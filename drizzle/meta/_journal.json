@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1719293980030,
+      "tag": "0000_dazzling_iceman",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1719313119726,
+      "tag": "0001_optimal_garia",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1719374673605,
+      "tag": "0002_chubby_rumiko_fujikawa",
+      "breakpoints": true
+    }
+  ]
+}
