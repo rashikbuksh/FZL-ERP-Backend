@@ -1,12 +1,6 @@
-import {
-	decimal,
-	integer,
-	pgSchema,
-	serial,
-	text,
-} from "drizzle-orm/pg-core";
+import { decimal, integer, pgSchema, serial, text } from "drizzle-orm/pg-core";
 
-export const materialSchema = pgSchema("material");
+export const materialSchema = pgSchema("materials");
 
 export const material = materialSchema.table("material", {
 	id: serial("id").primaryKey(),
