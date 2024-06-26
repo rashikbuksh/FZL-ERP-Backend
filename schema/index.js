@@ -1,4 +1,5 @@
 import {
+    decimal,
 	integer,
 	pgSchema,
 	pgTable,
@@ -17,18 +18,18 @@ export const authOtps = pgTable("auth_otp", {
 	userId: integer("user_id").references(() => users.id),
 });
 
-export const postSchema = pgSchema("post");
+export const materialSchema = pgSchema("material");
 
-export const posts = postSchema.table("posts", {
+export const material = materialSchema.table("material", {
 	id: serial("id").primaryKey(),
-	title: text("title"),
-	content: text("content"),
-	userId: integer("user_id").references(() => users.id),
+	name: text("name"),
+	description: text("description"),
+	quantity: decimal("quantity"),
 });
 
-export const comments = postSchema.table("comments", {
+export const purchase = materialSchema.table("purchase", {
 	id: serial("id").primaryKey(),
-	content: text("content"),
-	postId: integer("post_id").references(() => posts.id),
-	userId: integer("user_id").references(() => users.id),
+	material_id: integer("material_id").references(() => material.id),
+	quantity: decimal("quantity").notNull(),
+	price: decimal("price").notNull(),
 });
