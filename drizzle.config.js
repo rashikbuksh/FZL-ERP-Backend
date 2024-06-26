@@ -11,7 +11,7 @@ import {
 // if the command is generate then run the following code
 if (process.argv[2] === "generate" || process.argv[2] === "introspect") {
 	module.exports = defineConfig({
-		schema: "./schema",
+		schema: "./schema/schema.js",
 		out: "./drizzle",
 		dialect: "postgresql", // 'postgresql' | 'mysql' | 'sqlite'
 		dbCredentials: {
@@ -32,7 +32,7 @@ if (
 ) {
 	module.exports = defineConfig({
 		dialect: "postgresql", // "mysql" | "sqlite"
-		schema: "./schema.js",
+		schema: "./schema/schema.js",
 		out: "./drizzle",
 		migrations: {
 			table: "migrations_custom", // default `__drizzle_migrations`,
