@@ -1,17 +1,25 @@
-import { decimal, integer, pgSchema, serial, text } from "drizzle-orm/pg-core";
+import {
+	decimal,
+	integer,
+	pgSchema,
+	pgTable,
+	serial,
+	text,
+	varchar,
+} from "drizzle-orm/pg-core";
 
-export const materialSchema = pgSchema("materials");
+export const material = pgSchema("material");
 
-export const material = materialSchema.table("material", {
+export const info = material.table("info", {
 	id: serial("id").primaryKey(),
-	name: text("name"),
-	description: text("description"),
-	quantity: decimal("quantity"),
+	name: text("name").unique(),
+	price: decimal("price"),
+	quantity: integer("quantity"),
 });
 
-export const purchase = materialSchema.table("purchase", {
+export const purchase = material.table("purchase", {
 	id: serial("id").primaryKey(),
-	material_id: integer("material_id").references(() => material.id),
-	quantity: decimal("quantity").notNull(),
-	price: decimal("price").notNull(),
+	material_id: integer("material_id").references(() => info.id),
+	quantity: integer("quantity"),
+	date: text("date"),
 });
