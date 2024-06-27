@@ -1,20 +1,22 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import Pool from "pg";
-import * as schema from "./schema/index.js";
+import pg from "pg";
 import {
 	DB_HOST,
 	DB_NAME,
 	DB_PASS,
 	DB_POSTGRES_PORT,
 	DB_USER,
-} from "./secret.js";
+} from "../lib/secret.js";
+import * as schema from "./schema/index.js";
 
-const pool = new Pool.Pool({
-	user: DB_USER,
-	database: DB_NAME,
-	password: DB_PASS,
-	port: DB_POSTGRES_PORT,
+const { Pool } = pg;
+
+const pool = new Pool({
 	host: DB_HOST,
+	port: DB_POSTGRES_PORT,
+	user: DB_USER,
+	password: DB_PASS,
+	database: DB_NAME,
 });
 
 const db = drizzle(pool, { schema });

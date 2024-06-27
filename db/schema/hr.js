@@ -1,13 +1,4 @@
-import {
-	decimal,
-	integer,
-	pgSchema,
-	pgTable,
-	serial,
-	text,
-	uuid,
-	varchar,
-} from "drizzle-orm/pg-core";
+import { pgSchema, text, uuid } from "drizzle-orm/pg-core";
 
 export const hr = pgSchema("hr");
 

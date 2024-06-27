@@ -5,12 +5,12 @@ import {
 	DB_PASS,
 	DB_POSTGRES_PORT,
 	DB_USER,
-} from "./secret.js";
+} from "./lib/secret";
 
 const defaultConfig = {
-	schema: "./schema",
-	out: "./drizzle",
 	dialect: "postgresql",
+	schema: "./db/schema/*.js",
+	out: "./db/drizzle",
 	dbCredentials: {
 		host: DB_HOST,
 		user: DB_USER,

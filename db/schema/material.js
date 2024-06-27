@@ -1,12 +1,4 @@
-import {
-	decimal,
-	integer,
-	pgSchema,
-	pgTable,
-	serial,
-	text,
-	varchar,
-} from "drizzle-orm/pg-core";
+import { decimal, integer, pgSchema, serial, text } from "drizzle-orm/pg-core";
 
 export const material = pgSchema("material");
 
@@ -22,4 +14,5 @@ export const purchase = material.table("purchase", {
 	material_id: integer("material_id").references(() => info.id),
 	quantity: integer("quantity"),
 	date: text("date"),
+	remarks: text("remarks"),
 });
