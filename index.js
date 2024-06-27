@@ -1,5 +1,5 @@
 import db from "./db.js";
-import * as schema from "./schema/schema.js";
+import * as schema from "./schema/index.js";
 
 // await server
 // 	.insert(schema.users)
