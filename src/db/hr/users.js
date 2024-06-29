@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import db from "../../index.js";
-import { department, users } from "../../schema/hr.js";
+import db from "../index.js";
+import { department, users } from "./schema.js";
 
 export async function insert(data) {
 	return await db.insert(users).values(data).returning();

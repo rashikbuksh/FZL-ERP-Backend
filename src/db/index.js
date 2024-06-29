@@ -7,7 +7,7 @@ import {
 	DB_POSTGRES_PORT,
 	DB_USER,
 } from "../lib/secret.js";
-import * as schema from "./schema/index.js";
+import * as schema from "./schema.js";
 
 const { Pool } = pg;
 

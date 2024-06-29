@@ -1,16 +1,16 @@
-import { defineConfig } from "drizzle-kit";
 import {
 	DB_HOST,
 	DB_NAME,
 	DB_PASS,
 	DB_POSTGRES_PORT,
 	DB_USER,
-} from "./lib/secret";
+} from "@/lib/secret.js";
+import { defineConfig } from "drizzle-kit";
 
 const defaultConfig = {
 	dialect: "postgresql",
-	schema: "./db/schema/*",
-	out: "./db/drizzle",
+	schema: "./src/db/*/schema.js",
+	out: "./src/db/drizzle",
 	dbCredentials: {
 		host: DB_HOST,
 		user: DB_USER,
