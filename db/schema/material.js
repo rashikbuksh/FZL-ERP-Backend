@@ -1,6 +1,6 @@
 import { decimal, integer, pgSchema, serial, text } from "drizzle-orm/pg-core";
 
-export const material = pgSchema("material");
+const material = pgSchema("material");
 
 export const info = material.table("info", {
 	id: serial("id").primaryKey(),
@@ -16,3 +16,5 @@ export const purchase = material.table("purchase", {
 	date: text("date"),
 	remarks: text("remarks"),
 });
+
+export default material;

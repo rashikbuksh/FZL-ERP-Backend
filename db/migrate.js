@@ -6,10 +6,10 @@ async function MigrateData() {
 	process.exit(0);
 }
 
-MigrateData().catch((err) => {
+await MigrateData().catch((err) => {
 	console.error(err);
 	process.exit(0);
 });
 
 // close the connection
-db.close();
+await db.close();

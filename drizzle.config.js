@@ -9,7 +9,7 @@ import {
 
 const defaultConfig = {
 	dialect: "postgresql",
-	schema: "./db/schema/*.js",
+	schema: "./db/schema/*",
 	out: "./db/drizzle",
 	dbCredentials: {
 		host: DB_HOST,

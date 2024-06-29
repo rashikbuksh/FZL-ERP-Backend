@@ -7,7 +7,7 @@ import {
 	DB_POSTGRES_PORT,
 	DB_USER,
 } from "../lib/secret.js";
-import * as schema from "./schema/index.js";
+import * as schema from "./schema";
 
 const { Pool } = pg;
 
@@ -19,6 +19,6 @@ const pool = new Pool({
 	database: DB_NAME,
 });
 
-const db = drizzle(pool, { schema });
+const db = drizzle(pool, { schema, logger: true });
 
 export default db;

@@ -1,6 +1,6 @@
 import { pgSchema, text, uuid } from "drizzle-orm/pg-core";
 
-export const hr = pgSchema("hr");
+const hr = pgSchema("hr");
 
 export const department = hr.table("department", {
 	uuid: uuid("uuid").primaryKey(),
@@ -29,3 +29,5 @@ export const users = hr.table("users", {
 	status: text("status").notNull(),
 	remarks: text("remarks"),
 });
+
+export default hr;
