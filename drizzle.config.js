@@ -10,7 +10,7 @@ import { defineConfig } from "drizzle-kit";
 const defaultConfig = {
 	dialect: "postgresql",
 	schema: "./src/db/*/schema.js",
-	out: "./src/db/drizzle",
+	out: "./src/db/migrations",
 	dbCredentials: {
 		host: DB_HOST,
 		user: DB_USER,
@@ -22,7 +22,9 @@ const defaultConfig = {
 };
 
 const command = process.argv[2];
-const isGenerateOrIntrospect = ["generate", "introspect"].includes(command);
+const isGenerateOrIntrospect = ["generate", "introspect", "studio"].includes(
+	command
+);
 const isMigrateDropOrPush = ["migrate", "drop", "push"].includes(command);
 
 if (isGenerateOrIntrospect) {
