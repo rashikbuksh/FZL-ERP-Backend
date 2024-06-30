@@ -2,6 +2,7 @@ import cors from "cors";
 import express, { json, urlencoded } from "express";
 import { SERVER_PORT } from "./lib/secret.js";
 import { VerifyToken } from "./middleware/auth.js";
+import hrUserRouter from "./routes/hr/users.js";
 
 const server = express();
 
@@ -47,6 +48,9 @@ server.use(json());
 server.use(VerifyToken);
 
 server.use("/uploads", express.static("uploads"));
+
+// routes
+server.use("/hr", hrUserRouter);
 
 // listen
 server.listen(SERVER_PORT, () => {
