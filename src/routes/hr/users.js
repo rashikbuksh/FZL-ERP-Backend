@@ -1,6 +1,12 @@
-import { insert, remove, select, selectAll, update } from "@/db/hr/users";
-import { validateUuidParam } from "@/lib/validator";
 import { Router } from "express";
+import {
+	insert,
+	remove,
+	select,
+	selectAll,
+	update,
+} from "../../db/hr/users.js";
+import { validateUuidParam } from "../../lib/validator.js";
 
 const hrUserRouter = Router();
 

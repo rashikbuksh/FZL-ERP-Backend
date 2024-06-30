@@ -1,5 +1,5 @@
-import { handleResponse, validateRequest } from "@/util/index.js";
 import { eq } from "drizzle-orm";
+import { handleResponse, validateRequest } from "../../util/index.js";
 import db from "../index.js";
 import { users } from "./schema.js";
 
