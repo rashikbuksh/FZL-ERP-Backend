@@ -27,11 +27,15 @@ const isGenerateOrIntrospect = ["generate", "introspect", "studio"].includes(
 );
 const isMigrateDropOrPush = ["migrate", "drop", "push"].includes(command);
 
+var config;
+
 if (isGenerateOrIntrospect) {
-	module.exports = defineConfig(defaultConfig);
+	config = defineConfig(defaultConfig);
 } else if (isMigrateDropOrPush) {
-	module.exports = defineConfig({
+	config = defineConfig({
 		...defaultConfig,
 		migrations: { table: "migrations_details" },
 	});
 }
+
+export default config;
