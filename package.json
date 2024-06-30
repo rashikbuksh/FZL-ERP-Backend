@@ -23,6 +23,7 @@
 		"dotenv": "^16.4.5",
 		"drizzle-orm": "^0.31.2",
 		"express": "^4.19.2",
+		"express-validator": "^7.1.0",
 		"jsonwebtoken": "^9.0.2",
 		"minimist": "^1.2.8",
 		"pg": "^8.12.0"

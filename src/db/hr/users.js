@@ -1,25 +1,48 @@
+import { handleResponse, validateRequest } from "@/util/index.js";
 import { eq } from "drizzle-orm";
 import db from "../index.js";
 import { users } from "./schema.js";
 
-export async function insert(data) {
-	return await db.insert(users).values(data).returning();
+export async function insert(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const userPromise = db.insert(users).values(req.body).returning();
+	handleResponse(userPromise, res, next, 201);
 }
 
-export async function update(data) {
-	return await db
+export async function update(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const userPromise = db
 		.update(users)
-		.set(data)
-		.where(eq(users.id, data.id))
+		.set(req.body)
+		.where(eq(users.uuid, req.params.uuid))
 		.returning();
+
+	handleResponse(userPromise, res, next, 201);
 }
 
-export async function remove(id) {
-	return await db.delete(users).where(eq(users.id, id)).returning();
+export async function remove(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const userPromise = db
+		.delete(users)
+		.where(eq(users.uuid, req.params.uuid))
+		.returning();
+	handleResponse(userPromise, res, next);
 }
 
-export async function select() {
-	const result = await db.select().from(users);
-	console.log(result);
-	return result;
+export async function selectAll(req, res, next) {
+	const resultPromise = db.select().from(users);
+	handleResponse(resultPromise, res, next);
+}
+
+export async function select(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const userPromise = db
+		.select()
+		.from(users)
+		.where(eq(users.uuid, req.params.uuid));
+	handleResponse(userPromise, res, next);
 }
