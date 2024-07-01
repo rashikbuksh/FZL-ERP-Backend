@@ -16,4 +16,4 @@ hrUserRouter.post("/user", insert);
 hrUserRouter.put("/user/:uuid", update);
 hrUserRouter.delete("/user/:uuid", validateUuidParam(), remove);
 
-export default hrUserRouter;
+export { hrUserRouter };
