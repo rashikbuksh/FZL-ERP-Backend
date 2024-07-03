@@ -50,6 +50,8 @@ server.use(VerifyToken);
 server.use("/uploads", express.static("uploads"));
 
 // routes
+// add all hr routes to /hr
+server.use("/hr", hr.hrDepartmentRouter);
 server.use("/hr", hr.hrUserRouter);
 
 // listen

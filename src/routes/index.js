@@ -1,9 +1,11 @@
-import hrUserRouter from "./hr/index.js";
+import {
+	default as hrDepartmentRouter,
+	default as hrUserRouter,
+} from "../db/hr/route.js";
 
 const hr = {
 	...hrUserRouter,
+	...hrDepartmentRouter,
 };
-
-console.log("hr", hr);
 
 export { hr };
