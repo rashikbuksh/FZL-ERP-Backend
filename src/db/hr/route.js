@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { validateUuidParam } from "../../lib/validator.js";
 import * as departmentOperations from "./query/department.js";
+import * as designationOperations from "./query/designation.js";
 import * as userOperations from "./query/users.js";
 
 const hrUserRouter = Router();
@@ -27,4 +28,20 @@ hrDepartmentRouter.delete(
 	departmentOperations.remove
 );
 
-export default { hrUserRouter, hrDepartmentRouter };
+const hrDesignationRouter = Router();
+
+hrDesignationRouter.get("/designation", designationOperations.selectAll);
+hrDesignationRouter.get(
+	"/designation/:uuid",
+	validateUuidParam(),
+	designationOperations.select
+);
+hrDesignationRouter.post("/designation", designationOperations.insert);
+hrDesignationRouter.put("/designation/:uuid", designationOperations.update);
+hrDesignationRouter.delete(
+	"/designation/:uuid",
+	validateUuidParam(),
+	designationOperations.remove
+);
+
+export { hrDepartmentRouter, hrDesignationRouter, hrUserRouter };

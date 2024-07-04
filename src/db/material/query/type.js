@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
-import { handleResponse, validateRequest } from "../../util/index.js";
-import db from "../index.js";
-import { type } from "./schema.js";
+import { handleResponse, validateRequest } from "../../../util/index.js";
+import db from "../../index.js";
+import { type } from "../schema.js";
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -45,4 +45,3 @@ export async function select(req, res, next) {
 		.where(eq(type.uuid, req.params.uuid));
 	handleResponse(typePromise, res, next);
 }
-
