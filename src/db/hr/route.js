@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validateUuidParam } from "../../lib/validator.js";
-import * as departmentOperations from "./department.js";
-import * as userOperations from "./users.js";
+import * as departmentOperations from "./query/department.js";
+import * as userOperations from "./query/users.js";
 
 const hrUserRouter = Router();
 
