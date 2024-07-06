@@ -1,9 +1,5 @@
 import express from "express";
-import {
-	hrDepartmentRouter,
-	hrDesignationRouter,
-	hrUserRouter,
-} from "../db/hr/route.js";
+import { hrRouter } from "../db/hr/route.js";
 import {
 	materialInfoRouter,
 	materialSectionRouter,
@@ -16,9 +12,7 @@ import {
 const route = express.Router();
 
 // hr routes
-route.use("/hr", hrUserRouter);
-route.use("/hr", hrDepartmentRouter);
-route.use("/hr", hrDesignationRouter);
+route.use("/hr", hrRouter);
 
 // material routes
 route.use("/material", materialInfoRouter);
