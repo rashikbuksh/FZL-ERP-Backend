@@ -1,11 +1,31 @@
+import express from "express";
 import {
-	default as hrDepartmentRouter,
-	default as hrUserRouter,
+	hrDepartmentRouter,
+	hrDesignationRouter,
+	hrUserRouter,
 } from "../db/hr/route.js";
+import {
+	materialInfoRouter,
+	materialSectionRouter,
+	materialStockRouter,
+	materialTrxRouter,
+	materialTypeRouter,
+	materialUsedRouter,
+} from "../db/material/route.js";
 
-const hr = {
-	...hrUserRouter,
-	...hrDepartmentRouter,
-};
+const route = express.Router();
 
-export { hr };
+// hr routes
+route.use("/hr", hrUserRouter);
+route.use("/hr", hrDepartmentRouter);
+route.use("/hr", hrDesignationRouter);
+
+// material routes
+route.use("/material", materialInfoRouter);
+route.use("/material", materialSectionRouter);
+route.use("/material", materialStockRouter);
+route.use("/material", materialTrxRouter);
+route.use("/material", materialTypeRouter);
+route.use("/material", materialUsedRouter);
+
+export { route };

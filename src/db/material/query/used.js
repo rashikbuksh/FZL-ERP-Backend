@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
-import { handleResponse, validateRequest } from "../../util/index.js";
-import db from "../index.js";
-import { used } from "./schema.js";
+import { handleResponse, validateRequest } from "../../../util/index.js";
+import db from "../../index.js";
+import { used } from "../schema.js";
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
