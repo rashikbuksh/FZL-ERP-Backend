@@ -4,53 +4,48 @@ import * as descriptionOperations from "./query/description.js";
 import * as entryOperations from "./query/entry.js";
 import * as vendorOperations from "./query/vendor.js";
 
-const purchaseVendorRouter = Router();
-const purchaseDescriptionRouter = Router();
-const purchaseEntryRouter = Router();
+const purchaseRouter = Router();
 
-purchaseVendorRouter.get("/vendor", vendorOperations.selectAll);
-purchaseVendorRouter.get(
+// Vendor routes
+purchaseRouter.get("/vendor", vendorOperations.selectAll);
+purchaseRouter.get(
 	"/vendor/:uuid",
 	validateUuidParam(),
 	vendorOperations.select
 );
-purchaseVendorRouter.post("/vendor", vendorOperations.insert);
-purchaseVendorRouter.put("/vendor/:uuid", vendorOperations.update);
-purchaseVendorRouter.delete(
+purchaseRouter.post("/vendor", vendorOperations.insert);
+purchaseRouter.put("/vendor/:uuid", vendorOperations.update);
+purchaseRouter.delete(
 	"/vendor/:uuid",
 	validateUuidParam(),
 	vendorOperations.remove
 );
 
-purchaseDescriptionRouter.get("/description", descriptionOperations.selectAll);
-purchaseDescriptionRouter.get(
+// Description routes
+purchaseRouter.get("/description", descriptionOperations.selectAll);
+purchaseRouter.get(
 	"/description/:uuid",
 	validateUuidParam(),
 	descriptionOperations.select
 );
-purchaseDescriptionRouter.post("/description", descriptionOperations.insert);
-purchaseDescriptionRouter.put(
-	"/description/:uuid",
-	descriptionOperations.update
-);
-purchaseDescriptionRouter.delete(
+purchaseRouter.post("/description", descriptionOperations.insert);
+purchaseRouter.put("/description/:uuid", descriptionOperations.update);
+
+purchaseRouter.delete(
 	"/description/:uuid",
 	validateUuidParam(),
 	descriptionOperations.remove
 );
 
-purchaseEntryRouter.get("/entry", entryOperations.selectAll);
-purchaseEntryRouter.get(
-	"/entry/:uuid",
-	validateUuidParam(),
-	entryOperations.select
-);
-purchaseEntryRouter.post("/entry", entryOperations.insert);
-purchaseEntryRouter.put("/entry/:uuid", entryOperations.update);
-purchaseEntryRouter.delete(
+// Entry routes
+purchaseRouter.get("/entry", entryOperations.selectAll);
+purchaseRouter.get("/entry/:uuid", validateUuidParam(), entryOperations.select);
+purchaseRouter.post("/entry", entryOperations.insert);
+purchaseRouter.put("/entry/:uuid", entryOperations.update);
+purchaseRouter.delete(
 	"/entry/:uuid",
 	validateUuidParam(),
 	entryOperations.remove
 );
 
-export { purchaseDescriptionRouter, purchaseEntryRouter, purchaseVendorRouter };
+export { purchaseRouter };

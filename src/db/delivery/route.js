@@ -7,6 +7,7 @@ import * as packingListEntryOperations from "./query/packing_list_entry.js";
 
 const deliveryRouter = Router();
 
+// packing_list routes
 deliveryRouter.get("/packing_list", packingListOperations.selectAll);
 deliveryRouter.get(
 	"/packing_list/:uuid",
@@ -21,7 +22,7 @@ deliveryRouter.delete(
 	packingListOperations.remove
 );
 
-//
+// packing_list_entry routes
 deliveryRouter.get("/packing_list_entry", packingListEntryOperations.selectAll);
 deliveryRouter.get(
 	"/packing_list_entry/:uuid",
@@ -39,6 +40,7 @@ deliveryRouter.delete(
 	packingListEntryOperations.remove
 );
 
+// challan routes
 deliveryRouter.get("/challan", challanOperations.selectAll);
 deliveryRouter.get(
 	"/challan/:uuid",
@@ -53,6 +55,7 @@ deliveryRouter.delete(
 	challanOperations.remove
 );
 
+// challan_entry routes
 deliveryRouter.get("/challan_entry", challanEntryOperations.selectAll);
 deliveryRouter.get(
 	"/challan_entry/:uuid",
