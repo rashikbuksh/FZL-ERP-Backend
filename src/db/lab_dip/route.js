@@ -4,49 +4,39 @@ import * as infoOperations from "./query/info.js";
 import * as recipeOperations from "./query/recipe.js";
 import * as recipeEntryOperations from "./query/recipe_entry.js";
 
-const labDipInfoRouter = Router();
-const labDipRecipeRouter = Router();
-const labDipRecipeEntryRouter = Router();
+const labDipRouter = Router();
 
-labDipInfoRouter.get("/info", infoOperations.selectAll);
-labDipInfoRouter.get("/info/:uuid", validateUuidParam(), infoOperations.select);
-labDipInfoRouter.post("/info", infoOperations.insert);
-labDipInfoRouter.put("/info/:uuid", infoOperations.update);
-labDipInfoRouter.delete(
-	"/info/:uuid",
-	validateUuidParam(),
-	infoOperations.remove
-);
+// info routes
+labDipRouter.get("/info", infoOperations.selectAll);
+labDipRouter.get("/info/:uuid", validateUuidParam(), infoOperations.select);
+labDipRouter.post("/info", infoOperations.insert);
+labDipRouter.put("/info/:uuid", infoOperations.update);
+labDipRouter.delete("/info/:uuid", validateUuidParam(), infoOperations.remove);
 
-labDipRecipeRouter.get("/recipe", recipeOperations.selectAll);
-labDipRecipeRouter.get(
-	"/recipe/:uuid",
-	validateUuidParam(),
-	recipeOperations.select
-);
-labDipRecipeRouter.post("/recipe", recipeOperations.insert);
-labDipRecipeRouter.put("/recipe/:uuid", recipeOperations.update);
-labDipRecipeRouter.delete(
+// recipe routes
+labDipRouter.get("/recipe", recipeOperations.selectAll);
+labDipRouter.get("/recipe/:uuid", validateUuidParam(), recipeOperations.select);
+labDipRouter.post("/recipe", recipeOperations.insert);
+labDipRouter.put("/recipe/:uuid", recipeOperations.update);
+labDipRouter.delete(
 	"/recipe/:uuid",
 	validateUuidParam(),
 	recipeOperations.remove
 );
 
-labDipRecipeEntryRouter.get("/recipe_entry", recipeEntryOperations.selectAll);
-labDipRecipeEntryRouter.get(
+// recipe_entry routes
+labDipRouter.get("/recipe_entry", recipeEntryOperations.selectAll);
+labDipRouter.get(
 	"/recipe_entry/:uuid",
 	validateUuidParam(),
 	recipeEntryOperations.select
 );
-labDipRecipeEntryRouter.post("/recipe_entry", recipeEntryOperations.insert);
-labDipRecipeEntryRouter.put(
-	"/recipe_entry/:uuid",
-	recipeEntryOperations.update
-);
-labDipRecipeEntryRouter.delete(
+labDipRouter.post("/recipe_entry", recipeEntryOperations.insert);
+labDipRouter.put("/recipe_entry/:uuid", recipeEntryOperations.update);
+labDipRouter.delete(
 	"/recipe_entry/:uuid",
 	validateUuidParam(),
 	recipeEntryOperations.remove
 );
 
-export { labDipInfoRouter, labDipRecipeEntryRouter, labDipRecipeRouter };
+export { labDipRouter };
