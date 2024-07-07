@@ -7,121 +7,82 @@ import * as sfgOperations from "./query/sfg.js";
 import * as sfgProductionOperations from "./query/sfg_production.js";
 import * as sfgTransactionOperations from "./query/sfg_transaction.js";
 
-const zipperOrderInfoRouter = Router();
-const zipperOrderDescriptionRouter = Router();
-const zipperOrderEntryRouter = Router();
-const zipperSfgRouter = Router();
-const zipperSfgProductionRouter = Router();
-const zipperSfgTransactionRouter = Router();
+const zipperRouter = Router();
 
-zipperOrderInfoRouter.get("/order_info", orderInfoOperations.selectAll);
-zipperOrderInfoRouter.get(
+zipperRouter.get("/order_info", orderInfoOperations.selectAll);
+zipperRouter.get(
 	"/order_info/:uuid",
 	validateUuidParam(),
 	orderInfoOperations.select
 );
-zipperOrderInfoRouter.post("/order_info", orderInfoOperations.insert);
-zipperOrderInfoRouter.put("/order_info/:uuid", orderInfoOperations.update);
-zipperOrderInfoRouter.delete(
+zipperRouter.post("/order_info", orderInfoOperations.insert);
+zipperRouter.put("/order_info/:uuid", orderInfoOperations.update);
+zipperRouter.delete(
 	"/order_info/:uuid",
 	validateUuidParam(),
 	orderInfoOperations.remove
 );
 
-zipperOrderDescriptionRouter.get(
-	"/order_description",
-	orderDescriptionOperations.selectAll
-);
-zipperOrderDescriptionRouter.get(
+zipperRouter.get("/order_description", orderDescriptionOperations.selectAll);
+zipperRouter.get(
 	"/order_description/:uuid",
 	validateUuidParam(),
 	orderDescriptionOperations.select
 );
-zipperOrderDescriptionRouter.post(
-	"/order_description",
-	orderDescriptionOperations.insert
-);
-zipperOrderDescriptionRouter.put(
-	"/order_description/:uuid",
-	orderDescriptionOperations.update
-);
-zipperOrderDescriptionRouter.delete(
+zipperRouter.post("/order_description", orderDescriptionOperations.insert);
+zipperRouter.put("/order_description/:uuid", orderDescriptionOperations.update);
+zipperRouter.delete(
 	"/order_description/:uuid",
 	validateUuidParam(),
 	orderDescriptionOperations.remove
 );
 
-zipperOrderEntryRouter.get("/order_entry", orderEntryOperations.selectAll);
-zipperOrderEntryRouter.get(
+zipperRouter.get("/order_entry", orderEntryOperations.selectAll);
+zipperRouter.get(
 	"/order_entry/:uuid",
 	validateUuidParam(),
 	orderEntryOperations.select
 );
-zipperOrderEntryRouter.post("/order_entry", orderEntryOperations.insert);
-zipperOrderEntryRouter.put("/order_entry/:uuid", orderEntryOperations.update);
-zipperOrderEntryRouter.delete(
+zipperRouter.post("/order_entry", orderEntryOperations.insert);
+zipperRouter.put("/order_entry/:uuid", orderEntryOperations.update);
+zipperRouter.delete(
 	"/order_entry/:uuid",
 	validateUuidParam(),
 	orderEntryOperations.remove
 );
 
-zipperSfgRouter.get("/sfg", sfgOperations.selectAll);
-zipperSfgRouter.get("/sfg/:uuid", validateUuidParam(), sfgOperations.select);
-zipperSfgRouter.post("/sfg", sfgOperations.insert);
-zipperSfgRouter.put("/sfg/:uuid", sfgOperations.update);
-zipperSfgRouter.delete("/sfg/:uuid", validateUuidParam(), sfgOperations.remove);
+zipperRouter.get("/sfg", sfgOperations.selectAll);
+zipperRouter.get("/sfg/:uuid", validateUuidParam(), sfgOperations.select);
+zipperRouter.post("/sfg", sfgOperations.insert);
+zipperRouter.put("/sfg/:uuid", sfgOperations.update);
+zipperRouter.delete("/sfg/:uuid", validateUuidParam(), sfgOperations.remove);
 
-zipperSfgProductionRouter.get(
-	"/sfg_production",
-	sfgProductionOperations.selectAll
-);
-zipperSfgProductionRouter.get(
+zipperRouter.get("/sfg_production", sfgProductionOperations.selectAll);
+zipperRouter.get(
 	"/sfg_production/:uuid",
 	validateUuidParam(),
 	sfgProductionOperations.select
 );
-zipperSfgProductionRouter.post(
-	"/sfg_production",
-	sfgProductionOperations.insert
-);
-zipperSfgProductionRouter.put(
-	"/sfg_production/:uuid",
-	sfgProductionOperations.update
-);
-zipperSfgProductionRouter.delete(
+zipperRouter.post("/sfg_production", sfgProductionOperations.insert);
+zipperRouter.put("/sfg_production/:uuid", sfgProductionOperations.update);
+zipperRouter.delete(
 	"/sfg_production/:uuid",
 	validateUuidParam(),
 	sfgProductionOperations.remove
 );
 
-zipperSfgTransactionRouter.get(
-	"/sfg_transaction",
-	sfgTransactionOperations.selectAll
-);
-zipperSfgTransactionRouter.get(
+zipperRouter.get("/sfg_transaction", sfgTransactionOperations.selectAll);
+zipperRouter.get(
 	"/sfg_transaction/:uuid",
 	validateUuidParam(),
 	sfgTransactionOperations.select
 );
-zipperSfgTransactionRouter.post(
-	"/sfg_transaction",
-	sfgTransactionOperations.insert
-);
-zipperSfgTransactionRouter.put(
-	"/sfg_transaction/:uuid",
-	sfgTransactionOperations.update
-);
-zipperSfgTransactionRouter.delete(
+zipperRouter.post("/sfg_transaction", sfgTransactionOperations.insert);
+zipperRouter.put("/sfg_transaction/:uuid", sfgTransactionOperations.update);
+zipperRouter.delete(
 	"/sfg_transaction/:uuid",
 	validateUuidParam(),
 	sfgTransactionOperations.remove
 );
 
-export {
-	zipperOrderDescriptionRouter,
-	zipperOrderEntryRouter,
-	zipperOrderInfoRouter,
-	zipperSfgProductionRouter,
-	zipperSfgRouter,
-	zipperSfgTransactionRouter,
-};
+export { zipperRouter };

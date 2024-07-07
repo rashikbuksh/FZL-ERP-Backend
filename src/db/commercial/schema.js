@@ -1,19 +1,28 @@
-import { decimal, integer, pgSchema, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+	decimal,
+	integer,
+	pgSchema,
+	text,
+	timestamp,
+	uuid,
+} from "drizzle-orm/pg-core";
 import * as hrSchema from "../hr/schema.js";
 import * as publicSchema from "../public/schema.js";
 import * as zipperSchema from "../zipper/schema.js";
 
 const commercial = pgSchema("commercial");
 
+// table information // table data for testing
+
 export const bank = commercial.table("bank", {
-	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull(),
-	swift_code: text("swift_code").notNull(),
-	address: text("address").notNull(),
-	policy: text("policy").notNull(),
-	created: timestamp("created"),
-	updated: timestamp("updated"),
-	remarks: text("remarks"),
+	uuid: uuid("uuid").primaryKey(), // 78c2bcd7-766a-4d17-93f7-de39fff2eaaf
+	name: text("name").notNull(), // Bank Asia
+	swift_code: text("swift_code").notNull(), // BAABBDH
+	address: text("address").notNull(), // 123, ABC, Dhaka
+	policy: text("policy").notNull(), // asdsdafasf
+	created: timestamp("created"), // 2021-08-01 00:00:00
+	updated: timestamp("updated"), // 2021-08-01 00:00:00
+	remarks: text("remarks"), // asdfasfasf
 });
 
 export const lc = commercial.table("lc", {

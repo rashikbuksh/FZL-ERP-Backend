@@ -22,12 +22,7 @@ import {
 	commercialPiRouter,
 } from "../db/commercial/route.js";
 
-import {
-	deliveryChallanEntryRouter,
-	deliveryChallanRouter,
-	deliveryPackingListEntryRouter,
-	deliveryPackingListRouter,
-} from "../db/delivery/route.js";
+import { deliveryRouter } from "../db/delivery/route.js";
 
 import {
 	publicBuyerRouter,
@@ -45,19 +40,16 @@ import {
 	purchaseVendorRouter,
 } from "../db/purchase/route.js";
 
-import {
-	zipperOrderDescriptionRouter,
-	zipperOrderEntryRouter,
-	zipperOrderInfoRouter,
-	zipperSfgProductionRouter,
-	zipperSfgRouter,
-	zipperSfgTransactionRouter,
-} from "../db/zipper/route.js";
+import { zipperRouter } from "../db/zipper/route.js";
 
 const route = express.Router();
 
+// All the routes are defined here
+
+// use the /hr route and /delivery route as reference, change the routes accordingly, also in query folder, then test with postman
+
 // hr routes
-route.use("/hr", hrRouter);
+route.use("/hr", hrRouter).all;
 
 // material routes
 route.use("/material", materialInfoRouter);
@@ -79,10 +71,7 @@ route.use("/commercial", commercialPiRouter);
 route.use("/commercial", commercialPiEntryRouter);
 
 // delivery routes
-route.use("/delivery", deliveryPackingListRouter);
-route.use("/delivery", deliveryPackingListEntryRouter);
-route.use("/delivery", deliveryChallanRouter);
-route.use("/delivery", deliveryChallanEntryRouter);
+route.use("/delivery", deliveryRouter);
 
 // public routes
 route.use("/public", publicBuyerRouter);
@@ -99,11 +88,6 @@ route.use("/purchase", purchaseDescriptionRouter);
 route.use("/purchase", purchaseEntryRouter);
 
 // zipper routes
-route.use("/zipper", zipperOrderInfoRouter);
-route.use("/zipper", zipperOrderDescriptionRouter);
-route.use("/zipper", zipperOrderEntryRouter);
-route.use("/zipper", zipperSfgRouter);
-route.use("/zipper", zipperSfgProductionRouter);
-route.use("/zipper", zipperSfgTransactionRouter);
+route.use("/zipper", zipperRouter);
 
 export { route };

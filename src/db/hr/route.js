@@ -7,7 +7,7 @@ import * as userOperations from "./query/users.js";
 const hrRouter = Router();
 
 // user routes
-hrRouter.get("/user", userOperations.selectAll);
+hrRouter.get("/user", userOperations.selectAll); 
 hrRouter.get("/user/:uuid", validateUuidParam(), userOperations.select);
 hrRouter.post("/user", userOperations.insert);
 hrRouter.put("/user/:uuid", userOperations.update);

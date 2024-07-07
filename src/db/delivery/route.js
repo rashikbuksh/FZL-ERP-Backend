@@ -5,91 +5,66 @@ import * as challanEntryOperations from "./query/challan_entry.js";
 import * as packingListOperations from "./query/packing_list.js";
 import * as packingListEntryOperations from "./query/packing_list_entry.js";
 
-const deliveryPackingListRouter = Router();
-const deliveryPackingListEntryRouter = Router();
-const deliveryChallanRouter = Router();
-const deliveryChallanEntryRouter = Router();
+const deliveryRouter = Router();
 
-deliveryPackingListRouter.get("/packing_list", packingListOperations.selectAll);
-deliveryPackingListRouter.get(
+deliveryRouter.get("/packing_list", packingListOperations.selectAll);
+deliveryRouter.get(
 	"/packing_list/:uuid",
 	validateUuidParam(),
 	packingListOperations.select
 );
-deliveryPackingListRouter.post("/packing_list", packingListOperations.insert);
-deliveryPackingListRouter.put(
-	"/packing_list/:uuid",
-	packingListOperations.update
-);
-deliveryPackingListRouter.delete(
+deliveryRouter.post("/packing_list", packingListOperations.insert);
+deliveryRouter.put("/packing_list/:uuid", packingListOperations.update);
+deliveryRouter.delete(
 	"/packing_list/:uuid",
 	validateUuidParam(),
 	packingListOperations.remove
 );
 
-deliveryPackingListEntryRouter.get(
-	"/packing_list_entry",
-	packingListEntryOperations.selectAll
-);
-deliveryPackingListEntryRouter.get(
+//
+deliveryRouter.get("/packing_list_entry", packingListEntryOperations.selectAll);
+deliveryRouter.get(
 	"/packing_list_entry/:uuid",
 	validateUuidParam(),
 	packingListEntryOperations.select
 );
-deliveryPackingListEntryRouter.post(
-	"/packing_list_entry",
-	packingListEntryOperations.insert
-);
-deliveryPackingListEntryRouter.put(
+deliveryRouter.post("/packing_list_entry", packingListEntryOperations.insert);
+deliveryRouter.put(
 	"/packing_list_entry/:uuid",
 	packingListEntryOperations.update
 );
-deliveryPackingListEntryRouter.delete(
+deliveryRouter.delete(
 	"/packing_list_entry/:uuid",
 	validateUuidParam(),
 	packingListEntryOperations.remove
 );
 
-deliveryChallanRouter.get("/challan", challanOperations.selectAll);
-deliveryChallanRouter.get(
+deliveryRouter.get("/challan", challanOperations.selectAll);
+deliveryRouter.get(
 	"/challan/:uuid",
 	validateUuidParam(),
 	challanOperations.select
 );
-deliveryChallanRouter.post("/challan", challanOperations.insert);
-deliveryChallanRouter.put("/challan/:uuid", challanOperations.update);
-deliveryChallanRouter.delete(
+deliveryRouter.post("/challan", challanOperations.insert);
+deliveryRouter.put("/challan/:uuid", challanOperations.update);
+deliveryRouter.delete(
 	"/challan/:uuid",
 	validateUuidParam(),
 	challanOperations.remove
 );
 
-deliveryChallanEntryRouter.get(
-	"/challan_entry",
-	challanEntryOperations.selectAll
-);
-deliveryChallanEntryRouter.get(
+deliveryRouter.get("/challan_entry", challanEntryOperations.selectAll);
+deliveryRouter.get(
 	"/challan_entry/:uuid",
 	validateUuidParam(),
 	challanEntryOperations.select
 );
-deliveryChallanEntryRouter.post(
-	"/challan_entry",
-	challanEntryOperations.insert
-);
-deliveryChallanEntryRouter.put(
-	"/challan_entry/:uuid",
-	challanEntryOperations.update
-);
-deliveryChallanEntryRouter.delete(
+deliveryRouter.post("/challan_entry", challanEntryOperations.insert);
+deliveryRouter.put("/challan_entry/:uuid", challanEntryOperations.update);
+deliveryRouter.delete(
 	"/challan_entry/:uuid",
 	validateUuidParam(),
 	challanEntryOperations.remove
 );
 
-export {
-	deliveryChallanEntryRouter,
-	deliveryChallanRouter,
-	deliveryPackingListEntryRouter,
-	deliveryPackingListRouter,
-};
+export { deliveryRouter };

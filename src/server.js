@@ -2,7 +2,6 @@ import cors from "cors";
 import express, { json, urlencoded } from "express";
 import { SERVER_PORT } from "./lib/secret.js";
 import { VerifyToken } from "./middleware/auth.js";
-// import { hr } from "./routes/index.js";
 import { route } from "./routes/index.js";
 
 const server = express();
