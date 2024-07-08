@@ -33,16 +33,16 @@ commercialRouter.put("/pi/:uuid", piOperations.update);
 commercialRouter.delete("/pi/:uuid", validateUuidParam(), piOperations.remove);
 
 // pi_entry routes
-commercialRouter.get("/pi_entry", piEntryOperations.selectAll);
+commercialRouter.get("/pi-entry", piEntryOperations.selectAll);
 commercialRouter.get(
-	"/pi_entry/:uuid",
+	"/pi-entry/:uuid",
 	validateUuidParam(),
 	piEntryOperations.select
 );
-commercialRouter.post("/pi_entry", piEntryOperations.insert);
-commercialRouter.put("/pi_entry/:uuid", piEntryOperations.update);
+commercialRouter.post("/pi-entry", piEntryOperations.insert);
+commercialRouter.put("/pi-entry/:uuid", piEntryOperations.update);
 commercialRouter.delete(
-	"/pi_entry/:uuid",
+	"/pi-entry/:uuid",
 	validateUuidParam(),
 	piEntryOperations.remove
 );

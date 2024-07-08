@@ -25,16 +25,16 @@ labDipRouter.delete(
 );
 
 // recipe_entry routes
-labDipRouter.get("/recipe_entry", recipeEntryOperations.selectAll);
+labDipRouter.get("/recipe-entry", recipeEntryOperations.selectAll);
 labDipRouter.get(
-	"/recipe_entry/:uuid",
+	"/recipe-entry/:uuid",
 	validateUuidParam(),
 	recipeEntryOperations.select
 );
-labDipRouter.post("/recipe_entry", recipeEntryOperations.insert);
-labDipRouter.put("/recipe_entry/:uuid", recipeEntryOperations.update);
+labDipRouter.post("/recipe-entry", recipeEntryOperations.insert);
+labDipRouter.put("/recipe-entry/:uuid", recipeEntryOperations.update);
 labDipRouter.delete(
-	"/recipe_entry/:uuid",
+	"/recipe-entry/:uuid",
 	validateUuidParam(),
 	recipeEntryOperations.remove
 );
