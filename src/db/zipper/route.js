@@ -9,7 +9,8 @@ import * as sfgTransactionOperations from "./query/sfg_transaction.js";
 
 const zipperRouter = Router();
 
-// Order routes
+// --------------------- ORDER ---------------------
+// --------------------- ORDER INFO ROUTES ---------------------
 zipperRouter.get("/order_info", orderInfoOperations.selectAll);
 zipperRouter.get(
 	"/order_info/:uuid",
@@ -24,7 +25,7 @@ zipperRouter.delete(
 	orderInfoOperations.remove
 );
 
-// Order Description routes
+// --------------------- ORDER DESCRIPTION ROUTES ---------------------
 zipperRouter.get("/order_description", orderDescriptionOperations.selectAll);
 zipperRouter.get(
 	"/order_description/:uuid",
@@ -39,7 +40,7 @@ zipperRouter.delete(
 	orderDescriptionOperations.remove
 );
 
-// Order Entry routes
+// --------------------- ORDER ENTRY ROUTES ---------------------
 zipperRouter.get("/order_entry", orderEntryOperations.selectAll);
 zipperRouter.get(
 	"/order_entry/:uuid",
@@ -54,14 +55,15 @@ zipperRouter.delete(
 	orderEntryOperations.remove
 );
 
-// SFG routes
+// --------------------- SFG ---------------------
+// --------------------- SFG ROUTES ---------------------
 zipperRouter.get("/sfg", sfgOperations.selectAll);
 zipperRouter.get("/sfg/:uuid", validateUuidParam(), sfgOperations.select);
 zipperRouter.post("/sfg", sfgOperations.insert);
 zipperRouter.put("/sfg/:uuid", sfgOperations.update);
 zipperRouter.delete("/sfg/:uuid", validateUuidParam(), sfgOperations.remove);
 
-// SFG Production routes
+// --------------------- SFG PRODUCTION ROUTES ---------------------
 zipperRouter.get("/sfg_production", sfgProductionOperations.selectAll);
 zipperRouter.get(
 	"/sfg_production/:uuid",
@@ -76,7 +78,7 @@ zipperRouter.delete(
 	sfgProductionOperations.remove
 );
 
-// SFG Transaction routes
+// --------------------- SFG TRANSACTION ROUTES ---------------------
 zipperRouter.get("/sfg_transaction", sfgTransactionOperations.selectAll);
 zipperRouter.get(
 	"/sfg_transaction/:uuid",
