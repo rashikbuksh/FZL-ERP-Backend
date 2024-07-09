@@ -31,7 +31,7 @@ route.use("/delivery", deliveryRouter);
 route.use("/hr", hrRouter);
 
 // lab dip routes
-route.use("/lab_dip", labDipRouter);
+route.use("/lab-dip", labDipRouter);
 
 // material routes
 route.use("/material", materialRouter);
