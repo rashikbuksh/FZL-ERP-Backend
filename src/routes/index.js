@@ -45,4 +45,4 @@ route.use("/purchase", purchaseRouter);
 // zipper routes
 route.use("/zipper", zipperRouter);
 
-export { route };
+export default route;
