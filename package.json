@@ -39,6 +39,6 @@
 			"node_modules/"
 		],
 		"ext": "js",
-		"delay": 1000
+		"delay": 500
 	}
 }
