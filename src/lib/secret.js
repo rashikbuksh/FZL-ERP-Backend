@@ -11,6 +11,7 @@ const {
 	DB_POSTGRES_PORT,
 	PRIVATE_KEY,
 	SALT,
+	SERVER_URL,
 } = process.env;
 
 export {
@@ -22,4 +23,5 @@ export {
 	PRIVATE_KEY,
 	SALT,
 	SERVER_PORT,
+	SERVER_URL,
 };
