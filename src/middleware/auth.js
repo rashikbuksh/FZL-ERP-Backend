@@ -43,7 +43,10 @@ export const VerifyToken = (req, res, next) => {
 	const { authorization } = req?.headers;
 	const { originalUrl, method } = req;
 
-	if (originalUrl === "/user/login" && method === "POST") {
+	if (
+		(originalUrl === "/user/login" && method === "POST") ||
+		originalUrl.startsWith("/api-docs")
+	) {
 		return next();
 	}
 
@@ -52,7 +55,9 @@ export const VerifyToken = (req, res, next) => {
 	}
 
 	verify(authorization, PRIVATE_KEY, (err, user) => {
-		if (err) return res.status(403).json({ error: "Forbidden" });
+		if (err) {
+			return res.status(403).json({ error: "Forbidden" });
+		}
 
 		req.user = user;
 
