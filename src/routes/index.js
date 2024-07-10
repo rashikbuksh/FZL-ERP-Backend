@@ -1,3 +1,86 @@
+/**
+ * @swagger
+ * '/hr/user':
+ *   get:
+ *     description: my hosted api docs
+ *     summary: api docs
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           'application/json':
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 thing:
+ *                   $ref: 'src/db/hr/schema.js'
+ * db:
+ *   user:
+ *     schema:
+ *       type: object
+ *       required:
+ *         - uuid
+ *         - name
+ *         - email
+ *         - pass
+ *         - designation_uuid
+ *         - can_access
+ *         - ext
+ *         - phone
+ *         - created_at
+ *         - updated_at
+ *       properties:
+ *         uuid:
+ *           type: uuid
+ *         name:
+ *          type: string
+ *         email:
+ *          type: string
+ *         pass:
+ *          type: string
+ *         designation_uuid:
+ *          type: uuid
+ *         can_access:
+ *          type: string
+ *         ext:
+ *          type: string
+ *         phone:
+ *          type: string
+ *         created_at:
+ *          type: string
+ *         updated_at:
+ *          type: string
+ *         status:
+ *          type: integer
+ * department:
+ *     schema:
+ *       type: object
+ *       required:
+ *         - uuid
+ *         - department
+ *       properties:
+ *         uuid:
+ *           type: uuid
+ *         department:
+ *           type: string
+ *
+ * '/hr/department':
+ *   get:
+ *     description: my hosted api docs
+ *     summary: api docs
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           'application/json':
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 thing:
+ *                   $ref: 'src/db/hr/schema.js'
+ *
+ */
+
 import express from "express";
 import { commercialRouter } from "../db/commercial/route.js";
 import { deliveryRouter } from "../db/delivery/route.js";

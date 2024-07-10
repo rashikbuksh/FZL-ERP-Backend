@@ -70,7 +70,7 @@ const options = {
 			},
 		],
 	},
-	apis: ["./routes/index.js"],
+	apis: ["src/routes/index.js"],
 };
 
 // Swagger
