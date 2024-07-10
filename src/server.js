@@ -6,6 +6,9 @@ import { route } from "./routes/index.js";
 
 const server = express();
 
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+
 // CORS
 const whitelist = [
 	// FZL H/O
@@ -51,6 +54,29 @@ server.use("/uploads", express.static("uploads"));
 
 // // routes
 server.use(route);
+
+// Swagger options
+const options = {
+	definition: {
+		openapi: "3.0.0",
+		info: {
+			title: "FZL API",
+			version: "1.0.0",
+			description: "FZL API Documentation",
+		},
+		servers: [
+			{
+				url: "http://localhost:3005",
+			},
+		],
+	},
+	apis: ["./routes/index.js"],
+};
+
+// Swagger
+const specs = swaggerJSDoc(options);
+
+server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // listen
 server.listen(SERVER_PORT, () => {
