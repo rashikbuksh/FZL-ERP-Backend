@@ -7,11 +7,49 @@ export const department = hr.table("department", {
 	department: text("department").notNull(),
 });
 
+export const defDepartment = {
+	type: "object",
+	required: ["uuid", "department"],
+	properties: {
+		uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		department: {
+			type: "string",
+		},
+	},
+	xml: {
+		name: "Hr/Department",
+	},
+};
+
 export const designation = hr.table("designation", {
 	uuid: uuid("uuid").primaryKey(),
 	department_uuid: uuid("department_uuid").references(() => department.uuid),
 	designation: text("designation").notNull(),
 });
+
+export const defDesignation = {
+	type: "object",
+	required: ["uuid", "department_uuid", "designation"],
+	properties: {
+		uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		department_uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		designation: {
+			type: "string",
+		},
+	},
+	xml: {
+		name: "Hr/Designation",
+	},
+};
 
 export const users = hr.table("users", {
 	uuid: uuid("uuid").primaryKey(),
@@ -25,9 +63,92 @@ export const users = hr.table("users", {
 	ext: text("ext"),
 	phone: text("phone"),
 	created_at: text("created_at").notNull(),
-	updated_at: text("updated_at").notNull(),
+	updated_at: text("updated_at"),
 	status: text("status").notNull(),
 	remarks: text("remarks"),
 });
+
+export const defHrUser = {
+	type: "object",
+	required: [
+		"uuid",
+		"name",
+		"email",
+		"pass",
+		"designation_uuid",
+		"can_access",
+		"created_at",
+		"status",
+	],
+	properties: {
+		uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		name: {
+			type: "string",
+		},
+		email: {
+			type: "string",
+		},
+		pass: {
+			type: "string",
+		},
+		designation_uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		can_access: {
+			type: "string",
+		},
+		ext: {
+			type: "string",
+		},
+		phone: {
+			type: "string",
+		},
+		created_at: {
+			type: "string",
+		},
+		updated_at: {
+			type: "string",
+		},
+		status: {
+			type: "string",
+		},
+		remarks: {
+			type: "string",
+		},
+	},
+	xml: {
+		name: "Hr/User",
+	},
+};
+
+// ------------- FOR TESTING ----------------
+export const defHr = {
+	user: defHrUser,
+	department: defDepartment,
+	designation: defDesignation,
+};
+
+export const tagHr = [
+	{
+		name: "hr.user",
+		description: "Everything about your Users",
+		externalDocs: {
+			description: "Find out more",
+			url: "http://swagger.io",
+		},
+	},
+	{
+		name: "hr.department",
+		description: "Operations about department",
+	},
+	{
+		name: "hr.designation",
+		description: "Operations about designation",
+	},
+];
 
 export default hr;

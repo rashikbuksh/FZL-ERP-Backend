@@ -10,5 +10,6 @@
 			"@util/*": ["./src/util/*"]
 		},
 		"moduleResolution": "node"
-	}
+	},
+	"exclude": ["node_modules"]
 }

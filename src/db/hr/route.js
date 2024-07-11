@@ -7,105 +7,160 @@ import * as userOperations from "./query/users.js";
 const hrRouter = Router();
 
 // user routes
+export const pathHrUser = {
+	"/hr/user": {
+		get: {
+			tags: ["hr.user"],
+			summary: "get all users",
+			description: "All users",
+			responses: {
+				200: {
+					description: "Returns a all user.",
+					content: {
+						"application/json": {
+							schema: {
+								type: "object",
+								properties: {
+									thing: {
+										$ref: "#/definitions/hr/user",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ["hr.user"],
+			summary: "create a user",
+			description: "",
+			// operationId: "addPet",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					in: "body",
+					name: "body",
+					description:
+						"User object that needs to be added to the hr.user",
+					required: true,
+					schema: {
+						$ref: "#/definitions/hr/user",
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						type: "object",
+						properties: {
+							thing: {
+								$ref: "#/definitions/hr/user",
+							},
+						},
+					},
+				},
+				405: {
+					description: "Invalid input",
+				},
+			},
+		},
+	},
+	"hr/user/{uuid}": {
+		get: {
+			tags: ["hr.user"],
+			summary: "Gets a user",
+			description: "",
+			// operationId: "deletePet",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "userUuid",
+					in: "path",
+					description: "User to get",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "User not found",
+				},
+			},
+		},
+		put: {
+			tags: ["hr.user"],
+			summary: "Update an existing user",
+			description: "",
+			// operationId: "updatePet",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "userUuid",
+					in: "path",
+					description: "User to update",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+				{
+					in: "body",
+					name: "body",
+					description:
+						"User object that needs to be updated to the hr.user",
+					required: true,
+					schema: {
+						$ref: "#/definitions/hr/user",
+					},
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "User not found",
+				},
+				405: {
+					description: "Validation exception",
+				},
+			},
+		},
+		delete: {
+			tags: ["hr.user"],
+			summary: "Deletes a user",
+			description: "",
+			// operationId: "deletePet",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "userUuid",
+					in: "path",
+					description: "User to delete",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "User not found",
+				},
+			},
+		},
+	},
+};
 
-/**
- * @swagger
- * db:
- *   user:
- *     schema:
- *       type: object
- *       required:
- *         - uuid
- *         - name
- *         - email
- *         - pass
- *         - designation_uuid
- *         - can_access
- *         - ext
- *         - phone
- *         - created_at
- *         - updated_at
- *       properties:
- *         uuid:
- *           type: uuid
- *         name:
- *          type: string
- *         email:
- *          type: string
- *         pass:
- *          type: string
- *         designation_uuid:
- *          type: uuid
- *         can_access:
- *          type: string
- *         ext:
- *          type: string
- *         phone:
- *          type: string
- *         created_at:
- *          type: string
- *         updated_at:
- *          type: string
- *         status:
- *          type: integer
- * 
- * '/hr/user':
- *   get:
- *     summary: get all users
- *     description: my hosted api docs
- *     responses:
- *      '200':
- *         description: OK
- *         content:
- *           'application/json':
- *             schema:
- *               type: object
- *               properties:
- *                 thing:
- *                   $ref: 'src/db/hr/schema.js'
- *   post:
- *     summary: create new user
- *     description: my hosted api docs
- *     requestBody:
- *       required: true
- *       content:
- *         'application/json':
- *            schema:
- *              $ref: 'src/db/hr/schema.js'
- *     responses:
- *      '200':
- *         description: OK
- *         content:
- *           'application/json':
- *             schema:
- *               type: object
- *               properties:
- *                 thing:
- *                   $ref: 'src/db/hr/schema.js'
- * 
- * '/hr/user/{uuid}':
- *  get:
- *     summary: get user by uuid
- *     description: my hosted api docs
- *     parameters:
- *       - in: path
- *         name: uuid
- *         required: true
- *         description: user uuid
- *         schema:
- *           type: string
- *     responses:
- *       '200':
- *         description: OK
- *         content:
- *           'application/json':
- *             schema:
- *               type: object
- *               properties:
- *                 thing:
- *                   $ref: 'src/db/hr/schema.js'
- *      
- */
 hrRouter.get("/user", userOperations.selectAll);
 hrRouter.get("/user/:uuid", validateUuidParam(), userOperations.select);
 hrRouter.post("/user", userOperations.insert);
@@ -113,37 +168,160 @@ hrRouter.put("/user/:uuid", userOperations.update);
 hrRouter.delete("/user/:uuid", validateUuidParam(), userOperations.remove);
 
 // department routes
+export const pathHrDepartment = {
+	"/hr/department": {
+		get: {
+			tags: ["hr.department"],
+			summary: "get all departments",
+			description: "All departments",
+			responses: {
+				200: {
+					description: "Returns a all department.",
+					content: {
+						"application/json": {
+							schema: {
+								type: "object",
+								properties: {
+									thing: {
+										$ref: "#/definitions/hr/department",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ["hr.department"],
+			summary: "create a department",
+			description: "",
+			// operationId: "addPet",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					in: "body",
+					name: "body",
+					description:
+						"Department object that needs to be added to the hr.department",
+					required: true,
+					schema: {
+						$ref: "#/definitions/hr/department",
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						type: "object",
+						properties: {
+							thing: {
+								$ref: "#/definitions/hr/department",
+							},
+						},
+					},
+				},
+				405: {
+					description: "Invalid input",
+				},
+			},
+		},
+	},
+	"hr/department/{uuid}": {
+		get: {
+			tags: ["hr.department"],
+			summary: "Gets a department",
+			description: "",
+			// operationId: "deletePet",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "departmentUuid",
+					in: "path",
+					description: "Department to get",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Department not found",
+				},
+			},
+		},
+		put: {
+			tags: ["hr.department"],
+			summary: "Update an existing department",
+			description: "",
+			// operationId: "updatePet",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "departmentUuid",
+					in: "path",
+					description: "Department to update",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+				{
+					in: "body",
+					name: "body",
+					description:
+						"Department object that needs to be updated to the hr.department",
+					required: true,
+					schema: {
+						$ref: "#/definitions/hr/department",
+					},
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Department not found",
+				},
+				405: {
+					description: "Validation exception",
+				},
+			},
+		},
+		delete: {
+			tags: ["hr.department"],
+			summary: "Deletes a department",
+			description: "",
+			// operationId: "deletePet",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "departmentUuid",
+					in: "path",
+					description: "Department to delete",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Department not found",
+				},
+			},
+		},
+	},
+};
 
-/**
- * @swagger
- * department:
- *     schema:
- *       type: object
- *       required:
- *         - uuid
- *         - department
- *       properties:
- *         uuid:
- *           type: uuid
- *         department:
- *           type: string
- *
- * '/hr/department':
- *   get:
- *     description: my hosted api docs
- *     summary: api docs
- *     responses:
- *       '200':
- *         description: OK
- *         content:
- *           'application/json':
- *             schema:
- *               type: object
- *               properties:
- *                 thing:
- *                   $ref: 'src/db/hr/schema.js'
- *
- */
 hrRouter.get("/department", departmentOperations.selectAll);
 hrRouter.get(
 	"/department/:uuid",
@@ -159,6 +337,160 @@ hrRouter.delete(
 );
 
 // designation routes
+export const pathHrDesignation = {
+	"/hr/designation": {
+		get: {
+			tags: ["hr.designation"],
+			summary: "get all designations",
+			description: "All designations",
+			responses: {
+				200: {
+					description: "Returns a all designation.",
+					content: {
+						"application/json": {
+							schema: {
+								type: "object",
+								properties: {
+									thing: {
+										$ref: "#/definitions/hr/designation",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ["hr.designation"],
+			summary: "create a designation",
+			description: "",
+			// operationId: "addPet",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					in: "body",
+					name: "body",
+					description:
+						"Designation object that needs to be added to the hr.designation",
+					required: true,
+					schema: {
+						$ref: "#/definitions/hr/designation",
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						type: "object",
+						properties: {
+							thing: {
+								$ref: "#/definitions/hr/designation",
+							},
+						},
+					},
+				},
+				405: {
+					description: "Invalid input",
+				},
+			},
+		},
+	},
+	"hr/designation/{uuid}": {
+		get: {
+			tags: ["hr.designation"],
+			summary: "Gets a designation",
+			description: "",
+			// operationId: "deletePet",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "designationUuid",
+					in: "path",
+					description: "Designation to get",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Designation not found",
+				},
+			},
+		},
+		put: {
+			tags: ["hr.designation"],
+			summary: "Update an existing designation",
+			description: "",
+			// operationId: "updatePet",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "designationUuid",
+					in: "path",
+					description: "Designation to update",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+				{
+					in: "body",
+					name: "body",
+					description:
+						"Designation object that needs to be updated to the hr.designation",
+					required: true,
+					schema: {
+						$ref: "#/definitions/hr/designation",
+					},
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Designation not found",
+				},
+				405: {
+					description: "Validation exception",
+				},
+			},
+		},
+		delete: {
+			tags: ["hr.designation"],
+			summary: "Deletes a designation",
+			description: "",
+			// operationId: "deletePet",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "designationUuid",
+					in: "path",
+					description: "Designation to delete",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Designation not found",
+				},
+			},
+		},
+	},
+};
+
 hrRouter.get("/designation", designationOperations.selectAll);
 hrRouter.get(
 	"/designation/:uuid",
@@ -172,5 +504,11 @@ hrRouter.delete(
 	validateUuidParam(),
 	designationOperations.remove
 );
+
+export const pathHr = {
+	...pathHrUser,
+	...pathHrDepartment,
+	...pathHrDesignation,
+};
 
 export { hrRouter };
