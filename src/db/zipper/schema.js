@@ -9,8 +9,10 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 
+import { int } from "drizzle-orm/mysql-core/index.js";
 import * as hrSchema from "../hr/schema.js";
 import * as labDipSchema from "../lab_dip/schema.js";
+import { type } from "../material/schema.js";
 import * as publicSchema from "../public/schema.js";
 
 const zipper = pgSchema("zipper");
@@ -153,6 +155,81 @@ export const sfg_transaction = zipper.table("sfg_transaction", {
 	trx_quantity: decimal("trx_quantity").notNull(),
 	// slider_item_id: text("slider_item_id").default(null),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
+	created: timestamp("created"),
+	updated: timestamp("updated").default(null),
+	remarks: text("remarks"),
+});
+
+export const batch = zipper.table("batch", {
+	uuid: uuid("uuid").primaryKey(),
+	created_by: uuid("created_by").notNull(),
+	created: timestamp("created"),
+	updated: timestamp("updated").default(null),
+	remarks: text("remarks").default(null),
+});
+
+export const batch_entry = zipper.table("batch_entry", {
+	uuid: uuid("uuid").primaryKey(),
+	batch_uuid: uuid("batch_uuid").references(() => batch.uuid),
+	sfg_uuid: uuid("sfg_uuid").references(() => sfg.uuid),
+	quantity: decimal("quantity").notNull(),
+	created: timestamp("created"),
+	updated: timestamp("updated").default(null),
+	remarks: text("remarks").default(null),
+});
+
+export const dying_batch = zipper.table("dying_batch", {
+	uuid: uuid("uuid").primaryKey(),
+	mc_no: integer("mc_no").notNull(),
+	created_by: uuid("created_by").notNull(),
+	created: timestamp("created"),
+	updated: timestamp("updated").default(null),
+	remarks: text("remarks").default(null),
+});
+
+export const dying_batch_entry = zipper.table("dying_batch_entry", {
+	uuid: uuid("uuid").primaryKey(),
+	dying_batch_uuid: uuid("dying_batch_uuid").references(
+		() => dying_batch.uuid
+	),
+	batch_entry_uuid: uuid("batch_entry_uuid").references(
+		() => batch_entry.uuid
+	),
+	quantity: decimal("quantity").notNull(),
+	production_quantity: decimal("production_quantity").notNull(),
+	production_quantity_in_kg: decimal("production_quantity_in_kg").notNull(),
+	created: timestamp("created"),
+	updated: timestamp("updated").default(null),
+	remarks: text("remarks").default(null),
+});
+
+export const tape_coil = zipper.table("tape_coil", {
+	uuid: uuid("uuid").primaryKey(),
+	type: text("type").notNull(),
+	zipper_number: decimal("zipper_number").notNull(),
+	quantity: decimal("quantity").notNull(),
+	trx_quantity_in_coil: decimal("trx_quantity_in_coil").notNull(),
+	quantity_in_coil: decimal("quantity_in_coil").notNull(),
+	remarks: text("remarks").default(null),
+});
+
+export const tape_to_coil = zipper.table("tape_to_coil", {
+	uuid: uuid("uuid").primaryKey(),
+	tape_coil_uuid: uuid("tape_coil_uuid").references(() => tape_coil.uuid),
+	trx_quantity: decimal("trx_quantity").notNull(),
+	created_by: uuid("created_by").notNull(),
+	created: timestamp("created"),
+	updated: timestamp("updated").default(null),
+	remarks: text("remarks").default(null),
+});
+
+export const tape_coil_production = zipper.table("tape_coil_production", {
+	uuid: uuid("uuid").primaryKey(),
+	section: text("section").notNull(),
+	tape_coil_uuid: uuid("tape_coil_uuid").references(() => tape_coil.uuid),
+	production_quantity: decimal("production_quantity").notNull(),
+	wastage: decimal("wastage").default(0),
+	created_by: uuid("created_by").notNull(),
 	created: timestamp("created"),
 	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
