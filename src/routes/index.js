@@ -6,6 +6,7 @@ import { labDipRouter } from "../db/lab_dip/route.js";
 import { materialRouter } from "../db/material/route.js";
 import { publicRouter } from "../db/public/route.js";
 import { purchaseRouter } from "../db/purchase/route.js";
+import { sliderRouter } from "../db/slider/route.js";
 import { zipperRouter } from "../db/zipper/route.js";
 
 const route = express.Router();
@@ -44,5 +45,8 @@ route.use("/purchase", purchaseRouter);
 
 // zipper routes
 route.use("/zipper", zipperRouter);
+
+// slider routes
+route.use("/slider", sliderRouter);
 
 export default route;

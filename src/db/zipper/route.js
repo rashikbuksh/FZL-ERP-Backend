@@ -1,11 +1,18 @@
 import { Router } from "express";
 import { validateUuidParam } from "../../lib/validator.js";
+import * as batchOperations from "./query/batch.js";
+import * as batchEntryOperations from "./query/batch_entry.js";
+import * as dyingBatchOperations from "./query/dying_batch.js";
+import * as dyingBatchEntryOperations from "./query/dying_batch_entry.js";
 import * as orderDescriptionOperations from "./query/order_description.js";
 import * as orderEntryOperations from "./query/order_entry.js";
 import * as orderInfoOperations from "./query/order_info.js";
 import * as sfgOperations from "./query/sfg.js";
 import * as sfgProductionOperations from "./query/sfg_production.js";
 import * as sfgTransactionOperations from "./query/sfg_transaction.js";
+import * as tapeCoilOperations from "./query/tape_coil.js";
+import * as tapeCoilProductionOperations from "./query/tape_coil_production.js";
+import * as tapeToCoilOperations from "./query/tape_to_coil.js";
 
 const zipperRouter = Router();
 
@@ -91,6 +98,116 @@ zipperRouter.delete(
 	"/sfg-transaction/:uuid",
 	validateUuidParam(),
 	sfgTransactionOperations.remove
+);
+
+// --------------------- BATCH ---------------------
+// --------------------- BATCH ROUTES ---------------------
+zipperRouter.get("/batch", batchOperations.selectAll);
+zipperRouter.get("/batch/:uuid", validateUuidParam(), batchOperations.select);
+zipperRouter.post("/batch", batchOperations.insert);
+zipperRouter.put("/batch/:uuid", batchOperations.update);
+zipperRouter.delete(
+	"/batch/:uuid",
+	validateUuidParam(),
+	batchOperations.remove
+);
+
+// --------------------- BATCH ENTRY ROUTES ---------------------
+zipperRouter.get("/batch-entry", batchEntryOperations.selectAll);
+zipperRouter.get(
+	"/batch-entry/:uuid",
+	validateUuidParam(),
+	batchEntryOperations.select
+);
+zipperRouter.post("/batch-entry", batchEntryOperations.insert);
+zipperRouter.put("/batch-entry/:uuid", batchEntryOperations.update);
+zipperRouter.delete(
+	"/batch-entry/:uuid",
+	validateUuidParam(),
+	batchEntryOperations.remove
+);
+
+// --------------------- DYING BATCH ---------------------
+// --------------------- DYING BATCH ROUTES ---------------------
+zipperRouter.get("/dying-batch", dyingBatchOperations.selectAll);
+zipperRouter.get(
+	"/dying-batch/:uuid",
+	validateUuidParam(),
+	dyingBatchOperations.select
+);
+zipperRouter.post("/dying-batch", dyingBatchOperations.insert);
+zipperRouter.put("/dying-batch/:uuid", dyingBatchOperations.update);
+zipperRouter.delete(
+	"/dying-batch/:uuid",
+	validateUuidParam(),
+	dyingBatchOperations.remove
+);
+
+// --------------------- DYING BATCH ENTRY ROUTES ---------------------
+zipperRouter.get("/dying-batch-entry", dyingBatchEntryOperations.selectAll);
+zipperRouter.get(
+	"/dying-batch-entry/:uuid",
+	validateUuidParam(),
+	dyingBatchEntryOperations.select
+);
+zipperRouter.post("/dying-batch-entry", dyingBatchEntryOperations.insert);
+zipperRouter.put("/dying-batch-entry/:uuid", dyingBatchEntryOperations.update);
+zipperRouter.delete(
+	"/dying-batch-entry/:uuid",
+	validateUuidParam(),
+	dyingBatchEntryOperations.remove
+);
+
+// --------------------- TAPE COIL ---------------------
+// --------------------- TAPE COIL ROUTES ---------------------
+zipperRouter.get("/tape-coil", tapeCoilOperations.selectAll);
+zipperRouter.get(
+	"/tape-coil/:uuid",
+	validateUuidParam(),
+	tapeCoilOperations.select
+);
+zipperRouter.post("/tape-coil", tapeCoilOperations.insert);
+zipperRouter.put("/tape-coil/:uuid", tapeCoilOperations.update);
+zipperRouter.delete(
+	"/tape-coil/:uuid",
+	validateUuidParam(),
+	tapeCoilOperations.remove
+);
+
+// --------------------- TAPE COIL PRODUCTION ROUTES ---------------------
+zipperRouter.get(
+	"/tape-coil-production",
+	tapeCoilProductionOperations.selectAll
+);
+zipperRouter.get(
+	"/tape-coil-production/:uuid",
+	validateUuidParam(),
+	tapeCoilProductionOperations.select
+);
+zipperRouter.post("/tape-coil-production", tapeCoilProductionOperations.insert);
+zipperRouter.put(
+	"/tape-coil-production/:uuid",
+	tapeCoilProductionOperations.update
+);
+zipperRouter.delete(
+	"/tape-coil-production/:uuid",
+	validateUuidParam(),
+	tapeCoilProductionOperations.remove
+);
+
+// --------------------- TAPE TO COIL ROUTES ---------------------
+zipperRouter.get("/tape-to-coil", tapeToCoilOperations.selectAll);
+zipperRouter.get(
+	"/tape-to-coil/:uuid",
+	validateUuidParam(),
+	tapeToCoilOperations.select
+);
+zipperRouter.post("/tape-to-coil", tapeToCoilOperations.insert);
+zipperRouter.put("/tape-to-coil/:uuid", tapeToCoilOperations.update);
+zipperRouter.delete(
+	"/tape-to-coil/:uuid",
+	validateUuidParam(),
+	tapeToCoilOperations.remove
 );
 
 export { zipperRouter };
