@@ -17,7 +17,16 @@ server.use("/uploads", express.static("uploads"));
 
 server.use(route);
 
-server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use("/api-docs", swaggerUi.serve);
+server.get(
+	"/api-docs",
+	swaggerUi.setup(swaggerSpec, {
+		explorer: true,
+		swaggerOptions: {
+			validatorUrl: null,
+		},
+	})
+);
 
 // listen
 server.listen(SERVER_PORT, () => {

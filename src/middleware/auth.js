@@ -54,7 +54,7 @@ export const VerifyToken = (req, res, next) => {
 		return res.status(401).json({ error: "Unauthorized" });
 	}
 
-	const token = authorization.split(" ")[1];
+	const token = authorization?.split(" ")[1];
 	verify(token, PRIVATE_KEY, (err, user) => {
 		if (err) {
 			return res.status(403).json({ error: "Forbidden" });

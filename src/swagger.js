@@ -51,9 +51,7 @@ const data = {
 		version: "1.0.7",
 		title: "Swagger Petstore",
 		termsOfService: "http://swagger.io/terms/",
-		contact: {
-			email: "apiteam@swagger.io",
-		},
+		contact: { email: "apiteam@swagger.io" },
 		license: {
 			name: "Apache 2.0",
 			url: "http://www.apache.org/licenses/LICENSE-2.0.html",
@@ -70,10 +68,7 @@ const data = {
 				url: "http://swagger.io",
 			},
 		},
-		{
-			name: "store",
-			description: "Access to Petstore orders",
-		},
+		{ name: "store", description: "Access to Petstore orders" },
 		{
 			name: "user",
 			description: "Operations about user",
@@ -120,16 +115,10 @@ const data = {
 				responses: {
 					200: {
 						description: "successful operation",
-						schema: {
-							$ref: "#/definitions/ApiResponse",
-						},
+						schema: { $ref: "#/definitions/ApiResponse" },
 					},
 				},
-				security: [
-					{
-						petstore_auth: ["write:pets", "read:pets"],
-					},
-				],
+				security: [{ petstore_auth: ["write:pets", "read:pets"] }],
 			},
 		},
 		"/pet": {
@@ -147,21 +136,11 @@ const data = {
 						description:
 							"Pet object that needs to be added to the store",
 						required: true,
-						schema: {
-							$ref: "#/definitions/Pet",
-						},
+						schema: { $ref: "#/definitions/Pet" },
 					},
 				],
-				responses: {
-					405: {
-						description: "Invalid input",
-					},
-				},
-				security: [
-					{
-						petstore_auth: ["write:pets", "read:pets"],
-					},
-				],
+				responses: { 405: { description: "Invalid input" } },
+				security: [{ petstore_auth: ["write:pets", "read:pets"] }],
 			},
 			put: {
 				tags: ["pet"],
@@ -177,27 +156,15 @@ const data = {
 						description:
 							"Pet object that needs to be added to the store",
 						required: true,
-						schema: {
-							$ref: "#/definitions/Pet",
-						},
+						schema: { $ref: "#/definitions/Pet" },
 					},
 				],
 				responses: {
-					400: {
-						description: "Invalid ID supplied",
-					},
-					404: {
-						description: "Pet not found",
-					},
-					405: {
-						description: "Validation exception",
-					},
+					400: { description: "Invalid ID supplied" },
+					404: { description: "Pet not found" },
+					405: { description: "Validation exception" },
 				},
-				security: [
-					{
-						petstore_auth: ["write:pets", "read:pets"],
-					},
-				],
+				security: [{ petstore_auth: ["write:pets", "read:pets"] }],
 			},
 		},
 		"/pet/findByStatus": {
@@ -229,20 +196,12 @@ const data = {
 						description: "successful operation",
 						schema: {
 							type: "array",
-							items: {
-								$ref: "#/definitions/Pet",
-							},
+							items: { $ref: "#/definitions/Pet" },
 						},
 					},
-					400: {
-						description: "Invalid status value",
-					},
+					400: { description: "Invalid status value" },
 				},
-				security: [
-					{
-						petstore_auth: ["write:pets", "read:pets"],
-					},
-				],
+				security: [{ petstore_auth: ["write:pets", "read:pets"] }],
 			},
 		},
 		"/pet/findByTags": {
@@ -260,9 +219,7 @@ const data = {
 						description: "Tags to filter by",
 						required: true,
 						type: "array",
-						items: {
-							type: "string",
-						},
+						items: { type: "string" },
 						collectionFormat: "multi",
 					},
 				],
@@ -271,20 +228,12 @@ const data = {
 						description: "successful operation",
 						schema: {
 							type: "array",
-							items: {
-								$ref: "#/definitions/Pet",
-							},
+							items: { $ref: "#/definitions/Pet" },
 						},
 					},
-					400: {
-						description: "Invalid tag value",
-					},
+					400: { description: "Invalid tag value" },
 				},
-				security: [
-					{
-						petstore_auth: ["write:pets", "read:pets"],
-					},
-				],
+				security: [{ petstore_auth: ["write:pets", "read:pets"] }],
 				deprecated: true,
 			},
 		},
@@ -308,22 +257,12 @@ const data = {
 				responses: {
 					200: {
 						description: "successful operation",
-						schema: {
-							$ref: "#/definitions/Pet",
-						},
+						schema: { $ref: "#/definitions/Pet" },
 					},
-					400: {
-						description: "Invalid ID supplied",
-					},
-					404: {
-						description: "Pet not found",
-					},
+					400: { description: "Invalid ID supplied" },
+					404: { description: "Pet not found" },
 				},
-				security: [
-					{
-						api_key: [],
-					},
-				],
+				security: [{ api_key: [] }],
 			},
 			post: {
 				tags: ["pet"],
@@ -356,16 +295,8 @@ const data = {
 						type: "string",
 					},
 				],
-				responses: {
-					405: {
-						description: "Invalid input",
-					},
-				},
-				security: [
-					{
-						petstore_auth: ["write:pets", "read:pets"],
-					},
-				],
+				responses: { 405: { description: "Invalid input" } },
+				security: [{ petstore_auth: ["write:pets", "read:pets"] }],
 			},
 			delete: {
 				tags: ["pet"],
@@ -390,18 +321,10 @@ const data = {
 					},
 				],
 				responses: {
-					400: {
-						description: "Invalid ID supplied",
-					},
-					404: {
-						description: "Pet not found",
-					},
+					400: { description: "Invalid ID supplied" },
+					404: { description: "Pet not found" },
 				},
-				security: [
-					{
-						petstore_auth: ["write:pets", "read:pets"],
-					},
-				],
+				security: [{ petstore_auth: ["write:pets", "read:pets"] }],
 			},
 		},
 		"/store/inventory": {
@@ -424,11 +347,7 @@ const data = {
 						},
 					},
 				},
-				security: [
-					{
-						api_key: [],
-					},
-				],
+				security: [{ api_key: [] }],
 			},
 		},
 		"/store/order": {
@@ -445,21 +364,15 @@ const data = {
 						name: "body",
 						description: "order placed for purchasing the pet",
 						required: true,
-						schema: {
-							$ref: "#/definitions/Order",
-						},
+						schema: { $ref: "#/definitions/Order" },
 					},
 				],
 				responses: {
 					200: {
 						description: "successful operation",
-						schema: {
-							$ref: "#/definitions/Order",
-						},
+						schema: { $ref: "#/definitions/Order" },
 					},
-					400: {
-						description: "Invalid Order",
-					},
+					400: { description: "Invalid Order" },
 				},
 			},
 		},
@@ -468,7 +381,7 @@ const data = {
 				tags: ["store"],
 				summary: "Find purchase order by ID",
 				description:
-					"For valid response try integer IDs with value \u003E= 1 and \u003C= 10. Other values will generated exceptions",
+					"For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions",
 				operationId: "getOrderById",
 				produces: ["application/json", "application/xml"],
 				parameters: [
@@ -486,16 +399,10 @@ const data = {
 				responses: {
 					200: {
 						description: "successful operation",
-						schema: {
-							$ref: "#/definitions/Order",
-						},
+						schema: { $ref: "#/definitions/Order" },
 					},
-					400: {
-						description: "Invalid ID supplied",
-					},
-					404: {
-						description: "Order not found",
-					},
+					400: { description: "Invalid ID supplied" },
+					404: { description: "Order not found" },
 				},
 			},
 			delete: {
@@ -517,12 +424,8 @@ const data = {
 					},
 				],
 				responses: {
-					400: {
-						description: "Invalid ID supplied",
-					},
-					404: {
-						description: "Order not found",
-					},
+					400: { description: "Invalid ID supplied" },
+					404: { description: "Order not found" },
 				},
 			},
 		},
@@ -542,17 +445,11 @@ const data = {
 						required: true,
 						schema: {
 							type: "array",
-							items: {
-								$ref: "#/definitions/User",
-							},
+							items: { $ref: "#/definitions/User" },
 						},
 					},
 				],
-				responses: {
-					default: {
-						description: "successful operation",
-					},
-				},
+				responses: { default: { description: "successful operation" } },
 			},
 		},
 		"/user/{username}": {
@@ -575,16 +472,10 @@ const data = {
 				responses: {
 					200: {
 						description: "successful operation",
-						schema: {
-							$ref: "#/definitions/User",
-						},
+						schema: { $ref: "#/definitions/User" },
 					},
-					400: {
-						description: "Invalid username supplied",
-					},
-					404: {
-						description: "User not found",
-					},
+					400: { description: "Invalid username supplied" },
+					404: { description: "User not found" },
 				},
 			},
 			put: {
@@ -607,18 +498,12 @@ const data = {
 						name: "body",
 						description: "Updated user object",
 						required: true,
-						schema: {
-							$ref: "#/definitions/User",
-						},
+						schema: { $ref: "#/definitions/User" },
 					},
 				],
 				responses: {
-					400: {
-						description: "Invalid user supplied",
-					},
-					404: {
-						description: "User not found",
-					},
+					400: { description: "Invalid user supplied" },
+					404: { description: "User not found" },
 				},
 			},
 			delete: {
@@ -637,12 +522,8 @@ const data = {
 					},
 				],
 				responses: {
-					400: {
-						description: "Invalid username supplied",
-					},
-					404: {
-						description: "User not found",
-					},
+					400: { description: "Invalid username supplied" },
+					404: { description: "User not found" },
 				},
 			},
 		},
@@ -685,13 +566,9 @@ const data = {
 									"calls per hour allowed by the user",
 							},
 						},
-						schema: {
-							type: "string",
-						},
+						schema: { type: "string" },
 					},
-					400: {
-						description: "Invalid username/password supplied",
-					},
+					400: { description: "Invalid username/password supplied" },
 				},
 			},
 		},
@@ -703,11 +580,7 @@ const data = {
 				operationId: "logoutUser",
 				produces: ["application/json", "application/xml"],
 				parameters: [],
-				responses: {
-					default: {
-						description: "successful operation",
-					},
-				},
+				responses: { default: { description: "successful operation" } },
 			},
 		},
 		"/user/createWithArray": {
@@ -726,17 +599,11 @@ const data = {
 						required: true,
 						schema: {
 							type: "array",
-							items: {
-								$ref: "#/definitions/User",
-							},
+							items: { $ref: "#/definitions/User" },
 						},
 					},
 				],
-				responses: {
-					default: {
-						description: "successful operation",
-					},
-				},
+				responses: { default: { description: "successful operation" } },
 			},
 		},
 		"/user": {
@@ -753,25 +620,15 @@ const data = {
 						name: "body",
 						description: "Created user object",
 						required: true,
-						schema: {
-							$ref: "#/definitions/User",
-						},
+						schema: { $ref: "#/definitions/User" },
 					},
 				],
-				responses: {
-					default: {
-						description: "successful operation",
-					},
-				},
+				responses: { default: { description: "successful operation" } },
 			},
 		},
 	},
 	securityDefinitions: {
-		api_key: {
-			type: "apiKey",
-			name: "api_key",
-			in: "header",
-		},
+		api_key: { type: "apiKey", name: "api_key", in: "header" },
 		petstore_auth: {
 			type: "oauth2",
 			authorizationUrl: "https://petstore.swagger.io/oauth/authorize",
@@ -786,71 +643,35 @@ const data = {
 		ApiResponse: {
 			type: "object",
 			properties: {
-				code: {
-					type: "integer",
-					format: "int32",
-				},
-				type: {
-					type: "string",
-				},
-				message: {
-					type: "string",
-				},
+				code: { type: "integer", format: "int32" },
+				type: { type: "string" },
+				message: { type: "string" },
 			},
 		},
 		Category: {
 			type: "object",
 			properties: {
-				id: {
-					type: "integer",
-					format: "int64",
-				},
-				name: {
-					type: "string",
-				},
+				id: { type: "integer", format: "int64" },
+				name: { type: "string" },
 			},
-			xml: {
-				name: "Category",
-			},
+			xml: { name: "Category" },
 		},
 		Pet: {
 			type: "object",
 			required: ["name", "photoUrls"],
 			properties: {
-				id: {
-					type: "integer",
-					format: "int64",
-				},
-				category: {
-					$ref: "#/definitions/Category",
-				},
-				name: {
-					type: "string",
-					example: "doggie",
-				},
+				id: { type: "integer", format: "int64" },
+				category: { $ref: "#/definitions/Category" },
+				name: { type: "string", example: "doggie" },
 				photoUrls: {
 					type: "array",
-					xml: {
-						wrapped: true,
-					},
-					items: {
-						type: "string",
-						xml: {
-							name: "photoUrl",
-						},
-					},
+					xml: { wrapped: true },
+					items: { type: "string", xml: { name: "photoUrl" } },
 				},
 				tags: {
 					type: "array",
-					xml: {
-						wrapped: true,
-					},
-					items: {
-						xml: {
-							name: "tag",
-						},
-						$ref: "#/definitions/Tag",
-					},
+					xml: { wrapped: true },
+					items: { xml: { name: "tag" }, $ref: "#/definitions/Tag" },
 				},
 				status: {
 					type: "string",
@@ -858,91 +679,49 @@ const data = {
 					enum: ["available", "pending", "sold"],
 				},
 			},
-			xml: {
-				name: "Pet",
-			},
+			xml: { name: "Pet" },
 		},
 		Tag: {
 			type: "object",
 			properties: {
-				id: {
-					type: "integer",
-					format: "int64",
-				},
-				name: {
-					type: "string",
-				},
+				id: { type: "integer", format: "int64" },
+				name: { type: "string" },
 			},
-			xml: {
-				name: "Tag",
-			},
+			xml: { name: "Tag" },
 		},
 		Order: {
 			type: "object",
 			properties: {
-				id: {
-					type: "integer",
-					format: "int64",
-				},
-				petId: {
-					type: "integer",
-					format: "int64",
-				},
-				quantity: {
-					type: "integer",
-					format: "int32",
-				},
-				shipDate: {
-					type: "string",
-					format: "date-time",
-				},
+				id: { type: "integer", format: "int64" },
+				petId: { type: "integer", format: "int64" },
+				quantity: { type: "integer", format: "int32" },
+				shipDate: { type: "string", format: "date-time" },
 				status: {
 					type: "string",
 					description: "Order Status",
 					enum: ["placed", "approved", "delivered"],
 				},
-				complete: {
-					type: "boolean",
-				},
+				complete: { type: "boolean" },
 			},
-			xml: {
-				name: "Order",
-			},
+			xml: { name: "Order" },
 		},
 		User: {
 			type: "object",
 			properties: {
-				id: {
-					type: "integer",
-					format: "int64",
-				},
-				username: {
-					type: "string",
-				},
-				firstName: {
-					type: "string",
-				},
-				lastName: {
-					type: "string",
-				},
-				email: {
-					type: "string",
-				},
-				password: {
-					type: "string",
-				},
-				phone: {
-					type: "string",
-				},
+				id: { type: "integer", format: "int64" },
+				username: { type: "string" },
+				firstName: { type: "string" },
+				lastName: { type: "string" },
+				email: { type: "string" },
+				password: { type: "string" },
+				phone: { type: "string" },
 				userStatus: {
 					type: "integer",
 					format: "int32",
 					description: "User Status",
 				},
 			},
-			xml: {
-				name: "User",
-			},
+			xml: { name: "User" },
 		},
 	},
 	externalDocs: {
