@@ -1,5 +1,5 @@
-import { decimal, int } from "drizzle-orm/mysql-core";
 import {
+	decimal,
 	integer,
 	pgSchema,
 	serial,
@@ -7,9 +7,7 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { body } from "express-validator";
-import { type } from "../material/schema";
-import zipper, { order_info } from "../zipper/schema.js";
+import { order_info } from "../zipper/schema.js";
 
 const slider = pgSchema("slider");
 
@@ -19,12 +17,10 @@ export const stock = slider.table("stock", {
 		.references(() => order_info.uuid)
 		.notNull(),
 	item: integer("item").notNull(),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 	zipper_number: integer("zipper_number").notNull(),
-	end_type: integer("end_type").notNull,
-	puller: integer("puller").notNull,
+	end_type: integer("end_type").notNull(),
+	puller: integer("puller").notNull(),
 	color: integer("color").notNull(),
 	order_quantity: decimal("order_quantity").notNull(),
 	body_quantity: decimal("body_quantity").default(0),
@@ -39,6 +35,8 @@ export const stock = slider.table("stock", {
 	h_bottom_quantity: decimal("h_bottom_quantity").default(0),
 	box_pin_quantity: decimal("box_pin_quantity").default(0),
 	two_way_pin_quantity: decimal("two_way_pin_quantity").default(0),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 });
 
 export const die_casting = slider.table("die_casting", {

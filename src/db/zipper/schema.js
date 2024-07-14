@@ -9,7 +9,6 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 
-import { int } from "drizzle-orm/mysql-core/index.js";
 import * as hrSchema from "../hr/schema.js";
 import * as labDipSchema from "../lab_dip/schema.js";
 import { type } from "../material/schema.js";
