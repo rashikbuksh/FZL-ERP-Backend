@@ -1,6 +1,14 @@
 import swaggerJSDoc from "swagger-jsdoc";
+import { pathCommercial } from "./db/commercial/route.js";
+import { defCommercial, tagCommercial } from "./db/commercial/schema.js";
+import { pathDelivery } from "./db/delivery/route.js";
+import { defDelivery, tagDelivery } from "./db/delivery/schema.js";
 import { pathHr } from "./db/hr/route.js";
 import { defHr, tagHr } from "./db/hr/schema.js";
+import { pathLabDip } from "./db/lab_dip/route.js";
+import { defLabDip, tagLabDip } from "./db/lab_dip/schema.js";
+import { pathMaterial } from "./db/material/route.js";
+import { defMaterial, tagMaterial } from "./db/material/schema.js";
 import { SERVER_URL } from "./lib/secret.js";
 
 // zipper
@@ -15,13 +23,23 @@ import { defSlider, tagSlider } from "./db/slider/schema.js";
 import { pathPurchase } from "./db/purchase/route.js";
 import { defPurchase, tagPurchase } from "./db/purchase/schema.js";
 
-const tags = [...tagHr, ...tagZipper, ...tagSlider, ...tagPurchase];
+const tags = [
+	...tagHr, ...tagZipper, ...tagSlider, ...tagPurchase,
+	...tagCommercial,
+	...tagDelivery,
+	...tagLabDip,
+	...tagMaterial,
+];
 
 const definitions = {
 	hr: defHr,
 	zipper: defZipper,
 	slider: defSlider,
 	purchase: defPurchase,
+	commercial: defCommercial,
+	delivery: defDelivery,
+	lab_dip: defLabDip,
+	material: defMaterial,
 };
 
 const paths = {
@@ -29,6 +47,10 @@ const paths = {
 	...pathZipper,
 	...pathSlider,
 	...pathPurchase,
+	...pathCommercial,
+	...pathDelivery,
+	...pathLabDip,
+	...pathMaterial,
 };
 
 const swaggerSpec = swaggerJSDoc({
