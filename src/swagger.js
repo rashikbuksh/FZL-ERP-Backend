@@ -1,16 +1,38 @@
 import swaggerJSDoc from "swagger-jsdoc";
+import { pathCommercial } from "./db/commercial/route.js";
+import { defCommercial, tagCommercial } from "./db/commercial/schema.js";
+import { pathDelivery } from "./db/delivery/route.js";
+import { defDelivery, tagDelivery } from "./db/delivery/schema.js";
 import { pathHr } from "./db/hr/route.js";
 import { defHr, tagHr } from "./db/hr/schema.js";
+import { pathLabDip } from "./db/lab_dip/route.js";
+import { defLabDip, tagLabDip } from "./db/lab_dip/schema.js";
+import { pathMaterial } from "./db/material/route.js";
+import { defMaterial, tagMaterial } from "./db/material/schema.js";
 import { SERVER_URL } from "./lib/secret.js";
 
-const tags = [...tagHr];
+const tags = [
+	...tagHr,
+	...tagCommercial,
+	...tagDelivery,
+	...tagLabDip,
+	...tagMaterial,
+];
 
 const definitions = {
 	hr: defHr,
+	commercial: defCommercial,
+	delivery: defDelivery,
+	lab_dip: defLabDip,
+	material: defMaterial,
 };
 
 const paths = {
 	...pathHr,
+	...pathCommercial,
+	...pathDelivery,
+	...pathLabDip,
+	...pathMaterial,
 };
 
 const swaggerSpec = swaggerJSDoc({
