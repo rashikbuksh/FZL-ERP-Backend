@@ -3,14 +3,32 @@ import { pathHr } from "./db/hr/route.js";
 import { defHr, tagHr } from "./db/hr/schema.js";
 import { SERVER_URL } from "./lib/secret.js";
 
-const tags = [...tagHr];
+// zipper
+import { pathZipper } from "./db/zipper/route.js";
+import { defZipper, tagZipper } from "./db/zipper/schema.js";
+
+// slider
+import { pathSlider } from "./db/slider/route.js";
+import { defSlider, tagSlider } from "./db/slider/schema.js";
+
+// Purchase
+import { pathPurchase } from "./db/purchase/route.js";
+import { defPurchase, tagPurchase } from "./db/purchase/schema.js";
+
+const tags = [...tagHr, ...tagZipper, ...tagSlider, ...tagPurchase];
 
 const definitions = {
 	hr: defHr,
+	zipper: defZipper,
+	slider: defSlider,
+	purchase: defPurchase,
 };
 
 const paths = {
 	...pathHr,
+	...pathZipper,
+	...pathSlider,
+	...pathPurchase,
 };
 
 const swaggerSpec = swaggerJSDoc({
