@@ -7,29 +7,29 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { users } from "../hr/schema.js";
-import { properties } from "../public/schema.js";
-import { order_info } from "../zipper/schema.js";
+import * as hrSchema from "../hr/schema.js";
+import * as publicSchema from "../public/schema.js";
+import * as zipperSchema from "../zipper/schema.js";
 
 const slider = pgSchema("slider");
 
 export const stock = slider.table("stock", {
 	uuid: uuid("uuid").primaryKey(),
 	order_info_uuid: uuid("order_info_uuid")
-		.references(() => order_info.uuid)
+		.references(() => zipperSchema.order_info.uuid)
 		.notNull(),
 	item: uuid("item")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	zipper_number: uuid("zipper_number")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	end_type: uuid("end_type")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	puller: uuid("puller")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	color: text("color").notNull(),
 	order_quantity: decimal("order_quantity").notNull(),
 	body_quantity: decimal("body_quantity").default(0),
@@ -150,26 +150,28 @@ export const die_casting = slider.table("die_casting", {
 	name: text("name").notNull(),
 	item: uuid("item")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	zipper_number: uuid("zipper_number")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	type: uuid("type")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	puller: uuid("puller")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	logo_type: uuid("logo_type")
 		.notNull()
-		.references(() => properties.uuid),
-	body_shape: uuid("body_shape").references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
+	body_shape: uuid("body_shape").references(
+		() => publicSchema.properties.uuid
+	),
 	puller_link: uuid("puller_link")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	stopper: uuid("stopper")
 		.notNull()
-		.references(() => properties.uuid),
+		.references(() => publicSchema.properties.uuid),
 	quantity: decimal("quantity").notNull(),
 	weight: decimal("weight").notNull(),
 	pcs_per_kg: decimal("pcs_per_kg").notNull(),
@@ -263,9 +265,11 @@ export const die_casting_production = slider.table("die_casting_production", {
 	cavity_defect: integer("cavity_defect").notNull(),
 	push: integer("push").notNull(),
 	weight: decimal("weight").notNull(),
-	order_info_uuid: uuid("order_info_uuid").references(() => order_info.uuid),
+	order_info_uuid: uuid("order_info_uuid").references(
+		() => zipperSchema.order_info.uuid
+	),
 	created_by: uuid("created_by")
-		.references(() => users.uuid)
+		.references(() => hrSchema.users.uuid)
 		.notNull(),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
@@ -344,7 +348,7 @@ export const die_casting_transaction = slider.table("die_casting_transaction", {
 		.notNull(),
 	trx_quantity: decimal("trx_quantity").notNull(),
 	created_by: uuid("created_by")
-		.references(() => users.uuid)
+		.references(() => hrSchema.users.uuid)
 		.notNull(),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),

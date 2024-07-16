@@ -7,7 +7,7 @@ import * as vendorOperations from "./query/vendor.js";
 const purchaseRouter = Router();
 
 // Vendor
-export const pathPurchaseVendor = {
+const pathPurchaseVendor = {
 	"/purchase/vendor": {
 		get: {
 			summary: "Get all vendors",
@@ -151,7 +151,7 @@ purchaseRouter.delete(
 
 // Description
 
-export const pathPurchaseDescription = {
+const pathPurchaseDescription = {
 	"/purchase/description": {
 		get: {
 			summary: "Get all descriptions",
@@ -296,7 +296,7 @@ purchaseRouter.delete(
 
 // Entry
 
-export const pathPurchaseEntry = {
+const pathPurchaseEntry = {
 	"/purchase/entry": {
 		get: {
 			summary: "Get all entries",

@@ -7,8 +7,8 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 
-import { users } from "../hr/schema.js";
-import { info } from "../material/schema.js";
+import * as hrSchema from "../hr/schema.js";
+import * as materialSchema from "../material/schema.js";
 
 const purchase = pgSchema("purchase");
 
@@ -59,7 +59,7 @@ export const description = purchase.table("description", {
 	vendor_uuid: uuid("vendor_uuid").references(() => vendor.uuid),
 	is_local: integer("is_local").default(0),
 	lc_number: text("lc_number").default(null),
-	created_by: uuid("created_by").references(() => users.uuid),
+	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created"),
 	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
@@ -107,10 +107,12 @@ export const entry = purchase.table("entry", {
 	purchase_description_uuid: uuid("purchase_description_uuid").references(
 		() => description.uuid
 	),
-	material_info_uuid: uuid("material_info_uuid").references(() => info.uuid),
+	material_info_uuid: uuid("material_info_uuid").references(
+		() => materialSchema.info.uuid
+	),
 	quantity: decimal("quantity").notNull(),
 	price: decimal("price").notNull(),
-	created_by: uuid("created_by").references(() => users.uuid),
+	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created"),
 	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),

@@ -1,8 +1,5 @@
 import { Router } from "express";
-import { param } from "express-validator";
 import { validateUuidParam } from "../../lib/validator.js";
-import { properties } from "../public/schema.js";
-import { description } from "../purchase/schema.js";
 import * as bankOperations from "./query/bank.js";
 import * as lcOperations from "./query/lc.js";
 import * as piOperations from "./query/pi.js";
@@ -10,7 +7,7 @@ import * as piEntryOperations from "./query/pi_entry.js";
 
 const commercialRouter = Router();
 
-// bank routes
+// bank
 export const pathCommercialBank = {
 	"commercial/bank": {
 		get: {
@@ -163,6 +160,7 @@ export const pathCommercialBank = {
 	},
 };
 
+// bank routes
 commercialRouter.get("/bank", bankOperations.selectAll);
 commercialRouter.get("/bank/:uuid", validateUuidParam(), bankOperations.select);
 commercialRouter.post("/bank", bankOperations.insert);
@@ -173,7 +171,7 @@ commercialRouter.delete(
 	bankOperations.remove
 );
 
-// lc routes
+// lc
 export const pathCommercialLc = {
 	"commercial/lc": {
 		get: {
@@ -330,13 +328,14 @@ export const pathCommercialLc = {
 	},
 };
 
+// lc routes
 commercialRouter.get("/lc", lcOperations.selectAll);
 commercialRouter.get("/lc/:uuid", validateUuidParam(), lcOperations.select);
 commercialRouter.post("/lc", lcOperations.insert);
 commercialRouter.put("/lc/:uuid", lcOperations.update);
 commercialRouter.delete("/lc/:uuid", validateUuidParam(), lcOperations.remove);
 
-// pi routes
+// pi
 export const pathCommercialPi = {
 	"commercial/pi": {
 		get: {
@@ -494,13 +493,14 @@ export const pathCommercialPi = {
 	},
 };
 
+// pi routes
 commercialRouter.get("/pi", piOperations.selectAll);
 commercialRouter.get("/pi/:uuid", validateUuidParam(), piOperations.select);
 commercialRouter.post("/pi", piOperations.insert);
 commercialRouter.put("/pi/:uuid", piOperations.update);
 commercialRouter.delete("/pi/:uuid", validateUuidParam(), piOperations.remove);
 
-// pi_entry routes
+// pi_entry
 export const pathCommercialPiEntry = {
 	"commercial/pi-entry": {
 		get: {
@@ -657,6 +657,7 @@ export const pathCommercialPiEntry = {
 	},
 };
 
+// pi_entry routes
 commercialRouter.get("/pi-entry", piEntryOperations.selectAll);
 commercialRouter.get(
 	"/pi-entry/:uuid",

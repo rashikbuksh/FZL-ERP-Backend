@@ -8,22 +8,19 @@ import {
 } from "drizzle-orm/pg-core";
 import * as hrSchema from "../hr/schema.js";
 import * as publicSchema from "../public/schema.js";
-import { description } from "../purchase/schema.js";
 import * as zipperSchema from "../zipper/schema.js";
 
 const commercial = pgSchema("commercial");
 
-// table information // table data for testing
-
 export const bank = commercial.table("bank", {
-	uuid: uuid("uuid").primaryKey(), // 78c2bcd7-766a-4d17-93f7-de39fff2eaaf
-	name: text("name").notNull(), // Bank Asia
-	swift_code: text("swift_code").notNull(), // BAABBDH
-	address: text("address").notNull(), // 123, ABC, Dhaka
-	policy: text("policy").notNull(), // asdsdafasf
-	created: timestamp("created").notNull(), // 2021-08-01 00:00:00
-	updated: timestamp("updated"), // 2021-08-01 00:00:00
-	remarks: text("remarks"), // asdfasfasf
+	uuid: uuid("uuid").primaryKey(),
+	name: text("name").notNull(),
+	swift_code: text("swift_code").notNull(),
+	address: text("address").notNull(),
+	policy: text("policy").notNull(),
+	created: timestamp("created").notNull(),
+	updated: timestamp("updated"),
+	remarks: text("remarks"),
 });
 
 export const defCommercialBank = {
@@ -82,7 +79,7 @@ export const lc = commercial.table("lc", {
 	expiry_date: timestamp("expiry_date"),
 	ud_no: text("ud_no").default(null),
 	ud_received: text("ud_received").default(null),
-	at_sight: text("at_sight"),
+	at_sight: text("at_sight").notNull(),
 	amd_date: timestamp("amd_date"),
 	amd_count: integer("amd_count").default(0),
 	problematical: integer("problematical").default(0),
@@ -103,9 +100,8 @@ export const defCommercialLc = {
 		"ldbc_fdbc",
 		"commercial_executive",
 		"party_bank",
-		"production_complete",
-		"lc_cancel",
 		"expiry_date",
+		"at_sight",
 		"created_by",
 		"created",
 	],

@@ -21,6 +21,10 @@ import { defLabDip, tagLabDip } from "./db/lab_dip/schema.js";
 import { pathMaterial } from "./db/material/route.js";
 import { defMaterial, tagMaterial } from "./db/material/schema.js";
 
+// Public
+import { pathPublic } from "./db/public/route.js";
+import { defPublic, tagPublic } from "./db/public/schema.js";
+
 // Zipper
 import { pathZipper } from "./db/zipper/route.js";
 import { defZipper, tagZipper } from "./db/zipper/schema.js";
@@ -42,6 +46,7 @@ const tags = [
 	...tagDelivery,
 	...tagLabDip,
 	...tagMaterial,
+	...tagPublic,
 ];
 
 const definitions = {
@@ -53,6 +58,7 @@ const definitions = {
 	delivery: defDelivery,
 	lab_dip: defLabDip,
 	material: defMaterial,
+	public: defPublic,
 };
 
 const paths = {
@@ -64,6 +70,7 @@ const paths = {
 	...pathDelivery,
 	...pathLabDip,
 	...pathMaterial,
+	...pathPublic,
 };
 
 const swaggerSpec = swaggerJSDoc({
