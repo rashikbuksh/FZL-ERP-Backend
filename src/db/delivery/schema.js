@@ -17,7 +17,7 @@ export const packing_list = delivery.table("packing_list", {
 	carton_weight: text("carton_weight").notNull(),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated"),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 
@@ -64,7 +64,7 @@ export const packing_list_entry = delivery.table("packing_list_entry", {
 	sfg_uuid: uuid("sfg_uuid").references(() => zipperSchema.sfg.uuid),
 	quantity: decimal("quantity").notNull(),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated"),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 
@@ -162,7 +162,7 @@ export const challan_entry = delivery.table("challan_entry", {
 	),
 	delivery_quantity: decimal("delivery_quantity").notNull(),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(0),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks").default(0),
 });
 

@@ -75,7 +75,7 @@ export const info = material.table("info", {
 	threshold: decimal("threshold").default(0),
 	description: text("description"),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated"),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 export const defMaterialInfo = {
@@ -171,7 +171,7 @@ export const trx = material.table("trx", {
 	quantity: decimal("quantity").notNull(),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated"),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 export const defMaterialTrx = {
@@ -228,7 +228,7 @@ export const used = material.table("used", {
 	wastage: decimal("wastage").notNull().default(0.0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated"),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 export const defMaterialUsed = {

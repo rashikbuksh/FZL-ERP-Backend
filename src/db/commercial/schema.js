@@ -19,7 +19,7 @@ export const bank = commercial.table("bank", {
 	address: text("address").notNull(),
 	policy: text("policy").notNull(),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated"),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 
@@ -86,7 +86,7 @@ export const lc = commercial.table("lc", {
 	epz: integer("epz").default(0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated"),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 
@@ -223,8 +223,8 @@ export const pi = commercial.table("pi", {
 	validity: integer("validity").notNull(), // need review
 	payment: integer("payment").notNull(), // need review
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created"),
-	updated: timestamp("updated"),
+	created: timestamp("created").notNull(),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 
@@ -308,8 +308,8 @@ export const pi_entry = commercial.table("pi_entry", {
 	pi_uuid: uuid("pi_uuid").references(() => pi.uuid),
 	sfg_uuid: uuid("sfg_uuid").references(() => zipperSchema.sfg.uuid),
 	pi_quantity: decimal("pi_quantity").notNull(),
-	created: timestamp("created"),
-	updated: timestamp("updated"),
+	created: timestamp("created").notNull(),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 

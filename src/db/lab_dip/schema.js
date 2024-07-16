@@ -21,7 +21,7 @@ export const info = lab_dip.table("info", {
 	lab_status: text("lab_status").default(0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(0),
+	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
 

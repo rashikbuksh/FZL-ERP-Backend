@@ -104,8 +104,8 @@ export const merchandiser = pgTable("merchandiser", {
 	email: text("email"),
 	phone: text("phone"),
 	address: text("address"),
-	created: timestamp("created"),
-	updated: timestamp("updated"),
+	created: timestamp("created").notNull(),
+	updated: timestamp("updated").default(null),
 });
 
 export const defPublicMerchandiser = {
@@ -152,8 +152,8 @@ export const factory = pgTable("factory", {
 	name: text("name"),
 	phone: text("phone"),
 	address: text("address"),
-	created: timestamp("created"),
-	updated: timestamp("updated"),
+	created: timestamp("created").notNull(),
+	updated: timestamp("updated").default(null),
 });
 
 export const defPublicFactory = {
@@ -228,8 +228,8 @@ export const properties = pgTable("properties", {
 	name: text("name"),
 	short_name: text("short_name"),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created"),
-	updated: timestamp("updated"),
+	created: timestamp("created").notNull(),
+	updated: timestamp("updated").default(null),
 });
 
 export const defPublicProperties = {

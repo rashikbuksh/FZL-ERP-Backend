@@ -60,7 +60,7 @@ export const description = purchase.table("description", {
 	is_local: integer("is_local").default(0),
 	lc_number: text("lc_number").default(null),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created"),
+	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
@@ -113,7 +113,7 @@ export const entry = purchase.table("entry", {
 	quantity: decimal("quantity").notNull(),
 	price: decimal("price").notNull(),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created"),
+	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
 	remarks: text("remarks"),
 });
