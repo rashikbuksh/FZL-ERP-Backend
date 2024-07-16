@@ -1,4 +1,3 @@
-import { desc, not } from "drizzle-orm";
 import {
 	decimal,
 	integer,
@@ -108,12 +107,12 @@ export const defPackingListEntry = {
 export const challan = delivery.table("challan", {
 	uuid: uuid("uuid").primaryKey(),
 	carton_quantity: decimal("carton_quantity").notNull(),
-	assign_to: uuid("created_by").references(() => hrSchema.users.uuid),
+	assign_to: uuid("assign_to").references(() => hrSchema.users.uuid),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	receive_status: integer("receive_status").default(0),
 	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(0),
-	remarks: text("remarks").default(0),
+	updated: timestamp("updated").default(null),
+	remarks: text("remarks").default(null),
 });
 
 export const defChallan = {

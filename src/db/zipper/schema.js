@@ -2,6 +2,7 @@ import {
 	decimal,
 	integer,
 	jsonb,
+	pgEnum,
 	pgSchema,
 	serial,
 	text,
@@ -14,6 +15,18 @@ import * as labDipSchema from "../lab_dip/schema.js";
 import * as publicSchema from "../public/schema.js";
 
 const zipper = pgSchema("zipper");
+
+const swatchStatusEnum = pgEnum("swatch_status", [
+	"pending",
+	"approved",
+	"rejected",
+]);
+
+const sliderStartingSectionEnum = pgEnum("slider_starting_section", [
+	"die_casting",
+	"slider_assembly",
+	"coloring",
+]);
 
 export const order_info = zipper.table("order_info", {
 	uuid: uuid("uuid").primaryKey(),
@@ -140,7 +153,9 @@ export const order_description = zipper.table("order_description", {
 	),
 	is_slider_provided: integer("is_slider_provided").default(0),
 	slider: uuid("slider").references(() => publicSchema.properties.uuid),
-	slider_starting_section: text("slider_starting_section").default(null),
+	slider_starting_section: sliderStartingSectionEnum(
+		"slider_starting_section"
+	).default("die_casting"),
 	top_stopper: uuid("top_stopper").references(
 		() => publicSchema.properties.uuid
 	),
@@ -294,7 +309,7 @@ export const order_entry = zipper.table("order_entry", {
 	company_price: decimal("company_price").notNull(),
 	party_price: decimal("party_price").notNull(),
 	status: integer("status").default(0),
-	swatch_status: text("swatch_status").default(null),
+	swatch_status: swatchStatusEnum("swatch_status").default("pending"),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created"),
 	updated: timestamp("updated").default(null),

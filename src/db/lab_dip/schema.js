@@ -8,7 +8,6 @@ import {
 } from "drizzle-orm/pg-core";
 
 import * as hrSchema from "../hr/schema.js";
-import { description } from "../purchase/schema.js";
 import * as zipperSchema from "../zipper/schema.js";
 
 const lab_dip = pgSchema("lab_dip");
