@@ -2,7 +2,6 @@ import {
 	decimal,
 	integer,
 	jsonb,
-	pgEnum,
 	pgSchema,
 	serial,
 	text,
@@ -16,14 +15,14 @@ import * as publicSchema from "../public/schema.js";
 
 const zipper = pgSchema("zipper");
 
-export const swatchStatusEnum = zipper.enum("swatch_status", [
+export const swatchStatusEnum = zipper.enum("swatch_status_enum", [
 	"pending",
 	"approved",
 	"rejected",
 ]);
 
 export const sliderStartingSectionEnum = zipper.enum(
-	"slider_starting_section",
+	"slider_starting_section_enum",
 	["die_casting", "slider_assembly", "coloring"]
 );
 
@@ -153,7 +152,7 @@ export const order_description = zipper.table("order_description", {
 	is_slider_provided: integer("is_slider_provided").default(0),
 	slider: uuid("slider").references(() => publicSchema.properties.uuid),
 	slider_starting_section: sliderStartingSectionEnum(
-		"slider_starting_section"
+		"slider_starting_section_enum"
 	),
 	top_stopper: uuid("top_stopper").references(
 		() => publicSchema.properties.uuid
@@ -308,7 +307,7 @@ export const order_entry = zipper.table("order_entry", {
 	company_price: decimal("company_price").notNull(),
 	party_price: decimal("party_price").notNull(),
 	status: integer("status").default(0),
-	swatch_status: swatchStatusEnum("swatch_status").default("pending"),
+	swatch_status: swatchStatusEnum("swatch_status_enum"),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
