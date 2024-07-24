@@ -63,7 +63,7 @@ export const users = hr.table("users", {
 	ext: text("ext"),
 	phone: text("phone"),
 	created_at: text("created_at").notNull(),
-	updated_at: text("updated_at"),
+	updated_at: text("updated_at").default(null),
 	status: text("status").notNull(),
 	remarks: text("remarks"),
 });
