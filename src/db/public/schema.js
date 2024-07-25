@@ -4,8 +4,8 @@ import * as hrSchema from "../hr/schema.js";
 
 export const buyer = pgTable("buyer", {
 	uuid: uuid("uuid").primaryKey(),
-	name: text("name"),
-	short_name: text("short_name"),
+	name: text("name").notNull(),
+	short_name: text("short_name").default(null),
 	remarks: text("remarks"),
 });
 
@@ -34,14 +34,14 @@ export const defPublicBuyer = {
 
 export const party = pgTable("party", {
 	uuid: uuid("uuid").primaryKey(),
-	name: text("name"),
-	short_name: text("short_name"),
-	remarks: text("remarks"),
+	name: text("name").notNull(),
+	short_name: text("short_name").notNull(),
+	remarks: text("remarks").notNull(),
 });
 
 export const defPublicParty = {
 	type: "object",
-	required: ["uuid", "name"],
+	required: ["uuid", "name", "short_name", "remarks"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -64,8 +64,8 @@ export const defPublicParty = {
 
 export const marketing = pgTable("marketing", {
 	uuid: uuid("uuid").primaryKey(),
-	name: text("name"),
-	short_name: text("short_name"),
+	name: text("name").notNull(),
+	short_name: text("short_name").default(null),
 	user_uuid: uuid("user_uuid").references(() => hrSchema.users.uuid),
 	remarks: text("remarks"),
 });
