@@ -8,8 +8,8 @@ const material = pgSchema("material");
 export const section = material.table("section", {
 	uuid: uuid("uuid").primaryKey(),
 	name: text("name").notNull(),
-	short_name: text("short_name"),
-	remarks: text("remarks"),
+	short_name: text("short_name").default(null),
+	remarks: text("remarks").default(null),
 });
 
 export const defMaterialSection = {
@@ -38,8 +38,8 @@ export const defMaterialSection = {
 export const type = material.table("type", {
 	uuid: uuid("uuid").primaryKey(),
 	name: text("name").notNull(),
-	short_name: text("short_name"),
-	remarks: text("remarks"),
+	short_name: text("short_name").default(null),
+	remarks: text("remarks").default(null),
 });
 
 export const defMaterialType = {
@@ -70,17 +70,25 @@ export const info = material.table("info", {
 	section_uuid: uuid("section_uuid").references(() => section.uuid),
 	type_uuid: uuid("type_uuid").references(() => type.uuid),
 	name: text("name").notNull(),
-	short_name: text("short_name"),
-	unit: text("unit"),
-	threshold: decimal("threshold").default(0),
-	description: text("description"),
+	short_name: text("short_name").default(null),
+	unit: text("unit").notNull(),
+	threshold: decimal("threshold").notNull().default(0.0),
+	description: text("description").default(null),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 export const defMaterialInfo = {
 	type: "object",
-	required: ["uuid", "section_uuid", "type_uuid", "name", "created"],
+	required: [
+		"uuid",
+		"section_uuid",
+		"type_uuid",
+		"name",
+		"unit",
+		"threshold",
+		"created",
+	],
 	properties: {
 		uuid: {
 			type: "string",
@@ -133,6 +141,7 @@ export const stock = material.table("stock", {
 		() => publicSchema.section.uuid
 	),
 	stock: decimal("stock").notNull().default(0.0),
+	remarks: text("remarks").default(null),
 });
 
 export const defMaterialStock = {
@@ -154,6 +163,9 @@ export const defMaterialStock = {
 		stock: {
 			type: "number",
 		},
+		remarks: {
+			type: "string",
+		},
 	},
 	xml: {
 		name: "Material/Stock",
@@ -172,7 +184,7 @@ export const trx = material.table("trx", {
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 export const defMaterialTrx = {
 	type: "object",
@@ -181,6 +193,7 @@ export const defMaterialTrx = {
 		"material_stock_uuid",
 		"section_uuid_trx_to",
 		"quantity",
+		"created_by",
 		"created",
 	],
 	properties: {
@@ -198,6 +211,10 @@ export const defMaterialTrx = {
 		},
 		quantity: {
 			type: "number",
+		},
+		created_by: {
+			type: "string",
+			format: "uuid",
 		},
 		created: {
 			type: "string",
@@ -229,7 +246,7 @@ export const used = material.table("used", {
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 export const defMaterialUsed = {
 	type: "object",
@@ -239,6 +256,7 @@ export const defMaterialUsed = {
 		"section_uuid",
 		"used_quantity",
 		"wastage",
+		"created_by",
 		"created",
 	],
 	properties: {

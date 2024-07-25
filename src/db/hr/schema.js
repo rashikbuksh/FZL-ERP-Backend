@@ -60,12 +60,12 @@ export const users = hr.table("users", {
 		() => designation.uuid
 	),
 	can_access: text("can_access").notNull(),
-	ext: text("ext"),
-	phone: text("phone"),
+	ext: text("ext").default(null),
+	phone: text("phone").default(null),
 	created_at: text("created_at").notNull(),
 	updated_at: text("updated_at").default(null),
 	status: text("status").notNull(),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defHrUser = {
