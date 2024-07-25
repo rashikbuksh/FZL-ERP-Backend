@@ -86,6 +86,7 @@ export const lc = commercial.table("lc", {
 	amd_count: integer("amd_count").default(0),
 	problematical: integer("problematical").default(0),
 	epz: integer("epz").default(0),
+	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
 	remarks: text("remarks").default(null),
@@ -105,6 +106,7 @@ export const defCommercialLc = {
 		"expiry_date",
 		"at_sight",
 		"created",
+		"created_by",
 	],
 	properties: {
 		uuid: {
@@ -187,6 +189,10 @@ export const defCommercialLc = {
 		},
 		epz: {
 			type: "integer",
+		},
+		created_by: {
+			type: "string",
+			format: "uuid",
 		},
 		created: {
 			type: "string",

@@ -21,13 +21,13 @@ export const stock = slider.table("stock", {
 	item: uuid("item")
 		.notNull()
 		.references(() => publicSchema.properties.uuid),
-	zipper_number: integer("zipper_number")
+	zipper_number: uuid("zipper_number")
 		.notNull()
 		.references(() => publicSchema.properties.uuid),
-	end_type: integer("end_type")
+	end_type: uuid("end_type")
 		.notNull()
 		.references(() => publicSchema.properties.uuid),
-	puller: integer("puller")
+	puller: uuid("puller")
 		.notNull()
 		.references(() => publicSchema.properties.uuid),
 	color: text("color").notNull(),

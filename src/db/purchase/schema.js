@@ -18,20 +18,13 @@ export const vendor = purchase.table("vendor", {
 	contact_name: text("contact_name").notNull(),
 	email: text("email").notNull(),
 	office_address: text("office_address").notNull(),
-	contact_number: text("contact_number").notNull(),
+	contact_number: text("contact_number").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const defPurchaseVendor = {
 	type: "object",
-	required: [
-		"uuid",
-		"name",
-		"contact_name",
-		"email",
-		"office_address",
-		"contact_number",
-	],
+	required: ["uuid", "name", "email", "office_address"],
 	properties: {
 		uuid: {
 			type: "string",

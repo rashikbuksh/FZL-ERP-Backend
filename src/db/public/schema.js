@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import * as hrSchema from "../hr/schema.js";
-import { type } from "../material/schema.js";
+import * as materialSchema from "../material/schema.js";
 
 export const buyer = pgTable("buyer", {
 	uuid: uuid("uuid").primaryKey(),
@@ -150,7 +150,7 @@ export const defPublicMerchandiser = {
 export const factory = pgTable("factory", {
 	uuid: uuid("uuid").primaryKey(),
 	party_uuid: uuid("party_uuid").references(() => party.uuid),
-	name: text("name").default(null),
+	name: text("name").notNull(),
 	phone: text("phone").default(null),
 	address: text("address").default(null),
 	created: timestamp("created").notNull(),
@@ -159,7 +159,7 @@ export const factory = pgTable("factory", {
 
 export const defPublicFactory = {
 	type: "object",
-	required: ["uuid", "party_uuid", "created"],
+	required: ["uuid", "party_uuid", "name", "created"],
 	properties: {
 		uuid: {
 			type: "string",
