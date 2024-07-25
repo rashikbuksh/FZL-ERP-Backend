@@ -18,7 +18,7 @@ export const packing_list = delivery.table("packing_list", {
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defPackingList = {
@@ -65,7 +65,7 @@ export const packing_list_entry = delivery.table("packing_list_entry", {
 	quantity: decimal("quantity").notNull(),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defPackingListEntry = {
@@ -163,7 +163,7 @@ export const challan_entry = delivery.table("challan_entry", {
 	delivery_quantity: decimal("delivery_quantity").notNull(),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks").default(0),
+	remarks: text("remarks").default(null),
 });
 
 export const defChallanEntry = {

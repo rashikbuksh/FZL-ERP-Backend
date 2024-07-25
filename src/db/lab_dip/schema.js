@@ -14,15 +14,15 @@ const lab_dip = pgSchema("lab_dip");
 
 export const info = lab_dip.table("info", {
 	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull(),
+	name: text("name").notNull().unique(),
 	order_info_uuid: uuid("order_info_uuid").references(
 		() => zipperSchema.order_info.uuid
 	),
-	lab_status: text("lab_status").default(0),
+	lab_status: text("lab_status").default(null),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defLabDipInfo = {
@@ -125,7 +125,7 @@ export const recipe_entry = lab_dip.table("recipe_entry", {
 	quantity: decimal("quantity").notNull(),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defLabDipRecipeEntry = {
