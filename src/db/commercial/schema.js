@@ -1,6 +1,7 @@
 import {
 	decimal,
 	integer,
+	PgArray,
 	pgSchema,
 	text,
 	timestamp,
@@ -16,16 +17,16 @@ export const bank = commercial.table("bank", {
 	uuid: uuid("uuid").primaryKey(),
 	name: text("name").notNull(),
 	swift_code: text("swift_code").notNull(),
-	address: text("address").notNull(),
-	policy: text("policy").notNull(),
+	address: text("address").default(null),
+	policy: text("policy").default(null),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defCommercialBank = {
 	type: "object",
-	required: ["uuid", "name", "swift_code", "address", "policy", "created"],
+	required: ["uuid", "name", "swift_code", "created"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -63,10 +64,11 @@ export const defCommercialBank = {
 export const lc = commercial.table("lc", {
 	uuid: uuid("uuid").primaryKey(),
 	party_uuid: uuid("party_uuid").references(() => publicSchema.party.uuid),
+	file_no: text("file_no").notNull(),
 	lc_number: text("lc_number").notNull(),
 	lc_date: text("lc_date").notNull(),
-	payment_value: decimal("payment_value"),
-	payment_date: timestamp("payment_date"),
+	payment_value: decimal("payment_value").notNull(),
+	payment_date: timestamp("payment_date").default(null),
 	ldbc_fdbc: text("ldbc_fdbc").notNull(),
 	acceptance_date: timestamp("acceptance_date").default(null),
 	maturity_date: timestamp("maturity_date").default(null),
@@ -76,18 +78,18 @@ export const lc = commercial.table("lc", {
 	lc_cancel: integer("lc_cancel").default(0),
 	handover_date: timestamp("handover_date").default(null),
 	shipment_date: timestamp("shipment_date").default(null),
-	expiry_date: timestamp("expiry_date"),
+	expiry_date: timestamp("expiry_date").default(null),
 	ud_no: text("ud_no").default(null),
 	ud_received: text("ud_received").default(null),
 	at_sight: text("at_sight").notNull(),
-	amd_date: timestamp("amd_date"),
+	amd_date: timestamp("amd_date").default(null),
 	amd_count: integer("amd_count").default(0),
 	problematical: integer("problematical").default(0),
 	epz: integer("epz").default(0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defCommercialLc = {
@@ -95,6 +97,7 @@ export const defCommercialLc = {
 	required: [
 		"uuid",
 		"party_uuid",
+		"file_no",
 		"lc_number",
 		"lc_date",
 		"ldbc_fdbc",
@@ -102,8 +105,8 @@ export const defCommercialLc = {
 		"party_bank",
 		"expiry_date",
 		"at_sight",
-		"created_by",
 		"created",
+		"created_by",
 	],
 	properties: {
 		uuid: {
@@ -113,6 +116,9 @@ export const defCommercialLc = {
 		party_uuid: {
 			type: "string",
 			format: "uuid",
+		},
+		file_no: {
+			type: "string",
 		},
 		lc_number: {
 			type: "string",
@@ -208,7 +214,7 @@ export const defCommercialLc = {
 export const pi = commercial.table("pi", {
 	uuid: uuid("uuid").primaryKey(),
 	lc_uuid: uuid("lc_uuid").references(() => lc.uuid),
-	order_info_ids: text("order_info_ids").notNull(),
+	order_info_ids: text("order_info_ids").array().notNull(),
 	marketing_uuid: uuid("marketing_uuid").references(
 		() => publicSchema.marketing.uuid
 	),
@@ -225,7 +231,7 @@ export const pi = commercial.table("pi", {
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defCommercialPi = {
@@ -254,7 +260,10 @@ export const defCommercialPi = {
 			format: "uuid",
 		},
 		order_info_ids: {
-			type: "string",
+			type: "array",
+			items: {
+				type: "string",
+			},
 		},
 		marketing_uuid: {
 			type: "string",
@@ -310,12 +319,12 @@ export const pi_entry = commercial.table("pi_entry", {
 	pi_quantity: decimal("pi_quantity").notNull(),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defCommercialPiEntry = {
 	type: "object",
-	required: ["uuid", "pi_uuid", "sfg_uuid", "pi_quantity"],
+	required: ["uuid", "pi_uuid", "sfg_uuid", "pi_quantity", "created"],
 	properties: {
 		uuid: {
 			type: "string",

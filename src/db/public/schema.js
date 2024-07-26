@@ -1,12 +1,13 @@
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import * as hrSchema from "../hr/schema.js";
+import * as materialSchema from "../material/schema.js";
 
 export const buyer = pgTable("buyer", {
 	uuid: uuid("uuid").primaryKey(),
 	name: text("name").notNull(),
 	short_name: text("short_name").default(null),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defPublicBuyer = {
@@ -67,7 +68,7 @@ export const marketing = pgTable("marketing", {
 	name: text("name").notNull(),
 	short_name: text("short_name").default(null),
 	user_uuid: uuid("user_uuid").references(() => hrSchema.users.uuid),
-	remarks: text("remarks"),
+	remarks: text("remarks").default(null),
 });
 
 export const defPublicMarketing = {
@@ -100,10 +101,10 @@ export const defPublicMarketing = {
 export const merchandiser = pgTable("merchandiser", {
 	uuid: uuid("uuid").primaryKey(),
 	party_uuid: uuid("party_uuid").references(() => party.uuid),
-	name: text("name"),
-	email: text("email"),
-	phone: text("phone"),
-	address: text("address"),
+	name: text("name").notNull(),
+	email: text("email").default(null),
+	phone: text("phone").default(null),
+	address: text("address").default(null),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
 });
@@ -149,9 +150,9 @@ export const defPublicMerchandiser = {
 export const factory = pgTable("factory", {
 	uuid: uuid("uuid").primaryKey(),
 	party_uuid: uuid("party_uuid").references(() => party.uuid),
-	name: text("name"),
-	phone: text("phone"),
-	address: text("address"),
+	name: text("name").notNull(),
+	phone: text("phone").default(null),
+	address: text("address").default(null),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
 });
@@ -193,9 +194,9 @@ export const defPublicFactory = {
 
 export const section = pgTable("section", {
 	uuid: uuid("uuid").primaryKey(),
-	name: text("name"),
-	short_name: text("short_name"),
-	remarks: text("remarks"),
+	name: text("name").notNull(),
+	short_name: text("short_name").default(null),
+	remarks: text("remarks").default(null),
 });
 
 export const defPublicSection = {
@@ -223,18 +224,19 @@ export const defPublicSection = {
 
 export const properties = pgTable("properties", {
 	uuid: uuid("uuid").primaryKey(),
-	item_for: text("item_for"),
-	type: text("type").unique(),
-	name: text("name"),
-	short_name: text("short_name"),
+	item_for: text("item_for").notNull(),
+	type: text("type").notNull().unique(),
+	name: text("name").notNull(),
+	short_name: text("short_name").default(null),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
+	remarks: text("remarks").default(null),
 });
 
 export const defPublicProperties = {
 	type: "object",
-	required: ["uuid", "type", "name", "created_by", "created"],
+	required: ["uuid", "item_for", "type", "name", "created_by", "created"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -264,12 +266,16 @@ export const defPublicProperties = {
 			type: "string",
 			format: "date-time",
 		},
+		remarks: {
+			type: "string",
+		},
 	},
 	xml: {
 		name: "Public/Properties",
 	},
 };
 
+//.....................FOR TESTING.......................
 export const defPublic = {
 	buyer: defPublicBuyer,
 	party: defPublicParty,
