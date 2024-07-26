@@ -214,7 +214,7 @@ export const defCommercialLc = {
 export const pi = commercial.table("pi", {
 	uuid: uuid("uuid").primaryKey(),
 	lc_uuid: uuid("lc_uuid").references(() => lc.uuid),
-	order_info_ids: text("order_info_ids").array().notNull(),
+	order_info_ids: text("order_info_ids").notNull(),
 	marketing_uuid: uuid("marketing_uuid").references(
 		() => publicSchema.marketing.uuid
 	),
