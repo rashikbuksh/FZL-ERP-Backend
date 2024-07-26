@@ -29,8 +29,22 @@ const isMigrateDropOrPush = ["migrate", "drop", "push"].includes(command);
 
 var config;
 
+// if new schema is added then add the schema name here in schemaFilter
 if (isGenerateOrIntrospect) {
-	config = defineConfig(defaultConfig);
+	config = defineConfig({
+		...defaultConfig,
+		schemaFilter: [
+			"commercial",
+			"delivery",
+			"hr",
+			"lab_dip",
+			"material",
+			"public",
+			"purchase",
+			"slider",
+			"zipper",
+		],
+	});
 } else if (isMigrateDropOrPush) {
 	config = defineConfig({
 		...defaultConfig,

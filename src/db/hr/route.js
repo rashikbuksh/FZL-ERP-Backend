@@ -13,6 +13,7 @@ export const pathHrUser = {
 			tags: ["hr.user"],
 			summary: "get all users",
 			description: "All users",
+			operationId: "getAllUsers", // unique identifier of an operation or a route
 			responses: {
 				200: {
 					description: "Returns a all user.",
