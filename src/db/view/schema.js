@@ -217,7 +217,7 @@ SElECT
 	properties.name as item_name,
 	order_description.stopper_type as stopper_type,
 	order_info.status as status,
-	SUM(order_entry.quantity) as total,
+	SUM(order_entry.quantity) as total
 
 FROM
 	zipper.order_description
@@ -242,6 +242,8 @@ SELECT
 	order_entry.uuid as order_entry_uuid,
 	order_description.uuid as order_description_uuid,
 	order_description.item as item_description,
+	c_order_planning.style_count_rank as style_count_rank,
+	v_order_planning.style_count as style_count,
 	order_entry.style as style,
 	order_entry.color as color,
 	order_entry.size as size,
@@ -261,35 +263,34 @@ SELECT
 	order_entry.remarks as remarks,
 	CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END AS order_status,
 	order_info.marketing_priority as marketing_priority,
-	order_info.factory_priority as factory_priority
-	order_entry.swatch_status as swatch_status
+	order_info.factory_priority as factory_priority,
+	order_entry.swatch_status as swatch_status,
 	order_entry.status as order_status
 FROM
 	zipper.order_entry
 	LEFT JOIN zipper.order_description ON order_description.uuid = order_entry.order_description_uuid
 	LEFT JOIN zipper.order_info ON order_info.uuid = order_description.order_info_uuid
 	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = order_entry.id AND order_entry.quantity > sfg.finishing_prod
-	LEFT JOIN hr.users ON users.uuid = order_info.created_by
 	LEFT JOIN zipper.sfg_transaction ON sfg_transaction.order_entry_uuid = order_entry.id
+	LEFT JOIN zipper.v_order_planning ON v_order_planning.order_entry_uuid = order_entry.id
+	LEFT JOIN zipper.v_order_details_full ON v_order_details_full.order_description_uuid = order_description.uuid
 	LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
 	LEFT JOIN public.buyer ON buyer.uuid = order_info.buyer_uuid
+	LEFT JOIN hr.users ON users.uuid = order_info.created_by
 WHERE
 	order_entry.swatch_status = 'approved'
 ORDER BY
 	CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END ASC,
 	order_description.order_number ASC,
 	order_entry.id ASC
-`;
-//order_number is not present in order_description
-//style_count_rank is not present in order_entry
-//style_count is not present in order_entry
+`; // required v_order_planning, v_order_details_full
 
 export const ProductionView = `
 CREATE OR REPLACE VIEW v_production AS
 SELECT 
 	order_description.uuid as order_description_uuid,
 	ROUND(SUM(sfg.finishing_prod)/SUM(order_entry.quantity)*100.0, 0) as production_percentage,
-	SUM(CASE WHEN order_entry.company_price > 0 AND order_entry.party_price > 0 THEN 1 ELSE 0 END) as price_given,
+	SUM(CASE WHEN order_entry.company_price > 0 AND order_entry.party_price > 0 THEN 1 ELSE 0 END) as price_given
 	
 FROM
 	zipper.order_description
