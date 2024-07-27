@@ -271,8 +271,8 @@ FROM
 	LEFT JOIN zipper.order_description ON order_description.uuid = order_entry.order_description_uuid
 	LEFT JOIN zipper.order_info ON order_info.uuid = order_description.order_info_uuid
 	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = order_entry.id AND order_entry.quantity > sfg.finishing_prod
-	LEFT JOIN zipper.sfg_transaction ON sfg_transaction.order_entry_uuid = order_entry.id
-	LEFT JOIN zipper.v_order_planning ON v_order_planning.order_entry_uuid = order_entry.id
+	LEFT JOIN zipper.sfg_transaction ON sfg_transaction.order_entry_uuid = order_entry.uuid
+	LEFT JOIN zipper.v_order_planning ON v_order_planning.order_entry_uuid = order_entry.uuid
 	LEFT JOIN zipper.v_order_details_full ON v_order_details_full.order_description_uuid = order_description.uuid
 	LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
 	LEFT JOIN public.buyer ON buyer.uuid = order_info.buyer_uuid
@@ -282,7 +282,7 @@ WHERE
 ORDER BY
 	CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END ASC,
 	order_description.order_number ASC,
-	order_entry.id ASC
+	order_entry.uuid ASC
 `; // required v_order_planning, v_order_details_full
 
 export const ProductionView = `
