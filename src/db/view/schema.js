@@ -295,7 +295,7 @@ SELECT
 FROM
 	zipper.order_description
 	LEFT JOIN zipper.order_entry ON order_entry.order_description_uuid = order_description.uuid
-	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = order_entry.id
+	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = order_entry.uuid
 GROUP BY
 	order_description.uuid
 `;
