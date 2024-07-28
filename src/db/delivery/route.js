@@ -25,12 +25,9 @@ export const pathDeliveryPackingList = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-
-								properties: {
-									thing: {
-										$ref: "#/definitions/delivery/packing_list",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/delivery/packing_list",
 								},
 							},
 						},
@@ -61,11 +58,9 @@ export const pathDeliveryPackingList = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/delivery/packing_list",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/delivery/packing_list",
 						},
 					},
 				},
@@ -194,12 +189,9 @@ export const pathDeliveryPackingListEntry = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-
-								properties: {
-									thing: {
-										$ref: "#/definitions/delivery/packing_list_entry",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/delivery/packing_list_entry",
 								},
 							},
 						},
@@ -230,11 +222,9 @@ export const pathDeliveryPackingListEntry = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/delivery/packing_list_entry",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/delivery/packing_list_entry",
 						},
 					},
 				},
@@ -366,12 +356,9 @@ export const pathDeliveryChallan = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-
-								properties: {
-									thing: {
-										$ref: "#/definitions/delivery/challan",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/delivery/challan",
 								},
 							},
 						},
@@ -402,11 +389,9 @@ export const pathDeliveryChallan = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/delivery/challan",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/delivery/challan",
 						},
 					},
 				},
@@ -535,12 +520,9 @@ export const pathDeliveryChallanEntry = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-
-								properties: {
-									thing: {
-										$ref: "#/definitions/delivery/challan_entry",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/delivery/challan_entry",
 								},
 							},
 						},
@@ -571,11 +553,9 @@ export const pathDeliveryChallanEntry = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/delivery/challan_entry",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/delivery/challan_entry",
 						},
 					},
 				},

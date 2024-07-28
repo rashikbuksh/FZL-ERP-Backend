@@ -1,6 +1,4 @@
-import { all } from "axios";
-import { desc } from "drizzle-orm";
-import { response, Router } from "express";
+import { Router } from "express";
 import { validateUuidParam } from "../../lib/validator.js";
 import * as infoOperations from "./query/info.js";
 import * as recipeOperations from "./query/recipe.js";
@@ -10,22 +8,20 @@ const labDipRouter = Router();
 
 // info routes
 export const pathLabDipInfo = {
-	"lab-dip/info": {
+	"/lab-dip/info": {
 		get: {
-			tags: ["lab-dip.info"],
+			tags: ["lab_dip.info"],
 			summary: "Get all lab dip info",
 			description: "Get all lab dip info",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all lab dip info",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/lab-dip/info",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/lab_dip/info",
 								},
 							},
 						},
@@ -34,7 +30,7 @@ export const pathLabDipInfo = {
 			},
 		},
 		post: {
-			tags: ["lab-dip.info"],
+			tags: ["lab_dip.info"],
 			summary: "Create a lab dip info",
 			description: "Create a lab dip info",
 			consumes: ["application/json"],
@@ -44,10 +40,10 @@ export const pathLabDipInfo = {
 					in: "body",
 					name: "body",
 					description:
-						"Lab dip info object that needs to be added to the lab-dip.info",
+						"Lab dip info object that needs to be added to the lab_dip.info",
 					required: true,
 					schema: {
-						$ref: "#/definitions/lab-dip/info",
+						$ref: "#/definitions/lab_dip/info",
 					},
 				},
 			],
@@ -57,7 +53,7 @@ export const pathLabDipInfo = {
 					content: {
 						"application/json": {
 							schema: {
-								$ref: "#/definitions/lab-dip/info",
+								$ref: "#/definitions/lab_dip/info",
 							},
 						},
 					},
@@ -68,9 +64,9 @@ export const pathLabDipInfo = {
 			},
 		},
 	},
-	"lab-dip/info/{uuid}": {
+	"/lab-dip/info/{uuid}": {
 		get: {
-			tags: ["lab-dip.info"],
+			tags: ["lab_dip.info"],
 			summary: "Get lab dip info by uuid",
 			description: "Get lab dip info by uuid",
 			produces: ["application/json"],
@@ -94,7 +90,7 @@ export const pathLabDipInfo = {
 			},
 		},
 		put: {
-			tags: ["lab-dip.info"],
+			tags: ["lab_dip.info"],
 			summary: "Update an existing lab dip info",
 			description: "Update an existing lab dip info",
 			consumes: ["application/json"],
@@ -112,10 +108,10 @@ export const pathLabDipInfo = {
 					in: "body",
 					name: "body",
 					description:
-						"Lab dip info object that needs to be updated to the lab-dip.info",
+						"Lab dip info object that needs to be updated to the lab_dip.info",
 					required: true,
 					schema: {
-						$ref: "#/definitions/lab-dip/info",
+						$ref: "#/definitions/lab_dip/info",
 					},
 				},
 			],
@@ -132,7 +128,7 @@ export const pathLabDipInfo = {
 			},
 		},
 		delete: {
-			tags: ["lab-dip.info"],
+			tags: ["lab_dip.info"],
 			summary: "Delete a lab dip info",
 			description: "Delete a lab dip info",
 			produces: ["application/json"],
@@ -167,22 +163,20 @@ labDipRouter.delete("/info/:uuid", validateUuidParam(), infoOperations.remove);
 // recipe routes
 
 export const pathLabDipRecipe = {
-	"lab-dip/recipe": {
+	"/lab-dip/recipe": {
 		get: {
-			tags: ["lab-dip.recipe"],
+			tags: ["lab_dip.recipe"],
 			summary: "Get all lab dip recipe",
 			description: "Get all lab dip recipe",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all lab dip recipe",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/lab-dip/recipe",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/lab_dip/recipe",
 								},
 							},
 						},
@@ -191,7 +185,7 @@ export const pathLabDipRecipe = {
 			},
 		},
 		post: {
-			tags: ["lab-dip.recipe"],
+			tags: ["lab_dip.recipe"],
 			summary: "Create a lab dip recipe",
 			description: "Create a lab dip recipe",
 			consumes: ["application/json"],
@@ -201,10 +195,10 @@ export const pathLabDipRecipe = {
 					in: "body",
 					name: "body",
 					description:
-						"Lab dip recipe object that needs to be added to the lab-dip.recipe",
+						"Lab dip recipe object that needs to be added to the lab_dip.recipe",
 					required: true,
 					schema: {
-						$ref: "#/definitions/lab-dip/recipe",
+						$ref: "#/definitions/lab_dip/recipe",
 					},
 				},
 			],
@@ -214,7 +208,7 @@ export const pathLabDipRecipe = {
 					content: {
 						"application/json": {
 							schema: {
-								$ref: "#/definitions/lab-dip/recipe",
+								$ref: "#/definitions/lab_dip/recipe",
 							},
 						},
 					},
@@ -225,9 +219,9 @@ export const pathLabDipRecipe = {
 			},
 		},
 	},
-	"lab-dip/recipe/{uuid}": {
+	"/lab-dip/recipe/{uuid}": {
 		get: {
-			tags: ["lab-dip.recipe"],
+			tags: ["lab_dip.recipe"],
 			summary: "Get lab dip recipe by uuid",
 			description: "Get lab dip recipe by uuid",
 			produces: ["application/json"],
@@ -251,7 +245,7 @@ export const pathLabDipRecipe = {
 			},
 		},
 		put: {
-			tags: ["lab-dip.recipe"],
+			tags: ["lab_dip.recipe"],
 			summary: "Update an existing lab dip recipe",
 			description: "Update an existing lab dip recipe",
 			consumes: ["application/json"],
@@ -269,10 +263,10 @@ export const pathLabDipRecipe = {
 					in: "body",
 					name: "body",
 					description:
-						"Lab dip recipe object that needs to be updated to the lab-dip.recipe",
+						"Lab dip recipe object that needs to be updated to the lab_dip.recipe",
 					required: true,
 					schema: {
-						$ref: "#/definitions/lab-dip/recipe",
+						$ref: "#/definitions/lab_dip/recipe",
 					},
 				},
 			],
@@ -289,7 +283,7 @@ export const pathLabDipRecipe = {
 			},
 		},
 		delete: {
-			tags: ["lab-dip.recipe"],
+			tags: ["lab_dip.recipe"],
 			summary: "Delete a lab dip recipe",
 			description: "Delete a lab dip recipe",
 			produces: ["application/json"],
@@ -327,22 +321,20 @@ labDipRouter.delete(
 
 // recipe_entry routes
 export const pathLabDipRecipeEntry = {
-	"lab-dip/recipe-entry": {
+	"/lab-dip/recipe-entry": {
 		get: {
-			tags: ["lab-dip.recipe-entry"],
+			tags: ["lab_dip.recipe_entry"],
 			summary: "Get all lab dip recipe entry",
 			description: "Get all lab dip recipe entry",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all lab dip recipe entry",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/lab-dip/recipe-entry",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/lab_dip/recipe_entry",
 								},
 							},
 						},
@@ -351,7 +343,7 @@ export const pathLabDipRecipeEntry = {
 			},
 		},
 		post: {
-			tags: ["lab-dip.recipe-entry"],
+			tags: ["lab_dip.recipe_entry"],
 			summary: "Create a lab dip recipe entry",
 			description: "Create a lab dip recipe entry",
 			consumes: ["application/json"],
@@ -361,10 +353,10 @@ export const pathLabDipRecipeEntry = {
 					in: "body",
 					name: "body",
 					description:
-						"Lab dip recipe entry object that needs to be added to the lab-dip.recipe-entry",
+						"Lab dip recipe entry object that needs to be added to the lab_dip.recipe_entry",
 					required: true,
 					schema: {
-						$ref: "#/definitions/lab-dip/recipe-entry",
+						$ref: "#/definitions/lab_dip/recipe_entry",
 					},
 				},
 			],
@@ -374,7 +366,7 @@ export const pathLabDipRecipeEntry = {
 					content: {
 						"application/json": {
 							schema: {
-								$ref: "#/definitions/lab-dip/recipe-entry",
+								$ref: "#/definitions/lab_dip/recipe_entry",
 							},
 						},
 					},
@@ -385,9 +377,9 @@ export const pathLabDipRecipeEntry = {
 			},
 		},
 	},
-	"lab-dip/recipe-entry/{uuid}": {
+	"/lab-dip/recipe-entry/{uuid}": {
 		get: {
-			tags: ["lab-dip.recipe-entry"],
+			tags: ["lab_dip.recipe_entry"],
 			summary: "Get lab dip recipe entry by uuid",
 			description: "Get lab dip recipe entry by uuid",
 			produces: ["application/json"],
@@ -411,7 +403,7 @@ export const pathLabDipRecipeEntry = {
 			},
 		},
 		put: {
-			tags: ["lab-dip.recipe-entry"],
+			tags: ["lab_dip.recipe_entry"],
 			summary: "Update an existing lab dip recipe entry",
 			description: "Update an existing lab dip recipe entry",
 			consumes: ["application/json"],
@@ -429,10 +421,10 @@ export const pathLabDipRecipeEntry = {
 					in: "body",
 					name: "body",
 					description:
-						"Lab dip recipe entry object that needs to be updated to the lab-dip.recipe-entry",
+						"Lab dip recipe entry object that needs to be updated to the lab_dip.recipe_entry",
 					required: true,
 					schema: {
-						$ref: "#/definitions/lab-dip/recipe-entry",
+						$ref: "#/definitions/lab_dip/recipe_entry",
 					},
 				},
 			],
@@ -449,7 +441,7 @@ export const pathLabDipRecipeEntry = {
 			},
 		},
 		delete: {
-			tags: ["lab-dip.recipe-entry"],
+			tags: ["lab_dip.recipe_entry"],
 			summary: "Delete a lab dip recipe entry",
 			description: "Delete a lab dip recipe entry",
 			produces: ["application/json"],
@@ -495,4 +487,3 @@ export const pathLabDip = {
 };
 
 export { labDipRouter };
-

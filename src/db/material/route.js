@@ -1,14 +1,11 @@
-import { desc } from "drizzle-orm";
-import { response, Router } from "express";
+import { Router } from "express";
 import { validateUuidParam } from "../../lib/validator.js";
-import { description } from "../purchase/schema.js";
 import * as infoOperations from "./query/info.js";
 import * as sectionOperations from "./query/section.js";
 import * as stockOperations from "./query/stock.js";
 import * as trxOperations from "./query/trx.js";
 import * as typeOperations from "./query/type.js";
 import * as usedOperations from "./query/used.js";
-import { type } from "./schema.js";
 
 const materialRouter = Router();
 
@@ -19,17 +16,15 @@ export const pathMaterialInfo = {
 			tags: ["material.info"],
 			summary: "Get all material info",
 			description: "Get all material info",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material info",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/info",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/info",
 								},
 							},
 						},
@@ -60,11 +55,9 @@ export const pathMaterialInfo = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/info",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/info",
 						},
 					},
 				},
@@ -181,17 +174,15 @@ export const pathMaterialSection = {
 			tags: ["material.section"],
 			summary: "Get all material section",
 			description: "Get all material section",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material section",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/section",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/section",
 								},
 							},
 						},
@@ -221,11 +212,9 @@ export const pathMaterialSection = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/section",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/section",
 						},
 					},
 				},
@@ -346,17 +335,15 @@ export const pathMaterialStock = {
 			tags: ["material.stock"],
 			summary: "Get all material stock",
 			description: "Get all material stock",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material stock",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/stock",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/stock",
 								},
 							},
 						},
@@ -386,11 +373,9 @@ export const pathMaterialStock = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/stock",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/stock",
 						},
 					},
 				},
@@ -507,17 +492,15 @@ export const pathMaterialTrx = {
 			tags: ["material.trx"],
 			summary: "Get all material trx",
 			description: "Get all material trx",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material trx",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/trx",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/trx",
 								},
 							},
 						},
@@ -547,11 +530,9 @@ export const pathMaterialTrx = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/trx",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/trx",
 						},
 					},
 				},
@@ -664,17 +645,15 @@ export const pathMaterialType = {
 			tags: ["material.type"],
 			summary: "Get all material type",
 			description: "Get all material type",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material type",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/type",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/type",
 								},
 							},
 						},
@@ -704,11 +683,9 @@ export const pathMaterialType = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/type",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/type",
 						},
 					},
 				},
@@ -825,17 +802,15 @@ export const pathMaterialUsed = {
 			tags: ["material.used"],
 			summary: "Get all material used",
 			description: "Get all material used",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material used",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/used",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/used",
 								},
 							},
 						},
@@ -865,11 +840,9 @@ export const pathMaterialUsed = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/used",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/used",
 						},
 					},
 				},

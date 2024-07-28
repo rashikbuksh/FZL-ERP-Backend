@@ -20,11 +20,9 @@ export const pathCommercialBank = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/commercial/bank",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/commercial/bank",
 								},
 							},
 						},
@@ -52,11 +50,9 @@ export const pathCommercialBank = {
 				200: {
 					description: "Successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/commercial/bank",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/commercial/bank",
 						},
 					},
 				},
@@ -184,11 +180,9 @@ export const pathCommercialLc = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/commercial/lc",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/commercial/lc",
 								},
 							},
 						},
@@ -219,11 +213,9 @@ export const pathCommercialLc = {
 				200: {
 					description: "Successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/commercial/lc",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/commercial/lc",
 						},
 					},
 				},
@@ -348,11 +340,9 @@ export const pathCommercialPi = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/commercial/pi",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/commercial/pi",
 								},
 							},
 						},
@@ -384,11 +374,9 @@ export const pathCommercialPi = {
 				200: {
 					description: "Successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/commercial/pi",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/commercial/pi",
 						},
 					},
 				},
@@ -513,11 +501,9 @@ export const pathCommercialPiEntry = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/commercial/pi_entry",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/commercial/pi_entry",
 								},
 							},
 						},
@@ -548,11 +534,9 @@ export const pathCommercialPiEntry = {
 				200: {
 					description: "Successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/commercial/pi_entry",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/commercial/pi_entry",
 						},
 					},
 				},

@@ -61,11 +61,9 @@ export const pathZipperOrderInfo = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/order_info",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/order_info",
 						},
 					},
 				},
@@ -229,11 +227,9 @@ export const pathZipperOrderDescription = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/order_description",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/order_description",
 						},
 					},
 				},
@@ -397,11 +393,9 @@ export const pathZipperOrderEntry = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/order_entry",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/order_entry",
 						},
 					},
 				},
@@ -565,11 +559,9 @@ export const pathZipperSfg = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/sfg",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/sfg",
 						},
 					},
 				},
@@ -725,11 +717,9 @@ export const pathZipperSfgProduction = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/sfg_production",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/sfg_production",
 						},
 					},
 				},
@@ -893,11 +883,9 @@ export const pathZipperSfgTransaction = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/sfg_transaction",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/sfg_transaction",
 						},
 					},
 				},
@@ -1061,11 +1049,9 @@ export const pathZipperBatch = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/batch",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/batch",
 						},
 					},
 				},
@@ -1200,11 +1186,9 @@ export const pathZipperBatchEntry = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/batch_entry",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/batch_entry",
 						},
 					},
 				},
@@ -1368,11 +1352,9 @@ export const pathZipperDyingBatch = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/dying_batch",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/dying_batch",
 						},
 					},
 				},
@@ -1536,11 +1518,9 @@ export const pathZipperDyingBatchEntry = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/dying_batch_entry",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/dying_batch_entry",
 						},
 					},
 				},
@@ -1704,11 +1684,9 @@ export const pathZipperTapeCoil = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/tape_coil",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/tape_coil",
 						},
 					},
 				},
@@ -1872,11 +1850,9 @@ export const pathZipperTapeCoilProduction = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/tape_coil_production",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/tape_coil_production",
 						},
 					},
 				},
@@ -2046,11 +2022,9 @@ export const pathZipperTapeToCoil = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/zipper/tape_to_coil",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/zipper/tape_to_coil",
 						},
 					},
 				},

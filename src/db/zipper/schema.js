@@ -12,6 +12,7 @@ import {
 import * as hrSchema from "../hr/schema.js";
 import * as labDipSchema from "../lab_dip/schema.js";
 import * as publicSchema from "../public/schema.js";
+import * as sliderSchema from "../slider/schema.js";
 
 const zipper = pgSchema("zipper");
 
@@ -453,7 +454,9 @@ export const sfg = zipper.table("sfg", {
 	order_entry_uuid: uuid("order_entry_uuid").references(
 		() => order_entry.uuid
 	),
-	recipe_uuid: uuid("recipe_uuid").references(() => labDipSchema.recipe.uuid),
+	recipe_uuid: uuid("recipe_uuid")
+		.references(() => labDipSchema.recipe.uuid)
+		.default(null),
 	// dyeing_and_iron_stock: decimal("dyeing_and_iron_stock").default(0.0), // dyeing_and_iron has been moved to dyeing_batch table
 	dyeing_and_iron_prod: decimal("dyeing_and_iron_prod").default(0),
 	teeth_molding_stock: decimal("teeth_molding_stock").default(0.0),
@@ -606,7 +609,9 @@ export const sfg_transaction = zipper.table("sfg_transaction", {
 	trx_from: text("trx_from").notNull(),
 	trx_to: text("trx_to").notNull(),
 	trx_quantity: decimal("trx_quantity").notNull(),
-	// slider_item_id: text("slider_item_id").default(null), // it is not needed as the slider section moved out to slider schema
+	slider_item_uuid: uuid("slider_item_uuid").references(
+		() => sliderSchema.stock.uuid
+	),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
@@ -673,6 +678,7 @@ export const def_zipper_sfg_transaction = {
 // zipper batch
 export const batch = zipper.table("batch", {
 	uuid: uuid("uuid").primaryKey(),
+	id: serial("id").notNull(),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),
 	updated: timestamp("updated").default(null),
@@ -773,6 +779,7 @@ export const def_zipper_batch_entry = {
 // dyeing batch
 export const dying_batch = zipper.table("dying_batch", {
 	uuid: uuid("uuid").primaryKey(),
+	id: serial("id").notNull(),
 	mc_no: integer("mc_no").notNull(),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created: timestamp("created").notNull(),

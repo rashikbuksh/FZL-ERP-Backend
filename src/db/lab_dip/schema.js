@@ -2,6 +2,7 @@ import {
 	decimal,
 	integer,
 	pgSchema,
+	serial,
 	text,
 	timestamp,
 	uuid,
@@ -14,7 +15,8 @@ const lab_dip = pgSchema("lab_dip");
 
 export const info = lab_dip.table("info", {
 	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull().unique(),
+	id: serial("id").notNull(),
+	name: text("name").notNull(),
 	order_info_uuid: uuid("order_info_uuid").references(
 		() => zipperSchema.order_info.uuid
 	),
@@ -32,6 +34,9 @@ export const defLabDipInfo = {
 		uuid: {
 			type: "string",
 			format: "uuid",
+		},
+		id: {
+			type: "integer",
 		},
 		name: {
 			type: "string",
@@ -66,6 +71,7 @@ export const defLabDipInfo = {
 
 export const recipe = lab_dip.table("recipe", {
 	uuid: uuid("uuid").primaryKey(),
+	id: serial("id").notNull(),
 	lab_dip_info_uuid: uuid("lab_dip_info_uuid").references(() => info.uuid),
 	name: text("name").notNull(),
 	approved: integer("approved").default(0),
@@ -83,6 +89,9 @@ export const defLabDipRecipe = {
 		uuid: {
 			type: "string",
 			format: "uuid",
+		},
+		id: {
+			type: "integer",
 		},
 		lab_dip_info_uuid: {
 			type: "string",
@@ -173,7 +182,7 @@ export const defLabDip = {
 
 export const tagLabDip = [
 	{
-		name: lab_dip.info,
+		name: "lab_dip.info",
 		description: "Everything about info of Lab dip",
 		externalDocs: {
 			description: "Find out more about Lab dip",
@@ -181,11 +190,11 @@ export const tagLabDip = [
 		},
 	},
 	{
-		name: lab_dip.recipe,
+		name: "lab_dip.recipe",
 		description: "Operations about recipe of Lab dip",
 	},
 	{
-		name: lab_dip.recipe_entry,
+		name: "lab_dip.recipe_entry",
 		description: "Operations about recipe entry of Lab dip",
 	},
 ];

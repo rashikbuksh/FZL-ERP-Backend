@@ -15,9 +15,9 @@ export const ComparePass = async (password, hashPassword) => {
 };
 
 export const CreateToken = (user, time = "24h") => {
-	const { id, name, email, department } = user;
+	const { uuid, name, email, department } = user;
 	const payload = {
-		id,
+		uuid,
 		name,
 		email,
 		department,

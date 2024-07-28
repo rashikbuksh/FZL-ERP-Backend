@@ -20,11 +20,9 @@ export const pathHrUser = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/hr/user",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/hr/user",
 								},
 							},
 						},
@@ -55,11 +53,9 @@ export const pathHrUser = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/hr/user",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/hr/user",
 						},
 					},
 				},
@@ -181,11 +177,9 @@ export const pathHrDepartment = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/hr/department",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/hr/department",
 								},
 							},
 						},
@@ -216,11 +210,9 @@ export const pathHrDepartment = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/hr/department",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/hr/department",
 						},
 					},
 				},
@@ -350,11 +342,9 @@ export const pathHrDesignation = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/hr/designation",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/hr/designation",
 								},
 							},
 						},
@@ -385,11 +375,9 @@ export const pathHrDesignation = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/hr/designation",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/hr/designation",
 						},
 					},
 				},
