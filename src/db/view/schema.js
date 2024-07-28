@@ -209,3 +209,93 @@ ORDER BY
     vodf.order_number ASC, 
     oe.id ASC
 `; // required v_order_details_full
+
+export const OrderStatusView = `
+CREATE OR REPLACE VIEW v_order_status AS
+SElECT 
+	order_description.uuid as item,
+	properties.name as item_name,
+	order_description.stopper_type as stopper_type,
+	order_info.status as status,
+	SUM(order_entry.quantity) as total
+
+FROM
+	zipper.order_description
+	LEFT JOIN zipper.order_info ON order_info.uuid = order_description.order_info_uuid
+	LEFT JOIN zipper.order_entry ON order_entry.order_description_uuid = order_description.uuid
+	LEFT JOIN public.properties ON properties.uuid = order_description.item
+GROUP BY
+	order_description.uuid,
+	properties.name,
+	order_description.stopper_type,
+	order_info.status
+	CASE 
+	order_info.status = 0 THEN 'Pending'
+	order_info.status = 1 THEN 'Approved'
+
+END
+`;
+
+export const OrderSwatchView = `
+CREATE OR REPLACE VIEW v_order_swatch AS
+SELECT 
+	order_entry.uuid as order_entry_uuid,
+	order_description.uuid as order_description_uuid,
+	order_description.item as item_description,
+	c_order_planning.style_count_rank as style_count_rank,
+	v_order_planning.style_count as style_count,
+	order_entry.style as style,
+	order_entry.color as color,
+	order_entry.size as size,
+	order_description.item as item_name,
+	order_description.stopper_type as stopper_type,
+	order_description.zipper_number as zipper_number,
+	order_description.end_type as end_type,
+	order_entry.size as zipper_size,
+	order_entry.quantity as quantity,
+	sfg.dying_and_iron_prod as dying_and_iron_prod,
+	order_info.marketing_uuid as marketing_id,
+	marketing.name as marketing_name,
+	order_info.buyer_uuid as buyer_id,
+	buyer.name as buyer_name,
+	order_info.created_by as created_by_id,
+	users.name as created_by_name,
+	order_entry.remarks as remarks,
+	CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END AS order_status,
+	order_info.marketing_priority as marketing_priority,
+	order_info.factory_priority as factory_priority,
+	order_entry.swatch_status as swatch_status,
+	order_entry.status as order_status
+FROM
+	zipper.order_entry
+	LEFT JOIN zipper.order_description ON order_description.uuid = order_entry.order_description_uuid
+	LEFT JOIN zipper.order_info ON order_info.uuid = order_description.order_info_uuid
+	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = order_entry.id AND order_entry.quantity > sfg.finishing_prod
+	LEFT JOIN zipper.sfg_transaction ON sfg_transaction.order_entry_uuid = order_entry.uuid
+	LEFT JOIN zipper.v_order_planning ON v_order_planning.order_entry_uuid = order_entry.uuid
+	LEFT JOIN zipper.v_order_details_full ON v_order_details_full.order_description_uuid = order_description.uuid
+	LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
+	LEFT JOIN public.buyer ON buyer.uuid = order_info.buyer_uuid
+	LEFT JOIN hr.users ON users.uuid = order_info.created_by
+WHERE
+	order_entry.swatch_status = 'approved'
+ORDER BY
+	CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END ASC,
+	order_description.order_number ASC,
+	order_entry.uuid ASC
+`; // required v_order_planning, v_order_details_full
+
+export const ProductionView = `
+CREATE OR REPLACE VIEW v_production AS
+SELECT 
+	order_description.uuid as order_description_uuid,
+	ROUND(SUM(sfg.finishing_prod)/SUM(order_entry.quantity)*100.0, 0) as production_percentage,
+	SUM(CASE WHEN order_entry.company_price > 0 AND order_entry.party_price > 0 THEN 1 ELSE 0 END) as price_given
+	
+FROM
+	zipper.order_description
+	LEFT JOIN zipper.order_entry ON order_entry.order_description_uuid = order_description.uuid
+	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = order_entry.uuid
+GROUP BY
+	order_description.uuid
+`;
