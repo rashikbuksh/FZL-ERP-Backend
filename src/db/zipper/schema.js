@@ -457,8 +457,8 @@ export const sfg = zipper.table("sfg", {
 	recipe_uuid: uuid("recipe_uuid")
 		.references(() => labDipSchema.recipe.uuid)
 		.default(null),
-	// dyeing_and_iron_stock: decimal("dyeing_and_iron_stock").default(0.0), // dyeing_and_iron has been moved to dyeing_batch table
-	dyeing_and_iron_prod: decimal("dyeing_and_iron_prod").default(0),
+	// dying_and_iron_stock: decimal("dying_and_iron_stock").default(0.0), // dying_and_iron has been moved to dying_batch table
+	dying_and_iron_prod: decimal("dying_and_iron_prod").default(0),
 	teeth_molding_stock: decimal("teeth_molding_stock").default(0.0),
 	teeth_molding_prod: decimal("teeth_molding_prod").default(0.0),
 	teeth_coloring_stock: decimal("teeth_coloring_stock").default(0.0),
@@ -492,7 +492,7 @@ export const def_zipper_sfg = {
 			type: "string",
 			format: "uuid",
 		},
-		dyeing_and_iron_prod: {
+		dying_and_iron_prod: {
 			type: "number",
 		},
 		teeth_molding_stock: {
@@ -538,7 +538,7 @@ export const sfg_production = zipper.table("sfg_production", {
 	uuid: uuid("uuid").primaryKey(),
 	sfg_uuid: uuid("sfg_uuid").references(() => sfg.uuid),
 	section: text("section").notNull(),
-	used_quantity: decimal("used_quantity").notNull(),
+	used_quantity: decimal("used_quantity").default(0.0),
 	production_quantity: decimal("production_quantity").default(0.0),
 	wastage: decimal("wastage").notNull().default(0.0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
@@ -605,7 +605,6 @@ export const sfg_transaction = zipper.table("sfg_transaction", {
 	order_entry_uuid: uuid("order_entry_uuid").references(
 		() => order_entry.uuid
 	),
-	section: text("section").notNull(),
 	trx_from: text("trx_from").notNull(),
 	trx_to: text("trx_to").notNull(),
 	trx_quantity: decimal("trx_quantity").notNull(),
@@ -776,7 +775,7 @@ export const def_zipper_batch_entry = {
 	},
 };
 
-// dyeing batch
+// dying batch
 export const dying_batch = zipper.table("dying_batch", {
 	uuid: uuid("uuid").primaryKey(),
 	id: serial("id").notNull(),
