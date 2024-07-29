@@ -3,14 +3,14 @@ CREATE OR REPLACE FUNCTION sfg_production_insert_function() RETURNS TRIGGER AS $
 BEGIN
     UPDATE sfg
     SET 
-         teeth_molding_stock = CASE WHEN NEW.section = 'teeth_molding' CASE WHEN used_quantity = 0 THEN teeth_molding_stock = teeth_molding_stock - NEW.production_quantity
+         teeth_molding_stock = CASE WHEN NEW.section = 'teeth_molding' CASE WHEN NEW.used_quantity = 0 THEN teeth_molding_stock = teeth_molding_stock - NEW.production_quantity
          ELSE teeth_molding_stock = teeth_molding_stock - NEW.used_quantity ELSE teeth_molding_stock END
 
-         teeth_coloring_stock = CASE WHEN NEW.section = 'teeth_coloring' CASE WHEN used_quantity = 0 THEN teeth_coloring_stock = teeth_coloring_stock - NEW.production_quantity
+         teeth_coloring_stock = CASE WHEN NEW.section = 'teeth_coloring' CASE WHEN NEW.used_quantity = 0 THEN teeth_coloring_stock = teeth_coloring_stock - NEW.production_quantity
          ELSE teeth_coloring_stock = teeth_coloring_stock - NEW.used_quantity ELSE teeth_coloring_stock END
 
         
-         finishing_stock = CASE WHEN NEW.section = 'finishing' CASE WHEN used_quantity = 0 THEN finishing_stock = finishing_stock - NEW.production_quantity
+         finishing_stock = CASE WHEN NEW.section = 'finishing' CASE WHEN NEW.used_quantity = 0 THEN finishing_stock = finishing_stock - NEW.production_quantity
          ELSE finishing_stock = finishing_stock - NEW.used_quantity ELSE finishing_stock END
 
          
