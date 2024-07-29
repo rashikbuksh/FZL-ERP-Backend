@@ -1,5 +1,5 @@
 export const OrderDetailsView = `
-    CREATE OR REPLACE VIEW v_order_details AS
+    CREATE OR REPLACE VIEW zipper.v_order_details AS
     SELECT
       order_info.uuid AS order_info_uuid,
       order_info.reference_order_info_uuid,
@@ -34,7 +34,7 @@ export const OrderDetailsView = `
   `;
 
 export const OrderDetailsFullView = `
-CREATE OR REPLACE v_order_details_full AS 
+CREATE OR REPLACE VIEW zipper.v_order_details_full AS 
 SELECT 
 	order_info.uuid as order_info_uuid,
 	order_description.uuid as order_description_uuid,
@@ -83,8 +83,8 @@ SELECT
 	op_hand.name as hand_name,
 	op_hand.short_name as hand_short_name,
 	order_description.stopper_type,
-	op_stopper.name as stopper_name,
-	op_stopper.short_name as stopper_short_name,
+	op_stopper.name as stopper_type_name,
+	op_stopper.short_name as stopper_type_short_name,
 	order_description.coloring_type,
 	op_coloring.name as coloring_name,
 	op_coloring.short_name as coloring_short_name,
@@ -116,7 +116,7 @@ SELECT
 	op_slider_link.name as slider_link_name,
 	op_slider_link.short_name as slider_link_short_name,
 	order_description.end_user,
-	op_end_user.end_user_name,
+	op_end_user.name as end_user_name,
 	op_end_user.short_name as end_user_short_name,
 	order_description.garment as garment,
 	order_description.light_preference,
@@ -151,7 +151,7 @@ FROM zipper.order_info
 	LEFT JOIN public.properties op_slider ON op_slider.uuid = order_description.slider
 	LEFT JOIN public.properties op_top_stopper ON op_top_stopper.uuid = order_description.top_stopper
 	LEFT JOIN public.properties op_bottom_stopper ON op_bottom_stopper.uuid = order_description.bottom_stopper
-	LEFT JOIN public.properties op_logo ON op_logo.uuid = order_description.logo_type;
+	LEFT JOIN public.properties op_logo ON op_logo.uuid = order_description.logo_type
 	LEFT JOIN public.properties op_slider_body_shape ON op_slider_body_shape.uuid = order_description.slider_body_shape
 	LEFT JOIN public.properties op_slider_link ON op_slider_link.uuid = order_description.slider_link
 	LEFT JOIN public.properties op_end_user ON op_end_user.uuid = order_description.end_user
@@ -161,23 +161,23 @@ FROM zipper.order_info
 	`; // required order_description changes
 
 export const OrderPlanningView = `
-CREATE OR REPLACE VIEW v_order_planning AS
+CREATE OR REPLACE VIEW zipper.v_order_planning AS
 SELECT 
-	order_entry.uuid as order_entry_uuid,
+	oe.uuid as order_entry_uuid,
 	vodf.order_description_uuid,
 	vodf.order_info_uuid,
 	vodf.item_description AS item_description,
-	row_number() OVER (PARTITION BY vodf.order_description_uuid ORDER BY oe.id) AS style_count_rank, 
+	row_number() OVER (PARTITION BY vodf.order_description_uuid ORDER BY oe.uuid) AS style_count_rank, 
 	style_count.count AS style_count,
-    order_entry.style AS style, 
-    order_entry.color AS color, 
-    order_entry.size AS size, 
+    oe.style AS style, 
+    oe.color AS color, 
+    oe.size AS size, 
     vodf.item_name AS item_name, 
     vodf.stopper_type_name AS stopper_type, 
-    vodf.zipper_number_name AS zipper_number, 
-    vodf.end_type_name AS end_type, 
-    order_entry.size AS zipper_size, 
-    order_entry.quantity AS quantity, 
+    vodf.zipper_name AS zipper_number, 
+    vodf.end_name AS end_type, 
+    oe.size AS zipper_size, 
+    oe.quantity AS quantity, 
     sfg.dying_and_iron_prod AS dying_and_iron_prod, 
     vodf.marketing_uuid AS marketing_uuid, 
     vodf.marketing_name AS marketing_name, 
@@ -185,117 +185,116 @@ SELECT
     vodf.buyer_name AS buyer_name, 
     vodf.created_by_uuid AS created_by_uuid, 
     vodf.created_by_name AS created_by_name, 
-    order_entry.remarks AS remarks, 
+    oe.remarks AS remarks, 
     CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END AS order_status, 
     vodf.marketing_priority AS marketing_priority, 
     vodf.factory_priority AS factory_priority
 FROM 
     zipper.v_order_details_full vodf
-	LEFT JOIN zipper.order_entry ON order_entry.order_description_uuid = vodf.order_description_uuid
-	JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.id AND oe.quantity > sfg.finishing_prod 
+	LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
+	JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid AND oe.quantity > sfg.finishing_prod 
     LEFT JOIN (
-        SELECT DISTINCT sfg_transaction.order_entry_uuid AS order_entry_uuid 
-        FROM sfg_transaction
-    ) sfgt_distinct ON sfgt_distinct.order_entry_uuid = oe.id 
+        SELECT DISTINCT sfgt.order_entry_uuid AS order_entry_uuid 
+        FROM zipper.sfg_transaction sfgt
+    ) sfgt_distinct ON sfgt_distinct.order_entry_uuid = oe.uuid 
     LEFT JOIN (
         SELECT oe.order_description_uuid AS order_description_uuid, COUNT(oe.order_description_uuid) AS count 
-        FROM order_entry oe 
+        FROM zipper.order_entry oe 
         GROUP BY oe.order_description_uuid
     ) style_count ON style_count.order_description_uuid = vodf.order_description_uuid 
 WHERE 
-    oe.swatch_status = 'approved' 
+    oe.swatch_status_enum = 'approved' 
 ORDER BY 
-    CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END ASC, 
-    vodf.order_number ASC, 
-    oe.id ASC
+    CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END ASC,
+    oe.uuid ASC
 `; // required v_order_details_full
 
 export const OrderStatusView = `
-CREATE OR REPLACE VIEW v_order_status AS
+CREATE OR REPLACE VIEW zipper.v_order_status AS
 SElECT 
-	order_description.uuid as item,
+	od.uuid as item,
 	properties.name as item_name,
-	order_description.stopper_type as stopper_type,
+	od.stopper_type as stopper_type,
 	order_info.status as status,
 	SUM(order_entry.quantity) as total
-
 FROM
-	zipper.order_description
-	LEFT JOIN zipper.order_info ON order_info.uuid = order_description.order_info_uuid
-	LEFT JOIN zipper.order_entry ON order_entry.order_description_uuid = order_description.uuid
-	LEFT JOIN public.properties ON properties.uuid = order_description.item
+	zipper.order_description od
+	LEFT JOIN zipper.order_info ON order_info.uuid = od.order_info_uuid
+	LEFT JOIN zipper.order_entry ON order_entry.order_description_uuid = od.uuid
+	LEFT JOIN public.properties ON properties.uuid = od.item
 GROUP BY
-	order_description.uuid,
+	od.uuid,
 	properties.name,
-	order_description.stopper_type,
-	order_info.status
+	od.stopper_type,
+	order_info.status,
 	CASE 
-	order_info.status = 0 THEN 'Pending'
-	order_info.status = 1 THEN 'Approved'
-
-END
+        WHEN od.status = 0 THEN 'not_approved' 
+        WHEN od.status = 1 THEN 'approved' 
+    END;
 `;
 
 export const OrderSwatchView = `
-CREATE OR REPLACE VIEW v_order_swatch AS
+CREATE OR REPLACE VIEW zipper.v_order_swatch AS
 SELECT 
-	order_entry.uuid as order_entry_uuid,
-	order_description.uuid as order_description_uuid,
-	order_description.item as item_description,
-	c_order_planning.style_count_rank as style_count_rank,
+	oe.uuid as order_entry_uuid,
+	od.uuid as order_description_uuid,
+	od.item as item_description,
+	v_order_planning.style_count_rank as style_count_rank,
 	v_order_planning.style_count as style_count,
-	order_entry.style as style,
-	order_entry.color as color,
-	order_entry.size as size,
-	order_description.item as item_name,
-	order_description.stopper_type as stopper_type,
-	order_description.zipper_number as zipper_number,
-	order_description.end_type as end_type,
-	order_entry.size as zipper_size,
-	order_entry.quantity as quantity,
+	oe.style as style,
+	oe.color as color,
+	oe.size as size,
+	od.item as item_name,
+	od.stopper_type as stopper_type,
+	od.zipper_number as zipper_number,
+	od.end_type as end_type,
+	oe.size as zipper_size,
+	oe.quantity as quantity,
 	sfg.dying_and_iron_prod as dying_and_iron_prod,
-	order_info.marketing_uuid as marketing_id,
+	oi.marketing_uuid as marketing_id,
 	marketing.name as marketing_name,
-	order_info.buyer_uuid as buyer_id,
+	oi.buyer_uuid as buyer_id,
 	buyer.name as buyer_name,
-	order_info.created_by as created_by_id,
+	oi.created_by as created_by_id,
 	users.name as created_by_name,
-	order_entry.remarks as remarks,
+	oe.remarks as remarks,
 	CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END AS order_status,
-	order_info.marketing_priority as marketing_priority,
-	order_info.factory_priority as factory_priority,
-	order_entry.swatch_status as swatch_status,
-	order_entry.status as order_status
+	oi.marketing_priority as marketing_priority,
+	oi.factory_priority as factory_priority,
+	oe.swatch_status_enum as swatch_status,
+	oe.status as order_entry_status
 FROM
-	zipper.order_entry
-	LEFT JOIN zipper.order_description ON order_description.uuid = order_entry.order_description_uuid
-	LEFT JOIN zipper.order_info ON order_info.uuid = order_description.order_info_uuid
-	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = order_entry.id AND order_entry.quantity > sfg.finishing_prod
-	LEFT JOIN zipper.sfg_transaction ON sfg_transaction.order_entry_uuid = order_entry.uuid
-	LEFT JOIN zipper.v_order_planning ON v_order_planning.order_entry_uuid = order_entry.uuid
-	LEFT JOIN zipper.v_order_details_full ON v_order_details_full.order_description_uuid = order_description.uuid
-	LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
-	LEFT JOIN public.buyer ON buyer.uuid = order_info.buyer_uuid
-	LEFT JOIN hr.users ON users.uuid = order_info.created_by
+	zipper.order_entry oe
+	LEFT JOIN zipper.order_description od ON od.uuid = oe.order_description_uuid
+	LEFT JOIN zipper.order_info oi ON oi.uuid = od.order_info_uuid
+	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = oe.uuid AND oe.quantity > sfg.finishing_prod
+	LEFT JOIN zipper.sfg_transaction ON sfg_transaction.order_entry_uuid = oe.uuid
+	LEFT JOIN zipper.v_order_planning ON v_order_planning.order_entry_uuid = oe.uuid
+	LEFT JOIN zipper.v_order_details_full ON v_order_details_full.order_description_uuid = od.uuid
+	LEFT JOIN public.marketing ON marketing.uuid = oi.marketing_uuid
+	LEFT JOIN public.buyer ON buyer.uuid = oi.buyer_uuid
+	LEFT JOIN hr.users ON users.uuid = oi.created_by
+	LEFT JOIN (
+        SELECT DISTINCT sfgt.order_entry_uuid AS order_entry_uuid 
+        FROM zipper.sfg_transaction sfgt
+    ) sfgt_distinct ON sfgt_distinct.order_entry_uuid = oe.uuid
 WHERE
-	order_entry.swatch_status = 'approved'
+	oe.swatch_status_enum = 'approved'
 ORDER BY
 	CASE WHEN sfgt_distinct.order_entry_uuid IS NULL THEN 0 ELSE 1 END ASC,
-	order_description.order_number ASC,
-	order_entry.uuid ASC
+	oe.uuid ASC
 `; // required v_order_planning, v_order_details_full
 
 export const ProductionView = `
-CREATE OR REPLACE VIEW v_production AS
+CREATE OR REPLACE VIEW zipper.v_production AS
 SELECT 
-	order_description.uuid as order_description_uuid,
-	ROUND(SUM(sfg.finishing_prod)/SUM(order_entry.quantity)*100.0, 0) as production_percentage,
-	SUM(CASE WHEN order_entry.company_price > 0 AND order_entry.party_price > 0 THEN 1 ELSE 0 END) as price_given
-	
+	od.uuid as order_description_uuid,
+	ROUND(SUM(sfg.finishing_prod)/SUM(oe.quantity)*100.0, 0) as production_percentage,
+	SUM(CASE WHEN oe.company_price > 0 AND oe.party_price > 0 THEN 1 ELSE 0 END) as price_given
 FROM
-	zipper.order_description
-	LEFT JOIN zipper.order_entry ON order_entry.order_description_uuid = order_description.uuid
-	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = order_entry.uuid
+	zipper.order_description od
+	LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid
+	LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
 GROUP BY
-	order_description.uuid
+	od.uuid
 `;

@@ -1552,7 +1552,7 @@ export const pathZipperDyingBatchEntry = {
 					description: "Invalid UUID supplied",
 				},
 				404: {
-					description: "Dyeing Batch Entry not found",
+					description: "Dying Batch Entry not found",
 				},
 			},
 		},
