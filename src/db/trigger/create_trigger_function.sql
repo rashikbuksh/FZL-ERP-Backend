@@ -352,3 +352,87 @@ CREATE TRIGGER sfg_after_sfg_transaction_update_trigger
 AFTER UPDATE ON sfg_transaction
 FOR EACH ROW
 EXECUTE FUNCTION sfg_after_sfg_transaction_update_function();
+
+
+------------------------- SFG Commercial PI Entry Trigger -------------------------
+CREATE OR REPLACE FUNCTION sfg_after_commercial_pi_entry_insert_function() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE zipper.sfg SET
+        pi = pi + NEW.pi_quantity
+    WHERE uuid = NEW.sfg_uuid;
+
+    RETURN NEW;
+END;
+
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION sfg_after_commercial_pi_entry_delete_function() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE zipper.sfg SET
+        pi = pi - OLD.pi_quantity
+    WHERE uuid = OLD.sfg_uuid;
+
+    RETURN OLD;
+END;
+
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION sfg_after_commercial_pi_entry_update_function() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE zipper.sfg SET
+        pi = pi + NEW.pi_quantity - OLD.pi_quantity
+    WHERE uuid = NEW.sfg_uuid;
+
+    RETURN NEW;
+END;
+
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER sfg_after_commercial_pi_entry_insert_trigger
+AFTER INSERT ON pi_entry
+FOR EACH ROW
+EXECUTE FUNCTION sfg_after_commercial_pi_entry_insert_function();
+
+CREATE TRIGGER sfg_after_commercial_pi_entry_delete_trigger
+AFTER DELETE ON pi_entry
+FOR EACH ROW
+EXECUTE FUNCTION sfg_after_commercial_pi_entry_delete_function();
+
+CREATE TRIGGER sfg_after_commercial_pi_entry_update_trigger
+AFTER UPDATE ON pi_entry
+FOR EACH ROW
+EXECUTE FUNCTION sfg_after_commercial_pi_entry_update_function();
+
+
+CREATE OR REPLACE FUNCTION sfg_after_order_entry_insert() RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO zipper.sfg (
+        uuid, 
+        order_entry_uuid
+    ) VALUES (
+        NEW.uuid, 
+        NEW.uuid
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION sfg_after_order_entry_delete() RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM zipper.sfg
+    WHERE order_entry_uuid = OLD.uuid;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER sfg_after_order_entry_insert
+AFTER INSERT ON order_entry
+FOR EACH ROW
+EXECUTE FUNCTION sfg_after_order_entry_insert();
+
+CREATE TRIGGER sfg_after_order_entry_delete
+AFTER DELETE ON order_entry
+FOR EACH ROW
+EXECUTE FUNCTION sfg_after_order_entry_delete();
