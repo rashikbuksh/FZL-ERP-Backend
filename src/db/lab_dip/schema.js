@@ -22,14 +22,14 @@ export const info = lab_dip.table("info", {
 	),
 	lab_status: text("lab_status").default(null),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const defLabDipInfo = {
 	type: "object",
-	required: ["uuid", "name", "order_info_uuid", "created_by", "created"],
+	required: ["uuid", "name", "order_info_uuid", "created_by", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -52,11 +52,11 @@ export const defLabDipInfo = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -77,14 +77,14 @@ export const recipe = lab_dip.table("recipe", {
 	approved: integer("approved").default(0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	status: integer("status").default(0),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const defLabDipRecipe = {
 	type: "object",
-	required: ["uuid", "lab_dip_info_uuid", "name", "created_by", "created"],
+	required: ["uuid", "lab_dip_info_uuid", "name", "created_by", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -110,11 +110,11 @@ export const defLabDipRecipe = {
 		status: {
 			type: "integer",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -131,15 +131,18 @@ export const recipe_entry = lab_dip.table("recipe_entry", {
 	uuid: uuid("uuid").primaryKey(),
 	recipe_uuid: uuid("recipe_uuid").references(() => recipe.uuid),
 	color: text("color").notNull(),
-	quantity: decimal("quantity").notNull(),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	quantity: decimal("quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const defLabDipRecipeEntry = {
 	type: "object",
-	required: ["uuid", "recipe_uuid", "color", "quantity", "created"],
+	required: ["uuid", "recipe_uuid", "color", "quantity", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -155,11 +158,11 @@ export const defLabDipRecipeEntry = {
 		quantity: {
 			type: "number",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},

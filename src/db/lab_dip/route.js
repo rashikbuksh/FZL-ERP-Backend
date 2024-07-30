@@ -72,7 +72,7 @@ export const pathLabDipInfo = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "infoUuid",
+					name: "uuid",
 					in: "path",
 					description: "lab dip info to get",
 					required: true,
@@ -97,7 +97,7 @@ export const pathLabDipInfo = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "infoUuid",
+					name: "uuid",
 					in: "path",
 					description: "Lab dip info to update",
 					required: true,
@@ -134,7 +134,7 @@ export const pathLabDipInfo = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "infoUuid",
+					name: "uuid",
 					in: "path",
 					description: "Lab dip info to delete",
 					required: true,
@@ -227,7 +227,7 @@ export const pathLabDipRecipe = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "recipeUuid",
+					name: "uuid",
 					in: "path",
 					description: "lab dip recipe to get",
 					required: true,
@@ -252,7 +252,7 @@ export const pathLabDipRecipe = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "recipeUuid",
+					name: "uuid",
 					in: "path",
 					description: "Lab dip recipe to update",
 					required: true,
@@ -289,7 +289,7 @@ export const pathLabDipRecipe = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "recipeUuid",
+					name: "uuid",
 					in: "path",
 					description: "Lab dip recipe to delete",
 					required: true,
@@ -385,7 +385,7 @@ export const pathLabDipRecipeEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "recipeEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "lab dip recipe entry to get",
 					required: true,
@@ -410,7 +410,7 @@ export const pathLabDipRecipeEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "recipeEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "Lab dip recipe entry to update",
 					required: true,
@@ -447,7 +447,7 @@ export const pathLabDipRecipeEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "recipeEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "Lab dip recipe entry to delete",
 					required: true,

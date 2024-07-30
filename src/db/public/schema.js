@@ -105,13 +105,13 @@ export const merchandiser = pgTable("merchandiser", {
 	email: text("email").default(null),
 	phone: text("phone").default(null),
 	address: text("address").default(null),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 });
 
 export const defPublicMerchandiser = {
 	type: "object",
-	required: ["uuid", "party_uuid", "name", "created"],
+	required: ["uuid", "party_uuid", "name", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -133,11 +133,11 @@ export const defPublicMerchandiser = {
 		address: {
 			type: "string",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -153,13 +153,13 @@ export const factory = pgTable("factory", {
 	name: text("name").notNull(),
 	phone: text("phone").default(null),
 	address: text("address").default(null),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 });
 
 export const defPublicFactory = {
 	type: "object",
-	required: ["uuid", "party_uuid", "name", "created"],
+	required: ["uuid", "party_uuid", "name", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -178,11 +178,11 @@ export const defPublicFactory = {
 		address: {
 			type: "string",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -229,14 +229,14 @@ export const properties = pgTable("properties", {
 	name: text("name").notNull(),
 	short_name: text("short_name").default(null),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const defPublicProperties = {
 	type: "object",
-	required: ["uuid", "item_for", "type", "name", "created_by", "created"],
+	required: ["uuid", "item_for", "type", "name", "created_by", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -258,11 +258,11 @@ export const defPublicProperties = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},

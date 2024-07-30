@@ -76,7 +76,7 @@ export const pathSliderStock = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "stockUuid",
+					name: "uuid",
 					in: "path",
 					description: "stock to get",
 					required: true,
@@ -102,7 +102,7 @@ export const pathSliderStock = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "stockUuid",
+					name: "uuid",
 					in: "path",
 					description: "Stock to update",
 					required: true,
@@ -140,7 +140,7 @@ export const pathSliderStock = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "stockUuid",
+					name: "uuid",
 					in: "path",
 					description: "Stock to delete",
 					required: true,
@@ -239,7 +239,7 @@ export const pathSliderDieCasting = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dieCastingUuid",
+					name: "uuid",
 					in: "path",
 					description: "die casting to get",
 					required: true,
@@ -265,7 +265,7 @@ export const pathSliderDieCasting = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dieCastingUuid",
+					name: "uuid",
 					in: "path",
 					description: "Die casting to update",
 					required: true,
@@ -303,7 +303,7 @@ export const pathSliderDieCasting = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dieCastingUuid",
+					name: "uuid",
 					in: "path",
 					description: "Die casting to delete",
 					required: true,
@@ -406,7 +406,7 @@ export const pathSliderDieCastingProduction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dieCastingProductionUuid",
+					name: "uuid",
 					in: "path",
 					description: "die casting production to get",
 					required: true,
@@ -432,7 +432,7 @@ export const pathSliderDieCastingProduction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dieCastingProductionUuid",
+					name: "uuid",
 					in: "path",
 					description: "Die casting production to update",
 					required: true,
@@ -470,7 +470,7 @@ export const pathSliderDieCastingProduction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dieCastingProductionUuid",
+					name: "uuid",
 					in: "path",
 					description: "Die casting production to delete",
 					required: true,
@@ -582,7 +582,7 @@ export const pathSliderDieCastingTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dieCastingTransactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "die casting transaction to get",
 					required: true,
@@ -608,7 +608,7 @@ export const pathSliderDieCastingTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dieCastingTransactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "Die casting transaction to update",
 					required: true,
@@ -646,7 +646,7 @@ export const pathSliderDieCastingTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dieCastingTransactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "Die casting transaction to delete",
 					required: true,
@@ -758,7 +758,7 @@ const pathSliderTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "transactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "transaction to get",
 					required: true,
@@ -784,7 +784,7 @@ const pathSliderTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "transactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "Transaction to update",
 					required: true,
@@ -822,7 +822,7 @@ const pathSliderTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "transactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "Transaction to delete",
 					required: true,
@@ -925,7 +925,7 @@ const pathSliderColoringTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "coloringTransactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "coloring transaction to get",
 					required: true,
@@ -951,7 +951,7 @@ const pathSliderColoringTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "coloringTransactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "Coloring transaction to update",
 					required: true,
@@ -989,7 +989,7 @@ const pathSliderColoringTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "coloringTransactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "Coloring transaction to delete",
 					required: true,

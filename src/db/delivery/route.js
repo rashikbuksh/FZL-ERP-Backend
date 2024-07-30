@@ -79,7 +79,7 @@ export const pathDeliveryPackingList = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PackingListUuid",
+					name: "uuid",
 					in: "path",
 					description: " packing list to get",
 					required: true,
@@ -105,7 +105,7 @@ export const pathDeliveryPackingList = {
 			produces: "application/json",
 			parameters: [
 				{
-					name: "PackingListUuid",
+					name: "uuid",
 					in: "path",
 					description: " packing list to update",
 					required: true,
@@ -141,7 +141,7 @@ export const pathDeliveryPackingList = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PackingListUuid",
+					name: "uuid",
 					in: "path",
 					description: "packing list to delete",
 					required: true,
@@ -243,7 +243,7 @@ export const pathDeliveryPackingListEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PackingListEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: " packing list entry to get",
 					required: true,
@@ -269,7 +269,7 @@ export const pathDeliveryPackingListEntry = {
 			produces: "application/json",
 			parameters: [
 				{
-					name: "PackingListEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: " packing list entry to update",
 					required: true,
@@ -305,7 +305,7 @@ export const pathDeliveryPackingListEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PackingListEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "packing list entry to delete",
 					required: true,
@@ -410,7 +410,7 @@ export const pathDeliveryChallan = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "ChallanUuid",
+					name: "uuid",
 					in: "path",
 					description: " challan to get",
 					required: true,
@@ -436,7 +436,7 @@ export const pathDeliveryChallan = {
 			produces: "application/json",
 			parameters: [
 				{
-					name: "ChallanUuid",
+					name: "uuid",
 					in: "path",
 					description: " challan to update",
 					required: true,
@@ -472,7 +472,7 @@ export const pathDeliveryChallan = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "ChallanUuid",
+					name: "uuid",
 					in: "path",
 					description: "challan to delete",
 					required: true,
@@ -574,7 +574,7 @@ export const pathDeliveryChallanEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "ChallanEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: " challan entry to get",
 					required: true,
@@ -600,7 +600,7 @@ export const pathDeliveryChallanEntry = {
 			produces: "application/json",
 			parameters: [
 				{
-					name: "ChallanEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: " challan entry to update",
 					required: true,
@@ -636,7 +636,7 @@ export const pathDeliveryChallanEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "ChallanEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "challan entry to delete",
 					required: true,

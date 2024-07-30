@@ -51,8 +51,8 @@ export const order_info = zipper.table("order_info", {
 	factory_priority: text("factory_priority").default(null),
 	status: integer("status").notNull().default(0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -71,7 +71,7 @@ export const def_zipper_order_info = {
 		"factory_priority",
 		"status",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -127,11 +127,11 @@ export const def_zipper_order_info = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -186,8 +186,8 @@ export const order_description = zipper.table("order_description", {
 	is_logo_puller: integer("is_logo_puller").notNull().default(0),
 	description: text("description").default(null),
 	status: integer("status").notNull().default(0),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 	slider_body_shape: uuid("slider_body_shape").references(
 		() => publicSchema.properties.uuid
@@ -322,11 +322,11 @@ export const def_zipper_order_description = {
 		status: {
 			type: "integer",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -374,14 +374,27 @@ export const order_entry = zipper.table("order_entry", {
 	style: text("style").notNull(),
 	color: text("color").notNull(),
 	size: text("size").notNull(),
-	quantity: decimal("quantity").notNull(),
-	company_price: decimal("company_price").notNull().default(0.0),
-	party_price: decimal("party_price").notNull().default(0.0),
+	quantity: decimal("quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	company_price: decimal("company_price", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	party_price: decimal("party_price", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
 	status: integer("status").default(1),
 	swatch_status: swatchStatusEnum("swatch_status_enum").default("pending"),
 	swap_approval_date: text("swap_approval_date").default(null),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -394,7 +407,7 @@ export const def_zipper_order_entry = {
 		"color",
 		"size",
 		"quantity",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -432,11 +445,11 @@ export const def_zipper_order_entry = {
 		swap_approval_date: {
 			type: "string",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -458,21 +471,60 @@ export const sfg = zipper.table("sfg", {
 		.references(() => labDipSchema.recipe.uuid)
 		.default(null),
 	// dying_and_iron_stock: decimal("dying_and_iron_stock").default(0.0), // dying_and_iron has been moved to dying_batch table
-	dying_and_iron_prod: decimal("dying_and_iron_prod").default(0),
-	teeth_molding_stock: decimal("teeth_molding_stock").default(0.0),
-	teeth_molding_prod: decimal("teeth_molding_prod").default(0.0),
-	teeth_coloring_stock: decimal("teeth_coloring_stock").default(0.0),
-	teeth_coloring_prod: decimal("teeth_coloring_prod").default(0.0),
-	finishing_stock: decimal("finishing_stock").default(0.0),
-	finishing_prod: decimal("finishing_prod").default(0.0),
+	dying_and_iron_prod: decimal("dying_and_iron_prod", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	teeth_molding_stock: decimal("teeth_molding_stock", {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
+	teeth_molding_prod: decimal("teeth_molding_prod", {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
+	teeth_coloring_stock: decimal("teeth_coloring_stock", {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
+	teeth_coloring_prod: decimal("teeth_coloring_prod", {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
+	finishing_stock: decimal("finishing_stock", {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
+	finishing_prod: decimal("finishing_prod", {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
 	// die_casting_prod: decimal("die_casting_prod").default(0),
 	// slider_assembly_stock: decimal("slider_assembly_stock").default(0),
 	// slider_assembly_prod: decimal("slider_assembly_prod").default(0),
 	// coloring_stock: decimal("coloring_stock").default(0.0), // slider section has been moved to slider schema
-	coloring_prod: decimal("coloring_prod").default(0.0),
-	warehouse: decimal("warehouse").notNull().default(0.0),
-	delivered: decimal("delivered").notNull().default(0.0),
-	pi: decimal("pi").notNull().default(0.0),
+	coloring_prod: decimal("coloring_prod", {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
+	warehouse: decimal("warehouse", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	delivered: decimal("delivered", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	pi: decimal("pi", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
 	remarks: text("remarks").default(null),
 });
 
@@ -538,12 +590,23 @@ export const sfg_production = zipper.table("sfg_production", {
 	uuid: uuid("uuid").primaryKey(),
 	sfg_uuid: uuid("sfg_uuid").references(() => sfg.uuid),
 	section: text("section").notNull(),
-	used_quantity: decimal("used_quantity").default(0.0),
-	production_quantity: decimal("production_quantity").default(0.0),
-	wastage: decimal("wastage").notNull().default(0.0),
+	used_quantity: decimal("used_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
+	production_quantity: decimal("production_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
+	wastage: decimal("wastage", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -556,7 +619,7 @@ export const def_zipper_sfg_production = {
 		"production_quantity",
 		"wastage",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -583,11 +646,11 @@ export const def_zipper_sfg_production = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -607,13 +670,16 @@ export const sfg_transaction = zipper.table("sfg_transaction", {
 	),
 	trx_from: text("trx_from").notNull(),
 	trx_to: text("trx_to").notNull(),
-	trx_quantity: decimal("trx_quantity").notNull(),
+	trx_quantity: decimal("trx_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
 	slider_item_uuid: uuid("slider_item_uuid").references(
 		() => sliderSchema.stock.uuid
 	),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -627,7 +693,7 @@ export const def_zipper_sfg_transaction = {
 		"trx_to",
 		"trx_quantity",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -657,11 +723,11 @@ export const def_zipper_sfg_transaction = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -679,14 +745,14 @@ export const batch = zipper.table("batch", {
 	uuid: uuid("uuid").primaryKey(),
 	id: serial("id").notNull(),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const def_zipper_batch = {
 	type: "object",
-	required: ["uuid", "created_by", "created"],
+	required: ["uuid", "created_by", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -696,11 +762,11 @@ export const def_zipper_batch = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -717,11 +783,20 @@ export const batch_entry = zipper.table("batch_entry", {
 	uuid: uuid("uuid").primaryKey(),
 	batch_uuid: uuid("batch_uuid").references(() => batch.uuid),
 	sfg_uuid: uuid("sfg_uuid").references(() => sfg.uuid),
-	quantity: decimal("quantity").notNull(),
-	production_quantity: decimal("production_quantity").notNull(),
-	production_quantity_in_kg: decimal("production_quantity_in_kg").notNull(),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	quantity: decimal("quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	production_quantity: decimal("production_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	production_quantity_in_kg: decimal("production_quantity_in_kg", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -734,7 +809,7 @@ export const def_zipper_batch_entry = {
 		"quantity",
 		"production_quantity",
 		"production_quantity_in_kg",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -758,11 +833,11 @@ export const def_zipper_batch_entry = {
 		production_quantity_in_kg: {
 			type: "number",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -781,14 +856,14 @@ export const dying_batch = zipper.table("dying_batch", {
 	id: serial("id").notNull(),
 	mc_no: integer("mc_no").notNull(),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const def_zipper_dying_batch = {
 	type: "object",
-	required: ["uuid", "mc_no", "created_by", "created"],
+	required: ["uuid", "mc_no", "created_by", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -801,11 +876,11 @@ export const def_zipper_dying_batch = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -826,11 +901,20 @@ export const dying_batch_entry = zipper.table("dying_batch_entry", {
 	batch_entry_uuid: uuid("batch_entry_uuid").references(
 		() => batch_entry.uuid
 	),
-	quantity: decimal("quantity").notNull(),
-	production_quantity: decimal("production_quantity").notNull(),
-	production_quantity_in_kg: decimal("production_quantity_in_kg").notNull(),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	quantity: decimal("quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	production_quantity: decimal("production_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	production_quantity_in_kg: decimal("production_quantity_in_kg", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -843,7 +927,7 @@ export const def_zipper_dying_batch_entry = {
 		"quantity",
 		"production_quantity",
 		"production_quantity_in_kg",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -867,11 +951,11 @@ export const def_zipper_dying_batch_entry = {
 		production_quantity_in_kg: {
 			type: "number",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -892,9 +976,18 @@ export const tape_coil = zipper.table("tape_coil", {
 		precision: 2,
 		scale: 1,
 	}).notNull(),
-	quantity: decimal("quantity").notNull(),
-	trx_quantity_in_coil: decimal("trx_quantity_in_coil").notNull(),
-	quantity_in_coil: decimal("quantity_in_coil").notNull(),
+	quantity: decimal("quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	trx_quantity_in_coil: decimal("trx_quantity_in_coil", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	quantity_in_coil: decimal("quantity_in_coil", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
 	remarks: text("remarks").default(null),
 });
 
@@ -940,10 +1033,13 @@ export const def_zipper_tape_coil = {
 export const tape_to_coil = zipper.table("tape_to_coil", {
 	uuid: uuid("uuid").primaryKey(),
 	tape_coil_uuid: uuid("tape_coil_uuid").references(() => tape_coil.uuid),
-	trx_quantity: decimal("trx_quantity").notNull(),
+	trx_quantity: decimal("trx_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -954,7 +1050,7 @@ export const def_zipper_tape_to_coil = {
 		"tape_coil_uuid",
 		"trx_quantity",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -972,11 +1068,11 @@ export const def_zipper_tape_to_coil = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -993,11 +1089,19 @@ export const tape_coil_production = zipper.table("tape_coil_production", {
 	uuid: uuid("uuid").primaryKey(),
 	section: text("section").notNull(),
 	tape_coil_uuid: uuid("tape_coil_uuid").references(() => tape_coil.uuid),
-	production_quantity: decimal("production_quantity").notNull(),
-	wastage: decimal("wastage").notNull().default(0.0),
+	production_quantity: decimal("production_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	wastage: decimal("wastage", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -1010,7 +1114,7 @@ export const def_zipper_tape_coil_production = {
 		"production_quantity",
 		"wastage",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -1034,11 +1138,11 @@ export const def_zipper_tape_coil_production = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},

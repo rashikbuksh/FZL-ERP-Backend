@@ -82,7 +82,7 @@ export const pathZipperOrderInfo = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "order Info Uuid",
+					name: "uuid",
 					in: "path",
 					description: "orderInfo to get",
 					required: true,
@@ -108,7 +108,7 @@ export const pathZipperOrderInfo = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "order infoUuid",
+					name: "uuid",
 					in: "path",
 					description: "order info to update",
 					required: true,
@@ -146,7 +146,7 @@ export const pathZipperOrderInfo = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "order Info Uuid",
+					name: "uuid",
 					in: "path",
 					description: "order info to delete",
 					required: true,
@@ -248,7 +248,7 @@ export const pathZipperOrderDescription = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "order Description Uuid",
+					name: "uuid",
 					in: "path",
 					description: "orderDescription to get",
 					required: true,
@@ -274,7 +274,7 @@ export const pathZipperOrderDescription = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "order descriptionUuid",
+					name: "uuid",
 					in: "path",
 					description: "order description to update",
 					required: true,
@@ -312,7 +312,7 @@ export const pathZipperOrderDescription = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "order Description Uuid",
+					name: "uuid",
 					in: "path",
 					description: "order description to delete",
 					required: true,
@@ -414,7 +414,7 @@ export const pathZipperOrderEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "order Entry Uuid",
+					name: "uuid",
 					in: "path",
 					description: "orderEntry to get",
 					required: true,
@@ -440,7 +440,7 @@ export const pathZipperOrderEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "order entryUuid",
+					name: "uuid",
 					in: "path",
 					description: "order entry to update",
 					required: true,
@@ -478,7 +478,7 @@ export const pathZipperOrderEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "order Entry Uuid",
+					name: "uuid",
 					in: "path",
 					description: "order entry to delete",
 					required: true,
@@ -580,7 +580,7 @@ export const pathZipperSfg = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "SFG Uuid",
+					name: "uuid",
 					in: "path",
 					description: "sfg to get",
 					required: true,
@@ -606,7 +606,7 @@ export const pathZipperSfg = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "sfgUuid",
+					name: "uuid",
 					in: "path",
 					description: "sfg to update",
 					required: true,
@@ -644,7 +644,7 @@ export const pathZipperSfg = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "SFG Uuid",
+					name: "uuid",
 					in: "path",
 					description: "sfg to delete",
 					required: true,
@@ -738,7 +738,7 @@ export const pathZipperSfgProduction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "SFG Production Uuid",
+					name: "uuid",
 					in: "path",
 					description: "sfgProduction to get",
 					required: true,
@@ -764,7 +764,7 @@ export const pathZipperSfgProduction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "sfg productionUuid",
+					name: "uuid",
 					in: "path",
 					description: "sfg production to update",
 					required: true,
@@ -802,7 +802,7 @@ export const pathZipperSfgProduction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "SFG Production Uuid",
+					name: "uuid",
 					in: "path",
 					description: "sfg production to delete",
 					required: true,
@@ -904,7 +904,7 @@ export const pathZipperSfgTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "SFG Transaction Uuid",
+					name: "uuid",
 					in: "path",
 					description: "sfgTransaction to get",
 					required: true,
@@ -930,7 +930,7 @@ export const pathZipperSfgTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "sfg transactionUuid",
+					name: "uuid",
 					in: "path",
 					description: "sfg transaction to update",
 					required: true,
@@ -968,7 +968,7 @@ export const pathZipperSfgTransaction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "SFG Transaction Uuid",
+					name: "uuid",
 					in: "path",
 					description: "sfg transaction to delete",
 					required: true,
@@ -1070,7 +1070,7 @@ export const pathZipperBatch = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Batch Uuid",
+					name: "uuid",
 					in: "path",
 					description: "batch to get",
 					required: true,
@@ -1096,7 +1096,7 @@ export const pathZipperBatch = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "batchUuid",
+					name: "uuid",
 					in: "path",
 					description: "batch to update",
 					required: true,
@@ -1207,7 +1207,7 @@ export const pathZipperBatchEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Batch Entry Uuid",
+					name: "uuid",
 					in: "path",
 					description: "batchEntry to get",
 					required: true,
@@ -1233,7 +1233,7 @@ export const pathZipperBatchEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "batch entryUuid",
+					name: "uuid",
 					in: "path",
 					description: "batch entry to update",
 					required: true,
@@ -1271,7 +1271,7 @@ export const pathZipperBatchEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Batch Entry Uuid",
+					name: "uuid",
 					in: "path",
 					description: "batch entry to delete",
 					required: true,
@@ -1373,7 +1373,7 @@ export const pathZipperDyingBatch = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Dying Batch Uuid",
+					name: "uuid",
 					in: "path",
 					description: "dyingBatch to get",
 					required: true,
@@ -1399,7 +1399,7 @@ export const pathZipperDyingBatch = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dying batchUuid",
+					name: "uuid",
 					in: "path",
 					description: "dying batch to update",
 					required: true,
@@ -1437,7 +1437,7 @@ export const pathZipperDyingBatch = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Dying Batch Uuid",
+					name: "uuid",
 					in: "path",
 					description: "dying batch to delete",
 					required: true,
@@ -1539,7 +1539,7 @@ export const pathZipperDyingBatchEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Dying Batch Uuid",
+					name: "uuid",
 					in: "path",
 					description: "dyingBatchEntry to get",
 					required: true,
@@ -1565,7 +1565,7 @@ export const pathZipperDyingBatchEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "dying batchUuid",
+					name: "uuid",
 					in: "path",
 					description: "dying batch entry to update",
 					required: true,
@@ -1603,7 +1603,7 @@ export const pathZipperDyingBatchEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Dying Batch Uuid",
+					name: "uuid",
 					in: "path",
 					description: "dying batch to delete",
 					required: true,
@@ -1705,7 +1705,7 @@ export const pathZipperTapeCoil = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Tape Coil Uuid",
+					name: "uuid",
 					in: "path",
 					description: "tapeCoil to get",
 					required: true,
@@ -1731,7 +1731,7 @@ export const pathZipperTapeCoil = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "tape coilUuid",
+					name: "uuid",
 					in: "path",
 					description: "tape coil to update",
 					required: true,
@@ -1769,7 +1769,7 @@ export const pathZipperTapeCoil = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Tape Coil Uuid",
+					name: "uuid",
 					in: "path",
 					description: "tape coil to delete",
 					required: true,
@@ -1871,7 +1871,7 @@ export const pathZipperTapeCoilProduction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Tape Coil Production Uuid",
+					name: "uuid",
 					in: "path",
 					description: "tapeCoilProduction to get",
 					required: true,
@@ -1897,7 +1897,7 @@ export const pathZipperTapeCoilProduction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "tape coil productionUuid",
+					name: "uuid",
 					in: "path",
 					description: "tape coil production to update",
 					required: true,
@@ -1935,7 +1935,7 @@ export const pathZipperTapeCoilProduction = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Tape Coil Production Uuid",
+					name: "uuid",
 					in: "path",
 					description: "tape coil production to delete",
 					required: true,
@@ -2043,7 +2043,7 @@ export const pathZipperTapeToCoil = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Tape To Coil Uuid",
+					name: "uuid",
 					in: "path",
 					description: "tapeToCoil to get",
 					required: true,
@@ -2069,7 +2069,7 @@ export const pathZipperTapeToCoil = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "tape to coilUuid",
+					name: "uuid",
 					in: "path",
 					description: "tape to coil to update",
 					required: true,
@@ -2107,7 +2107,7 @@ export const pathZipperTapeToCoil = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "Tape To Coil Uuid",
+					name: "uuid",
 					in: "path",
 					description: "tape to coil to delete",
 					required: true,
