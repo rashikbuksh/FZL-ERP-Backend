@@ -7,6 +7,7 @@ import {
 	sfg,
 	sfg_production,
 	sfg_transaction,
+	tape_coil,
 } from "../zipper/schema.js";
 
 import { entry } from "../purchase/schema.js";
@@ -211,5 +212,29 @@ export const materialStockDeleteTrigger = pgTrigger({
 	when: "AFTER",
 	operation: "DELETE",
 	function: "material_stock_after_material_info_delete_trigger",
+	level: "ROW",
+});
+
+export const zipperTapeCoilInsertTrigger = pgTrigger({
+	table: tape_coil,
+	when: "AFTER",
+	operation: "INSERT",
+	function: "tape_coil_after_tape_to_coil_insert_trigger",
+	level: "ROW",
+});
+
+export const zipperTapeCoilUpdateTrigger = pgTrigger({
+	table: tape_coil,
+	when: "AFTER",
+	operation: "UPDATE",
+	function: "tape_coil_after_tape_to_coil_update_trigger",
+	level: "ROW",
+});
+
+export const zipperTapeCoilDeleteTrigger = pgTrigger({
+	table: tape_coil,
+	when: "AFTER",
+	operation: "DELETE",
+	function: "tape_coil_after_tape_to_coil_delete_trigger",
 	level: "ROW",
 });
