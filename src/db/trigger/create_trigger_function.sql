@@ -879,7 +879,7 @@ BEGIN
     INSERT INTO material.stock
        (uuid, material_uuid)
     VALUES
-         (NEW.uuid, NEW.material_uuid);
+         (NEW.uuid, NEW.uuid);
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -887,7 +887,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION material_stock_after_material_info_delete() RETURNS TRIGGER AS $$
 BEGIN
     DELETE FROM material.stock
-    WHERE material_uuid = OLD.material_uuid;
+    WHERE material_uuid = OLD.uuid;
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
