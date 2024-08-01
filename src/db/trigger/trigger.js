@@ -170,3 +170,46 @@ export const materialTrxDeleteTrigger = pgTrigger({
 	function: "material_stock_after_material_trx_delete_trigger",
 	level: "ROW",
 });
+
+export const materialStockSfgInsertTrigger = pgTrigger({
+	table: stock,
+	sfg,
+	when: "AFTER",
+	operation: "INSERT",
+	function: "material_stock_sfg_after_stock_to_sfg_insert_trigger",
+	level: "ROW",
+});
+
+export const materialStockSfgUpdateTrigger = pgTrigger({
+	table: stock,
+	sfg,
+	when: "AFTER",
+	operation: "UPDATE",
+	function: "material_stock_sfg_after_stock_to_sfg_update_trigger",
+	level: "ROW",
+});
+
+export const materialStockSfgDeleteTrigger = pgTrigger({
+	table: stock,
+	sfg,
+	when: "AFTER",
+	operation: "DELETE",
+	function: "material_stock_sfg_after_stock_to_sfg_delete_trigger",
+	level: "ROW",
+});
+
+export const materialStockInsertTrigger = pgTrigger({
+	table: stock,
+	when: "AFTER",
+	operation: "INSERT",
+	function: "material_stock_after_material_info_insert_trigger",
+	level: "ROW",
+});
+
+export const materialStockDeleteTrigger = pgTrigger({
+	table: stock,
+	when: "AFTER",
+	operation: "DELETE",
+	function: "material_stock_after_material_info_delete_trigger",
+	level: "ROW",
+});
