@@ -24,6 +24,9 @@ server.get(
 		explorer: true,
 		swaggerOptions: {
 			validatorUrl: null,
+			headers: {
+				"Access-Control-Allow-Origin": "*", // Required to avoid CORS errors
+			},
 		},
 	})
 );

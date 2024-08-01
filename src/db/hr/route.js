@@ -164,6 +164,7 @@ export const pathHrUser = {
 	},
 };
 
+hrRouter.post("/user/login", userOperations.loginUser);
 hrRouter.get("/user", userOperations.selectAll);
 hrRouter.get("/user/:uuid", validateUuidParam(), userOperations.select);
 hrRouter.post("/user", userOperations.insert);
@@ -315,6 +316,46 @@ export const pathHrDepartment = {
 				},
 				404: {
 					description: "Department not found",
+				},
+			},
+		},
+	},
+	"/hr/user/login": {
+		post: {
+			tags: ["hr.user"],
+			summary: "validate a user",
+			description: "Validate user credentials",
+			operationId: "validateUser",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			requestBody: {
+				content: {
+					"application/json": {
+						schema: {
+							type: "object",
+							properties: {
+								email: {
+									type: "string",
+									description: "User's email address",
+									example: "admin@fzl.com",
+								},
+								pass: {
+									type: "string",
+									description: "User's password",
+									example: "1234",
+								},
+							},
+							required: ["email", "pass"],
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: "successful operation",
+				},
+				405: {
+					description: "Invalid input",
 				},
 			},
 		},
