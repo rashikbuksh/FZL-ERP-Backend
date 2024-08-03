@@ -17,7 +17,7 @@ export const stock = slider.table("stock", {
 	uuid: uuid("uuid").primaryKey(),
 	order_info_uuid: uuid("order_info_uuid")
 		.references(() => zipperSchema.order_info.uuid)
-		.notNull(),
+		.default(null),
 	item: uuid("item")
 		.notNull()
 		.references(() => publicSchema.properties.uuid),
@@ -28,24 +28,63 @@ export const stock = slider.table("stock", {
 		.notNull()
 		.references(() => publicSchema.properties.uuid),
 	puller: uuid("puller")
-		.notNull()
-		.references(() => publicSchema.properties.uuid),
+		.references(() => publicSchema.properties.uuid)
+		.default(null),
 	color: text("color").notNull(),
-	order_quantity: decimal("order_quantity").notNull(),
-	body_quantity: decimal("body_quantity").default(0),
-	cap_quantity: decimal("cap_quantity").default(0),
-	puller_quantity: decimal("puller_quantity").default(0),
-	link_quantity: decimal("link_quantity").default(0),
-	sa_prod: decimal("sa_prod").default(0),
-	coloring_stock: decimal("coloring_stock").default(0),
-	coloring_prod: decimal("coloring_prod").default(0),
-	trx_to_finishing: decimal("trx_to_finishing").default(0),
-	u_top_quantity: decimal("u_top_quantity").default(0),
-	h_bottom_quantity: decimal("h_bottom_quantity").default(0),
-	box_pin_quantity: decimal("box_pin_quantity").default(0),
-	two_way_pin_quantity: decimal("two_way_pin_quantity").default(0),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	order_quantity: decimal("order_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	body_quantity: decimal("body_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	cap_quantity: decimal("cap_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	puller_quantity: decimal("puller_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	link_quantity: decimal("link_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	sa_prod: decimal("sa_prod", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	coloring_stock: decimal("coloring_stock", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	coloring_prod: decimal("coloring_prod", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	trx_to_finishing: decimal("trx_to_finishing", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	u_top_quantity: decimal("u_top_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	h_bottom_quantity: decimal("h_bottom_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	box_pin_quantity: decimal("box_pin_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	two_way_pin_quantity: decimal("two_way_pin_quantity", {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -128,11 +167,11 @@ export const defStock = {
 		two_way_pin_quantity: {
 			type: "number",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -172,11 +211,20 @@ export const die_casting = slider.table("die_casting", {
 	stopper: uuid("stopper")
 		.notNull()
 		.references(() => publicSchema.properties.uuid),
-	quantity: decimal("quantity").notNull(),
-	weight: decimal("weight").notNull(),
-	pcs_per_kg: decimal("pcs_per_kg").notNull(),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	quantity: decimal("quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	weight: decimal("weight", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	pcs_per_kg: decimal("pcs_per_kg", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -238,11 +286,11 @@ export const defDieCasting = {
 		pcs_per_kg: {
 			type: "number",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -264,15 +312,18 @@ export const die_casting_production = slider.table("die_casting_production", {
 	cavity_goods: integer("cavity_goods").notNull(),
 	cavity_defect: integer("cavity_defect").notNull(),
 	push: integer("push").notNull(),
-	weight: decimal("weight").notNull(),
+	weight: decimal("weight", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
 	order_info_uuid: uuid("order_info_uuid").references(
 		() => zipperSchema.order_info.uuid
 	),
 	created_by: uuid("created_by")
 		.references(() => hrSchema.users.uuid)
 		.notNull(),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -287,7 +338,7 @@ export const defDieCastingProduction = {
 		"push",
 		"weight",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -321,11 +372,11 @@ export const defDieCastingProduction = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -346,12 +397,15 @@ export const die_casting_transaction = slider.table("die_casting_transaction", {
 	stock_uuid: uuid("stock_uuid")
 		.references(() => stock.uuid)
 		.notNull(),
-	trx_quantity: decimal("trx_quantity").notNull(),
+	trx_quantity: decimal("trx_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
 	created_by: uuid("created_by")
 		.references(() => hrSchema.users.uuid)
 		.notNull(),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -363,7 +417,7 @@ export const defDieCastingTransaction = {
 		"stock_uuid",
 		"trx_quantity",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -385,11 +439,11 @@ export const defDieCastingTransaction = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -402,6 +456,141 @@ export const defDieCastingTransaction = {
 	},
 };
 
+// transaction
+
+export const transaction = slider.table("transaction", {
+	uuid: uuid("uuid").primaryKey(),
+	stock_uuid: uuid("stock_uuid")
+		.references(() => stock.uuid)
+		.notNull(),
+	section: text("section").notNull(),
+	trx_quantity: decimal("trx_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_by: uuid("created_by")
+		.references(() => hrSchema.users.uuid)
+		.notNull(),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
+	remarks: text("remarks").default(null),
+});
+
+export const defTransaction = {
+	type: "object",
+	required: [
+		"uuid",
+		"stock_uuid",
+		"section",
+		"trx_quantity",
+		"created_by",
+		"created_at",
+	],
+	properties: {
+		uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		stock_uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		section: {
+			type: "string",
+		},
+		trx_quantity: {
+			type: "number",
+		},
+		created_by: {
+			type: "string",
+			format: "uuid",
+		},
+		created_at: {
+			type: "string",
+			format: "date-time",
+		},
+		updated_at: {
+			type: "string",
+			format: "date-time",
+		},
+		remarks: {
+			type: "string",
+		},
+	},
+	xml: {
+		name: "Slider/Transaction",
+	},
+};
+
+// coloring transaction
+
+export const coloring_transaction = slider.table("coloring_transaction", {
+	uuid: uuid("uuid").primaryKey(),
+	stock_uuid: uuid("stock_uuid")
+		.references(() => stock.uuid)
+		.notNull(),
+	order_info_uuid: uuid("order_info_uuid")
+		.references(() => zipperSchema.order_info.uuid)
+		.notNull(),
+	trx_quantity: decimal("trx_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_by: uuid("created_by")
+		.references(() => hrSchema.users.uuid)
+		.notNull(),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
+	remarks: text("remarks").default(null),
+});
+
+export const defColoringTransaction = {
+	type: "object",
+	required: [
+		"uuid",
+		"stock_uuid",
+		"order_info_uuid",
+		"trx_quantity",
+		"created_by",
+		"created_at",
+	],
+	properties: {
+		uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		stock_uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		order_info_uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		trx_quantity: {
+			type: "number",
+		},
+		created_by: {
+			type: "string",
+			format: "uuid",
+		},
+		created_at: {
+			type: "string",
+			format: "date-time",
+		},
+		updated_at: {
+			type: "string",
+			format: "date-time",
+		},
+		remarks: {
+			type: "string",
+		},
+	},
+	xml: {
+		name: "Slider/ColoringTransaction",
+	},
+};
+
 // ------------- FOR TESTING ----------------
 
 export const defSlider = {
@@ -409,6 +598,8 @@ export const defSlider = {
 	die_casting_production: defDieCastingProduction,
 	die_casting_transaction: defDieCastingTransaction,
 	stock: defStock,
+	transaction: defTransaction,
+	coloring_transaction: defColoringTransaction,
 };
 
 export const tagSlider = [
@@ -417,16 +608,24 @@ export const tagSlider = [
 		description: "Stock",
 	},
 	{
-		name: "slider.die-casting",
+		name: "slider.die_casting",
 		description: "Die Casting",
 	},
 	{
-		name: "slider.die-casting-production",
+		name: "slider.die_casting_production",
 		description: "Die Casting Production",
 	},
 	{
-		name: "slider.die-casting-transaction",
+		name: "slider.die_casting_transaction",
 		description: "Die Casting Transaction",
+	},
+	{
+		name: "slider.transaction",
+		description: "Transaction",
+	},
+	{
+		name: "slider.coloring_transaction",
+		description: "Coloring Transaction",
 	},
 ];
 

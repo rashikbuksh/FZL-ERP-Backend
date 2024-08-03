@@ -60,14 +60,14 @@ export const description = purchase.table("description", {
 	is_local: integer("is_local").notNull(),
 	lc_number: text("lc_number").default(null),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const defPurchaseDescription = {
 	type: "object",
-	required: ["uuid", "vendor_uuid", "created_by", "created", "is_local"],
+	required: ["uuid", "vendor_uuid", "created_by", "created_at", "is_local"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -87,10 +87,10 @@ export const defPurchaseDescription = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 		},
 		remarks: {
@@ -110,11 +110,17 @@ export const entry = purchase.table("entry", {
 	material_info_uuid: uuid("material_info_uuid").references(
 		() => materialSchema.info.uuid
 	),
-	quantity: decimal("quantity").notNull(),
-	price: decimal("price").default(null),
+	quantity: decimal("quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	price: decimal("price", {
+		precision: 20,
+		scale: 4,
+	}).default(null),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -126,7 +132,7 @@ export const defPurchaseEntry = {
 		"material_info_uuid",
 		"quantity",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -151,10 +157,10 @@ export const defPurchaseEntry = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 		},
 		remarks: {

@@ -15,9 +15,9 @@ export const ComparePass = async (password, hashPassword) => {
 };
 
 export const CreateToken = (user, time = "24h") => {
-	const { id, name, email, department } = user;
+	const { uuid, name, email, department } = user;
 	const payload = {
-		id,
+		uuid,
 		name,
 		email,
 		department,
@@ -44,7 +44,7 @@ export const VerifyToken = (req, res, next) => {
 	const { originalUrl, method } = req;
 
 	if (
-		(originalUrl === "/user/login" && method === "POST") ||
+		(originalUrl === "/hr/user/login" && method === "POST") ||
 		originalUrl.startsWith("/api-docs")
 	) {
 		return next();

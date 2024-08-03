@@ -19,14 +19,14 @@ export const bank = commercial.table("bank", {
 	swift_code: text("swift_code").notNull(),
 	address: text("address").default(null),
 	policy: text("policy").default(null),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const defCommercialBank = {
 	type: "object",
-	required: ["uuid", "name", "swift_code", "created"],
+	required: ["uuid", "name", "swift_code", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -44,11 +44,11 @@ export const defCommercialBank = {
 		policy: {
 			type: "string",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -67,7 +67,10 @@ export const lc = commercial.table("lc", {
 	file_no: text("file_no").notNull(),
 	lc_number: text("lc_number").notNull(),
 	lc_date: text("lc_date").notNull(),
-	payment_value: decimal("payment_value").notNull(),
+	payment_value: decimal("payment_value", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
 	payment_date: timestamp("payment_date").default(null),
 	ldbc_fdbc: text("ldbc_fdbc").notNull(),
 	acceptance_date: timestamp("acceptance_date").default(null),
@@ -87,8 +90,8 @@ export const lc = commercial.table("lc", {
 	problematical: integer("problematical").default(0),
 	epz: integer("epz").default(0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -105,7 +108,7 @@ export const defCommercialLc = {
 		"party_bank",
 		"expiry_date",
 		"at_sight",
-		"created",
+		"created_at",
 		"created_by",
 	],
 	properties: {
@@ -194,11 +197,11 @@ export const defCommercialLc = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -229,8 +232,8 @@ export const pi = commercial.table("pi", {
 	validity: integer("validity").notNull(), // need review
 	payment: integer("payment").notNull(), // need review
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
@@ -248,7 +251,7 @@ export const defCommercialPi = {
 		"validity",
 		"payment",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -295,11 +298,11 @@ export const defCommercialPi = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -316,15 +319,18 @@ export const pi_entry = commercial.table("pi_entry", {
 	uuid: uuid("uuid").primaryKey(),
 	pi_uuid: uuid("pi_uuid").references(() => pi.uuid),
 	sfg_uuid: uuid("sfg_uuid").references(() => zipperSchema.sfg.uuid),
-	pi_quantity: decimal("pi_quantity").notNull(),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	pi_quantity: decimal("pi_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 
 export const defCommercialPiEntry = {
 	type: "object",
-	required: ["uuid", "pi_uuid", "sfg_uuid", "pi_quantity", "created"],
+	required: ["uuid", "pi_uuid", "sfg_uuid", "pi_quantity", "created_at"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -341,11 +347,11 @@ export const defCommercialPiEntry = {
 		pi_quantity: {
 			type: "number",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},

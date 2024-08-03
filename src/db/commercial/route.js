@@ -9,7 +9,7 @@ const commercialRouter = Router();
 
 // bank
 export const pathCommercialBank = {
-	"commercial/bank": {
+	"/commercial/bank": {
 		get: {
 			tags: ["commercial.bank"],
 			summary: "Get all banks",
@@ -20,11 +20,9 @@ export const pathCommercialBank = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/commercial/bank",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/commercial/bank",
 								},
 							},
 						},
@@ -52,11 +50,9 @@ export const pathCommercialBank = {
 				200: {
 					description: "Successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/commercial/bank",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/commercial/bank",
 						},
 					},
 				},
@@ -68,7 +64,7 @@ export const pathCommercialBank = {
 		},
 	},
 
-	"commercial/bank/{uuid}": {
+	"/commercial/bank/{uuid}": {
 		get: {
 			tags: ["commercial.bank"],
 			summary: "Get a bank",
@@ -173,7 +169,7 @@ commercialRouter.delete(
 
 // lc
 export const pathCommercialLc = {
-	"commercial/lc": {
+	"/commercial/lc": {
 		get: {
 			tags: ["commercial.lc"],
 			summary: "Get all lcs",
@@ -184,11 +180,9 @@ export const pathCommercialLc = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/commercial/lc",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/commercial/lc",
 								},
 							},
 						},
@@ -219,11 +213,9 @@ export const pathCommercialLc = {
 				200: {
 					description: "Successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/commercial/lc",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/commercial/lc",
 						},
 					},
 				},
@@ -235,7 +227,7 @@ export const pathCommercialLc = {
 		},
 	},
 
-	"commercial/lc/{uuid}": {
+	"/commercial/lc/{uuid}": {
 		get: {
 			tags: ["commercial.lc"],
 			summary: "Get a lc",
@@ -244,7 +236,7 @@ export const pathCommercialLc = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "lcUuid",
+					name: "uuid",
 					in: "path",
 					description: "Lc to get",
 					required: true,
@@ -270,7 +262,7 @@ export const pathCommercialLc = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "LcUuid",
+					name: "uuid",
 					in: "path",
 					description: "lc to update",
 					required: true,
@@ -308,7 +300,7 @@ export const pathCommercialLc = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "lcUuid",
+					name: "uuid",
 					in: "path",
 					description: "Lc to delete",
 					required: true,
@@ -337,7 +329,7 @@ commercialRouter.delete("/lc/:uuid", validateUuidParam(), lcOperations.remove);
 
 // pi
 export const pathCommercialPi = {
-	"commercial/pi": {
+	"/commercial/pi": {
 		get: {
 			tags: ["commercial.pi"],
 			summary: "Get all pis",
@@ -348,11 +340,9 @@ export const pathCommercialPi = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/commercial/pi",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/commercial/pi",
 								},
 							},
 						},
@@ -384,11 +374,9 @@ export const pathCommercialPi = {
 				200: {
 					description: "Successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/commercial/pi",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/commercial/pi",
 						},
 					},
 				},
@@ -400,7 +388,7 @@ export const pathCommercialPi = {
 		},
 	},
 
-	"commercial/pi/{uuid}": {
+	"/commercial/pi/{uuid}": {
 		get: {
 			tags: ["commercial.pi"],
 			summary: "Get a pi",
@@ -409,7 +397,7 @@ export const pathCommercialPi = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "piUuid",
+					name: "uuid",
 					in: "path",
 					description: "Pi to get",
 					required: true,
@@ -435,7 +423,7 @@ export const pathCommercialPi = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PiUuid",
+					name: "uuid",
 					in: "path",
 					description: "pi to update",
 					required: true,
@@ -473,7 +461,7 @@ export const pathCommercialPi = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "piUuid",
+					name: "uuid",
 					in: "path",
 					description: "Pi to delete",
 					required: true,
@@ -502,7 +490,7 @@ commercialRouter.delete("/pi/:uuid", validateUuidParam(), piOperations.remove);
 
 // pi_entry
 export const pathCommercialPiEntry = {
-	"commercial/pi-entry": {
+	"/commercial/pi-entry": {
 		get: {
 			tags: ["commercial.pi_entry"],
 			summary: "Get all pi_entries",
@@ -513,11 +501,9 @@ export const pathCommercialPiEntry = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/commercial/pi_entry",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/commercial/pi_entry",
 								},
 							},
 						},
@@ -548,11 +534,9 @@ export const pathCommercialPiEntry = {
 				200: {
 					description: "Successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/commercial/pi_entry",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/commercial/pi_entry",
 						},
 					},
 				},
@@ -564,7 +548,7 @@ export const pathCommercialPiEntry = {
 		},
 	},
 
-	"commercial/pi-entry/{uuid}": {
+	"/commercial/pi-entry/{uuid}": {
 		get: {
 			tags: ["commercial.pi_entry"],
 			summary: "Get a pi_entry",
@@ -573,7 +557,7 @@ export const pathCommercialPiEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "piEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "Pi_entry to get",
 					required: true,
@@ -599,7 +583,7 @@ export const pathCommercialPiEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PiEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "pi_entry to update",
 					required: true,
@@ -637,7 +621,7 @@ export const pathCommercialPiEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "piEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "Pi_entry to delete",
 					required: true,

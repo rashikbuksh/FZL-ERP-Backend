@@ -1,35 +1,31 @@
-import { desc } from "drizzle-orm";
-import { response, Router } from "express";
+import { Router } from "express";
 import { validateUuidParam } from "../../lib/validator.js";
-import { description } from "../purchase/schema.js";
 import * as infoOperations from "./query/info.js";
 import * as sectionOperations from "./query/section.js";
 import * as stockOperations from "./query/stock.js";
+import * as stockToSfgOperations from "./query/stock_to_sfg.js";
 import * as trxOperations from "./query/trx.js";
 import * as typeOperations from "./query/type.js";
 import * as usedOperations from "./query/used.js";
-import { type } from "./schema.js";
 
 const materialRouter = Router();
 
 // info routes
 export const pathMaterialInfo = {
-	"material/info": {
+	"/material/info": {
 		get: {
 			tags: ["material.info"],
 			summary: "Get all material info",
 			description: "Get all material info",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material info",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/info",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/info",
 								},
 							},
 						},
@@ -60,11 +56,9 @@ export const pathMaterialInfo = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/info",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/info",
 						},
 					},
 				},
@@ -74,7 +68,7 @@ export const pathMaterialInfo = {
 			},
 		},
 	},
-	"material/info/{uuid}": {
+	"/material/info/{uuid}": {
 		get: {
 			tags: ["material.info"],
 			summary: "Get material info by uuid",
@@ -82,7 +76,7 @@ export const pathMaterialInfo = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "infoUuid",
+					name: "uuid",
 					in: "path",
 					description: " material info to get",
 					required: true,
@@ -107,7 +101,7 @@ export const pathMaterialInfo = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "infoUuid",
+					name: "uuid",
 					in: "path",
 					description: "material info to update",
 					required: true,
@@ -144,7 +138,7 @@ export const pathMaterialInfo = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "infoUuid",
+					name: "uuid",
 					in: "path",
 					description: "material info to delete",
 					required: true,
@@ -176,22 +170,20 @@ materialRouter.delete(
 
 // section routes
 export const pathMaterialSection = {
-	"material/section": {
+	"/material/section": {
 		get: {
 			tags: ["material.section"],
 			summary: "Get all material section",
 			description: "Get all material section",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material section",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/section",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/section",
 								},
 							},
 						},
@@ -221,11 +213,9 @@ export const pathMaterialSection = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/section",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/section",
 						},
 					},
 				},
@@ -235,7 +225,7 @@ export const pathMaterialSection = {
 			},
 		},
 	},
-	"material/section/{uuid}": {
+	"/material/section/{uuid}": {
 		get: {
 			tags: ["material.section"],
 			summary: "Get material section by uuid",
@@ -243,7 +233,7 @@ export const pathMaterialSection = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "sectionUuid",
+					name: "uuid",
 					in: "path",
 					description: " material section to get",
 					required: true,
@@ -268,7 +258,7 @@ export const pathMaterialSection = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "sectionUuid",
+					name: "uuid",
 					in: "path",
 					description: "material section to update",
 					required: true,
@@ -305,7 +295,7 @@ export const pathMaterialSection = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "sectionUuid",
+					name: "uuid",
 					in: "path",
 					description: "material section to delete",
 					required: true,
@@ -341,22 +331,20 @@ materialRouter.delete(
 
 // stock routes
 export const pathMaterialStock = {
-	"material/stock": {
+	"/material/stock": {
 		get: {
 			tags: ["material.stock"],
 			summary: "Get all material stock",
 			description: "Get all material stock",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material stock",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/stock",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/stock",
 								},
 							},
 						},
@@ -386,11 +374,9 @@ export const pathMaterialStock = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/stock",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/stock",
 						},
 					},
 				},
@@ -400,7 +386,7 @@ export const pathMaterialStock = {
 			},
 		},
 	},
-	"material/stock/{uuid}": {
+	"/material/stock/{uuid}": {
 		get: {
 			tags: ["material.stock"],
 			summary: "Get material stock by uuid",
@@ -408,7 +394,7 @@ export const pathMaterialStock = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "stockUuid",
+					name: "uuid",
 					in: "path",
 					description: " material stock to get",
 					required: true,
@@ -433,7 +419,7 @@ export const pathMaterialStock = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "stockUuid",
+					name: "uuid",
 					in: "path",
 					description: "material stock to update",
 					required: true,
@@ -470,7 +456,7 @@ export const pathMaterialStock = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "stockUuid",
+					name: "uuid",
 					in: "path",
 					description: "material stock to delete",
 					required: true,
@@ -502,22 +488,20 @@ materialRouter.delete(
 
 // trx routes
 export const pathMaterialTrx = {
-	"material/trx": {
+	"/material/trx": {
 		get: {
 			tags: ["material.trx"],
 			summary: "Get all material trx",
 			description: "Get all material trx",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material trx",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/trx",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/trx",
 								},
 							},
 						},
@@ -547,11 +531,9 @@ export const pathMaterialTrx = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/trx",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/trx",
 						},
 					},
 				},
@@ -561,7 +543,7 @@ export const pathMaterialTrx = {
 			},
 		},
 	},
-	"material/trx/{uuid}": {
+	"/material/trx/{uuid}": {
 		get: {
 			tags: ["material.trx"],
 			summary: "Get material trx by uuid",
@@ -569,7 +551,7 @@ export const pathMaterialTrx = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "trxUuid",
+					name: "uuid",
 					in: "path",
 					description: " material trx to get",
 					required: true,
@@ -594,7 +576,7 @@ export const pathMaterialTrx = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "trxUuid",
+					name: "uuid",
 					in: "path",
 					description: "material trx to update",
 					required: true,
@@ -631,7 +613,7 @@ export const pathMaterialTrx = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "trxUuid",
+					name: "uuid",
 					in: "path",
 					description: "material trx to delete",
 					required: true,
@@ -659,22 +641,20 @@ materialRouter.delete("/trx/:uuid", validateUuidParam(), trxOperations.remove);
 
 // type routes
 export const pathMaterialType = {
-	"material/type": {
+	"/material/type": {
 		get: {
 			tags: ["material.type"],
 			summary: "Get all material type",
 			description: "Get all material type",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material type",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/type",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/type",
 								},
 							},
 						},
@@ -704,11 +684,9 @@ export const pathMaterialType = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/type",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/type",
 						},
 					},
 				},
@@ -718,7 +696,7 @@ export const pathMaterialType = {
 			},
 		},
 	},
-	"material/type/{uuid}": {
+	"/material/type/{uuid}": {
 		get: {
 			tags: ["material.type"],
 			summary: "Get material type by uuid",
@@ -726,7 +704,7 @@ export const pathMaterialType = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "typeUuid",
+					name: "uuid",
 					in: "path",
 					description: " material type to get",
 					required: true,
@@ -751,7 +729,7 @@ export const pathMaterialType = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "typeUuid",
+					name: "uuid",
 					in: "path",
 					description: "material type to update",
 					required: true,
@@ -788,7 +766,7 @@ export const pathMaterialType = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "typeUuid",
+					name: "uuid",
 					in: "path",
 					description: "material type to delete",
 					required: true,
@@ -820,22 +798,20 @@ materialRouter.delete(
 
 // used routes
 export const pathMaterialUsed = {
-	"material/used": {
+	"/material/used": {
 		get: {
 			tags: ["material.used"],
 			summary: "Get all material used",
 			description: "Get all material used",
-			response: {
+			responses: {
 				200: {
 					description: "Returns all material used",
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/material/used",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/used",
 								},
 							},
 						},
@@ -865,11 +841,9 @@ export const pathMaterialUsed = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/material/used",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/used",
 						},
 					},
 				},
@@ -879,7 +853,7 @@ export const pathMaterialUsed = {
 			},
 		},
 	},
-	"material/used/{uuid}": {
+	"/material/used/{uuid}": {
 		get: {
 			tags: ["material.used"],
 			summary: "Get material used by uuid",
@@ -887,7 +861,7 @@ export const pathMaterialUsed = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "usedUuid",
+					name: "uuid",
 					in: "path",
 					description: " material used to get",
 					required: true,
@@ -912,7 +886,7 @@ export const pathMaterialUsed = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "usedUuid",
+					name: "uuid",
 					in: "path",
 					description: "material used to update",
 					required: true,
@@ -949,7 +923,7 @@ export const pathMaterialUsed = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "usedUuid",
+					name: "uuid",
 					in: "path",
 					description: "material used to delete",
 					required: true,
@@ -979,6 +953,179 @@ materialRouter.delete(
 	usedOperations.remove
 );
 
+// stock_to_sfg
+
+export const pathMaterialStockToSFG = {
+	"/material/stock-to-sfg": {
+		get: {
+			tags: ["material.stock_to_sfg"],
+			summary: "Get all material stock_to_sfg",
+			description: "Get all material stock_to_sfg",
+			responses: {
+				200: {
+					description: "Returns all material stock_to_sfg",
+					content: {
+						"application/json": {
+							schema: {
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/stock_to_sfg",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ["material.stock_to_sfg"],
+			summary: "Create a new material stock_to_sfg",
+			description: "Create a new material stock_to_sfg",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					in: "body",
+					name: "body",
+					description:
+						"Material stock_to_sfg object that needs to be added to the material.stock_to_sfg",
+					required: true,
+					schema: {
+						$ref: "#/definitions/material/stock_to_sfg",
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/stock_to_sfg",
+						},
+					},
+				},
+				405: {
+					description: "Invalid input",
+				},
+			},
+		},
+	},
+	"/material/stock-to-sfg/{uuid}": {
+		get: {
+			tags: ["material.stock_to_sfg"],
+			summary: "Get material stock_to_sfg by uuid",
+			description: "Get material stock_to_sfg by uuid",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "uuid",
+					in: "path",
+					description: " material stock_to_sfg to get",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						type: "array",
+						items: {
+							$ref: "#/definitions/material/stock_to_sfg",
+						},
+					},
+				},
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Material stock_to_sfg not found",
+				},
+			},
+		},
+		put: {
+			tags: ["material.stock_to_sfg"],
+			summary: "Update an existing material stock_to_sfg",
+			description: "Update an existing material stock_to_sfg",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "uuid",
+					in: "path",
+					description: "material stock_to_sfg to update",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+				{
+					in: "body",
+					name: "body",
+					description:
+						"Material stock_to_sfg object that needs to be updated in the material.stock_to_sfg",
+					required: true,
+					schema: {
+						$ref: "#/definitions/material/stock_to_sfg",
+					},
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Material stock_to_sfg not found",
+				},
+				405: {
+					description: "Validation exception",
+				},
+			},
+		},
+		delete: {
+			tags: ["material.stock_to_sfg"],
+			summary: "Delete a material stock_to_sfg",
+			description: "Delete a material stock_to_sfg",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "uuid",
+					in: "path",
+					description: "material stock_to_sfg to delete",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Material stock_to_sfg not found",
+				},
+			},
+		},
+	},
+};
+
+// stock_to_sfg routes
+
+materialRouter.get("/stock-to-sfg", stockToSfgOperations.selectAll);
+materialRouter.get(
+	"/stock-to-sfg/:uuid",
+	validateUuidParam(),
+	stockToSfgOperations.select
+);
+materialRouter.post("/stock-to-sfg", stockToSfgOperations.insert);
+materialRouter.put("/stock-to-sfg/:uuid", stockToSfgOperations.update);
+materialRouter.delete(
+	"/stock-to-sfg/:uuid",
+	validateUuidParam(),
+	stockToSfgOperations.remove
+);
+
 export const pathMaterial = {
 	...pathMaterialInfo,
 	...pathMaterialSection,
@@ -986,5 +1133,6 @@ export const pathMaterial = {
 	...pathMaterialTrx,
 	...pathMaterialType,
 	...pathMaterialUsed,
+	...pathMaterialStockToSFG,
 };
 export { materialRouter };

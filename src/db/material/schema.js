@@ -1,7 +1,7 @@
 import { decimal, pgSchema, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import * as hrSchema from "../hr/schema.js";
-import * as publicSchema from "../public/schema.js";
+import * as zipperSchema from "../zipper/schema.js";
 
 const material = pgSchema("material");
 
@@ -72,10 +72,15 @@ export const info = material.table("info", {
 	name: text("name").notNull(),
 	short_name: text("short_name").default(null),
 	unit: text("unit").notNull(),
-	threshold: decimal("threshold").notNull().default(0.0),
+	threshold: decimal("threshold", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
 	description: text("description").default(null),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 export const defMaterialInfo = {
@@ -87,7 +92,7 @@ export const defMaterialInfo = {
 		"name",
 		"unit",
 		"threshold",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
@@ -117,11 +122,11 @@ export const defMaterialInfo = {
 		description: {
 			type: "string",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -137,16 +142,156 @@ export const defMaterialInfo = {
 export const stock = material.table("stock", {
 	uuid: uuid("uuid").primaryKey(),
 	material_uuid: uuid("material_uuid").references(() => info.uuid),
-	section_uuid: uuid("section_uuid").references(
-		() => publicSchema.section.uuid
-	),
-	stock: decimal("stock").notNull().default(0.0),
+	stock: decimal("stock", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	tape_making: decimal("tape_making", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	coil_forming: decimal("coil_forming", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	dying_and_iron: decimal("dying_and_iron", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	m_gapping: decimal("m_gapping", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	v_gapping: decimal("v_gapping", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	v_teeth_molding: decimal("v_teeth_molding", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	m_teeth_molding: decimal("m_teeth_molding", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	teeth_assembling_and_polishing: decimal("teeth_assembling_and_polishing", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	m_teeth_cleaning: decimal("m_teeth_cleaning", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	v_teeth_cleaning: decimal("v_teeth_cleaning", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	plating_and_iron: decimal("plating_and_iron", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	m_sealing: decimal("m_sealing", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	v_sealing: decimal("v_sealing", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	n_t_cutting: decimal("n_t_cutting", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	v_t_cutting: decimal("v_t_cutting", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	m_stopper: decimal("m_stopper", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	v_stopper: decimal("v_stopper", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	n_stopper: decimal("n_stopper", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	cutting: decimal("cutting", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	qc_and_packing: decimal("qc_and_packing", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	die_casting: decimal("die_casting", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	slider_assembly: decimal("slider_assembly", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	coloring: decimal("coloring", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
 	remarks: text("remarks").default(null),
 });
 
 export const defMaterialStock = {
 	type: "object",
-	required: ["uuid", "material_uuid", "section_uuid", "stock"],
+	required: ["uuid", "material_uuid", "stock"],
 	properties: {
 		uuid: {
 			type: "string",
@@ -156,11 +301,76 @@ export const defMaterialStock = {
 			type: "string",
 			format: "uuid",
 		},
-		section_uuid: {
-			type: "string",
-			format: "uuid",
-		},
 		stock: {
+			type: "number",
+		},
+		tape_making: {
+			type: "number",
+		},
+		coil_forming: {
+			type: "number",
+		},
+		dying_and_iron: {
+			type: "number",
+		},
+		m_gapping: {
+			type: "number",
+		},
+		v_gapping: {
+			type: "number",
+		},
+		v_teeth_molding: {
+			type: "number",
+		},
+		m_teeth_molding: {
+			type: "number",
+		},
+		teeth_assembling_and_polishing: {
+			type: "number",
+		},
+		m_teeth_cleaning: {
+			type: "number",
+		},
+		v_teeth_cleaning: {
+			type: "number",
+		},
+		plating_and_iron: {
+			type: "number",
+		},
+		m_sealing: {
+			type: "number",
+		},
+		v_sealing: {
+			type: "number",
+		},
+		n_t_cutting: {
+			type: "number",
+		},
+		v_t_cutting: {
+			type: "number",
+		},
+		m_stopper: {
+			type: "number",
+		},
+		v_stopper: {
+			type: "number",
+		},
+		n_stopper: {
+			type: "number",
+		},
+		cutting: {
+			type: "number",
+		},
+		qc_and_packing: {
+			type: "number",
+		},
+		die_casting: {
+			type: "number",
+		},
+		slider_assembly: {
+			type: "number",
+		},
+		coloring: {
 			type: "number",
 		},
 		remarks: {
@@ -174,40 +384,40 @@ export const defMaterialStock = {
 
 export const trx = material.table("trx", {
 	uuid: uuid("uuid").primaryKey(),
-	material_stock_uuid: uuid("material_stock_uuid")
-		.references(() => stock.uuid)
+	material_uuid: uuid("material_uuid")
+		.references(() => info.uuid)
 		.notNull(),
-	section_uuid_trx_to: uuid("section_uuid_trx_to")
-		.references(() => publicSchema.section.uuid)
-		.notNull(),
-	quantity: decimal("quantity").notNull(),
+	trx_to: text("trx_to").notNull(),
+	trx_quantity: decimal("trx_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 export const defMaterialTrx = {
 	type: "object",
 	required: [
 		"uuid",
-		"material_stock_uuid",
-		"section_uuid_trx_to",
+		"material_uuid",
+		"trx_to",
 		"quantity",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
 			type: "string",
 			format: "uuid",
 		},
-		material_stock_uuid: {
+		material_uuid: {
 			type: "string",
 			format: "uuid",
 		},
-		section_uuid_trx_to: {
+		trx_to: {
 			type: "string",
-			format: "uuid",
 		},
 		quantity: {
 			type: "number",
@@ -216,11 +426,11 @@ export const defMaterialTrx = {
 			type: "string",
 			format: "uuid",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -235,42 +445,47 @@ export const defMaterialTrx = {
 
 export const used = material.table("used", {
 	uuid: uuid("uuid").primaryKey(),
-	material_stock_uuid: uuid("material_stock_uuid")
-		.references(() => stock.uuid)
+	material_uuid: uuid("material_uuid")
+		.references(() => info.uuid)
 		.notNull(),
-	section_uuid: uuid("section_uuid").references(
-		() => publicSchema.section.uuid
-	),
-	used_quantity: decimal("used_quantity").notNull(),
-	wastage: decimal("wastage").notNull().default(0.0),
+	section: text("section").notNull(),
+	used_quantity: decimal("used_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	wastage: decimal("wastage", {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created: timestamp("created").notNull(),
-	updated: timestamp("updated").default(null),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
 });
 export const defMaterialUsed = {
 	type: "object",
 	required: [
 		"uuid",
-		"material_stock_uuid",
-		"section_uuid",
+		"material_uuid",
+		"section",
 		"used_quantity",
 		"wastage",
 		"created_by",
-		"created",
+		"created_at",
 	],
 	properties: {
 		uuid: {
 			type: "string",
 			format: "uuid",
 		},
-		material_stock_uuid: {
+		material_uuid: {
 			type: "string",
 			format: "uuid",
 		},
-		section_uuid: {
+		section: {
 			type: "string",
-			format: "uuid",
 		},
 		used_quantity: {
 			type: "number",
@@ -278,11 +493,11 @@ export const defMaterialUsed = {
 		wastage: {
 			type: "number",
 		},
-		created: {
+		created_at: {
 			type: "string",
 			format: "date-time",
 		},
-		updated: {
+		updated_at: {
 			type: "string",
 			format: "date-time",
 		},
@@ -295,6 +510,75 @@ export const defMaterialUsed = {
 	},
 };
 
+//stock to sfg table
+export const stock_to_sfg = material.table("stock_to_sfg", {
+	uuid: uuid("uuid").primaryKey(),
+	material_uuid: uuid("material_uuid").references(() => info.uuid),
+	order_entry_uuid: uuid("order_entry_uuid").references(
+		() => zipperSchema.order_entry.uuid
+	),
+	trx_to: text("trx_to").notNull(),
+	trx_quantity: decimal("trx_quantity", {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
+	created_at: timestamp("created_at").notNull(),
+	updated_at: timestamp("updated_at").default(null),
+	remarks: text("remarks").default(null),
+});
+
+export const defMaterialStockToSfg = {
+	type: "object",
+	required: [
+		"uuid",
+		"material_uuid",
+		"order_entry_uuid",
+		"trx_to",
+		"trx_quantity",
+		"created_by",
+		"created_at",
+	],
+	properties: {
+		uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		material_uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		order_entry_uuid: {
+			type: "string",
+			format: "uuid",
+		},
+		trx_to: {
+			type: "string",
+		},
+		trx_quantity: {
+			type: "number",
+		},
+		created_by: {
+			type: "string",
+			format: "uuid",
+		},
+		created_at: {
+			type: "string",
+			format: "date-time",
+		},
+		updated_at: {
+			type: "string",
+			format: "date-time",
+		},
+		remarks: {
+			type: "string",
+		},
+	},
+	xml: {
+		name: "Material/StockToSfg",
+	},
+};
+
 //................FOR TESTING................
 
 export const defMaterial = {
@@ -304,6 +588,7 @@ export const defMaterial = {
 	stock: defMaterialStock,
 	trx: defMaterialTrx,
 	used: defMaterialUsed,
+	stock_to_sfg: defMaterialStockToSfg,
 };
 
 export const tagMaterial = [
@@ -354,6 +639,10 @@ export const tagMaterial = [
 			description: "Find out more about Material Used",
 			url: "http://swagger.io",
 		},
+	},
+	{
+		name: "material.stock_to_sfg",
+		description: "Material Stock to SFG",
 	},
 ];
 

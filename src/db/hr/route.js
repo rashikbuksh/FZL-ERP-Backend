@@ -20,11 +20,9 @@ export const pathHrUser = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/hr/user",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/hr/user",
 								},
 							},
 						},
@@ -54,11 +52,9 @@ export const pathHrUser = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/hr/user",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/hr/user",
 						},
 					},
 				},
@@ -68,7 +64,7 @@ export const pathHrUser = {
 			},
 		},
 	},
-	"hr/user/{uuid}": {
+	"/hr/user/{uuid}": {
 		get: {
 			tags: ["hr.user"],
 			summary: "Gets a user",
@@ -77,7 +73,7 @@ export const pathHrUser = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "userUuid",
+					name: "uuid",
 					in: "path",
 					description: "User to get",
 					required: true,
@@ -86,6 +82,12 @@ export const pathHrUser = {
 				},
 			],
 			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						$ref: "#/definitions/hr/user",
+					},
+				},
 				400: {
 					description: "Invalid UUID supplied",
 				},
@@ -103,7 +105,7 @@ export const pathHrUser = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "userUuid",
+					name: "uuid",
 					in: "path",
 					description: "User to update",
 					required: true,
@@ -140,7 +142,7 @@ export const pathHrUser = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "userUuid",
+					name: "uuid",
 					in: "path",
 					description: "User to delete",
 					required: true,
@@ -158,8 +160,83 @@ export const pathHrUser = {
 			},
 		},
 	},
+	"/hr/user/login": {
+		post: {
+			tags: ["hr.user"],
+			summary: "validate a user",
+			description: "Validate user credentials",
+			operationId: "validateUser",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			requestBody: {
+				content: {
+					"application/json": {
+						schema: {
+							type: "object",
+							properties: {
+								email: {
+									type: "string",
+									description: "User's email address",
+									example: "admin@fzl.com",
+								},
+								pass: {
+									type: "string",
+									description: "User's password",
+									example: "1234",
+								},
+							},
+							required: ["email", "pass"],
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: "successful operation",
+				},
+				405: {
+					description: "Invalid input",
+				},
+			},
+		},
+	},
+	"/hr/user/can-access/{uuid}": {
+		get: {
+			tags: ["hr.user"],
+			summary: "Gets a user access",
+			description: "",
+			// operationId: "deletePet",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "uuid",
+					in: "path",
+					description: "User access to get",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						$ref: "#/definitions/hr/user",
+					},
+				},
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "User access not found",
+				},
+			},
+		},
+	},
 };
 
+hrRouter.post("/user/login", userOperations.loginUser);
+hrRouter.get("/user/can-access/:uuid", userOperations.selectUsersAccessPages);
 hrRouter.get("/user", userOperations.selectAll);
 hrRouter.get("/user/:uuid", validateUuidParam(), userOperations.select);
 hrRouter.post("/user", userOperations.insert);
@@ -179,11 +256,9 @@ export const pathHrDepartment = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/hr/department",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/hr/department",
 								},
 							},
 						},
@@ -213,11 +288,9 @@ export const pathHrDepartment = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/hr/department",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/hr/department",
 						},
 					},
 				},
@@ -227,7 +300,7 @@ export const pathHrDepartment = {
 			},
 		},
 	},
-	"hr/department/{uuid}": {
+	"/hr/department/{uuid}": {
 		get: {
 			tags: ["hr.department"],
 			summary: "Gets a department",
@@ -236,7 +309,7 @@ export const pathHrDepartment = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "departmentUuid",
+					name: "uuid",
 					in: "path",
 					description: "Department to get",
 					required: true,
@@ -262,7 +335,7 @@ export const pathHrDepartment = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "departmentUuid",
+					name: "uuid",
 					in: "path",
 					description: "Department to update",
 					required: true,
@@ -299,7 +372,7 @@ export const pathHrDepartment = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "departmentUuid",
+					name: "uuid",
 					in: "path",
 					description: "Department to delete",
 					required: true,
@@ -338,11 +411,9 @@ export const pathHrDesignation = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-								properties: {
-									thing: {
-										$ref: "#/definitions/hr/designation",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/hr/designation",
 								},
 							},
 						},
@@ -372,11 +443,9 @@ export const pathHrDesignation = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/hr/designation",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/hr/designation",
 						},
 					},
 				},
@@ -386,7 +455,7 @@ export const pathHrDesignation = {
 			},
 		},
 	},
-	"hr/designation/{uuid}": {
+	"/hr/designation/{uuid}": {
 		get: {
 			tags: ["hr.designation"],
 			summary: "Gets a designation",
@@ -395,7 +464,7 @@ export const pathHrDesignation = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "designationUuid",
+					name: "uuid",
 					in: "path",
 					description: "Designation to get",
 					required: true,
@@ -421,7 +490,7 @@ export const pathHrDesignation = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "designationUuid",
+					name: "uuid",
 					in: "path",
 					description: "Designation to update",
 					required: true,
@@ -458,7 +527,7 @@ export const pathHrDesignation = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "designationUuid",
+					name: "uuid",
 					in: "path",
 					description: "Designation to delete",
 					required: true,

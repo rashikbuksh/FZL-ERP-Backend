@@ -25,12 +25,9 @@ export const pathDeliveryPackingList = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-
-								properties: {
-									thing: {
-										$ref: "#/definitions/delivery/packing_list",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/delivery/packing_list",
 								},
 							},
 						},
@@ -61,11 +58,9 @@ export const pathDeliveryPackingList = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/delivery/packing_list",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/delivery/packing_list",
 						},
 					},
 				},
@@ -84,7 +79,7 @@ export const pathDeliveryPackingList = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PackingListUuid",
+					name: "uuid",
 					in: "path",
 					description: " packing list to get",
 					required: true,
@@ -110,7 +105,7 @@ export const pathDeliveryPackingList = {
 			produces: "application/json",
 			parameters: [
 				{
-					name: "PackingListUuid",
+					name: "uuid",
 					in: "path",
 					description: " packing list to update",
 					required: true,
@@ -146,7 +141,7 @@ export const pathDeliveryPackingList = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PackingListUuid",
+					name: "uuid",
 					in: "path",
 					description: "packing list to delete",
 					required: true,
@@ -194,12 +189,9 @@ export const pathDeliveryPackingListEntry = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-
-								properties: {
-									thing: {
-										$ref: "#/definitions/delivery/packing_list_entry",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/delivery/packing_list_entry",
 								},
 							},
 						},
@@ -230,11 +222,9 @@ export const pathDeliveryPackingListEntry = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/delivery/packing_list_entry",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/delivery/packing_list_entry",
 						},
 					},
 				},
@@ -253,7 +243,7 @@ export const pathDeliveryPackingListEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PackingListEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: " packing list entry to get",
 					required: true,
@@ -279,7 +269,7 @@ export const pathDeliveryPackingListEntry = {
 			produces: "application/json",
 			parameters: [
 				{
-					name: "PackingListEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: " packing list entry to update",
 					required: true,
@@ -315,7 +305,7 @@ export const pathDeliveryPackingListEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "PackingListEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "packing list entry to delete",
 					required: true,
@@ -366,12 +356,9 @@ export const pathDeliveryChallan = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-
-								properties: {
-									thing: {
-										$ref: "#/definitions/delivery/challan",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/delivery/challan",
 								},
 							},
 						},
@@ -402,11 +389,9 @@ export const pathDeliveryChallan = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/delivery/challan",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/delivery/challan",
 						},
 					},
 				},
@@ -425,7 +410,7 @@ export const pathDeliveryChallan = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "ChallanUuid",
+					name: "uuid",
 					in: "path",
 					description: " challan to get",
 					required: true,
@@ -451,7 +436,7 @@ export const pathDeliveryChallan = {
 			produces: "application/json",
 			parameters: [
 				{
-					name: "ChallanUuid",
+					name: "uuid",
 					in: "path",
 					description: " challan to update",
 					required: true,
@@ -487,7 +472,7 @@ export const pathDeliveryChallan = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "ChallanUuid",
+					name: "uuid",
 					in: "path",
 					description: "challan to delete",
 					required: true,
@@ -535,12 +520,9 @@ export const pathDeliveryChallanEntry = {
 					content: {
 						"application/json": {
 							schema: {
-								type: "object",
-
-								properties: {
-									thing: {
-										$ref: "#/definitions/delivery/challan_entry",
-									},
+								type: "array",
+								items: {
+									$ref: "#/definitions/delivery/challan_entry",
 								},
 							},
 						},
@@ -571,11 +553,9 @@ export const pathDeliveryChallanEntry = {
 				200: {
 					description: "successful operation",
 					schema: {
-						type: "object",
-						properties: {
-							thing: {
-								$ref: "#/definitions/delivery/challan_entry",
-							},
+						type: "array",
+						items: {
+							$ref: "#/definitions/delivery/challan_entry",
 						},
 					},
 				},
@@ -594,7 +574,7 @@ export const pathDeliveryChallanEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "ChallanEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: " challan entry to get",
 					required: true,
@@ -620,7 +600,7 @@ export const pathDeliveryChallanEntry = {
 			produces: "application/json",
 			parameters: [
 				{
-					name: "ChallanEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: " challan entry to update",
 					required: true,
@@ -656,7 +636,7 @@ export const pathDeliveryChallanEntry = {
 			produces: ["application/json"],
 			parameters: [
 				{
-					name: "ChallanEntryUuid",
+					name: "uuid",
 					in: "path",
 					description: "challan entry to delete",
 					required: true,
