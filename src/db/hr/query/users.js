@@ -119,3 +119,16 @@ export async function loginUser(req, res, next) {
 		// handleResponse(userPromise, res, next);
 	});
 }
+
+export async function selectUsersAccessPages(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const userPromise = db
+		.select({
+			can_access: users.can_access,
+		})
+		.from(users)
+		.where(eq(users.uuid, req.params.uuid));
+
+	handleResponse(userPromise, res, next);
+}

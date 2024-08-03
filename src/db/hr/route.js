@@ -162,9 +162,83 @@ export const pathHrUser = {
 			},
 		},
 	},
+	"/hr/user/login": {
+		post: {
+			tags: ["hr.user"],
+			summary: "validate a user",
+			description: "Validate user credentials",
+			operationId: "validateUser",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			requestBody: {
+				content: {
+					"application/json": {
+						schema: {
+							type: "object",
+							properties: {
+								email: {
+									type: "string",
+									description: "User's email address",
+									example: "admin@fzl.com",
+								},
+								pass: {
+									type: "string",
+									description: "User's password",
+									example: "1234",
+								},
+							},
+							required: ["email", "pass"],
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: "successful operation",
+				},
+				405: {
+					description: "Invalid input",
+				},
+			},
+		},
+	},
+	"/hr/user/can-access/{uuid}": {
+		get: {
+			tags: ["hr.user"],
+			summary: "Gets a user access",
+			description: "",
+			// operationId: "deletePet",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "uuid",
+					in: "path",
+					description: "User access to get",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+			],
+			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						$ref: "#/definitions/hr/user",
+					},
+				},
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "User access not found",
+				},
+			},
+		},
+	},
 };
 
 hrRouter.post("/user/login", userOperations.loginUser);
+hrRouter.get("/user/can-access/:uuid", userOperations.selectUsersAccessPages);
 hrRouter.get("/user", userOperations.selectAll);
 hrRouter.get("/user/:uuid", validateUuidParam(), userOperations.select);
 hrRouter.post("/user", userOperations.insert);
@@ -316,46 +390,6 @@ export const pathHrDepartment = {
 				},
 				404: {
 					description: "Department not found",
-				},
-			},
-		},
-	},
-	"/hr/user/login": {
-		post: {
-			tags: ["hr.user"],
-			summary: "validate a user",
-			description: "Validate user credentials",
-			operationId: "validateUser",
-			consumes: ["application/json"],
-			produces: ["application/json"],
-			requestBody: {
-				content: {
-					"application/json": {
-						schema: {
-							type: "object",
-							properties: {
-								email: {
-									type: "string",
-									description: "User's email address",
-									example: "admin@fzl.com",
-								},
-								pass: {
-									type: "string",
-									description: "User's password",
-									example: "1234",
-								},
-							},
-							required: ["email", "pass"],
-						},
-					},
-				},
-			},
-			responses: {
-				200: {
-					description: "successful operation",
-				},
-				405: {
-					description: "Invalid input",
 				},
 			},
 		},
