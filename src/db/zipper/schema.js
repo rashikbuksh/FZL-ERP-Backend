@@ -29,7 +29,7 @@ export const sliderStartingSectionEnum = zipper.enum(
 
 export const order_info = zipper.table("order_info", {
 	uuid: uuid("uuid").primaryKey(),
-	id: serial("id").default(null), // for order number serial if needed
+	id: serial("id"), // for order number serial if needed
 	reference_order_info_uuid: uuid("reference_order_info_uuid")
 		.references(() => order_info.uuid)
 		.default(null),

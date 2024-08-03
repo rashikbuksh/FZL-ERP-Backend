@@ -41,8 +41,7 @@ export const pathHrUser = {
 				{
 					in: "body",
 					name: "body",
-					description:
-						"User object that needs to be added to the hr.user",
+					description: "User object that needs to be added to the hr.user",
 					required: true,
 					schema: {
 						$ref: "#/definitions/hr/user",
@@ -116,8 +115,7 @@ export const pathHrUser = {
 				{
 					in: "body",
 					name: "body",
-					description:
-						"User object that needs to be updated to the hr.user",
+					description: "User object that needs to be updated to the hr.user",
 					required: true,
 					schema: {
 						$ref: "#/definitions/hr/user",
@@ -279,8 +277,7 @@ export const pathHrDepartment = {
 				{
 					in: "body",
 					name: "body",
-					description:
-						"Department object that needs to be added to the hr.department",
+					description: "Department object that needs to be added to the hr.department",
 					required: true,
 					schema: {
 						$ref: "#/definitions/hr/department",
@@ -348,8 +345,7 @@ export const pathHrDepartment = {
 				{
 					in: "body",
 					name: "body",
-					description:
-						"Department object that needs to be updated to the hr.department",
+					description: "Department object that needs to be updated to the hr.department",
 					required: true,
 					schema: {
 						$ref: "#/definitions/hr/department",
@@ -397,18 +393,10 @@ export const pathHrDepartment = {
 };
 
 hrRouter.get("/department", departmentOperations.selectAll);
-hrRouter.get(
-	"/department/:uuid",
-	validateUuidParam(),
-	departmentOperations.select
-);
+hrRouter.get("/department/:uuid", validateUuidParam(), departmentOperations.select);
 hrRouter.post("/department", departmentOperations.insert);
 hrRouter.put("/department/:uuid", departmentOperations.update);
-hrRouter.delete(
-	"/department/:uuid",
-	validateUuidParam(),
-	departmentOperations.remove
-);
+hrRouter.delete("/department/:uuid", validateUuidParam(), departmentOperations.remove);
 
 // designation routes
 export const pathHrDesignation = {
@@ -444,8 +432,7 @@ export const pathHrDesignation = {
 				{
 					in: "body",
 					name: "body",
-					description:
-						"Designation object that needs to be added to the hr.designation",
+					description: "Designation object that needs to be added to the hr.designation",
 					required: true,
 					schema: {
 						$ref: "#/definitions/hr/designation",
@@ -513,8 +500,7 @@ export const pathHrDesignation = {
 				{
 					in: "body",
 					name: "body",
-					description:
-						"Designation object that needs to be updated to the hr.designation",
+					description: "Designation object that needs to be updated to the hr.designation",
 					required: true,
 					schema: {
 						$ref: "#/definitions/hr/designation",
@@ -562,18 +548,10 @@ export const pathHrDesignation = {
 };
 
 hrRouter.get("/designation", designationOperations.selectAll);
-hrRouter.get(
-	"/designation/:uuid",
-	validateUuidParam(),
-	designationOperations.select
-);
+hrRouter.get("/designation/:uuid", validateUuidParam(), designationOperations.select);
 hrRouter.post("/designation", designationOperations.insert);
 hrRouter.put("/designation/:uuid", designationOperations.update);
-hrRouter.delete(
-	"/designation/:uuid",
-	validateUuidParam(),
-	designationOperations.remove
-);
+hrRouter.delete("/designation/:uuid", validateUuidParam(), designationOperations.remove);
 
 export const pathHr = {
 	...pathHrUser,
