@@ -41,7 +41,7 @@ export const pathHrUser = {
 				{
 					in: "body",
 					name: "body",
-					description: "User object that needs to be added to the hr.user", // resolved
+					description: "User object that needs to be added to the hr.user",
 					required: true,
 					schema: {
 						$ref: "#/definitions/hr/user",
