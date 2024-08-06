@@ -12,7 +12,7 @@ const publicRouter = Router();
 
 // buyer
 const pathPublicBuyer = {
-	"/buyer": {
+	"/public/buyer": {
 		get: {
 			summary: "Get all buyers",
 			tags: ["public.buyer"],
