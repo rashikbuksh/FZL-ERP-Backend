@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
+import { eq, lt } from "drizzle-orm";
 import { handleResponse, validateRequest } from "../../../util/index.js";
 import db from "../../index.js";
-import { stock } from "../schema.js";
+import { info, stock } from "../schema.js";
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -37,11 +37,27 @@ export async function selectAll(req, res, next) {
 }
 
 export async function select(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
+	// if (!(await validateRequest(req, next))) return;
 
 	const stockPromise = db
 		.select()
 		.from(stock)
 		.where(eq(stock.uuid, req.params.uuid));
+	handleResponse(stockPromise, res, next);
+}
+
+export async function selectMaterialBelowThreshold(req, res, next) {
+	const stockPromise = db
+		.select({
+			uuid: info.uuid,
+			name: info.name,
+			stock: stock.stock,
+			threshold: info.threshold,
+			unit: info.unit,
+		})
+		.from(stock)
+		.innerJoin(info, eq(stock.material_uuid, info.uuid))
+		.where(lt(stock.stock, info.threshold));
+
 	handleResponse(stockPromise, res, next);
 }

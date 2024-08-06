@@ -8,6 +8,46 @@ const hrRouter = Router();
 
 // user routes
 export const pathHrUser = {
+	"/hr/user/login": {
+		post: {
+			tags: ["hr.user"],
+			summary: "validate a user",
+			description: "Validate user credentials",
+			operationId: "validateUser",
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			requestBody: {
+				content: {
+					"application/json": {
+						schema: {
+							type: "object",
+							properties: {
+								email: {
+									type: "string",
+									description: "User's email address",
+									example: "admin@fzl.com",
+								},
+								pass: {
+									type: "string",
+									description: "User's password",
+									example: "1234",
+								},
+							},
+							required: ["email", "pass"],
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: "successful operation",
+				},
+				405: {
+					description: "Invalid input",
+				},
+			},
+		},
+	},
 	"/hr/user": {
 		get: {
 			tags: ["hr.user"],
@@ -158,46 +198,6 @@ export const pathHrUser = {
 				},
 				404: {
 					description: "User not found",
-				},
-			},
-		},
-	},
-	"/hr/user/login": {
-		post: {
-			tags: ["hr.user"],
-			summary: "validate a user",
-			description: "Validate user credentials",
-			operationId: "validateUser",
-			consumes: ["application/json"],
-			produces: ["application/json"],
-			requestBody: {
-				content: {
-					"application/json": {
-						schema: {
-							type: "object",
-							properties: {
-								email: {
-									type: "string",
-									description: "User's email address",
-									example: "admin@fzl.com",
-								},
-								pass: {
-									type: "string",
-									description: "User's password",
-									example: "1234",
-								},
-							},
-							required: ["email", "pass"],
-						},
-					},
-				},
-			},
-			responses: {
-				200: {
-					description: "successful operation",
-				},
-				405: {
-					description: "Invalid input",
 				},
 			},
 		},

@@ -474,6 +474,28 @@ export const pathMaterialStock = {
 			},
 		},
 	},
+	"/material/stock-threshold": {
+		get: {
+			tags: ["material.stock"],
+			summary: "Get all material stock below threshold",
+			description: "Get all material stock below threshold",
+			responses: {
+				200: {
+					description: "Returns all material stock below threshold",
+					content: {
+						"application/json": {
+							schema: {
+								type: "array",
+								items: {
+									$ref: "#/definitions/material/stock",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 materialRouter.get("/stock", stockOperations.selectAll);
@@ -484,6 +506,10 @@ materialRouter.delete(
 	"/stock/:uuid",
 	validateUuidParam(),
 	stockOperations.remove
+);
+materialRouter.get(
+	"/stock-threshold",
+	stockOperations.selectMaterialBelowThreshold
 );
 
 // trx routes
@@ -595,6 +621,12 @@ export const pathMaterialTrx = {
 				},
 			],
 			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						$ref: "#/definitions/material/trx",
+					},
+				},
 				400: {
 					description: "Invalid UUID supplied",
 				},
@@ -631,6 +663,46 @@ export const pathMaterialTrx = {
 			},
 		},
 	},
+	"/material/trx/by/{material_uuid}/{trx_to}": {
+		get: {
+			tags: ["material.trx"],
+			summary: "Get selected material trx by material uuid and trx_to",
+			description:
+				"Get selected material trx by material uuid and trx_to",
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "material_uuid",
+					in: "path",
+					description: " material uuid to get",
+					required: true,
+					type: "string",
+					format: "uuid",
+				},
+				{
+					name: "trx_to",
+					in: "path",
+					description: " trx_to to get",
+					required: true,
+					type: "string",
+				},
+			],
+			responses: {
+				200: {
+					description: "successful operation",
+					schema: {
+						$ref: "#/definitions/material/trx",
+					},
+				},
+				400: {
+					description: "Invalid UUID supplied",
+				},
+				404: {
+					description: "Material trx not found",
+				},
+			},
+		},
+	},
 };
 
 materialRouter.get("/trx", trxOperations.selectAll);
@@ -638,6 +710,11 @@ materialRouter.get("/trx/:uuid", validateUuidParam(), trxOperations.select);
 materialRouter.post("/trx", trxOperations.insert);
 materialRouter.put("/trx/:uuid", trxOperations.update);
 materialRouter.delete("/trx/:uuid", validateUuidParam(), trxOperations.remove);
+materialRouter.get(
+	"/trx/by/:material_uuid/:trx_to",
+	validateUuidParam(),
+	trxOperations.selectMaterialTrxByMaterialTrxTo
+);
 
 // type routes
 export const pathMaterialType = {

@@ -78,8 +78,6 @@ export async function loginUser(req, res, next) {
 
 	const USER = await userPromise;
 
-	console.log(USER[0], "USER");
-
 	if (USER[0].length === 0) {
 		return next(new CustomError("User not found", 404));
 	}
