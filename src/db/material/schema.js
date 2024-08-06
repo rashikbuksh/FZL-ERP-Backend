@@ -67,8 +67,8 @@ export const defMaterialType = {
 
 export const info = material.table("info", {
 	uuid: uuid("uuid").primaryKey().unique(),
-	section_uuid: uuid("section_uuid").references(() => section.uuid),
-	type_uuid: uuid("type_uuid").references(() => type.uuid),
+	section_uuid: uuid("section_uuid"),
+	type_uuid: uuid("type_uuid"),
 	name: text("name").notNull(),
 	short_name: text("short_name").default(null),
 	unit: text("unit").notNull(),
@@ -141,7 +141,7 @@ export const defMaterialInfo = {
 
 export const stock = material.table("stock", {
 	uuid: uuid("uuid").primaryKey(),
-	material_uuid: uuid("material_uuid").references(() => info.uuid),
+	material_uuid: uuid("material_uuid"),
 	stock: decimal("stock", {
 		precision: 20,
 		scale: 4,
@@ -385,14 +385,13 @@ export const defMaterialStock = {
 export const trx = material.table("trx", {
 	uuid: uuid("uuid").primaryKey(),
 	material_uuid: uuid("material_uuid")
-		.references(() => info.uuid)
 		.notNull(),
 	trx_to: text("trx_to").notNull(),
 	trx_quantity: decimal("trx_quantity", {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
+	created_by: uuid("created_by"),
 	created_at: timestamp("created_at").notNull(),
 	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
@@ -446,7 +445,6 @@ export const defMaterialTrx = {
 export const used = material.table("used", {
 	uuid: uuid("uuid").primaryKey(),
 	material_uuid: uuid("material_uuid")
-		.references(() => info.uuid)
 		.notNull(),
 	section: text("section").notNull(),
 	used_quantity: decimal("used_quantity", {
@@ -459,7 +457,7 @@ export const used = material.table("used", {
 	})
 		.notNull()
 		.default(0.0),
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
+	created_by: uuid("created_by"),
 	created_at: timestamp("created_at").notNull(),
 	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
@@ -513,16 +511,14 @@ export const defMaterialUsed = {
 //stock to sfg table
 export const stock_to_sfg = material.table("stock_to_sfg", {
 	uuid: uuid("uuid").primaryKey(),
-	material_uuid: uuid("material_uuid").references(() => info.uuid),
-	order_entry_uuid: uuid("order_entry_uuid").references(
-		() => zipperSchema.order_entry.uuid
-	),
+	material_uuid: uuid("material_uuid"),
+	order_entry_uuid: uuid("order_entry_uuid"),
 	trx_to: text("trx_to").notNull(),
 	trx_quantity: decimal("trx_quantity", {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
+	created_by: uuid("created_by"),
 	created_at: timestamp("created_at").notNull(),
 	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),

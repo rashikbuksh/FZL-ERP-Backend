@@ -6,361 +6,342 @@ import {
 	text,
 	timestamp,
 	uuid,
-} from "drizzle-orm/pg-core";
-import * as hrSchema from "../hr/schema.js";
-import * as publicSchema from "../public/schema.js";
-import * as zipperSchema from "../zipper/schema.js";
+} from 'drizzle-orm/pg-core';
+import { defaultUUID, uuid_primary } from '../variables.js';
 
-const commercial = pgSchema("commercial");
+import * as hrSchema from '../hr/schema.js';
+import * as publicSchema from '../public/schema.js';
+import * as zipperSchema from '../zipper/schema.js';
 
-export const bank = commercial.table("bank", {
-	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull(),
-	swift_code: text("swift_code").notNull(),
-	address: text("address").default(null),
-	policy: text("policy").default(null),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+const commercial = pgSchema('commercial');
+
+export const bank = commercial.table('bank', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	swift_code: text('swift_code').notNull(),
+	address: text('address').default(null),
+	policy: text('policy').default(null),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defCommercialBank = {
-	type: "object",
-	required: ["uuid", "name", "swift_code", "created_at"],
+	type: 'object',
+	required: ['uuid', 'name', 'swift_code', 'created_at'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		swift_code: {
-			type: "string",
+			type: 'string',
 		},
 		address: {
-			type: "string",
+			type: 'string',
 		},
 		policy: {
-			type: "string",
+			type: 'string',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Commercial/Bank",
+		name: 'Commercial/Bank',
 	},
 };
 
-export const lc = commercial.table("lc", {
-	uuid: uuid("uuid").primaryKey(),
-	party_uuid: uuid("party_uuid").references(() => publicSchema.party.uuid),
-	file_no: text("file_no").notNull(),
-	lc_number: text("lc_number").notNull(),
-	lc_date: text("lc_date").notNull(),
-	payment_value: decimal("payment_value", {
+export const lc = commercial.table('lc', {
+	uuid: uuid_primary,
+	party_uuid: defaultUUID('party_uuid'),
+	file_no: text('file_no').notNull(),
+	lc_number: text('lc_number').notNull(),
+	lc_date: text('lc_date').notNull(),
+	payment_value: decimal('payment_value', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	payment_date: timestamp("payment_date").default(null),
-	ldbc_fdbc: text("ldbc_fdbc").notNull(),
-	acceptance_date: timestamp("acceptance_date").default(null),
-	maturity_date: timestamp("maturity_date").default(null),
-	commercial_executive: text("commercial_executive").notNull(),
-	party_bank: text("party_bank").notNull(),
-	production_complete: integer("production_complete").default(0),
-	lc_cancel: integer("lc_cancel").default(0),
-	handover_date: timestamp("handover_date").default(null),
-	shipment_date: timestamp("shipment_date").default(null),
-	expiry_date: timestamp("expiry_date").default(null),
-	ud_no: text("ud_no").default(null),
-	ud_received: text("ud_received").default(null),
-	at_sight: text("at_sight").notNull(),
-	amd_date: timestamp("amd_date").default(null),
-	amd_count: integer("amd_count").default(0),
-	problematical: integer("problematical").default(0),
-	epz: integer("epz").default(0),
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+	payment_date: timestamp('payment_date').default(null),
+	ldbc_fdbc: text('ldbc_fdbc').notNull(),
+	acceptance_date: timestamp('acceptance_date').default(null),
+	maturity_date: timestamp('maturity_date').default(null),
+	commercial_executive: text('commercial_executive').notNull(),
+	party_bank: text('party_bank').notNull(),
+	production_complete: integer('production_complete').default(0),
+	lc_cancel: integer('lc_cancel').default(0),
+	handover_date: timestamp('handover_date').default(null),
+	shipment_date: timestamp('shipment_date').default(null),
+	expiry_date: timestamp('expiry_date').default(null),
+	ud_no: text('ud_no').default(null),
+	ud_received: text('ud_received').default(null),
+	at_sight: text('at_sight').notNull(),
+	amd_date: timestamp('amd_date').default(null),
+	amd_count: integer('amd_count').default(0),
+	problematical: integer('problematical').default(0),
+	epz: integer('epz').default(0),
+	created_by: defaultUUID('created_by'),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defCommercialLc = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"party_uuid",
-		"file_no",
-		"lc_number",
-		"lc_date",
-		"ldbc_fdbc",
-		"commercial_executive",
-		"party_bank",
-		"expiry_date",
-		"at_sight",
-		"created_at",
-		"created_by",
+		'uuid',
+		'party_uuid',
+		'file_no',
+		'lc_number',
+		'lc_date',
+		'ldbc_fdbc',
+		'commercial_executive',
+		'party_bank',
+		'expiry_date',
+		'at_sight',
+		'created_at',
+		'created_by',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		party_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		file_no: {
-			type: "string",
+			type: 'string',
 		},
 		lc_number: {
-			type: "string",
+			type: 'string',
 		},
 		lc_date: {
-			type: "string",
+			type: 'string',
 		},
 		payment_value: {
-			type: "number",
+			type: 'number',
 		},
 		payment_date: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		ldbc_fdbc: {
-			type: "string",
+			type: 'string',
 		},
 		acceptance_date: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		maturity_date: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		commercial_executive: {
-			type: "string",
+			type: 'string',
 		},
 		party_bank: {
-			type: "string",
+			type: 'string',
 		},
 		production_complete: {
-			type: "integer",
+			type: 'integer',
 		},
 		lc_cancel: {
-			type: "integer",
+			type: 'integer',
 		},
 		handover_date: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		shipment_date: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		expiry_date: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		ud_no: {
-			type: "string",
+			type: 'string',
 		},
 		ud_received: {
-			type: "string",
+			type: 'string',
 		},
 		at_sight: {
-			type: "string",
+			type: 'string',
 		},
 		amd_date: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		amd_count: {
-			type: "integer",
+			type: 'integer',
 		},
 		problematical: {
-			type: "integer",
+			type: 'integer',
 		},
 		epz: {
-			type: "integer",
+			type: 'integer',
 		},
 		created_by: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Commercial/Lc",
+		name: 'Commercial/Lc',
 	},
 };
 
-export const pi = commercial.table("pi", {
-	uuid: uuid("uuid").primaryKey(),
-	lc_uuid: uuid("lc_uuid").references(() => lc.uuid),
-	order_info_ids: text("order_info_ids").notNull(),
-	marketing_uuid: uuid("marketing_uuid").references(
-		() => publicSchema.marketing.uuid
-	),
-	party_uuid: uuid("party_uuid").references(() => publicSchema.party.uuid),
-	merchandiser_uuid: uuid("merchandiser_uuid").references(
-		() => publicSchema.merchandiser.uuid
-	),
-	factory_uuid: uuid("factory_uuid").references(
-		() => publicSchema.factory.uuid
-	),
-	bank_uuid: uuid("bank_uuid").references(() => bank.uuid),
-	validity: integer("validity").notNull(), // need review
-	payment: integer("payment").notNull(), // need review
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+export const pi = commercial.table('pi', {
+	uuid: uuid_primary,
+	lc_uuid: defaultUUID('lc_uuid'),
+	order_info_ids: text('order_info_ids').notNull(),
+	marketing_uuid: defaultUUID('marketing_uuid'),
+	party_uuid: defaultUUID('party_uuid'),
+	merchandiser_uuid: defaultUUID('merchandiser_uuid'),
+	factory_uuid: defaultUUID('factory_uuid'),
+	bank_uuid: defaultUUID('bank_uuid'),
+	validity: integer('validity').notNull(), // need review
+	payment: integer('payment').notNull(), // need review
+	created_by: defaultUUID('created_by'),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defCommercialPi = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"lc_uuid",
-		"order_info_ids",
-		"marketing_uuid",
-		"party_uuid",
-		"merchandiser_uuid",
-		"factory_uuid",
-		"bank_uuid",
-		"validity",
-		"payment",
-		"created_by",
-		"created_at",
+		'uuid',
+		'lc_uuid',
+		'order_info_ids',
+		'marketing_uuid',
+		'party_uuid',
+		'merchandiser_uuid',
+		'factory_uuid',
+		'bank_uuid',
+		'validity',
+		'payment',
+		'created_by',
+		'created_at',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		lc_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		order_info_ids: {
-			type: "array",
+			type: 'array',
 			items: {
-				type: "string",
+				type: 'string',
 			},
 		},
 		marketing_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		party_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		merchandiser_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		factory_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		bank_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		validity: {
-			type: "integer",
+			type: 'integer',
 		},
 		payment: {
-			type: "integer",
+			type: 'integer',
 		},
 		created_by: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Commercial/Pi",
+		name: 'Commercial/Pi',
 	},
 };
 
-export const pi_entry = commercial.table("pi_entry", {
-	uuid: uuid("uuid").primaryKey(),
-	pi_uuid: uuid("pi_uuid").references(() => pi.uuid),
-	sfg_uuid: uuid("sfg_uuid").references(() => zipperSchema.sfg.uuid),
-	pi_quantity: decimal("pi_quantity", {
+export const pi_entry = commercial.table('pi_entry', {
+	uuid: uuid_primary,
+	pi_uuid: defaultUUID('pi_uuid'),
+	sfg_uuid: defaultUUID('sfg_uuid'),
+	pi_quantity: decimal('pi_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defCommercialPiEntry = {
-	type: "object",
-	required: ["uuid", "pi_uuid", "sfg_uuid", "pi_quantity", "created_at"],
+	type: 'object',
+	required: ['uuid', 'pi_uuid', 'sfg_uuid', 'pi_quantity', 'created_at'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		pi_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		sfg_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		pi_quantity: {
-			type: "number",
+			type: 'number',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Commercial/PiEntry",
+		name: 'Commercial/PiEntry',
 	},
 };
 
@@ -375,35 +356,35 @@ export const defCommercial = {
 
 export const tagCommercial = [
 	{
-		name: "commercial.bank",
-		description: "Everything about commercial bank",
+		name: 'commercial.bank',
+		description: 'Everything about commercial bank',
 		externalDocs: {
-			description: "Find out more",
-			url: "http://swagger.io",
+			description: 'Find out more',
+			url: 'http://swagger.io',
 		},
 	},
 	{
-		name: "commercial.lc",
-		description: "Operations about commercial lc",
+		name: 'commercial.lc',
+		description: 'Operations about commercial lc',
 		externalDocs: {
-			description: "Find out more",
-			url: "http://swagger.io",
+			description: 'Find out more',
+			url: 'http://swagger.io',
 		},
 	},
 	{
-		name: "commercial.pi",
-		description: "Operations about commercial pi",
+		name: 'commercial.pi',
+		description: 'Operations about commercial pi',
 		externalDocs: {
-			description: "Find out more",
-			url: "http://swagger.io",
+			description: 'Find out more',
+			url: 'http://swagger.io',
 		},
 	},
 	{
-		name: "commercial.pi_entry",
-		description: "Operations about commercial pi_entry",
+		name: 'commercial.pi_entry',
+		description: 'Operations about commercial pi_entry',
 		externalDocs: {
-			description: "Find out more",
-			url: "http://swagger.io",
+			description: 'Find out more',
+			url: 'http://swagger.io',
 		},
 	},
 ];

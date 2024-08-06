@@ -1,13 +1,7 @@
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
-
-const defaultUUID = (column = 'uuid') =>
-	text(column, {
-		length: 15,
-	});
-
-const uuid_primary = defaultUUID().primaryKey();
 
 export const buyer = pgTable('buyer', {
 	uuid: uuid_primary,
@@ -39,7 +33,7 @@ export const defPublicBuyer = {
 };
 
 export const party = pgTable('party', {
-	uuid: uuid('uuid').primaryKey(),
+	uuid: uuid_primary,
 	name: text('name').notNull(),
 	short_name: text('short_name').notNull(),
 	remarks: text('remarks').notNull(),
@@ -68,10 +62,10 @@ export const defPublicParty = {
 };
 
 export const marketing = pgTable('marketing', {
-	uuid: uuid('uuid').primaryKey(),
+	uuid: uuid_primary,
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
-	user_uuid: uuid('user_uuid').references(() => hrSchema.users.uuid),
+	user_uuid: uuid('user_uuid'),
 	remarks: text('remarks').default(null),
 });
 
@@ -90,7 +84,6 @@ export const defPublicMarketing = {
 		},
 		user_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		remarks: {
 			type: 'string',
@@ -102,8 +95,8 @@ export const defPublicMarketing = {
 };
 
 export const merchandiser = pgTable('merchandiser', {
-	uuid: uuid('uuid').primaryKey(),
-	party_uuid: defaultUUID('party_uuid'),
+	uuid: uuid_primary,
+	party_uuid: defaultUUID('party_uuid').references(() => party.uuid),
 	name: text('name').notNull(),
 	email: text('email').default(null),
 	phone: text('phone').default(null),
@@ -121,7 +114,6 @@ export const defPublicMerchandiser = {
 		},
 		party_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		name: {
 			type: 'string',
@@ -150,8 +142,8 @@ export const defPublicMerchandiser = {
 };
 
 export const factory = pgTable('factory', {
-	uuid: uuid('uuid').primaryKey(),
-	party_uuid: defaultUUID('party_uuid'),
+	uuid: uuid_primary,
+	party_uuid: defaultUUID('party_uuid').references(() => party.uuid),
 	name: text('name').notNull(),
 	phone: text('phone').default(null),
 	address: text('address').default(null),
@@ -223,12 +215,12 @@ export const defPublicSection = {
 };
 
 export const properties = pgTable('properties', {
-	uuid: uuid('uuid').primaryKey(),
+	uuid: uuid_primary,
 	item_for: text('item_for').notNull(),
 	type: text('type').notNull().unique(),
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
-	created_by: uuid('created_by').references(() => hrSchema.users.uuid),
+	created_by: defaultUUID('created_by'),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -255,7 +247,6 @@ export const defPublicProperties = {
 		},
 		created_by: {
 			type: 'string',
-			format: 'uuid',
 		},
 		created_at: {
 			type: 'string',

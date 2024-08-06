@@ -17,9 +17,7 @@ export const info = lab_dip.table("info", {
 	uuid: uuid("uuid").primaryKey(),
 	id: serial("id").notNull(),
 	name: text("name").notNull(),
-	order_info_uuid: uuid("order_info_uuid").references(
-		() => zipperSchema.order_info.uuid
-	),
+	order_info_uuid: uuid("order_info_uuid"),
 	lab_status: text("lab_status").default(null),
 	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
 	created_at: timestamp("created_at").notNull(),
@@ -33,7 +31,6 @@ export const defLabDipInfo = {
 	properties: {
 		uuid: {
 			type: "string",
-			format: "uuid",
 		},
 		id: {
 			type: "integer",
@@ -43,7 +40,6 @@ export const defLabDipInfo = {
 		},
 		order_info_uuid: {
 			type: "string",
-			format: "uuid",
 		},
 		lab_status: {
 			type: "string",
