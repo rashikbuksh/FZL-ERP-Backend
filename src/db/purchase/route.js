@@ -1,28 +1,28 @@
-import { Router } from "express";
-import { validateUuidParam } from "../../lib/validator.js";
-import * as descriptionOperations from "./query/description.js";
-import * as entryOperations from "./query/entry.js";
-import * as vendorOperations from "./query/vendor.js";
+import { Router } from 'express';
+import { validateUuidParam } from '../../lib/validator.js';
+import * as descriptionOperations from './query/description.js';
+import * as entryOperations from './query/entry.js';
+import * as vendorOperations from './query/vendor.js';
 
 const purchaseRouter = Router();
 
 // Vendor
 const pathPurchaseVendor = {
-	"/purchase/vendor": {
+	'/purchase/vendor': {
 		get: {
-			summary: "Get all vendors",
-			tags: ["purchase.vendor"],
-			operationId: "getVendors",
+			summary: 'Get all vendors',
+			tags: ['purchase.vendor'],
+			operationId: 'getVendors',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/purchase/vendor",
+									$ref: '#/definitions/purchase/vendor',
 								},
 							},
 						},
@@ -31,49 +31,49 @@ const pathPurchaseVendor = {
 			},
 		},
 		post: {
-			summary: "Create a vendor",
-			tags: ["purchase.vendor"],
-			operationId: "createVendor",
+			summary: 'Create a vendor',
+			tags: ['purchase.vendor'],
+			operationId: 'createVendor',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/purchase/vendor",
+							$ref: '#/definitions/purchase/vendor',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/purchase/vendor/{uuid}": {
+	'/purchase/vendor/{uuid}': {
 		get: {
-			summary: "Get a vendor",
-			tags: ["purchase.vendor"],
-			operationId: "getVendor",
+			summary: 'Get a vendor',
+			tags: ['purchase.vendor'],
+			operationId: 'getVendor',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/purchase/vendor",
+								$ref: '#/definitions/purchase/vendor',
 							},
 						},
 					},
@@ -81,53 +81,53 @@ const pathPurchaseVendor = {
 			},
 		},
 		put: {
-			summary: "Update a vendor",
-			tags: ["purchase.vendor"],
-			operationId: "updateVendor",
+			summary: 'Update a vendor',
+			tags: ['purchase.vendor'],
+			operationId: 'updateVendor',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/purchase/vendor",
+							$ref: '#/definitions/purchase/vendor',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete a vendor",
-			tags: ["purchase.vendor"],
-			operationId: "deleteVendor",
+			summary: 'Delete a vendor',
+			tags: ['purchase.vendor'],
+			operationId: 'deleteVendor',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -135,38 +135,38 @@ const pathPurchaseVendor = {
 };
 
 // Vendor routes
-purchaseRouter.get("/vendor", vendorOperations.selectAll);
+purchaseRouter.get('/vendor', vendorOperations.selectAll);
 purchaseRouter.get(
-	"/vendor/:uuid",
-	validateUuidParam(),
+	'/vendor/:uuid',
+
 	vendorOperations.select
 );
-purchaseRouter.post("/vendor", vendorOperations.insert);
-purchaseRouter.put("/vendor/:uuid", vendorOperations.update);
+purchaseRouter.post('/vendor', vendorOperations.insert);
+purchaseRouter.put('/vendor/:uuid', vendorOperations.update);
 purchaseRouter.delete(
-	"/vendor/:uuid",
-	validateUuidParam(),
+	'/vendor/:uuid',
+
 	vendorOperations.remove
 );
 
 // Description
 
 const pathPurchaseDescription = {
-	"/purchase/description": {
+	'/purchase/description': {
 		get: {
-			summary: "Get all descriptions",
-			tags: ["purchase.description"],
-			operationId: "getDescriptions",
+			summary: 'Get all descriptions',
+			tags: ['purchase.description'],
+			operationId: 'getDescriptions',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/purchase/description",
+									$ref: '#/definitions/purchase/description',
 								},
 							},
 						},
@@ -175,49 +175,49 @@ const pathPurchaseDescription = {
 			},
 		},
 		post: {
-			summary: "Create a description",
-			tags: ["purchase.description"],
-			operationId: "createDescription",
+			summary: 'Create a description',
+			tags: ['purchase.description'],
+			operationId: 'createDescription',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/purchase/description",
+							$ref: '#/definitions/purchase/description',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/purchase/description/{uuid}": {
+	'/purchase/description/{uuid}': {
 		get: {
-			summary: "Get a description",
-			tags: ["purchase.description"],
-			operationId: "getDescription",
+			summary: 'Get a description',
+			tags: ['purchase.description'],
+			operationId: 'getDescription',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/purchase/description",
+								$ref: '#/definitions/purchase/description',
 							},
 						},
 					},
@@ -225,53 +225,53 @@ const pathPurchaseDescription = {
 			},
 		},
 		put: {
-			summary: "Update a description",
-			tags: ["purchase.description"],
-			operationId: "updateDescription",
+			summary: 'Update a description',
+			tags: ['purchase.description'],
+			operationId: 'updateDescription',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/purchase/description",
+							$ref: '#/definitions/purchase/description',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete a description",
-			tags: ["purchase.description"],
-			operationId: "deleteDescription",
+			summary: 'Delete a description',
+			tags: ['purchase.description'],
+			operationId: 'deleteDescription',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -279,39 +279,39 @@ const pathPurchaseDescription = {
 };
 
 // Description routes
-purchaseRouter.get("/description", descriptionOperations.selectAll);
+purchaseRouter.get('/description', descriptionOperations.selectAll);
 purchaseRouter.get(
-	"/description/:uuid",
-	validateUuidParam(),
+	'/description/:uuid',
+
 	descriptionOperations.select
 );
-purchaseRouter.post("/description", descriptionOperations.insert);
-purchaseRouter.put("/description/:uuid", descriptionOperations.update);
+purchaseRouter.post('/description', descriptionOperations.insert);
+purchaseRouter.put('/description/:uuid', descriptionOperations.update);
 
 purchaseRouter.delete(
-	"/description/:uuid",
-	validateUuidParam(),
+	'/description/:uuid',
+
 	descriptionOperations.remove
 );
 
 // Entry
 
 const pathPurchaseEntry = {
-	"/purchase/entry": {
+	'/purchase/entry': {
 		get: {
-			summary: "Get all entries",
-			tags: ["purchase.entry"],
-			operationId: "getEntries",
+			summary: 'Get all entries',
+			tags: ['purchase.entry'],
+			operationId: 'getEntries',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/purchase/entry",
+									$ref: '#/definitions/purchase/entry',
 								},
 							},
 						},
@@ -320,49 +320,49 @@ const pathPurchaseEntry = {
 			},
 		},
 		post: {
-			summary: "Create an entry",
-			tags: ["purchase.entry"],
-			operationId: "createEntry",
+			summary: 'Create an entry',
+			tags: ['purchase.entry'],
+			operationId: 'createEntry',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/purchase/entry",
+							$ref: '#/definitions/purchase/entry',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/purchase/entry/{uuid}": {
+	'/purchase/entry/{uuid}': {
 		get: {
-			summary: "Get an entry",
-			tags: ["purchase.entry"],
-			operationId: "getEntry",
+			summary: 'Get an entry',
+			tags: ['purchase.entry'],
+			operationId: 'getEntry',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/purchase/entry",
+								$ref: '#/definitions/purchase/entry',
 							},
 						},
 					},
@@ -370,53 +370,53 @@ const pathPurchaseEntry = {
 			},
 		},
 		put: {
-			summary: "Update an entry",
-			tags: ["purchase.entry"],
-			operationId: "updateEntry",
+			summary: 'Update an entry',
+			tags: ['purchase.entry'],
+			operationId: 'updateEntry',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/purchase/entry",
+							$ref: '#/definitions/purchase/entry',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete an entry",
-			tags: ["purchase.entry"],
-			operationId: "deleteEntry",
+			summary: 'Delete an entry',
+			tags: ['purchase.entry'],
+			operationId: 'deleteEntry',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -424,13 +424,13 @@ const pathPurchaseEntry = {
 };
 
 // Entry routes
-purchaseRouter.get("/entry", entryOperations.selectAll);
-purchaseRouter.get("/entry/:uuid", validateUuidParam(), entryOperations.select);
-purchaseRouter.post("/entry", entryOperations.insert);
-purchaseRouter.put("/entry/:uuid", entryOperations.update);
+purchaseRouter.get('/entry', entryOperations.selectAll);
+purchaseRouter.get('/entry/:uuid', entryOperations.select);
+purchaseRouter.post('/entry', entryOperations.insert);
+purchaseRouter.put('/entry/:uuid', entryOperations.update);
 purchaseRouter.delete(
-	"/entry/:uuid",
-	validateUuidParam(),
+	'/entry/:uuid',
+
 	entryOperations.remove
 );
 
