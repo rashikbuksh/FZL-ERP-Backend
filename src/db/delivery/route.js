@@ -11,6 +11,7 @@ import * as packingListEntryOperations from "./query/packing_list_entry.js";
 
 const deliveryRouter = Router();
 
+
 // packing_list routes
 export const pathDeliveryPackingList = {
 	"/delivery/packing-list": {

@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
-import { handleResponse, validateRequest } from "../../../util/index.js";
-import db from "../../index.js";
-import { properties } from "../schema.js";
+import { eq } from 'drizzle-orm';
+import { handleResponse, validateRequest } from '../../../util/index.js';
+import db from '../../index.js';
+import { properties } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -10,7 +10,17 @@ export async function insert(req, res, next) {
 		.insert(properties)
 		.values(req.body)
 		.returning();
-	handleResponse(propertiesPromise, res, next, 201);
+	const toast = {
+		status: 201,
+		type: 'create',
+		msg: `${req.body.name} created`,
+	};
+	handleResponse({
+		promise: propertiesPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function update(req, res, next) {
@@ -21,7 +31,17 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(properties.uuid, req.params.uuid))
 		.returning();
-	handleResponse(propertiesPromise, res, next, 201);
+	const toast = {
+		status: 201,
+		type: 'update',
+		msg: 'Properties updated',
+	};
+	handleResponse({
+		promise: propertiesPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function remove(req, res, next) {
@@ -31,12 +51,26 @@ export async function remove(req, res, next) {
 		.delete(properties)
 		.where(eq(properties.uuid, req.params.uuid))
 		.returning();
-	handleResponse(propertiesPromise, res, next);
+	const toast = {
+		status: 200,
+		type: 'delete',
+		msg: 'Properties deleted',
+	};
+	handleResponse({
+		promise: propertiesPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function selectAll(req, res, next) {
 	const resultPromise = db.select().from(properties);
-	handleResponse(resultPromise, res, next);
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Property list',
+	};
 }
 
 export async function select(req, res, next) {
@@ -46,5 +80,15 @@ export async function select(req, res, next) {
 		.select()
 		.from(properties)
 		.where(eq(properties.uuid, req.params.uuid));
-	handleResponse(propertiesPromise, res, next);
+	const toast = {
+		status: 200,
+		type: 'select',
+		msg: 'Property',
+	};
+	handleResponse({
+		promise: propertiesPromise,
+		res,
+		next,
+		...toast,
+	});
 }
