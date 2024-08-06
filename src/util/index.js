@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import { CustomError } from "../middleware/not_found.js";
+import { CustomError, nullValueError } from "../middleware/not_found.js";
 
 // Utility function for request validation
 export async function validateRequest(req, next) {
@@ -12,19 +12,23 @@ export async function validateRequest(req, next) {
 }
 
 // Utility function for handling responses and errors
-export function handleResponse(promise, res, next, status = 200, msg = "Operation failed", type = "select") {
-	promise
-		.then((data) => {
-			const toast = {
-				status,
-				type,
-				message: msg,
-			};
+export async function handleResponse({ promise, res, next, status = 200, msg = "Operation failed", type = "select" }) {
+	try {
+		const data = await promise;
+		const toast = {
+			status,
+			type,
+			message: msg,
+		};
 
-			res.status(status).json({ toast, data });
-		})
-		.catch((error) => {
-			console.error(error);
-			next(new CustomError(msg, 500));
-		});
+		return res.status(status).json({ toast, data });
+	} catch (error) {
+		console.log(error);
+		
+		if (error.severity === "ERROR") {
+			nullValueError(res, error);
+		} else {
+			next(new CustomError(error.message, 500));
+		}
+	}
 }
