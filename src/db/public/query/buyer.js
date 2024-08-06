@@ -10,7 +10,7 @@ export async function insert(req, res, next) {
 	const toast = {
 		status: 201,
 		type: 'create',
-		msg: 'Buyer created',
+		msg: `${req.body.name} created`,
 	};
 
 	handleResponse({

@@ -34,11 +34,21 @@ export const order_info = zipper.table('order_info', {
 	reference_order_info_uuid: defaultUUID('reference_order_info_uuid').default(
 		null
 	),
-	buyer_uuid: defaultUUID('buyer_uuid'),
-	party_uuid: defaultUUID('party_uuid'),
-	marketing_uuid: defaultUUID('marketing_uuid'),
-	merchandiser_uuid: defaultUUID('merchandiser_uuid'),
-	factory_uuid: defaultUUID('factory_uuid'),
+	buyer_uuid: defaultUUID('buyer_uuid').references(
+		() => publicSchema.buyer.uuid
+	),
+	party_uuid: defaultUUID('party_uuid').references(
+		() => publicSchema.party.uuid
+	),
+	marketing_uuid: defaultUUID('marketing_uuid').references(
+		() => publicSchema.marketing.uuid
+	),
+	merchandiser_uuid: defaultUUID('merchandiser_uuid').references(
+		() => publicSchema.merchandiser.uuid
+	),
+	factory_uuid: defaultUUID('factory_uuid').references(
+		() => publicSchema.factory.uuid
+	),
 	is_sample: integer('is_sample').default(0),
 	is_bill: integer('is_bill').default(0),
 	is_cash: integer('is_cash').default(0),
@@ -132,8 +142,10 @@ export const def_zipper_order_info = {
 };
 
 export const order_description = zipper.table('order_description', {
-	uuid: uuid('uuid').primaryKey(),
-	order_info_uuid: uuid('order_info_uuid'),
+	uuid: uuid_primary,
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => order_info.uuid
+	),
 	item: uuid('item'),
 	zipper_number: uuid('zipper_number'),
 	end_type: uuid('end_type'),
@@ -307,7 +319,9 @@ export const def_zipper_order_description = {
 
 export const order_entry = zipper.table('order_entry', {
 	uuid: uuid_primary,
-	order_description_uuid: uuid('order_description_uuid'),
+	order_description_uuid: defaultUUID('order_description_uuid').references(
+		() => order_description.uuid
+	),
 	style: text('style').notNull(),
 	color: text('color').notNull(),
 	size: text('size').notNull(),
