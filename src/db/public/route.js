@@ -1,32 +1,32 @@
-import { Router } from "express";
-import { validateUuidParam } from "../../lib/validator.js";
-import * as buyerOperations from "./query/buyer.js";
-import * as factoryOperations from "./query/factory.js";
-import * as marketingOperations from "./query/marketing.js";
-import * as merchandiserOperations from "./query/merchandiser.js";
-import * as partyOperations from "./query/party.js";
-import * as propertiesOperations from "./query/properties.js";
-import * as sectionOperations from "./query/section.js";
+import { Router } from 'express';
+import { validateUuidParam } from '../../lib/validator.js';
+import * as buyerOperations from './query/buyer.js';
+import * as factoryOperations from './query/factory.js';
+import * as marketingOperations from './query/marketing.js';
+import * as merchandiserOperations from './query/merchandiser.js';
+import * as partyOperations from './query/party.js';
+import * as propertiesOperations from './query/properties.js';
+import * as sectionOperations from './query/section.js';
 
 const publicRouter = Router();
 
 // buyer
 const pathPublicBuyer = {
-	"/public/buyer": {
+	'/public/buyer': {
 		get: {
-			summary: "Get all buyers",
-			tags: ["public.buyer"],
-			operationId: "getBuyers",
+			summary: 'Get all buyers',
+			tags: ['public.buyer'],
+			operationId: 'getBuyers',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/public/buyer",
+									$ref: '#/definitions/public/buyer',
 								},
 							},
 						},
@@ -35,50 +35,50 @@ const pathPublicBuyer = {
 			},
 		},
 		post: {
-			summary: "Create a buyer",
-			tags: ["public.buyer"],
-			operationId: "createBuyer",
+			summary: 'Create a buyer',
+			tags: ['public.buyer'],
+			operationId: 'createBuyer',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/buyer",
+							$ref: '#/definitions/public/buyer',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/buyer/{uuid}": {
+	'/buyer/{uuid}': {
 		get: {
-			summary: "Get a buyer",
-			tags: ["public.buyer"],
-			operationId: "getBuyer",
+			summary: 'Get a buyer',
+			tags: ['public.buyer'],
+			operationId: 'getBuyer',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the buyer",
+					description: 'uuid of the buyer',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/public/buyer",
+								$ref: '#/definitions/public/buyer',
 							},
 						},
 					},
@@ -86,55 +86,55 @@ const pathPublicBuyer = {
 			},
 		},
 		put: {
-			summary: "Update a buyer",
-			tags: ["public.buyer"],
-			operationId: "updateBuyer",
+			summary: 'Update a buyer',
+			tags: ['public.buyer'],
+			operationId: 'updateBuyer',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the buyer",
+					description: 'uuid of the buyer',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/buyer",
+							$ref: '#/definitions/public/buyer',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete a buyer",
-			tags: ["public.buyer"],
-			operationId: "deleteBuyer",
+			summary: 'Delete a buyer',
+			tags: ['public.buyer'],
+			operationId: 'deleteBuyer',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the buyer",
+					description: 'uuid of the buyer',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -142,33 +142,33 @@ const pathPublicBuyer = {
 };
 
 // buyer routes
-publicRouter.get("/buyer", buyerOperations.selectAll);
-publicRouter.get("/buyer/:uuid", validateUuidParam(), buyerOperations.select);
-publicRouter.post("/buyer", buyerOperations.insert);
-publicRouter.put("/buyer/:uuid", buyerOperations.update);
+publicRouter.get('/buyer', buyerOperations.selectAll);
+publicRouter.get('/buyer/:uuid', buyerOperations.select);
+publicRouter.post('/buyer', buyerOperations.insert);
+publicRouter.put('/buyer/:uuid', buyerOperations.update);
 publicRouter.delete(
-	"/buyer/:uuid",
-	validateUuidParam(),
+	'/buyer/:uuid',
+	// validateUuidParam(),
 	buyerOperations.remove
 );
 
 // factory
 const pathPublicFactory = {
-	"/factory": {
+	'/factory': {
 		get: {
-			summary: "Get all factories",
-			tags: ["public.factory"],
-			operationId: "getFactories",
+			summary: 'Get all factories',
+			tags: ['public.factory'],
+			operationId: 'getFactories',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/public/factory",
+									$ref: '#/definitions/public/factory',
 								},
 							},
 						},
@@ -177,50 +177,50 @@ const pathPublicFactory = {
 			},
 		},
 		post: {
-			summary: "Create a factory",
-			tags: ["public.factory"],
-			operationId: "createFactory",
+			summary: 'Create a factory',
+			tags: ['public.factory'],
+			operationId: 'createFactory',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/factory",
+							$ref: '#/definitions/public/factory',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/factory/{uuid}": {
+	'/factory/{uuid}': {
 		get: {
-			summary: "Get a factory",
-			tags: ["public.factory"],
-			operationId: "getFactory",
+			summary: 'Get a factory',
+			tags: ['public.factory'],
+			operationId: 'getFactory',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the factory",
+					description: 'uuid of the factory',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/public/factory",
+								$ref: '#/definitions/public/factory',
 							},
 						},
 					},
@@ -228,55 +228,55 @@ const pathPublicFactory = {
 			},
 		},
 		put: {
-			summary: "Update a factory",
-			tags: ["public.factory"],
-			operationId: "updateFactory",
+			summary: 'Update a factory',
+			tags: ['public.factory'],
+			operationId: 'updateFactory',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the factory",
+					description: 'uuid of the factory',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/factory",
+							$ref: '#/definitions/public/factory',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete a factory",
-			tags: ["public.factory"],
-			operationId: "deleteFactory",
+			summary: 'Delete a factory',
+			tags: ['public.factory'],
+			operationId: 'deleteFactory',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the factory",
+					description: 'uuid of the factory',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -284,37 +284,37 @@ const pathPublicFactory = {
 };
 
 // factory routes
-publicRouter.get("/factory", factoryOperations.selectAll);
+publicRouter.get('/factory', factoryOperations.selectAll);
 publicRouter.get(
-	"/factory/:uuid",
+	'/factory/:uuid',
 	validateUuidParam(),
 	factoryOperations.select
 );
-publicRouter.post("/factory", factoryOperations.insert);
-publicRouter.put("/factory/:uuid", factoryOperations.update);
+publicRouter.post('/factory', factoryOperations.insert);
+publicRouter.put('/factory/:uuid', factoryOperations.update);
 publicRouter.delete(
-	"/factory/:uuid",
+	'/factory/:uuid',
 	validateUuidParam(),
 	factoryOperations.remove
 );
 
 // marketing
 const pathPublicMarketing = {
-	"/marketing": {
+	'/marketing': {
 		get: {
-			summary: "Get all marketing",
-			tags: ["public.marketing"],
-			operationId: "getMarketings",
+			summary: 'Get all marketing',
+			tags: ['public.marketing'],
+			operationId: 'getMarketings',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/public/marketing",
+									$ref: '#/definitions/public/marketing',
 								},
 							},
 						},
@@ -323,50 +323,50 @@ const pathPublicMarketing = {
 			},
 		},
 		post: {
-			summary: "Create a marketing",
-			tags: ["public.marketing"],
-			operationId: "createMarketing",
+			summary: 'Create a marketing',
+			tags: ['public.marketing'],
+			operationId: 'createMarketing',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/marketing",
+							$ref: '#/definitions/public/marketing',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/marketing/{uuid}": {
+	'/marketing/{uuid}': {
 		get: {
-			summary: "Get a marketing",
-			tags: ["public.marketing"],
-			operationId: "getMarketing",
+			summary: 'Get a marketing',
+			tags: ['public.marketing'],
+			operationId: 'getMarketing',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the marketing",
+					description: 'uuid of the marketing',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/public/marketing",
+								$ref: '#/definitions/public/marketing',
 							},
 						},
 					},
@@ -374,55 +374,55 @@ const pathPublicMarketing = {
 			},
 		},
 		put: {
-			summary: "Update a marketing",
-			tags: ["public.marketing"],
-			operationId: "updateMarketing",
+			summary: 'Update a marketing',
+			tags: ['public.marketing'],
+			operationId: 'updateMarketing',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the marketing",
+					description: 'uuid of the marketing',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/marketing",
+							$ref: '#/definitions/public/marketing',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete a marketing",
-			tags: ["public.marketing"],
-			operationId: "deleteMarketing",
+			summary: 'Delete a marketing',
+			tags: ['public.marketing'],
+			operationId: 'deleteMarketing',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the marketing",
+					description: 'uuid of the marketing',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -430,37 +430,37 @@ const pathPublicMarketing = {
 };
 
 // marketing routes
-publicRouter.get("/marketing", marketingOperations.selectAll);
+publicRouter.get('/marketing', marketingOperations.selectAll);
 publicRouter.get(
-	"/marketing/:uuid",
+	'/marketing/:uuid',
 	validateUuidParam(),
 	marketingOperations.select
 );
-publicRouter.post("/marketing", marketingOperations.insert);
-publicRouter.put("/marketing/:uuid", marketingOperations.update);
+publicRouter.post('/marketing', marketingOperations.insert);
+publicRouter.put('/marketing/:uuid', marketingOperations.update);
 publicRouter.delete(
-	"/marketing/:uuid",
+	'/marketing/:uuid',
 	validateUuidParam(),
 	marketingOperations.remove
 );
 
 // merchandiser
 const pathPublicMerchandiser = {
-	"/merchandiser": {
+	'/merchandiser': {
 		get: {
-			summary: "Get all merchandisers",
-			tags: ["public.merchandiser"],
-			operationId: "getMerchandisers",
+			summary: 'Get all merchandisers',
+			tags: ['public.merchandiser'],
+			operationId: 'getMerchandisers',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/public/merchandiser",
+									$ref: '#/definitions/public/merchandiser',
 								},
 							},
 						},
@@ -469,50 +469,50 @@ const pathPublicMerchandiser = {
 			},
 		},
 		post: {
-			summary: "Create a merchandiser",
-			tags: ["public.merchandiser"],
-			operationId: "createMerchandiser",
+			summary: 'Create a merchandiser',
+			tags: ['public.merchandiser'],
+			operationId: 'createMerchandiser',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/merchandiser",
+							$ref: '#/definitions/public/merchandiser',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/merchandiser/{uuid}": {
+	'/merchandiser/{uuid}': {
 		get: {
-			summary: "Get a merchandiser",
-			tags: ["public.merchandiser"],
-			operationId: "getMerchandiser",
+			summary: 'Get a merchandiser',
+			tags: ['public.merchandiser'],
+			operationId: 'getMerchandiser',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the merchandiser",
+					description: 'uuid of the merchandiser',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/public/merchandiser",
+								$ref: '#/definitions/public/merchandiser',
 							},
 						},
 					},
@@ -520,55 +520,55 @@ const pathPublicMerchandiser = {
 			},
 		},
 		put: {
-			summary: "Update a merchandiser",
-			tags: ["public.merchandiser"],
-			operationId: "updateMerchandiser",
+			summary: 'Update a merchandiser',
+			tags: ['public.merchandiser'],
+			operationId: 'updateMerchandiser',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the merchandiser",
+					description: 'uuid of the merchandiser',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/merchandiser",
+							$ref: '#/definitions/public/merchandiser',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete a merchandiser",
-			tags: ["public.merchandiser"],
-			operationId: "deleteMerchandiser",
+			summary: 'Delete a merchandiser',
+			tags: ['public.merchandiser'],
+			operationId: 'deleteMerchandiser',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the merchandiser",
+					description: 'uuid of the merchandiser',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -576,37 +576,37 @@ const pathPublicMerchandiser = {
 };
 
 // merchandiser routes
-publicRouter.get("/merchandiser", merchandiserOperations.selectAll);
+publicRouter.get('/merchandiser', merchandiserOperations.selectAll);
 publicRouter.get(
-	"/merchandiser/:uuid",
+	'/merchandiser/:uuid',
 	validateUuidParam(),
 	merchandiserOperations.select
 );
-publicRouter.post("/merchandiser", merchandiserOperations.insert);
-publicRouter.put("/merchandiser/:uuid", merchandiserOperations.update);
+publicRouter.post('/merchandiser', merchandiserOperations.insert);
+publicRouter.put('/merchandiser/:uuid', merchandiserOperations.update);
 publicRouter.delete(
-	"/merchandiser/:uuid",
+	'/merchandiser/:uuid',
 	validateUuidParam(),
 	merchandiserOperations.remove
 );
 
 // party
 const pathPublicParty = {
-	"/party": {
+	'/party': {
 		get: {
-			summary: "Get all parties",
-			tags: ["public.party"],
-			operationId: "getParties",
+			summary: 'Get all parties',
+			tags: ['public.party'],
+			operationId: 'getParties',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/public/party",
+									$ref: '#/definitions/public/party',
 								},
 							},
 						},
@@ -615,50 +615,50 @@ const pathPublicParty = {
 			},
 		},
 		post: {
-			summary: "Create a party",
-			tags: ["public.party"],
-			operationId: "createParty",
+			summary: 'Create a party',
+			tags: ['public.party'],
+			operationId: 'createParty',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/party",
+							$ref: '#/definitions/public/party',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/party/{uuid}": {
+	'/party/{uuid}': {
 		get: {
-			summary: "Get a party",
-			tags: ["public.party"],
-			operationId: "getParty",
+			summary: 'Get a party',
+			tags: ['public.party'],
+			operationId: 'getParty',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the party",
+					description: 'uuid of the party',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/public/party",
+								$ref: '#/definitions/public/party',
 							},
 						},
 					},
@@ -666,55 +666,55 @@ const pathPublicParty = {
 			},
 		},
 		put: {
-			summary: "Update a party",
-			tags: ["public.party"],
-			operationId: "updateParty",
+			summary: 'Update a party',
+			tags: ['public.party'],
+			operationId: 'updateParty',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the party",
+					description: 'uuid of the party',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/party",
+							$ref: '#/definitions/public/party',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete a party",
-			tags: ["public.party"],
-			operationId: "deleteParty",
+			summary: 'Delete a party',
+			tags: ['public.party'],
+			operationId: 'deleteParty',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the party",
+					description: 'uuid of the party',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -722,33 +722,33 @@ const pathPublicParty = {
 };
 
 // party routes
-publicRouter.get("/party", partyOperations.selectAll);
-publicRouter.get("/party/:uuid", validateUuidParam(), partyOperations.select);
-publicRouter.post("/party", partyOperations.insert);
-publicRouter.put("/party/:uuid", partyOperations.update);
+publicRouter.get('/party', partyOperations.selectAll);
+publicRouter.get('/party/:uuid', validateUuidParam(), partyOperations.select);
+publicRouter.post('/party', partyOperations.insert);
+publicRouter.put('/party/:uuid', partyOperations.update);
 publicRouter.delete(
-	"/party/:uuid",
+	'/party/:uuid',
 	validateUuidParam(),
 	partyOperations.remove
 );
 
 // properties
 const pathPublicProperties = {
-	"/properties": {
+	'/properties': {
 		get: {
-			summary: "Get all properties",
-			tags: ["public.properties"],
-			operationId: "getProperties",
+			summary: 'Get all properties',
+			tags: ['public.properties'],
+			operationId: 'getProperties',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/public/properties",
+									$ref: '#/definitions/public/properties',
 								},
 							},
 						},
@@ -757,50 +757,50 @@ const pathPublicProperties = {
 			},
 		},
 		post: {
-			summary: "Create a properties",
-			tags: ["public.properties"],
-			operationId: "createProperties",
+			summary: 'Create a properties',
+			tags: ['public.properties'],
+			operationId: 'createProperties',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/properties",
+							$ref: '#/definitions/public/properties',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/properties/{uuid}": {
+	'/properties/{uuid}': {
 		get: {
-			summary: "Get a properties",
-			tags: ["public.properties"],
-			operationId: "getProperties",
+			summary: 'Get a properties',
+			tags: ['public.properties'],
+			operationId: 'getProperties',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the properties",
+					description: 'uuid of the properties',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/public/properties",
+								$ref: '#/definitions/public/properties',
 							},
 						},
 					},
@@ -808,55 +808,55 @@ const pathPublicProperties = {
 			},
 		},
 		put: {
-			summary: "Update a properties",
-			tags: ["public.properties"],
-			operationId: "updateProperties",
+			summary: 'Update a properties',
+			tags: ['public.properties'],
+			operationId: 'updateProperties',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the properties",
+					description: 'uuid of the properties',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/properties",
+							$ref: '#/definitions/public/properties',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete a properties",
-			tags: ["public.properties"],
-			operationId: "deleteProperties",
+			summary: 'Delete a properties',
+			tags: ['public.properties'],
+			operationId: 'deleteProperties',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the properties",
+					description: 'uuid of the properties',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -864,37 +864,37 @@ const pathPublicProperties = {
 };
 
 // properties routes
-publicRouter.get("/properties", propertiesOperations.selectAll);
+publicRouter.get('/properties', propertiesOperations.selectAll);
 publicRouter.get(
-	"/properties/:uuid",
+	'/properties/:uuid',
 	validateUuidParam(),
 	propertiesOperations.select
 );
-publicRouter.post("/properties", propertiesOperations.insert);
-publicRouter.put("/properties/:uuid", propertiesOperations.update);
+publicRouter.post('/properties', propertiesOperations.insert);
+publicRouter.put('/properties/:uuid', propertiesOperations.update);
 publicRouter.delete(
-	"/properties/:uuid",
+	'/properties/:uuid',
 	validateUuidParam(),
 	propertiesOperations.remove
 );
 
 // section
 const pathPublicSection = {
-	"/section": {
+	'/section': {
 		get: {
-			summary: "Get all sections",
-			tags: ["public.section"],
-			operationId: "getSections",
+			summary: 'Get all sections',
+			tags: ['public.section'],
+			operationId: 'getSections',
 			parameters: [],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								type: "array",
+								type: 'array',
 								items: {
-									$ref: "#/definitions/public/section",
+									$ref: '#/definitions/public/section',
 								},
 							},
 						},
@@ -903,50 +903,50 @@ const pathPublicSection = {
 			},
 		},
 		post: {
-			summary: "Create a section",
-			tags: ["public.section"],
-			operationId: "createSection",
+			summary: 'Create a section',
+			tags: ['public.section'],
+			operationId: 'createSection',
 			parameters: [],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/section",
+							$ref: '#/definitions/public/section',
 						},
 					},
 				},
 			},
 			responses: {
 				201: {
-					description: "Created",
+					description: 'Created',
 				},
 			},
 		},
 	},
-	"/section/{uuid}": {
+	'/section/{uuid}': {
 		get: {
-			summary: "Get a section",
-			tags: ["public.section"],
-			operationId: "getSection",
+			summary: 'Get a section',
+			tags: ['public.section'],
+			operationId: 'getSection',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the section",
+					description: 'uuid of the section',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				200: {
-					description: "OK",
+					description: 'OK',
 					content: {
-						"application/json": {
+						'application/json': {
 							schema: {
-								$ref: "#/definitions/public/section",
+								$ref: '#/definitions/public/section',
 							},
 						},
 					},
@@ -954,55 +954,55 @@ const pathPublicSection = {
 			},
 		},
 		put: {
-			summary: "Update a section",
-			tags: ["public.section"],
-			operationId: "updateSection",
+			summary: 'Update a section',
+			tags: ['public.section'],
+			operationId: 'updateSection',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the section",
+					description: 'uuid of the section',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			requestBody: {
 				content: {
-					"application/json": {
+					'application/json': {
 						schema: {
-							$ref: "#/definitions/public/section",
+							$ref: '#/definitions/public/section',
 						},
 					},
 				},
 			},
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
 		delete: {
-			summary: "Delete a section",
-			tags: ["public.section"],
-			operationId: "deleteSection",
+			summary: 'Delete a section',
+			tags: ['public.section'],
+			operationId: 'deleteSection',
 			parameters: [
 				{
-					name: "uuid",
-					in: "path",
+					name: 'uuid',
+					in: 'path',
 					required: true,
-					description: "uuid of the section",
+					description: 'uuid of the section',
 					schema: {
-						type: "string",
-						format: "uuid",
+						type: 'string',
+						format: 'uuid',
 					},
 				},
 			],
 			responses: {
 				204: {
-					description: "No Content",
+					description: 'No Content',
 				},
 			},
 		},
@@ -1010,16 +1010,16 @@ const pathPublicSection = {
 };
 
 // section routes
-publicRouter.get("/section", sectionOperations.selectAll);
+publicRouter.get('/section', sectionOperations.selectAll);
 publicRouter.get(
-	"/section/:uuid",
+	'/section/:uuid',
 	validateUuidParam(),
 	sectionOperations.select
 );
-publicRouter.post("/section", sectionOperations.insert);
-publicRouter.put("/section/:uuid", sectionOperations.update);
+publicRouter.post('/section', sectionOperations.insert);
+publicRouter.put('/section/:uuid', sectionOperations.update);
 publicRouter.delete(
-	"/section/:uuid",
+	'/section/:uuid',
 	validateUuidParam(),
 	sectionOperations.remove
 );
