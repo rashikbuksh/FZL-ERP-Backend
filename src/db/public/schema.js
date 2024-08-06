@@ -1,277 +1,273 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-import * as hrSchema from "../hr/schema.js";
-import * as materialSchema from "../material/schema.js";
+import * as hrSchema from '../hr/schema.js';
 
-export const buyer = pgTable("buyer", {
-	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull(),
-	short_name: text("short_name").default(null),
-	remarks: text("remarks").default(null),
+const uuid_primary = text('uuid', {
+	length: 15,
+}).primaryKey();
+
+export const buyer = pgTable('buyer', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	short_name: text('short_name').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defPublicBuyer = {
-	type: "object",
-	required: ["uuid", "name"],
+	type: 'object',
+	required: ['uuid', 'name'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		short_name: {
-			type: "string",
+			type: 'string',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Public/Buyer",
+		name: 'Public/Buyer',
 	},
 };
 
-export const party = pgTable("party", {
-	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull(),
-	short_name: text("short_name").notNull(),
-	remarks: text("remarks").notNull(),
+export const party = pgTable('party', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	short_name: text('short_name').notNull(),
+	remarks: text('remarks').notNull(),
 });
 
 export const defPublicParty = {
-	type: "object",
-	required: ["uuid", "name", "short_name", "remarks"],
+	type: 'object',
+	required: ['uuid', 'name', 'short_name', 'remarks'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		short_name: {
-			type: "string",
+			type: 'string',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Public/Party",
+		name: 'Public/Party',
 	},
 };
 
-export const marketing = pgTable("marketing", {
-	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull(),
-	short_name: text("short_name").default(null),
-	user_uuid: uuid("user_uuid").references(() => hrSchema.users.uuid),
-	remarks: text("remarks").default(null),
+export const marketing = pgTable('marketing', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	short_name: text('short_name').default(null),
+	user_uuid: uuid('user_uuid').references(() => hrSchema.users.uuid),
+	remarks: text('remarks').default(null),
 });
 
 export const defPublicMarketing = {
-	type: "object",
-	required: ["uuid", "name", "user_uuid"],
+	type: 'object',
+	required: ['uuid', 'name', 'user_uuid'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		short_name: {
-			type: "string",
+			type: 'string',
 		},
 		user_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
+			format: 'uuid',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Public/Marketing",
+		name: 'Public/Marketing',
 	},
 };
 
-export const merchandiser = pgTable("merchandiser", {
-	uuid: uuid("uuid").primaryKey(),
-	party_uuid: uuid("party_uuid").references(() => party.uuid),
-	name: text("name").notNull(),
-	email: text("email").default(null),
-	phone: text("phone").default(null),
-	address: text("address").default(null),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
+export const merchandiser = pgTable('merchandiser', {
+	uuid: uuid_primary,
+	party_uuid: uuid('party_uuid').references(() => party.uuid),
+	name: text('name').notNull(),
+	email: text('email').default(null),
+	phone: text('phone').default(null),
+	address: text('address').default(null),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
 });
 
 export const defPublicMerchandiser = {
-	type: "object",
-	required: ["uuid", "party_uuid", "name", "created_at"],
+	type: 'object',
+	required: ['uuid', 'party_uuid', 'name', 'created_at'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		party_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
+			format: 'uuid',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		email: {
-			type: "string",
+			type: 'string',
 		},
 		phone: {
-			type: "string",
+			type: 'string',
 		},
 		address: {
-			type: "string",
+			type: 'string',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 	},
 	xml: {
-		name: "Public/Merchandiser",
+		name: 'Public/Merchandiser',
 	},
 };
 
-export const factory = pgTable("factory", {
-	uuid: uuid("uuid").primaryKey(),
-	party_uuid: uuid("party_uuid").references(() => party.uuid),
-	name: text("name").notNull(),
-	phone: text("phone").default(null),
-	address: text("address").default(null),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
+export const factory = pgTable('factory', {
+	uuid: uuid_primary,
+	party_uuid: uuid('party_uuid').references(() => party.uuid),
+	name: text('name').notNull(),
+	phone: text('phone').default(null),
+	address: text('address').default(null),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
 });
 
 export const defPublicFactory = {
-	type: "object",
-	required: ["uuid", "party_uuid", "name", "created_at"],
+	type: 'object',
+	required: ['uuid', 'party_uuid', 'name', 'created_at'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		party_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		phone: {
-			type: "string",
+			type: 'string',
 		},
 		address: {
-			type: "string",
+			type: 'string',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 	},
 	xml: {
-		name: "Public/Factory",
+		name: 'Public/Factory',
 	},
 };
 
-export const section = pgTable("section", {
-	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull(),
-	short_name: text("short_name").default(null),
-	remarks: text("remarks").default(null),
+export const section = pgTable('section', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	short_name: text('short_name').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defPublicSection = {
-	type: "object",
-	required: ["uuid", "name"],
+	type: 'object',
+	required: ['uuid', 'name'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
+			format: 'uuid',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		short_name: {
-			type: "string",
+			type: 'string',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Public/Section",
+		name: 'Public/Section',
 	},
 };
 
-export const properties = pgTable("properties", {
-	uuid: uuid("uuid").primaryKey(),
-	item_for: text("item_for").notNull(),
-	type: text("type").notNull().unique(),
-	name: text("name").notNull(),
-	short_name: text("short_name").default(null),
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+export const properties = pgTable('properties', {
+	uuid: uuid_primary,
+	item_for: text('item_for').notNull(),
+	type: text('type').notNull().unique(),
+	name: text('name').notNull(),
+	short_name: text('short_name').default(null),
+	created_by: uuid('created_by').references(() => hrSchema.users.uuid),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defPublicProperties = {
-	type: "object",
-	required: ["uuid", "item_for", "type", "name", "created_by", "created_at"],
+	type: 'object',
+	required: ['uuid', 'item_for', 'type', 'name', 'created_by', 'created_at'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		item_for: {
-			type: "string",
+			type: 'string',
 		},
 		type: {
-			type: "string",
+			type: 'string',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		short_name: {
-			type: "string",
+			type: 'string',
 		},
 		created_by: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
+			format: 'uuid',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Public/Properties",
+		name: 'Public/Properties',
 	},
 };
 
@@ -288,45 +284,45 @@ export const defPublic = {
 
 export const tagPublic = [
 	{
-		"public.buyer": {
-			name: "buyer",
-			description: "buyer",
+		'public.buyer': {
+			name: 'buyer',
+			description: 'buyer',
 		},
 	},
 	{
-		"public.party": {
-			name: "party",
-			description: "party",
+		'public.party': {
+			name: 'party',
+			description: 'party',
 		},
 	},
 	{
-		"public.marketing": {
-			name: "marketing",
-			description: "marketing",
+		'public.marketing': {
+			name: 'marketing',
+			description: 'marketing',
 		},
 	},
 	{
-		"public.merchandiser": {
-			name: "merchandiser",
-			description: "merchandiser",
+		'public.merchandiser': {
+			name: 'merchandiser',
+			description: 'merchandiser',
 		},
 	},
 	{
-		"public.factory": {
-			name: "factory",
-			description: "factory",
+		'public.factory': {
+			name: 'factory',
+			description: 'factory',
 		},
 	},
 	{
-		"public.section": {
-			name: "section",
-			description: "section",
+		'public.section': {
+			name: 'section',
+			description: 'section',
 		},
 	},
 	{
-		"public.properties": {
-			name: "properties",
-			description: "properties",
+		'public.properties': {
+			name: 'properties',
+			description: 'properties',
 		},
 	},
 ];
