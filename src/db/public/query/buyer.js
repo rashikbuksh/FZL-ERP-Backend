@@ -10,7 +10,7 @@ export async function insert(req, res, next) {
 	const toast = {
 		status: 201,
 		type: 'create',
-		message: 'Buyer created',
+		msg: 'Buyer created',
 	};
 
 	handleResponse({
@@ -30,6 +30,19 @@ export async function update(req, res, next) {
 		.where(eq(buyer.uuid, req.params.uuid))
 		.returning();
 	handleResponse(buyerPromise, res, next, 201);
+
+	const toast = {
+		status: 201,
+		type: 'update',
+		msg: 'Buyer updated',
+	};
+
+	handleResponse({
+		promise: buyerPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function remove(req, res, next) {
@@ -39,19 +52,31 @@ export async function remove(req, res, next) {
 		.delete(buyer)
 		.where(eq(buyer.uuid, req.params.uuid))
 		.returning();
-	handleResponse(buyerPromise, res, next);
-}
 
-export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(buyer);
 	const toast = {
 		status: 200,
-		type: 'select_all',
-		message: 'Buyer list',
+		type: 'delete',
+		msg: 'Buyer deleted',
 	};
 
 	handleResponse({
-		promise: resultPromise,
+		promise: buyerPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+export async function selectAll(req, res, next) {
+	const buyerPromise = db.select().from(buyer);
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Buyer list',
+	};
+
+	handleResponse({
+		promise: buyerPromise,
 		res,
 		next,
 		...toast,
@@ -65,5 +90,16 @@ export async function select(req, res, next) {
 		.select()
 		.from(buyer)
 		.where(eq(buyer.uuid, req.params.uuid));
-	handleResponse(buyerPromise, res, next);
+	const toast = {
+		status: 200,
+		type: 'select',
+		msg: 'Buyer',
+	};
+
+	handleResponse({
+		promise: buyerPromise,
+		res,
+		next,
+		...toast,
+	});
 }
