@@ -40,21 +40,13 @@ export const order_info = zipper.table('order_info', {
 	reference_order_info_uuid: uuid('reference_order_info_uuid')
 		.references(() => order_info.uuid)
 		.default(null),
-	buyer_uuid: text('buyer_uuid',{
-		length: 15,
-	}).references(
+	buyer_uuid: defaultUUID('buyer_uuid').references(
 		() => publicSchema.buyer.uuid
 	),
-	party_uuid: defaultUUID('party_uuid').references(() => publicSchema.party.uuid),
-	marketing_uuid: defaultUUID('marketing_uuid').references(
-		() => publicSchema.marketing.uuid
-	),
-	merchandiser_uuid: defaultUUID('merchandiser_uuid').references(
-		() => publicSchema.merchandiser.uuid
-	),
-	factory_uuid: defaultUUID('factory_uuid').references(
-		() => publicSchema.factory.uuid
-	),
+	party_uuid: defaultUUID('party_uuid'),
+	marketing_uuid: defaultUUID('marketing_uuid'),
+	merchandiser_uuid: defaultUUID('merchandiser_uuid'),
+	factory_uuid: defaultUUID('factory_uuid'),
 	is_sample: integer('is_sample').default(0),
 	is_bill: integer('is_bill').default(0),
 	is_cash: integer('is_cash').default(0),
