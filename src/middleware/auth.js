@@ -43,10 +43,7 @@ export const VerifyToken = (req, res, next) => {
 	const { authorization } = req?.headers;
 	const { originalUrl, method } = req;
 
-	if (
-		(originalUrl === "/hr/user/login" && method === "POST") ||
-		originalUrl.startsWith("/api-docs")
-	) {
+	if ((originalUrl === "/hr/user/login" && method === "POST") || originalUrl.startsWith("/api-docs")) {
 		return next();
 	}
 
