@@ -67,7 +67,7 @@ export const packing_list_entry = delivery.table("packing_list_entry", {
 	packing_list_uuid: uuid("packing_list_uuid").references(
 		() => packing_list.uuid
 	),
-	sfg_uuid: uuid("sfg_uuid").references(() => zipperSchema.sfg.uuid),
+	sfg_uuid: uuid("sfg_uuid"),
 	quantity: decimal("quantity", {
 		precision: 20,
 		scale: 4,
