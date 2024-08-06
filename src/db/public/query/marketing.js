@@ -28,20 +28,39 @@ export async function update(req, res, next) {
 		.update(marketing)
 		.set(req.body)
 		.where(eq(marketing.uuid, req.params.uuid))
-		.returning();
+		.returning({ updatedName: marketing.name });
 
-	const toast = {
-		status: 201,
-		type: 'update',
-		msg: 'Marketing updated',
-	};
+	marketingPromise
+		.then((result) => {
+			const toast = {
+				status: 201,
+				type: 'update',
+				msg: `${result[0].updatedName} updated`,
+			};
 
-	handleResponse({
-		promise: marketingPromise,
-		res,
-		next,
-		...toast,
-	});
+			handleResponse({
+				promise: marketingPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'update',
+				msg: `Error updating marketing - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: marketingPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function remove(req, res, next) {
@@ -50,20 +69,39 @@ export async function remove(req, res, next) {
 	const marketingPromise = db
 		.delete(marketing)
 		.where(eq(marketing.uuid, req.params.uuid))
-		.returning();
+		.returning({ deletedName: marketing.name });
 
-	const toast = {
-		status: 200,
-		type: 'delete',
-		msg: 'Marketing deleted',
-	};
+	marketingPromise
+		.then((result) => {
+			const toast = {
+				status: 200,
+				type: 'delete',
+				msg: `${result[0].deletedName} deleted`,
+			};
 
-	handleResponse({
-		promise: marketingPromise,
-		res,
-		next,
-		...toast,
-	});
+			handleResponse({
+				promise: marketingPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'delete',
+				msg: `Error deleting marketing - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: marketingPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function selectAll(req, res, next) {

@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { validateUuidParam } from '../../lib/validator.js';
 import * as buyerOperations from './query/buyer.js';
 import * as factoryOperations from './query/factory.js';
 import * as marketingOperations from './query/marketing.js';

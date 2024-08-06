@@ -32,20 +32,39 @@ export async function update(req, res, next) {
 		.update(merchandiser)
 		.set(req.body)
 		.where(eq(merchandiser.uuid, req.params.uuid))
-		.returning();
+		.returning({ updatedName: merchandiser.name });
 
-	const toast = {
-		status: 201,
-		type: 'update',
-		msg: 'Merchandiser updated',
-	};
+	merchandiserPromise
+		.then((result) => {
+			const toast = {
+				status: 201,
+				type: 'update',
+				msg: `${result[0].updatedName} updated`,
+			};
 
-	handleResponse({
-		promise: merchandiserPromise,
-		res,
-		next,
-		...toast,
-	});
+			handleResponse({
+				promise: merchandiserPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'update',
+				msg: `Error updating merchandiser - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: merchandiserPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function remove(req, res, next) {
@@ -54,20 +73,39 @@ export async function remove(req, res, next) {
 	const merchandiserPromise = db
 		.delete(merchandiser)
 		.where(eq(merchandiser.uuid, req.params.uuid))
-		.returning();
+		.returning({ deletedName: merchandiser.name });
 
-	const toast = {
-		status: 200,
-		type: 'delete',
-		msg: 'Merchandiser deleted',
-	};
+	merchandiserPromise
+		.then((result) => {
+			const toast = {
+				status: 200,
+				type: 'delete',
+				msg: `${result[0].deletedName} deleted`,
+			};
 
-	handleResponse({
-		promise: merchandiserPromise,
-		res,
-		next,
-		...toast,
-	});
+			handleResponse({
+				promise: merchandiserPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'delete',
+				msg: `Error deleting merchandiser - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: merchandiserPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function selectAll(req, res, next) {

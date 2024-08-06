@@ -28,21 +28,39 @@ export async function update(req, res, next) {
 		.update(buyer)
 		.set(req.body)
 		.where(eq(buyer.uuid, req.params.uuid))
-		.returning();
-	handleResponse(buyerPromise, res, next, 201);
+		.returning({ updatedName: buyer.name });
 
-	const toast = {
-		status: 201,
-		type: 'update',
-		msg: 'Buyer updated',
-	};
+	buyerPromise
+		.then((result) => {
+			const toast = {
+				status: 201,
+				type: 'update',
+				msg: `${result[0].updatedName} updated`,
+			};
 
-	handleResponse({
-		promise: buyerPromise,
-		res,
-		next,
-		...toast,
-	});
+			handleResponse({
+				promise: buyerPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'update',
+				msg: `Error updating buyer - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: buyerPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function remove(req, res, next) {
@@ -51,20 +69,39 @@ export async function remove(req, res, next) {
 	const buyerPromise = db
 		.delete(buyer)
 		.where(eq(buyer.uuid, req.params.uuid))
-		.returning();
+		.returning({ deletedName: buyer.name });
 
-	const toast = {
-		status: 200,
-		type: 'delete',
-		msg: 'Buyer deleted',
-	};
+	buyerPromise
+		.then((result) => {
+			const toast = {
+				status: 200,
+				type: 'delete',
+				msg: `${result[0].deletedName} deleted`,
+			};
 
-	handleResponse({
-		promise: buyerPromise,
-		res,
-		next,
-		...toast,
-	});
+			handleResponse({
+				promise: buyerPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+			// for error
+			const toast = {
+				status: 500,
+				type: 'delete',
+				msg: `Error deleting buyer - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: buyerPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function selectAll(req, res, next) {

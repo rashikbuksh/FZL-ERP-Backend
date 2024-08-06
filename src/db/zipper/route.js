@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { validateUuidParam } from '../../lib/validator.js';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';

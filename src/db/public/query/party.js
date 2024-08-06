@@ -28,18 +28,39 @@ export async function update(req, res, next) {
 		.update(party)
 		.set(req.body)
 		.where(eq(party.uuid, req.params.uuid))
-		.returning();
-	const toast = {
-		status: 201,
-		type: 'update',
-		msg: 'Party updated',
-	};
-	handleResponse({
-		promise: partyPromise,
-		res,
-		next,
-		...toast,
-	});
+		.returning({ updatedName: party.name });
+
+	partyPromise
+		.then((result) => {
+			const toast = {
+				status: 201,
+				type: 'update',
+				msg: `${result[0].updatedName} updated`,
+			};
+
+			handleResponse({
+				promise: partyPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'update',
+				msg: `Error updating party - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: partyPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function remove(req, res, next) {
@@ -48,18 +69,39 @@ export async function remove(req, res, next) {
 	const partyPromise = db
 		.delete(party)
 		.where(eq(party.uuid, req.params.uuid))
-		.returning();
-	const toast = {
-		status: 200,
-		type: 'delete',
-		msg: 'Party deleted',
-	};
-	handleResponse({
-		promise: partyPromise,
-		res,
-		next,
-		...toast,
-	});
+		.returning({ deletedName: party.name });
+
+	partyPromise
+		.then((result) => {
+			const toast = {
+				status: 200,
+				type: 'delete',
+				msg: `${result[0].deletedName} deleted`,
+			};
+
+			handleResponse({
+				promise: partyPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'delete',
+				msg: `Error deleting party - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: partyPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function selectAll(req, res, next) {
@@ -69,6 +111,12 @@ export async function selectAll(req, res, next) {
 		type: 'select_all',
 		msg: 'Party list',
 	};
+	handleResponse({
+		promise: resultPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function select(req, res, next) {
