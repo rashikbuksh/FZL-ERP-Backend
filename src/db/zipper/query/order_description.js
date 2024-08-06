@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
-import { handleResponse, validateRequest } from "../../../util/index.js";
-import db from "../../index.js";
-import { order_description } from "../schema.js";
+import { eq } from 'drizzle-orm';
+import { handleResponse, validateRequest } from '../../../util/index.js';
+import db from '../../index.js';
+import { order_description } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -10,7 +10,19 @@ export async function insert(req, res, next) {
 		.insert(order_description)
 		.values(req.body)
 		.returning();
-	handleResponse(orderDescriptionPromise, res, next, 201);
+
+	const toast = {
+		status: 201,
+		type: 'create',
+		msg: `${req.body.name} created`,
+	};
+
+	handleResponse({
+		promise: orderDescriptionPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function update(req, res, next) {
@@ -21,7 +33,19 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning();
-	handleResponse(orderDescriptionPromise, res, next, 201);
+
+	const toast = {
+		status: 201,
+		type: 'update',
+		msg: 'Order Description updated',
+	};
+
+	handleResponse({
+		promise: orderDescriptionPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function remove(req, res, next) {
@@ -31,12 +55,36 @@ export async function remove(req, res, next) {
 		.delete(order_description)
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning();
-	handleResponse(orderDescriptionPromise, res, next);
+
+	const toast = {
+		status: 200,
+		type: 'delete',
+		msg: 'Order Description deleted',
+	};
+
+	handleResponse({
+		promise: orderDescriptionPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(order_description);
-	handleResponse(resultPromise, res, next);
+	const orderDescriptionPromise = db.select().from(order_description);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Order description list',
+	};
+
+	handleResponse({
+		promise: orderDescriptionPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function select(req, res, next) {
@@ -46,5 +94,17 @@ export async function select(req, res, next) {
 		.select()
 		.from(order_description)
 		.where(eq(order_description.uuid, req.params.uuid));
-	handleResponse(orderDescriptionPromise, res, next);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		msg: 'Order description',
+	};
+
+	handleResponse({
+		promise: orderDescriptionPromise,
+		res,
+		next,
+		...toast,
+	});
 }
