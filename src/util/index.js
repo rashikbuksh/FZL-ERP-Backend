@@ -30,10 +30,13 @@ export async function handleResponse({
 
 		return res.status(status).json({ toast, data });
 	} catch (error) {
+		console.log(error);
+
 		if (error.severity === 'ERROR') {
 			nullValueError(res, error);
-		} else {
-			next(new CustomError(error.message, 500));
-		}
+		} 
+		// else {
+		// 	next(new CustomError(error.message, 500));
+		// }
 	}
 }
