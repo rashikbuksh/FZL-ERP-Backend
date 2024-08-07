@@ -1,577 +1,560 @@
-import { decimal, pgSchema, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { decimal, pgSchema, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { defaultUUID, uuid_primary } from '../variables.js';
 
-import * as hrSchema from "../hr/schema.js";
-import * as zipperSchema from "../zipper/schema.js";
+import * as hrSchema from '../hr/schema.js';
+import * as zipperSchema from '../zipper/schema.js';
 
-const material = pgSchema("material");
+const material = pgSchema('material');
 
-export const section = material.table("section", {
-	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull(),
-	short_name: text("short_name").default(null),
-	remarks: text("remarks").default(null),
+export const section = material.table('section', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	short_name: text('short_name').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defMaterialSection = {
-	type: "object",
-	required: ["uuid", "name"],
+	type: 'object',
+	required: ['uuid', 'name'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		short_name: {
-			type: "string",
+			type: 'string',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Material/Section",
+		name: 'Material/Section',
 	},
 };
 
-export const type = material.table("type", {
-	uuid: uuid("uuid").primaryKey(),
-	name: text("name").notNull(),
-	short_name: text("short_name").default(null),
-	remarks: text("remarks").default(null),
+export const type = material.table('type', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	short_name: text('short_name').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defMaterialType = {
-	type: "object",
-	required: ["uuid", "name"],
+	type: 'object',
+	required: ['uuid', 'name'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		short_name: {
-			type: "string",
+			type: 'string',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Material/Type",
+		name: 'Material/Type',
 	},
 };
 
-export const info = material.table("info", {
-	uuid: uuid("uuid").primaryKey().unique(),
-	section_uuid: uuid("section_uuid"),
-	type_uuid: uuid("type_uuid"),
-	name: text("name").notNull(),
-	short_name: text("short_name").default(null),
-	unit: text("unit").notNull(),
-	threshold: decimal("threshold", {
+export const info = material.table('info', {
+	uuid: uuid_primary,
+	section_uuid: defaultUUID('section_uuid'),
+	type_uuid: defaultUUID('type_uuid'),
+	name: text('name').notNull(),
+	short_name: text('short_name').default(null),
+	unit: text('unit').notNull(),
+	threshold: decimal('threshold', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	description: text("description").default(null),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+	description: text('description').default(null),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 export const defMaterialInfo = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"section_uuid",
-		"type_uuid",
-		"name",
-		"unit",
-		"threshold",
-		"created_at",
+		'uuid',
+		'section_uuid',
+		'type_uuid',
+		'name',
+		'unit',
+		'threshold',
+		'created_at',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		section_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		type_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		name: {
-			type: "string",
+			type: 'string',
 		},
 		short_name: {
-			type: "string",
+			type: 'string',
 		},
 		unit: {
-			type: "string",
+			type: 'string',
 		},
 		threshold: {
-			type: "number",
+			type: 'number',
 		},
 		description: {
-			type: "string",
+			type: 'string',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Material/Info",
+		name: 'Material/Info',
 	},
 };
 
-export const stock = material.table("stock", {
-	uuid: uuid("uuid").primaryKey(),
-	material_uuid: uuid("material_uuid"),
-	stock: decimal("stock", {
+export const stock = material.table('stock', {
+	uuid: uuid_primary,
+	material_uuid: defaultUUID('material_uuid'),
+	stock: decimal('stock', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	tape_making: decimal("tape_making", {
+	tape_making: decimal('tape_making', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	coil_forming: decimal("coil_forming", {
+	coil_forming: decimal('coil_forming', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	dying_and_iron: decimal("dying_and_iron", {
+	dying_and_iron: decimal('dying_and_iron', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	m_gapping: decimal("m_gapping", {
+	m_gapping: decimal('m_gapping', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	v_gapping: decimal("v_gapping", {
+	v_gapping: decimal('v_gapping', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	v_teeth_molding: decimal("v_teeth_molding", {
+	v_teeth_molding: decimal('v_teeth_molding', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	m_teeth_molding: decimal("m_teeth_molding", {
+	m_teeth_molding: decimal('m_teeth_molding', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	teeth_assembling_and_polishing: decimal("teeth_assembling_and_polishing", {
+	teeth_assembling_and_polishing: decimal('teeth_assembling_and_polishing', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	m_teeth_cleaning: decimal("m_teeth_cleaning", {
+	m_teeth_cleaning: decimal('m_teeth_cleaning', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	v_teeth_cleaning: decimal("v_teeth_cleaning", {
+	v_teeth_cleaning: decimal('v_teeth_cleaning', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	plating_and_iron: decimal("plating_and_iron", {
+	plating_and_iron: decimal('plating_and_iron', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	m_sealing: decimal("m_sealing", {
+	m_sealing: decimal('m_sealing', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	v_sealing: decimal("v_sealing", {
+	v_sealing: decimal('v_sealing', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	n_t_cutting: decimal("n_t_cutting", {
+	n_t_cutting: decimal('n_t_cutting', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	v_t_cutting: decimal("v_t_cutting", {
+	v_t_cutting: decimal('v_t_cutting', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	m_stopper: decimal("m_stopper", {
+	m_stopper: decimal('m_stopper', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	v_stopper: decimal("v_stopper", {
+	v_stopper: decimal('v_stopper', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	n_stopper: decimal("n_stopper", {
+	n_stopper: decimal('n_stopper', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	cutting: decimal("cutting", {
+	cutting: decimal('cutting', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	qc_and_packing: decimal("qc_and_packing", {
+	qc_and_packing: decimal('qc_and_packing', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	die_casting: decimal("die_casting", {
+	die_casting: decimal('die_casting', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	slider_assembly: decimal("slider_assembly", {
+	slider_assembly: decimal('slider_assembly', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	coloring: decimal("coloring", {
+	coloring: decimal('coloring', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	remarks: text("remarks").default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defMaterialStock = {
-	type: "object",
-	required: ["uuid", "material_uuid", "stock"],
+	type: 'object',
+	required: ['uuid', 'material_uuid', 'stock'],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		material_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		stock: {
-			type: "number",
+			type: 'number',
 		},
 		tape_making: {
-			type: "number",
+			type: 'number',
 		},
 		coil_forming: {
-			type: "number",
+			type: 'number',
 		},
 		dying_and_iron: {
-			type: "number",
+			type: 'number',
 		},
 		m_gapping: {
-			type: "number",
+			type: 'number',
 		},
 		v_gapping: {
-			type: "number",
+			type: 'number',
 		},
 		v_teeth_molding: {
-			type: "number",
+			type: 'number',
 		},
 		m_teeth_molding: {
-			type: "number",
+			type: 'number',
 		},
 		teeth_assembling_and_polishing: {
-			type: "number",
+			type: 'number',
 		},
 		m_teeth_cleaning: {
-			type: "number",
+			type: 'number',
 		},
 		v_teeth_cleaning: {
-			type: "number",
+			type: 'number',
 		},
 		plating_and_iron: {
-			type: "number",
+			type: 'number',
 		},
 		m_sealing: {
-			type: "number",
+			type: 'number',
 		},
 		v_sealing: {
-			type: "number",
+			type: 'number',
 		},
 		n_t_cutting: {
-			type: "number",
+			type: 'number',
 		},
 		v_t_cutting: {
-			type: "number",
+			type: 'number',
 		},
 		m_stopper: {
-			type: "number",
+			type: 'number',
 		},
 		v_stopper: {
-			type: "number",
+			type: 'number',
 		},
 		n_stopper: {
-			type: "number",
+			type: 'number',
 		},
 		cutting: {
-			type: "number",
+			type: 'number',
 		},
 		qc_and_packing: {
-			type: "number",
+			type: 'number',
 		},
 		die_casting: {
-			type: "number",
+			type: 'number',
 		},
 		slider_assembly: {
-			type: "number",
+			type: 'number',
 		},
 		coloring: {
-			type: "number",
+			type: 'number',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Material/Stock",
+		name: 'Material/Stock',
 	},
 };
 
-export const trx = material.table("trx", {
-	uuid: uuid("uuid").primaryKey(),
-	material_uuid: uuid("material_uuid")
-		.notNull(),
-	trx_to: text("trx_to").notNull(),
-	trx_quantity: decimal("trx_quantity", {
+export const trx = material.table('trx', {
+	uuid: uuid_primary,
+	material_uuid: defaultUUID('material_uuid').notNull(),
+	trx_to: text('trx_to').notNull(),
+	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: uuid("created_by"),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+	created_by: defaultUUID('created_by'),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 export const defMaterialTrx = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"material_uuid",
-		"trx_to",
-		"quantity",
-		"created_by",
-		"created_at",
+		'uuid',
+		'material_uuid',
+		'trx_to',
+		'quantity',
+		'created_by',
+		'created_at',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		material_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		trx_to: {
-			type: "string",
+			type: 'string',
 		},
 		quantity: {
-			type: "number",
+			type: 'number',
 		},
 		created_by: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Material/Trx",
+		name: 'Material/Trx',
 	},
 };
 
-export const used = material.table("used", {
-	uuid: uuid("uuid").primaryKey(),
-	material_uuid: uuid("material_uuid")
-		.notNull(),
-	section: text("section").notNull(),
-	used_quantity: decimal("used_quantity", {
+export const used = material.table('used', {
+	uuid: uuid_primary,
+	material_uuid: defaultUUID('material_uuid').notNull(),
+	section: text('section').notNull(),
+	used_quantity: decimal('used_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	wastage: decimal("wastage", {
+	wastage: decimal('wastage', {
 		precision: 20,
 		scale: 4,
 	})
 		.notNull()
 		.default(0.0),
-	created_by: uuid("created_by"),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+	created_by: defaultUUID('created_by'),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 export const defMaterialUsed = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"material_uuid",
-		"section",
-		"used_quantity",
-		"wastage",
-		"created_by",
-		"created_at",
+		'uuid',
+		'material_uuid',
+		'section',
+		'used_quantity',
+		'wastage',
+		'created_by',
+		'created_at',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		material_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		section: {
-			type: "string",
+			type: 'string',
 		},
 		used_quantity: {
-			type: "number",
+			type: 'number',
 		},
 		wastage: {
-			type: "number",
+			type: 'number',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Material/Used",
+		name: 'Material/Used',
 	},
 };
 
 //stock to sfg table
-export const stock_to_sfg = material.table("stock_to_sfg", {
-	uuid: uuid("uuid").primaryKey(),
-	material_uuid: uuid("material_uuid"),
-	order_entry_uuid: uuid("order_entry_uuid"),
-	trx_to: text("trx_to").notNull(),
-	trx_quantity: decimal("trx_quantity", {
+export const stock_to_sfg = material.table('stock_to_sfg', {
+	uuid: uuid_primary,
+	material_uuid: defaultUUID('material_uuid'),
+	order_entry_uuid: defaultUUID('order_entry_uuid'),
+	trx_to: text('trx_to').notNull(),
+	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: uuid("created_by"),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+	created_by: defaultUUID('created_by'),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defMaterialStockToSfg = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"material_uuid",
-		"order_entry_uuid",
-		"trx_to",
-		"trx_quantity",
-		"created_by",
-		"created_at",
+		'uuid',
+		'material_uuid',
+		'order_entry_uuid',
+		'trx_to',
+		'trx_quantity',
+		'created_by',
+		'created_at',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		material_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		order_entry_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		trx_to: {
-			type: "string",
+			type: 'string',
 		},
 		trx_quantity: {
-			type: "number",
+			type: 'number',
 		},
 		created_by: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Material/StockToSfg",
+		name: 'Material/StockToSfg',
 	},
 };
 
@@ -589,56 +572,56 @@ export const defMaterial = {
 
 export const tagMaterial = [
 	{
-		name: "material.section",
-		description: "Material Section",
+		name: 'material.section',
+		description: 'Material Section',
 		externalDocs: {
-			description: "Find out more about Material Section",
-			url: "http://swagger.io",
+			description: 'Find out more about Material Section',
+			url: 'http://swagger.io',
 		},
 	},
 	{
-		name: "material.type",
-		description: "Material Type",
+		name: 'material.type',
+		description: 'Material Type',
 		externalDocs: {
-			description: "Find out more about Material Type",
-			url: "http://swagger.io",
+			description: 'Find out more about Material Type',
+			url: 'http://swagger.io',
 		},
 	},
 	{
-		name: "material.info",
-		description: "Material Information",
+		name: 'material.info',
+		description: 'Material Information',
 		externalDocs: {
-			description: "Find out more about Material Information",
-			url: "http://swagger.io",
+			description: 'Find out more about Material Information',
+			url: 'http://swagger.io',
 		},
 	},
 	{
-		name: "material.stock",
-		description: "Material Stock",
+		name: 'material.stock',
+		description: 'Material Stock',
 		externalDocs: {
-			description: "Find out more about Material Stock",
-			url: "http://swagger.io",
+			description: 'Find out more about Material Stock',
+			url: 'http://swagger.io',
 		},
 	},
 	{
-		name: "material.trx",
-		description: "Material Transaction",
+		name: 'material.trx',
+		description: 'Material Transaction',
 		externalDocs: {
-			description: "Find out more about Material Transaction",
-			url: "http://swagger.io",
+			description: 'Find out more about Material Transaction',
+			url: 'http://swagger.io',
 		},
 	},
 	{
-		name: "material.used",
-		description: "Material Used",
+		name: 'material.used',
+		description: 'Material Used',
 		externalDocs: {
-			description: "Find out more about Material Used",
-			url: "http://swagger.io",
+			description: 'Find out more about Material Used',
+			url: 'http://swagger.io',
 		},
 	},
 	{
-		name: "material.stock_to_sfg",
-		description: "Material Stock to SFG",
+		name: 'material.stock_to_sfg',
+		description: 'Material Stock to SFG',
 	},
 ];
 

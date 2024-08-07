@@ -1,9 +1,10 @@
 import { pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import { defaultUUID, uuid_primary } from '../variables.js';
 
 const hr = pgSchema('hr');
 
 export const department = hr.table('department', {
-	uuid: uuid('uuid').primaryKey(),
+	uuid: uuid_primary,
 	department: text('department').notNull(),
 });
 
@@ -13,7 +14,6 @@ export const defDepartment = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		department: {
 			type: 'string',
@@ -25,8 +25,8 @@ export const defDepartment = {
 };
 
 export const designation = hr.table('designation', {
-	uuid: uuid('uuid').primaryKey(),
-	department_uuid: uuid('department_uuid'),
+	uuid: uuid_primary,
+	department_uuid: defaultUUID('department_uuid'),
 	designation: text('designation').notNull(),
 });
 
@@ -36,11 +36,9 @@ export const defDesignation = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		department_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		designation: {
 			type: 'string',
@@ -52,11 +50,11 @@ export const defDesignation = {
 };
 
 export const users = hr.table('users', {
-	uuid: uuid('uuid').primaryKey(),
+	uuid: uuid_primary,
 	name: text('name').notNull(),
 	email: text('email').notNull(),
 	pass: text('pass').notNull(),
-	designation_uuid: uuid('designation_uuid'),
+	designation_uuid: defaultUUID('designation_uuid'),
 	can_access: text('can_access').notNull(),
 	ext: text('ext').default(null),
 	phone: text('phone').default(null),
@@ -81,7 +79,6 @@ export const defHrUser = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		name: {
 			type: 'string',
@@ -94,7 +91,6 @@ export const defHrUser = {
 		},
 		designation_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		can_access: {
 			type: 'string',

@@ -9,17 +9,18 @@ import {
 } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
+import { defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const slider = pgSchema('slider');
 
 export const stock = slider.table('stock', {
-	uuid: uuid('uuid').primaryKey(),
-	order_info_uuid: uuid('order_info_uuid').default(null),
-	item: uuid('item').notNull(),
-	zipper_number: uuid('zipper_number').notNull(),
-	end_type: uuid('end_type').notNull(),
-	puller: uuid('puller').default(null),
+	uuid: uuid_primary,
+	order_info_uuid: defaultUUID('order_info_uuid').default(null),
+	item: defaultUUID('item').notNull(),
+	zipper_number: defaultUUID('zipper_number').notNull(),
+	end_type: defaultUUID('end_type').notNull(),
+	puller: defaultUUID('puller').default(null),
 	color: text('color').notNull(),
 	order_quantity: decimal('order_quantity', {
 		precision: 20,
@@ -93,27 +94,21 @@ export const defStock = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		order_info_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		item: {
 			type: 'string',
-			format: 'uuid',
 		},
 		zipper_number: {
 			type: 'string',
-			format: 'uuid',
 		},
 		end_type: {
 			type: 'string',
-			format: 'uuid',
 		},
 		puller: {
 			type: 'string',
-			format: 'uuid',
 		},
 		color: {
 			type: 'string',
@@ -175,16 +170,16 @@ export const defStock = {
 };
 
 export const die_casting = slider.table('die_casting', {
-	uuid: uuid('uuid').primaryKey(),
+	uuid: uuid_primary,
 	name: text('name').notNull(),
-	item: uuid('item').notNull(),
-	zipper_number: uuid('zipper_number').notNull(),
-	type: uuid('type').notNull(),
-	puller: uuid('puller').notNull(),
-	logo_type: uuid('logo_type').notNull(),
-	body_shape: uuid('body_shape'),
-	puller_link: uuid('puller_link').notNull(),
-	stopper: uuid('stopper').notNull(),
+	item: defaultUUID('item').notNull(),
+	zipper_number: defaultUUID('zipper_number').notNull(),
+	type: defaultUUID('type').notNull(),
+	puller: defaultUUID('puller').notNull(),
+	logo_type: defaultUUID('logo_type').notNull(),
+	body_shape: defaultUUID('body_shape'),
+	puller_link: defaultUUID('puller_link').notNull(),
+	stopper: defaultUUID('stopper').notNull(),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -222,7 +217,6 @@ export const defDieCasting = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		name: {
 			type: 'string',
@@ -278,8 +272,8 @@ export const defDieCasting = {
 };
 
 export const die_casting_production = slider.table('die_casting_production', {
-	uuid: uuid('uuid').primaryKey(),
-	die_casting_uuid: uuid('die_casting_uuid').notNull(),
+	uuid: uuid_primary,
+	die_casting_uuid: defaultUUID('die_casting_uuid').notNull(),
 	mc_no: integer('mc_no').notNull(),
 	cavity_goods: integer('cavity_goods').notNull(),
 	cavity_defect: integer('cavity_defect').notNull(),
@@ -288,8 +282,8 @@ export const die_casting_production = slider.table('die_casting_production', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	order_info_uuid: uuid('order_info_uuid'),
-	created_by: uuid('created_by').notNull(),
+	order_info_uuid: defaultUUID('order_info_uuid'),
+	created_by: defaultUUID('created_by').notNull(),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -335,7 +329,6 @@ export const defDieCastingProduction = {
 		},
 		created_by: {
 			type: 'string',
-			format: 'uuid',
 		},
 		created_at: {
 			type: 'string',
@@ -355,14 +348,14 @@ export const defDieCastingProduction = {
 };
 
 export const die_casting_transaction = slider.table('die_casting_transaction', {
-	uuid: uuid('uuid').primaryKey(),
-	die_casting_uuid: uuid('die_casting_uuid').notNull(),
-	stock_uuid: uuid('stock_uuid').notNull(),
+	uuid: uuid_primary,
+	die_casting_uuid: defaultUUID('die_casting_uuid').notNull(),
+	stock_uuid: defaultUUID('stock_uuid').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: uuid('created_by').notNull(),
+	created_by: defaultUUID('created_by').notNull(),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -381,22 +374,18 @@ export const defDieCastingTransaction = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		die_casting_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		stock_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		trx_quantity: {
 			type: 'number',
 		},
 		created_by: {
 			type: 'string',
-			format: 'uuid',
 		},
 		created_at: {
 			type: 'string',
@@ -418,14 +407,14 @@ export const defDieCastingTransaction = {
 // transaction
 
 export const transaction = slider.table('transaction', {
-	uuid: uuid('uuid').primaryKey(),
-	stock_uuid: uuid('stock_uuid').notNull(),
+	uuid: uuid_primary,
+	stock_uuid: defaultUUID('stock_uuid').notNull(),
 	section: text('section').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: uuid('created_by').notNull(),
+	created_by: defaultUUID('created_by').notNull(),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -444,11 +433,9 @@ export const defTransaction = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		stock_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		section: {
 			type: 'string',
@@ -458,7 +445,6 @@ export const defTransaction = {
 		},
 		created_by: {
 			type: 'string',
-			format: 'uuid',
 		},
 		created_at: {
 			type: 'string',
@@ -480,14 +466,14 @@ export const defTransaction = {
 // coloring transaction
 
 export const coloring_transaction = slider.table('coloring_transaction', {
-	uuid: uuid('uuid').primaryKey(),
-	stock_uuid: uuid('stock_uuid').notNull(),
-	order_info_uuid: uuid('order_info_uuid').notNull(),
+	uuid: uuid_primary,
+	stock_uuid: defaultUUID('stock_uuid').notNull(),
+	order_info_uuid: defaultUUID('order_info_uuid').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: uuid('created_by').notNull(),
+	created_by: defaultUUID('created_by').notNull(),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -506,22 +492,18 @@ export const defColoringTransaction = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		stock_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		order_info_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		trx_quantity: {
 			type: 'number',
 		},
 		created_by: {
 			type: 'string',
-			format: 'uuid',
 		},
 		created_at: {
 			type: 'string',

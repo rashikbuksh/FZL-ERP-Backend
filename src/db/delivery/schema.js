@@ -5,226 +5,216 @@ import {
 	text,
 	timestamp,
 	uuid,
-} from "drizzle-orm/pg-core";
-import * as hrSchema from "../hr/schema.js";
-import * as zipperSchema from "../zipper/schema.js";
+} from 'drizzle-orm/pg-core';
+import * as hrSchema from '../hr/schema.js';
+import { defaultUUID, uuid_primary } from '../variables.js';
+import * as zipperSchema from '../zipper/schema.js';
 
-const delivery = pgSchema("delivery");
+const delivery = pgSchema('delivery');
 
-export const packing_list = delivery.table("packing_list", {
-	uuid: uuid("uuid").primaryKey(),
-	carton_size: text("carton_size").notNull(),
-	carton_weight: text("carton_weight").notNull(),
-	created_by: uuid("created_by"),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+export const packing_list = delivery.table('packing_list', {
+	uuid: uuid_primary,
+	carton_size: text('carton_size').notNull(),
+	carton_weight: text('carton_weight').notNull(),
+	created_by: defaultUUID('created_by'),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defPackingList = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"carton_size",
-		"carton_weight",
-		"created_by",
-		"created_at",
+		'uuid',
+		'carton_size',
+		'carton_weight',
+		'created_by',
+		'created_at',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		carton_size: {
-			type: "string",
+			type: 'string',
 		},
 		carton_weight: {
-			type: "string",
+			type: 'string',
 		},
 		created_by: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Delivery/PackingList",
+		name: 'Delivery/PackingList',
 	},
 };
 
-export const packing_list_entry = delivery.table("packing_list_entry", {
-	uuid: uuid("uuid").primaryKey(),
-	packing_list_uuid: uuid("packing_list_uuid"),
-	sfg_uuid: uuid("sfg_uuid"),
-	quantity: decimal("quantity", {
+export const packing_list_entry = delivery.table('packing_list_entry', {
+	uuid: uuid_primary,
+	packing_list_uuid: defaultUUID('packing_list_uuid'),
+	sfg_uuid: defaultUUID('sfg_uuid'),
+	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defPackingListEntry = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"packing_list_uuid",
-		"sfg_uuid",
-		"quantity",
-		"created_at",
+		'uuid',
+		'packing_list_uuid',
+		'sfg_uuid',
+		'quantity',
+		'created_at',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		packing_list_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		sfg_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		quantity: {
-			type: "number",
+			type: 'number',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Delivery/PackingListEntry",
+		name: 'Delivery/PackingListEntry',
 	},
 };
 
-export const challan = delivery.table("challan", {
-	uuid: uuid("uuid").primaryKey(),
-	carton_quantity: integer("carton_quantity").notNull(),
-	assign_to: uuid("assign_to"),
-	receive_status: integer("receive_status").default(0),
-	created_by: uuid("created_by"),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+export const challan = delivery.table('challan', {
+	uuid: uuid_primary,
+	carton_quantity: integer('carton_quantity').notNull(),
+	assign_to: defaultUUID('assign_to'),
+	receive_status: integer('receive_status').default(0),
+	created_by: defaultUUID('created_by'),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defChallan = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"carton_quantity",
-		"assign_to",
-		"created_by",
-		"created_at",
+		'uuid',
+		'carton_quantity',
+		'assign_to',
+		'created_by',
+		'created_at',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		carton_quantity: {
-			type: "number",
+			type: 'number',
 		},
 		assign_to: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		created_by: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		receive_status: {
-			type: "number",
+			type: 'number',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Delivery/Challan",
+		name: 'Delivery/Challan',
 	},
 };
 
-export const challan_entry = delivery.table("challan_entry", {
-	uuid: uuid("uuid").primaryKey(),
-	challan_uuid: uuid("challan_uuid"),
-	packing_list_uuid: uuid("packing_list_uuid"),
-	delivery_quantity: decimal("delivery_quantity", {
+export const challan_entry = delivery.table('challan_entry', {
+	uuid: uuid_primary,
+	challan_uuid: defaultUUID('challan_uuid'),
+	packing_list_uuid: defaultUUID('packing_list_uuid'),
+	delivery_quantity: decimal('delivery_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp("created_at").notNull(),
-	updated_at: timestamp("updated_at").default(null),
-	remarks: text("remarks").default(null),
+	created_at: timestamp('created_at').notNull(),
+	updated_at: timestamp('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const defChallanEntry = {
-	type: "object",
+	type: 'object',
 	required: [
-		"uuid",
-		"challan_uuid",
-		"packing_list_uuid",
-		"delivery_quantity",
-		"created_at",
+		'uuid',
+		'challan_uuid',
+		'packing_list_uuid',
+		'delivery_quantity',
+		'created_at',
 	],
 	properties: {
 		uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		challan_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		packing_list_uuid: {
-			type: "string",
-			format: "uuid",
+			type: 'string',
 		},
 		delivery_quantity: {
-			type: "number",
+			type: 'number',
 		},
 		created_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		updated_at: {
-			type: "string",
-			format: "date-time",
+			type: 'string',
+			format: 'date-time',
 		},
 		remarks: {
-			type: "string",
+			type: 'string',
 		},
 	},
 	xml: {
-		name: "Delivery/ChallanEntry",
+		name: 'Delivery/ChallanEntry',
 	},
 };
 
@@ -239,34 +229,34 @@ export const defDelivery = {
 export const tagDelivery = [
 	{
 		name: delivery.packing_list,
-		description: "Operations about Packing List",
+		description: 'Operations about Packing List',
 		externalDocs: {
-			description: "Find out more",
-			url: "http://swagger.io",
+			description: 'Find out more',
+			url: 'http://swagger.io',
 		},
 	},
 	{
 		name: delivery.packing_list_entry,
-		description: "Operations about Packing List Entry",
+		description: 'Operations about Packing List Entry',
 		externalDocs: {
-			description: "Find out more",
-			url: "http://swagger.io",
+			description: 'Find out more',
+			url: 'http://swagger.io',
 		},
 	},
 	{
 		name: delivery.challan,
-		description: "Operations about Challan",
+		description: 'Operations about Challan',
 		externalDocs: {
-			description: "Find out more",
-			url: "http://swagger.io",
+			description: 'Find out more',
+			url: 'http://swagger.io',
 		},
 	},
 	{
 		name: delivery.challan_entry,
-		description: "Operations about Challan Entry",
+		description: 'Operations about Challan Entry',
 		externalDocs: {
-			description: "Find out more",
-			url: "http://swagger.io",
+			description: 'Find out more',
+			url: 'http://swagger.io',
 		},
 	},
 ];

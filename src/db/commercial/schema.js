@@ -1,11 +1,9 @@
 import {
 	decimal,
 	integer,
-	PgArray,
 	pgSchema,
 	text,
 	timestamp,
-	uuid,
 } from 'drizzle-orm/pg-core';
 import { defaultUUID, uuid_primary } from '../variables.js';
 

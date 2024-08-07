@@ -55,7 +55,7 @@ export const order_info = zipper.table('order_info', {
 	marketing_priority: text('marketing_priority').default(null),
 	factory_priority: text('factory_priority').default(null),
 	status: integer('status').notNull().default(0),
-	created_by: uuid('created_by'),
+	created_by: defaultUUID('created_by'),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -414,7 +414,7 @@ export const def_zipper_order_entry = {
 export const sfg = zipper.table('sfg', {
 	uuid: uuid_primary,
 	order_entry_uuid: defaultUUID('order_entry_uuid'),
-	recipe_uuid: uuid('recipe_uuid').default(null),
+	recipe_uuid: defaultUUID('recipe_uuid').default(null),
 	// dying_and_iron_stock: decimal("dying_and_iron_stock").default(0.0), // dying_and_iron has been moved to dying_batch table
 	dying_and_iron_prod: decimal('dying_and_iron_prod', {
 		precision: 20,
@@ -546,7 +546,7 @@ export const sfg_production = zipper.table('sfg_production', {
 	})
 		.notNull()
 		.default(0.0),
-	created_by: uuid('created_by'),
+	created_by: defaultUUID('created_by'),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -611,8 +611,8 @@ export const sfg_transaction = zipper.table('sfg_transaction', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	slider_item_uuid: uuid('slider_item_uuid'), //	slider_item_uuid: uuid('slider_item_uuid').references(() => sliderSchema.stock.uuid),
-	created_by: uuid('created_by'),
+	slider_item_uuid: defaultUUID('slider_item_uuid'), //	slider_item_uuid: uuid('slider_item_uuid').references(() => sliderSchema.stock.uuid),
+	created_by: defaultUUID('created_by'),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -676,7 +676,7 @@ export const def_zipper_sfg_transaction = {
 export const batch = zipper.table('batch', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
-	created_by: uuid('created_by'),
+	created_by: defaultUUID('created_by'),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -782,7 +782,7 @@ export const dying_batch = zipper.table('dying_batch', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
 	mc_no: integer('mc_no').notNull(),
-	created_by: uuid('created_by'),
+	created_by: defaultUUID('created_by'),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -954,7 +954,7 @@ export const tape_to_coil = zipper.table('tape_to_coil', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: uuid('created_by'),
+	created_by: defaultUUID('created_by'),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -1013,7 +1013,7 @@ export const tape_coil_production = zipper.table('tape_coil_production', {
 	})
 		.notNull()
 		.default(0.0),
-	created_by: uuid('created_by'),
+	created_by: defaultUUID('created_by'),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),

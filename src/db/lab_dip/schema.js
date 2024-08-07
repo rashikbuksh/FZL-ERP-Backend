@@ -9,17 +9,18 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import * as hrSchema from '../hr/schema.js';
+import { defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const lab_dip = pgSchema('lab_dip');
 
 export const info = lab_dip.table('info', {
-	uuid: uuid('uuid').primaryKey(),
+	uuid: uuid_primary,
 	id: serial('id').notNull(),
 	name: text('name').notNull(),
-	order_info_uuid: uuid('order_info_uuid'),
+	order_info_uuid: defaultUUID('order_info_uuid'),
 	lab_status: text('lab_status').default(null),
-	created_by: uuid('created_by'),
+	created_by: defaultUUID('created_by'),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -46,7 +47,6 @@ export const defLabDipInfo = {
 		},
 		created_by: {
 			type: 'string',
-			format: 'uuid',
 		},
 		created_at: {
 			type: 'string',
@@ -66,12 +66,12 @@ export const defLabDipInfo = {
 };
 
 export const recipe = lab_dip.table('recipe', {
-	uuid: uuid('uuid').primaryKey(),
+	uuid: uuid_primary,
 	id: serial('id').notNull(),
-	lab_dip_info_uuid: uuid('lab_dip_info_uuid'),
+	lab_dip_info_uuid: defaultUUID('lab_dip_info_uuid'),
 	name: text('name').notNull(),
 	approved: integer('approved').default(0),
-	created_by: uuid('created_by'),
+	created_by: defaultUUID('created_by'),
 	status: integer('status').default(0),
 	created_at: timestamp('created_at').notNull(),
 	updated_at: timestamp('updated_at').default(null),
@@ -84,14 +84,12 @@ export const defLabDipRecipe = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		id: {
 			type: 'integer',
 		},
 		lab_dip_info_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		name: {
 			type: 'string',
@@ -101,7 +99,6 @@ export const defLabDipRecipe = {
 		},
 		created_by: {
 			type: 'string',
-			format: 'uuid',
 		},
 		status: {
 			type: 'integer',
@@ -124,8 +121,8 @@ export const defLabDipRecipe = {
 };
 
 export const recipe_entry = lab_dip.table('recipe_entry', {
-	uuid: uuid('uuid').primaryKey(),
-	recipe_uuid: uuid('recipe_uuid'),
+	uuid: uuid_primary,
+	recipe_uuid: defaultUUID('recipe_uuid'),
 	color: text('color').notNull(),
 	quantity: decimal('quantity', {
 		precision: 20,
@@ -142,11 +139,9 @@ export const defLabDipRecipeEntry = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		recipe_uuid: {
 			type: 'string',
-			format: 'uuid',
 		},
 		color: {
 			type: 'string',
