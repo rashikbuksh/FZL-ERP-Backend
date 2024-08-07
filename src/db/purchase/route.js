@@ -1,5 +1,7 @@
+import { uuid } from 'drizzle-orm/pg-core/index.js';
 import { Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
+import { properties } from '../public/schema.js';
 import * as descriptionOperations from './query/description.js';
 import * as entryOperations from './query/entry.js';
 import * as vendorOperations from './query/vendor.js';
@@ -164,9 +166,45 @@ const pathPurchaseDescription = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/purchase/description',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+									},
+									vendor_uuid: {
+										type: 'string',
+									},
+									is_local: {
+										type: 'integer',
+									},
+									lc_number: {
+										type: 'string',
+									},
+									created_by: {
+										type: 'string',
+									},
+									user_name: {
+										type: 'string',
+									},
+									user_designation: {
+										type: 'string',
+									},
+									user_department: {
+										type: 'string',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+									},
 								},
 							},
 						},
@@ -309,9 +347,51 @@ const pathPurchaseEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/purchase/entry',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+									},
+									purchase_description_uuid: {
+										type: 'string',
+									},
+									material_info_uuid: {
+										type: 'string',
+									},
+									material_name: {
+										type: 'string',
+									},
+									quantity: {
+										type: 'number',
+									},
+									price: {
+										type: 'number',
+									},
+									created_by: {
+										type: 'string',
+									},
+									user_name: {
+										type: 'string',
+									},
+									user_designation: {
+										type: 'string',
+									},
+									user_department: {
+										type: 'string',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+									},
 								},
 							},
 						},
