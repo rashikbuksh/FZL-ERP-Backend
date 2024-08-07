@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
@@ -33,7 +33,9 @@ export async function selectMarketingUser(req, res, next) {
 	const userPromise = db
 		.select({
 			value: hrSchema.users.uuid,
-			label: hrSchema.users.name,
+			label: sql`concat(users.name,
+				' - ',
+				designation.designation)`,
 		})
 		.from(hrSchema.users)
 		.leftJoin(
