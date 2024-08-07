@@ -56,10 +56,10 @@ export const defPurchaseVendor = {
 
 export const description = purchase.table("description", {
 	uuid: uuid("uuid").primaryKey(),
-	vendor_uuid: uuid("vendor_uuid").references(() => vendor.uuid),
+	vendor_uuid: uuid("vendor_uuid"),
 	is_local: integer("is_local").notNull(),
 	lc_number: text("lc_number").default(null),
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
+	created_by: uuid("created_by"),
 	created_at: timestamp("created_at").notNull(),
 	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
@@ -104,12 +104,8 @@ export const defPurchaseDescription = {
 
 export const entry = purchase.table("entry", {
 	uuid: uuid("uuid").primaryKey(),
-	purchase_description_uuid: uuid("purchase_description_uuid").references(
-		() => description.uuid
-	),
-	material_info_uuid: uuid("material_info_uuid").references(
-		() => materialSchema.info.uuid
-	),
+	purchase_description_uuid: uuid("purchase_description_uuid"),
+	material_info_uuid: uuid("material_info_uuid"),
 	quantity: decimal("quantity", {
 		precision: 20,
 		scale: 4,
@@ -118,7 +114,7 @@ export const entry = purchase.table("entry", {
 		precision: 20,
 		scale: 4,
 	}).default(null),
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
+	created_by: uuid("created_by"),
 	created_at: timestamp("created_at").notNull(),
 	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),

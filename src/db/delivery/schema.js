@@ -15,7 +15,7 @@ export const packing_list = delivery.table("packing_list", {
 	uuid: uuid("uuid").primaryKey(),
 	carton_size: text("carton_size").notNull(),
 	carton_weight: text("carton_weight").notNull(),
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
+	created_by: uuid("created_by"),
 	created_at: timestamp("created_at").notNull(),
 	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
@@ -64,9 +64,7 @@ export const defPackingList = {
 
 export const packing_list_entry = delivery.table("packing_list_entry", {
 	uuid: uuid("uuid").primaryKey(),
-	packing_list_uuid: uuid("packing_list_uuid").references(
-		() => packing_list.uuid
-	),
+	packing_list_uuid: uuid("packing_list_uuid"),
 	sfg_uuid: uuid("sfg_uuid"),
 	quantity: decimal("quantity", {
 		precision: 20,
@@ -122,9 +120,9 @@ export const defPackingListEntry = {
 export const challan = delivery.table("challan", {
 	uuid: uuid("uuid").primaryKey(),
 	carton_quantity: integer("carton_quantity").notNull(),
-	assign_to: uuid("assign_to").references(() => hrSchema.users.uuid),
+	assign_to: uuid("assign_to"),
 	receive_status: integer("receive_status").default(0),
-	created_by: uuid("created_by").references(() => hrSchema.users.uuid),
+	created_by: uuid("created_by"),
 	created_at: timestamp("created_at").notNull(),
 	updated_at: timestamp("updated_at").default(null),
 	remarks: text("remarks").default(null),
@@ -177,10 +175,8 @@ export const defChallan = {
 
 export const challan_entry = delivery.table("challan_entry", {
 	uuid: uuid("uuid").primaryKey(),
-	challan_uuid: uuid("challan_uuid").references(() => challan.uuid),
-	packing_list_uuid: uuid("packing_list_uuid").references(
-		() => packing_list.uuid
-	),
+	challan_uuid: uuid("challan_uuid"),
+	packing_list_uuid: uuid("packing_list_uuid"),
 	delivery_quantity: decimal("delivery_quantity", {
 		precision: 20,
 		scale: 4,
