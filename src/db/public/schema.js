@@ -65,7 +65,7 @@ export const marketing = pgTable('marketing', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
-	user_uuid: uuid('user_uuid'),
+	user_uuid: defaultUUID('user_uuid'),
 	remarks: text('remarks').default(null),
 });
 

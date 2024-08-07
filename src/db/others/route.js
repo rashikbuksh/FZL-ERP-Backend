@@ -10,6 +10,20 @@ otherRouter.get(
 	'/marketing-user/value/label',
 	otherOperations.selectMarketingUser
 );
+otherRouter.get('/buyer/value/label', otherOperations.selectBuyer);
+otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
+otherRouter.get(
+	'/material-section/value/label',
+	otherOperations.selectMaterialSection
+);
+otherRouter.get(
+	'/material-type/value/label',
+	otherOperations.selectMaterialType
+);
+otherRouter.get(
+	'/material/value/label/unit/quantity',
+	otherOperations.selectMaterial
+);
 
 export const pathOthers = {
 	'/other/marketing-user/value/label': {
