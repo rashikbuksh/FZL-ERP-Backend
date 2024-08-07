@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { merchandiser } from '../schema.js';
+import { merchandiser, party } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -109,7 +109,19 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(merchandiser);
+	const resultPromise = db
+		.select({
+			uuid: merchandiser.uuid,
+			party_uuid: merchandiser.party_uuid,
+			party_name: party.name,
+			name: merchandiser.name,
+			email: merchandiser.email,
+			phone: merchandiser.phone,
+			created_at: merchandiser.created_at,
+			updated_at: merchandiser.updated_at,
+		})
+		.from(merchandiser)
+		.leftJoin(party, eq(merchandiser.party_uuid, party.uuid));
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -127,8 +139,18 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const merchandiserPromise = db
-		.select()
+		.select({
+			uuid: merchandiser.uuid,
+			party_uuid: merchandiser.party_uuid,
+			party_name: party.name,
+			name: merchandiser.name,
+			email: merchandiser.email,
+			phone: merchandiser.phone,
+			created_at: merchandiser.created_at,
+			updated_at: merchandiser.updated_at,
+		})
 		.from(merchandiser)
+		.leftJoin(party, eq(merchandiser.party_uuid, party.uuid))
 		.where(eq(merchandiser.uuid, req.params.uuid));
 
 	const toast = {

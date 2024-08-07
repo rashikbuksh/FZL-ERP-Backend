@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, time, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
@@ -101,8 +101,12 @@ export const merchandiser = pgTable('merchandiser', {
 	email: text('email').default(null),
 	phone: text('phone').default(null),
 	address: text('address').default(null),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: timestamp('created_at', {
+		withTimezone: false,
+	}).notNull(),
+	updated_at: timestamp('updated_at', {
+		withTimezone: false,
+	}).default(null),
 });
 
 export const defPublicMerchandiser = {
@@ -130,10 +134,12 @@ export const defPublicMerchandiser = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			timezone: false,
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			timezone: false,
 		},
 	},
 	xml: {

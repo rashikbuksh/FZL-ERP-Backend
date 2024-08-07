@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { factory } from '../schema.js';
+import { factory, party } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -105,7 +105,19 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(factory);
+	const resultPromise = db
+		.select({
+			uuid: factory.uuid,
+			party_uuid: factory.party_uuid,
+			party_name: party.name,
+			name: factory.name,
+			phone: factory.phone,
+			address: factory.address,
+			created_at: factory.created_at,
+			updated_at: factory.updated_at,
+		})
+		.from(factory)
+		.leftJoin(party, eq(factory.party_uuid, party.uuid));
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -123,8 +135,18 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const factoryPromise = db
-		.select()
+		.select({
+			uuid: factory.uuid,
+			party_uuid: factory.party_uuid,
+			party_name: party.name,
+			name: factory.name,
+			phone: factory.phone,
+			address: factory.address,
+			created_at: factory.created_at,
+			updated_at: factory.updated_at,
+		})
 		.from(factory)
+		.leftJoin(party, eq(factory.party_uuid, party.uuid))
 		.where(eq(factory.uuid, req.params.uuid));
 	const toast = {
 		status: 200,
