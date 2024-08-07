@@ -110,6 +110,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: marketing.uuid,
 			name: marketing.name,
+			short_name: marketing.short_name,
 			user_uuid: marketing.user_uuid,
 			user_designation: hrSchema.designation.designation,
 			remarks: marketing.remarks,
