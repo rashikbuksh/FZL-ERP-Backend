@@ -1,15 +1,7 @@
-import {
-	decimal,
-	integer,
-	pgSchema,
-	serial,
-	text,
-	timestamp,
-	uuid,
-} from 'drizzle-orm/pg-core';
+import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
-import { defaultUUID, uuid_primary } from '../variables.js';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const slider = pgSchema('slider');
@@ -74,8 +66,8 @@ export const stock = slider.table('stock', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -192,8 +184,8 @@ export const die_casting = slider.table('die_casting', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -284,8 +276,8 @@ export const die_casting_production = slider.table('die_casting_production', {
 	}).notNull(),
 	order_info_uuid: defaultUUID('order_info_uuid'),
 	created_by: defaultUUID('created_by').notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -356,8 +348,8 @@ export const die_casting_transaction = slider.table('die_casting_transaction', {
 		scale: 4,
 	}).notNull(),
 	created_by: defaultUUID('created_by').notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -415,8 +407,8 @@ export const transaction = slider.table('transaction', {
 		scale: 4,
 	}).notNull(),
 	created_by: defaultUUID('created_by').notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -474,8 +466,8 @@ export const coloring_transaction = slider.table('coloring_transaction', {
 		scale: 4,
 	}).notNull(),
 	created_by: defaultUUID('created_by').notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 

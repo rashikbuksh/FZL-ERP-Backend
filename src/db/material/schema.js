@@ -1,5 +1,5 @@
-import { decimal, pgSchema, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { defaultUUID, uuid_primary } from '../variables.js';
+import { decimal, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
 import * as zipperSchema from '../zipper/schema.js';
@@ -78,8 +78,8 @@ export const info = material.table('info', {
 		.notNull()
 		.default(0.0),
 	description: text('description').default(null),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 export const defMaterialInfo = {
@@ -385,8 +385,8 @@ export const trx = material.table('trx', {
 		scale: 4,
 	}).notNull(),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 export const defMaterialTrx = {
@@ -447,8 +447,8 @@ export const used = material.table('used', {
 		.notNull()
 		.default(0.0),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 export const defMaterialUsed = {
@@ -506,8 +506,8 @@ export const stock_to_sfg = material.table('stock_to_sfg', {
 		scale: 4,
 	}).notNull(),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 

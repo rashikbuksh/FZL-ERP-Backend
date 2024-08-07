@@ -1,13 +1,6 @@
-import {
-	decimal,
-	integer,
-	pgSchema,
-	text,
-	timestamp,
-	uuid,
-} from 'drizzle-orm/pg-core';
+import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
-import { defaultUUID, uuid_primary } from '../variables.js';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const delivery = pgSchema('delivery');
@@ -17,8 +10,8 @@ export const packing_list = delivery.table('packing_list', {
 	carton_size: text('carton_size').notNull(),
 	carton_weight: text('carton_weight').notNull(),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -69,8 +62,8 @@ export const packing_list_entry = delivery.table('packing_list_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -119,8 +112,8 @@ export const challan = delivery.table('challan', {
 	assign_to: defaultUUID('assign_to'),
 	receive_status: integer('receive_status').default(0),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -174,8 +167,8 @@ export const challan_entry = delivery.table('challan_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 

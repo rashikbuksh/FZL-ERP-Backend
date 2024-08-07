@@ -1,11 +1,5 @@
-import {
-	decimal,
-	integer,
-	pgSchema,
-	text,
-	timestamp,
-} from 'drizzle-orm/pg-core';
-import { defaultUUID, uuid_primary } from '../variables.js';
+import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
@@ -19,8 +13,8 @@ export const bank = commercial.table('bank', {
 	swift_code: text('swift_code').notNull(),
 	address: text('address').default(null),
 	policy: text('policy').default(null),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -70,27 +64,27 @@ export const lc = commercial.table('lc', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	payment_date: timestamp('payment_date').default(null),
+	payment_date: DateTime('payment_date').default(null),
 	ldbc_fdbc: text('ldbc_fdbc').notNull(),
-	acceptance_date: timestamp('acceptance_date').default(null),
-	maturity_date: timestamp('maturity_date').default(null),
+	acceptance_date: DateTime('acceptance_date').default(null),
+	maturity_date: DateTime('maturity_date').default(null),
 	commercial_executive: text('commercial_executive').notNull(),
 	party_bank: text('party_bank').notNull(),
 	production_complete: integer('production_complete').default(0),
 	lc_cancel: integer('lc_cancel').default(0),
-	handover_date: timestamp('handover_date').default(null),
-	shipment_date: timestamp('shipment_date').default(null),
-	expiry_date: timestamp('expiry_date').default(null),
+	handover_date: DateTime('handover_date').default(null),
+	shipment_date: DateTime('shipment_date').default(null),
+	expiry_date: DateTime('expiry_date').default(null),
 	ud_no: text('ud_no').default(null),
 	ud_received: text('ud_received').default(null),
 	at_sight: text('at_sight').notNull(),
-	amd_date: timestamp('amd_date').default(null),
+	amd_date: DateTime('amd_date').default(null),
 	amd_count: integer('amd_count').default(0),
 	problematical: integer('problematical').default(0),
 	epz: integer('epz').default(0),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -222,8 +216,8 @@ export const pi = commercial.table('pi', {
 	validity: integer('validity').notNull(), // need review
 	payment: integer('payment').notNull(), // need review
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -305,8 +299,8 @@ export const pi_entry = commercial.table('pi_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 

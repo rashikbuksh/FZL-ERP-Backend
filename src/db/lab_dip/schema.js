@@ -4,12 +4,11 @@ import {
 	pgSchema,
 	serial,
 	text,
-	timestamp,
 	uuid,
 } from 'drizzle-orm/pg-core';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
-import { defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const lab_dip = pgSchema('lab_dip');
@@ -21,8 +20,8 @@ export const info = lab_dip.table('info', {
 	order_info_uuid: defaultUUID('order_info_uuid'),
 	lab_status: text('lab_status').default(null),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -73,8 +72,8 @@ export const recipe = lab_dip.table('recipe', {
 	approved: integer('approved').default(0),
 	created_by: defaultUUID('created_by'),
 	status: integer('status').default(0),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -128,8 +127,8 @@ export const recipe_entry = lab_dip.table('recipe_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 

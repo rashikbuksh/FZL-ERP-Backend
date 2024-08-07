@@ -1,5 +1,5 @@
-import { pgTable, text, time, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { defaultUUID, uuid_primary } from '../variables.js';
+import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
 
@@ -101,12 +101,8 @@ export const merchandiser = pgTable('merchandiser', {
 	email: text('email').default(null),
 	phone: text('phone').default(null),
 	address: text('address').default(null),
-	created_at: timestamp('created_at', {
-		withTimezone: false,
-	}).notNull(),
-	updated_at: timestamp('updated_at', {
-		withTimezone: false,
-	}).default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 });
 
 export const defPublicMerchandiser = {
@@ -134,12 +130,10 @@ export const defPublicMerchandiser = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
-			timezone: false,
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
-			timezone: false,
 		},
 	},
 	xml: {
@@ -153,8 +147,14 @@ export const factory = pgTable('factory', {
 	name: text('name').notNull(),
 	phone: text('phone').default(null),
 	address: text('address').default(null),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at', {
+		mode: 'string',
+		withTimezone: false,
+	}).notNull(),
+	updated_at: DateTime('updated_at', {
+		mode: 'string',
+		withTimezone: false,
+	}).default(null),
 });
 
 export const defPublicFactory = {
@@ -227,8 +227,14 @@ export const properties = pgTable('properties', {
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at', {
+		mode: 'string',
+		withTimezone: false,
+	}).notNull(),
+	updated_at: DateTime('updated_at', {
+		mode: 'string',
+		withTimezone: false,
+	}).default(null),
 	remarks: text('remarks').default(null),
 });
 

@@ -1,4 +1,4 @@
-import { text } from 'drizzle-orm/pg-core';
+import { text, timestamp } from 'drizzle-orm/pg-core';
 
 export const defaultUUID = (column = 'uuid') =>
 	text(column, {
@@ -6,3 +6,9 @@ export const defaultUUID = (column = 'uuid') =>
 	});
 
 export const uuid_primary = defaultUUID().primaryKey();
+
+export const DateTime = (column) =>
+	timestamp(column, {
+		mode: 'string',
+		withTimezone: false,
+	});

@@ -117,6 +117,7 @@ export async function selectAll(req, res, next) {
 			name: merchandiser.name,
 			email: merchandiser.email,
 			phone: merchandiser.phone,
+			address: merchandiser.address,
 			created_at: merchandiser.created_at,
 			updated_at: merchandiser.updated_at,
 		})
@@ -146,6 +147,7 @@ export async function select(req, res, next) {
 			name: merchandiser.name,
 			email: merchandiser.email,
 			phone: merchandiser.phone,
+			address: merchandiser.address,
 			created_at: merchandiser.created_at,
 			updated_at: merchandiser.updated_at,
 		})

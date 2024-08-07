@@ -1,12 +1,5 @@
-import {
-	decimal,
-	integer,
-	pgSchema,
-	text,
-	timestamp,
-	uuid,
-} from 'drizzle-orm/pg-core';
-import { defaultUUID, uuid_primary } from '../variables.js';
+import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
 import * as materialSchema from '../material/schema.js';
@@ -60,8 +53,8 @@ export const description = purchase.table('description', {
 	is_local: integer('is_local').notNull(),
 	lc_number: text('lc_number').default(null),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -112,8 +105,8 @@ export const entry = purchase.table('entry', {
 		scale: 4,
 	}).default(null),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 

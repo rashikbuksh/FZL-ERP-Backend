@@ -1,14 +1,12 @@
 import {
 	decimal,
 	integer,
-	jsonb,
 	pgSchema,
 	serial,
 	text,
-	timestamp,
 	uuid,
 } from 'drizzle-orm/pg-core';
-import { defaultUUID, uuid_primary } from '../variables.js';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
@@ -56,8 +54,8 @@ export const order_info = zipper.table('order_info', {
 	factory_priority: text('factory_priority').default(null),
 	status: integer('status').notNull().default(0),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -169,8 +167,8 @@ export const order_description = zipper.table('order_description', {
 	is_logo_puller: integer('is_logo_puller').notNull().default(0),
 	description: text('description').default(null),
 	status: integer('status').notNull().default(0),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 	slider_body_shape: defaultUUID('slider_body_shape'),
 	slider_link: defaultUUID('slider_link'),
@@ -344,8 +342,8 @@ export const order_entry = zipper.table('order_entry', {
 	status: integer('status').default(1),
 	swatch_status: swatchStatusEnum('swatch_status_enum').default('pending'),
 	swap_approval_date: text('swap_approval_date').default(null),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -547,8 +545,8 @@ export const sfg_production = zipper.table('sfg_production', {
 		.notNull()
 		.default(0.0),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -613,8 +611,8 @@ export const sfg_transaction = zipper.table('sfg_transaction', {
 	}).notNull(),
 	slider_item_uuid: defaultUUID('slider_item_uuid'), //	slider_item_uuid: uuid('slider_item_uuid').references(() => sliderSchema.stock.uuid),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -677,8 +675,8 @@ export const batch = zipper.table('batch', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -725,8 +723,8 @@ export const batch_entry = zipper.table('batch_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -783,8 +781,8 @@ export const dying_batch = zipper.table('dying_batch', {
 	id: serial('id').notNull(),
 	mc_no: integer('mc_no').notNull(),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -834,8 +832,8 @@ export const dying_batch_entry = zipper.table('dying_batch_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -955,8 +953,8 @@ export const tape_to_coil = zipper.table('tape_to_coil', {
 		scale: 4,
 	}).notNull(),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -1014,8 +1012,8 @@ export const tape_coil_production = zipper.table('tape_coil_production', {
 		.notNull()
 		.default(0.0),
 	created_by: defaultUUID('created_by'),
-	created_at: timestamp('created_at').notNull(),
-	updated_at: timestamp('updated_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
