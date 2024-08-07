@@ -258,25 +258,3 @@ export async function selectUsersAccessPages(req, res, next) {
 
 	handleResponse({ promise: userPromise, res, next, ...toast });
 }
-
-export async function selectMarketingUser(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
-
-	const userPromise = db
-		.select({
-			value: users.uuid,
-			label: users.name,
-		})
-		.from(users)
-		.leftJoin(designation, eq(users.designation_uuid, designation.uuid))
-		.leftJoin(department, eq(designation.department_uuid, department.uuid))
-		.where(eq(department.department, 'Sales And Marketing'));
-
-	const toast = {
-		status: 200,
-		type: 'select',
-		msg: 'marketing user',
-	};
-
-	handleResponse({ promise: userPromise, res, next, ...toast });
-}

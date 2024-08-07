@@ -232,29 +232,6 @@ export const pathHrUser = {
 			},
 		},
 	},
-	'/hr/marketing-user/value/label': {
-		get: {
-			tags: ['hr.user'],
-			summary: 'get all marketing users',
-			description: 'All marketing users',
-			operationId: 'getAllMarketingUsers',
-			responses: {
-				200: {
-					description: 'Returns a all marketing user.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/hr/user',
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	},
 };
 
 hrRouter.post('/user/login', userOperations.loginUser);
@@ -264,7 +241,6 @@ hrRouter.get('/user/:uuid', validateUuidParam(), userOperations.select);
 hrRouter.post('/user', userOperations.insert);
 hrRouter.put('/user/:uuid', userOperations.update);
 hrRouter.delete('/user/:uuid', validateUuidParam(), userOperations.remove);
-hrRouter.get('/marketing-user/value/label', userOperations.selectMarketingUser);
 
 // department routes
 export const pathHrDepartment = {

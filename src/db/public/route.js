@@ -11,7 +11,7 @@ const publicRouter = Router();
 
 // buyer
 const pathPublicBuyer = {
-	'/public/buyer': {
+	'/public/public/buyer': {
 		get: {
 			summary: 'Get all buyers',
 			tags: ['public.buyer'],
@@ -54,7 +54,7 @@ const pathPublicBuyer = {
 			},
 		},
 	},
-	'/buyer/{uuid}': {
+	'/public/buyer/{uuid}': {
 		get: {
 			summary: 'Get a buyer',
 			tags: ['public.buyer'],
@@ -153,7 +153,7 @@ publicRouter.delete(
 
 // factory
 const pathPublicFactory = {
-	'/factory': {
+	'/public/factory': {
 		get: {
 			summary: 'Get all factories',
 			tags: ['public.factory'],
@@ -196,7 +196,7 @@ const pathPublicFactory = {
 			},
 		},
 	},
-	'/factory/{uuid}': {
+	'/public/factory/{uuid}': {
 		get: {
 			summary: 'Get a factory',
 			tags: ['public.factory'],
@@ -299,7 +299,7 @@ publicRouter.delete(
 
 // marketing
 const pathPublicMarketing = {
-	'/marketing': {
+	'/public/marketing': {
 		get: {
 			summary: 'Get all marketing',
 			tags: ['public.marketing'],
@@ -342,7 +342,7 @@ const pathPublicMarketing = {
 			},
 		},
 	},
-	'/marketing/{uuid}': {
+	'/public/marketing/{uuid}': {
 		get: {
 			summary: 'Get a marketing',
 			tags: ['public.marketing'],
@@ -445,7 +445,7 @@ publicRouter.delete(
 
 // merchandiser
 const pathPublicMerchandiser = {
-	'/merchandiser': {
+	'/public/merchandiser': {
 		get: {
 			summary: 'Get all merchandisers',
 			tags: ['public.merchandiser'],
@@ -488,7 +488,7 @@ const pathPublicMerchandiser = {
 			},
 		},
 	},
-	'/merchandiser/{uuid}': {
+	'/public/merchandiser/{uuid}': {
 		get: {
 			summary: 'Get a merchandiser',
 			tags: ['public.merchandiser'],
@@ -591,7 +591,7 @@ publicRouter.delete(
 
 // party
 const pathPublicParty = {
-	'/party': {
+	'/public/party': {
 		get: {
 			summary: 'Get all parties',
 			tags: ['public.party'],
@@ -634,7 +634,7 @@ const pathPublicParty = {
 			},
 		},
 	},
-	'/party/{uuid}': {
+	'/public/party/{uuid}': {
 		get: {
 			summary: 'Get a party',
 			tags: ['public.party'],
@@ -733,7 +733,7 @@ publicRouter.delete(
 
 // properties
 const pathPublicProperties = {
-	'/properties': {
+	'/public/properties': {
 		get: {
 			summary: 'Get all properties',
 			tags: ['public.properties'],
@@ -776,7 +776,7 @@ const pathPublicProperties = {
 			},
 		},
 	},
-	'/properties/{uuid}': {
+	'/public/properties/{uuid}': {
 		get: {
 			summary: 'Get a properties',
 			tags: ['public.properties'],
@@ -879,7 +879,7 @@ publicRouter.delete(
 
 // section
 const pathPublicSection = {
-	'/section': {
+	'/public/section': {
 		get: {
 			summary: 'Get all sections',
 			tags: ['public.section'],
@@ -922,7 +922,7 @@ const pathPublicSection = {
 			},
 		},
 	},
-	'/section/{uuid}': {
+	'/public/section/{uuid}': {
 		get: {
 			summary: 'Get a section',
 			tags: ['public.section'],
