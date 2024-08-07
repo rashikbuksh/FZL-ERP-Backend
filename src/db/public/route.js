@@ -165,9 +165,39 @@ const pathPublicFactory = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/public/factory',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+									},
+									party_uuid: {
+										type: 'string',
+									},
+									party_name: {
+										type: 'string',
+									},
+									name: {
+										type: 'string',
+									},
+									email: {
+										type: 'string',
+									},
+									phone: {
+										type: 'string',
+									},
+									address: {
+										type: 'string',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
 								},
 							},
 						},
@@ -457,9 +487,39 @@ const pathPublicMerchandiser = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/public/merchandiser',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+									},
+									party_uuid: {
+										type: 'string',
+									},
+									party_name: {
+										type: 'string',
+									},
+									name: {
+										type: 'string',
+									},
+									email: {
+										type: 'string',
+									},
+									phone: {
+										type: 'string',
+									},
+									address: {
+										type: 'string',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
 								},
 							},
 						},
@@ -511,7 +571,39 @@ const pathPublicMerchandiser = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/public/merchandiser',
+								properties: {
+									uuid: {
+										type: 'string',
+									},
+									party_uuid: {
+										type: 'string',
+									},
+									party_name: {
+										type: 'string',
+									},
+									name: {
+										type: 'string',
+									},
+									email: {
+										type: 'string',
+									},
+									phone: {
+										type: 'string',
+									},
+									address: {
+										type: 'string',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+								},
 							},
 						},
 					},

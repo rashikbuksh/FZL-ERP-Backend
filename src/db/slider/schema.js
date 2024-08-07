@@ -147,10 +147,12 @@ export const defStock = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -249,10 +251,12 @@ export const defDieCasting = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -325,10 +329,12 @@ export const defDieCastingProduction = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -382,10 +388,12 @@ export const defDieCastingTransaction = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -441,10 +449,12 @@ export const defTransaction = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -500,10 +510,12 @@ export const defColoringTransaction = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',

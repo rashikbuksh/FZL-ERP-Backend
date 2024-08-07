@@ -91,7 +91,7 @@ export function selectSpecificMerchandiser(req, res, next) {
 			publicSchema.party,
 			eq(publicSchema.merchandiser.party_uuid, publicSchema.party.uuid)
 		)
-		.where(eq(publicSchema.party.uuid, req.params.uuid));
+		.where(eq(publicSchema.party.uuid, req.params.party_uuid));
 
 	const toast = {
 		status: 200,
@@ -120,7 +120,7 @@ export function selectSpecificFactory(req, res, next) {
 			publicSchema.party,
 			eq(publicSchema.factory.party_uuid, publicSchema.party.uuid)
 		)
-		.where(eq(publicSchema.party.uuid, req.params.uuid));
+		.where(eq(publicSchema.party.uuid, req.params.party_uuid));
 
 	const toast = {
 		status: 200,

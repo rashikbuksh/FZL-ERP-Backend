@@ -40,10 +40,12 @@ export const defPackingList = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -92,10 +94,12 @@ export const defPackingListEntry = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -145,10 +149,12 @@ export const defChallan = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -197,10 +203,12 @@ export const defChallanEntry = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',

@@ -79,9 +79,13 @@ export const defPurchaseDescription = {
 		},
 		created_at: {
 			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -141,9 +145,13 @@ export const defPurchaseEntry = {
 		},
 		created_at: {
 			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',

@@ -40,10 +40,12 @@ export const defCommercialBank = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -126,6 +128,7 @@ export const defCommercialLc = {
 		payment_date: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		ldbc_fdbc: {
 			type: 'string',
@@ -133,10 +136,12 @@ export const defCommercialLc = {
 		acceptance_date: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		maturity_date: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		commercial_executive: {
 			type: 'string',
@@ -153,14 +158,17 @@ export const defCommercialLc = {
 		handover_date: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		shipment_date: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		expiry_date: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		ud_no: {
 			type: 'string',
@@ -174,6 +182,7 @@ export const defCommercialLc = {
 		amd_date: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		amd_count: {
 			type: 'integer',
@@ -190,10 +199,12 @@ export const defCommercialLc = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -277,10 +288,12 @@ export const defCommercialPi = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -323,10 +336,12 @@ export const defCommercialPiEntry = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',

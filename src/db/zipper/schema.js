@@ -125,10 +125,12 @@ export const def_zipper_order_info = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -280,10 +282,12 @@ export const def_zipper_order_description = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -395,10 +399,12 @@ export const def_zipper_order_entry = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -586,10 +592,12 @@ export const def_zipper_sfg_production = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -656,10 +664,12 @@ export const def_zipper_sfg_transaction = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -693,10 +703,12 @@ export const def_zipper_batch = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -761,10 +773,12 @@ export const def_zipper_batch_entry = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -793,6 +807,9 @@ export const def_zipper_dying_batch = {
 		uuid: {
 			type: 'string',
 		},
+		id: {
+			type: 'serial',
+		},
 		mc_no: {
 			type: 'integer',
 		},
@@ -802,10 +819,12 @@ export const def_zipper_dying_batch = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -870,10 +889,12 @@ export const def_zipper_dying_batch_entry = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -983,10 +1004,12 @@ export const def_zipper_tape_to_coil = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -1050,10 +1073,12 @@ export const def_zipper_tape_coil_production = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',

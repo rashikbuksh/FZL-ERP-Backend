@@ -121,10 +121,12 @@ export const defMaterialInfo = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -418,10 +420,12 @@ export const defMaterialTrx = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -481,10 +485,12 @@ export const defMaterialUsed = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
@@ -544,10 +550,12 @@ export const defMaterialStockToSfg = {
 		created_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
 			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
