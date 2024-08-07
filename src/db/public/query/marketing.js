@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { marketing } from '../schema.js';
 
@@ -105,7 +106,20 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(marketing);
+	const resultPromise = db
+		.select({
+			uuid: marketing.uuid,
+			name: marketing.name,
+			user_uuid: marketing.user_uuid,
+			user_designation: hrSchema.designation.designation,
+			remarks: marketing.remarks,
+		})
+		.from(marketing)
+		.leftJoin(hrSchema.users, eq(marketing.user_uuid, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		);
 
 	const toast = {
 		status: 200,
@@ -125,8 +139,19 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const marketingPromise = db
-		.select()
+		.select({
+			uuid: marketing.uuid,
+			name: marketing.name,
+			user_uuid: marketing.user_uuid,
+			user_designation: hrSchema.designation.designation,
+			remarks: marketing.remarks,
+		})
 		.from(marketing)
+		.leftJoin(hrSchema.users, eq(marketing.user_uuid, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
 		.where(eq(marketing.uuid, req.params.uuid));
 
 	const toast = {
