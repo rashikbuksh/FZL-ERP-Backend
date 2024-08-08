@@ -7,6 +7,7 @@ import * as hrSchema from '../../hr/schema.js';
 import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
+import * as zipperSchema from '../../zipper/schema.js';
 
 // public
 export async function selectParty(req, res, next) {
@@ -131,6 +132,52 @@ export function selectSpecificFactory(req, res, next) {
 
 	handleResponse({
 		promise: factoryPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+export function selectMarketing(req, res, next) {
+	const marketingPromise = db
+		.select({
+			value: publicSchema.marketing.uuid,
+			label: publicSchema.marketing.name,
+		})
+		.from(publicSchema.marketing);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Marketing list',
+	};
+	handleResponse({
+		promise: marketingPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+// zipper
+export function selectOrderInfo(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const orderInfoPromise = db
+		.select({
+			value: zipperSchema.order_info.uuid,
+			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		})
+		.from(zipperSchema.order_info);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Order Info list',
+	};
+
+	handleResponse({
+		promise: orderInfoPromise,
 		res,
 		next,
 		...toast,

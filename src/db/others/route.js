@@ -19,6 +19,7 @@ otherRouter.get(
 	'/factory/value/label/:party_uuid',
 	otherOperations.selectSpecificFactory
 );
+otherRouter.get('/marketing/value/label', otherOperations.selectMarketing);
 
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
@@ -36,6 +37,7 @@ otherRouter.get(
 	'/material/value/label/unit/quantity',
 	otherOperations.selectMaterial
 );
+otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
 
 // commercial
 otherRouter.get('/bank/value/label', otherOperations.selectBank);
@@ -164,6 +166,54 @@ const pathPublic = {
 			responses: {
 				200: {
 					description: 'Returns a all factories.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: { type: 'string' },
+									label: { type: 'string' },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/marketing/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all marketing',
+			description: 'All marketing',
+			operationId: 'getAllMarketing',
+			responses: {
+				200: {
+					description: 'Returns a all marketing.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: { type: 'string' },
+									label: { type: 'string' },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/order/info/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all order info',
+			description: 'All order info',
+			operationId: 'getAllOrderInfo',
+			responses: {
+				200: {
+					description: 'Returns a all order info.',
 					content: {
 						'application/json': {
 							schema: {
