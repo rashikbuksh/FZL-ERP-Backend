@@ -1,5 +1,6 @@
 import { request, Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
+import { marketing, merchandiser, properties } from '../public/schema.js';
 import * as bankOperations from './query/bank.js';
 import * as lcOperations from './query/lc.js';
 import * as piOperations from './query/pi.js';
@@ -333,9 +334,119 @@ export const pathCommercialPi = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/commercial/pi',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									lc_uuid: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									lc_number: {
+										type: 'string',
+										example: '123456',
+									},
+									order_info_ids: {
+										type: 'array',
+										items: {
+											type: 'string',
+											example:
+												'123e4567-e89b-12d3-a456-426614174000',
+										},
+									},
+									marketing_uuid: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'marketing',
+									},
+									party_uuid: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									party_name: {
+										type: 'string',
+										example: 'party',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'merchandiser',
+									},
+									factory_uuid: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'ABC',
+									},
+									bank_uuid: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									bank_name: {
+										type: 'string',
+										example: 'Bangladesh Bank',
+									},
+
+									bank_swift_code: {
+										type: 'string',
+										example: 'BB',
+									},
+									validity: {
+										type: 'string',
+										example: '2021-12-12',
+									},
+									payment: {
+										type: 'string',
+										example: 'paid',
+									},
+									created_by: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									user_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'HR',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									update_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
 								},
 							},
 						},
