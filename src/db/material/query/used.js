@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import material, { info, used } from '../schema.js';
+import { info, used } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
