@@ -2,6 +2,7 @@ import { eq, sql } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
+import * as commercialSchema from '../../commercial/schema.js';
 import * as hrSchema from '../../hr/schema.js';
 import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
@@ -222,6 +223,29 @@ export async function selectMaterial(req, res, next) {
 	};
 	handleResponse({
 		promise: infoPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+// Commercial
+
+export async function selectBank(req, res, next) {
+	const bankPromise = db
+		.select({
+			value: commercialSchema.bank.uuid,
+			label: commercialSchema.bank.name,
+		})
+		.from(commercialSchema.bank);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Bank list',
+	};
+	handleResponse({
+		promise: bankPromise,
 		res,
 		next,
 		...toast,

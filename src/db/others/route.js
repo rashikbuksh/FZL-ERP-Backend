@@ -37,6 +37,9 @@ otherRouter.get(
 	otherOperations.selectMaterial
 );
 
+// commercial
+otherRouter.get('/bank/value/label', otherOperations.selectBank);
+
 const pathPublic = {
 	'/other/party/value/label': {
 		get: {
@@ -282,7 +285,39 @@ const pathMaterial = {
 	},
 };
 
-export const pathOthers = { ...pathPublic, ...pathPurchase, ...pathMaterial };
+const pathCommercial = {
+	'/other/bank/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all banks',
+			description: 'All banks',
+			operationId: 'getAllBanks',
+			responses: {
+				200: {
+					description: 'Returns all banks.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: { type: 'string' },
+									label: { type: 'string' },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+};
+
+export const pathOthers = {
+	...pathPublic,
+	...pathPurchase,
+	...pathMaterial,
+	...pathCommercial,
+};
 
 export const tagOthers = [
 	{
