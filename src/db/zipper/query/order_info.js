@@ -6,8 +6,9 @@ import * as hrSchema from '../../hr/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { order_info } from '../schema.js';
 
-export async function insert(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
+export function insert(req, res, next) {
+	// insert issue persists (multiple insert issue)
+	if (!validateRequest(req, next)) return;
 
 	const {
 		uuid,
@@ -52,23 +53,42 @@ export async function insert(req, res, next) {
 			insertedId: order_info.uuid,
 		});
 
-	orderInfoPromise.then((result) => {
-		const toast = {
-			status: 201,
-			type: 'create',
-			msg: `Order Info created`,
-		};
+	orderInfoPromise
+		.then((result) => {
+			console.log('result', result);
+			const toast = {
+				status: 201,
+				type: 'create',
+				msg: `Order Info created`,
+			};
 
-		handleResponse({
-			promise: orderInfoPromise,
-			res,
-			next,
-			...toast,
+			handleResponse({
+				promise: orderInfoPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'create',
+				msg: `Error creating Order Info - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: orderInfoPromise,
+				res,
+				next,
+				...toast,
+			});
 		});
-	});
 }
 
 export async function update(req, res, next) {
+	// working perfectly in swagger, but issue in frontend
 	if (!(await validateRequest(req, next))) return;
 
 	const {
@@ -89,6 +109,8 @@ export async function update(req, res, next) {
 		updated_at,
 		remarks,
 	} = req.body;
+
+	console.log('req.body', req.body);
 
 	const orderInfoPromise = db
 		.update(order_info)
