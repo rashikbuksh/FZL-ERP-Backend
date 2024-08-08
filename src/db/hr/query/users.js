@@ -258,3 +258,31 @@ export async function selectUsersAccessPages(req, res, next) {
 
 	handleResponse({ promise: userPromise, res, next, ...toast });
 }
+
+export async function selectCommonUsers(req, res, next) {
+	const userPromise = db
+		.select({
+			uuid: users.uuid,
+			name: users.name,
+			email: users.email,
+			designation_uuid: users.designation_uuid,
+			designation: designation.designation,
+			ext: users.ext,
+			phone: users.phone,
+		})
+		.from(users)
+		.leftJoin(designation, eq(users.designation_uuid, designation.uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select_common',
+		msg: 'Common User list',
+	};
+
+	handleResponse({
+		promise: userPromise,
+		res,
+		next,
+		...toast,
+	});
+}

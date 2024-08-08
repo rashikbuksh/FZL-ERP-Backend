@@ -232,6 +232,56 @@ export const pathHrUser = {
 			},
 		},
 	},
+	'/hr/user-common': {
+		get: {
+			tags: ['hr.user'],
+			summary: 'get all common users',
+			description: 'All common users',
+			operationId: 'getAllCommonUsers', // unique identifier of an operation or a route
+			responses: {
+				200: {
+					description: 'Returns all common user.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									email: {
+										type: 'string',
+										example: 'admin@fzl.com',
+									},
+									designaiton_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									designation: {
+										type: 'string',
+										example: 'Admin',
+									},
+									ext: {
+										type: 'string',
+										example: '123',
+									},
+									phone: {
+										type: 'string',
+										example: '12345678910',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 hrRouter.post('/user/login', userOperations.loginUser);
@@ -241,6 +291,7 @@ hrRouter.get('/user/:uuid', validateUuidParam(), userOperations.select);
 hrRouter.post('/user', userOperations.insert);
 hrRouter.put('/user/:uuid', userOperations.update);
 hrRouter.delete('/user/:uuid', validateUuidParam(), userOperations.remove);
+hrRouter.get('/user-common', userOperations.selectCommonUsers);
 
 // department routes
 export const pathHrDepartment = {
