@@ -1,13 +1,23 @@
-import { eq } from "drizzle-orm";
-import { handleResponse, validateRequest } from "../../../util/index.js";
-import db from "../../index.js";
-import { challan } from "../schema.js";
+import { eq } from 'drizzle-orm';
+import { handleResponse, validateRequest } from '../../../util/index.js';
+import db from '../../index.js';
+import { challan } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const challanPromise = db.insert(challan).values(req.body).returning();
-	handleResponse(challanPromise, res, next, 201);
+	const toast = {
+		status: 201,
+		type: 'create',
+		msg: `${req.body.name} created`,
+	};
+	handleResponse({
+		promise: challanPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 export async function update(req, res, next) {
@@ -17,8 +27,39 @@ export async function update(req, res, next) {
 		.update(challan)
 		.set(req.body)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning();
-	handleResponse(challanPromise, res, next, 201);
+		.returning({ updatedName: challan.name });
+
+	challanPromise
+		.then((result) => {
+			const toast = {
+				status: 201,
+				type: 'update',
+				msg: `${result[0].updatedName} updated`,
+			};
+
+			handleResponse({
+				promise: challanPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+			//for error message
+			const toast = {
+				status: 500,
+				type: 'update',
+				msg: `Error updating challan - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: challanPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function remove(req, res, next) {
@@ -27,13 +68,48 @@ export async function remove(req, res, next) {
 	const challanPromise = db
 		.delete(challan)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning();
-	handleResponse(challanPromise, res, next);
+		.returning({ deletedName: challan.name });
+
+	challanPromise
+		.then((result) => {
+			const toast = {
+				status: 201,
+				type: 'delete',
+				msg: `${result[0].deletedName} deleted`,
+			};
+
+			handleResponse({
+				promise: challanPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'delete',
+				msg: `Error deleting challan - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: challanPromise,
+				res,
+				next,
+				...toast,
+			});
+		});
 }
 
 export async function selectAll(req, res, next) {
 	const resultPromise = db.select().from(challan);
-	handleResponse(resultPromise, res, next);
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Challan list',
+	};
 }
 
 export async function select(req, res, next) {
@@ -43,5 +119,16 @@ export async function select(req, res, next) {
 		.select()
 		.from(challan)
 		.where(eq(challan.uuid, req.params.uuid));
-	handleResponse(challanPromise, res, next);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		msg: 'Challan',
+	};
+	handleResponse({
+		promise: challanPromise,
+		res,
+		next,
+		...toast,
+	});
 }
