@@ -56,7 +56,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'create',
-			msg: `${result[0].insertedId} created`,
+			msg: `Order Info created`,
 		};
 
 		handleResponse({
@@ -70,6 +70,10 @@ export async function insert(req, res, next) {
 
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	const { uuid } = req.params;
+
+	console.log('uuid', uuid);
 
 	const {
 		buyer_uuid,
@@ -119,7 +123,7 @@ export async function update(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'update',
-			msg: `${result[0].updatedId} updated`,
+			msg: `Order Info updated`,
 		};
 
 		handleResponse({
