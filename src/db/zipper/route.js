@@ -87,10 +87,6 @@ export const pathZipperOrderInfo = {
 										type: 'string',
 										example: 'Urgent',
 									},
-									merchandiser_priority: {
-										type: 'string',
-										example: 'Urgent',
-									},
 									factory_priority: {
 										type: 'string',
 										example: 'FIFO',

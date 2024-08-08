@@ -240,7 +240,9 @@ export const defCommercialLc = {
 
 export const pi = commercial.table('pi', {
 	uuid: uuid_primary,
-	lc_uuid: defaultUUID('lc_uuid').references(() => commercial.lc.uuid),
+	lc_uuid: defaultUUID('lc_uuid')
+		.default(null)
+		.references(() => lc.uuid),
 	order_info_ids: text('order_info_ids').notNull(), // need review
 	marketing_uuid: defaultUUID('marketing_uuid').references(
 		() => publicSchema.marketing.uuid
@@ -254,7 +256,7 @@ export const pi = commercial.table('pi', {
 	factory_uuid: defaultUUID('factory_uuid').references(
 		() => publicSchema.factory.uuid
 	),
-	bank_uuid: defaultUUID('bank_uuid').references(() => commercial.bank.uuid),
+	bank_uuid: defaultUUID('bank_uuid').references(() => bank.uuid),
 	validity: integer('validity').notNull(), // need review
 	payment: integer('payment').notNull(), // need review
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

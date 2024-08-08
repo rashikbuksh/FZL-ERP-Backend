@@ -90,7 +90,6 @@ export async function selectAll(req, res, next) {
 			is_bill: order_info.is_bill,
 			is_cash: order_info.is_cash,
 			marketing_priority: order_info.marketing_priority,
-			merchandiser_priority: order_info.merchandiser_priority,
 			factory_priority: order_info.factory_priority,
 			status: order_info.status,
 			created_by: order_info.created_by,
@@ -100,18 +99,30 @@ export async function selectAll(req, res, next) {
 			remarks: order_info.remarks,
 		})
 		.from(order_info)
-		.leftJoin(publicSchema.buyer)
-		.on(eq(order_info.buyer_uuid, publicSchema.buyer.uuid))
-		.leftJoin(publicSchema.party)
-		.on(eq(order_info.party_uuid, publicSchema.party.uuid))
-		.leftJoin(publicSchema.marketing)
-		.on(eq(order_info.marketing_uuid, publicSchema.marketing.uuid))
-		.leftJoin(publicSchema.merchandiser)
-		.on(eq(order_info.merchandiser_uuid, publicSchema.merchandiser.uuid))
-		.leftJoin(publicSchema.factory)
-		.on(eq(order_info.factory_uuid, publicSchema.factory.uuid))
-		.leftJoin(hrSchema.users)
-		.on(eq(order_info.created_by, hrSchema.users.uuid));
+		.leftJoin(
+			publicSchema.buyer,
+			eq(order_info.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(order_info.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.marketing,
+			eq(order_info.marketing_uuid, publicSchema.marketing.uuid)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(order_info.merchandiser_uuid, publicSchema.merchandiser.uuid)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(order_info.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(
+			hrSchema.users,
+			eq(order_info.created_by, hrSchema.users.uuid)
+		);
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -148,7 +159,6 @@ export async function select(req, res, next) {
 			is_bill: order_info.is_bill,
 			is_cash: order_info.is_cash,
 			marketing_priority: order_info.marketing_priority,
-			merchandiser_priority: order_info.merchandiser_priority,
 			factory_priority: order_info.factory_priority,
 			status: order_info.status,
 			created_by: order_info.created_by,
@@ -158,18 +168,30 @@ export async function select(req, res, next) {
 			remarks: order_info.remarks,
 		})
 		.from(order_info)
-		.leftJoin(publicSchema.buyer)
-		.on(eq(order_info.buyer_uuid, publicSchema.buyer.uuid))
-		.leftJoin(publicSchema.party)
-		.on(eq(order_info.party_uuid, publicSchema.party.uuid))
-		.leftJoin(publicSchema.marketing)
-		.on(eq(order_info.marketing_uuid, publicSchema.marketing.uuid))
-		.leftJoin(publicSchema.merchandiser)
-		.on(eq(order_info.merchandiser_uuid, publicSchema.merchandiser.uuid))
-		.leftJoin(publicSchema.factory)
-		.on(eq(order_info.factory_uuid, publicSchema.factory.uuid))
-		.leftJoin(hrSchema.users)
-		.on(eq(order_info.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			publicSchema.buyer,
+			eq(order_info.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(order_info.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.marketing,
+			eq(order_info.marketing_uuid, publicSchema.marketing.uuid)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(order_info.merchandiser_uuid, publicSchema.merchandiser.uuid)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(order_info.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(
+			hrSchema.users,
+			eq(order_info.created_by, hrSchema.users.uuid)
+		)
 		.where(eq(order_info.uuid, req.params.uuid));
 	const toast = {
 		status: 200,
