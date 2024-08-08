@@ -34,7 +34,7 @@ export async function update(req, res, next) {
 			const toast = {
 				status: 201,
 				type: 'update',
-				msg: `${result[0].updatedName} updated`,
+				msg: `${result[0].updateName} updated`,
 			};
 
 			handleResponse({
