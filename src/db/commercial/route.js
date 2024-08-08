@@ -1,4 +1,4 @@
-import e, { request, Router } from 'express';
+import { request, Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
 import { type } from '../material/schema.js';
 import {
