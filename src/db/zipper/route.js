@@ -126,17 +126,69 @@ export const pathZipperOrderInfo = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Order Info',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/order_info',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							type: 'object',
+							properties: {
+								uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								reference_order_info_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								buyer_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								party_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								marketing_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								merchandiser_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								factory_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								is_sample: { type: 'integer', example: 0 },
+								is_bill: { type: 'integer', example: 0 },
+								is_cash: { type: 'integer', example: 0 },
+								marketing_priority: {
+									type: 'string',
+									example: 'Urgent',
+								},
+								factory_priority: {
+									type: 'string',
+									example: 'FIFO',
+								},
+								status: { type: 'integer', example: 0 },
+								created_by: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								created_at: {
+									type: 'string',
+									example: '2021-08-01 00:00:00',
+								},
+								remarks: {
+									type: 'string',
+									example: 'Remarks',
+								},
+							},
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',

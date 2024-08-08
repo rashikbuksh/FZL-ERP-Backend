@@ -9,12 +9,51 @@ import { order_info } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const orderInfoPromise = db.insert(order_info).values(req.body).returning();
+	const {
+		uuid,
+		buyer_uuid,
+		party_uuid,
+		reference_order_info_uuid,
+		marketing_uuid,
+		merchandiser_uuid,
+		factory_uuid,
+		is_sample,
+		is_bill,
+		is_cash,
+		marketing_priority,
+		factory_priority,
+		status,
+		created_by,
+		created_at,
+		remarks,
+	} = req.body;
+
+	const orderInfoPromise = db
+		.insert(order_info)
+		.values({
+			uuid,
+			buyer_uuid,
+			party_uuid,
+			reference_order_info_uuid,
+			marketing_uuid,
+			merchandiser_uuid,
+			factory_uuid,
+			is_sample,
+			is_bill,
+			is_cash,
+			marketing_priority,
+			factory_priority,
+			status,
+			created_by,
+			created_at,
+			remarks,
+		})
+		.returning();
 
 	const toast = {
 		status: 201,
 		type: 'create',
-		msg: `${req.body.id} created`,
+		msg: `${uuid} created`,
 	};
 
 	handleResponse({

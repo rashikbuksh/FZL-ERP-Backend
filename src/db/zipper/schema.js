@@ -1,11 +1,5 @@
-import {
-	decimal,
-	integer,
-	pgSchema,
-	serial,
-	text,
-	uuid,
-} from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
@@ -14,6 +8,11 @@ import * as publicSchema from '../public/schema.js';
 import * as sliderSchema from '../slider/schema.js';
 
 const zipper = pgSchema('zipper');
+
+export const order_info_sequence = zipper.sequence('order_info_sequence', {
+	startWith: 1,
+	increment: 1,
+});
 
 export const swatchStatusEnum = zipper.enum('swatch_status_enum', [
 	'pending',
@@ -28,7 +27,9 @@ export const sliderStartingSectionEnum = zipper.enum(
 
 export const order_info = zipper.table('order_info', {
 	uuid: uuid_primary,
-	id: serial('id'), // for order number serial if needed
+	id: serial('id')
+		.default(sql`nextval('zipper.order_info_sequence')`)
+		.notNull(),
 	reference_order_info_uuid: defaultUUID('reference_order_info_uuid').default(
 		null
 	),
