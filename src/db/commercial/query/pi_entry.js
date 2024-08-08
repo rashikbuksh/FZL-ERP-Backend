@@ -104,7 +104,19 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(pi_entry);
+	const resultPromise = db
+		.select({
+			uuid: pi_entry.uuid,
+			pi_uuid: pi_entry.pi_uuid,
+			sfg_uuid: pi_entry.sfg_uuid,
+			pi_quantity: pi_entry.pi_quantity,
+			created_at: pi_entry.created_at,
+			updated_at: pi_entry.updated_at,
+			remarks: pi_entry.remarks,
+		})
+		.from(pi_entry)
+		.orderBy(pi_entry.created_at, 'desc');
+
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -122,9 +134,18 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const pi_entryPromise = db
-		.select()
+		.select({
+			uuid: pi_entry.uuid,
+			pi_uuid: pi_entry.pi_uuid,
+			sfg_uuid: pi_entry.sfg_uuid,
+			pi_quantity: pi_entry.pi_quantity,
+			created_at: pi_entry.created_at,
+			updated_at: pi_entry.updated_at,
+			remarks: pi_entry.remarks,
+		})
 		.from(pi_entry)
 		.where(eq(pi_entry.uuid, req.params.uuid));
+
 	const toast = {
 		status: 200,
 		type: 'select',

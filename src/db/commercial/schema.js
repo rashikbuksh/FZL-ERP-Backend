@@ -37,9 +37,11 @@ export const defCommercialBank = {
 		},
 		address: {
 			type: 'string',
+			example: 'Dhaka, Bangladesh',
 		},
 		policy: {
 			type: 'string',
+			example: 'policy_name',
 		},
 		created_at: {
 			type: 'string',
@@ -52,7 +54,7 @@ export const defCommercialBank = {
 			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
-			type: 'string',
+			type: 'remarks',
 		},
 	},
 	xml: {
@@ -62,7 +64,9 @@ export const defCommercialBank = {
 
 export const lc = commercial.table('lc', {
 	uuid: uuid_primary,
-	party_uuid: defaultUUID('party_uuid'),
+	party_uuid: defaultUUID('party_uuid').references(
+		() => publicSchema.party.uuid
+	),
 	file_no: text('file_no').notNull(),
 	lc_number: text('lc_number').notNull(),
 	lc_date: text('lc_date').notNull(),
@@ -88,7 +92,7 @@ export const lc = commercial.table('lc', {
 	amd_count: integer('amd_count').default(0),
 	problematical: integer('problematical').default(0),
 	epz: integer('epz').default(0),
-	created_by: defaultUUID('created_by'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -351,8 +355,8 @@ export const defCommercialPi = {
 
 export const pi_entry = commercial.table('pi_entry', {
 	uuid: uuid_primary,
-	pi_uuid: defaultUUID('pi_uuid'),
-	sfg_uuid: defaultUUID('sfg_uuid'),
+	pi_uuid: defaultUUID('pi_uuid').references(() => pi.uuid),
+	sfg_uuid: defaultUUID('sfg_uuid').references(() => zipperSchema.sfg.uuid),
 	pi_quantity: decimal('pi_quantity', {
 		precision: 20,
 		scale: 4,

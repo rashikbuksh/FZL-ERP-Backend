@@ -1,6 +1,13 @@
 import { request, Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
-import { marketing, merchandiser, properties } from '../public/schema.js';
+import { type } from '../material/schema.js';
+import {
+	marketing,
+	merchandiser,
+	party,
+	properties,
+} from '../public/schema.js';
+
 import * as bankOperations from './query/bank.js';
 import * as lcOperations from './query/lc.js';
 import * as piOperations from './query/pi.js';
@@ -174,9 +181,148 @@ export const pathCommercialLc = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/commercial/lc',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									party_uuid: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									party_name: {
+										type: 'string',
+										example: 'ABC',
+									},
+									file_no: {
+										type: 'string',
+										example: '123456',
+									},
+									lc_number: {
+										type: 'string',
+										example: '123456',
+									},
+									lc_date: {
+										type: 'string',
+										example: '2021-12-12',
+									},
+									payment_value: {
+										type: 'number',
+										example: 12.3456,
+									},
+									payment_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									ldbc_fdc: {
+										type: 'string',
+										example: 'ldbc_fdc',
+									},
+									acceptance_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									maturity_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									commercial_executive: {
+										type: 'string',
+										example: 'commercial_executive',
+									},
+									party_bank: {
+										type: 'string',
+										example: 'party_bank',
+									},
+									production_complete: {
+										type: 'integer',
+										example: 1,
+									},
+									lc_cancel: {
+										type: 'integer',
+										example: 1,
+									},
+									handover_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									shipment_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									expiry_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									ud_no: {
+										type: 'string',
+										example: 'ud_no',
+									},
+									ud_received: {
+										type: 'string',
+										example: 'ud_received',
+									},
+									at_sight: {
+										type: 'string',
+										example: 'at_sight',
+									},
+									amd_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									amd_count: {
+										type: 'integer',
+										example: 1,
+									},
+									problematical: {
+										type: 'integer',
+										example: 1,
+									},
+									epz: {
+										type: 'integer',
+										example: 1,
+									},
+									created_by: {
+										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
+									},
+									user_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'HR',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									update_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
 								},
 							},
 						},
