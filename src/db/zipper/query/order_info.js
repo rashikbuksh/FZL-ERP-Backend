@@ -48,42 +48,86 @@ export async function insert(req, res, next) {
 			created_at,
 			remarks,
 		})
-		.returning();
+		.returning({
+			insertedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
 
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${uuid} created`,
-	};
+	orderInfoPromise.then((result) => {
+		const toast = {
+			status: 201,
+			type: 'create',
+			msg: `${result[0].insertedId} created`,
+		};
 
-	handleResponse({
-		promise: orderInfoPromise,
-		res,
-		next,
-		...toast,
+		handleResponse({
+			promise: orderInfoPromise,
+			res,
+			next,
+			...toast,
+		});
 	});
 }
 
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const {
+		buyer_uuid,
+		party_uuid,
+		reference_order_info_uuid,
+		marketing_uuid,
+		merchandiser_uuid,
+		factory_uuid,
+		is_sample,
+		is_bill,
+		is_cash,
+		marketing_priority,
+		factory_priority,
+		status,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
+	} = req.body;
+
 	const orderInfoPromise = db
 		.update(order_info)
-		.set(req.body)
+		.set({
+			buyer_uuid,
+			party_uuid,
+			reference_order_info_uuid,
+			marketing_uuid,
+			merchandiser_uuid,
+			factory_uuid,
+			is_sample,
+			is_bill,
+			is_cash,
+			marketing_priority,
+			factory_priority,
+			status,
+			created_by,
+			created_at,
+			updated_at,
+			remarks,
+		})
 		.where(eq(order_info.uuid, req.params.uuid))
-		.returning({ updatedId: order_info.id });
+		.returning({
+			updatedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
 
-	const toast = {
-		status: 201,
-		type: 'update',
-		msg: `Order Info updated`,
-	};
+	orderInfoPromise.then((result) => {
+		const toast = {
+			status: 201,
+			type: 'update',
+			msg: `${result[0].updatedId} updated`,
+		};
 
-	handleResponse({
-		promise: orderInfoPromise,
-		res,
-		next,
-		...toast,
+		handleResponse({
+			promise: orderInfoPromise,
+			res,
+			next,
+			...toast,
+		});
 	});
 }
 
