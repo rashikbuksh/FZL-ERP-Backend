@@ -49,7 +49,7 @@ export async function insert(req, res, next) {
 			remarks,
 		})
 		.returning({
-			insertedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			insertedId: order_info.uuid,
 		});
 
 	orderInfoPromise.then((result) => {
@@ -112,7 +112,7 @@ export async function update(req, res, next) {
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: order_info.uuid,
 		});
 
 	orderInfoPromise.then((result) => {
