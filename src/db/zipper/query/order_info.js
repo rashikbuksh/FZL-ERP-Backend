@@ -71,10 +71,6 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { uuid } = req.params;
-
-	console.log('uuid', uuid);
-
 	const {
 		buyer_uuid,
 		party_uuid,
@@ -116,23 +112,42 @@ export async function update(req, res, next) {
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: order_info.uuid,
+			updatedId: order_info.buyer_uuid,
 		});
 
-	orderInfoPromise.then((result) => {
-		const toast = {
-			status: 201,
-			type: 'update',
-			msg: `Order Info updated`,
-		};
+	orderInfoPromise
+		.then((result) => {
+			console.log('result', result);
 
-		handleResponse({
-			promise: orderInfoPromise,
-			res,
-			next,
-			...toast,
+			const toast = {
+				status: 201,
+				type: 'update',
+				msg: `Order Info updated`,
+			};
+
+			handleResponse({
+				promise: orderInfoPromise,
+				res,
+				next,
+				...toast,
+			});
+		})
+		.catch((error) => {
+			console.error(error);
+
+			const toast = {
+				status: 500,
+				type: 'update',
+				msg: `Error updating Order Info - ${error.message}`,
+			};
+
+			handleResponse({
+				promise: orderInfoPromise,
+				res,
+				next,
+				...toast,
+			});
 		});
-	});
 }
 
 export async function remove(req, res, next) {
