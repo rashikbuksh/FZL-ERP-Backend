@@ -1,6 +1,7 @@
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
+import e from 'express';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
 import * as zipperSchema from '../zipper/schema.js';
@@ -24,12 +25,15 @@ export const defCommercialBank = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'Bangladesh Name',
 		},
 		swift_code: {
 			type: 'string',
+			example: 'BNGD',
 		},
 		address: {
 			type: 'string',
@@ -109,21 +113,27 @@ export const defCommercialLc = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		party_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		file_no: {
 			type: 'string',
+			example: '1234/2024',
 		},
 		lc_number: {
 			type: 'string',
+			example: '1234/2024',
 		},
 		lc_date: {
 			type: 'string',
+			example: '2024-01-01 00:00:00',
 		},
 		payment_value: {
 			type: 'number',
+			example: 1000.0,
 		},
 		payment_date: {
 			type: 'string',
@@ -132,6 +142,7 @@ export const defCommercialLc = {
 		},
 		ldbc_fdbc: {
 			type: 'string',
+			example: 'LDBC',
 		},
 		acceptance_date: {
 			type: 'string',
@@ -145,15 +156,19 @@ export const defCommercialLc = {
 		},
 		commercial_executive: {
 			type: 'string',
+			example: 'John Doe',
 		},
 		party_bank: {
 			type: 'string',
+			example: 'Bangladesh Bank',
 		},
 		production_complete: {
 			type: 'integer',
+			example: 0,
 		},
 		lc_cancel: {
 			type: 'integer',
+			example: 0,
 		},
 		handover_date: {
 			type: 'string',
@@ -172,12 +187,15 @@ export const defCommercialLc = {
 		},
 		ud_no: {
 			type: 'string',
+			example: '1234/2024',
 		},
 		ud_received: {
 			type: 'string',
+			example: '2024-01-01 00:00:00',
 		},
 		at_sight: {
 			type: 'string',
+			example: 'At Sight',
 		},
 		amd_date: {
 			type: 'string',
@@ -186,15 +204,19 @@ export const defCommercialLc = {
 		},
 		amd_count: {
 			type: 'integer',
+			example: 0,
 		},
 		problematical: {
 			type: 'integer',
+			example: 0,
 		},
 		epz: {
 			type: 'integer',
+			example: 0,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -208,6 +230,7 @@ export const defCommercialLc = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -217,16 +240,24 @@ export const defCommercialLc = {
 
 export const pi = commercial.table('pi', {
 	uuid: uuid_primary,
-	lc_uuid: defaultUUID('lc_uuid'),
-	order_info_ids: text('order_info_ids').notNull(),
-	marketing_uuid: defaultUUID('marketing_uuid'),
-	party_uuid: defaultUUID('party_uuid'),
-	merchandiser_uuid: defaultUUID('merchandiser_uuid'),
-	factory_uuid: defaultUUID('factory_uuid'),
-	bank_uuid: defaultUUID('bank_uuid'),
+	lc_uuid: defaultUUID('lc_uuid').references(() => commercial.lc.uuid),
+	order_info_ids: text('order_info_ids').notNull(), // need review
+	marketing_uuid: defaultUUID('marketing_uuid').references(
+		() => publicSchema.marketing.uuid
+	),
+	party_uuid: defaultUUID('party_uuid').references(
+		() => publicSchema.party.uuid
+	),
+	merchandiser_uuid: defaultUUID('merchandiser_uuid').references(
+		() => publicSchema.party.uuid
+	),
+	factory_uuid: defaultUUID('factory_uuid').references(
+		() => publicSchema.factory.uuid
+	),
+	bank_uuid: defaultUUID('bank_uuid').references(() => commercial.bank.uuid),
 	validity: integer('validity').notNull(), // need review
 	payment: integer('payment').notNull(), // need review
-	created_by: defaultUUID('created_by'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -251,39 +282,50 @@ export const defCommercialPi = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		lc_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		order_info_ids: {
 			type: 'array',
 			items: {
 				type: 'string',
 			},
+			example: ['igD0v9DIJQhJeet'],
 		},
 		marketing_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		party_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		merchandiser_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		factory_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		bank_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		validity: {
 			type: 'integer',
+			example: 0,
 		},
 		payment: {
 			type: 'integer',
+			example: 0,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -297,6 +339,7 @@ export const defCommercialPi = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -323,15 +366,19 @@ export const defCommercialPiEntry = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		pi_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		sfg_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		pi_quantity: {
 			type: 'number',
+			example: 1000.0,
 		},
 		created_at: {
 			type: 'string',
@@ -345,6 +392,7 @@ export const defCommercialPiEntry = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
