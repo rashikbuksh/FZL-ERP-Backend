@@ -1,6 +1,5 @@
-import { description } from '@/db/purchase/schema.js';
 import { eq } from 'drizzle-orm';
-import { uuid } from 'drizzle-orm/pg-core/index.js';
+import { description } from '../../../db/purchase/schema.js';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { info, section, type } from '../schema.js';

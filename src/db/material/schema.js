@@ -523,7 +523,7 @@ export const stock_to_sfg = material.table('stock_to_sfg', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: defaultUUID('created_by').hrSchema.users.uuid,
+	created_by: defaultUUID('created_by'),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

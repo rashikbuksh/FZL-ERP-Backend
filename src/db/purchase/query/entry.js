@@ -1,5 +1,4 @@
 import { eq } from 'drizzle-orm';
-import { uuid } from 'drizzle-orm/pg-core/index.js';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';

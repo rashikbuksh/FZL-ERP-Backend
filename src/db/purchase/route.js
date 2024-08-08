@@ -1,4 +1,3 @@
-import { uuid } from 'drizzle-orm/pg-core/index.js';
 import { Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
 import { properties } from '../public/schema.js';
