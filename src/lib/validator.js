@@ -17,5 +17,5 @@ export function validateIdParam() {
 }
 
 export function validateUuidParam() {
-	return param('uuid').isUUID();
+	return param('uuid').isString().isLength({ min: 15, max: 15 });
 }

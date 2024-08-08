@@ -49,9 +49,7 @@ export const defPurchaseVendor = {
 
 export const description = purchase.table('description', {
 	uuid: uuid_primary,
-	vendor_uuid: defaultUUID('vendor_uuid').references(
-		() => purchase.vendor.uuid
-	),
+	vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid),
 	is_local: integer('is_local').notNull(),
 	lc_number: text('lc_number').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
@@ -102,10 +100,8 @@ export const entry = purchase.table('entry', {
 	uuid: uuid_primary,
 	purchase_description_uuid: defaultUUID(
 		'purchase_description_uuid'
-	).references(() => purchase.description.uuid),
-	material_info_uuid: defaultUUID('material_info_uuid').references(
-		() => materialSchema.info.uuid
-	),
+	).references(() => description.uuid),
+	material_info_uuid: defaultUUID('material_info_uuid'),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,

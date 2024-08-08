@@ -136,6 +136,52 @@ export function selectSpecificFactory(req, res, next) {
 	});
 }
 
+export function selectMarketing(req, res, next) {
+	const marketingPromise = db
+		.select({
+			value: publicSchema.marketing.uuid,
+			label: publicSchema.marketing.name,
+		})
+		.from(publicSchema.marketing);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Marketing list',
+	};
+	handleResponse({
+		promise: marketingPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+// zipper
+export function selectOrderInfo(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const orderInfoPromise = db
+		.select({
+			value: publicSchema.order_info.uuid,
+			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		})
+		.from(publicSchema.order_info);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Order Info list',
+	};
+
+	handleResponse({
+		promise: orderInfoPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
 // purchase
 export async function selectVendor(req, res, next) {
 	const vendorPromise = db

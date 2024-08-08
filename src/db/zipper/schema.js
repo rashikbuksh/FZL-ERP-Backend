@@ -79,61 +79,64 @@ export const def_zipper_order_info = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
-		id: {
-			type: 'serial',
-		},
+		id: { type: 'number', example: 1 },
 		reference_order_info_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		buyer_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		party_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		marketing_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		merchandiser_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		factory_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
-		is_sample: {
-			type: 'integer',
-		},
-		is_bill: {
-			type: 'integer',
-		},
-		is_cash: {
-			type: 'integer',
-		},
+		is_sample: { type: 'integer', example: 0 },
+		is_bill: { type: 'integer', example: 0 },
+		is_cash: { type: 'integer', example: 0 },
 		marketing_priority: {
 			type: 'string',
+			example: 'Urgent',
+		},
+		merchandiser_priority: {
+			type: 'string',
+			example: 'Urgent',
 		},
 		factory_priority: {
 			type: 'string',
+			example: 'FIFO',
 		},
-		status: {
-			type: 'integer',
-		},
+		status: { type: 'integer', example: 0 },
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
+			example: '2021-08-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
+			example: '2021-08-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {

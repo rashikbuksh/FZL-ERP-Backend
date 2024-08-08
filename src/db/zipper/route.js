@@ -1,3 +1,4 @@
+import { desc } from 'drizzle-orm';
 import { Router } from 'express';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
@@ -28,9 +29,93 @@ export const pathZipperOrderInfo = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/order_info',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: { type: 'number', example: 1 },
+									reference_order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buyer_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buyer_name: {
+										type: 'string',
+										example: 'John',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'John',
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'John',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'John',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'John',
+									},
+									is_sample: { type: 'integer', example: 0 },
+									is_bill: { type: 'integer', example: 0 },
+									is_cash: { type: 'integer', example: 0 },
+									marketing_priority: {
+										type: 'string',
+										example: 'Urgent',
+									},
+									merchandiser_priority: {
+										type: 'string',
+										example: 'Urgent',
+									},
+									factory_priority: {
+										type: 'string',
+										example: 'FIFO',
+									},
+									status: { type: 'integer', example: 0 },
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John',
+									},
+									created_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -90,6 +175,103 @@ export const pathZipperOrderInfo = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'Returns all Order Info',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: { type: 'number', example: 1 },
+									reference_order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buyer_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buyer_name: {
+										type: 'string',
+										example: 'John',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'John',
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'John',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'John',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'John',
+									},
+									is_sample: { type: 'integer', example: 0 },
+									is_bill: { type: 'integer', example: 0 },
+									is_cash: { type: 'integer', example: 0 },
+									marketing_priority: {
+										type: 'string',
+										example: 'Urgent',
+									},
+									merchandiser_priority: {
+										type: 'string',
+										example: 'Urgent',
+									},
+									factory_priority: {
+										type: 'string',
+										example: 'FIFO',
+									},
+									status: { type: 'integer', example: 0 },
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John',
+									},
+									created_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -109,10 +291,11 @@ export const pathZipperOrderInfo = {
 				{
 					name: 'uuid',
 					in: 'path',
-					description: 'order info to update',
+					description: 'uuid - string. length: 15',
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 				{
 					in: 'body',
@@ -194,9 +377,33 @@ export const pathZipperOrderDescription = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/order_description',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									item: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+										description: 'uuid',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									created_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
 								},
 							},
 						},
