@@ -1,4 +1,4 @@
-import { pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import { integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
 import { defaultUUID, uuid_primary } from '../variables.js';
 
 const hr = pgSchema('hr');
@@ -119,11 +119,80 @@ export const defHrUser = {
 	},
 };
 
+export const policy_and_notice = hr.table('policy_and_notice', {
+	uuid: uuid_primary,
+	type: text('type').notNull(),
+	title: text('title').notNull(),
+	sub_title: text('sub_title').notNull(),
+	url: text('url').notNull(),
+	created_at: text('created_at').notNull(),
+	updated_at: text('updated_at').default(null),
+	status: integer('status').notNull(),
+	remarks: text('remarks').default(null),
+});
+
+export const defPolicyAndNotice = {
+	type: 'object',
+	required: [
+		'uuid',
+		'type',
+		'title',
+		'sub_title',
+		'url',
+		'created_at',
+		'status',
+	],
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		type: {
+			type: 'string',
+			example: 'privacy',
+		},
+		title: {
+			type: 'string',
+			example: 'Privacy',
+		},
+		sub_title: {
+			type: 'string',
+			example: 'Privacy Policy',
+		},
+		url: {
+			type: 'string',
+			example: 'https://www.example.com',
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2021-01-01 00:00:00',
+		},
+		updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2021-01-01 00:00:00',
+		},
+		status: {
+			type: 'integer',
+			example: 1,
+		},
+		remarks: {
+			type: 'string',
+			example: 'remarks',
+		},
+	},
+	xml: {
+		name: 'Hr/PolicyAndNotice',
+	},
+};
+
 // ------------- FOR TESTING ----------------
 export const defHr = {
 	user: defHrUser,
 	department: defDepartment,
 	designation: defDesignation,
+	policy_and_notice: defPolicyAndNotice,
 };
 
 export const tagHr = [
@@ -142,6 +211,10 @@ export const tagHr = [
 	{
 		name: 'hr.designation',
 		description: 'Operations about designation',
+	},
+	{
+		name: 'hr.policy_and_notice',
+		description: 'Operations about policy and notice',
 	},
 ];
 
