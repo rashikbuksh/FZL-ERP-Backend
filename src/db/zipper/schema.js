@@ -27,7 +27,7 @@ export const sliderStartingSectionEnum = zipper.enum(
 
 export const order_info = zipper.table('order_info', {
 	uuid: uuid_primary,
-	id: serial('id')
+	id: integer('id')
 		.default(sql`nextval('zipper.order_info_sequence')`)
 		.notNull(),
 	reference_order_info_uuid: defaultUUID('reference_order_info_uuid').default(

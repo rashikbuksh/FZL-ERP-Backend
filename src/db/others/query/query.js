@@ -165,10 +165,10 @@ export function selectOrderInfo(req, res, next) {
 
 	const orderInfoPromise = db
 		.select({
-			value: publicSchema.order_info.uuid,
+			value: zipperSchema.order_info.uuid,
 			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		})
-		.from(publicSchema.order_info);
+		.from(zipperSchema.order_info);
 
 	const toast = {
 		status: 200,

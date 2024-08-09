@@ -7,7 +7,7 @@ import * as publicSchema from '../../public/schema.js';
 import { order_info } from '../schema.js';
 
 export function insert(req, res, next) {
-	// insert issue persists (multiple insert issue)
+	// insert issue persists (insert issue)
 	if (!validateRequest(req, next)) return;
 
 	const {
@@ -88,7 +88,6 @@ export function insert(req, res, next) {
 }
 
 export async function update(req, res, next) {
-	// working perfectly in swagger, but issue in frontend
 	if (!(await validateRequest(req, next))) return;
 
 	const {
@@ -109,8 +108,6 @@ export async function update(req, res, next) {
 		updated_at,
 		remarks,
 	} = req.body;
-
-	console.log('req.body', req.body);
 
 	const orderInfoPromise = db
 		.update(order_info)
@@ -199,6 +196,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: order_info.uuid,
 			id: order_info.id,
+			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			reference_order_info_uuid: order_info.reference_order_info_uuid,
 			buyer_uuid: order_info.buyer_uuid,
 			buyer_name: publicSchema.buyer.name,

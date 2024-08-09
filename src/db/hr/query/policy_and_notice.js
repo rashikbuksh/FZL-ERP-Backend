@@ -75,7 +75,7 @@ export async function remove(req, res, next) {
 		.where(eq(policy_and_notice.uuid, req.params.uuid))
 		.returning({ deletedId: policy_and_notice.title });
 
-	privacyAndNoticePromise
+	policyAndNoticePromise
 		.then((result) => {
 			const toast = {
 				status: 200,
