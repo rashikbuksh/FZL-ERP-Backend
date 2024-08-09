@@ -286,10 +286,6 @@ export const pathZipperOrderInfo = {
 										type: 'string',
 										example: 'Urgent',
 									},
-									merchandiser_priority: {
-										type: 'string',
-										example: 'Urgent',
-									},
 									factory_priority: {
 										type: 'string',
 										example: 'FIFO',
@@ -380,10 +376,6 @@ export const pathZipperOrderInfo = {
 								is_bill: { type: 'integer', example: 0 },
 								is_cash: { type: 'integer', example: 0 },
 								marketing_priority: {
-									type: 'string',
-									example: 'Urgent',
-								},
-								merchandiser_priority: {
 									type: 'string',
 									example: 'Urgent',
 								},

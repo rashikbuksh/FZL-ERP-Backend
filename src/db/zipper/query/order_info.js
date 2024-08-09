@@ -175,7 +175,9 @@ export async function remove(req, res, next) {
 	const orderInfoPromise = db
 		.delete(order_info)
 		.where(eq(order_info.uuid, req.params.uuid))
-		.returning();
+		.returning({
+			deletedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
 
 	const toast = {
 		status: 200,

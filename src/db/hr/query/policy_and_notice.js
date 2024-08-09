@@ -9,19 +9,21 @@ export async function insert(req, res, next) {
 	const policyAndNoticePromise = db
 		.insert(policy_and_notice)
 		.values(req.body)
-		.returning();
+		.returning({ insertedId: policy_and_notice.title });
 
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.id} created`,
-	};
+	policyAndNoticePromise.then((result) => {
+		const toast = {
+			status: 201,
+			type: 'create',
+			msg: `${result[0].insertedId} created`,
+		};
 
-	handleResponse({
-		promise: policyAndNoticePromise,
-		res,
-		next,
-		...toast,
+		handleResponse({
+			promise: policyAndNoticePromise,
+			res,
+			next,
+			...toast,
+		});
 	});
 }
 
