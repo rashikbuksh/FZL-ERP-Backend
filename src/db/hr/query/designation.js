@@ -17,7 +17,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			msg: `${data[0].insertedName} inserted`,
+			message: `${data[0].insertedName} inserted`,
 		};
 
 		return res.status(201).json({ toast, data });
@@ -41,7 +41,7 @@ export async function update(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'update',
-			msg: `${data[0].updatedName} updated`,
+			message: `${data[0].updatedName} updated`,
 		};
 
 		return res.status(201).json({ toast, data });
@@ -64,7 +64,7 @@ export async function remove(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'delete',
-			msg: `${data[0].deletedName} deleted`,
+			message: `${data[0].deletedName} deleted`,
 		};
 
 		return res.status(201).json({ toast, data });
@@ -87,7 +87,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Designation list',
+		message: 'Designation list',
 	};
 
 	handleResponse({
@@ -115,7 +115,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Designation',
+		message: 'Designation',
 	};
 
 	handleResponse({

@@ -1,5 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { department } from '../schema.js';
 
@@ -11,37 +15,18 @@ export async function insert(req, res, next) {
 		.values(req.body)
 		.returning({ insertedName: department.department });
 
-	departmentPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'create',
-				msg: `${result[0].insertedName} created`,
-			};
+	try {
+		const data = await departmentPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedName} inserted`,
+		};
 
-			handleResponse({
-				promise: departmentPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'create',
-				msg: `Error creating department - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: departmentPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -53,37 +38,18 @@ export async function update(req, res, next) {
 		.where(eq(department.uuid, req.params.uuid))
 		.returning({ updatedName: department.department });
 
-	departmentPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await departmentPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
 
-			handleResponse({
-				promise: departmentPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating designation - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: departmentPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -94,37 +60,18 @@ export async function remove(req, res, next) {
 		.where(eq(department.uuid, req.params.uuid))
 		.returning({ deletedName: department.department });
 
-	departmentPromise
-		.then((result) => {
-			const toast = {
-				status: 200,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await departmentPromise;
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
 
-			handleResponse({
-				promise: departmentPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			// for error
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting designation - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: departmentPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -133,7 +80,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Designation list',
+		message: 'Designation list',
 	};
 
 	handleResponse({
@@ -155,7 +102,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Designation',
+		message: 'Designation',
 	};
 
 	handleResponse({
