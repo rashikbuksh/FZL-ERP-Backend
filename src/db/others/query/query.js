@@ -1,5 +1,9 @@
 import { eq, sql } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 
 import * as commercialSchema from '../../commercial/schema.js';
@@ -208,35 +212,28 @@ export function selectOrderInfo(req, res, next) {
 	});
 }
 
-export function selectOrderInfoToGetOrderDescription(req, res, next) {
+export async function selectOrderInfoToGetOrderDescription(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	console.log('req.params', req.params);
+	const { order_number } = req.params;
 
-	const orderInfoPromise = db
-		.select()
-		.from(sql`zipper.v_order_details`)
-		.where(
-			eq(
-				sql`zipper.v_order_details.order_number`,
-				req.params.order_number
-			)
-		);
+	const query = sql`SELECT * FROM zipper.v_order_details WHERE v_order_details.order_number = ${order_number}`;
 
-	console.log('orderInfoPromise', orderInfoPromise);
+	const orderInfoPromise = db.execute(query);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		msg: 'Order Info list',
-	};
+	try {
+		const data = await orderInfoPromise;
 
-	handleResponse({
-		promise: orderInfoPromise,
-		res,
-		next,
-		...toast,
-	});
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			msg: 'Order Info list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 // purchase
