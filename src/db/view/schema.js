@@ -3,6 +3,8 @@ export const OrderDetailsView = `
     SELECT
       order_info.uuid AS order_info_uuid,
       order_info.reference_order_info_uuid,
+      concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+      order_description.uuid as order_description_uuid,
       order_info.buyer_uuid,
       buyer.name AS buyer_name,
       order_info.party_uuid,
@@ -36,7 +38,9 @@ export const OrderDetailsView = `
 export const OrderDetailsFullView = `
 CREATE OR REPLACE VIEW zipper.v_order_details_full
  AS
- SELECT order_info.uuid AS order_info_uuid,
+ SELECT 
+    order_info.uuid AS order_info_uuid,
+    concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
     order_description.uuid AS order_description_uuid,
     order_info.marketing_uuid,
     marketing.name AS marketing_name,
@@ -166,6 +170,7 @@ SELECT
 	oe.uuid as order_entry_uuid,
 	vodf.order_description_uuid,
 	vodf.order_info_uuid,
+    vodf.order_number,
 	vodf.item_description AS item_description,
 	row_number() OVER (PARTITION BY vodf.order_description_uuid ORDER BY oe.uuid) AS style_count_rank, 
 	style_count.count AS style_count,
@@ -212,9 +217,10 @@ ORDER BY
 export const OrderStatusView = `
 CREATE OR REPLACE VIEW zipper.v_order_status AS
 SElECT 
-	od.uuid as item,
+    od.uuid as order_description_uuid,
+	od.item as item,
 	properties.name as item_name,
-	od.stopper_type as stopper_type,
+	CASE WHEN (properties.name = 'nylon') THEN od.stopper_type as stopper_type ELSE 'N/A' END as stopper_type,
 	order_info.status as status,
 	SUM(order_entry.quantity) as total
 FROM
@@ -237,6 +243,7 @@ export const OrderSwatchView = `
 CREATE OR REPLACE VIEW zipper.v_order_swatch AS
 SELECT 
 	oe.uuid as order_entry_uuid,
+    vodf.order_number,
 	od.uuid as order_description_uuid,
 	od.item as item_description,
 	v_order_planning.style_count_rank as style_count_rank,
@@ -270,7 +277,7 @@ FROM
 	LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = oe.uuid AND oe.quantity > sfg.finishing_prod
 	LEFT JOIN zipper.sfg_transaction ON sfg_transaction.order_entry_uuid = oe.uuid
 	LEFT JOIN zipper.v_order_planning ON v_order_planning.order_entry_uuid = oe.uuid
-	LEFT JOIN zipper.v_order_details_full ON v_order_details_full.order_description_uuid = od.uuid
+	LEFT JOIN zipper.v_order_details_full vodf ON v_order_details_full.order_description_uuid = od.uuid
 	LEFT JOIN public.marketing ON marketing.uuid = oi.marketing_uuid
 	LEFT JOIN public.buyer ON buyer.uuid = oi.buyer_uuid
 	LEFT JOIN hr.users ON users.uuid = oi.created_by

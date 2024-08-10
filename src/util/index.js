@@ -17,7 +17,7 @@ export async function handleResponse({
 	res,
 	next,
 	status = 200,
-	msg = 'Operation failed',
+	message = 'Operation failed',
 	type = 'select',
 }) {
 	try {
@@ -25,7 +25,7 @@ export async function handleResponse({
 		const toast = {
 			status,
 			type,
-			message: msg,
+			message,
 		};
 
 		return res.status(status).json({ toast, data });
@@ -34,7 +34,7 @@ export async function handleResponse({
 
 		if (error.severity === 'ERROR') {
 			nullValueError(res, error);
-		} 
+		}
 		// else {
 		// 	next(new CustomError(error.message, 500));
 		// }

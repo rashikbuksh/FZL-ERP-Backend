@@ -20,6 +20,16 @@ otherRouter.get(
 	otherOperations.selectSpecificFactory
 );
 otherRouter.get('/marketing/value/label', otherOperations.selectMarketing);
+otherRouter.get(
+	'/order-properties/by/:type_name',
+	otherOperations.selectOrderProperties
+);
+
+// zipper
+otherRouter.get(
+	'/order/order_description_uuid/by/:order_number',
+	otherOperations.selectOrderInfoToGetOrderDescription
+);
 
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
@@ -219,8 +229,51 @@ const pathPublic = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: { type: 'string' },
-									label: { type: 'string' },
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'Z-24-0001',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/order-properties/by/{type_name}': {
+		get: {
+			tags: ['others'],
+			summary: 'get all order properties',
+			description: 'All order properties',
+			operationId: 'getAllOrderProperties',
+			parameters: [
+				{
+					name: 'type_name',
+					in: 'path',
+					description: 'type of order properties',
+					required: true,
+					type: 'string',
+					example: 'item',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns a all order properties.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: { type: 'string', example: 'nylon' },
 								},
 							},
 						},
@@ -362,11 +415,138 @@ const pathCommercial = {
 	},
 };
 
+const pathZipper = {
+	'/other/order/order_description_uuid/by/{order_number}': {
+		get: {
+			tags: ['others'],
+			summary: 'get order description uuid by order number',
+			description: 'Order description uuid by order number',
+			operationId: 'getOrderDescriptionUuid',
+			parameters: [
+				{
+					name: 'order_number',
+					in: 'path',
+					description: 'order number',
+					required: true,
+					type: 'string',
+					example: 'Z24-0003',
+				},
+			],
+			//   order_info.buyer_uuid,
+			//   buyer.name AS buyer_name,
+			//   order_info.party_uuid,
+			//   party.name AS party_name,
+			//   order_info.marketing_uuid,
+			//   marketing.name AS marketing_name,
+			//   order_info.merchandiser_uuid,
+			//   merchandiser.name AS merchandiser_name,
+			//   order_info.factory_uuid,
+			//   factory.name AS factory_name,
+			//   order_info.is_sample,
+			//   order_info.is_bill,
+			//   order_info.is_cash,
+			//   order_info.marketing_priority,
+			//   order_info.factory_priority,
+			//   order_info.status,
+			//   order_info.created_by AS created_by_uuid,
+			//   users.name AS created_by_name,
+			//   order_info.created_at AS created_at
+			responses: {
+				200: {
+					description: 'Returns a order description uuid.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									order_info_uuid: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									reference_order_info_uuid: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									buyer_uuid: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									buyer_name: {
+										type: 'string',
+										example: 'John',
+									},
+									party_uuid: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									party_name: {
+										type: 'string',
+										example: 'John',
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'John',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'John',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'John',
+									},
+									is_sample: {
+										type: 'integer',
+										example: 1,
+									},
+									is_bill: {
+										type: 'integer',
+										example: 1,
+									},
+									is_cash: {
+										type: 'integer',
+										example: 1,
+									},
+									marketing_priority: {
+										type: 'string',
+										example: '',
+									},
+									factory_priority: {
+										type: 'string',
+										example: '',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+};
+
 export const pathOthers = {
 	...pathPublic,
 	...pathPurchase,
 	...pathMaterial,
 	...pathCommercial,
+	...pathZipper,
 };
 
 export const tagOthers = [

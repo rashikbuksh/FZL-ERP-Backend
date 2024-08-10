@@ -6,7 +6,7 @@ import * as hrSchema from '../../hr/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { order_info } from '../schema.js';
 
-export function insert(req, res, next) {
+export async function insert(req, res, next) {
 	// insert issue persists (insert issue)
 	if (!validateRequest(req, next)) return;
 
@@ -50,41 +50,21 @@ export function insert(req, res, next) {
 			remarks,
 		})
 		.returning({
-			insertedId: order_info.uuid,
+			insertedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
-	orderInfoPromise
-		.then((result) => {
-			console.log('result', result);
-			const toast = {
-				status: 201,
-				type: 'create',
-				msg: `Order Info created`,
-			};
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 200,
+			type: 'insert',
+			message: `${data[0].insertedId} inserted`,
+		};
 
-			handleResponse({
-				promise: orderInfoPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'create',
-				msg: `Error creating Order Info - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: orderInfoPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 export async function update(req, res, next) {
@@ -131,42 +111,21 @@ export async function update(req, res, next) {
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: order_info.buyer_uuid,
+			updatedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
-	orderInfoPromise
-		.then((result) => {
-			console.log('result', result);
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
 
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `Order Info updated`,
-			};
-
-			handleResponse({
-				promise: orderInfoPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating Order Info - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: orderInfoPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 export async function remove(req, res, next) {
@@ -179,18 +138,18 @@ export async function remove(req, res, next) {
 			deletedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
-	const toast = {
-		status: 200,
-		type: 'delete',
-		msg: 'Order Info deleted',
-	};
+	try {
+		const result = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${result[0].deletedId} deleted`,
+		};
 
-	handleResponse({
-		promise: orderInfoPromise,
-		res,
-		next,
-		...toast,
-	});
+		return res.status(201).json({ toast, data: result[0].deletedId });
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -247,10 +206,11 @@ export async function selectAll(req, res, next) {
 			hrSchema.users,
 			eq(order_info.created_by, hrSchema.users.uuid)
 		);
+
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Order Info list',
+		message: 'Order Info',
 	};
 
 	handleResponse({
@@ -317,10 +277,11 @@ export async function select(req, res, next) {
 			eq(order_info.created_by, hrSchema.users.uuid)
 		)
 		.where(eq(order_info.uuid, req.params.uuid));
+
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Order Info',
+		message: 'Order Info',
 	};
 
 	handleResponse({

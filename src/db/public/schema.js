@@ -227,18 +227,12 @@ export const defPublicSection = {
 export const properties = pgTable('properties', {
 	uuid: uuid_primary,
 	item_for: text('item_for').notNull(),
-	type: text('type').notNull().unique(),
+	type: text('type').notNull(),
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
 	created_by: defaultUUID('created_by'),
-	created_at: DateTime('created_at', {
-		mode: 'string',
-		withTimezone: false,
-	}).notNull(),
-	updated_at: DateTime('updated_at', {
-		mode: 'string',
-		withTimezone: false,
-	}).default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
