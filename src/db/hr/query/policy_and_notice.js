@@ -1,5 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { policy_and_notice } from '../schema.js';
 
@@ -11,20 +15,18 @@ export async function insert(req, res, next) {
 		.values(req.body)
 		.returning({ insertedId: policy_and_notice.title });
 
-	policyAndNoticePromise.then((result) => {
+	try {
+		const data = await policyAndNoticePromise;
 		const toast = {
 			status: 201,
 			type: 'create',
-			msg: `${result[0].insertedId} created`,
+			message: `${data[0].insertedId} created`,
 		};
 
-		handleResponse({
-			promise: policyAndNoticePromise,
-			res,
-			next,
-			...toast,
-		});
-	});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -36,37 +38,18 @@ export async function update(req, res, next) {
 		.where(eq(policy_and_notice.uuid, req.params.uuid))
 		.returning({ updatedId: policy_and_notice.title });
 
-	policyAndNoticePromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedId} updated`,
-			};
+	try {
+		const data = await policyAndNoticePromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
 
-			handleResponse({
-				promise: policyAndNoticePromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating privacy and notice - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: policyAndNoticePromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -77,37 +60,18 @@ export async function remove(req, res, next) {
 		.where(eq(policy_and_notice.uuid, req.params.uuid))
 		.returning({ deletedId: policy_and_notice.title });
 
-	policyAndNoticePromise
-		.then((result) => {
-			const toast = {
-				status: 200,
-				type: 'delete',
-				msg: `${result[0].deletedId} deleted`,
-			};
+	try {
+		const data = await policyAndNoticePromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
 
-			handleResponse({
-				promise: policyAndNoticePromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting privacy and notice - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: policyAndNoticePromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export function selectAll(req, res, next) {
