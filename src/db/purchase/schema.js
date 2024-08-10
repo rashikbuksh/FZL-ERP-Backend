@@ -22,24 +22,31 @@ export const defPurchaseVendor = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		name: {
 			type: 'string',
+			example: 'Z Group',
 		},
 		contact_name: {
 			type: 'string',
+			example: 'Jahid Hasan',
 		},
 		email: {
 			type: 'string',
+			example: 'z456@gmail.com',
 		},
 		office_address: {
 			type: 'string',
+			example: 'Dhaka, Bangladesh',
 		},
 		contact_number: {
 			type: 'string',
+			example: '01700000000',
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is a vendor',
 		},
 	},
 	xml: {
@@ -64,18 +71,23 @@ export const defPurchaseDescription = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		vendor_uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		is_local: {
 			type: 'integer',
+			example: 1,
 		},
 		lc_number: {
 			type: 'string',
+			example: '123456789',
 		},
 		created_by: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		created_at: {
 			type: 'string',
@@ -89,6 +101,7 @@ export const defPurchaseDescription = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is a description',
 		},
 	},
 	xml: {
@@ -129,21 +142,27 @@ export const defPurchaseEntry = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		purchase_description_uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		material_info_uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		quantity: {
 			type: 'number',
+			example: 1000.0,
 		},
 		price: {
 			type: 'number',
+			example: 1111.0,
 		},
 		created_by: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		created_at: {
 			type: 'string',
@@ -157,6 +176,7 @@ export const defPurchaseEntry = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is an entry',
 		},
 	},
 	xml: {

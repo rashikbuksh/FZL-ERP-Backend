@@ -169,27 +169,38 @@ const pathPurchaseDescription = {
 								properties: {
 									uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
 									},
 									vendor_uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
 									},
 									is_local: {
 										type: 'integer',
+										example: 1,
 									},
 									lc_number: {
 										type: 'string',
+										example: '123456789',
 									},
 									created_by: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
 									},
 									user_name: {
 										type: 'string',
+										example: 'John Doe',
 									},
 									user_designation: {
 										type: 'string',
+										example: 'Manager',
 									},
 									user_department: {
 										type: 'string',
+										example: 'HR',
 									},
 									created_at: {
 										type: 'string',
@@ -203,6 +214,7 @@ const pathPurchaseDescription = {
 									},
 									remarks: {
 										type: 'string',
+										example: 'This is a description',
 									},
 								},
 							},
@@ -350,33 +362,47 @@ const pathPurchaseEntry = {
 								properties: {
 									uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
 									},
 									purchase_description_uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
 									},
 									material_info_uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
 									},
 									material_name: {
 										type: 'string',
+										example: 'nylon',
 									},
 									quantity: {
 										type: 'number',
+										example: 1000.0,
 									},
 									price: {
 										type: 'number',
+										example: 1111.0,
 									},
 									created_by: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
 									},
 									user_name: {
 										type: 'string',
+										example: 'John Doe',
 									},
 									user_designation: {
 										type: 'string',
+										example: 'Manager',
 									},
 									user_department: {
 										type: 'string',
+										example: 'HR',
 									},
 									created_at: {
 										type: 'string',
@@ -390,6 +416,7 @@ const pathPurchaseEntry = {
 									},
 									remarks: {
 										type: 'string',
+										example: 'This is an entry',
 									},
 								},
 							},

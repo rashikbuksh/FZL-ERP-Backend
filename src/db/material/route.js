@@ -402,18 +402,17 @@ export const pathMaterialStock = {
 			description: 'Create a new material stock',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material stock object that needs to be added to the material.stock',
-					required: true,
-					schema: {
-						$ref: '#/definitions/material/stock',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/stock',
+						},
 					},
 				},
-			],
+			},
+
 			responses: {
 				200: {
 					description: 'successful operation',

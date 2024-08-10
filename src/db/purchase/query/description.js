@@ -119,15 +119,29 @@ export async function selectAll(req, res, next) {
 			remarks: description.remarks,
 		})
 		.from(description)
-		.leftJoin(hrSchema.users)
-		.on(description.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(
-			hrSchema.designation.department_uuid.equals(
-				hrSchema.department.uuid
-			)
+		// .leftJoin(hrSchema.users)
+		// .on(description.created_by.equals(hrSchema.users.uuid))
+		// .leftJoin(hrSchema.designation)
+		// .on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
+		// .leftJoin(hrSchema.department)
+		// .on(
+		// 	hrSchema.designation.department_uuid.equals(
+		// 		hrSchema.department.uuid
+		// 	)
+		.leftJoin(
+			hrSchema.users,
+			'description.created_by',
+			'hrSchema.users.uuid'
+		)
+		.leftJoin(
+			hrSchema.designation,
+			'hrSchema.users.designation_uuid',
+			'hrSchema.designation.uuid'
+		)
+		.leftJoin(
+			hrSchema.department,
+			'hrSchema.designation.department_uuid',
+			'hrSchema.department.uuid'
 		);
 
 	const toast = {
