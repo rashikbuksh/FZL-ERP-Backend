@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
+import { properties } from '../public/schema.js';
 import * as departmentOperations from './query/department.js';
 import * as designationOperations from './query/designation.js';
 import * as policyAndNoticeOperations from './query/policy_and_notice.js';
@@ -469,9 +470,24 @@ export const pathHrDesignation = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/hr/designation',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									designation: {
+										type: 'string',
+										example: 'Admin',
+									},
+									department_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									department: {
+										type: 'string',
+										example: 'Admin',
+									},
 								},
 							},
 						},
@@ -529,6 +545,30 @@ export const pathHrDesignation = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							designation: {
+								type: 'string',
+								example: 'Admin',
+							},
+							department_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							department: {
+								type: 'string',
+								example: 'Admin',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
