@@ -22,24 +22,31 @@ export const defPurchaseVendor = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		name: {
 			type: 'string',
+			example: 'Z Group',
 		},
 		contact_name: {
 			type: 'string',
+			example: 'Jahid Hasan',
 		},
 		email: {
 			type: 'string',
+			example: 'z456@gmail.com',
 		},
 		office_address: {
 			type: 'string',
+			example: 'Dhaka, Bangladesh',
 		},
 		contact_number: {
 			type: 'string',
+			example: '01700000000',
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is a vendor',
 		},
 	},
 	xml: {
@@ -64,18 +71,23 @@ export const defPurchaseDescription = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174002',
 		},
 		vendor_uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		is_local: {
 			type: 'integer',
+			example: 1,
 		},
 		lc_number: {
 			type: 'string',
+			example: '1234',
 		},
 		created_by: {
 			type: 'string',
+			example: '1234567890',
 		},
 		created_at: {
 			type: 'string',
@@ -89,6 +101,7 @@ export const defPurchaseDescription = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is a description',
 		},
 	},
 	xml: {
@@ -101,7 +114,9 @@ export const entry = purchase.table('entry', {
 	purchase_description_uuid: defaultUUID(
 		'purchase_description_uuid'
 	).references(() => description.uuid),
-	material_info_uuid: defaultUUID('material_info_uuid'),
+	material_info_uuid: defaultUUID('material_info_uuid').references(
+		() => materialSchema.info.uuid
+	),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -110,7 +125,6 @@ export const entry = purchase.table('entry', {
 		precision: 20,
 		scale: 4,
 	}).default(null),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -129,21 +143,27 @@ export const defPurchaseEntry = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174004',
 		},
 		purchase_description_uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174002',
 		},
 		material_info_uuid: {
 			type: 'string',
+			example: '123e4567-e89b-12d3-a456-426614174006',
 		},
 		quantity: {
 			type: 'number',
+			example: 1000.0,
 		},
 		price: {
 			type: 'number',
+			example: 1111.0,
 		},
 		created_by: {
 			type: 'string',
+			example: '1234567890',
 		},
 		created_at: {
 			type: 'string',
@@ -157,6 +177,7 @@ export const defPurchaseEntry = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is an entry',
 		},
 	},
 	xml: {

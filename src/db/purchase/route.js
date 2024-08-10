@@ -1,3 +1,4 @@
+import { desc } from 'drizzle-orm';
 import { Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
 import { properties } from '../public/schema.js';
@@ -61,11 +62,9 @@ const pathPurchaseVendor = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: 'Vendor UUID',
 					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
 				},
 			],
 			responses: {
@@ -90,10 +89,7 @@ const pathPurchaseVendor = {
 					name: 'uuid',
 					in: 'path',
 					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
 				},
 			],
 			requestBody: {
@@ -120,10 +116,7 @@ const pathPurchaseVendor = {
 					name: 'uuid',
 					in: 'path',
 					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
 				},
 			],
 			responses: {
@@ -169,27 +162,38 @@ const pathPurchaseDescription = {
 								properties: {
 									uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174002',
 									},
 									vendor_uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174000',
 									},
 									is_local: {
 										type: 'integer',
+										example: 1,
 									},
 									lc_number: {
 										type: 'string',
+										example: '123456789',
 									},
 									created_by: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174011',
 									},
 									user_name: {
 										type: 'string',
+										example: 'John Doe',
 									},
 									user_designation: {
 										type: 'string',
+										example: 'Manager',
 									},
 									user_department: {
 										type: 'string',
+										example: 'HR',
 									},
 									created_at: {
 										type: 'string',
@@ -203,6 +207,7 @@ const pathPurchaseDescription = {
 									},
 									remarks: {
 										type: 'string',
+										example: 'This is a description',
 									},
 								},
 							},
@@ -242,10 +247,7 @@ const pathPurchaseDescription = {
 					name: 'uuid',
 					in: 'path',
 					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
 				},
 			],
 			responses: {
@@ -270,10 +272,7 @@ const pathPurchaseDescription = {
 					name: 'uuid',
 					in: 'path',
 					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
 				},
 			],
 			requestBody: {
@@ -300,10 +299,7 @@ const pathPurchaseDescription = {
 					name: 'uuid',
 					in: 'path',
 					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
 				},
 			],
 			responses: {
@@ -350,33 +346,30 @@ const pathPurchaseEntry = {
 								properties: {
 									uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174004',
 									},
 									purchase_description_uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174002',
 									},
 									material_info_uuid: {
 										type: 'string',
+										example:
+											'123e4567-e89b-12d3-a456-426614174006',
 									},
 									material_name: {
 										type: 'string',
+										example: 'nylon',
 									},
 									quantity: {
 										type: 'number',
+										example: 1000.0,
 									},
 									price: {
 										type: 'number',
-									},
-									created_by: {
-										type: 'string',
-									},
-									user_name: {
-										type: 'string',
-									},
-									user_designation: {
-										type: 'string',
-									},
-									user_department: {
-										type: 'string',
+										example: 1111.0,
 									},
 									created_at: {
 										type: 'string',
@@ -390,6 +383,7 @@ const pathPurchaseEntry = {
 									},
 									remarks: {
 										type: 'string',
+										example: 'This is an entry',
 									},
 								},
 							},
@@ -429,10 +423,7 @@ const pathPurchaseEntry = {
 					name: 'uuid',
 					in: 'path',
 					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
 				},
 			],
 			responses: {
@@ -457,10 +448,7 @@ const pathPurchaseEntry = {
 					name: 'uuid',
 					in: 'path',
 					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
 				},
 			],
 			requestBody: {
@@ -487,10 +475,7 @@ const pathPurchaseEntry = {
 					name: 'uuid',
 					in: 'path',
 					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
 				},
 			],
 			responses: {
