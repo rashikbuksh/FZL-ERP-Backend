@@ -10,13 +10,19 @@ export async function insert(req, res, next) {
 	const descriptionPromise = db
 		.insert(description)
 		.values(req.body)
-		.returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
-	handleResponse({ promise: descriptionPromise, res, next, ...toast });
+		.returning({ insertedId: description.uuid });
+
+	try {
+		const data = await descriptionPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertedId} created`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -26,40 +32,20 @@ export async function update(req, res, next) {
 		.update(description)
 		.set(req.body)
 		.where(eq(description.uuid, req.params.uuid))
-		.returning({ updatedName: description.name });
+		.returning({ updatedId: description.uuid });
 
-	descriptionPromise
+	try {
+		const data = await descriptionPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
 
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
-
-			handleResponse({
-				promise: descriptionPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating description - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: descriptionPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -68,39 +54,20 @@ export async function remove(req, res, next) {
 	const descriptionPromise = db
 		.delete(description)
 		.where(eq(description.uuid, req.params.uuid))
-		.returning({ deletedName: description.name });
+		.returning({ deletedId: description.uuid });
 
-	descriptionPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await descriptionPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
 
-			handleResponse({
-				promise: descriptionPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting description - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: descriptionPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -119,29 +86,17 @@ export async function selectAll(req, res, next) {
 			remarks: description.remarks,
 		})
 		.from(description)
-		// .leftJoin(hrSchema.users)
-		// .on(description.created_by.equals(hrSchema.users.uuid))
-		// .leftJoin(hrSchema.designation)
-		// .on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		// .leftJoin(hrSchema.department)
-		// .on(
-		// 	hrSchema.designation.department_uuid.equals(
-		// 		hrSchema.department.uuid
-		// 	)
 		.leftJoin(
 			hrSchema.users,
-			'description.created_by',
-			'hrSchema.users.uuid'
+			eq(description.created_by, hrSchema.users.uuid)
 		)
 		.leftJoin(
 			hrSchema.designation,
-			'hrSchema.users.designation_uuid',
-			'hrSchema.designation.uuid'
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
 		)
 		.leftJoin(
 			hrSchema.department,
-			'hrSchema.designation.department_uuid',
-			'hrSchema.department.uuid'
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 
 	const toast = {
@@ -171,16 +126,19 @@ export async function select(req, res, next) {
 			remarks: description.remarks,
 		})
 		.from(description)
-		.leftJoin(hrSchema.users)
-		.on(description.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(
-			hrSchema.designation.department_uuid.equals(
-				hrSchema.department.uuid
-			)
+		.leftJoin(
+			hrSchema.users,
+			eq(description.created_by, hrSchema.users.uuid)
 		)
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
+		)
+
 		.where(eq(description.uuid, req.params.uuid));
 
 	const toast = {

@@ -22,7 +22,7 @@ export const defPurchaseVendor = {
 	properties: {
 		uuid: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
+			example: '1234567890',
 		},
 		name: {
 			type: 'string',
@@ -71,11 +71,11 @@ export const defPurchaseDescription = {
 	properties: {
 		uuid: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
+			example: '1234567890',
 		},
 		vendor_uuid: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
+			example: '1234567890',
 		},
 		is_local: {
 			type: 'integer',
@@ -83,11 +83,11 @@ export const defPurchaseDescription = {
 		},
 		lc_number: {
 			type: 'string',
-			example: '123456789',
+			example: '1234',
 		},
 		created_by: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
+			example: '1234567890',
 		},
 		created_at: {
 			type: 'string',
@@ -114,7 +114,9 @@ export const entry = purchase.table('entry', {
 	purchase_description_uuid: defaultUUID(
 		'purchase_description_uuid'
 	).references(() => description.uuid),
-	material_info_uuid: defaultUUID('material_info_uuid'),
+	material_info_uuid: defaultUUID('material_info_uuid').references(
+		() => materialSchema.info.uuid
+	),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -142,15 +144,15 @@ export const defPurchaseEntry = {
 	properties: {
 		uuid: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
+			example: '1234567890',
 		},
 		purchase_description_uuid: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
+			example: '1234567890',
 		},
 		material_info_uuid: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
+			example: '1234567890material',
 		},
 		quantity: {
 			type: 'number',
@@ -162,7 +164,7 @@ export const defPurchaseEntry = {
 		},
 		created_by: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
+			example: '1234567890',
 		},
 		created_at: {
 			type: 'string',

@@ -7,14 +7,23 @@ import { entry } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const entryPromise = db.insert(entry).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.material_name} created`,
-	};
+	const entryPromise = db
+		.insert(entry)
+		.values(req.body)
+		.returning({ insertedId: entry.uuid });
 
-	handleResponse({ promise: entryPromise, res, next, ...toast });
+	try {
+		const data = await entryPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertedId} created`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -24,40 +33,20 @@ export async function update(req, res, next) {
 		.update(entry)
 		.set(req.body)
 		.where(eq(entry.uuid, req.params.uuid))
-		.returning({ updatedName: entry.material_name });
+		.returning({ updatedId: entry.uuid });
 
-	entryPromise
+	try {
+		const data = await entryPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
 
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
-
-			handleResponse({
-				promise: entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating entry - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -66,39 +55,20 @@ export async function remove(req, res, next) {
 	const entryPromise = db
 		.delete(entry)
 		.where(eq(entry.uuid, req.params.uuid))
-		.returning({ deletedName: entry.material_name });
+		.returning({ deletedId: entry.uuid });
 
-	entryPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await entryPromise;
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
 
-			handleResponse({
-				promise: entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting entry - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -119,14 +89,19 @@ export async function selectAll(req, res, next) {
 			remarks: entry.remarks,
 		})
 		.from(entry)
-		.leftJoin(materialSchema.info)
-		.on(entry.material_info_uuid.equals(materialSchema.info.uuid))
-		.leftJoin(hrSchema.users)
-		.on(entry.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(hrSchema.users.department_uuid.equals(hrSchema.department.uuid));
+		.leftJoin(
+			materialSchema.info,
+			eq(entry.material_info_uuid, materialSchema.info.uuid)
+		)
+		.leftJoin(hrSchema.users, eq(entry.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department)
+		);
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -144,6 +119,7 @@ export async function select(req, res, next) {
 			uuid: entry.uuid,
 			purchase_description_uuid: entry.purchase_description_uuid,
 			material_info_uuid: entry.material_info_uuid,
+			material_name: materialSchema.info.name,
 			quantity: entry.quantity,
 			price: entry.price,
 			created_by: entry.created_by,
@@ -155,12 +131,19 @@ export async function select(req, res, next) {
 			remarks: entry.remarks,
 		})
 		.from(entry)
-		.leftJoin(hrSchema.users)
-		.on(entry.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(hrSchema.users.department_uuid.equals(hrSchema.department.uuid))
+		.leftJoin(
+			materialSchema.info,
+			eq(entry.material_info_uuid, materialSchema.info.uuid)
+		)
+		.leftJoin(hrSchema.users, eq(entry.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+		)
 		.where(eq(entry.uuid, req.params.uuid));
 
 	const toast = {

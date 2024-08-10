@@ -362,18 +362,15 @@ const pathPurchaseEntry = {
 								properties: {
 									uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: '1234567890',
 									},
 									purchase_description_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: '1234567890',
 									},
 									material_info_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: '1234567890',
 									},
 									material_name: {
 										type: 'string',
@@ -389,8 +386,7 @@ const pathPurchaseEntry = {
 									},
 									created_by: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: '1234567890',
 									},
 									user_name: {
 										type: 'string',
