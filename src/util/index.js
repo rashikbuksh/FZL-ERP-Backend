@@ -15,7 +15,6 @@ export async function validateRequest(req, next) {
 export async function handleResponse({
 	promise,
 	res,
-	next,
 	status = 200,
 	msg = 'Operation failed',
 	type = 'select',
@@ -34,9 +33,20 @@ export async function handleResponse({
 
 		if (error.severity === 'ERROR') {
 			nullValueError(res, error);
-		} 
+		}
 		// else {
 		// 	next(new CustomError(error.message, 500));
 		// }
 	}
+}
+
+export async function handleError({ error, res }) {
+	console.log(error);
+
+	if (error.severity === 'ERROR') {
+		nullValueError(res, error);
+	}
+	// else {
+	// 	next(new CustomError(error.message, 500));
+	// }
 }
