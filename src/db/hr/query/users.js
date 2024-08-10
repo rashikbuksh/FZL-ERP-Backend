@@ -1,7 +1,11 @@
 // import { ComparePass, CreateToken } from "@/middleware/auth.js";
 import { eq } from 'drizzle-orm';
 import { ComparePass, CreateToken } from '../../../middleware/auth.js';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { department, designation, users } from '../schema.js';
 
@@ -13,40 +17,18 @@ export async function insert(req, res, next) {
 		.values(req.body)
 		.returning({ insertedName: users.name });
 
-	userPromise
-		.then((result) => {
-			if (result.length === 0) {
-				return next(new CustomError('User not created', 400));
-			}
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedName} inserted`,
+		};
 
-			const toast = {
-				type: 'create',
-				message: 'User created',
-			};
-
-			handleResponse({
-				promise: userPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'create',
-				message: `Error creating user - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: userPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -58,37 +40,18 @@ export async function update(req, res, next) {
 		.where(eq(users.uuid, req.params.uuid))
 		.returning({ updatedName: users.name });
 
-	userPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
 
-			handleResponse({
-				promise: userPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating user - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: userPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -99,46 +62,45 @@ export async function remove(req, res, next) {
 		.where(eq(users.uuid, req.params.uuid))
 		.returning({ deletedName: users.name });
 
-	userPromise
-		.then((result) => {
-			const toast = {
-				status: 200,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
 
-			handleResponse({
-				promise: userPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			// for error
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting user - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: userPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(users);
+	const resultPromise = db
+		.select({
+			uuid: users.uuid,
+			name: users.name,
+			email: users.email,
+			designation_uuid: users.designation_uuid,
+			designation: designation.designation,
+			department_uuid: department.uuid,
+			department: department.department,
+			ext: users.ext,
+			phone: users.phone,
+			created_at: users.created_at,
+			updated_at: users.updated_at,
+			status: users.status,
+			remarks: users.remarks,
+		})
+		.from(users)
+		.leftJoin(designation, eq(users.designation_uuid, designation.uuid))
+		.leftJoin(department, eq(designation.department_uuid, department.uuid));
 
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'user list',
+		message: 'user list',
 	};
 
 	handleResponse({
@@ -153,14 +115,30 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const userPromise = db
-		.select()
+		.select({
+			uuid: users.uuid,
+			name: users.name,
+			email: users.email,
+			designation_uuid: users.designation_uuid,
+			designation: designation.designation,
+			department_uuid: department.uuid,
+			department: department.department,
+			ext: users.ext,
+			phone: users.phone,
+			created_at: users.created_at,
+			updated_at: users.updated_at,
+			status: users.status,
+			remarks: users.remarks,
+		})
 		.from(users)
+		.leftJoin(designation, eq(users.designation_uuid, designation.uuid))
+		.leftJoin(department, eq(designation.department_uuid, department.uuid))
 		.where(eq(users.uuid, req.params.uuid));
 
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'user',
+		message: 'user',
 	};
 
 	handleResponse({
@@ -253,7 +231,7 @@ export async function selectUsersAccessPages(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'user',
+		message: 'user',
 	};
 
 	handleResponse({ promise: userPromise, res, next, ...toast });
@@ -276,7 +254,7 @@ export async function selectCommonUsers(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_common',
-		msg: 'Common User list',
+		message: 'Common User list',
 	};
 
 	handleResponse({

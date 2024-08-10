@@ -1,4 +1,8 @@
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 
 import { eq, sql } from 'drizzle-orm';
@@ -63,7 +67,7 @@ export async function insert(req, res, next) {
 
 		return res.status(201).json({ toast, data });
 	} catch (error) {
-		console.error(error);
+		await handleError({ error, res });
 	}
 }
 
@@ -124,7 +128,7 @@ export async function update(req, res, next) {
 
 		return res.status(201).json({ toast, data });
 	} catch (error) {
-		console.error(error);
+		await handleError({ error, res });
 	}
 }
 
@@ -148,7 +152,7 @@ export async function remove(req, res, next) {
 
 		return res.status(201).json({ toast, data: result[0].deletedId });
 	} catch (error) {
-		console.error(error);
+		await handleError({ error, res });
 	}
 }
 

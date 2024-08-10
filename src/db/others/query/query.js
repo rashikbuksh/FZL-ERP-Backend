@@ -353,3 +353,25 @@ export async function selectBank(req, res, next) {
 		...toast,
 	});
 }
+
+// hr
+export async function selectDepartment(req, res, next) {
+	const departmentPromise = db
+		.select({
+			value: hrSchema.department.uuid,
+			label: hrSchema.department.department,
+		})
+		.from(hrSchema.department);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Department list',
+	};
+	handleResponse({
+		promise: departmentPromise,
+		res,
+		next,
+		...toast,
+	});
+}

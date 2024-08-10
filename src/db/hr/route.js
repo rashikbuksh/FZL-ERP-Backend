@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
+import { type } from '../material/schema.js';
+import { properties } from '../public/schema.js';
 import * as departmentOperations from './query/department.js';
 import * as designationOperations from './query/designation.js';
 import * as policyAndNoticeOperations from './query/policy_and_notice.js';
@@ -61,9 +63,62 @@ export const pathHrUser = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/hr/user',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									email: {
+										type: 'string',
+										example: 'john@fzl.com',
+									},
+									designation_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									designation: {
+										type: 'string',
+										example: 'Admin',
+									},
+									department_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									department: {
+										type: 'string',
+										example: 'Admin',
+									},
+									ext: {
+										type: 'string',
+										example: '123',
+									},
+									phone: {
+										type: 'string',
+										example: '12345678910',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2021-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2021-01-01 00:00:00',
+									},
+									status: {
+										type: 'integer',
+										example: 1,
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
 								},
 							},
 						},
@@ -124,7 +179,63 @@ export const pathHrUser = {
 				200: {
 					description: 'successful operation',
 					schema: {
-						$ref: '#/definitions/hr/user',
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							email: {
+								type: 'string',
+								example: 'john@fzl.com',
+							},
+							designation_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							designation: {
+								type: 'string',
+								example: 'Admin',
+							},
+							department_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							department: {
+								type: 'string',
+								example: 'Admin',
+							},
+							ext: {
+								type: 'string',
+								example: '123',
+							},
+							phone: {
+								type: 'string',
+								example: '12345678910',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2021-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2021-01-01 00:00:00',
+							},
+							status: {
+								type: 'integer',
+								example: 1,
+							},
+							remarks: {
+								type: 'string',
+								example: 'remarks',
+							},
+						},
 					},
 				},
 				400: {
@@ -151,17 +262,56 @@ export const pathHrUser = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'User object that needs to be updated to the hr.user',
-					required: true,
-					schema: {
-						$ref: '#/definitions/hr/user',
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							type: 'object',
+							properties: {
+								name: {
+									type: 'string',
+									example: 'John Doe',
+								},
+								email: {
+									type: 'string',
+									example: 'john@fzl.com',
+								},
+								designation_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								ext: {
+									type: 'string',
+									example: '123',
+								},
+								phone: {
+									type: 'string',
+									example: '12345678910',
+								},
+								created_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2021-01-01 00:00:00',
+								},
+								updated_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2021-01-01 00:00:00',
+								},
+								status: {
+									type: 'integer',
+									example: 1,
+								},
+								remarks: {
+									type: 'string',
+									example: 'remarks',
+								},
+							},
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -469,9 +619,24 @@ export const pathHrDesignation = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/hr/designation',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									designation: {
+										type: 'string',
+										example: 'Admin',
+									},
+									department_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									department: {
+										type: 'string',
+										example: 'Admin',
+									},
 								},
 							},
 						},
@@ -529,6 +694,30 @@ export const pathHrDesignation = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							designation: {
+								type: 'string',
+								example: 'Admin',
+							},
+							department_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							department: {
+								type: 'string',
+								example: 'Admin',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},

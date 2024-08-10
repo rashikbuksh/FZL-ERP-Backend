@@ -52,6 +52,9 @@ otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
 // commercial
 otherRouter.get('/bank/value/label', otherOperations.selectBank);
 
+// hr
+otherRouter.get('/department/value/label', otherOperations.selectDepartment);
+
 const pathPublic = {
 	'/other/party/value/label': {
 		get: {
@@ -541,12 +544,43 @@ const pathZipper = {
 	},
 };
 
+const pathHr = {
+	'/other/department/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all departments',
+			description: 'All departments',
+			operationId: 'getAllDepartments',
+			responses: {
+				200: {
+					description: 'Returns a all departments.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: { type: 'string', example: 'Admin' },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+};
+
 export const pathOthers = {
 	...pathPublic,
 	...pathPurchase,
 	...pathMaterial,
 	...pathCommercial,
 	...pathZipper,
+	...pathHr,
 };
 
 export const tagOthers = [

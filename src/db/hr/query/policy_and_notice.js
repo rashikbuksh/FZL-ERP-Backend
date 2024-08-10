@@ -80,7 +80,7 @@ export function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Privacy and Notice List',
+		message: 'Privacy and Notice List',
 	};
 
 	handleResponse({
@@ -102,7 +102,7 @@ export function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Privacy and Notice',
+		message: 'Privacy and Notice',
 	};
 
 	handleResponse({
@@ -124,7 +124,7 @@ export function selectPolicy(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Policy',
+		message: 'Policy',
 	};
 
 	handleResponse({
@@ -146,7 +146,7 @@ export function selectNotice(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Notice',
+		message: 'Notice',
 	};
 
 	handleResponse({
