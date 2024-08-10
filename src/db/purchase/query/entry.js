@@ -1,5 +1,10 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
 import { entry } from '../schema.js';
@@ -80,10 +85,6 @@ export async function selectAll(req, res, next) {
 			material_name: materialSchema.info.name,
 			quantity: entry.quantity,
 			price: entry.price,
-			created_by: entry.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: entry.created_at,
 			updated_at: entry.updated_at,
 			remarks: entry.remarks,
@@ -92,20 +93,12 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			materialSchema.info,
 			eq(entry.material_info_uuid, materialSchema.info.uuid)
-		)
-		.leftJoin(hrSchema.users, eq(entry.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department)
 		);
+
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Entry list',
+		message: 'Entry list',
 	};
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
@@ -122,10 +115,6 @@ export async function select(req, res, next) {
 			material_name: materialSchema.info.name,
 			quantity: entry.quantity,
 			price: entry.price,
-			created_by: entry.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: entry.created_at,
 			updated_at: entry.updated_at,
 			remarks: entry.remarks,
@@ -135,21 +124,12 @@ export async function select(req, res, next) {
 			materialSchema.info,
 			eq(entry.material_info_uuid, materialSchema.info.uuid)
 		)
-		.leftJoin(hrSchema.users, eq(entry.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
-		)
 		.where(eq(entry.uuid, req.params.uuid));
 
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Entry',
+		message: 'Entry',
 	};
 
 	handleResponse({ promise: entryPromise, res, next, ...toast });

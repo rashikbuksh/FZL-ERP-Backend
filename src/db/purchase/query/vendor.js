@@ -1,5 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { vendor } from '../schema.js';
 
@@ -70,7 +74,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Vendor list',
+		message: 'Vendor list',
 	};
 	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
@@ -85,7 +89,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Vendor',
+		message: 'Vendor',
 	};
 	handleResponse({ promise: vendorPromise, res, next, ...toast });
 }

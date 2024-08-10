@@ -22,7 +22,7 @@ export const defPurchaseVendor = {
 	properties: {
 		uuid: {
 			type: 'string',
-			example: '1234567890',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		name: {
 			type: 'string',
@@ -71,11 +71,11 @@ export const defPurchaseDescription = {
 	properties: {
 		uuid: {
 			type: 'string',
-			example: '1234567890',
+			example: '123e4567-e89b-12d3-a456-426614174002',
 		},
 		vendor_uuid: {
 			type: 'string',
-			example: '1234567890',
+			example: '123e4567-e89b-12d3-a456-426614174000',
 		},
 		is_local: {
 			type: 'integer',
@@ -125,7 +125,6 @@ export const entry = purchase.table('entry', {
 		precision: 20,
 		scale: 4,
 	}).default(null),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -144,15 +143,15 @@ export const defPurchaseEntry = {
 	properties: {
 		uuid: {
 			type: 'string',
-			example: '1234567890',
+			example: '123e4567-e89b-12d3-a456-426614174004',
 		},
 		purchase_description_uuid: {
 			type: 'string',
-			example: '1234567890',
+			example: '123e4567-e89b-12d3-a456-426614174002',
 		},
 		material_info_uuid: {
 			type: 'string',
-			example: '1234567890material',
+			example: '123e4567-e89b-12d3-a456-426614174006',
 		},
 		quantity: {
 			type: 'number',
