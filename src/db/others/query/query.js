@@ -159,6 +159,30 @@ export function selectMarketing(req, res, next) {
 	});
 }
 
+export function selectOrderProperties(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const orderPropertiesPromise = db
+		.select({
+			value: publicSchema.properties.uuid,
+			label: publicSchema.properties.name,
+		})
+		.from(publicSchema.properties)
+		.where(eq(publicSchema.properties.type, req.params.type_name));
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Order Properties list',
+	};
+	handleResponse({
+		promise: orderPropertiesPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
 // zipper
 export function selectOrderInfo(req, res, next) {
 	if (!validateRequest(req, next)) return;
@@ -169,6 +193,37 @@ export function selectOrderInfo(req, res, next) {
 			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		})
 		.from(zipperSchema.order_info);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		msg: 'Order Info list',
+	};
+
+	handleResponse({
+		promise: orderInfoPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+export function selectOrderInfoToGetOrderDescription(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	console.log('req.params', req.params);
+
+	const orderInfoPromise = db
+		.select()
+		.from(sql`zipper.v_order_details`)
+		.where(
+			eq(
+				sql`zipper.v_order_details.order_number`,
+				req.params.order_number
+			)
+		);
+
+	console.log('orderInfoPromise', orderInfoPromise);
 
 	const toast = {
 		status: 200,

@@ -16,7 +16,7 @@ export async function handleResponse({
 	promise,
 	res,
 	status = 200,
-	msg = 'Operation failed',
+	message = 'Operation failed',
 	type = 'select',
 }) {
 	try {
@@ -24,7 +24,7 @@ export async function handleResponse({
 		const toast = {
 			status,
 			type,
-			message: msg,
+			message,
 		};
 
 		return res.status(status).json({ toast, data });
