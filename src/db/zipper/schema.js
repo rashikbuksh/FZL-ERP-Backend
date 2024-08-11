@@ -216,72 +216,95 @@ export const def_zipper_order_description = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		order_info_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		item: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		zipper_number: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		end_type: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		lock_type: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		puller_type: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		teeth_color: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		puller_color: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		special_requirement: {
 			type: 'object',
+			example: '{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
 		},
 		hand: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		stopper_type: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		coloring_type: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		is_slider_provided: {
 			type: 'integer',
+			example: 0,
 		},
 		slider: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		slider_starting_section: {
 			type: 'string',
+			example: 'die_casting',
 		},
 		top_stopper: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		bottom_stopper: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		logo_type: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		is_logo_body: {
 			type: 'integer',
+			example: 0,
 		},
 		is_logo_puller: {
 			type: 'integer',
+			example: 0,
 		},
 		description: {
 			type: 'string',
+			example: 'Description',
 		},
 		status: {
 			type: 'integer',
+			example: 0,
 		},
 		created_at: {
 			type: 'string',
@@ -295,27 +318,35 @@ export const def_zipper_order_description = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 		slider_body_shape: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		slider_link: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		end_user: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		garment: {
 			type: 'string',
+			example: 'Garment',
 		},
 		light_preference: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		garments_wash: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		puller_link: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 	},
 	xml: {
@@ -349,7 +380,7 @@ export const order_entry = zipper.table('order_entry', {
 		.default(0.0),
 	status: integer('status').default(1),
 	swatch_status: swatchStatusEnum('swatch_status_enum').default('pending'),
-	swap_approval_date: text('swap_approval_date').default(null),
+	swatch_approval_date: text('swatch_approval_date').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -369,49 +400,63 @@ export const def_zipper_order_entry = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		order_description_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		style: {
 			type: 'string',
+			example: 'style 1',
 		},
 		color: {
 			type: 'string',
+			example: 'black',
 		},
 		size: {
-			type: 'string',
+			type: 'number',
+			example: 10,
 		},
 		quantity: {
 			type: 'number',
+			example: 100,
 		},
 		company_price: {
 			type: 'number',
+			example: 10.5,
 		},
 		party_price: {
 			type: 'number',
+			example: 10.5,
 		},
 		status: {
 			type: 'integer',
+			example: 0,
 		},
 		swatch_status: {
 			type: 'string',
+			example: 'Pending',
 		},
 		swap_approval_date: {
 			type: 'string',
+			example: '2021-08-01 00:00:00',
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
+			example: '2021-08-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
+			example: '2021-08-01 00:00:00',
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {

@@ -13,6 +13,7 @@ import * as sfgTransactionOperations from './query/sfg_transaction.js';
 import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeToCoilOperations from './query/tape_to_coil.js';
+import zipper from './schema.js';
 
 const zipperRouter = Router();
 
@@ -487,11 +488,195 @@ export const pathZipperOrderDescription = {
 									item: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
-										description: 'uuid',
 									},
-									remarks: {
+									item_name: {
 										type: 'string',
-										example: 'Remarks',
+										example: 'John',
+									},
+									item_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									zipper_number: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									zipper_number_name: {
+										type: 'string',
+										example: 'John',
+									},
+									zipper_number_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									end_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_type_name: {
+										type: 'string',
+										example: 'John',
+									},
+									end_type_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									lock_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lock_type_name: {
+										type: 'string',
+										example: 'John',
+									},
+									lock_type_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									puller_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_type_name: {
+										type: 'string',
+										example: 'John',
+									},
+									puller_type_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									teeth_color: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									teeth_color_name: {
+										type: 'string',
+										example: 'John',
+									},
+									teeth_color_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									puller_color: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_color_name: {
+										type: 'string',
+										example: 'John',
+									},
+									puller_color_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									special_requirement: {
+										type: 'string',
+										example:
+											'{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
+									},
+									hand: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									hand_name: {
+										type: 'string',
+										example: 'John',
+									},
+									hand_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									stopper_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									stopper_type_name: {
+										type: 'string',
+										example: 'John',
+									},
+									stopper_type_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									coloring_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									coloring_type_name: {
+										type: 'string',
+										example: 'John',
+									},
+									coloring_type_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									is_slider_provided: {
+										type: 'integer',
+										example: 0,
+									},
+									slider: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									slider_name: {
+										type: 'string',
+										example: 'John',
+									},
+									slider_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									top_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									top_stopper_name: {
+										type: 'string',
+										example: 'John',
+									},
+									top_stopper_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									bottom_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									bottom_stopper_name: {
+										type: 'string',
+										example: 'John',
+									},
+									bottom_stopper_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									logo_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									logo_type_name: {
+										type: 'string',
+										example: 'John',
+									},
+									logo_type_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									is_logo_body: {
+										type: 'integer',
+										example: 0,
+									},
+									is_logo_puller: {
+										type: 'integer',
+										example: 0,
+									},
+									description: {
+										type: 'string',
+										example: 'description',
+									},
+									status: {
+										type: 'integer',
+										example: 0,
 									},
 									created_at: {
 										type: 'string',
@@ -500,6 +685,86 @@ export const pathZipperOrderDescription = {
 									updated_at: {
 										type: 'string',
 										example: '2021-08-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									slider_body_shape: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									slider_body_shape_name: {
+										type: 'string',
+										example: 'John',
+									},
+									slider_body_shape_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									slider_link: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									slider_link_name: {
+										type: 'string',
+										example: 'John',
+									},
+									slider_link_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									end_user: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_user_name: {
+										type: 'string',
+										example: 'John',
+									},
+									end_user_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									garment: {
+										type: 'string',
+										example: 'garments',
+									},
+									light_preference: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									light_preference_name: {
+										type: 'string',
+										example: 'John',
+									},
+									light_preference_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									garments_wash: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									garments_wash_name: {
+										type: 'string',
+										example: 'John',
+									},
+									garments_wash_short_name: {
+										type: 'string',
+										example: 'John',
+									},
+									puller_link: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_link_name: {
+										type: 'string',
+										example: 'John',
+									},
+									puller_link_short_name: {
+										type: 'string',
+										example: 'John',
 									},
 								},
 							},
@@ -530,9 +795,136 @@ export const pathZipperOrderDescription = {
 				200: {
 					description: 'successful operation',
 					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/order_description',
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							order_info_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							item: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							zipper_number: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							end_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							lock_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							puller_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							teeth_color: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							puller_color: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							special_requirement: {
+								type: 'string',
+								example: '{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
+							},
+							hand: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							stopper_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							coloring_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							is_slider_provided: {
+								type: 'integer',
+								example: 0,
+							},
+							slider: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							top_stopper: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							bottom_stopper: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							logo_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							is_logo_body: {
+								type: 'integer',
+								example: 0,
+							},
+							is_logo_puller: {
+								type: 'integer',
+								example: 0,
+							},
+							description: {
+								type: 'string',
+								example: 'description',
+							},
+							status: {
+								type: 'integer',
+								example: 0,
+							},
+							created_at: {
+								type: 'string',
+								example: '2021-08-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								example: '2021-08-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
+							slider_body_shape: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							slider_link: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							end_user: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							garment: {
+								type: 'string',
+								example: 'garments',
+							},
+							light_preference: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							garments_wash: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							puller_link: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
 						},
 					},
 				},
@@ -596,6 +988,142 @@ export const pathZipperOrderDescription = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							order_info_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							item: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							zipper_number: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							end_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							lock_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							puller_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							teeth_color: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							puller_color: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							special_requirement: {
+								type: 'string',
+								example: '{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
+							},
+							hand: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							stopper_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							coloring_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							is_slider_provided: {
+								type: 'integer',
+								example: 0,
+							},
+							slider: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							top_stopper: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							bottom_stopper: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							logo_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							is_logo_body: {
+								type: 'integer',
+								example: 0,
+							},
+							is_logo_puller: {
+								type: 'integer',
+								example: 0,
+							},
+							description: {
+								type: 'string',
+								example: 'description',
+							},
+							status: {
+								type: 'integer',
+								example: 0,
+							},
+							created_at: {
+								type: 'string',
+								example: '2021-08-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								example: '2021-08-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
+							slider_body_shape: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							slider_link: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							end_user: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							garment: {
+								type: 'string',
+								example: 'garments',
+							},
+							light_preference: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							garments_wash: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							puller_link: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -633,6 +1161,731 @@ export const pathZipperOrderDescription = {
 			},
 		},
 	},
+	'/zipper/order/description/full/uuid/by/{order_description_uuid}': {
+		get: {
+			tags: ['zipper.order_description'],
+			summary: 'Gets a Order Description Full by Order Description UUID',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'order_description_uuid',
+					in: 'path',
+					description: 'orderDescription to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description:
+						'Returns all Order Description Full by Order Description UUID',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0010',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									item: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									zipper_number: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lock_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									teeth_color: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_color: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									special_requirement: {
+										type: 'string',
+										example:
+											'{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
+									},
+									hand: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									stopper_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									coloring_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									is_slider_provided: {
+										type: 'integer',
+										example: 0,
+									},
+									slider: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									top_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									bottom_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									logo_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									is_logo_body: {
+										type: 'integer',
+										example: 0,
+									},
+									is_logo_puller: {
+										type: 'integer',
+										example: 0,
+									},
+									description: {
+										type: 'string',
+										example: 'description',
+									},
+									status: {
+										type: 'integer',
+										example: 0,
+									},
+									created_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									slider_body_shape: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									slider_link: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_user: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									garment: {
+										type: 'string',
+										example: 'garments',
+									},
+									light_preference: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									garments_wash: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_link: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'User not found',
+				},
+			},
+		},
+	},
+	'/zipper/order/details/single-order/by/{order_description_uuid}/UUID': {
+		get: {
+			tags: ['zipper.order_description'],
+			summary:
+				'Gets a Order Description UUID to get Order Description and Order Entry',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'order_description_uuid',
+					in: 'path',
+					description: 'orderDescription to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description:
+						'Returns all Order Description UUID to get Order Description and Order Entry',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0010',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									item: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									zipper_number: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lock_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									teeth_color: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_color: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									special_requirement: {
+										type: 'string',
+										example:
+											'{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
+									},
+									hand: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									stopper_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									coloring_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									is_slider_provided: {
+										type: 'integer',
+										example: 0,
+									},
+									slider: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									top_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									bottom_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									logo_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									is_logo_body: {
+										type: 'integer',
+										example: 0,
+									},
+									is_logo_puller: {
+										type: 'integer',
+										example: 0,
+									},
+									description: {
+										type: 'string',
+										example: 'description',
+									},
+									status: {
+										type: 'integer',
+										example: 0,
+									},
+									created_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									slider_body_shape: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									slider_link: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_user: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									garment: {
+										type: 'string',
+										example: 'garments',
+									},
+									light_preference: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									garments_wash: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_link: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_entry: {
+										type: 'object',
+										properties: {
+											order_entry_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											order_description_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											style: {
+												type: 'string',
+												example: 'style 1',
+											},
+											color: {
+												type: 'string',
+												example: 'black',
+											},
+											size: {
+												type: 'number',
+												example: 10,
+											},
+											quantity: {
+												type: 'number',
+												example: 100,
+											},
+											company_price: {
+												type: 'number',
+												example: 10.5,
+											},
+											party_price: {
+												type: 'number',
+												example: 10.5,
+											},
+											status: {
+												type: 'integer',
+												example: 0,
+											},
+											swatch_status: {
+												type: 'string',
+												example: 'Pending',
+											},
+											swap_approval_date: {
+												type: 'string',
+												example: '2021-08-01 00:00:00',
+											},
+											created_by: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											created_at: {
+												type: 'string',
+												example: '2021-08-01 00:00:00',
+											},
+											updated_at: {
+												type: 'string',
+												example: '2021-08-01 00:00:00',
+											},
+											teeth_molding_stock: {
+												type: 'number',
+												example: 10,
+											},
+											teeth_molding_prod: {
+												type: 'number',
+												example: 10,
+											},
+											total_teeth_molding: {
+												type: 'number',
+												example: 10,
+											},
+											teeth_coloring_stock: {
+												type: 'number',
+												example: 10,
+											},
+											teeth_coloring_prod: {
+												type: 'number',
+												example: 10,
+											},
+											total_teeth_coloring: {
+												type: 'number',
+												example: 10,
+											},
+											finishing_stock: {
+												type: 'number',
+												example: 10,
+											},
+											finishing_prod: {
+												type: 'number',
+												example: 10,
+											},
+											total_finishing: {
+												type: 'number',
+												example: 10,
+											},
+											coloring_prod: {
+												type: 'number',
+												example: 10,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'User not found',
+				},
+			},
+		},
+	},
+	'/zipper/order/details/single-order/by/{order_number}': {
+		get: {
+			tags: ['zipper.order_description'],
+			summary:
+				'Gets a Order Number to get Order Description and Order Entry',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'order_number',
+					in: 'path',
+					description: 'orderDescription to get',
+					required: true,
+					type: 'string',
+					example: 'Z24-0010',
+				},
+			],
+			responses: {
+				200: {
+					description:
+						'Returns all Order Number to get Order Description and Order Entry',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0010',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									item: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									zipper_number: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lock_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									teeth_color: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_color: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									special_requirement: {
+										type: 'string',
+										example:
+											'{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
+									},
+									hand: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									stopper_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									coloring_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									is_slider_provided: {
+										type: 'integer',
+										example: 0,
+									},
+									slider: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									top_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									bottom_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									logo_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									is_logo_body: {
+										type: 'integer',
+										example: 0,
+									},
+									is_logo_puller: {
+										type: 'integer',
+										example: 0,
+									},
+									description: {
+										type: 'string',
+										example: 'description',
+									},
+									status: {
+										type: 'integer',
+										example: 0,
+									},
+									created_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									slider_body_shape: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									slider_link: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_user: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									garment: {
+										type: 'string',
+										example: 'garments',
+									},
+									light_preference: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									garments_wash: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_link: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_entry: {
+										type: 'object',
+										properties: {
+											order_entry_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											order_description_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											style: {
+												type: 'string',
+												example: 'style 1',
+											},
+											color: {
+												type: 'string',
+												example: 'black',
+											},
+											size: {
+												type: 'number',
+												example: 10,
+											},
+											quantity: {
+												type: 'number',
+												example: 100,
+											},
+											company_price: {
+												type: 'number',
+												example: 10.5,
+											},
+											party_price: {
+												type: 'number',
+												example: 10.5,
+											},
+											status: {
+												type: 'integer',
+												example: 0,
+											},
+											swatch_status: {
+												type: 'string',
+												example: 'Pending',
+											},
+											swap_approval_date: {
+												type: 'string',
+												example: '2021-08-01 00:00:00',
+											},
+											created_by: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											created_at: {
+												type: 'string',
+												example: '2021-08-01 00:00:00',
+											},
+											updated_at: {
+												type: 'string',
+												example: '2021-08-01 00:00:00',
+											},
+											teeth_molding_stock: {
+												type: 'number',
+												example: 10,
+											},
+											teeth_molding_prod: {
+												type: 'number',
+												example: 10,
+											},
+											total_teeth_molding: {
+												type: 'number',
+												example: 10,
+											},
+											teeth_coloring_stock: {
+												type: 'number',
+												example: 10,
+											},
+											teeth_coloring_prod: {
+												type: 'number',
+												example: 10,
+											},
+											total_teeth_coloring: {
+												type: 'number',
+												example: 10,
+											},
+											finishing_stock: {
+												type: 'number',
+												example: 10,
+											},
+											finishing_prod: {
+												type: 'number',
+												example: 10,
+											},
+											total_finishing: {
+												type: 'number',
+												example: 10,
+											},
+											coloring_prod: {
+												type: 'number',
+												example: 10,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'User not found',
+				},
+			},
+		},
+	},
 };
 
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------
@@ -650,6 +1903,20 @@ zipperRouter.delete(
 	// validateUuidParam(),
 	orderDescriptionOperations.remove
 );
+zipperRouter.get(
+	'/order/description/full/uuid/by/:order_description_uuid',
+	orderDescriptionOperations.selectOrderDescriptionFullByOrderDescriptionUuid
+);
+zipperRouter.get(
+	'/order/details/single-order/by/:order_description_uuid/UUID',
+	orderDescriptionOperations.selectOrderDescriptionUuidToGetOrderDescriptionAndOrderEntry
+);
+zipperRouter.get(
+	'/order/details/single-order/by/:order_number',
+	orderDescriptionOperations.selectOrderNumberToGetOrderDescriptionAndOrderEntry
+);
+
+// /order/details/single-order/by/:id/marketing/:marketing_id -> pending
 
 // --------------------- ORDER ENTRY ---------------------
 
@@ -664,9 +1931,68 @@ export const pathZipperOrderEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/order_entry',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									style: {
+										type: 'string',
+										example: 'style 1',
+									},
+									color: {
+										type: 'string',
+										example: 'black',
+									},
+									size: {
+										type: 'number',
+										example: 10,
+									},
+									quantity: {
+										type: 'number',
+										example: 100,
+									},
+									company_price: {
+										type: 'number',
+										example: 10.5,
+									},
+									party_price: {
+										type: 'number',
+										example: 10.5,
+									},
+									status: {
+										type: 'integer',
+										example: 0,
+									},
+									swatch_status: {
+										type: 'string',
+										example: 'Pending',
+									},
+									swap_approval_date: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -799,6 +2125,143 @@ export const pathZipperOrderEntry = {
 			},
 		},
 	},
+	'/zipper/order/entry/full/uuid/by/{order_description_uuid}': {
+		get: {
+			tags: ['zipper.order_entry'],
+			summary: 'Gets a Order Entry Full By Order Description UUID',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'order_description_uuid',
+					in: 'path',
+					description: 'orderDescription to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description:
+						'Returns all Order Entry Full By Order Description UUID',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									order_entry_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									style: {
+										type: 'string',
+										example: 'style 1',
+									},
+									color: {
+										type: 'string',
+										example: 'black',
+									},
+									size: {
+										type: 'number',
+										example: 10,
+									},
+									quantity: {
+										type: 'number',
+										example: 100,
+									},
+									company_price: {
+										type: 'number',
+										example: 10.5,
+									},
+									party_price: {
+										type: 'number',
+										example: 10.5,
+									},
+									status: {
+										type: 'integer',
+										example: 0,
+									},
+									swatch_status: {
+										type: 'string',
+										example: 'Pending',
+									},
+									swap_approval_date: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									teeth_molding_stock: {
+										type: 'number',
+										example: 10,
+									},
+									teeth_molding_prod: {
+										type: 'number',
+										example: 10,
+									},
+									total_teeth_molding: {
+										type: 'number',
+										example: 10,
+									},
+									teeth_coloring_stock: {
+										type: 'number',
+										example: 10,
+									},
+									teeth_coloring_prod: {
+										type: 'number',
+										example: 10,
+									},
+									total_teeth_coloring: {
+										type: 'number',
+										example: 10,
+									},
+									finishing_stock: {
+										type: 'number',
+										example: 10,
+									},
+									finishing_prod: {
+										type: 'number',
+										example: 10,
+									},
+									total_finishing: {
+										type: 'number',
+										example: 10,
+									},
+									coloring_prod: {
+										type: 'number',
+										example: 10,
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Order Entry not found',
+				},
+			},
+		},
+	},
 };
 
 // --------------------- ORDER ENTRY ROUTES ---------------------
@@ -815,6 +2278,10 @@ zipperRouter.delete(
 	'/order-entry/:uuid',
 	// validateUuidParam(),
 	orderEntryOperations.remove
+);
+zipperRouter.get(
+	'/order/entry/full/uuid/by/:order_description_uuid',
+	orderEntryOperations.selectOrderEntryFullByOrderDescriptionUuid
 );
 
 // --------------------- SFG ---------------------
