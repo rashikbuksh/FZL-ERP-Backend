@@ -104,19 +104,17 @@ export const pathCommercialBank = {
 					description: 'bank to update',
 					required: true,
 					type: 'string',
-					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Bank object need to be updated to the commercial.bank',
-					required: true,
-					schema: {
-						$ref: '#/definitions/commercial/bank',
-					},
 				},
 			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/commercial/bank',
+						},
+					},
+				},
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -185,13 +183,11 @@ export const pathCommercialLc = {
 								properties: {
 									uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									party_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									party_name: {
 										type: 'string',
@@ -294,8 +290,7 @@ export const pathCommercialLc = {
 									},
 									created_by: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									user_name: {
 										type: 'string',
@@ -337,18 +332,16 @@ export const pathCommercialLc = {
 			description: 'Create a lc',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Lc objects that needs to be added to the commercial.lc',
-					required: true,
-					schema: {
-						$ref: '#/definitions/commercial/lc',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/commercial/lc',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'Successful operation',
@@ -381,7 +374,6 @@ export const pathCommercialLc = {
 					description: 'Lc to get',
 					required: true,
 					type: 'string',
-					Format: 'uuid',
 				},
 			],
 			responses: {
@@ -409,17 +401,17 @@ export const pathCommercialLc = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Lc object need to be updated to the commercial.lc',
-					required: true,
-					schema: {
-						$ref: '#/definitions/commercial/lc',
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/commercial/lc',
+						},
 					},
 				},
-			],
+			},
+
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',

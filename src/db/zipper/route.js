@@ -443,6 +443,137 @@ export const pathZipperOrderInfo = {
 			},
 		},
 	},
+	'/zipper/order-info/details': {
+		get: {
+			tags: ['zipper.order_info'],
+			summary: 'Get Order Details',
+			responses: {
+				200: {
+					description: 'Returns all Order Details',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								// 							order_info.uuid AS order_info_uuid,
+								//   order_info.reference_order_info_uuid,
+								//   concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+								//   order_description.uuid as order_description_uuid,
+								//   order_info.buyer_uuid,
+								//   buyer.name AS buyer_name,
+								//   order_info.party_uuid,
+								//   party.name AS party_name,
+								//   order_info.marketing_uuid,
+								//   marketing.name AS marketing_name,
+								//   order_info.merchandiser_uuid,
+								//   merchandiser.name AS merchandiser_name,
+								//   order_info.factory_uuid,
+								//   factory.name AS factory_name,
+								//   order_info.is_sample,
+								//   order_info.is_bill,
+								//   order_info.is_cash,
+								//   order_info.marketing_priority,
+								//   order_info.factory_priority,
+								//   order_info.status,
+								//   order_info.created_by AS created_by_uuid,
+								//   users.name AS created_by_name,
+								//   order_info.created_at AS created_at
+								properties: {
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z21-0010',
+									},
+									reference_order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buyer_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buyer_name: {
+										type: 'string',
+										example: 'John',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'John',
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'John',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'John',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'John',
+									},
+									is_sample: { type: 'integer', example: 0 },
+									is_bill: { type: 'integer', example: 0 },
+									is_cash: { type: 'integer', example: 0 },
+									marketing_priority: {
+										type: 'string',
+										example: 'Urgent',
+									},
+									factory_priority: {
+										type: 'string',
+										example: 'Urgent',
+									},
+									status: { type: 'integer', example: 0 },
+									created_by_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John',
+									},
+									created_at: {
+										type: 'string',
+										example: '2021-08-01 00:00:00',
+									},
+									order_number_wise_rank: {
+										type: 'integer',
+										example: 1,
+									},
+									order_number_wise_count: {
+										type: 'integer',
+										example: 1,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 // --------------------- ORDER INFO ROUTES ---------------------
@@ -460,6 +591,7 @@ zipperRouter.delete(
 	// validateUuidParam(),
 	orderInfoOperations.remove
 );
+zipperRouter.get('/order/details', orderInfoOperations.getOrderDetails);
 
 // --------------------- ORDER DESCRIPTION ---------------------
 

@@ -295,3 +295,40 @@ export async function select(req, res, next) {
 		...toast,
 	});
 }
+
+export async function getOrderDetails(req, res, next) {
+	const query = sql`SELECT 
+					vod.*, 
+					DENSE_RANK() OVER (
+						PARTITION BY vod.order_number
+						ORDER BY vod.id
+					) order_number_wise_rank, 
+					order_number_wise_counts.order_number_wise_count as order_number_wise_count
+				from v_order_details vod
+					LEFT JOIN (
+						SELECT order_number, COUNT(*) as order_number_wise_count
+						FROM v_order_details
+						GROUP BY order_number
+					) order_number_wise_counts
+					ON vod.order_number = order_number_wise_counts.order_number
+					LEFT JOIN order_info oi ON vod.id = oi.id
+				WHERE 
+					oi.id > 0
+				ORDER BY vod.order_number desc, order_number_wise_rank`;
+
+	const orderInfoPromise = db.execute(query);
+
+	try {
+		const data = await orderInfoPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			msg: 'Order Info list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

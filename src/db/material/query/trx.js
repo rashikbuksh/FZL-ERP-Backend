@@ -10,7 +10,7 @@ export async function insert(req, res, next) {
 	const trxPromise = db
 		.insert(trx)
 		.values(req.body)
-		.returning({ insertedId: trx.uuid });
+		.returning({ insertedId: trx.material_uuid });
 
 	try {
 		const data = await trxPromise;
@@ -32,7 +32,7 @@ export async function update(req, res, next) {
 		.update(trx)
 		.set(req.body)
 		.where(eq(trx.uuid, req.params.uuid))
-		.returning({ updatedId: trx.uuid });
+		.returning({ updatedId: trx.material_uuid });
 
 	try {
 		const data = await trxPromise;
@@ -54,7 +54,7 @@ export async function remove(req, res, next) {
 	const trxPromise = db
 		.delete(trx)
 		.where(eq(trx.uuid, req.params.uuid))
-		.returning({ deletedId: trx.uuid });
+		.returning({ deletedId: trx.material_uuid });
 
 	try {
 		const data = await trxPromise;

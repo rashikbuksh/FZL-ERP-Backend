@@ -313,6 +313,52 @@ export const pathHrUser = {
 				},
 			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							email: {
+								type: 'string',
+								example: 'john@fzl.com',
+							},
+							designation_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							ext: {
+								type: 'string',
+								example: '123',
+							},
+							phone: {
+								type: 'string',
+								example: '12345678910',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2021-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2021-01-01 00:00:00',
+							},
+							status: {
+								type: 'integer',
+								example: 1,
+							},
+							remarks: {
+								type: 'string',
+								example: 'remarks',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -365,13 +411,20 @@ export const pathHrUser = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhQeey',
 				},
 			],
 			responses: {
 				200: {
 					description: 'successful operation',
 					schema: {
-						$ref: '#/definitions/hr/user',
+						type: 'object',
+						properties: {
+							can_access: {
+								type: 'string',
+								example: '1,2,3',
+							},
+						},
 					},
 				},
 				400: {
@@ -379,6 +432,57 @@ export const pathHrUser = {
 				},
 				404: {
 					description: 'User access not found',
+				},
+			},
+		},
+		put: {
+			tags: ['hr.user'],
+			summary: 'create a user access',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'User access to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhQeey',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							type: 'object',
+							properties: {
+								can_access: {
+									type: 'string',
+									example: '1,2,3',
+								},
+							},
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							can_access: {
+								type: 'string',
+								example: '1,2,3',
+							},
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
 				},
 			},
 		},
@@ -443,6 +547,7 @@ hrRouter.post('/user', userOperations.insert);
 hrRouter.put('/user/:uuid', userOperations.update);
 hrRouter.delete('/user/:uuid', validateUuidParam(), userOperations.remove);
 hrRouter.get('/user-common', userOperations.selectCommonUsers);
+hrRouter.put('/user/can-access/:uuid', userOperations.changeUserAccess);
 
 // department routes
 export const pathHrDepartment = {

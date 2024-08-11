@@ -1,5 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
@@ -8,13 +12,21 @@ import { stock_to_sfg } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const usedPromise = db.insert(stock_to_sfg).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
-	handleResponse({ promise: usedPromise, res, next, ...toast });
+	const usedPromise = db.insert(stock_to_sfg).values(req.body).returning({
+		insertedId: stock_to_sfg.material_uuid,
+	});
+	try {
+		const data = await usedPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertedId} created`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -24,39 +36,20 @@ export async function update(req, res, next) {
 		.update(stock_to_sfg)
 		.set(req.body)
 		.where(eq(stock_to_sfg.uuid, req.params.uuid))
-		.returning({ updatedName: stock_to_sfg.name });
+		.returning({ updatedName: stock_to_sfg.material_uuid });
 
-	usedPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await usedPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
 
-			handleResponse({
-				promise: usedPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating stock_to_sfg - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: usedPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -65,39 +58,20 @@ export async function remove(req, res, next) {
 	const usedPromise = db
 		.delete(stock_to_sfg)
 		.where(eq(stock_to_sfg.uuid, req.params.uuid))
-		.returning({ deletedName: stock_to_sfg.name });
+		.returning({ deletedName: stock_to_sfg.material_uuid });
 
-	usedPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await usedPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
 
-			handleResponse({
-				promise: usedPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting stock_to_sfg - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: usedPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -140,7 +114,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Stock to SFG list',
+		message: 'Stock to SFG list',
 	};
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
@@ -188,7 +162,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Stock to SFG',
+		message: 'Stock to SFG',
 	};
 
 	handleResponse({ promise: usedPromise, res, next, ...toast });

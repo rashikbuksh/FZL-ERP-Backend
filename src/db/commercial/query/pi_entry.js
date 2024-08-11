@@ -6,18 +6,22 @@ import { pi_entry } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const pi_entryPromise = db.insert(pi_entry).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
-	handleResponse({
-		promise: pi_entryPromise,
-		res,
-		next,
-		...toast,
-	});
+	const pi_entryPromise = db
+		.insert(pi_entry)
+		.values(req.body)
+		.returning({ insertId: pi_entry.uuid });
+	try {
+		const data = await pi_entryPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertId} created`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -27,39 +31,20 @@ export async function update(req, res, next) {
 		.update(pi_entry)
 		.set(req.body)
 		.where(eq(pi_entry.uuid, req.params.uuid))
-		.returning({ updatedName: pi_entry.name });
+		.returning({ updatedId: pi_entry.uuid });
 
-	pi_entryPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await policyAndNoticePromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
 
-			handleResponse({
-				promise: pi_entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			//for error message
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating pi_entry - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: pi_entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -68,39 +53,20 @@ export async function remove(req, res, next) {
 	const pi_entryPromise = db
 		.delete(pi_entry)
 		.where(eq(pi_entry.uuid, req.params.uuid))
-		.returning({ deletedName: pi_entry.name });
+		.returning({ deletedId: pi_entry.uuid });
 
-	pi_entryPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await policyAndNoticePromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
 
-			handleResponse({
-				promise: pi_entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			//for error message
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting pi_entry - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: pi_entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
