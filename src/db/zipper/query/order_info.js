@@ -301,19 +301,17 @@ export async function getOrderDetails(req, res, next) {
 					vod.*, 
 					DENSE_RANK() OVER (
 						PARTITION BY vod.order_number
-						ORDER BY vod.id
+						ORDER BY vod.order_info_uuid
 					) order_number_wise_rank, 
 					order_number_wise_counts.order_number_wise_count as order_number_wise_count
-				from v_order_details vod
+				from zipper.v_order_details vod
 					LEFT JOIN (
 						SELECT order_number, COUNT(*) as order_number_wise_count
-						FROM v_order_details
+						FROM zipper.v_order_details
 						GROUP BY order_number
 					) order_number_wise_counts
 					ON vod.order_number = order_number_wise_counts.order_number
-					LEFT JOIN order_info oi ON vod.id = oi.id
-				WHERE 
-					oi.id > 0
+					LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
 				ORDER BY vod.order_number desc, order_number_wise_rank`;
 
 	const orderInfoPromise = db.execute(query);
