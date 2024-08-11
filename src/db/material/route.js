@@ -259,12 +259,12 @@ export const pathMaterialInfo = {
 };
 
 materialRouter.get('/info', infoOperations.selectAll);
-materialRouter.get('/info/:uuid', validateUuidParam(), infoOperations.select);
+materialRouter.get('/info/:uuid', infoOperations.select);
 materialRouter.post('/info', infoOperations.insert);
 materialRouter.put('/info/:uuid', infoOperations.update);
 materialRouter.delete(
 	'/info/:uuid',
-	validateUuidParam(),
+
 	infoOperations.remove
 );
 
@@ -429,14 +429,14 @@ export const pathMaterialSection = {
 materialRouter.get('/section', sectionOperations.selectAll);
 materialRouter.get(
 	'/section/:uuid',
-	validateUuidParam(),
+
 	sectionOperations.select
 );
 materialRouter.post('/section', sectionOperations.insert);
 materialRouter.put('/section/:uuid', sectionOperations.update);
 materialRouter.delete(
 	'/section/:uuid',
-	validateUuidParam(),
+
 	sectionOperations.remove
 );
 
@@ -542,38 +542,39 @@ export const pathMaterialStock = {
 				},
 			},
 		},
-	},
-	post: {
-		tags: ['material.stock'],
-		summary: 'Create a new material stock',
-		description: 'Create a new material stock',
-		consumes: ['application/json'],
-		produces: ['application/json'],
-		parameters: [],
-		requestBody: {
-			content: {
-				'application/json': {
+		post: {
+			tags: ['material.stock'],
+			summary: 'Create a new material stock',
+			description: 'Create a new material stock',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/stock',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
 					schema: {
-						$ref: '#/definitions/material/stock',
+						type: 'array',
+						items: {
+							$ref: '#/definitions/material/stock',
+						},
 					},
 				},
-			},
-		},
-		responses: {
-			200: {
-				description: 'successful operation',
-				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/material/stock',
-					},
+				405: {
+					description: 'Invalid input',
 				},
-			},
-			405: {
-				description: 'Invalid input',
 			},
 		},
 	},
+
 	'/material/stock/{uuid}': {
 		get: {
 			tags: ['material.stock'],
@@ -587,7 +588,6 @@ export const pathMaterialStock = {
 					description: ' material stock to get',
 					required: true,
 					type: 'string',
-					format: 'uuid',
 				},
 			],
 			responses: {
@@ -612,7 +612,6 @@ export const pathMaterialStock = {
 					description: 'material stock to update',
 					required: true,
 					type: 'string',
-					format: 'uuid',
 				},
 			],
 			requestBody: {
@@ -648,7 +647,6 @@ export const pathMaterialStock = {
 					description: 'material stock to delete',
 					required: true,
 					type: 'string',
-					format: 'uuid',
 				},
 			],
 			responses: {
@@ -686,14 +684,10 @@ export const pathMaterialStock = {
 };
 
 materialRouter.get('/stock', stockOperations.selectAll);
-materialRouter.get('/stock/:uuid', validateUuidParam(), stockOperations.select);
+materialRouter.get('/stock/:uuid', stockOperations.select);
 materialRouter.post('/stock', stockOperations.insert);
 materialRouter.put('/stock/:uuid', stockOperations.update);
-materialRouter.delete(
-	'/stock/:uuid',
-	validateUuidParam(),
-	stockOperations.remove
-);
+materialRouter.delete('/stock/:uuid', stockOperations.remove);
 materialRouter.get(
 	'/stock-threshold',
 	stockOperations.selectMaterialBelowThreshold
@@ -999,13 +993,13 @@ export const pathMaterialTrx = {
 };
 
 materialRouter.get('/trx', trxOperations.selectAll);
-materialRouter.get('/trx/:uuid', validateUuidParam(), trxOperations.select);
+materialRouter.get('/trx/:uuid', trxOperations.select);
 materialRouter.post('/trx', trxOperations.insert);
 materialRouter.put('/trx/:uuid', trxOperations.update);
-materialRouter.delete('/trx/:uuid', validateUuidParam(), trxOperations.remove);
+materialRouter.delete('/trx/:uuid', trxOperations.remove);
 materialRouter.get(
 	'/trx/by/:material_uuid/:trx_to',
-	validateUuidParam(),
+
 	trxOperations.selectMaterialTrxByMaterialTrxTo
 );
 
@@ -1168,12 +1162,12 @@ export const pathMaterialType = {
 };
 
 materialRouter.get('/type', typeOperations.selectAll);
-materialRouter.get('/type/:uuid', validateUuidParam(), typeOperations.select);
+materialRouter.get('/type/:uuid', typeOperations.select);
 materialRouter.post('/type', typeOperations.insert);
 materialRouter.put('/type/:uuid', typeOperations.update);
 materialRouter.delete(
 	'/type/:uuid',
-	validateUuidParam(),
+
 	typeOperations.remove
 );
 
@@ -1439,12 +1433,12 @@ export const pathMaterialUsed = {
 };
 
 materialRouter.get('/used', usedOperations.selectAll);
-materialRouter.get('/used/:uuid', validateUuidParam(), usedOperations.select);
+materialRouter.get('/used/:uuid', usedOperations.select);
 materialRouter.post('/used', usedOperations.insert);
 materialRouter.put('/used/:uuid', usedOperations.update);
 materialRouter.delete(
 	'/used/:uuid',
-	validateUuidParam(),
+
 	usedOperations.remove
 );
 
@@ -1731,14 +1725,14 @@ export const pathMaterialStockToSFG = {
 materialRouter.get('/stock-to-sfg', stockToSfgOperations.selectAll);
 materialRouter.get(
 	'/stock-to-sfg/:uuid',
-	validateUuidParam(),
+
 	stockToSfgOperations.select
 );
 materialRouter.post('/stock-to-sfg', stockToSfgOperations.insert);
 materialRouter.put('/stock-to-sfg/:uuid', stockToSfgOperations.update);
 materialRouter.delete(
 	'/stock-to-sfg/:uuid',
-	validateUuidParam(),
+
 	stockToSfgOperations.remove
 );
 

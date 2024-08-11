@@ -92,12 +92,12 @@ export async function update(req, res, next) {
 	try {
 		const data = await infoPromise;
 		const toast = {
-			status: 200,
+			status: 201,
 			type: 'update',
 			message: `${data[0].updatedName} updated`,
 		};
 
-		res.status(200).json({ data, toast });
+		return await res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -114,12 +114,12 @@ export async function remove(req, res, next) {
 	try {
 		const data = await infoPromise;
 		const toast = {
-			status: 200,
+			status: 201,
 			type: 'delete',
 			message: `${data[0].deletedName} deleted`,
 		};
 
-		res.status(200).json({ data, toast });
+		return await res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

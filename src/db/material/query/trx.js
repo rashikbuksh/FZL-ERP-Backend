@@ -7,14 +7,22 @@ import { info, stock, trx } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const trxPromise = db.insert(trx).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.material_name} created`,
-	};
+	const trxPromise = db
+		.insert(trx)
+		.values(req.body)
+		.returning({ insertedId: trx.uuid });
 
-	handleResponse({ promise: trxPromise, res, next, ...toast });
+	try {
+		const data = await trxPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			msg: `${data[0].insertedId} created`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -24,39 +32,20 @@ export async function update(req, res, next) {
 		.update(trx)
 		.set(req.body)
 		.where(eq(trx.uuid, req.params.uuid))
-		.returning({ updatedName: trx.material_name });
+		.returning({ updatedId: trx.uuid });
 
-	trxPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await trxPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			msg: `${data[0].updatedId} updated`,
+		};
 
-			handleResponse({
-				promise: trxPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating trx - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: trxPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -65,39 +54,20 @@ export async function remove(req, res, next) {
 	const trxPromise = db
 		.delete(trx)
 		.where(eq(trx.uuid, req.params.uuid))
-		.returning({ deletedName: trx.material_name });
+		.returning({ deletedId: trx.uuid });
 
-	trxPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await trxPromise;
+		const toast = {
+			status: 200,
+			type: 'delete',
+			msg: `${data[0].deletedId} deleted`,
+		};
 
-			handleResponse({
-				promise: trxPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting trx - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: trxPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -117,19 +87,20 @@ export async function selectAll(req, res, next) {
 			remarks: trx.remarks,
 		})
 		.from(trx)
-		.leftJoin(info)
-		.on(trx.material_uuid.equals(info.uuid))
-		.leftJoin(hrSchema.users)
-		.on(trx.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(hrSchema.users.department_uuid.equals(hrSchema.department.uuid));
-
+		.leftJoin(info, eq(trx.material_uuid, info.uuid))
+		.leftJoin(hrSchema.users, eq(trx.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+		);
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Trx list',
+		message: 'Trx list',
 	};
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
@@ -154,20 +125,22 @@ export async function select(req, res, next) {
 			remarks: trx.remarks,
 		})
 		.from(trx)
-		.leftJoin(info)
-		.on(trx.material_uuid.equals(info.uuid))
-		.leftJoin(hrSchema.users)
-		.on(trx.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(hrSchema.users.department_uuid.equals(hrSchema.department.uuid))
+		.leftJoin(info, eq(trx.material_uuid, info.uuid))
+		.leftJoin(hrSchema.users, eq(trx.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+		)
 		.where(eq(trx.uuid, req.params.uuid));
 
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Trx',
+		message: 'Trx',
 	};
 
 	handleResponse({ promise: trxPromise, res, next, ...toast });
@@ -202,7 +175,7 @@ export async function selectMaterialTrxByMaterialTrxTo(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Trx',
+		message: 'Trx',
 	};
 
 	handleResponse({ promise: trxPromise, res, next, ...toast });
