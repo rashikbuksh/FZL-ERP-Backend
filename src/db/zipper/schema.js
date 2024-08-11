@@ -651,19 +651,19 @@ export const def_zipper_sfg_production = {
 		},
 		section: {
 			type: 'string',
-			example: 'section',
+			example: 'section 1',
 		},
 		used_quantity: {
 			type: 'number',
-			example: 100,
+			example: 10,
 		},
 		production_quantity: {
 			type: 'number',
-			example: 100,
+			example: 10,
 		},
 		wastage: {
 			type: 'number',
-			example: 0.0,
+			example: 10,
 		},
 		created_by: {
 			type: 'string',

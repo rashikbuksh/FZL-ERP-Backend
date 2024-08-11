@@ -1,5 +1,4 @@
 import { request, Router } from 'express';
-
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
@@ -2759,9 +2758,63 @@ export const pathZipperSfgProduction = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/sfg_production',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sfg_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									section: {
+										type: 'string',
+										example: 'section 1',
+									},
+									used_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									production_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									wastage: {
+										type: 'number',
+										example: 10,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									user_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'Production',
+									},
+
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -2815,9 +2868,7 @@ export const pathZipperSfgProduction = {
 					name: 'uuid',
 					in: 'path',
 					description: 'sfgProduction to get',
-					required: true,
 					type: 'string',
-					format: 'uuid',
 					example: 'igD0v9DIJQhJeet',
 				},
 			],
@@ -2852,15 +2903,16 @@ export const pathZipperSfgProduction = {
 					name: 'uuid',
 					in: 'path',
 					description: 'sfg production to update',
-					required: true,
+
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
 				description:
 					'SFG Production object that needs to be updated to the zipper',
-				required: true,
+
 				content: {
 					'application/json': {
 						schema: {
@@ -2932,7 +2984,7 @@ export const pathZipperSfgProduction = {
 
 zipperRouter.get('/sfg-production', sfgProductionOperations.selectAll);
 zipperRouter.get(
-	'/sfg_production/:uuid',
+	'/sfg-production/:uuid',
 	// validateUuidParam(),
 	sfgProductionOperations.select
 );

@@ -408,13 +408,13 @@ export const defDieCastingTransaction = {
 
 export const transaction = slider.table('transaction', {
 	uuid: uuid_primary,
-	stock_uuid: defaultUUID('stock_uuid').notNull(),
+	stock_uuid: defaultUUID('stock_uuid').references(() => stock.uuid),
 	section: text('section').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: defaultUUID('created_by').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -433,18 +433,23 @@ export const defTransaction = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		stock_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		section: {
 			type: 'string',
+			example: 'section',
 		},
 		trx_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -458,6 +463,7 @@ export const defTransaction = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'remarks',
 		},
 	},
 	xml: {
