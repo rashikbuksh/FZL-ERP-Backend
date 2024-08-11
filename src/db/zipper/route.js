@@ -454,29 +454,6 @@ export const pathZipperOrderInfo = {
 						'application/json': {
 							schema: {
 								type: 'object',
-								// 							order_info.uuid AS order_info_uuid,
-								//   order_info.reference_order_info_uuid,
-								//   concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
-								//   order_description.uuid as order_description_uuid,
-								//   order_info.buyer_uuid,
-								//   buyer.name AS buyer_name,
-								//   order_info.party_uuid,
-								//   party.name AS party_name,
-								//   order_info.marketing_uuid,
-								//   marketing.name AS marketing_name,
-								//   order_info.merchandiser_uuid,
-								//   merchandiser.name AS merchandiser_name,
-								//   order_info.factory_uuid,
-								//   factory.name AS factory_name,
-								//   order_info.is_sample,
-								//   order_info.is_bill,
-								//   order_info.is_cash,
-								//   order_info.marketing_priority,
-								//   order_info.factory_priority,
-								//   order_info.status,
-								//   order_info.created_by AS created_by_uuid,
-								//   users.name AS created_by_name,
-								//   order_info.created_at AS created_at
 								properties: {
 									order_info_uuid: {
 										type: 'string',
@@ -485,6 +462,10 @@ export const pathZipperOrderInfo = {
 									order_number: {
 										type: 'string',
 										example: 'Z21-0010',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-5-O/E-SP',
 									},
 									reference_order_info_uuid: {
 										type: 'string',
