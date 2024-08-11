@@ -139,7 +139,7 @@ export const defMaterialInfo = {
 
 export const stock = material.table('stock', {
 	uuid: uuid_primary,
-	material_uuid: defaultUUID('material_uuid'),
+	material_uuid: defaultUUID('material_uuid').references(() => info.uuid),
 	stock: decimal('stock', {
 		precision: 20,
 		scale: 4,
@@ -293,84 +293,111 @@ export const defMaterialStock = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		material_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		stock: {
 			type: 'number',
+			example: 1000.0,
 		},
 		tape_making: {
 			type: 'number',
+			example: 1000.0,
 		},
 		coil_forming: {
 			type: 'number',
+			example: 1000.0,
 		},
 		dying_and_iron: {
 			type: 'number',
+			example: 1000.0,
 		},
 		m_gapping: {
 			type: 'number',
+			example: 1000.0,
 		},
 		v_gapping: {
 			type: 'number',
+			example: 1000.0,
 		},
 		v_teeth_molding: {
 			type: 'number',
+			example: 1000.0,
 		},
 		m_teeth_molding: {
 			type: 'number',
+			example: 1000.0,
 		},
 		teeth_assembling_and_polishing: {
 			type: 'number',
+			example: 1000.0,
 		},
 		m_teeth_cleaning: {
 			type: 'number',
+			example: 1000.0,
 		},
 		v_teeth_cleaning: {
 			type: 'number',
+			example: 1000.0,
 		},
 		plating_and_iron: {
 			type: 'number',
+			example: 1000.0,
 		},
 		m_sealing: {
 			type: 'number',
+			example: 1000.0,
 		},
 		v_sealing: {
 			type: 'number',
+			example: 1000.0,
 		},
 		n_t_cutting: {
 			type: 'number',
+			example: 1000.0,
 		},
 		v_t_cutting: {
 			type: 'number',
+			example: 1000.0,
 		},
 		m_stopper: {
 			type: 'number',
+			example: 1000.0,
 		},
 		v_stopper: {
 			type: 'number',
+			example: 1000.0,
 		},
 		n_stopper: {
 			type: 'number',
+			example: 1000.0,
 		},
 		cutting: {
 			type: 'number',
+			example: 1000.0,
 		},
 		qc_and_packing: {
 			type: 'number',
+			example: 1000.0,
 		},
 		die_casting: {
 			type: 'number',
+			example: 1000.0,
 		},
 		slider_assembly: {
 			type: 'number',
+			example: 1000.0,
 		},
 		coloring: {
 			type: 'number',
+			example: 1000.0,
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is an entry',
 		},
 	},
 	xml: {
@@ -380,7 +407,7 @@ export const defMaterialStock = {
 
 export const trx = material.table('trx', {
 	uuid: uuid_primary,
-	material_uuid: defaultUUID('material_uuid'),
+	material_uuid: defaultUUID('material_uuid').references(() => info.uuid),
 	trx_to: text('trx_to').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
@@ -404,18 +431,23 @@ export const defMaterialTrx = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		material_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		trx_to: {
 			type: 'string',
+			example: 'ig',
 		},
 		quantity: {
 			type: 'number',
+			example: 1000.0,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -429,6 +461,7 @@ export const defMaterialTrx = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is an entry',
 		},
 	},
 	xml: {

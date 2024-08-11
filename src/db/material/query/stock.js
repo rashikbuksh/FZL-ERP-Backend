@@ -1,18 +1,30 @@
 import { eq, lt } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { info, stock } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const stockPromise = db.insert(stock).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
-	handleResponse({ promise: stockPromise, res, next, ...toast });
+	const stockPromise = db
+		.insert(stock)
+		.values(req.body)
+		.returning({ insertedId: stock.uuid });
+	try {
+		const data = await stockPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertedId} created`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -22,39 +34,20 @@ export async function update(req, res, next) {
 		.update(stock)
 		.set(req.body)
 		.where(eq(stock.uuid, req.params.uuid))
-		.returning({ updatedName: stock.name });
+		.returning({ insertedId: stock.uuid });
 
-	stockPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await stockPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].insertedId} updated`,
+		};
 
-			handleResponse({
-				promise: stockPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating stock - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: stockPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -63,39 +56,20 @@ export async function remove(req, res, next) {
 	const stockPromise = db
 		.delete(stock)
 		.where(eq(stock.uuid, req.params.uuid))
-		.returning({ deletedName: stock.name });
+		.returning({ deletedId: stock.uuid });
 
-	stockPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await stockPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
 
-			handleResponse({
-				promise: stockPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting stock - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: stockPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -132,13 +106,12 @@ export async function selectAll(req, res, next) {
 			remarks: stock.remarks,
 		})
 		.from(stock)
-		.join(info)
-		.on(eq(stock.material_uuid, info.uuid));
+		.leftJoin(info, eq(stock.material_uuid, info.uuid));
 
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Stock list',
+		message: 'Stock list',
 	};
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
@@ -180,14 +153,13 @@ export async function select(req, res, next) {
 			remarks: stock.remarks,
 		})
 		.from(stock)
-		.join(info)
-		.on(eq(stock.material_uuid, info.uuid))
+		.leftJoin(info, eq(stock.material_uuid, info.uuid))
 		.where(eq(stock.uuid, req.params.uuid));
 
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Stock',
+		message: 'Stock',
 	};
 
 	handleResponse({ promise: stockPromise, res, next, ...toast });
@@ -209,7 +181,7 @@ export async function selectMaterialBelowThreshold(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Material below threshold',
+		message: 'Material below threshold',
 	};
 
 	handleResponse({ promise: stockPromise, res, next, ...toast });
