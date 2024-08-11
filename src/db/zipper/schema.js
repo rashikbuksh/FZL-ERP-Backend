@@ -1,12 +1,10 @@
 import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
-
-import e from 'express';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
 import * as publicSchema from '../public/schema.js';
 import * as sliderSchema from '../slider/schema.js';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 const zipper = pgSchema('zipper');
 
@@ -467,8 +465,12 @@ export const def_zipper_order_entry = {
 
 export const sfg = zipper.table('sfg', {
 	uuid: uuid_primary,
-	order_entry_uuid: defaultUUID('order_entry_uuid'),
-	recipe_uuid: defaultUUID('recipe_uuid').default(null),
+	order_entry_uuid: defaultUUID('order_entry_uuid').references(
+		() => order_entry.uuid
+	),
+	recipe_uuid: defaultUUID('recipe_uuid')
+		.default(null)
+		.references(() => labDipSchema.recipe.uuid),
 	// dying_and_iron_stock: decimal("dying_and_iron_stock").default(0.0), // dying_and_iron has been moved to dying_batch table
 	dying_and_iron_prod: decimal('dying_and_iron_prod', {
 		precision: 20,
@@ -533,48 +535,63 @@ export const def_zipper_sfg = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		order_entry_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		recipe_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		dying_and_iron_prod: {
 			type: 'number',
+			example: 0.0,
 		},
 		teeth_molding_stock: {
 			type: 'number',
+			example: 0.0,
 		},
 		teeth_molding_prod: {
 			type: 'number',
+			example: 0.0,
 		},
 		teeth_coloring_stock: {
 			type: 'number',
+			example: 0.0,
 		},
 		teeth_coloring_prod: {
 			type: 'number',
+			example: 0.0,
 		},
 		finishing_stock: {
 			type: 'number',
+			example: 0.0,
 		},
 		finishing_prod: {
 			type: 'number',
+			example: 0.0,
 		},
 		coloring_prod: {
 			type: 'number',
+			example: 0.0,
 		},
 		warehouse: {
 			type: 'number',
+			example: 0.0,
 		},
 		delivered: {
 			type: 'number',
+			example: 0.0,
 		},
 		pi: {
 			type: 'number',
+			example: 0.0,
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -584,7 +601,7 @@ export const def_zipper_sfg = {
 
 export const sfg_production = zipper.table('sfg_production', {
 	uuid: uuid_primary,
-	sfg_uuid: defaultUUID('sfg_uuid'),
+	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
 	section: text('section').notNull(),
 	used_quantity: decimal('used_quantity', {
 		precision: 20,
@@ -600,7 +617,7 @@ export const sfg_production = zipper.table('sfg_production', {
 	})
 		.notNull()
 		.default(0.0),
-	created_by: defaultUUID('created_by'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -620,24 +637,31 @@ export const def_zipper_sfg_production = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		sfg_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		section: {
 			type: 'string',
+			example: 'section',
 		},
 		used_quantity: {
 			type: 'number',
+			example: 100,
 		},
 		production_quantity: {
 			type: 'number',
+			example: 100,
 		},
 		wastage: {
 			type: 'number',
+			example: 0.0,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -651,6 +675,7 @@ export const def_zipper_sfg_production = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -660,15 +685,20 @@ export const def_zipper_sfg_production = {
 
 export const sfg_transaction = zipper.table('sfg_transaction', {
 	uuid: uuid_primary,
-	order_entry_uuid: defaultUUID('order_entry_uuid'),
+	order_entry_uuid: defaultUUID('order_entry_uuid').references(
+		() => order_entry.uuid
+	),
 	trx_from: text('trx_from').notNull(),
 	trx_to: text('trx_to').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	slider_item_uuid: defaultUUID('slider_item_uuid'), //	slider_item_uuid: uuid('slider_item_uuid').references(() => sliderSchema.stock.uuid),
-	created_by: defaultUUID('created_by'),
+	slider_item_uuid: defaultUUID('slider_item_uuid').references(
+		() => sliderSchema.stock.uuid
+	),
+	//	slider_item_uuid: uuid('slider_item_uuid').references(() => sliderSchema.stock.uuid),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -689,27 +719,35 @@ export const def_zipper_sfg_transaction = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		order_entry_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		section: {
 			type: 'string',
+			example: 'section',
 		},
 		trx_from: {
 			type: 'string',
+			example: 'trx_from',
 		},
 		trx_to: {
 			type: 'string',
+			example: 'trx_to',
 		},
 		trx_quantity: {
 			type: 'number',
+			example: 100,
 		},
-		// slider_item_id: {
-		// 	type: "string",
-		// },
+		slider_item_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -723,6 +761,7 @@ export const def_zipper_sfg_transaction = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {

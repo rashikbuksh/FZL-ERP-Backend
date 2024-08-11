@@ -1,5 +1,6 @@
 import { request, Router } from 'express';
 
+import { properties } from '../public/schema.js';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
@@ -13,6 +14,7 @@ import * as sfgTransactionOperations from './query/sfg_transaction.js';
 import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeToCoilOperations from './query/tape_to_coil.js';
+import { order_description, order_entry } from './schema.js';
 
 const zipperRouter = Router();
 
@@ -2428,9 +2430,81 @@ export const pathZipperSfg = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/sfg',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_entry_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									recipe_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									recipe_name: {
+										type: 'string',
+										example: 'recipe 1',
+									},
+									dying_and_iron_prod: {
+										type: 'number',
+										example: 10,
+									},
+									teeth_molding_stock: {
+										type: 'number',
+										example: 10,
+									},
+									teeth_molding_prod: {
+										type: 'number',
+										example: 10,
+									},
+									teeth_coloring_stock: {
+										type: 'number',
+										example: 10,
+									},
+									teeth_coloring_prod: {
+										type: 'number',
+										example: 10,
+									},
+									finishing_stock: {
+										type: 'number',
+										example: 10,
+									},
+									finishing_prod: {
+										type: 'number',
+										example: 10,
+									},
+									coloring_prod: {
+										type: 'number',
+										example: 10,
+									},
+									warehouse: {
+										type: 'string',
+										example: 'warehouse 1',
+									},
+									delivered: {
+										type: 'number',
+										example: 10,
+									},
+									pi: {
+										type: 'string',
+										example: 'pi 1',
+									},
+
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -2445,17 +2519,18 @@ export const pathZipperSfg = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'SFG',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/sfg',
+			parameters: [],
+			requestBody: {
+				description: 'SFG object that needs to be added to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/sfg',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -2486,10 +2561,20 @@ export const pathZipperSfg = {
 					description: 'sfg to get',
 					required: true,
 					type: 'string',
-					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Returns a SFG',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/zipper/sfg',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2513,18 +2598,21 @@ export const pathZipperSfg = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'sfg object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/sfg',
-					},
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
+			requestBody: {
+				description:
+					'SFG object that needs to be updated to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/sfg',
+						},
+					},
+				},
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -2550,7 +2638,6 @@ export const pathZipperSfg = {
 					description: 'sfg to delete',
 					required: true,
 					type: 'string',
-					format: 'uuid',
 				},
 			],
 			responses: {
@@ -2568,10 +2655,10 @@ export const pathZipperSfg = {
 // --------------------- SFG ROUTES ---------------------
 
 zipperRouter.get('/sfg', sfgOperations.selectAll);
-// zipperRouter.get("/sfg/:uuid", validateUuidParam(), sfgOperations.select);
+zipperRouter.get('/sfg/:uuid', sfgOperations.select);
 zipperRouter.post('/sfg', sfgOperations.insert);
 zipperRouter.put('/sfg/:uuid', sfgOperations.update);
-// zipperRouter.delete("/sfg/:uuid", validateUuidParam(), sfgOperations.remove);
+zipperRouter.delete('/sfg/:uuid', sfgOperations.remove);
 
 // --------------------- SFG PRODUCTION ---------------------
 
@@ -2752,9 +2839,74 @@ export const pathZipperSfgTransaction = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/sfg_transaction',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_entry_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									trx_from: {
+										type: 'string',
+										example: 'trx from',
+									},
+									trx_to: {
+										type: 'string',
+										example: 'trx to',
+									},
+									trx_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									slider_item_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									user_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'HR',
+									},
+									user_department: {
+										type: 'string',
+										example: 'HR',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2021-08-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2021-08-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -2769,17 +2921,18 @@ export const pathZipperSfgTransaction = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'SFG Transaction',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/sfg_transaction',
+			parameters: [],
+			requestBody: {
+				description:
+					'SFG Transaction object that needs to be added to the zipper',
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/sfg_transaction',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -2808,9 +2961,8 @@ export const pathZipperSfgTransaction = {
 					name: 'uuid',
 					in: 'path',
 					description: 'sfgTransaction to get',
-					required: true,
 					type: 'string',
-					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -2836,19 +2988,22 @@ export const pathZipperSfgTransaction = {
 					description: 'sfg transaction to update',
 					required: true,
 					type: 'string',
-					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'sfg transaction object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/sfg_transaction',
-					},
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
+
+			requestBody: {
+				description:
+					'SFG Transaction object that needs to be updated to the zipper',
+
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/sfg_transaction',
+						},
+					},
+				},
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -2874,7 +3029,7 @@ export const pathZipperSfgTransaction = {
 					description: 'sfg transaction to delete',
 					required: true,
 					type: 'string',
-					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {

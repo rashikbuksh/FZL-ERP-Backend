@@ -104,8 +104,7 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const recipe_entryPromise = db
-		.select()
-		.from({
+		.select({
 			uuid: recipe_entry.uuid,
 			recipe_uuid: recipe_entry.recipe_uuid,
 			recipe_name: recipe.name,
