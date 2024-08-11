@@ -6,7 +6,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
-import { info, section, type } from '../schema.js';
+import { info, section, stock, type } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -134,6 +134,8 @@ export async function selectAll(req, res, next) {
 			type_uuid: info.type_uuid,
 			type_name: type.name,
 			name: info.name,
+			short_name: info.short_name,
+			stock: stock.stock,
 			unit: info.unit,
 			threshold: info.threshold,
 			description: info.description,
@@ -143,7 +145,8 @@ export async function selectAll(req, res, next) {
 		})
 		.from(info)
 		.leftJoin(section, eq(info.section_uuid, section.uuid))
-		.leftJoin(type, eq(info.type_uuid, type.uuid));
+		.leftJoin(type, eq(info.type_uuid, type.uuid))
+		.leftJoin(stock, eq(info.uuid, stock.material_uuid));
 
 	const toast = {
 		status: 200,
@@ -164,6 +167,8 @@ export async function select(req, res, next) {
 			type_uuid: info.type_uuid,
 			type_name: type.name,
 			name: info.name,
+			short_name: info.short_name,
+			stock: stock.stock,
 			unit: info.unit,
 			threshold: info.threshold,
 			description: info.description,
@@ -174,6 +179,7 @@ export async function select(req, res, next) {
 		.from(info)
 		.leftJoin(section, eq(info.section_uuid, section.uuid))
 		.leftJoin(type, eq(info.type_uuid, type.uuid))
+		.leftJoin(stock, eq(info.uuid, stock.material_uuid))
 		.where(eq(info.uuid, req.params.uuid));
 
 	const toast = {

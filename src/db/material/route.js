@@ -49,6 +49,11 @@ export const pathMaterialInfo = {
 										type: 'string',
 										example: 'material 1',
 									},
+									short_name: {
+										type: 'string',
+										example: 'm1',
+									},
+									stock: { type: 'number', example: 10.0 },
 									unit: { type: 'string', example: 'kg' },
 									threshold: {
 										type: 'number',
@@ -158,6 +163,11 @@ export const pathMaterialInfo = {
 								type: 'string',
 								example: 'material 1',
 							},
+							short_name: {
+								type: 'string',
+								example: 'm1',
+							},
+							stock: { type: 'number', example: 10.0 },
 							unit: { type: 'string', example: 'kg' },
 							threshold: {
 								type: 'number',
