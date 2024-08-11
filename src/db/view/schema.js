@@ -4,6 +4,7 @@ export const OrderDetailsView = `
       order_info.uuid AS order_info_uuid,
       order_info.reference_order_info_uuid,
       concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+      concat(op_item.short_name,'-',op_zipper.short_name,'-',op_end.short_name,'-',op_puller.short_name) AS item_description,
       order_description.uuid as order_description_uuid,
       order_info.buyer_uuid,
       buyer.name AS buyer_name,
@@ -32,7 +33,12 @@ export const OrderDetailsView = `
 	  LEFT JOIN public.merchandiser ON merchandiser.uuid = order_info.merchandiser_uuid
 	  LEFT JOIN public.factory ON factory.uuid = order_info.factory_uuid
 	  LEFT JOIN hr.users ON users.uuid = order_info.created_by
-	  LEFT JOIN public.party ON party.uuid = order_info.party_uuid;
+	  LEFT JOIN public.party ON party.uuid = order_info.party_uuid
+      LEFT JOIN public.properties op_item ON op_item.uuid = order_description.item
+        LEFT JOIN public.properties op_zipper ON op_zipper.uuid = order_description.zipper_number
+        LEFT JOIN public.properties op_end ON op_end.uuid = order_description.end_type
+        LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type
+        WHERE ;
   `;
 
 export const OrderDetailsFullView = `

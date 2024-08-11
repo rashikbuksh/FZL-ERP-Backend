@@ -837,9 +837,48 @@ const pathPublicProperties = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/public/properties',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									item_for: {
+										type: 'string',
+										example: 'tape_making',
+									},
+									type: {
+										type: 'string',
+										example: 'type',
+									},
+									name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									short_name: {
+										type: 'string',
+										example: 'p1',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
 								},
 							},
 						},
@@ -891,7 +930,49 @@ const pathPublicProperties = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/public/properties',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									item_for: {
+										type: 'string',
+										example: 'tape_making',
+									},
+									type: {
+										type: 'string',
+										example: 'type',
+									},
+									name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									short_name: {
+										type: 'string',
+										example: 'p1',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
 							},
 						},
 					},
@@ -908,17 +989,50 @@ const pathPublicProperties = {
 					in: 'path',
 					required: true,
 					description: 'uuid of the properties',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/public/properties',
+							type: 'object',
+							properties: {
+								item_for: {
+									type: 'string',
+									example: 'tape_making',
+								},
+								type: {
+									type: 'string',
+									example: 'type',
+								},
+								name: {
+									type: 'string',
+									example: 'prop 1',
+								},
+								short_name: {
+									type: 'string',
+									example: 'p1',
+								},
+								created_by: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								created_at: {
+									type: 'string',
+									example: '2024-01-01 00:00:00',
+								},
+								updated_at: {
+									type: 'string',
+									example: '2024-01-01 00:00:00',
+								},
+								remarks: {
+									type: 'string',
+									example: 'remarks',
+								},
+							},
 						},
 					},
 				},

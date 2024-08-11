@@ -1,6 +1,4 @@
 import { request, Router } from 'express';
-import { validateUuidParam } from '../../lib/validator.js';
-import { type } from '../material/schema.js';
 import {
 	marketing,
 	merchandiser,
@@ -38,12 +36,10 @@ export const pathCommercialBank = {
 				},
 			},
 		},
-
 		post: {
 			tags: ['commercial.bank'],
 			summary: 'Create a bank',
 			description: 'Create a bank',
-			parameters: [],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -79,9 +75,20 @@ export const pathCommercialBank = {
 					description: "Bank's uuid",
 					required: true,
 					type: 'string',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/bank',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -104,6 +111,7 @@ export const pathCommercialBank = {
 					description: 'bank to update',
 					required: true,
 					type: 'string',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -116,6 +124,16 @@ export const pathCommercialBank = {
 				},
 			},
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/bank',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -141,9 +159,20 @@ export const pathCommercialBank = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/bank',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -325,14 +354,12 @@ export const pathCommercialLc = {
 				},
 			},
 		},
-
 		post: {
 			tags: ['commercial.lc'],
 			summary: 'Create a lc',
 			description: 'Create a lc',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -374,9 +401,21 @@ export const pathCommercialLc = {
 					description: 'Lc to get',
 					required: true,
 					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/lc',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -400,6 +439,7 @@ export const pathCommercialLc = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -411,8 +451,17 @@ export const pathCommercialLc = {
 					},
 				},
 			},
-
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/lc',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -438,9 +487,20 @@ export const pathCommercialLc = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/lc',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -592,7 +652,6 @@ export const pathCommercialPi = {
 				},
 			},
 		},
-
 		post: {
 			tags: ['commercial.pi'],
 			summary: 'Create a pi',
@@ -600,18 +659,15 @@ export const pathCommercialPi = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Pi objects that needs to be added to the commercial.pi',
-					required: true,
-					schema: {
-						$ref: '#/definitions/commercial/pi',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/commercial/pi',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'Successful operation',
@@ -644,10 +700,21 @@ export const pathCommercialPi = {
 					description: 'Pi to get',
 					required: true,
 					type: 'string',
-					Format: 'uuid',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/pi',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -671,19 +738,29 @@ export const pathCommercialPi = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Pi object need to be updated to the commercial.pi',
-					required: true,
-					schema: {
-						$ref: '#/definitions/commercial/pi',
-					},
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/commercial/pi',
+						},
+					},
+				},
+			},
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/pi',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -709,9 +786,20 @@ export const pathCommercialPi = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/pi',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -753,25 +841,21 @@ export const pathCommercialPiEntry = {
 				},
 			},
 		},
-
 		post: {
 			tags: ['commercial.pi_entry'],
 			summary: 'Create a pi_entry',
 			description: 'Create a pi_entry',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Pi_entry objects that needs to be added to the commercial.pi_entry',
-					required: true,
-					schema: {
-						$ref: '#/definitions/commercial/pi_entry',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/commercial/pi_entry',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'Successful operation',
@@ -782,7 +866,6 @@ export const pathCommercialPiEntry = {
 						},
 					},
 				},
-
 				405: {
 					description: 'Invalid input',
 				},
@@ -804,10 +887,21 @@ export const pathCommercialPiEntry = {
 					description: 'Pi_entry to get',
 					required: true,
 					type: 'string',
-					Format: 'uuid',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/pi_entry',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -831,19 +925,29 @@ export const pathCommercialPiEntry = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Pi_entry object need to be updated to the commercial.pi_entry',
-					required: true,
-					schema: {
-						$ref: '#/definitions/commercial/pi_entry',
-					},
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/commercial/pi_entry',
+						},
+					},
+				},
+			},
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/pi_entry',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -869,9 +973,20 @@ export const pathCommercialPiEntry = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/pi_entry',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},

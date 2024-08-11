@@ -1,5 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { pi_entry } from '../schema.js';
 
@@ -27,14 +31,14 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const pi_entryPromise = db
+	const piEntryPromise = db
 		.update(pi_entry)
 		.set(req.body)
 		.where(eq(pi_entry.uuid, req.params.uuid))
 		.returning({ updatedId: pi_entry.uuid });
 
 	try {
-		const data = await policyAndNoticePromise;
+		const data = await piEntryPromise;
 		const toast = {
 			status: 201,
 			type: 'update',
@@ -50,13 +54,13 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const pi_entryPromise = db
+	const piEntryPromise = db
 		.delete(pi_entry)
 		.where(eq(pi_entry.uuid, req.params.uuid))
 		.returning({ deletedId: pi_entry.uuid });
 
 	try {
-		const data = await policyAndNoticePromise;
+		const data = await piEntryPromise;
 		const toast = {
 			status: 201,
 			type: 'delete',
@@ -86,7 +90,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'pi_entry list',
+		message: 'pi_entry list',
 	};
 	handleResponse({
 		promise: resultPromise,
@@ -115,7 +119,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'pi_entry',
+		message: 'pi_entry',
 	};
 	handleResponse({
 		promise: pi_entryPromise,

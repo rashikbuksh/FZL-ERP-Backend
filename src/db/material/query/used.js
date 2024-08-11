@@ -91,14 +91,16 @@ export async function selectAll(req, res, next) {
 			remarks: used.remarks,
 		})
 		.from(used)
-		.leftJoin(info)
-		.on(used.material_uuid.equals(info.uuid))
-		.leftJoin(hrSchema.users)
-		.on(used.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(hrSchema.users.department_uuid.equals(hrSchema.department.uuid));
+		.leftJoin(info, eq(used.material_uuid, info.uuid))
+		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+		);
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -128,14 +130,16 @@ export async function select(req, res, next) {
 			remarks: used.remarks,
 		})
 		.from(used)
-		.leftJoin(info)
-		.on(used.material_uuid.equals(info.uuid))
-		.leftJoin(hrSchema.users)
-		.on(used.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(hrSchema.users.department_uuid.equals(hrSchema.department.uuid))
+		.leftJoin(info, eq(used.material_uuid, info.uuid))
+		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+		)
 		.where(eq(used.uuid, req.params.uuid));
 	const toast = {
 		status: 200,

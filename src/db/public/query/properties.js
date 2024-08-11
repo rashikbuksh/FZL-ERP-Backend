@@ -1,5 +1,10 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { properties } from '../schema.js';
 
@@ -9,18 +14,24 @@ export async function insert(req, res, next) {
 	const propertiesPromise = db
 		.insert(properties)
 		.values(req.body)
-		.returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
-	handleResponse({
-		promise: propertiesPromise,
-		res,
-		next,
-		...toast,
-	});
+		.returning({ insertedName: properties.name });
+
+	try {
+		const data = await propertiesPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			msg: `${data[0].insertedName} inserted`,
+		};
+		handleResponse({
+			promise: propertiesPromise,
+			res,
+			next,
+			...toast,
+		});
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -32,37 +43,22 @@ export async function update(req, res, next) {
 		.where(eq(properties.uuid, req.params.uuid))
 		.returning({ updatedName: properties.name });
 
-	propertiesPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
-
-			handleResponse({
-				promise: propertiesPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating properties - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: propertiesPromise,
-				res,
-				next,
-				...toast,
-			});
+	try {
+		const data = await propertiesPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			msg: `${data[0].updatedName} updated`,
+		};
+		handleResponse({
+			promise: propertiesPromise,
+			res,
+			next,
+			...toast,
 		});
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -73,41 +69,43 @@ export async function remove(req, res, next) {
 		.where(eq(properties.uuid, req.params.uuid))
 		.returning({ deletedName: properties.name });
 
-	propertiesPromise
-		.then((result) => {
-			const toast = {
-				status: 200,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
-
-			handleResponse({
-				promise: propertiesPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting properties - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: propertiesPromise,
-				res,
-				next,
-				...toast,
-			});
+	try {
+		const data = await propertiesPromise;
+		const toast = {
+			status: 200,
+			type: 'remove',
+			msg: `${data[0].deletedName} deleted`,
+		};
+		handleResponse({
+			promise: propertiesPromise,
+			res,
+			next,
+			...toast,
 		});
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(properties);
+	const resultPromise = db
+		.select({
+			uuid: properties.uuid,
+			item_for: properties.item_for,
+			type: properties.type,
+			name: properties.name,
+			short_name: properties.short_name,
+			created_by: properties.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: properties.created_at,
+			updated_at: properties.updated_at,
+			remarks: properties.remarks,
+		})
+		.from(properties)
+		.leftJoin(
+			hrSchema.users,
+			eq(properties.created_by, hrSchema.users.uuid)
+		);
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -125,8 +123,23 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const propertiesPromise = db
-		.select()
+		.select({
+			uuid: properties.uuid,
+			item_for: properties.item_for,
+			type: properties.type,
+			name: properties.name,
+			short_name: properties.short_name,
+			created_by: properties.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: properties.created_at,
+			updated_at: properties.updated_at,
+			remarks: properties.remarks,
+		})
 		.from(properties)
+		.leftJoin(
+			hrSchema.users,
+			eq(properties.created_by, hrSchema.users.uuid)
+		)
 		.where(eq(properties.uuid, req.params.uuid));
 	const toast = {
 		status: 200,
