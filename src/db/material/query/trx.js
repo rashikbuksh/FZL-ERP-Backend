@@ -17,7 +17,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'create',
-			msg: `${data[0].insertedId} created`,
+			message: `${data[0].insertedId} created`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'update',
-			msg: `${data[0].updatedId} updated`,
+			message: `${data[0].updatedId} updated`,
 		};
 
 		return await res.status(201).json({ toast, data });
@@ -61,7 +61,7 @@ export async function remove(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'delete',
-			msg: `${data[0].deletedId} deleted`,
+			message: `${data[0].deletedId} deleted`,
 		};
 
 		return await res.status(200).json({ toast, data });
@@ -153,21 +153,28 @@ export async function selectMaterialTrxByMaterialTrxTo(req, res, next) {
 		.select({
 			uuid: trx.uuid,
 			material_uuid: trx.material_uuid,
-			stock: stock.stock,
 			material_name: info.name,
-			unit: info.unit,
 			trx_to: trx.trx_to,
-			quantity: trx.trx_quantity,
+			trx_quantity: trx.trx_quantity,
 			created_by: trx.created_by,
-			created_by_name: users.name,
+			user_name: hrSchema.users.name,
+			user_designation: hrSchema.designation.designation,
+			user_department: hrSchema.department.department,
 			created_at: trx.created_at,
 			updated_at: trx.updated_at,
 			remarks: trx.remarks,
 		})
 		.from(trx)
-		.innerJoin(stock, eq(stock.material_uuid, trx.material_uuid))
-		.innerJoin(info, eq(info.uuid, trx.material_uuid))
-		.innerJoin(users, eq(users.uuid, trx.created_by))
+		.leftJoin(info, eq(trx.material_uuid, info.uuid))
+		.leftJoin(hrSchema.users, eq(trx.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+		)
 		.where(
 			and(eq(stock.material_uuid, material_uuid), eq(trx.trx_to, trx_to))
 		);

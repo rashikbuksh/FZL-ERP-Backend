@@ -1,8 +1,5 @@
 import { Router } from 'express';
-import { validateUuidParam } from '../../lib/validator.js';
-import { properties } from '../public/schema.js';
 import slider from '../slider/schema.js';
-import { order_description } from '../zipper/schema.js';
 import * as infoOperations from './query/info.js';
 import * as sectionOperations from './query/section.js';
 import * as stockOperations from './query/stock.js';
@@ -10,7 +7,6 @@ import * as stockToSfgOperations from './query/stock_to_sfg.js';
 import * as trxOperations from './query/trx.js';
 import * as typeOperations from './query/type.js';
 import * as usedOperations from './query/used.js';
-import { type } from './schema.js';
 
 const materialRouter = Router();
 
@@ -454,7 +450,6 @@ export const pathMaterialStock = {
 						'application/json': {
 							schema: {
 								type: 'object',
-
 								properties: {
 									uuid: {
 										type: 'string',
@@ -902,7 +897,36 @@ export const pathMaterialTrx = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/material/trx',
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							trx_to: {
+								type: 'string',
+								example: 'tape_making',
+							},
+							trx_quantity: {
+								type: 'number',
+								example: 10.0,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
 						},
 					},
 				},
