@@ -1,5 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { info, used } from '../schema.js';
@@ -7,14 +11,21 @@ import { info, used } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const usedPromise = db.insert(used).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.material_name} created`,
-	};
+	const usedPromise = db.insert(used).values(req.body).returning({
+		insertedId: used.section,
+	});
+	try {
+		const data = await usedPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertedId} created`,
+		};
 
-	handleResponse({ promise: usedPromise, res, next, ...toast });
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -24,39 +35,20 @@ export async function update(req, res, next) {
 		.update(used)
 		.set(req.body)
 		.where(eq(used.uuid, req.params.uuid))
-		.returning({ updatedName: used.material_name });
+		.returning({ updatedName: used.section });
 
-	usedPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await usedPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
 
-			handleResponse({
-				promise: usedPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating used - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: usedPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -65,39 +57,20 @@ export async function remove(req, res, next) {
 	const usedPromise = db
 		.delete(used)
 		.where(eq(used.uuid, req.params.uuid))
-		.returning({ deletedName: used.material_name });
+		.returning({ deletedName: used.section });
 
-	usedPromise
-		.then((result) => {
-			const toast = {
-				status: 200,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await usedPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
 
-			handleResponse({
-				promise: usedPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting used - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: usedPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -129,7 +102,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Used list',
+		message: 'Used list',
 	};
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
@@ -167,7 +140,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Used',
+		message: 'Used',
 	};
 
 	handleResponse({ promise: usedPromise, res, next, ...toast });

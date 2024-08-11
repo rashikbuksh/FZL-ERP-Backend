@@ -1,19 +1,31 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { section } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sectionPromise = db.insert(section).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
+	const sectionPromise = db.insert(section).values(req.body).returning({
+		insertedId: section.name,
+	});
 
-	handleResponse({ promise: sectionPromise, res, next, ...toast });
+	try {
+		const data = await sectionPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertedId} created`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -25,37 +37,18 @@ export async function update(req, res, next) {
 		.where(eq(section.uuid, req.params.uuid))
 		.returning({ updatedName: section.name });
 
-	sectionPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await sectionPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
 
-			handleResponse({
-				promise: sectionPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating section - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: sectionPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -66,37 +59,18 @@ export async function remove(req, res, next) {
 		.where(eq(section.uuid, req.params.uuid))
 		.returning({ deletedName: section.name });
 
-	sectionPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await sectionPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
 
-			handleResponse({
-				promise: sectionPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting section - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: sectionPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -104,7 +78,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Section list',
+		message: 'Section list',
 	};
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
@@ -120,7 +94,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Section',
+		message: 'Section',
 	};
 
 	handleResponse({ promise: sectionPromise, res, next, ...toast });
