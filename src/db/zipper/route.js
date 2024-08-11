@@ -443,7 +443,7 @@ export const pathZipperOrderInfo = {
 			},
 		},
 	},
-	'/zipper/order-info/details': {
+	'/zipper/order/details': {
 		get: {
 			tags: ['zipper.order_info'],
 			summary: 'Get Order Details',
