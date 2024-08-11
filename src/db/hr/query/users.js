@@ -264,3 +264,26 @@ export async function selectCommonUsers(req, res, next) {
 		...toast,
 	});
 }
+
+export async function changeUserAccess(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const userPromise = db
+		.update(users)
+		.set({ can_access: req.body.can_access })
+		.where(eq(users.uuid, req.params.uuid))
+		.returning({ updatedName: users.name });
+
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
+
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
