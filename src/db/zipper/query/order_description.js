@@ -350,9 +350,6 @@ export async function selectAll(req, res, next) {
 			created_by_name: hrSchema.users.name,
 		})
 		.from(order_description)
-		.where(
-			eq(order_description.order_info_uuid, req.params.order_info_uuid)
-		)
 		.leftJoin(
 			order_info,
 			eq(order_description.order_info_uuid, order_info.uuid)
@@ -450,8 +447,8 @@ export async function selectAll(req, res, next) {
 
 	const toast = {
 		status: 200,
-		type: 'select',
-		message: 'Order descriptions',
+		type: 'select_all',
+		message: 'Order descriptions List',
 	};
 
 	handleResponse({
