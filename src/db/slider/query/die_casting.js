@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
-import { handleResponse, validateRequest } from "../../../util/index.js";
-import db from "../../index.js";
-import { die_casting } from "../schema.js";
+import { eq } from 'drizzle-orm';
+import { handleResponse, validateRequest } from '../../../util/index.js';
+import db from '../../index.js';
+import { die_casting } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -9,8 +9,18 @@ export async function insert(req, res, next) {
 	const dieCastingPromise = db
 		.insert(die_casting)
 		.values(req.body)
-		.returning();
-	handleResponse(dieCastingPromise, res, next, 201);
+		.returning({ insertedName: die_casting.name });
+	try {
+		const data = await dieCastingPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedName} inserted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -20,8 +30,18 @@ export async function update(req, res, next) {
 		.update(die_casting)
 		.set(req.body)
 		.where(eq(die_casting.uuid, req.params.uuid))
-		.returning();
-	handleResponse(dieCastingPromise, res, next, 201);
+		.returning({ updatedName: die_casting.name });
+	try {
+		const data = await dieCastingPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -30,8 +50,18 @@ export async function remove(req, res, next) {
 	const dieCastingPromise = db
 		.delete(die_casting)
 		.where(eq(die_casting.uuid, req.params.uuid))
-		.returning();
-	handleResponse(dieCastingPromise, res, next);
+		.returning({ deletedName: die_casting.name });
+	try {
+		const data = await dieCastingPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {

@@ -198,18 +198,16 @@ export const pathSliderDieCasting = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'User object that needs to be added to the slider.die_casting',
-					required: true,
-					schema: {
-						$ref: '#/definitions/slider/die_casting',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/slider/die_casting',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -241,6 +239,7 @@ export const pathSliderDieCasting = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -268,17 +267,16 @@ export const pathSliderDieCasting = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'User object that needs to be updated to the slider.die_casting',
-					required: true,
-					schema: {
-						$ref: '#/definitions/slider/die_casting',
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/slider/die_casting',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -305,6 +303,7 @@ export const pathSliderDieCasting = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {

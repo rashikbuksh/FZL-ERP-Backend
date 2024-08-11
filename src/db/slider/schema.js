@@ -197,13 +197,21 @@ export const defStock = {
 export const die_casting = slider.table('die_casting', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
-	item: defaultUUID('item').notNull(),
-	zipper_number: defaultUUID('zipper_number').notNull(),
+	item: defaultUUID('item')
+		.notNull()
+		.references(() => zipperSchema.order_description.item),
+	zipper_number: defaultUUID('zipper_number')
+		.notNull()
+		.references(() => zipperSchema.order_description.zipper_number),
 	type: defaultUUID('type').notNull(),
 	puller: defaultUUID('puller').notNull(),
-	logo_type: defaultUUID('logo_type').notNull(),
+	logo_type: defaultUUID('logo_type')
+		.notNull()
+		.references(() => zipperSchema.order_description.logo_type),
 	body_shape: defaultUUID('body_shape'),
-	puller_link: defaultUUID('puller_link').notNull(),
+	puller_link: defaultUUID('puller_link')
+		.notNull()
+		.references(() => zipperSchema.order_description.puller_link),
 	stopper: defaultUUID('stopper').notNull(),
 	quantity: decimal('quantity', {
 		precision: 20,
