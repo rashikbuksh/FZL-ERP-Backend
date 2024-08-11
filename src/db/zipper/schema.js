@@ -745,9 +745,11 @@ export const def_zipper_batch = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -761,6 +763,7 @@ export const def_zipper_batch = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -803,21 +806,27 @@ export const def_zipper_batch_entry = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		batch_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		sfg_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		quantity: {
 			type: 'number',
+			example: 100,
 		},
 		production_quantity: {
 			type: 'number',
+			example: 100,
 		},
 		production_quantity_in_kg: {
 			type: 'number',
+			example: 100,
 		},
 		created_at: {
 			type: 'string',
@@ -831,6 +840,7 @@ export const def_zipper_batch_entry = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
