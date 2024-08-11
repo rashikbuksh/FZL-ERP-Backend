@@ -81,7 +81,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: entry.uuid,
 			purchase_description_uuid: entry.purchase_description_uuid,
-			material_info_uuid: entry.material_info_uuid,
+			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
 			quantity: entry.quantity,
 			price: entry.price,
@@ -92,7 +92,7 @@ export async function selectAll(req, res, next) {
 		.from(entry)
 		.leftJoin(
 			materialSchema.info,
-			eq(entry.material_info_uuid, materialSchema.info.uuid)
+			eq(entry.material_uuid, materialSchema.info.uuid)
 		);
 
 	const toast = {
@@ -111,7 +111,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: entry.uuid,
 			purchase_description_uuid: entry.purchase_description_uuid,
-			material_info_uuid: entry.material_info_uuid,
+			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
 			quantity: entry.quantity,
 			price: entry.price,
@@ -122,7 +122,7 @@ export async function select(req, res, next) {
 		.from(entry)
 		.leftJoin(
 			materialSchema.info,
-			eq(entry.material_info_uuid, materialSchema.info.uuid)
+			eq(entry.material_uuid, materialSchema.info.uuid)
 		)
 		.where(eq(entry.uuid, req.params.uuid));
 

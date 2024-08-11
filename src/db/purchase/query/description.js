@@ -6,7 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { description } from '../schema.js';
+import { description, vendor } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -79,6 +79,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: description.uuid,
 			vendor_uuid: description.vendor_uuid,
+			vendor_name: vendor.vendor_name,
 			is_local: description.is_local,
 			lc_number: description.lc_number,
 			created_by: description.created_by,
@@ -90,6 +91,7 @@ export async function selectAll(req, res, next) {
 			remarks: description.remarks,
 		})
 		.from(description)
+		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
 		.leftJoin(
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)
@@ -119,6 +121,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: description.uuid,
 			vendor_uuid: description.vendor_uuid,
+			vendor_name: vendor.vendor_name,
 			is_local: description.is_local,
 			lc_number: description.lc_number,
 			created_by: description.created_by,
@@ -130,6 +133,7 @@ export async function select(req, res, next) {
 			remarks: description.remarks,
 		})
 		.from(description)
+		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
 		.leftJoin(
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)

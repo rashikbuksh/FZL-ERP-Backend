@@ -114,9 +114,7 @@ export const entry = purchase.table('entry', {
 	purchase_description_uuid: defaultUUID(
 		'purchase_description_uuid'
 	).references(() => description.uuid),
-	material_info_uuid: defaultUUID('material_info_uuid').references(
-		() => materialSchema.info.uuid
-	),
+	material_uuid: defaultUUID('material_uuid'),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -135,7 +133,7 @@ export const defPurchaseEntry = {
 	required: [
 		'uuid',
 		'purchase_description_uuid',
-		'material_info_uuid',
+		'material_uuid',
 		'quantity',
 		'created_by',
 		'created_at',
@@ -143,15 +141,15 @@ export const defPurchaseEntry = {
 	properties: {
 		uuid: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174004',
+			example: 'igD0v9DIJQhJeet',
 		},
 		purchase_description_uuid: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174002',
+			example: 'igD0v9DIJQhJeet',
 		},
-		material_info_uuid: {
+		material_uuid: {
 			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174006',
+			example: 'igD0v9DIJQhJeet',
 		},
 		quantity: {
 			type: 'number',

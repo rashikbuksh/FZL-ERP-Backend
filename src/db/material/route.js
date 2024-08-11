@@ -10,6 +10,7 @@ import * as stockToSfgOperations from './query/stock_to_sfg.js';
 import * as trxOperations from './query/trx.js';
 import * as typeOperations from './query/type.js';
 import * as usedOperations from './query/used.js';
+import { type } from './schema.js';
 
 const materialRouter = Router();
 
@@ -28,18 +29,51 @@ export const pathMaterialInfo = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: { type: 'string' },
-									section_uuid: { type: 'string' },
-									section_name: { type: 'string' },
-									type_uuid: { type: 'string' },
-									type_name: { type: 'string' },
-									name: { type: 'string' },
-									unit: { type: 'string' },
-									threshold: { type: 'number' },
-									description: { type: 'string' },
-									created_at: { type: 'string' },
-									updated_at: { type: 'string' },
-									remarks: { type: 'string' },
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									section_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									section_name: {
+										type: 'string',
+										example: 'section 1',
+									},
+									type_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									type_name: {
+										type: 'string',
+										example: 'type 1',
+									},
+									name: {
+										type: 'string',
+										example: 'material 1',
+									},
+									unit: { type: 'string', example: 'kg' },
+									threshold: {
+										type: 'number',
+										example: 10.0,
+									},
+									description: {
+										type: 'string',
+										example: 'material 1',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'This is an entry',
+									},
 								},
 							},
 						},
@@ -99,6 +133,59 @@ export const pathMaterialInfo = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							section_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							section_name: {
+								type: 'string',
+								example: 'section 1',
+							},
+							type_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							type_name: {
+								type: 'string',
+								example: 'type 1',
+							},
+							name: {
+								type: 'string',
+								example: 'material 1',
+							},
+							unit: { type: 'string', example: 'kg' },
+							threshold: {
+								type: 'number',
+								example: 10.0,
+							},
+							description: {
+								type: 'string',
+								example: 'material 1',
+							},
+							created_at: {
+								type: 'string',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -122,17 +209,16 @@ export const pathMaterialInfo = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material info object that needs to be updated in the material.info',
-					required: true,
-					schema: {
-						$ref: '#/definitions/material/info',
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/info',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -256,6 +342,12 @@ export const pathMaterialSection = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						$ref: '#/definitions/material/section',
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -279,18 +371,23 @@ export const pathMaterialSection = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material section object that needs to be updated in the material.section',
-					required: true,
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/section',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
 					schema: {
 						$ref: '#/definitions/material/section',
 					},
 				},
-			],
-			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -359,36 +456,85 @@ export const pathMaterialStock = {
 								type: 'object',
 
 								properties: {
-									uuid: { type: 'string' },
-									material_uuid: { type: 'string' },
-									material_name: { type: 'string' },
-									stock: { type: 'number' },
-									tape_making: { type: 'number' },
-									coil_forming: { type: 'number' },
-									dying_and_iron: { type: 'number' },
-									m_gapping: { type: 'number' },
-									v_gapping: { type: 'number' },
-									v_teeth_molding: { type: 'number' },
-									m_teeth_molding: { type: 'number' },
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'material 1',
+									},
+									stock: { type: 'number', example: 10.0 },
+									tape_making: {
+										type: 'number',
+										example: 10.0,
+									},
+									coil_forming: {
+										type: 'number',
+										example: 10.0,
+									},
+									dying_and_iron: {
+										type: 'number',
+										example: 10.0,
+									},
+									m_gapping: {
+										type: 'number',
+										example: 10.0,
+									},
+									v_gapping: {
+										type: 'number',
+										example: 10.0,
+									},
+									v_teeth_molding: {
+										type: 'number',
+										example: 10.0,
+									},
+									m_teeth_molding: {
+										type: 'number',
+										example: 10.0,
+									},
 									teeth_assembling_and_polishing: {
 										type: 'number',
+										example: 10.0,
 									},
-									m_teeth_cleaning: { type: 'number' },
-									v_teeth_cleaning: { type: 'number' },
-									plating_and_iron: { type: 'number' },
-									m_sealing: { type: 'number' },
-									v_sealing: { type: 'number' },
-									n_t_cutting: { type: 'number' },
-									v_t_cutting: { type: 'number' },
-									m_stopper: { type: 'number' },
-									v_stopper: { type: 'number' },
-									n_stopper: { type: 'number' },
-									cutting: { type: 'number' },
-									qc_and_packing: { type: 'number' },
-									die_casting: { type: 'number' },
-									slider_assembly: { type: 'number' },
-									coloring: { type: 'string' },
-									remarks: { type: 'string' },
+								},
+								m_teeth_cleaning: {
+									type: 'number',
+									example: 10.0,
+								},
+								v_teeth_cleaning: {
+									type: 'number',
+									example: 10.0,
+								},
+								plating_and_iron: {
+									type: 'number',
+									example: 10.0,
+								},
+								m_sealing: { type: 'number', example: 10.0 },
+								v_sealing: { type: 'number', example: 10.0 },
+								n_t_cutting: { type: 'number', example: 10.0 },
+								v_t_cutting: { type: 'number', example: 10.0 },
+								m_stopper: { type: 'number', example: 10.0 },
+								v_stopper: { type: 'number', example: 10.0 },
+								n_stopper: { type: 'number', example: 10.0 },
+								cutting: { type: 'number', example: 10.0 },
+								qc_and_packing: {
+									type: 'number',
+									example: 10.0,
+								},
+								die_casting: { type: 'number', example: 10.0 },
+								slider_assembly: {
+									type: 'number',
+									example: 10.0,
+								},
+								coloring: { type: 'string', example: 10.0 },
+								remarks: {
+									type: 'string',
+									example: 'This is an entry',
 								},
 							},
 						},
@@ -396,36 +542,35 @@ export const pathMaterialStock = {
 				},
 			},
 		},
-		post: {
-			tags: ['material.stock'],
-			summary: 'Create a new material stock',
-			description: 'Create a new material stock',
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/stock',
-						},
+	},
+	post: {
+		tags: ['material.stock'],
+		summary: 'Create a new material stock',
+		description: 'Create a new material stock',
+		consumes: ['application/json'],
+		produces: ['application/json'],
+		parameters: [],
+		requestBody: {
+			content: {
+				'application/json': {
+					schema: {
+						$ref: '#/definitions/material/stock',
 					},
 				},
 			},
-
-			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/material/stock',
-						},
+		},
+		responses: {
+			200: {
+				description: 'successful operation',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/material/stock',
 					},
 				},
-				405: {
-					description: 'Invalid input',
-				},
+			},
+			405: {
+				description: 'Invalid input',
 			},
 		},
 	},
@@ -469,17 +614,16 @@ export const pathMaterialStock = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material stock object that needs to be updated in the material.stock',
-					required: true,
-					schema: {
-						$ref: '#/definitions/material/stock',
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/stock',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -570,15 +714,42 @@ export const pathMaterialTrx = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: { type: 'string' },
-									material_uuid: { type: 'string' },
-									material_name: { type: 'string' },
-									trx_to: { type: 'string' },
-									trx_quantity: { type: 'number' },
-									created_by: { type: 'string' },
-									user_name: { type: 'string' },
-									user_designation: { type: 'string' },
-									user_department: { type: 'string' },
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'material 1',
+									},
+									trx_to: {
+										type: 'string',
+										example: 'tape_making',
+									},
+									trx_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									user_name: {
+										type: 'string',
+										example: 'admin',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Admin',
+									},
+									user_department: {
+										type: 'string',
+										example: 'Admin',
+									},
 									created_at: {
 										type: 'string',
 										format: 'date-time',
@@ -589,7 +760,10 @@ export const pathMaterialTrx = {
 										format: 'date-time',
 										example: '2024-01-01 00:00:00',
 									},
-									remarks: { type: 'string' },
+									remarks: {
+										type: 'string',
+										example: 'This is an entry',
+									},
 								},
 							},
 						},
@@ -648,6 +822,64 @@ export const pathMaterialTrx = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_name: {
+								type: 'string',
+								example: 'material 1',
+							},
+							trx_to: {
+								type: 'string',
+								example: 'tape_making',
+							},
+							trx_quantity: {
+								type: 'number',
+								example: 10.0,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							user_name: {
+								type: 'string',
+								example: 'admin',
+							},
+							user_designation: {
+								type: 'string',
+								example: 'Admin',
+							},
+							user_department: {
+								type: 'string',
+								example: 'Admin',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -671,17 +903,16 @@ export const pathMaterialTrx = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material trx object that needs to be updated in the material.trx',
-					required: true,
-					schema: {
-						$ref: '#/definitions/material/trx',
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/trx',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -852,6 +1083,12 @@ export const pathMaterialType = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						$ref: '#/definitions/material/type',
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -875,18 +1112,23 @@ export const pathMaterialType = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material type object that needs to be updated in the material.type',
-					required: true,
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/type',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
 					schema: {
 						$ref: '#/definitions/material/type',
 					},
 				},
-			],
-			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -950,16 +1192,43 @@ export const pathMaterialUsed = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: { type: 'string' },
-									material_uuid: { type: 'string' },
-									material_name: { type: 'string' },
-									used_quantity: { type: 'number' },
-									wastage: { type: 'number' },
-									section: { type: 'string' },
-									created_by: { type: 'string' },
-									user_name: { type: 'string' },
-									user_designation: { type: 'string' },
-									user_department: { type: 'string' },
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'material 1',
+									},
+									used_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									wastage: { type: 'number', example: 10.0 },
+									section: {
+										type: 'string',
+										example: 'tape_making',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									user_name: {
+										type: 'string',
+										example: 'admin',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Admin',
+									},
+									user_department: {
+										type: 'string',
+										example: 'Admin',
+									},
 									created_at: {
 										type: 'string',
 										format: 'date-time',
@@ -970,8 +1239,10 @@ export const pathMaterialUsed = {
 										format: 'date-time',
 										example: '2024-01-01 00:00:00',
 									},
-
-									remarks: { type: 'string' },
+									remarks: {
+										type: 'string',
+										example: 'This is an entry',
+									},
 								},
 							},
 						},
@@ -1030,74 +1301,138 @@ export const pathMaterialUsed = {
 				},
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material used not found',
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_name: {
+								type: 'string',
+								example: 'material 1',
+							},
+							used_quantity: {
+								type: 'number',
+								example: 10.0,
+							},
+							wastage: { type: 'number', example: 10.0 },
+							section: {
+								type: 'string',
+								example: 'tape_making',
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							user_name: {
+								type: 'string',
+								example: 'admin',
+							},
+							user_designation: {
+								type: 'string',
+								example: 'Admin',
+							},
+							user_department: {
+								type: 'string',
+								example: 'Admin',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
+						},
+					},
 				},
 			},
+			400: {
+				description: 'Invalid UUID supplied',
+			},
+			404: {
+				description: 'Material used not found',
+			},
 		},
-		put: {
-			tags: ['material.used'],
-			summary: 'Update an existing material used',
-			description: 'Update an existing material used',
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material used to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material used object that needs to be updated in the material.used',
-					required: true,
+	},
+	put: {
+		tags: ['material.used'],
+		summary: 'Update an existing material used',
+		description: 'Update an existing material used',
+		consumes: ['application/json'],
+		produces: ['application/json'],
+		parameters: [
+			{
+				name: 'uuid',
+				in: 'path',
+				description: 'material used to update',
+				required: true,
+				type: 'string',
+				format: 'uuid',
+			},
+		],
+		requestBody: {
+			content: {
+				'application/json': {
 					schema: {
 						$ref: '#/definitions/material/used',
 					},
 				},
-			],
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material used not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
 			},
 		},
-		delete: {
-			tags: ['material.used'],
-			summary: 'Delete a material used',
-			description: 'Delete a material used',
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material used to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
+		responses: {
+			200: {
+				description: 'successful operation',
+				schema: {
+					$ref: '#/definitions/material/used',
 				},
-			],
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material used not found',
-				},
+			},
+			400: {
+				description: 'Invalid UUID supplied',
+			},
+			404: {
+				description: 'Material used not found',
+			},
+			405: {
+				description: 'Validation exception',
+			},
+		},
+	},
+	delete: {
+		tags: ['material.used'],
+		summary: 'Delete a material used',
+		description: 'Delete a material used',
+		produces: ['application/json'],
+		parameters: [
+			{
+				name: 'uuid',
+				in: 'path',
+				description: 'material used to delete',
+				required: true,
+				type: 'string',
+				format: 'uuid',
+			},
+		],
+		responses: {
+			400: {
+				description: 'Invalid UUID supplied',
+			},
+			404: {
+				description: 'Material used not found',
 			},
 		},
 	},
@@ -1129,17 +1464,50 @@ export const pathMaterialStockToSFG = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: { type: 'string' },
-									material_uuid: { type: 'string' },
-									material_name: { type: 'string' },
-									order_entry_uuid: { type: 'string' },
-									order_description_uuid: { type: 'string' },
-									trx_to: { type: 'string' },
-									trx_quantity: { type: 'number' },
-									created_by: { type: 'string' },
-									user_name: { type: 'string' },
-									user_designation: { type: 'string' },
-									user_department: { type: 'string' },
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'material 1',
+									},
+									order_entry_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									trx_to: {
+										type: 'string',
+										example: 'tape_making',
+									},
+									trx_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									user_name: {
+										type: 'string',
+										example: 'admin',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Admin',
+									},
+									user_department: {
+										type: 'string',
+										example: 'Admin',
+									},
 									created_at: {
 										type: 'string',
 										format: 'date-time',
@@ -1150,7 +1518,10 @@ export const pathMaterialStockToSFG = {
 										format: 'date-time',
 										example: '2024-01-01 00:00:00',
 									},
-									remarks: { type: 'string' },
+									remarks: {
+										type: 'string',
+										example: 'This is an entry',
+									},
 								},
 							},
 						},
@@ -1212,9 +1583,68 @@ export const pathMaterialStockToSFG = {
 				200: {
 					description: 'successful operation',
 					schema: {
-						type: 'array',
+						type: 'object',
 						items: {
-							$ref: '#/definitions/material/stock_to_sfg',
+							properties: {
+								uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								material_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								material_name: {
+									type: 'string',
+									example: 'material 1',
+								},
+								order_entry_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								order_description_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								trx_to: {
+									type: 'string',
+									example: 'tape_making',
+								},
+								trx_quantity: {
+									type: 'number',
+									example: 10.0,
+								},
+								created_by: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								user_name: {
+									type: 'string',
+									example: 'admin',
+								},
+								user_designation: {
+									type: 'string',
+									example: 'Admin',
+								},
+								user_department: {
+									type: 'string',
+									example: 'Admin',
+								},
+								created_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2024-01-01 00:00:00',
+								},
+								updated_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2024-01-01 00:00:00',
+								},
+								remarks: {
+									type: 'string',
+									example: 'This is an entry',
+								},
+							},
 						},
 					},
 				},
@@ -1241,18 +1671,23 @@ export const pathMaterialStockToSFG = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material stock_to_sfg object that needs to be updated in the material.stock_to_sfg',
-					required: true,
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/stock_to_sfg',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
 					schema: {
 						$ref: '#/definitions/material/stock_to_sfg',
 					},
 				},
-			],
-			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
 				},

@@ -1,7 +1,6 @@
 import { desc } from 'drizzle-orm';
 import { Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
-import { properties } from '../public/schema.js';
 import * as descriptionOperations from './query/description.js';
 import * as entryOperations from './query/entry.js';
 import * as vendorOperations from './query/vendor.js';
@@ -162,13 +161,15 @@ const pathPurchaseDescription = {
 								properties: {
 									uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174002',
+										example: 'igD0v9DIJQhJeet',
 									},
 									vendor_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
+									},
+									vendor_name: {
+										type: 'string',
+										example: 'John Doe',
 									},
 									is_local: {
 										type: 'integer',
@@ -180,8 +181,7 @@ const pathPurchaseDescription = {
 									},
 									created_by: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174011',
+										example: 'igD0v9DIJQhJeet',
 									},
 									user_name: {
 										type: 'string',
@@ -285,6 +285,68 @@ const pathPurchaseDescription = {
 				},
 			},
 			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									vendor_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									vendor_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									is_local: {
+										type: 'integer',
+										example: 1,
+									},
+									lc_number: {
+										type: 'string',
+										example: '123456789',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									user_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'HR',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'This is a description',
+									},
+								},
+							},
+						},
+					},
+				},
 				204: {
 					description: 'No Content',
 				},
@@ -346,18 +408,15 @@ const pathPurchaseEntry = {
 								properties: {
 									uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174004',
+										example: 'igD0v9DIJQhJeet',
 									},
 									purchase_description_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174002',
+										example: 'igD0v9DIJQhJeet',
 									},
-									material_info_uuid: {
+									material_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174006',
+										example: 'igD0v9DIJQhJeet',
 									},
 									material_name: {
 										type: 'string',
@@ -432,7 +491,47 @@ const pathPurchaseEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/purchase/entry',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									purchase_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'nylon',
+									},
+									quantity: {
+										type: 'number',
+										example: 1000.0,
+									},
+									price: {
+										type: 'number',
+										example: 1111.0,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'This is an entry',
+									},
+								},
 							},
 						},
 					},
