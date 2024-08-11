@@ -99,7 +99,7 @@ export const pathCommercialBank = {
 			produces: ['application/json'],
 			parameters: [
 				{
-					name: 'BankUuid',
+					name: 'uuid',
 					in: 'path',
 					description: 'bank to update',
 					required: true,

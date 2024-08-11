@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
+import e from 'express';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
 import * as publicSchema from '../public/schema.js';
@@ -1000,24 +1001,31 @@ export const def_zipper_tape_coil = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		type: {
 			type: 'string',
+			example: 'Tape',
 		},
 		zipper_number: {
 			type: 'number',
+			example: 1.0,
 		},
 		quantity: {
 			type: 'number',
+			example: 100,
 		},
 		trx_quantity_in_coil: {
 			type: 'number',
+			example: 100,
 		},
 		quantity_in_coil: {
 			type: 'number',
+			example: 100,
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -1027,12 +1035,14 @@ export const def_zipper_tape_coil = {
 
 export const tape_to_coil = zipper.table('tape_to_coil', {
 	uuid: uuid_primary,
-	tape_coil_uuid: defaultUUID('tape_coil_uuid'),
+	tape_coil_uuid: defaultUUID('tape_coil_uuid').references(
+		() => tape_coil.uuid
+	),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: defaultUUID('created_by'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -1050,15 +1060,19 @@ export const def_zipper_tape_to_coil = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		tape_coil_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		trx_quantity: {
 			type: 'number',
+			example: 100,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -1072,6 +1086,7 @@ export const def_zipper_tape_to_coil = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -1082,7 +1097,9 @@ export const def_zipper_tape_to_coil = {
 export const tape_coil_production = zipper.table('tape_coil_production', {
 	uuid: uuid_primary,
 	section: text('section').notNull(),
-	tape_coil_uuid: defaultUUID('tape_coil_uuid'),
+	tape_coil_uuid: defaultUUID('tape_coil_uuid').references(
+		() => tape_coil.uuid
+	),
 	production_quantity: decimal('production_quantity', {
 		precision: 20,
 		scale: 4,
@@ -1093,7 +1110,7 @@ export const tape_coil_production = zipper.table('tape_coil_production', {
 	})
 		.notNull()
 		.default(0.0),
-	created_by: defaultUUID('created_by'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -1113,21 +1130,27 @@ export const def_zipper_tape_coil_production = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		section: {
 			type: 'string',
+			example: 'Molding',
 		},
 		tape_coil_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		production_quantity: {
 			type: 'number',
+			example: 100,
 		},
 		wastage: {
 			type: 'number',
+			example: 0,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -1141,6 +1164,7 @@ export const def_zipper_tape_coil_production = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {

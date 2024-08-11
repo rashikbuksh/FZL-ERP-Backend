@@ -1,5 +1,5 @@
-import { desc } from 'drizzle-orm';
-import { Router } from 'express';
+import { request, Router } from 'express';
+
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
@@ -13,7 +13,6 @@ import * as sfgTransactionOperations from './query/sfg_transaction.js';
 import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeToCoilOperations from './query/tape_to_coil.js';
-import zipper from './schema.js';
 
 const zipperRouter = Router();
 
@@ -3510,7 +3509,6 @@ export const pathZipperDyingBatchEntry = {
 					description: 'dying batch to delete',
 					required: true,
 					type: 'string',
-					format: 'uuid',
 				},
 			],
 			responses: {
@@ -3571,17 +3569,16 @@ export const pathZipperTapeCoil = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Tape Coil',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/tape_coil',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/tape_coil',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -3640,17 +3637,16 @@ export const pathZipperTapeCoil = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'tape coil object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/tape_coil',
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/tape_coil',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -3720,9 +3716,62 @@ export const pathZipperTapeCoilProduction = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/tape_coil_production',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									section: {
+										type: 'string',
+										example: 'zipper',
+									},
+									tape_coil_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									tape_type: {
+										type: 'string',
+										example: 'nylon',
+									},
+									production_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									wastage: {
+										type: 'number',
+										example: 10,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									user_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'Production',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Good',
+									},
 								},
 							},
 						},
@@ -3737,17 +3786,16 @@ export const pathZipperTapeCoilProduction = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Tape Coil Production',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/tape_coil_production',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/tape_coil_production',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -3778,7 +3826,6 @@ export const pathZipperTapeCoilProduction = {
 					description: 'tapeCoilProduction to get',
 					required: true,
 					type: 'string',
-					format: 'uuid',
 				},
 			],
 			responses: {
@@ -3806,17 +3853,17 @@ export const pathZipperTapeCoilProduction = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'tape coil production object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/tape_coil_production',
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/tape_coil_production',
+						},
 					},
 				},
-			],
+			},
+
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -3842,7 +3889,6 @@ export const pathZipperTapeCoilProduction = {
 					description: 'tape coil production to delete',
 					required: true,
 					type: 'string',
-					format: 'uuid',
 				},
 			],
 			responses: {
@@ -3892,9 +3938,54 @@ export const pathZipperTapeToCoil = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/tape_to_coil',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									tape_coil_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									tape_type: {
+										type: 'string',
+										example: 'nylon',
+									},
+									trx_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									user_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'Production',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -3909,17 +4000,16 @@ export const pathZipperTapeToCoil = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Tape To Coil',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/tape_to_coil',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/tape_to_coil',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -3950,7 +4040,6 @@ export const pathZipperTapeToCoil = {
 					description: 'tapeToCoil to get',
 					required: true,
 					type: 'string',
-					format: 'uuid',
 				},
 			],
 			responses: {
@@ -3976,19 +4065,17 @@ export const pathZipperTapeToCoil = {
 					description: 'tape to coil to update',
 					required: true,
 					type: 'string',
-					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'tape to coil object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/tape_to_coil',
-					},
 				},
 			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/tape_to_coil',
+						},
+					},
+				},
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -4014,7 +4101,6 @@ export const pathZipperTapeToCoil = {
 					description: 'tape to coil to delete',
 					required: true,
 					type: 'string',
-					format: 'uuid',
 				},
 			],
 			responses: {
