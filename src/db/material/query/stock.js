@@ -34,7 +34,7 @@ export async function update(req, res, next) {
 		.update(stock)
 		.set(req.body)
 		.where(eq(stock.uuid, req.params.uuid))
-		.returning({ insertedId: stock.uuid });
+		.returning({ insertedId: stock.material_uuid });
 
 	try {
 		const data = await stockPromise;
@@ -56,7 +56,7 @@ export async function remove(req, res, next) {
 	const stockPromise = db
 		.delete(stock)
 		.where(eq(stock.uuid, req.params.uuid))
-		.returning({ deletedId: stock.uuid });
+		.returning({ deletedId: stock.material_uuid });
 
 	try {
 		const data = await stockPromise;

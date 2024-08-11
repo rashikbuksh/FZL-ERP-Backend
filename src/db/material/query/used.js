@@ -12,7 +12,7 @@ export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const usedPromise = db.insert(used).values(req.body).returning({
-		insertedId: used.section,
+		insertedId: used.material_uuid,
 	});
 	try {
 		const data = await usedPromise;
@@ -35,7 +35,7 @@ export async function update(req, res, next) {
 		.update(used)
 		.set(req.body)
 		.where(eq(used.uuid, req.params.uuid))
-		.returning({ updatedName: used.section });
+		.returning({ updatedName: used.material_uuid });
 
 	try {
 		const data = await usedPromise;
@@ -57,7 +57,7 @@ export async function remove(req, res, next) {
 	const usedPromise = db
 		.delete(used)
 		.where(eq(used.uuid, req.params.uuid))
-		.returning({ deletedName: used.section });
+		.returning({ deletedName: used.material_uuid });
 
 	try {
 		const data = await usedPromise;
