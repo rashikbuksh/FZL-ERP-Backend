@@ -142,10 +142,8 @@ export async function selectAll(req, res, next) {
 			remarks: info.remarks,
 		})
 		.from(info)
-		.leftJoin(section)
-		.on(eq(info.section_uuid, section.uuid))
-		.leftJoin(type)
-		.on(eq(info.type_uuid, type.uuid));
+		.leftJoin(section, eq(info.section_uuid, section.uuid))
+		.leftJoin(type, eq(info.type_uuid, type.uuid));
 
 	const toast = {
 		status: 200,
@@ -174,10 +172,8 @@ export async function select(req, res, next) {
 			remarks: info.remarks,
 		})
 		.from(info)
-		.leftJoin(section)
-		.on(eq(info.section_uuid, section.uuid))
-		.leftJoin(type)
-		.on(eq(info.type_uuid, type.uuid))
+		.leftJoin(section, eq(info.section_uuid, section.uuid))
+		.leftJoin(type, eq(info.type_uuid, type.uuid))
 		.where(eq(info.uuid, req.params.uuid));
 
 	const toast = {
