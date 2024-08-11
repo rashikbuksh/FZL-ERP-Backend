@@ -1,24 +1,30 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { bank } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const bankPromise = db.insert(bank).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
-
-	handleResponse({
-		promise: bankPromise,
-		res,
-		next,
-		...toast,
+	const bankPromise = db.insert(bank).values(req.body).returning({
+		insertedName: bank.name,
 	});
+	try {
+		const data = await bankPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertedName} created`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -28,38 +34,20 @@ export async function update(req, res, next) {
 		.update(bank)
 		.set(req.body)
 		.where(eq(bank.uuid, req.params.uuid))
-		.returning({ updateName: bank.name });
-	bankPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updateName} updated`,
-			};
+		.returning({ updatedName: bank.name });
 
-			handleResponse({
-				promise: bankPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			//for error message
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating bank - ${error.message}`,
-			};
+	try {
+		const data = await bankPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
 
-			handleResponse({
-				promise: bankPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -70,37 +58,18 @@ export async function remove(req, res, next) {
 		.where(eq(bank.uuid, req.params.uuid))
 		.returning({ deletedName: bank.name });
 
-	bankPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await bankPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
 
-			handleResponse({
-				promise: bankPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			//for error message
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting bank - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: bankPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -109,7 +78,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Bank list',
+		message: 'Bank list',
 	};
 
 	handleResponse({
@@ -131,7 +100,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Bank',
+		message: 'Bank',
 	};
 
 	handleResponse({

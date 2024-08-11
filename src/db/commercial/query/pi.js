@@ -10,13 +10,22 @@ import { bank, lc, pi } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const piPromise = db.insert(pi).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
-	handleResponse({ promise: piPromise, res, next, ...toast });
+	const piPromise = db
+		.insert(pi)
+		.values(req.body)
+		.returning({ insertedId: pi.order_info_ids });
+	try {
+		const data = await piPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertedId} created`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -26,39 +35,20 @@ export async function update(req, res, next) {
 		.update(pi)
 		.set(req.body)
 		.where(eq(pi.uuid, req.params.uuid))
-		.returning({ updatedName: pi.name });
+		.returning({ insertedUserName: pi.created_by });
 
-	piPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await piPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `updated by ${data[0].insertedUserName} `,
+		};
 
-			handleResponse({
-				promise: piPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			//for error message
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating pi - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: piPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -67,39 +57,20 @@ export async function remove(req, res, next) {
 	const piPromise = db
 		.delete(pi)
 		.where(eq(pi.uuid, req.params.uuid))
-		.returning({ deletedName: pi.name });
+		.returning({ deletedId: pi.uuid });
 
-	piPromise
-		.then((result) => {
-			const toast = {
-				status: 200,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await piPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
 
-			handleResponse({
-				promise: piPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			//for error message
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting pi - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: piPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -131,26 +102,32 @@ export async function selectAll(req, res, next) {
 			remarks: pi.remarks,
 		})
 		.from(pi)
-		.leftJoin(hrSchema.users)
-		.on(pi.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(
-			hrSchema.designation.department_uuid.equals(
-				hrSchema.department.uuid
-			)
+		.leftJoin(hrSchema.users, eq(pi.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
 		)
-		.leftJoin(publicSchema.marketing)
-		.on(pi.marketing_uuid.equals(publicSchema.marketing.uuid))
-		.leftJoin(publicSchema.party)
-		.on(pi.party_uuid.equals(publicSchema.party.uuid))
-		.leftJoin(publicSchema.merchandiser)
-		.on(pi.merchandiser_uuid.equals(publicSchema.merchandiser.uuid))
-		.leftJoin(publicSchema.factory)
-		.on(pi.factory_uuid.equals(publicSchema.factory.uuid))
-		.leftJoin(bank)
-		.on(pi.bank_uuid.equals(bank.uuid));
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
+		)
+		.leftJoin(
+			publicSchema.marketing,
+			eq(pi.marketing_uuid, publicSchema.marketing.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(pi.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(pi.merchandiser_uuid, publicSchema.merchandiser.uuid)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(pi.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(bank, eq(pi.bank_uuid, bank.uuid));
 
 	const toast = {
 		status: 200,
@@ -196,26 +173,32 @@ export async function select(req, res, next) {
 			remarks: pi.remarks,
 		})
 		.from(pi)
-		.leftJoin(hrSchema.users)
-		.on(pi.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(
-			hrSchema.designation.department_uuid.equals(
-				hrSchema.department.uuid
-			)
+		.leftJoin(hrSchema.users, eq(pi.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
 		)
-		.leftJoin(publicSchema.marketing)
-		.on(pi.marketing_uuid.equals(publicSchema.marketing.uuid))
-		.leftJoin(publicSchema.party)
-		.on(pi.party_uuid.equals(publicSchema.party.uuid))
-		.leftJoin(publicSchema.merchandiser)
-		.on(pi.merchandiser_uuid.equals(publicSchema.merchandiser.uuid))
-		.leftJoin(publicSchema.factory)
-		.on(pi.factory_uuid.equals(publicSchema.factory.uuid))
-		.leftJoin(bank)
-		.on(pi.bank_uuid.equals(bank.uuid))
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
+		)
+		.leftJoin(
+			publicSchema.marketing,
+			eq(pi.marketing_uuid, publicSchema.marketing.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(pi.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(pi.merchandiser_uuid, publicSchema.merchandiser.uuid)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(pi.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(bank, eq(pi.bank_uuid, bank.uuid))
 		.where(eq(pi.uuid, req.params.uuid));
 
 	const toast = {
