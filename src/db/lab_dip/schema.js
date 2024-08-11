@@ -6,10 +6,8 @@ import {
 	text,
 	uuid,
 } from 'drizzle-orm/pg-core';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
-
-import e from 'express';
 import * as hrSchema from '../hr/schema.js';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const lab_dip = pgSchema('lab_dip');
@@ -18,9 +16,11 @@ export const info = lab_dip.table('info', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
 	name: text('name').notNull(),
-	order_info_uuid: defaultUUID('order_info_uuid'),
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => zipperSchema.order_info.uuid
+	),
 	lab_status: text('lab_status').default(null),
-	created_by: defaultUUID('created_by'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
