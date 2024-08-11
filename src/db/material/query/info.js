@@ -142,9 +142,9 @@ export async function selectAll(req, res, next) {
 			remarks: info.remarks,
 		})
 		.from(info)
-		.join(section)
+		.leftJoin(section)
 		.on(eq(info.section_uuid, section.uuid))
-		.join(type)
+		.leftJoin(type)
 		.on(eq(info.type_uuid, type.uuid));
 
 	const toast = {
@@ -174,9 +174,9 @@ export async function select(req, res, next) {
 			remarks: info.remarks,
 		})
 		.from(info)
-		.join(section)
+		.leftJoin(section)
 		.on(eq(info.section_uuid, section.uuid))
-		.join(type)
+		.leftJoin(type)
 		.on(eq(info.type_uuid, type.uuid))
 		.where(eq(info.uuid, req.params.uuid));
 
