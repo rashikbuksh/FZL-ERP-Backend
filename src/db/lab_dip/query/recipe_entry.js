@@ -1,7 +1,11 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
-import { recipe_entry } from '../schema.js';
+import { recipe, recipe_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -9,19 +13,21 @@ export async function insert(req, res, next) {
 	const recipe_entryPromise = db
 		.insert(recipe_entry)
 		.values(req.body)
-		.returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
+		.returning({ insertedId: recipe_entry.uuid });
 
-	handleResponse({
-		promise: recipe_entryPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await recipe_entryPromise;
+
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedId} inserted`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -31,39 +37,21 @@ export async function update(req, res, next) {
 		.update(recipe_entry)
 		.set(req.body)
 		.where(eq(recipe_entry.uuid, req.params.uuid))
-		.returning({ updatedName: recipe_entry.name });
+		.returning({ updatedId: recipe_entry.uuid });
 
-	recipe_entryPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await recipe_entryPromise;
 
-			handleResponse({
-				promise: recipe_entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
 
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating recipe_entry - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: recipe_entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -72,47 +60,42 @@ export async function remove(req, res, next) {
 	const recipe_entryPromise = db
 		.delete(recipe_entry)
 		.where(eq(recipe_entry.uuid, req.params.uuid))
-		.returning({ deletedName: recipe_entry.name });
+		.returning({ deletedId: recipe_entry.uuid });
 
-	recipe_entryPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await recipe_entryPromise;
 
-			handleResponse({
-				promise: recipe_entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
+		const toast = {
+			status: 201,
+			type: 'remove',
+			message: `${data[0].deletedId} deleted`,
+		};
 
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting recipe_entry - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: recipe_entryPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(recipe_entry);
+	const resultPromise = db
+		.select({
+			uuid: recipe_entry.uuid,
+			recipe_uuid: recipe_entry.recipe_uuid,
+			recipe_name: recipe.name,
+			color: recipe_entry.color,
+			quantity: recipe_entry.quantity,
+			created_at: recipe_entry.created_at,
+			updated_at: recipe_entry.updated_at,
+			remarks: recipe_entry.remarks,
+		})
+		.from(recipe_entry)
+		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid));
+
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Recipe_entry list',
+		message: 'Recipe_entry list',
 	};
 	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
@@ -122,12 +105,24 @@ export async function select(req, res, next) {
 
 	const recipe_entryPromise = db
 		.select()
+		.from({
+			uuid: recipe_entry.uuid,
+			recipe_uuid: recipe_entry.recipe_uuid,
+			recipe_name: recipe.name,
+			color: recipe_entry.color,
+			quantity: recipe_entry.quantity,
+			created_at: recipe_entry.created_at,
+			updated_at: recipe_entry.updated_at,
+			remarks: recipe_entry.remarks,
+		})
 		.from(recipe_entry)
+		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid))
 		.where(eq(recipe_entry.uuid, req.params.uuid));
+
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Recipe_entry',
+		message: 'Recipe_entry',
 	};
 	handleResponse({ promise: recipe_entryPromise, res, next, ...toast });
 }
