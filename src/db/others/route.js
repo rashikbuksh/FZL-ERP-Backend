@@ -26,10 +26,12 @@ otherRouter.get(
 );
 
 // zipper
+otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
 otherRouter.get(
 	'/order/order_description_uuid/by/:order_number',
 	otherOperations.selectOrderInfoToGetOrderDescription
 );
+otherRouter.get('/order/entry/value/label', otherOperations.selectOrderEntry);
 
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
@@ -47,7 +49,6 @@ otherRouter.get(
 	'/material/value/label/unit/quantity',
 	otherOperations.selectMaterial
 );
-otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
 
 // commercial
 otherRouter.get('/bank/value/label', otherOperations.selectBank);
@@ -277,6 +278,41 @@ const pathPublic = {
 										example: '2ggcphnwHGzEUGy',
 									},
 									label: { type: 'string', example: 'nylon' },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/order/entry/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all order entry',
+			description: 'All order entry',
+			operationId: 'getAllOrderEntry',
+			responses: {
+				200: {
+					description: 'Returns a all order entry.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example:
+											'Z-24-0001 ⇾ N-5-OE-SP ⇾ st1 ⇾ black ⇾ 1000 ⇾ 1000',
+									},
+									can_trf_quantity: {
+										type: 'number',
+										example: 100,
+									},
 								},
 							},
 						},

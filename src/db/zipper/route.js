@@ -465,7 +465,7 @@ export const pathZipperOrderInfo = {
 									},
 									item_description: {
 										type: 'string',
-										example: 'N-5-O/E-SP',
+										example: 'N-5-OE-SP',
 									},
 									reference_order_info_uuid: {
 										type: 'string',

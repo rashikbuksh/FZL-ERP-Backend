@@ -236,6 +236,37 @@ export async function selectOrderInfoToGetOrderDescription(req, res, next) {
 	}
 }
 
+export async function selectOrderEntry(req, res, next) {
+	const query = sql`SELECT
+					oe.uuid AS value,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', oe.style, '/', oe.color, '/', oe.size) AS label,
+					oe.quantity AS quantity,
+					oe.quantity - (
+						COALESCE(sfg.coloring_prod, 0) + COALESCE(sfg.finishing_prod, 0)
+					) AS can_trf_quantity
+				FROM
+					zipper.order_entry oe
+					LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+					LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+				WHERE oe.swatch_status_enum = 'approved'`;
+
+	const orderEntryPromise = db.execute(query);
+
+	try {
+		const data = await orderEntryPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			msg: 'Order Entry list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 // purchase
 export async function selectVendor(req, res, next) {
 	const vendorPromise = db
