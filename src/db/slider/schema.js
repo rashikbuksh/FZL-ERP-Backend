@@ -8,11 +8,21 @@ const slider = pgSchema('slider');
 
 export const stock = slider.table('stock', {
 	uuid: uuid_primary,
-	order_info_uuid: defaultUUID('order_info_uuid').default(null),
-	item: defaultUUID('item').notNull(),
-	zipper_number: defaultUUID('zipper_number').notNull(),
-	end_type: defaultUUID('end_type').notNull(),
-	puller: defaultUUID('puller').default(null),
+	order_info_uuid: defaultUUID('order_info_uuid')
+		.default(null)
+		.references(() => zipperSchema.order_info.uuid),
+	item: defaultUUID('item').references(
+		() => zipperSchema.order_description.item
+	),
+	zipper_number: defaultUUID('zipper_number').references(
+		() => zipperSchema.order_description.zipper_number
+	),
+	end_type: defaultUUID('end_type').references(
+		() => zipperSchema.order_description.end_type
+	),
+	puller: defaultUUID('puller')
+		.default(null)
+		.references(() => zipperSchema.order_description.puller),
 	color: text('color').notNull(),
 	order_quantity: decimal('order_quantity', {
 		precision: 20,
@@ -86,63 +96,83 @@ export const defStock = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		order_info_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		item: {
 			type: 'string',
+			xample: 'igD0v9DIJQhJeet',
 		},
 		zipper_number: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		end_type: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		puller: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		color: {
 			type: 'string',
+			example: 'red',
 		},
 		order_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		body_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		cap_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		puller_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		link_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		sa_prod: {
 			type: 'number',
+			example: 0.0,
 		},
 		coloring_stock: {
 			type: 'number',
+			example: 0.0,
 		},
 		coloring_prod: {
 			type: 'number',
+			example: 0.0,
 		},
 		trx_to_finishing: {
 			type: 'number',
+			example: 0.0,
 		},
 		u_top_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		h_bottom_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		box_pin_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		two_way_pin_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		created_at: {
 			type: 'string',
@@ -156,6 +186,7 @@ export const defStock = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'remarks',
 		},
 	},
 	xml: {

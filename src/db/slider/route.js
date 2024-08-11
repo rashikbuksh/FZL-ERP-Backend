@@ -1,5 +1,4 @@
 import { request, Router } from 'express';
-import { validateUuidParam } from '../../lib/validator.js';
 import * as coloringTransactionOperations from './query/coloring_transaction.js';
 import * as dieCastingOperations from './query/die_casting.js';
 import * as dieCastingProductionOperations from './query/die_casting_production.js';
@@ -39,18 +38,16 @@ export const pathSliderStock = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'User object that needs to be added to the slider.stock',
-					required: true,
-					schema: {
-						$ref: '#/definitions/slider/stock',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/slider/stock',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -82,6 +79,7 @@ export const pathSliderStock = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -108,18 +106,19 @@ export const pathSliderStock = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'User object that needs to be updated to the slider.stock',
-					required: true,
-					schema: {
-						$ref: '#/definitions/slider/stock',
-					},
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/slider/stock',
+						},
+					},
+				},
+			},
+
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -146,6 +145,7 @@ export const pathSliderStock = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -163,14 +163,10 @@ export const pathSliderStock = {
 // --------------------- STOCK ROUTES ---------------------
 
 sliderRouter.get('/stock', stockOperations.selectAll);
-sliderRouter.get('/stock/:uuid', validateUuidParam(), stockOperations.select);
+sliderRouter.get('/stock/:uuid', stockOperations.select);
 sliderRouter.post('/stock', stockOperations.insert);
 sliderRouter.put('/stock/:uuid', stockOperations.update);
-sliderRouter.delete(
-	'/stock/:uuid',
-	validateUuidParam(),
-	stockOperations.remove
-);
+sliderRouter.delete('/stock/:uuid', stockOperations.remove);
 
 // --------------------- DIE CASTING ---------------------
 
@@ -328,14 +324,14 @@ export const pathSliderDieCasting = {
 sliderRouter.get('/die-casting', dieCastingOperations.selectAll);
 sliderRouter.get(
 	'/die-casting/:uuid',
-	validateUuidParam(),
+
 	dieCastingOperations.select
 );
 sliderRouter.post('/die-casting', dieCastingOperations.insert);
 sliderRouter.put('/die-casting/:uuid', dieCastingOperations.update);
 sliderRouter.delete(
 	'/die-casting/:uuid',
-	validateUuidParam(),
+
 	dieCastingOperations.remove
 );
 
@@ -498,7 +494,7 @@ sliderRouter.get(
 );
 sliderRouter.get(
 	'/die-casting-production/:uuid',
-	validateUuidParam(),
+
 	dieCastingProductionOperations.select
 );
 sliderRouter.post(
@@ -511,7 +507,7 @@ sliderRouter.put(
 );
 sliderRouter.delete(
 	'/die-casting-production/:uuid',
-	validateUuidParam(),
+
 	dieCastingProductionOperations.remove
 );
 
@@ -674,7 +670,7 @@ sliderRouter.get(
 );
 sliderRouter.get(
 	'/die-casting-transaction/:uuid',
-	validateUuidParam(),
+
 	dieCastingTransactionOperations.select
 );
 sliderRouter.post(
@@ -687,7 +683,7 @@ sliderRouter.put(
 );
 sliderRouter.delete(
 	'/die-casting-transaction/:uuid',
-	validateUuidParam(),
+
 	dieCastingTransactionOperations.remove
 );
 
@@ -892,14 +888,14 @@ const pathSliderTransaction = {
 sliderRouter.get('/transaction', transactionOperations.selectAll);
 sliderRouter.get(
 	'/transaction/:uuid',
-	validateUuidParam(),
+
 	transactionOperations.select
 );
 sliderRouter.post('/transaction', transactionOperations.insert);
 sliderRouter.put('/transaction/:uuid', transactionOperations.update);
 sliderRouter.delete(
 	'/transaction/:uuid',
-	validateUuidParam(),
+
 	transactionOperations.remove
 );
 
@@ -1062,7 +1058,7 @@ sliderRouter.get(
 );
 sliderRouter.get(
 	'/coloring-transaction/:uuid',
-	validateUuidParam(),
+
 	coloringTransactionOperations.select
 );
 sliderRouter.post(
@@ -1075,7 +1071,7 @@ sliderRouter.put(
 );
 sliderRouter.delete(
 	'/coloring-transaction/:uuid',
-	validateUuidParam(),
+
 	coloringTransactionOperations.remove
 );
 

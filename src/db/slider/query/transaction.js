@@ -82,7 +82,7 @@ export async function selectAll(req, res, next) {
 			user_designation: hrSchema.designation.designation,
 			user_department: hrSchema.department.department,
 			created_at: transaction.created_at,
-			update_at: transaction.update_at,
+			updated_at: transaction.updated_at,
 			remarks: transaction.remarks,
 		})
 		.from(transaction)
@@ -126,7 +126,7 @@ export async function select(req, res, next) {
 			user_designation: hrSchema.designation.designation,
 			user_department: hrSchema.department.department,
 			created_at: transaction.created_at,
-			update_at: transaction.update_at,
+			updated_at: transaction.updated_at,
 			remarks: transaction.remarks,
 		})
 		.from(transaction)
