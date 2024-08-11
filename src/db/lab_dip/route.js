@@ -1,11 +1,8 @@
 import { request, Router } from 'express';
-import { param } from 'express-validator';
 import { validateUuidParam } from '../../lib/validator.js';
-import { properties } from '../public/schema.js';
 import * as infoOperations from './query/info.js';
 import * as recipeOperations from './query/recipe.js';
 import * as recipeEntryOperations from './query/recipe_entry.js';
-import { recipe } from './schema.js';
 
 const labDipRouter = Router();
 
@@ -23,9 +20,74 @@ export const pathLabDipInfo = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/lab_dip/info',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: {
+										type: 'number',
+										example: 1,
+									},
+									name: {
+										type: 'string',
+										example: 'Lab Dip 1',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buyer_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lab_status: {
+										type: 'string',
+										example: 'Pending',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									user_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'HR',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -78,9 +140,8 @@ export const pathLabDipInfo = {
 					name: 'uuid',
 					in: 'path',
 					description: 'lab dip info to get',
-					required: true,
 					type: 'string',
-					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -106,6 +167,7 @@ export const pathLabDipInfo = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -139,8 +201,8 @@ export const pathLabDipInfo = {
 					name: 'uuid',
 					in: 'path',
 					description: 'Lab dip info to delete',
-					required: true,
 					type: 'string',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -284,6 +346,7 @@ export const pathLabDipRecipe = {
 					description: 'lab dip recipe to get',
 					required: true,
 					type: 'string',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -309,6 +372,7 @@ export const pathLabDipRecipe = {
 					description: 'Lab dip recipe to update',
 					required: true,
 					type: 'string',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -345,6 +409,7 @@ export const pathLabDipRecipe = {
 					description: 'Lab dip recipe to delete',
 					required: true,
 					type: 'string',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -472,6 +537,7 @@ export const pathLabDipRecipeEntry = {
 					description: 'lab dip recipe entry to get',
 					required: true,
 					type: 'string',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -496,7 +562,7 @@ export const pathLabDipRecipeEntry = {
 					description: 'Lab dip recipe entry to update',
 					required: true,
 					type: 'string',
-					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -532,6 +598,7 @@ export const pathLabDipRecipeEntry = {
 					description: 'Lab dip recipe entry to delete',
 					required: true,
 					type: 'string',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {

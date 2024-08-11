@@ -4,7 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import hr, * as hrSchema from '../../hr/schema.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { recipe } from '../schema.js';
 
@@ -103,7 +103,7 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(
 			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 
 	const toast = {
@@ -134,14 +134,14 @@ export async function select(req, res, next) {
 			remarks: recipe.remarks,
 		})
 		.from(recipe)
-		.leftJoin(hr.users, eq(recipe.created_by, hr.users.uuid))
+		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
 		.leftJoin(
-			hr.designation,
-			eq(hr.users.designation_uuid, hr.designation.uuid)
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
 		)
 		.leftJoin(
-			hr.department,
-			eq(hr.users.department_uuid, hr.department.uuid)
+			hrSchema.department,
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 		.where(eq(recipe.uuid, req.params.uuid));
 	const toast = {
