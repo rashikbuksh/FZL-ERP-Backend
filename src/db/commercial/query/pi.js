@@ -17,7 +17,7 @@ export async function insert(req, res, next) {
 	const piPromise = db
 		.insert(pi)
 		.values(req.body)
-		.returning({ insertedId: pi.order_info_ids });
+		.returning({ insertedId: pi.uuid });
 	try {
 		const data = await piPromise;
 		const toast = {
@@ -39,7 +39,7 @@ export async function update(req, res, next) {
 		.update(pi)
 		.set(req.body)
 		.where(eq(pi.uuid, req.params.uuid))
-		.returning({ insertedUserName: pi.created_by });
+		.returning({ insertedUserName: pi.uuid });
 
 	try {
 		const data = await piPromise;
@@ -98,7 +98,7 @@ export async function selectAll(req, res, next) {
 			validity: pi.validity,
 			payment: pi.payment,
 			created_by: pi.created_by,
-			user_name: hrSchema.users.name,
+			created_by_name: hrSchema.users.name,
 			user_designation: hrSchema.designation.designation,
 			user_department: hrSchema.department.department,
 			created_at: pi.created_at,
@@ -131,7 +131,8 @@ export async function selectAll(req, res, next) {
 			publicSchema.factory,
 			eq(pi.factory_uuid, publicSchema.factory.uuid)
 		)
-		.leftJoin(bank, eq(pi.bank_uuid, bank.uuid));
+		.leftJoin(bank, eq(pi.bank_uuid, bank.uuid))
+		.leftJoin(lc, eq(pi.lc_uuid, lc.uuid));
 
 	const toast = {
 		status: 200,
@@ -169,7 +170,7 @@ export async function select(req, res, next) {
 			validity: pi.validity,
 			payment: pi.payment,
 			created_by: pi.created_by,
-			user_name: hrSchema.users.name,
+			created_by_name: hrSchema.users.name,
 			user_designation: hrSchema.designation.designation,
 			user_department: hrSchema.department.department,
 			created_at: pi.created_at,
@@ -203,6 +204,7 @@ export async function select(req, res, next) {
 			eq(pi.factory_uuid, publicSchema.factory.uuid)
 		)
 		.leftJoin(bank, eq(pi.bank_uuid, bank.uuid))
+		.leftJoin(lc, eq(pi.lc_uuid, lc.uuid))
 		.where(eq(pi.uuid, req.params.uuid));
 
 	const toast = {

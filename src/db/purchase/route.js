@@ -183,7 +183,7 @@ const pathPurchaseDescription = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},
@@ -316,7 +316,7 @@ const pathPurchaseDescription = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},

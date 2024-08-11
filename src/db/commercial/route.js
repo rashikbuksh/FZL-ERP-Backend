@@ -321,7 +321,7 @@ export const pathCommercialLc = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},
@@ -536,13 +536,11 @@ export const pathCommercialPi = {
 								properties: {
 									uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									lc_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									lc_number: {
 										type: 'string',
@@ -552,14 +550,12 @@ export const pathCommercialPi = {
 										type: 'array',
 										items: {
 											type: 'string',
-											example:
-												'123e4567-e89b-12d3-a456-426614174000',
+											example: 'igD0v9DIJQhJeet',
 										},
 									},
 									marketing_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									marketing_name: {
 										type: 'string',
@@ -567,8 +563,7 @@ export const pathCommercialPi = {
 									},
 									party_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									party_name: {
 										type: 'string',
@@ -576,8 +571,7 @@ export const pathCommercialPi = {
 									},
 									merchandiser_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									merchandiser_name: {
 										type: 'string',
@@ -585,8 +579,7 @@ export const pathCommercialPi = {
 									},
 									factory_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									factory_name: {
 										type: 'string',
@@ -594,8 +587,7 @@ export const pathCommercialPi = {
 									},
 									bank_uuid: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
 									bank_name: {
 										type: 'string',
@@ -616,10 +608,9 @@ export const pathCommercialPi = {
 									},
 									created_by: {
 										type: 'string',
-										example:
-											'123e4567-e89b-12d3-a456-426614174000',
+										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},

@@ -62,7 +62,7 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},
@@ -263,7 +263,7 @@ export const pathLabDipRecipe = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},

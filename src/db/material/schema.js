@@ -139,7 +139,7 @@ export const defMaterialInfo = {
 
 export const stock = material.table('stock', {
 	uuid: uuid_primary,
-	material_uuid: defaultUUID('material_uuid').references(() => info.uuid),
+	material_uuid: defaultUUID('material_uuid'),
 	stock: decimal('stock', {
 		precision: 20,
 		scale: 4,
@@ -407,7 +407,7 @@ export const defMaterialStock = {
 
 export const trx = material.table('trx', {
 	uuid: uuid_primary,
-	material_uuid: defaultUUID('material_uuid').references(() => info.uuid),
+	material_uuid: defaultUUID('material_uuid'),
 	trx_to: text('trx_to').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,

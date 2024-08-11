@@ -737,7 +737,7 @@ export const pathMaterialTrx = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'admin',
 									},
@@ -850,7 +850,7 @@ export const pathMaterialTrx = {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
-							user_name: {
+							created_by_name: {
 								type: 'string',
 								example: 'admin',
 							},
@@ -1245,7 +1245,7 @@ export const pathMaterialUsed = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'admin',
 									},
@@ -1359,7 +1359,7 @@ export const pathMaterialUsed = {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
-							user_name: {
+							created_by_name: {
 								type: 'string',
 								example: 'admin',
 							},
@@ -1524,7 +1524,7 @@ export const pathMaterialStockToSFG = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'admin',
 									},
@@ -1646,7 +1646,7 @@ export const pathMaterialStockToSFG = {
 									type: 'string',
 									example: 'igD0v9DIJQhJeet',
 								},
-								user_name: {
+								created_by_name: {
 									type: 'string',
 									example: 'admin',
 								},

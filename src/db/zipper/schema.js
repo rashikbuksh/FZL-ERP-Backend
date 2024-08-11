@@ -182,6 +182,7 @@ export const order_description = zipper.table('order_description', {
 	light_preference: defaultUUID('light_preference'),
 	garments_wash: defaultUUID('garments_wash'),
 	puller_link: defaultUUID('puller_link'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 });
 
 export const def_zipper_order_description = {
@@ -211,6 +212,7 @@ export const def_zipper_order_description = {
 		'light_preference',
 		'garments_wash',
 		'puller_link',
+		'created_by',
 	],
 	properties: {
 		uuid: {
@@ -344,6 +346,10 @@ export const def_zipper_order_description = {
 			example: 'igD0v9DIJQhJeet',
 		},
 		puller_link: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		created_by: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},

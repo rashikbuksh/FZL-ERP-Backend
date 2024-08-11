@@ -195,27 +195,6 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 
 	const { order_description_uuid } = req.params;
 
-	const sfgt_totals = alias(
-		db
-			.select({
-				order_entry_uuid: sfg.order_entry_uuid,
-				sfg_uuid: sfg.uuid,
-				total_teeth_molding: sql`SUM(
-				CASE WHEN sfg_production.section = 'teeth_molding' THEN sfg_production.production_quantity ELSE 0 END
-				)`,
-				total_teeth_coloring: sql`SUM(
-				CASE WHEN sfg_production.section = 'teeth_coloring' THEN sfg_production.production_quantity ELSE 0 END
-				)`,
-				total_finishing: sql`SUM(
-				CASE WHEN sfg_production.section = 'finishing' THEN sfg_production.production_quantity ELSE 0 END
-				)`,
-			})
-			.from(sfg_production)
-			.leftJoin(sfg, eq(sfg_production.sfg_uuid, sfg.uuid))
-			.groupBy(sfg.order_entry_uuid),
-		'sfgt_totals'
-	);
-
 	const orderEntryPromise = db
 		.select({
 			order_entry_uuid: order_entry.uuid,
@@ -253,7 +232,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			order_description,
 			eq(order_entry.order_description_uuid, order_description.uuid)
 		)
-		.innerJoin(sfg, eq(order_entry.uuid, sfg.order_entry_uuid))
+		.leftJoin(sfg, eq(order_entry.uuid, sfg.order_entry_uuid))
 		.leftJoin(sfg_production, eq(sfg.uuid, sfg_production.sfg_uuid))
 		.where(eq(order_description.uuid, order_description_uuid))
 		.groupBy(order_entry.uuid, sfg.uuid);

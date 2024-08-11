@@ -6,6 +6,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { order_description, order_info } from '../schema.js';
@@ -98,6 +99,7 @@ export async function insert(req, res, next) {
 		light_preference,
 		garments_wash,
 		puller_link,
+		created_by,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -135,6 +137,7 @@ export async function insert(req, res, next) {
 			light_preference,
 			garments_wash,
 			puller_link,
+			created_by,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -188,6 +191,7 @@ export async function update(req, res, next) {
 		light_preference,
 		garments_wash,
 		puller_link,
+		created_by,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -225,6 +229,7 @@ export async function update(req, res, next) {
 			light_preference,
 			garments_wash,
 			puller_link,
+			created_by,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
@@ -341,6 +346,8 @@ export async function selectAll(req, res, next) {
 			puller_link: order_description.puller_link,
 			puller_link_name: pullerLinkProperties.name,
 			puller_link_short_name: pullerLinkProperties.short_name,
+			created_by: order_description.created_by,
+			created_by_name: hrSchema.users.name,
 		})
 		.from(order_description)
 		.where(
@@ -435,6 +442,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			pullerLinkProperties,
 			eq(order_description.puller_link, pullerLinkProperties.uuid)
+		)
+		.leftJoin(
+			hrSchema.users,
+			eq(order_description.created_by, hrSchema.users.uuid)
 		);
 
 	const toast = {
@@ -529,6 +540,8 @@ export async function select(req, res, next) {
 			puller_link: order_description.puller_link,
 			puller_link_name: pullerLinkProperties.name,
 			puller_link_short_name: pullerLinkProperties.short_name,
+			created_by: order_description.created_by,
+			created_by_name: hrSchema.users.name,
 		})
 		.from(order_description)
 		.where(
@@ -624,6 +637,10 @@ export async function select(req, res, next) {
 			pullerLinkProperties,
 			eq(order_description.puller_link, pullerLinkProperties.uuid)
 		)
+		.leftJoin(
+			hrSchema.users,
+			eq(order_description.created_by, hrSchema.users.uuid)
+		)
 		.where(eq(order_description.uuid, req.params.uuid));
 
 	const toast = {
@@ -677,6 +694,8 @@ export async function selectOrderDescriptionUuidToGetOrderDescriptionAndOrderEnt
 
 	const { order_description_uuid } = req.params;
 
+	console.log(order_description_uuid);
+
 	try {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
@@ -690,8 +709,8 @@ export async function selectOrderDescriptionUuidToGetOrderDescriptionAndOrderEnt
 		]);
 
 		const response = {
-			...order_description?.data[0],
-			order_entry: order_entry?.data || [],
+			...order_description?.data?.data[0],
+			order_entry: order_entry?.data?.data || [],
 		};
 
 		const toast = {

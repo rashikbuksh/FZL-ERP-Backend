@@ -18,17 +18,15 @@ export async function insert(req, res, next) {
 
 	try {
 		const data = await propertiesPromise;
+
+		console.log(data[0].insertedName);
+
 		const toast = {
 			status: 201,
 			type: 'insert',
-			msg: `${data[0].insertedName} inserted`,
+			message: `${data[0]?.insertedName} inserted`,
 		};
-		handleResponse({
-			promise: propertiesPromise,
-			res,
-			next,
-			...toast,
-		});
+		res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -46,16 +44,11 @@ export async function update(req, res, next) {
 	try {
 		const data = await propertiesPromise;
 		const toast = {
-			status: 200,
+			status: 201,
 			type: 'update',
-			msg: `${data[0].updatedName} updated`,
+			message: `${data[0].updatedName} updated`,
 		};
-		handleResponse({
-			promise: propertiesPromise,
-			res,
-			next,
-			...toast,
-		});
+		res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -72,16 +65,11 @@ export async function remove(req, res, next) {
 	try {
 		const data = await propertiesPromise;
 		const toast = {
-			status: 200,
+			status: 201,
 			type: 'remove',
-			msg: `${data[0].deletedName} deleted`,
+			message: `${data[0].deletedName} deleted`,
 		};
-		handleResponse({
-			promise: propertiesPromise,
-			res,
-			next,
-			...toast,
-		});
+		res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -106,10 +94,11 @@ export async function selectAll(req, res, next) {
 			hrSchema.users,
 			eq(properties.created_by, hrSchema.users.uuid)
 		);
+
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Property list',
+		message: 'Property list',
 	};
 	handleResponse({
 		promise: resultPromise,
@@ -141,10 +130,11 @@ export async function select(req, res, next) {
 			eq(properties.created_by, hrSchema.users.uuid)
 		)
 		.where(eq(properties.uuid, req.params.uuid));
+
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Property',
+		message: 'Property',
 	};
 	handleResponse({
 		promise: propertiesPromise,

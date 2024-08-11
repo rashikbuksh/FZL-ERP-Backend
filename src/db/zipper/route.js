@@ -1,6 +1,5 @@
 import { request, Router } from 'express';
 
-import { properties } from '../public/schema.js';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
@@ -14,7 +13,6 @@ import * as sfgTransactionOperations from './query/sfg_transaction.js';
 import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeToCoilOperations from './query/tape_to_coil.js';
-import { order_description, order_entry } from './schema.js';
 
 const zipperRouter = Router();
 
@@ -222,6 +220,7 @@ export const pathZipperOrderInfo = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -408,6 +407,15 @@ export const pathZipperOrderInfo = {
 				},
 			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/order_info',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -433,9 +441,13 @@ export const pathZipperOrderInfo = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'order info deleted',
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -880,6 +892,14 @@ export const pathZipperOrderDescription = {
 										type: 'string',
 										example: 'John',
 									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
 								},
 							},
 						},
@@ -1039,6 +1059,14 @@ export const pathZipperOrderDescription = {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
 						},
 					},
 				},
@@ -1089,28 +1117,24 @@ export const pathZipperOrderDescription = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'order description object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/order_description',
-					},
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/order_description',
+						},
+					},
+				},
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
 					schema: {
 						type: 'object',
 						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
 							order_info_uuid: {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
@@ -1234,6 +1258,14 @@ export const pathZipperOrderDescription = {
 							puller_link: {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
 							},
 						},
 					},
@@ -1435,6 +1467,14 @@ export const pathZipperOrderDescription = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
 								},
 							},
 						},
@@ -1609,6 +1649,14 @@ export const pathZipperOrderDescription = {
 									puller_link: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
 									},
 									order_entry: {
 										type: 'object',
@@ -1885,6 +1933,14 @@ export const pathZipperOrderDescription = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
 									order_entry: {
 										type: 'object',
 										properties: {
@@ -1983,6 +2039,14 @@ export const pathZipperOrderDescription = {
 											coloring_prod: {
 												type: 'number',
 												example: 10,
+											},
+											created_by: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											created_by_name: {
+												type: 'string',
+												example: 'John Doe',
 											},
 										},
 									},
@@ -2121,17 +2185,17 @@ export const pathZipperOrderEntry = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Order Entry',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/order_entry',
+			requestBody: {
+				description: 'Order Entry',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/order_entry',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -2163,9 +2227,19 @@ export const pathZipperOrderEntry = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/order_entry',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2190,18 +2264,28 @@ export const pathZipperOrderEntry = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'order entry object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/order_entry',
+			],
+			requestBody: {
+				description: 'Order Entry',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/order_entry',
+						},
 					},
 				},
-			],
+			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/order_entry',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2230,6 +2314,9 @@ export const pathZipperOrderEntry = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'order entry deleted',
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2500,7 +2587,6 @@ export const pathZipperSfg = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
 			requestBody: {
 				description: 'SFG object that needs to be added to the zipper',
 				required: true,
@@ -2595,6 +2681,15 @@ export const pathZipperSfg = {
 				},
 			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/sfg',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2618,10 +2713,20 @@ export const pathZipperSfg = {
 					in: 'path',
 					description: 'sfg to delete',
 					required: true,
-					type: 'string',
+					type: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/sfg',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2671,17 +2776,17 @@ export const pathZipperSfgProduction = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'SFG Production',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/sfg_production',
+			requestBody: {
+				description:
+					'SFG Production object that needs to be added to the zipper',
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/sfg_production',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -2713,9 +2818,20 @@ export const pathZipperSfgProduction = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Returns a SFG Production',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/zipper/sfg_production',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2740,18 +2856,29 @@ export const pathZipperSfgProduction = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'sfg production object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/sfg_production',
+			],
+			requestBody: {
+				description:
+					'SFG Production object that needs to be updated to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/sfg_production',
+						},
 					},
 				},
-			],
+			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/sfg_production',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2777,9 +2904,19 @@ export const pathZipperSfgProduction = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/sfg_production',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2858,7 +2995,7 @@ export const pathZipperSfgTransaction = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},
@@ -2902,7 +3039,6 @@ export const pathZipperSfgTransaction = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
 			requestBody: {
 				description:
 					'SFG Transaction object that needs to be added to the zipper',
@@ -2947,6 +3083,16 @@ export const pathZipperSfgTransaction = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'Returns a SFG Transaction',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/zipper/sfg_transaction',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2972,7 +3118,6 @@ export const pathZipperSfgTransaction = {
 					example: 'igD0v9DIJQhJeet',
 				},
 			],
-
 			requestBody: {
 				description:
 					'SFG Transaction object that needs to be updated to the zipper',
@@ -2986,6 +3131,15 @@ export const pathZipperSfgTransaction = {
 				},
 			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/sfg_transaction',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3014,6 +3168,15 @@ export const pathZipperSfgTransaction = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/sfg_transaction',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3071,17 +3234,18 @@ export const pathZipperBatch = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Batch',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/batch',
+			requestBody: {
+				description:
+					'Batch object that needs to be added to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/batch',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -3116,6 +3280,16 @@ export const pathZipperBatch = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'Returns a Batch',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/zipper/batch',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3139,19 +3313,31 @@ export const pathZipperBatch = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'batch object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/batch',
-					},
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
+			requestBody: {
+				description:
+					'Batch object that needs to be updated to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/batch',
+						},
+					},
+				},
+			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/batch',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3208,17 +3394,18 @@ export const pathZipperBatchEntry = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Batch Entry',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/batch_entry',
+			requestBody: {
+				description:
+					'Batch Entry object that needs to be added to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/batch_entry',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -3250,9 +3437,20 @@ export const pathZipperBatchEntry = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
+				200: {
+					description: 'Returns a Batch Entry',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/zipper/batch_entry',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3277,18 +3475,29 @@ export const pathZipperBatchEntry = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'batch entry object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/batch_entry',
+			],
+			requestBody: {
+				description:
+					'Batch Entry object that needs to be updated to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/batch_entry',
+						},
 					},
 				},
-			],
+			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/batch_entry',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3317,6 +3526,15 @@ export const pathZipperBatchEntry = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/batch_entry',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3374,17 +3592,18 @@ export const pathZipperDyingBatch = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Dying Batch',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/dying_batch',
+			requestBody: {
+				description:
+					'Dying Batch object that needs to be added to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/dying_batch',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -3419,6 +3638,16 @@ export const pathZipperDyingBatch = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'Returns a Dying Batch',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/zipper/dying_batch',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3443,18 +3672,29 @@ export const pathZipperDyingBatch = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'dying batch object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/dying_batch',
+			],
+			requestBody: {
+				description:
+					'Dying Batch object that needs to be updated to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/dying_batch',
+						},
 					},
 				},
-			],
+			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/dying_batch',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3483,6 +3723,15 @@ export const pathZipperDyingBatch = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/dying_batch',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3540,17 +3789,18 @@ export const pathZipperDyingBatchEntry = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Dying Batch Entry',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/dying_batch_entry',
+			requestBody: {
+				description:
+					'Dying Batch Entry object that needs to be added to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/dying_batch_entry',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -3585,6 +3835,16 @@ export const pathZipperDyingBatchEntry = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'Returns a Dying Batch Entry',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/zipper/dying_batch_entry',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3609,18 +3869,29 @@ export const pathZipperDyingBatchEntry = {
 					type: 'string',
 					format: 'uuid',
 				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'dying batch object that needs to be updated to the zipper',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/dying_batch_entry',
+			],
+			requestBody: {
+				description:
+					'Dying Batch Entry object that needs to be updated to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/dying_batch_entry',
+						},
 					},
 				},
-			],
+			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/dying_batch_entry',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3648,6 +3919,15 @@ export const pathZipperDyingBatchEntry = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/dying_batch_entry',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3749,6 +4029,15 @@ export const pathZipperTapeCoil = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_coil',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3784,6 +4073,15 @@ export const pathZipperTapeCoil = {
 				},
 			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_coil',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3812,6 +4110,15 @@ export const pathZipperTapeCoil = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_coil',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3882,7 +4189,7 @@ export const pathZipperTapeCoilProduction = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},
@@ -3965,6 +4272,15 @@ export const pathZipperTapeCoilProduction = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_coil_production',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -3999,8 +4315,16 @@ export const pathZipperTapeCoilProduction = {
 					},
 				},
 			},
-
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_coil_production',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -4028,6 +4352,15 @@ export const pathZipperTapeCoilProduction = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_coil_production',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -4096,7 +4429,7 @@ export const pathZipperTapeToCoil = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},
@@ -4179,6 +4512,15 @@ export const pathZipperTapeToCoil = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_to_coil',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -4213,6 +4555,15 @@ export const pathZipperTapeToCoil = {
 				},
 			},
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_to_coil',
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},

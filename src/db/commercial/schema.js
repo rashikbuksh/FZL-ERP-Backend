@@ -54,7 +54,8 @@ export const defCommercialBank = {
 			example: '2024-01-01 00:00:00',
 		},
 		remarks: {
-			type: 'remarks',
+			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -299,7 +300,7 @@ export const defCommercialPi = {
 			items: {
 				type: 'string',
 			},
-			example: ['igD0v9DIJQhJeet'],
+			example: '[{"igD0v9DIJQhJeet"}]',
 		},
 		marketing_uuid: {
 			type: 'string',

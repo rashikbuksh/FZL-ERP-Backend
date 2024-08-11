@@ -54,7 +54,9 @@ export const users = hr.table('users', {
 	name: text('name').notNull(),
 	email: text('email').notNull(),
 	pass: text('pass').notNull(),
-	designation_uuid: defaultUUID('designation_uuid'),
+	designation_uuid: defaultUUID('designation_uuid').references(
+		() => designation.uuid
+	),
 	can_access: text('can_access').notNull(),
 	ext: text('ext').default(null),
 	phone: text('phone').default(null),
