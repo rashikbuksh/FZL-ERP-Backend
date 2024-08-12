@@ -66,6 +66,7 @@ export async function insert(req, res, next) {
 		.insert(die_casting)
 		.values(req.body)
 		.returning({ insertedName: die_casting.name });
+
 	try {
 		const data = await dieCastingPromise;
 		const toast = {
@@ -127,8 +128,7 @@ export async function selectAll(req, res, next) {
 			name: die_casting.name,
 			item: die_casting.item,
 			item_name: itemProperties.name,
-			item_short_name: itemProperties,
-			short_name,
+			item_short_name: itemProperties.short_name,
 			zipper_number: die_casting.zipper_number,
 			zipper_name: zipperProperties.name,
 			zipper_short_name: zipperProperties.short_name,
