@@ -84,7 +84,7 @@ export const defStock = {
 		'item',
 		'zipper_number',
 		'end_type',
-		'puller',
+		'puller_type',
 		'color',
 		'order_quantity',
 	],
@@ -109,7 +109,7 @@ export const defStock = {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
-		puller: {
+		puller_type: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
