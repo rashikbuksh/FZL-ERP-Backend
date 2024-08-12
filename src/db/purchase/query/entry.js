@@ -134,3 +134,39 @@ export async function select(req, res, next) {
 
 	handleResponse({ promise: entryPromise, res, next, ...toast });
 }
+
+export async function selectEntryByPurchaseDescriptionUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const entryPromise = db
+		.select({
+			uuid: entry.uuid,
+			purchase_description_uuid: entry.purchase_description_uuid,
+			material_uuid: entry.material_uuid,
+			material_name: materialSchema.info.name,
+			quantity: entry.quantity,
+			price: entry.price,
+			created_at: entry.created_at,
+			updated_at: entry.updated_at,
+			remarks: entry.remarks,
+		})
+		.from(entry)
+		.leftJoin(
+			materialSchema.info,
+			eq(entry.material_uuid, materialSchema.info.uuid)
+		)
+		.where(
+			eq(
+				entry.purchase_description_uuid,
+				req.params.purchase_description_uuid
+			)
+		);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Entry',
+	};
+
+	handleResponse({ promise: entryPromise, res, next, ...toast });
+}
