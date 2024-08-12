@@ -78,9 +78,7 @@ export async function selectAll(req, res, next) {
 			stock_uuid: die_casting_transaction.stock_uuid,
 			trx_quantity: die_casting_transaction.trx_quantity,
 			created_by: die_casting_transaction.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
+			created_by_name: hrSchema.users.name,
 			created_at: die_casting_transaction.created_at,
 			updated_at: die_casting_transaction.updated_at,
 			remarks: die_casting_transaction.remarks,
@@ -93,16 +91,7 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(hrSchema.users.uuid, die_casting_transaction.created_by)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
-
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -123,9 +112,7 @@ export async function select(req, res, next) {
 			stock_uuid: die_casting_transaction.stock_uuid,
 			trx_quantity: die_casting_transaction.trx_quantity,
 			created_by: die_casting_transaction.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
+			created_by_name: hrSchema.users.name,
 			created_at: die_casting_transaction.created_at,
 			updated_at: die_casting_transaction.updated_at,
 			remarks: die_casting_transaction.remarks,
@@ -138,14 +125,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(hrSchema.users.uuid, die_casting_transaction.created_by)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 		.where(eq(die_casting_transaction.uuid, req.params.uuid));
 

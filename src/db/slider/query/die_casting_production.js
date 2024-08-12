@@ -87,9 +87,7 @@ export async function selectAll(req, res, next) {
 			weight: die_casting_production.weight,
 			order_info_uuid: die_casting_production.order_info_uuid,
 			created_by: die_casting_production.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
+			created_by_name: hrSchema.users.name,
 			created_at: die_casting_production.created_at,
 			updated_at: die_casting_production.updated_at,
 			remarks: die_casting_production.remarks,
@@ -102,14 +100,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(hrSchema.users.uuid, die_casting_production.created_by)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 	const toast = {
 		status: 200,
@@ -134,9 +124,8 @@ export async function select(req, res, next) {
 			weight: die_casting_production.weight,
 			order_info_uuid: die_casting_production.order_info_uuid,
 			created_by: die_casting_production.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
+			created_by_name: hrSchema.users.name,
+
 			created_at: die_casting_production.created_at,
 			updated_at: die_casting_production.updated_at,
 			remarks: die_casting_production.remarks,
@@ -150,14 +139,7 @@ export async function select(req, res, next) {
 			hrSchema.users,
 			eq(hrSchema.users.uuid, die_casting_production.created_by)
 		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		)
+
 		.where(eq(die_casting_production.uuid, req.params.uuid));
 
 	const toast = {
