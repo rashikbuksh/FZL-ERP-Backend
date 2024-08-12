@@ -1,5 +1,6 @@
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
+import { type } from '../material/schema.js';
 import * as publicSchema from '../public/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
@@ -192,32 +193,30 @@ export const defStock = {
 export const die_casting = slider.table('die_casting', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
-	item: defaultUUID('item'),
-	// .references(() => zipperSchema.order_description.item),
-	zipper_number: defaultUUID('zipper_number'),
-	// .references(() => zipperSchema.order_description.zipper_number),
-	end_type: defaultUUID('end_type'),
-	// .references(() => zipperSchema.order_description.end_type),
-	puller_type: defaultUUID('puller_type'),
-	// .references(
-	// 	() => zipperSchema.order_description.puller_type
-	// ),
-	logo_type: defaultUUID('logo_type'),
-	// .references(
-	// 	() => zipperSchema.order_description.logo_type
-	// ),
-	slider_body_shape: defaultUUID('slider_body_shape'),
-	// .references(
-	// 	() => zipperSchema.order_description.slider_body_shape
-	// ),
-	puller_link: defaultUUID('puller_link'),
-	// .references(
-	// 	() => zipperSchema.order_description.puller_link
-	// ),
-	stopper_type: defaultUUID('stopper_type'),
-	// .references(
-	// 	() => zipperSchema.order_description.stopper_type
-	// ),
+	item: defaultUUID('item').references(
+		() => zipperSchema.order_description.item
+	),
+	zipper_number: defaultUUID('zipper_number').references(
+		() => zipperSchema.order_description.zipper_number
+	),
+	end_type: defaultUUID('end_type').references(
+		() => zipperSchema.order_description.end_type
+	),
+	puller_type: defaultUUID('puller_type').references(
+		() => zipperSchema.order_description.puller_type
+	),
+	logo_type: defaultUUID('logo_type').references(
+		() => zipperSchema.order_description.logo_type
+	),
+	slider_body_shape: defaultUUID('slider_body_shape').references(
+		() => zipperSchema.order_description.slider_body_shape
+	),
+	puller_link: defaultUUID('puller_link').references(
+		() => zipperSchema.order_description.puller_link
+	),
+	stopper_type: defaultUUID('stopper_type').references(
+		() => zipperSchema.order_description.stopper_type
+	),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -294,16 +293,16 @@ export const defDieCasting = {
 			example: 'igD0v9DIJQhJeet',
 		},
 		quantity: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
+			type: 'number',
+			example: 0.0,
 		},
 		weight: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
+			type: 'number',
+			example: 0.0,
 		},
 		pcs_per_kg: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
+			type: 'number',
+			example: 0.0,
 		},
 		created_at: {
 			type: 'string',
@@ -405,13 +404,15 @@ export const defDieCastingProduction = {
 
 export const die_casting_transaction = slider.table('die_casting_transaction', {
 	uuid: uuid_primary,
-	die_casting_uuid: defaultUUID('die_casting_uuid').notNull(),
-	stock_uuid: defaultUUID('stock_uuid').notNull(),
+	die_casting_uuid: defaultUUID('die_casting_uuid').references(
+		() => die_casting.uuid
+	),
+	stock_uuid: defaultUUID('stock_uuid').references(() => stock.uuid),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: defaultUUID('created_by').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
