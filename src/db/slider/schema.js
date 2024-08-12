@@ -20,9 +20,9 @@ export const stock = slider.table('stock', {
 	end_type: defaultUUID('end_type').references(
 		() => zipperSchema.order_description.end_type
 	),
-	puller_type: defaultUUID('puller_type')
-		.default(null)
-		.references(() => zipperSchema.order_description.puller_type),
+	puller_type: defaultUUID('puller_type').references(
+		() => zipperSchema.order_description.puller_type
+	),
 	color: text('color').notNull(),
 	order_quantity: decimal('order_quantity', {
 		precision: 20,
@@ -89,7 +89,7 @@ export const defStock = {
 		'item',
 		'zipper_number',
 		'end_type',
-		'puller',
+		'puller_type',
 		'color',
 		'order_quantity',
 	],
@@ -114,7 +114,7 @@ export const defStock = {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
-		puller: {
+		puller_type: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},

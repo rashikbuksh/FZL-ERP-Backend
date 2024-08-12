@@ -21,9 +21,136 @@ export const pathSliderStock = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/slider/stock',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									item: {
+										type: 'string',
+										xample: 'igD0v9DIJQhJeet',
+									},
+									item_name: {
+										type: 'string',
+										example: 'item name',
+									},
+									item_short_name: {
+										type: 'string',
+										example: 'item short name',
+									},
+
+									zipper_number: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									zipper_name: {
+										type: 'string',
+										example: 'zipper name',
+									},
+									zipper_short_name: {
+										type: 'string',
+										example: 'zipper short name',
+									},
+									end_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_type_name: {
+										type: 'string',
+										example: 'end type name',
+									},
+									end_type_short_name: {
+										type: 'string',
+										example: 'end type short name',
+									},
+									puller_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_name: {
+										type: 'string',
+										example: 'puller name',
+									},
+									puller_short_name: {
+										type: 'string',
+										example: 'puller short name',
+									},
+
+									color: {
+										type: 'string',
+										example: 'red',
+									},
+									order_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									body_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									cap_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									puller_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									link_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									sa_prod: {
+										type: 'number',
+										example: 0.0,
+									},
+									coloring_stock: {
+										type: 'number',
+										example: 0.0,
+									},
+									coloring_prod: {
+										type: 'number',
+										example: 0.0,
+									},
+									trx_to_finishing: {
+										type: 'number',
+										example: 0.0,
+									},
+									u_top_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									h_bottom_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									box_pin_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									two_way_pin_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
 								},
 							},
 						},

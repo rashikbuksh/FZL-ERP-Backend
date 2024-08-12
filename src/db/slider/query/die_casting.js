@@ -1,8 +1,63 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import { alias } from 'drizzle-orm/pg-core';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { die_casting } from '../schema.js';
 
+const itemProperties = alias(publicSchema.properties, 'itemProperties');
+const zipperProperties = alias(publicSchema.properties, 'zipperProperties');
+const endTypeProperties = alias(publicSchema.properties, 'endTypeProperties');
+const lockTypeProperties = alias(publicSchema.properties, 'lockTypeProperties');
+const pullerTypeProperties = alias(
+	publicSchema.properties,
+	'pullerTypeProperties'
+);
+const teethColorProperties = alias(
+	publicSchema.properties,
+	'teethColorProperties'
+);
+const pullerColorProperties = alias(
+	publicSchema.properties,
+	'pullerColorProperties'
+);
+const handProperties = alias(publicSchema.properties, 'handProperties');
+const stopperProperties = alias(publicSchema.properties, 'stopperProperties');
+const coloringProperties = alias(publicSchema.properties, 'coloringProperties');
+const sliderProperties = alias(publicSchema.properties, 'sliderProperties');
+const topStopperProperties = alias(
+	publicSchema.properties,
+	'topStopperProperties'
+);
+const bottomStopperProperties = alias(
+	publicSchema.properties,
+	'bottomStopperProperties'
+);
+const logoTypeProperties = alias(publicSchema.properties, 'logoTypeProperties');
+const sliderBodyShapeProperties = alias(
+	publicSchema.properties,
+	'sliderBodyShapeProperties'
+);
+const sliderLinkProperties = alias(
+	publicSchema.properties,
+	'sliderLinkProperties'
+);
+const endUserProperties = alias(publicSchema.properties, 'endUserProperties');
+const lightPreferenceProperties = alias(
+	publicSchema.properties,
+	'lightPreferenceProperties'
+);
+const garmentsWashProperties = alias(
+	publicSchema.properties,
+	'garmentsWashProperties'
+);
+const pullerLinkProperties = alias(
+	publicSchema.properties,
+	'pullerLinkProperties'
+);
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
