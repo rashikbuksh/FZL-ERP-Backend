@@ -748,8 +748,8 @@ export async function selectOrderNumberToGetOrderDescriptionAndOrderEntry(
 			]);
 
 			const response = {
-				...order_description?.data[0],
-				order_entry: order_entry?.data || [],
+				...order_description?.data?.data[0],
+				order_entry: order_entry?.data?.data || [],
 			};
 
 			return response;

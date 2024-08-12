@@ -760,8 +760,12 @@ BEGIN
             + CASE WHEN NEW.trx_to = 'pi' THEN NEW.trx_quantity ELSE 0 END
         
     WHERE order_entry_uuid = NEW.order_entry_uuid;
+    RETURN NEW;
 
-CREATE OR FUNCTION material.material_stock_sfg_after_stock_to_sfg_delete() RETURNS TRIGGER AS $$
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION material.material_stock_sfg_after_stock_to_sfg_delete() RETURNS TRIGGER AS $$
 BEGIN
     --Update material.stock table
     UPDATE material.stock 
@@ -789,9 +793,9 @@ BEGIN
         coloring_prod = coloring_prod
             - CASE WHEN OLD.trx_to = 'coloring_prod' THEN OLD.trx_quantity ELSE 0 END,
         warehouse = warehouse
-            - CASE WHEN OLD.trx_to = 'warehouse' THEN OLD.trx_quantity ELSE 0 END
+            - CASE WHEN OLD.trx_to = 'warehouse' THEN OLD.trx_quantity ELSE 0 END,
         delivered = delivered
-            - CASE WHEN OLD.trx_to = 'delivered' THEN OLD.trx_quantity ELSE 0 END
+            - CASE WHEN OLD.trx_to = 'delivered' THEN OLD.trx_quantity ELSE 0 END,
         pi = pi 
             - CASE WHEN OLD.trx_to = 'pi' THEN OLD.trx_quantity ELSE 0 END
     WHERE order_entry_uuid = OLD.order_entry_uuid;
