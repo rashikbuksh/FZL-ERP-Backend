@@ -725,7 +725,7 @@ FOR EACH ROW
 EXECUTE FUNCTION material_stock_after_material_trx_update();
 
 --------------------------------- Material Stock SFG Trigger ------------------------------
-CREATE OR REPLACE FUNCTION material_stock_sfg_after_stock_to_sfg_insert() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_sfg_after_stock_to_sfg_insert() RETURNS TRIGGER AS $$
 BEGIN
     --Update material.stock table
     UPDATE material.stock 
@@ -765,7 +765,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR FUNCTION material_stock_sfg_after_stock_to_sfg_delete() RETURNS TRIGGER AS $$
+CREATE OR FUNCTION material.material_stock_sfg_after_stock_to_sfg_delete() RETURNS TRIGGER AS $$
 BEGIN
     --Update material.stock table
     UPDATE material.stock 
@@ -805,7 +805,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR FUNCTION material_stock_sfg_after_stock_to_sfg_update() RETURNS TRIGGER AS $$
+CREATE OR FUNCTION material.material_stock_sfg_after_stock_to_sfg_update() RETURNS TRIGGER AS $$
 BEGIN
     --Update material.stock table
     UPDATE material.stock 
@@ -856,25 +856,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER material_stock_sfg_after_stock_to_sfg_insert
-AFTER INSERT ON stock_to_sfg
+CREATE TRIGGER material.material_stock_sfg_after_stock_to_sfg_insert
+AFTER INSERT ON material.stock_to_sfg
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_sfg_after_stock_to_sfg_insert();
+EXECUTE FUNCTION material.material_stock_sfg_after_stock_to_sfg_insert();
 
-CREATE TRIGGER material_stock_sfg_after_stock_to_sfg_delete
-AFTER DELETE ON stock_to_sfg
+CREATE TRIGGER material.material_stock_sfg_after_stock_to_sfg_delete
+AFTER DELETE ON material.stock_to_sfg
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_sfg_after_stock_to_sfg_delete();
+EXECUTE FUNCTION material.material_stock_sfg_after_stock_to_sfg_delete();
 
-CREATE TRIGGER material_stock_sfg_after_stock_to_sfg_update
-AFTER UPDATE ON stock_to_sfg
+CREATE TRIGGER material.material_stock_sfg_after_stock_to_sfg_update
+AFTER UPDATE ON material.stock_to_sfg
 FOR EACH ROW
 EXECUTE FUNCTION material_stock_sfg_after_stock_to_sfg_update();
 
 
+-- inserted in DB
 
-
-CREATE OR REPLACE FUNCTION material_stock_after_material_info_insert() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_material_info_insert() RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO material.stock
        (uuid, material_uuid)
@@ -884,7 +884,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION material_stock_after_material_info_delete() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_material_info_delete() RETURNS TRIGGER AS $$
 BEGIN
     DELETE FROM material.stock
     WHERE material_uuid = OLD.uuid;
@@ -895,12 +895,12 @@ $$ LANGUAGE plpgsql;
 
 
 CREATE TRIGGER material_stock_after_material_info_insert
-AFTER INSERT ON material_info
+AFTER INSERT ON material.info
 FOR EACH ROW
 EXECUTE FUNCTION material_stock_after_material_info_insert();
 
 CREATE TRIGGER material_stock_after_material_info_delete
-AFTER DELETE ON material_info
+AFTER DELETE ON material.info
 FOR EACH ROW
 EXECUTE FUNCTION material_stock_after_material_info_delete();
 
