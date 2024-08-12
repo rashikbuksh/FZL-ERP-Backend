@@ -114,6 +114,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     op_logo.short_name AS logo_short_name,
     order_description.is_logo_body,
     order_description.is_logo_puller,
+    order_description.special_requirement,
     order_description.description,
     order_description.status AS order_description_status,
     order_description.created_at AS order_description_created_at,

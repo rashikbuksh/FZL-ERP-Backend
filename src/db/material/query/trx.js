@@ -1,5 +1,9 @@
 import { and, eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import hr, * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { info, stock, trx } from '../schema.js';
