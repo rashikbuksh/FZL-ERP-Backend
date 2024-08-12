@@ -248,7 +248,8 @@ export async function selectOrderEntry(req, res, next) {
 					zipper.order_entry oe
 					LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 					LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
-				WHERE oe.swatch_status_enum = 'approved'`;
+				`;
+	// WHERE oe.swatch_status_enum = 'approved' For development purpose, removed
 
 	const orderEntryPromise = db.execute(query);
 

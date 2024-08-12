@@ -609,7 +609,7 @@ EXECUTE FUNCTION material_stock_after_material_used_update();
 
 
 --------------------------------- Material Transaction Trigger ------------------------------
-CREATE OR REPLACE FUNCTION material_stock_after_material_trx_insert() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_material_trx_insert() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock
     SET 
@@ -642,7 +642,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR FUNCTION material_stock_after_material_trx_delete() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_material_trx_delete() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock
     SET 
@@ -676,9 +676,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR FUNCTION material_stock_after_material_trx_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_material_trx_update() RETURNS TRIGGER AS $$
 BEGIN
-    UPDATE zipper.material_stock
+    UPDATE material.stock
     SET 
     stock = stock - NEW.trx_quantity + OLD.trx_quantity,
     tape_making = tape_making + CASE WHEN NEW.trx_to = 'tape_making' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.trx_to = 'tape_making' THEN OLD.trx_quantity ELSE 0 END,
@@ -710,19 +710,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER material_stock_after_material_trx_insert
-AFTER INSERT ON material_trx
+AFTER INSERT ON material.trx
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_material_trx_insert();
+EXECUTE FUNCTION material.material_stock_after_material_trx_insert();
 
 CREATE TRIGGER material_stock_after_material_trx_delete
-AFTER DELETE ON material_trx
+AFTER DELETE ON material.trx
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_material_trx_delete();
+EXECUTE FUNCTION material.material_stock_after_material_trx_delete();
 
 CREATE TRIGGER material_stock_after_material_trx_update
-AFTER UPDATE ON material_trx
+AFTER UPDATE ON material.trx
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_material_trx_update();
+EXECUTE FUNCTION material.material_stock_after_material_trx_update();
 
 --------------------------------- Material Stock SFG Trigger ------------------------------
 CREATE OR REPLACE FUNCTION material.material_stock_sfg_after_stock_to_sfg_insert() RETURNS TRIGGER AS $$
@@ -770,7 +770,7 @@ BEGIN
     --Update material.stock table
     UPDATE material.stock 
     SET
-        stock = stock + OLD.trx_quantity,
+        stock = stock + OLD.trx_quantity
     WHERE material_uuid = OLD.material_uuid;
 
     --Update zipper.sfg table
@@ -805,12 +805,12 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR FUNCTION material.material_stock_sfg_after_stock_to_sfg_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_sfg_after_stock_to_sfg_update() RETURNS TRIGGER AS $$
 BEGIN
     --Update material.stock table
     UPDATE material.stock 
     SET
-        stock = stock - NEW.trx_quantity + OLD.trx_quantity,
+        stock = stock - NEW.trx_quantity + OLD.trx_quantity
     WHERE material_uuid = NEW.material_uuid;
 
     --Update zipper.sfg table
@@ -856,20 +856,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER material.material_stock_sfg_after_stock_to_sfg_insert
+CREATE TRIGGER material_stock_sfg_after_stock_to_sfg_insert
 AFTER INSERT ON material.stock_to_sfg
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_sfg_after_stock_to_sfg_insert();
 
-CREATE TRIGGER material.material_stock_sfg_after_stock_to_sfg_delete
+CREATE TRIGGER material_stock_sfg_after_stock_to_sfg_delete
 AFTER DELETE ON material.stock_to_sfg
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_sfg_after_stock_to_sfg_delete();
 
-CREATE TRIGGER material.material_stock_sfg_after_stock_to_sfg_update
+CREATE TRIGGER material_stock_sfg_after_stock_to_sfg_update
 AFTER UPDATE ON material.stock_to_sfg
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_sfg_after_stock_to_sfg_update();
+EXECUTE FUNCTION material.material_stock_sfg_after_stock_to_sfg_update();
 
 
 -- inserted in DB
@@ -897,12 +897,12 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER material_stock_after_material_info_insert
 AFTER INSERT ON material.info
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_material_info_insert();
+EXECUTE FUNCTION material.material_stock_after_material_info_insert();
 
 CREATE TRIGGER material_stock_after_material_info_delete
 AFTER DELETE ON material.info
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_material_info_delete();
+EXECUTE FUNCTION material.material_stock_after_material_info_delete();
 
 
 

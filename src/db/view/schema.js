@@ -101,7 +101,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.slider,
     op_slider.name AS slider_name,
     op_slider.short_name AS slider_short_name,
-    order_description.slider_starting_section_enum,
+    order_description.slider_starting_section_enum as slider_starting_section,
     order_description.top_stopper,
     op_top_stopper.name AS top_stopper_name,
     op_top_stopper.short_name AS top_stopper_short_name,
