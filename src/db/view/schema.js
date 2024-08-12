@@ -119,7 +119,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.status AS order_description_status,
     order_description.created_at AS order_description_created_at,
     order_description.updated_at AS order_description_updated_at,
-    order_description.remarks AS order_description_remarks,
+    order_description.remarks AS remarks,
     order_description.slider_body_shape,
     op_slider_body_shape.name AS slider_body_shape_name,
     op_slider_body_shape.short_name AS slider_body_shape_short_name,
