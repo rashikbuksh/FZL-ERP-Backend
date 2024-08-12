@@ -730,8 +730,8 @@ BEGIN
     --Update material.stock table
     UPDATE material.stock 
     SET
-        stock = stock - NEW.trx_quantity,
-    WHERE material_uuid = NEW.material_uuid;
+        stock = stock - NEW.trx_quantity
+    WHERE zipper.material_uuid = NEW.material_uuid;
 
     --Update zipper.sfg table
     UPDATE zipper.sfg
@@ -753,17 +753,13 @@ BEGIN
         coloring_prod = coloring_prod
             + CASE WHEN NEW.trx_to = 'coloring_prod' THEN NEW.trx_quantity ELSE 0 END,
         warehouse = warehouse
-            + CASE WHEN NEW.trx_to = 'warehouse' THEN NEW.trx_quantity ELSE 0 END
+            + CASE WHEN NEW.trx_to = 'warehouse' THEN NEW.trx_quantity ELSE 0 END,
         delivered = delivered
-            + CASE WHEN NEW.trx_to = 'delivered' THEN NEW.trx_quantity ELSE 0 END
+            + CASE WHEN NEW.trx_to = 'delivered' THEN NEW.trx_quantity ELSE 0 END,
         pi = pi 
             + CASE WHEN NEW.trx_to = 'pi' THEN NEW.trx_quantity ELSE 0 END
         
     WHERE order_entry_uuid = NEW.order_entry_uuid;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
 CREATE OR FUNCTION material.material_stock_sfg_after_stock_to_sfg_delete() RETURNS TRIGGER AS $$
 BEGIN
