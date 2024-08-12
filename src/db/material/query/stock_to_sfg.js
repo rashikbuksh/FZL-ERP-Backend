@@ -81,6 +81,7 @@ export async function selectAll(req, res, next) {
 			material_uuid: stock_to_sfg.material_uuid,
 			material_name: info.name,
 			unit: info.unit,
+			stock: stock.stock,
 			order_entry_uuid: stock_to_sfg.order_entry_uuid,
 			order_description_uuid:
 				zipperSchema.order_entry.order_description_uuid,
@@ -101,6 +102,7 @@ export async function selectAll(req, res, next) {
 			style_color_size: sql`CONCAT(order_entry.style , '/' , order_entry.color , '/' , order_entry.size)`,
 		})
 		.from(stock_to_sfg)
+		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
 		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_entry,
@@ -144,6 +146,7 @@ export async function select(req, res, next) {
 			material_uuid: stock_to_sfg.material_uuid,
 			material_name: info.name,
 			unit: info.unit,
+			stock: stock.stock,
 			order_entry_uuid: stock_to_sfg.order_entry_uuid,
 			order_description_uuid:
 				zipperSchema.order_entry.order_description_uuid,
@@ -164,6 +167,7 @@ export async function select(req, res, next) {
 			style_color_size: sql`CONCAT(order_entry.style , '/' , order_entry.color , '/' , order_entry.size)`,
 		})
 		.from(stock_to_sfg)
+		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
 		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_entry,

@@ -728,7 +728,7 @@ BEGIN
     UPDATE material.stock 
     SET
         stock = stock - NEW.trx_quantity
-    WHERE zipper.material_uuid = NEW.material_uuid;
+    WHERE stock.material_uuid = NEW.material_uuid;
 
     --Update zipper.sfg table
     UPDATE zipper.sfg
@@ -768,7 +768,7 @@ BEGIN
     UPDATE material.stock 
     SET
         stock = stock + OLD.trx_quantity
-    WHERE material_uuid = OLD.material_uuid;
+    WHERE stock.material_uuid = OLD.material_uuid;
 
     --Update zipper.sfg table
     UPDATE zipper.sfg
@@ -808,7 +808,7 @@ BEGIN
     UPDATE material.stock 
     SET
         stock = stock - NEW.trx_quantity + OLD.trx_quantity
-    WHERE material_uuid = NEW.material_uuid;
+    WHERE stock.material_uuid = NEW.material_uuid;
 
     --Update zipper.sfg table
     UPDATE zipper.sfg
