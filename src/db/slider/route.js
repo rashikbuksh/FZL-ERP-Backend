@@ -417,16 +417,16 @@ export const pathSliderDieCasting = {
 										example: 'stopper type short name',
 									},
 									quantity: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
+										type: 'number',
+										example: 0.0,
 									},
 									weight: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
+										type: 'number',
+										example: 0.0,
 									},
 									pcs_per_kg: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
+										type: 'number',
+										example: 0.0,
 									},
 									created_at: {
 										type: 'string',
@@ -579,11 +579,7 @@ export const pathSliderDieCasting = {
 // --------------------- DIE CASTING ROUTES ---------------------
 
 sliderRouter.get('/die-casting', dieCastingOperations.selectAll);
-sliderRouter.get(
-	'/die-casting/:uuid',
-
-	dieCastingOperations.select
-);
+sliderRouter.get('/die-casting/:uuid', dieCastingOperations.select);
 sliderRouter.post('/die-casting', dieCastingOperations.insert);
 sliderRouter.put('/die-casting/:uuid', dieCastingOperations.update);
 sliderRouter.delete(

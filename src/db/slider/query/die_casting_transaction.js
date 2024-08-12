@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
-import { handleResponse, validateRequest } from "../../../util/index.js";
-import db from "../../index.js";
-import { die_casting_transaction } from "../schema.js";
+import { eq } from 'drizzle-orm';
+import { handleResponse, validateRequest } from '../../../util/index.js';
+import db from '../../index.js';
+import { die_casting_transaction } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -9,8 +9,18 @@ export async function insert(req, res, next) {
 	const dieCastingTransactionPromise = db
 		.insert(die_casting_transaction)
 		.values(req.body)
-		.returning();
-	handleResponse(dieCastingTransactionPromise, res, next, 201);
+		.returning({ insertedId: die_casting_transaction.uuid });
+	try {
+		const data = await dieCastingTransactionPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedId} inserted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -20,8 +30,18 @@ export async function update(req, res, next) {
 		.update(die_casting_transaction)
 		.set(req.body)
 		.where(eq(die_casting_transaction.uuid, req.params.uuid))
-		.returning();
-	handleResponse(dieCastingTransactionPromise, res, next, 201);
+		.returning({ updatedId: die_casting_transaction.uuid });
+	try {
+		const data = await dieCastingTransactionPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -30,7 +50,7 @@ export async function remove(req, res, next) {
 	const dieCastingTransactionPromise = db
 		.delete(die_casting_transaction)
 		.where(eq(die_casting_transaction.uuid, req.params.uuid))
-		.returning();
+		.returning({ deletedId: die_casting_transaction.uuid });
 	handleResponse(dieCastingTransactionPromise, res, next);
 }
 
