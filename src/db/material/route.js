@@ -1504,6 +1504,8 @@ export const pathMaterialStockToSFG = {
 										type: 'string',
 										example: 'material 1',
 									},
+									unit: { type: 'string', example: 'kg' },
+									stock: { type: 'number', example: 10.0 },
 									order_entry_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -1528,14 +1530,6 @@ export const pathMaterialStockToSFG = {
 										type: 'string',
 										example: 'admin',
 									},
-									user_designation: {
-										type: 'string',
-										example: 'Admin',
-									},
-									user_department: {
-										type: 'string',
-										example: 'Admin',
-									},
 									created_at: {
 										type: 'string',
 										format: 'date-time',
@@ -1550,6 +1544,30 @@ export const pathMaterialStockToSFG = {
 										type: 'string',
 										example: 'This is an entry',
 									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0010',
+									},
+									item_description: {
+										type: 'string',
+										example: 'item description',
+									},
+									style: {
+										type: 'string',
+										example: 'st1',
+									},
+									color: {
+										type: 'string',
+										example: 'black',
+									},
+									size: {
+										type: 'string',
+										example: '10',
+									},
+									style_color_size: {
+										type: 'string',
+										example: 'st1-black-10',
+									},
 								},
 							},
 						},
@@ -1563,18 +1581,15 @@ export const pathMaterialStockToSFG = {
 			description: 'Create a new material stock_to_sfg',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material stock_to_sfg object that needs to be added to the material.stock_to_sfg',
-					required: true,
-					schema: {
-						$ref: '#/definitions/material/stock_to_sfg',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/stock_to_sfg',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -1626,6 +1641,8 @@ export const pathMaterialStockToSFG = {
 									type: 'string',
 									example: 'material 1',
 								},
+								unit: { type: 'string', example: 'kg' },
+								stock: { type: 'number', example: 10.0 },
 								order_entry_uuid: {
 									type: 'string',
 									example: 'igD0v9DIJQhJeet',
@@ -1650,14 +1667,6 @@ export const pathMaterialStockToSFG = {
 									type: 'string',
 									example: 'admin',
 								},
-								user_designation: {
-									type: 'string',
-									example: 'Admin',
-								},
-								user_department: {
-									type: 'string',
-									example: 'Admin',
-								},
 								created_at: {
 									type: 'string',
 									format: 'date-time',
@@ -1671,6 +1680,30 @@ export const pathMaterialStockToSFG = {
 								remarks: {
 									type: 'string',
 									example: 'This is an entry',
+								},
+								order_number: {
+									type: 'string',
+									example: 'Z24-0010',
+								},
+								item_description: {
+									type: 'string',
+									example: 'item description',
+								},
+								style: {
+									type: 'string',
+									example: 'st1',
+								},
+								color: {
+									type: 'string',
+									example: 'black',
+								},
+								size: {
+									type: 'string',
+									example: '10',
+								},
+								style_color_size: {
+									type: 'string',
+									example: 'st1-black-10',
 								},
 							},
 						},
@@ -1755,7 +1788,6 @@ export const pathMaterialStockToSFG = {
 };
 
 // stock_to_sfg routes
-
 materialRouter.get('/stock-to-sfg', stockToSfgOperations.selectAll);
 materialRouter.get(
 	'/stock-to-sfg/:uuid',
