@@ -99,7 +99,7 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(
 			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 	const toast = {
 		status: 200,
@@ -138,7 +138,7 @@ export async function select(req, res, next) {
 		)
 		.leftJoin(
 			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 		.where(eq(used.uuid, req.params.uuid));
 	const toast = {

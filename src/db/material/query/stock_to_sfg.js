@@ -102,7 +102,7 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			zipperSchema.order_description,
 			eq(
-				stock_to_sfg.order_description_uuid,
+				zipperSchema.order_entry.order_description_uuid,
 				zipperSchema.order_description.uuid
 			)
 		)
@@ -116,7 +116,7 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(
 			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 
 	const toast = {
@@ -158,7 +158,7 @@ export async function select(req, res, next) {
 		.leftJoin(
 			zipperSchema.order_description,
 			eq(
-				stock_to_sfg.order_description_uuid,
+				zipperSchema.order_entry.order_description_uuid,
 				zipperSchema.order_description.uuid
 			)
 		)
@@ -172,7 +172,7 @@ export async function select(req, res, next) {
 		)
 		.leftJoin(
 			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 		.where(eq(stock_to_sfg.uuid, req.params.uuid));
 	const toast = {

@@ -1396,71 +1396,71 @@ export const pathMaterialUsed = {
 				description: 'Material used not found',
 			},
 		},
-	},
-	put: {
-		tags: ['material.used'],
-		summary: 'Update an existing material used',
-		description: 'Update an existing material used',
-		consumes: ['application/json'],
-		produces: ['application/json'],
-		parameters: [
-			{
-				name: 'uuid',
-				in: 'path',
-				description: 'material used to update',
-				required: true,
-				type: 'string',
-				format: 'uuid',
+		put: {
+			tags: ['material.used'],
+			summary: 'Update an existing material used',
+			description: 'Update an existing material used',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'material used to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/used',
+						},
+					},
+				},
 			},
-		],
-		requestBody: {
-			content: {
-				'application/json': {
+			responses: {
+				200: {
+					description: 'successful operation',
 					schema: {
 						$ref: '#/definitions/material/used',
 					},
 				},
-			},
-		},
-		responses: {
-			200: {
-				description: 'successful operation',
-				schema: {
-					$ref: '#/definitions/material/used',
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material used not found',
+				},
+				405: {
+					description: 'Validation exception',
 				},
 			},
-			400: {
-				description: 'Invalid UUID supplied',
-			},
-			404: {
-				description: 'Material used not found',
-			},
-			405: {
-				description: 'Validation exception',
-			},
 		},
-	},
-	delete: {
-		tags: ['material.used'],
-		summary: 'Delete a material used',
-		description: 'Delete a material used',
-		produces: ['application/json'],
-		parameters: [
-			{
-				name: 'uuid',
-				in: 'path',
-				description: 'material used to delete',
-				required: true,
-				type: 'string',
-				format: 'uuid',
-			},
-		],
-		responses: {
-			400: {
-				description: 'Invalid UUID supplied',
-			},
-			404: {
-				description: 'Material used not found',
+		delete: {
+			tags: ['material.used'],
+			summary: 'Delete a material used',
+			description: 'Delete a material used',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'material used to delete',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material used not found',
+				},
 			},
 		},
 	},

@@ -99,7 +99,7 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(
 			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 	const toast = {
 		status: 200,
@@ -137,7 +137,7 @@ export async function select(req, res, next) {
 		)
 		.leftJoin(
 			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 		.where(eq(trx.uuid, req.params.uuid));
 
@@ -177,7 +177,7 @@ export async function selectMaterialTrxByMaterialTrxTo(req, res, next) {
 		)
 		.leftJoin(
 			hrSchema.department,
-			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 		.where(
 			and(eq(stock.material_uuid, material_uuid), eq(trx.trx_to, trx_to))
