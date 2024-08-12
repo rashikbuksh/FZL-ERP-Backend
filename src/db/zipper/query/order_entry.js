@@ -64,7 +64,7 @@ export async function insert(req, res, next) {
 
 		res.status(201).send({ toast, data });
 	} catch (error) {
-		await handleError(error, res);
+		await handleError({ error, res });
 	}
 }
 
@@ -120,20 +120,22 @@ export async function update(req, res, next) {
 
 		res.status(200).send({ toast, data });
 	} catch (error) {
-		await handleError(error, res);
+		await handleError({ error, res });
 	}
 }
 
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const order_entryPromise = db
+	console.log('req.params.uuid', req.params.uuid);
+
+	const orderEntryPromise = db
 		.delete(order_entry)
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ deletedUuid: order_entry.uuid });
 
 	try {
-		const data = await order_entryPromise;
+		const data = await orderEntryPromise;
 
 		const toast = {
 			status: 200,
@@ -143,7 +145,7 @@ export async function remove(req, res, next) {
 
 		res.status(200).send({ toast, data });
 	} catch (error) {
-		await handleError(error, res);
+		await handleError({ error, res });
 	}
 }
 

@@ -94,3 +94,18 @@ export async function select(req, res, next) {
 	};
 	handleResponse({ promise: tapeCoilPromise, res, next, ...toast });
 }
+
+export async function selectByNylon(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const tapeCoilPromise = db
+		.select()
+		.from(tape_coil)
+		.where(eq(tape_coil.type, 'nylon'));
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'tape_coil',
+	};
+	handleResponse({ promise: tapeCoilPromise, res, next, ...toast });
+}

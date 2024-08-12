@@ -2479,18 +2479,10 @@ export const pathZipperOrderEntry = {
 // --------------------- ORDER ENTRY ROUTES ---------------------
 
 zipperRouter.get('/order-entry', orderEntryOperations.selectAll);
-zipperRouter.get(
-	'/order-entry/:uuid',
-	// validateUuidParam(),
-	orderEntryOperations.select
-);
+zipperRouter.get('/order-entry/:uuid', orderEntryOperations.select);
 zipperRouter.post('/order-entry', orderEntryOperations.insert);
 zipperRouter.put('/order-entry/:uuid', orderEntryOperations.update);
-zipperRouter.delete(
-	'/order-entry/:uuid',
-	// validateUuidParam(),
-	orderEntryOperations.remove
-);
+zipperRouter.delete('/order-entry/:uuid', orderEntryOperations.remove);
 zipperRouter.get(
 	'/order/entry/full/uuid/by/:order_description_uuid',
 	orderEntryOperations.selectOrderEntryFullByOrderDescriptionUuid
@@ -4192,6 +4184,50 @@ export const pathZipperTapeCoil = {
 			},
 		},
 	},
+	'/zipper/tape-coil/by/nylon': {
+		get: {
+			tags: ['zipper.tape_coil'],
+			summary: 'Get all Tape Coil by Nylon',
+			responses: {
+				200: {
+					description: 'Returns all Tape Coil by Nylon',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									type: {
+										type: 'string',
+										example: 'nylon',
+									},
+									zipper_number: {
+										type: 'number',
+										example: 3,
+									},
+									trx_quantity_in_coil: {
+										type: 'number',
+										example: 100,
+									},
+									quantity_in_coil: {
+										type: 'number',
+										example: 100,
+									},
+									remarks: {
+										type: 'string',
+										example: 'Good',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 // --------------------- TAPE COIL ROUTES ---------------------
@@ -4209,6 +4245,7 @@ zipperRouter.delete(
 	// validateUuidParam(),
 	tapeCoilOperations.remove
 );
+zipperRouter.get('/tape-coil/by/nylon', tapeCoilOperations.selectByNylon);
 
 // --------------------- TAPE COIL PRODUCTION ---------------------
 
