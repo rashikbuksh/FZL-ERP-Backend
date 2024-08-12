@@ -7,7 +7,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { info, stock_to_sfg } from '../schema.js';
+import { info, stock, stock_to_sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -103,7 +103,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(stock_to_sfg)
 		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
-		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
+		.leftJoin(stock, eq(stock.material_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_entry,
 			eq(stock_to_sfg.order_entry_uuid, zipperSchema.order_entry.uuid)
@@ -168,7 +168,7 @@ export async function select(req, res, next) {
 		})
 		.from(stock_to_sfg)
 		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
-		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
+		.leftJoin(stock, eq(stock.material_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_entry,
 			eq(stock_to_sfg.order_entry_uuid, zipperSchema.order_entry.uuid)
