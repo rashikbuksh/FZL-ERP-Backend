@@ -4194,9 +4194,32 @@ export const pathZipperTapeCoil = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/tape_coil',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									type: {
+										type: 'string',
+										example: 'nylon',
+									},
+									zipper_number: {
+										type: 'number',
+										example: 3,
+									},
+									trx_quantity_in_coil: {
+										type: 'number',
+										example: 100,
+									},
+									quantity_in_coil: {
+										type: 'number',
+										example: 100,
+									},
+									remarks: {
+										type: 'string',
+										example: 'Good',
+									},
 								},
 							},
 						},
