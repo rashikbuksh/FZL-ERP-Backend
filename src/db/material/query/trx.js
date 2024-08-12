@@ -4,7 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import hr, * as hrSchema from '../../hr/schema.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { info, stock, trx } from '../schema.js';
 
@@ -80,6 +80,8 @@ export async function selectAll(req, res, next) {
 			uuid: trx.uuid,
 			material_uuid: trx.material_uuid,
 			material_name: info.name,
+			unit: info.unit,
+			stock: stock.stock,
 			trx_to: trx.trx_to,
 			trx_quantity: trx.trx_quantity,
 			created_by: trx.created_by,
@@ -92,6 +94,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(trx)
 		.leftJoin(info, eq(trx.material_uuid, info.uuid))
+		.leftJoin(stock, eq(trx.material_uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(trx.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			hrSchema.designation,
@@ -118,6 +121,8 @@ export async function select(req, res, next) {
 			uuid: trx.uuid,
 			material_uuid: trx.material_uuid,
 			material_name: info.name,
+			unit: info.unit,
+			stock: stock.stock,
 			trx_to: trx.trx_to,
 			trx_quantity: trx.trx_quantity,
 			created_by: trx.created_by,
@@ -130,6 +135,7 @@ export async function select(req, res, next) {
 		})
 		.from(trx)
 		.leftJoin(info, eq(trx.material_uuid, info.uuid))
+		.leftJoin(stock, eq(trx.material_uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(trx.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			hrSchema.designation,

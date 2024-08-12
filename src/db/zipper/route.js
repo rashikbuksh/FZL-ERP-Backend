@@ -899,6 +899,10 @@ export const pathZipperOrderDescription = {
 										type: 'string',
 										example: 'John Doe',
 									},
+									garments_remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -1065,6 +1069,10 @@ export const pathZipperOrderDescription = {
 							created_by_name: {
 								type: 'string',
 								example: 'John Doe',
+							},
+							garments_remarks: {
+								type: 'string',
+								example: 'Remarks',
 							},
 						},
 					},
@@ -1265,6 +1273,10 @@ export const pathZipperOrderDescription = {
 							created_by_name: {
 								type: 'string',
 								example: 'John Doe',
+							},
+							garments_remarks: {
+								type: 'string',
+								example: 'Remarks',
 							},
 						},
 					},

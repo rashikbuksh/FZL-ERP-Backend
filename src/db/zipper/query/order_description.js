@@ -100,6 +100,7 @@ export async function insert(req, res, next) {
 		garments_wash,
 		puller_link,
 		created_by,
+		garments_remarks,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -138,6 +139,7 @@ export async function insert(req, res, next) {
 			garments_wash,
 			puller_link,
 			created_by,
+			garments_remarks,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -192,6 +194,7 @@ export async function update(req, res, next) {
 		garments_wash,
 		puller_link,
 		created_by,
+		garments_remarks,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -230,6 +233,7 @@ export async function update(req, res, next) {
 			garments_wash,
 			puller_link,
 			created_by,
+			garments_remarks,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
@@ -348,6 +352,7 @@ export async function selectAll(req, res, next) {
 			puller_link_short_name: pullerLinkProperties.short_name,
 			created_by: order_description.created_by,
 			created_by_name: hrSchema.users.name,
+			garments_remarks: order_description.garments_remarks,
 		})
 		.from(order_description)
 		.leftJoin(
@@ -539,6 +544,7 @@ export async function select(req, res, next) {
 			puller_link_short_name: pullerLinkProperties.short_name,
 			created_by: order_description.created_by,
 			created_by_name: hrSchema.users.name,
+			garments_remarks: order_description.garments_remarks,
 		})
 		.from(order_description)
 		.where(

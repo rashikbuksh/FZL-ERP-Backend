@@ -37,8 +37,7 @@ export const OrderDetailsView = `
       LEFT JOIN public.properties op_item ON op_item.uuid = order_description.item
         LEFT JOIN public.properties op_zipper ON op_zipper.uuid = order_description.zipper_number
         LEFT JOIN public.properties op_end ON op_end.uuid = order_description.end_type
-        LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type
-        WHERE ;
+        LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type;
   `;
 
 export const OrderDetailsFullView = `
@@ -102,7 +101,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.slider,
     op_slider.name AS slider_name,
     op_slider.short_name AS slider_short_name,
-    order_description.slider_starting_section_enum,
+    order_description.slider_starting_section_enum as slider_starting_section,
     order_description.top_stopper,
     op_top_stopper.name AS top_stopper_name,
     op_top_stopper.short_name AS top_stopper_short_name,
@@ -140,7 +139,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     op_puller_link.name AS puller_link_name,
     op_puller_link.short_name AS puller_link_short_name,
     order_info.marketing_priority,
-    order_info.factory_priority
+    order_info.factory_priority,
+    order_description.garments_remarks
    FROM zipper.order_info
      LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
      LEFT JOIN marketing ON marketing.uuid = order_info.marketing_uuid

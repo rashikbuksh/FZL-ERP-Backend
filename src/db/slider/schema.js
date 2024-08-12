@@ -8,21 +8,16 @@ const slider = pgSchema('slider');
 
 export const stock = slider.table('stock', {
 	uuid: uuid_primary,
-	order_info_uuid: defaultUUID('order_info_uuid')
-		.default(null)
-		.references(() => zipperSchema.order_info.uuid),
-	item: defaultUUID('item').references(
-		() => zipperSchema.order_description.item
-	),
-	zipper_number: defaultUUID('zipper_number').references(
-		() => zipperSchema.order_description.zipper_number
-	),
-	end_type: defaultUUID('end_type').references(
-		() => zipperSchema.order_description.end_type
-	),
-	puller_type: defaultUUID('puller_type').references(
-		() => zipperSchema.order_description.puller_type
-	),
+	order_info_uuid: defaultUUID('order_info_uuid').default(null),
+	//.references(() => zipperSchema.order_info.uuid),
+	item: defaultUUID('item'),
+	//.references(() => zipperSchema.order_description.item),
+	zipper_number: defaultUUID('zipper_number'),
+	// .references(() => zipperSchema.order_description.zipper_number),
+	end_type: defaultUUID('end_type'),
+	// .references(() => zipperSchema.order_description.end_type),
+	puller_type: defaultUUID('puller_type').default(null),
+	// .references(() => zipperSchema.order_description.puller_type),
 	color: text('color').notNull(),
 	order_quantity: decimal('order_quantity', {
 		precision: 20,
@@ -197,30 +192,32 @@ export const defStock = {
 export const die_casting = slider.table('die_casting', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
-	item: defaultUUID('item').references(
-		() => zipperSchema.order_description.item
-	),
-	zipper_number: defaultUUID('zipper_number').references(
-		() => zipperSchema.order_description.zipper_number
-	),
-	end_type: defaultUUID('end_type').references(
-		() => zipperSchema.order_description.end_type
-	),
-	puller_type: defaultUUID('puller_type').references(
-		() => zipperSchema.order_description.puller_type
-	),
-	logo_type: defaultUUID('logo_type').references(
-		() => zipperSchema.order_description.logo_type
-	),
-	slider_body_shape: defaultUUID('slider_body_shape').references(
-		() => zipperSchema.order_description.slider_body_shape
-	),
-	puller_link: defaultUUID('puller_link').references(
-		() => zipperSchema.order_description.puller_link
-	),
-	stopper_type: defaultUUID('stopper_type').references(
-		() => zipperSchema.order_description.stopper_type
-	),
+	item: defaultUUID('item'),
+	// .references(() => zipperSchema.order_description.item),
+	zipper_number: defaultUUID('zipper_number'),
+	// .references(() => zipperSchema.order_description.zipper_number),
+	end_type: defaultUUID('end_type'),
+	// .references(() => zipperSchema.order_description.end_type),
+	puller_type: defaultUUID('puller_type'),
+	// .references(
+	// 	() => zipperSchema.order_description.puller_type
+	// ),
+	logo_type: defaultUUID('logo_type'),
+	// .references(
+	// 	() => zipperSchema.order_description.logo_type
+	// ),
+	slider_body_shape: defaultUUID('slider_body_shape'),
+	// .references(
+	// 	() => zipperSchema.order_description.slider_body_shape
+	// ),
+	puller_link: defaultUUID('puller_link'),
+	// .references(
+	// 	() => zipperSchema.order_description.puller_link
+	// ),
+	stopper_type: defaultUUID('stopper_type'),
+	// .references(
+	// 	() => zipperSchema.order_description.stopper_type
+	// ),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,

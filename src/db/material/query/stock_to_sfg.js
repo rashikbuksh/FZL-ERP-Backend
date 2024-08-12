@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -7,7 +7,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { info, stock_to_sfg } from '../schema.js';
+import { info, stock, stock_to_sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -80,6 +80,8 @@ export async function selectAll(req, res, next) {
 			uuid: stock_to_sfg.uuid,
 			material_uuid: stock_to_sfg.material_uuid,
 			material_name: info.name,
+			unit: info.unit,
+			stock: stock.stock,
 			order_entry_uuid: stock_to_sfg.order_entry_uuid,
 			order_description_uuid:
 				zipperSchema.order_entry.order_description_uuid,
@@ -92,18 +94,25 @@ export async function selectAll(req, res, next) {
 			created_at: stock_to_sfg.created_at,
 			updated_at: stock_to_sfg.updated_at,
 			remarks: stock_to_sfg.remarks,
+			order_number: sql`vodf.order_number`,
+			item_description: sql`vodf.item_description`,
+			style: zipperSchema.order_entry.style,
+			color: zipperSchema.order_entry.color,
+			size: zipperSchema.order_entry.size,
+			style_color_size: sql`CONCAT(order_entry.style , '/' , order_entry.color , '/' , order_entry.size)`,
 		})
 		.from(stock_to_sfg)
 		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
+		.leftJoin(stock, eq(stock.material_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_entry,
 			eq(stock_to_sfg.order_entry_uuid, zipperSchema.order_entry.uuid)
 		)
 		.leftJoin(
-			zipperSchema.order_description,
+			sql`zipper.v_order_details_full vodf`,
 			eq(
-				zipperSchema.order_entry.order_description_uuid,
-				zipperSchema.order_description.uuid
+				`order_entry.order_description_uuid `,
+				` vodf.order_description_uuid`
 			)
 		)
 		.leftJoin(
@@ -131,11 +140,13 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const usedPromise = db
+	const stockToSfgPromise = db
 		.select({
 			uuid: stock_to_sfg.uuid,
 			material_uuid: stock_to_sfg.material_uuid,
 			material_name: info.name,
+			unit: info.unit,
+			stock: stock.stock,
 			order_entry_uuid: stock_to_sfg.order_entry_uuid,
 			order_description_uuid:
 				zipperSchema.order_entry.order_description_uuid,
@@ -148,18 +159,25 @@ export async function select(req, res, next) {
 			created_at: stock_to_sfg.created_at,
 			updated_at: stock_to_sfg.updated_at,
 			remarks: stock_to_sfg.remarks,
+			order_number: sql`vodf.order_number`,
+			item_description: sql`vodf.item_description`,
+			style: zipperSchema.order_entry.style,
+			color: zipperSchema.order_entry.color,
+			size: zipperSchema.order_entry.size,
+			style_color_size: sql`CONCAT(order_entry.style , '/' , order_entry.color , '/' , order_entry.size)`,
 		})
 		.from(stock_to_sfg)
 		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
+		.leftJoin(stock, eq(stock.material_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_entry,
 			eq(stock_to_sfg.order_entry_uuid, zipperSchema.order_entry.uuid)
 		)
 		.leftJoin(
-			zipperSchema.order_description,
+			sql`zipper.v_order_details_full vodf`,
 			eq(
-				zipperSchema.order_entry.order_description_uuid,
-				zipperSchema.order_description.uuid
+				`order_entry.order_description_uuid `,
+				` vodf.order_description_uuid`
 			)
 		)
 		.leftJoin(
@@ -181,5 +199,5 @@ export async function select(req, res, next) {
 		message: 'Stock to SFG',
 	};
 
-	handleResponse({ promise: usedPromise, res, next, ...toast });
+	handleResponse({ promise: stockToSfgPromise, res, next, ...toast });
 }
