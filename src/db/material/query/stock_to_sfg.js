@@ -94,22 +94,30 @@ export async function selectAll(req, res, next) {
 			remarks: stock_to_sfg.remarks,
 		})
 		.from(stock_to_sfg)
-		.leftJoin(info)
-		.on(stock_to_sfg.material_uuid.equals(info.uuid))
-		.leftJoin(zipperSchema.order_entry)
-		.on(stock_to_sfg.order_entry_uuid.equals(zipperSchema.order_entry.uuid))
-		.leftJoin(zipperSchema.order_description)
-		.on(
-			stock_to_sfg.order_description_uuid.equals(
+		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
+		.leftJoin(
+			zipperSchema.order_entry,
+			eq(stock_to_sfg.order_entry_uuid, zipperSchema.order_entry.uuid)
+		)
+		.leftJoin(
+			zipperSchema.order_description,
+			eq(
+				stock_to_sfg.order_description_uuid,
 				zipperSchema.order_description.uuid
 			)
 		)
-		.leftJoin(hrSchema.users)
-		.on(stock_to_sfg.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(hrSchema.users.department_uuid.equals(hrSchema.department.uuid));
+		.leftJoin(
+			hrSchema.users,
+			eq(stock_to_sfg.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+		);
 
 	const toast = {
 		status: 200,
@@ -142,22 +150,30 @@ export async function select(req, res, next) {
 			remarks: stock_to_sfg.remarks,
 		})
 		.from(stock_to_sfg)
-		.leftJoin(info)
-		.on(stock_to_sfg.material_uuid.equals(info.uuid))
-		.leftJoin(zipperSchema.order_entry)
-		.on(stock_to_sfg.order_entry_uuid.equals(zipperSchema.order_entry.uuid))
-		.leftJoin(zipperSchema.order_description)
-		.on(
-			stock_to_sfg.order_description_uuid.equals(
+		.leftJoin(info, eq(stock_to_sfg.material_uuid, info.uuid))
+		.leftJoin(
+			zipperSchema.order_entry,
+			eq(stock_to_sfg.order_entry_uuid, zipperSchema.order_entry.uuid)
+		)
+		.leftJoin(
+			zipperSchema.order_description,
+			eq(
+				stock_to_sfg.order_description_uuid,
 				zipperSchema.order_description.uuid
 			)
 		)
-		.leftJoin(hrSchema.users)
-		.on(stock_to_sfg.created_by.equals(hrSchema.users.uuid))
-		.leftJoin(hrSchema.designation)
-		.on(hrSchema.users.designation_uuid.equals(hrSchema.designation.uuid))
-		.leftJoin(hrSchema.department)
-		.on(hrSchema.users.department_uuid.equals(hrSchema.department.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(stock_to_sfg.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+		)
 		.where(eq(stock_to_sfg.uuid, req.params.uuid));
 	const toast = {
 		status: 200,
