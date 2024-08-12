@@ -2481,14 +2481,12 @@ export const pathZipperOrderEntry = {
 zipperRouter.get('/order-entry', orderEntryOperations.selectAll);
 zipperRouter.get(
 	'/order-entry/:uuid',
-	// validateUuidParam(),
 	orderEntryOperations.select
 );
 zipperRouter.post('/order-entry', orderEntryOperations.insert);
 zipperRouter.put('/order-entry/:uuid', orderEntryOperations.update);
 zipperRouter.delete(
 	'/order-entry/:uuid',
-	// validateUuidParam(),
 	orderEntryOperations.remove
 );
 zipperRouter.get(
