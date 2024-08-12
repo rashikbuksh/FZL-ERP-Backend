@@ -95,10 +95,13 @@ export async function select(req, res, next) {
 	handleResponse({ promise: tapeCoilPromise, res, next, ...toast });
 }
 
-export async function selectByTape(req, res, next) {
+export async function selectByNylon(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const tapeCoilPromise = db.select().from(tape_coil);
+	const tapeCoilPromise = db
+		.select()
+		.from(tape_coil)
+		.where(eq(tape_coil.type, 'nylon'));
 	const toast = {
 		status: 200,
 		type: 'select',

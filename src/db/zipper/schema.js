@@ -1051,7 +1051,7 @@ export const def_zipper_tape_coil = {
 		},
 		type: {
 			type: 'string',
-			example: 'Tape',
+			example: 'nylon',
 		},
 		zipper_number: {
 			type: 'number',
