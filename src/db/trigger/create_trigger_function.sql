@@ -1,5 +1,5 @@
---------------------------------- SFG Production Trigger ------------------------------
-CREATE OR REPLACE FUNCTION sfg_after_sfg_production_insert_function() RETURNS TRIGGER AS $$
+--------------------------------- SFG Production Trigger ------------------------------ // inserted in DB
+CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_production_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE zipper.sfg
     SET 
@@ -41,7 +41,7 @@ $$ LANGUAGE plpgsql;
 
 -- Function for UPDATE trigger
 
-CREATE OR REPLACE FUNCTION sfg_after_sfg_production_update_function() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_production_update_function() RETURNS TRIGGER AS $$
 BEGIN 
 UPDATE zipper.sfg
 SET 
@@ -99,7 +99,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- Function for DELETE trigger
-CREATE OR REPLACE FUNCTION sfg_after_sfg_production_delete_function() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_production_delete_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE zipper.sfg
     SET 
@@ -144,25 +144,25 @@ $$ LANGUAGE plpgsql;
 
 -- Trigger for INSERT
 CREATE TRIGGER sfg_after_sfg_production_insert_trigger
-AFTER INSERT ON sfg_production
+AFTER INSERT ON zipper.sfg_production
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_sfg_production_insert_function();
+EXECUTE FUNCTION zipper.sfg_after_sfg_production_insert_function();
 
 -- Trigger for UPDATE
 CREATE TRIGGER sfg_after_sfg_production_update_trigger
-AFTER UPDATE ON sfg_production
+AFTER UPDATE ON zipper.sfg_production
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_sfg_production_update_function();
+EXECUTE FUNCTION zipper.sfg_after_sfg_production_update_function();
 
 -- Trigger for DELETE
 CREATE TRIGGER sfg_after_sfg_production_delete_trigger
-AFTER DELETE ON sfg_production
+AFTER DELETE ON zipper.sfg_production
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_sfg_production_delete_function();
+EXECUTE FUNCTION zipper.sfg_after_sfg_production_delete_function();
 
-------------------------- SFG Transaction Trigger -------------------------
+------------------------- SFG Transaction Trigger ------------------------- // inserted in DB
 
-CREATE OR REPLACE FUNCTION sfg_after_sfg_transaction_insert_function() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_transaction_insert_function() RETURNS TRIGGER AS $$
 DECLARE
     tocs_uuid INT;
 BEGIN
@@ -213,7 +213,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION sfg_after_sfg_transaction_delete_function() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_transaction_delete_function() RETURNS TRIGGER AS $$
 DECLARE
     tocs_uuid INT;
 BEGIN
@@ -271,9 +271,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION public.sfg_after_sfg_transaction_update_function() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
+CREATE FUNCTION zipper.sfg_after_sfg_transaction_update_function() RETURNS TRIGGER AS $$
 DECLARE
     tocs_uuid INT;
 BEGIN
@@ -342,26 +340,26 @@ BEGIN
     WHERE order_entry_uuid = NEW.order_entry_uuid;
     RETURN NEW;
 END;
-$$;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER sfg_after_sfg_transaction_insert_trigger
-AFTER INSERT ON sfg_transaction
+AFTER INSERT ON zipper.sfg_transaction
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_sfg_transaction_insert_function();
+EXECUTE FUNCTION zipper.sfg_after_sfg_transaction_insert_function();
 
 CREATE TRIGGER sfg_after_sfg_transaction_delete_trigger
-AFTER DELETE ON sfg_transaction
+AFTER DELETE ON zipper.sfg_transaction
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_sfg_transaction_delete_function();
+EXECUTE FUNCTION zipper.sfg_after_sfg_transaction_delete_function();
 
 CREATE TRIGGER sfg_after_sfg_transaction_update_trigger
-AFTER UPDATE ON sfg_transaction
+AFTER UPDATE ON zipper.sfg_transaction
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_sfg_transaction_update_function();
+EXECUTE FUNCTION zipper.sfg_after_sfg_transaction_update_function();
 
 
-------------------------- SFG Commercial PI Entry Trigger -------------------------
-CREATE OR REPLACE FUNCTION sfg_after_commercial_pi_entry_insert_function() RETURNS TRIGGER AS $$
+------------------------- SFG Commercial PI Entry Trigger ------------------------- // inserted in DB
+CREATE OR REPLACE FUNCTION commercial.sfg_after_commercial_pi_entry_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE zipper.sfg SET
         pi = pi + NEW.pi_quantity
@@ -373,7 +371,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION sfg_after_commercial_pi_entry_delete_function() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION commercial.sfg_after_commercial_pi_entry_delete_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE zipper.sfg SET
         pi = pi - OLD.pi_quantity
@@ -385,7 +383,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION sfg_after_commercial_pi_entry_update_function() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION commercial.sfg_after_commercial_pi_entry_update_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE zipper.sfg SET
         pi = pi + NEW.pi_quantity - OLD.pi_quantity
@@ -397,22 +395,22 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER sfg_after_commercial_pi_entry_insert_trigger
-AFTER INSERT ON pi_entry
+AFTER INSERT ON commercial.pi_entry
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_commercial_pi_entry_insert_function();
+EXECUTE FUNCTION commercial.sfg_after_commercial_pi_entry_insert_function();
 
 CREATE TRIGGER sfg_after_commercial_pi_entry_delete_trigger
-AFTER DELETE ON pi_entry
+AFTER DELETE ON commercial.pi_entry
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_commercial_pi_entry_delete_function();
+EXECUTE FUNCTION commercial.sfg_after_commercial_pi_entry_delete_function();
 
 CREATE TRIGGER sfg_after_commercial_pi_entry_update_trigger
-AFTER UPDATE ON pi_entry
+AFTER UPDATE ON commercial.pi_entry
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_commercial_pi_entry_update_function();
+EXECUTE FUNCTION commercial.sfg_after_commercial_pi_entry_update_function();
 
 ------------------------- SFG Order Entry Trigger -------------------------
-CREATE OR REPLACE FUNCTION sfg_after_order_entry_insert() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.sfg_after_order_entry_insert() RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO zipper.sfg (
         uuid, 
@@ -425,7 +423,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION sfg_after_order_entry_delete() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.sfg_after_order_entry_delete() RETURNS TRIGGER AS $$
 BEGIN
     DELETE FROM zipper.sfg
     WHERE order_entry_uuid = OLD.uuid;
@@ -434,17 +432,17 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER sfg_after_order_entry_insert
-AFTER INSERT ON order_entry
+AFTER INSERT ON zipper.order_entry
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_order_entry_insert();
+EXECUTE FUNCTION zipper.sfg_after_order_entry_insert();
 
 CREATE TRIGGER sfg_after_order_entry_delete
-AFTER DELETE ON order_entry
+AFTER DELETE ON zipper.order_entry
 FOR EACH ROW
-EXECUTE FUNCTION sfg_after_order_entry_delete();
+EXECUTE FUNCTION zipper.sfg_after_order_entry_delete();
 
-
-CREATE OR REPLACE FUNCTION material_stock_after_purchase_entry_insert() RETURNS TRIGGER AS $$
+------------------------- Purchase Entry Trigger -------------------------
+CREATE OR REPLACE FUNCTION material.material_stock_after_purchase_entry_insert() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock
         SET 
@@ -454,7 +452,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR FUNCTION material_stock_after_purchase_entry_delete() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_purchase_entry_delete() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock
         SET 
@@ -465,7 +463,7 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE OR FUNCTION material_stock_after_purchase_entry_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_purchase_entry_update() RETURNS TRIGGER AS $$
 
 BEGIN
     UPDATE material.stock
@@ -478,48 +476,48 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER material_stock_after_purchase_entry_insert
-AFTER INSERT ON purchase_entry
+AFTER INSERT ON purchase.entry
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_purchase_entry_insert();
+EXECUTE FUNCTION material.material_stock_after_purchase_entry_insert();
 
 CREATE TRIGGER material_stock_after_purchase_entry_delete
-AFTER DELETE ON purchase_entry
+AFTER DELETE ON purchase.entry
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_purchase_entry_delete();
+EXECUTE FUNCTION material.material_stock_after_purchase_entry_delete();
 
 CREATE TRIGGER material_stock_after_purchase_entry_update
-AFTER UPDATE ON purchase_entry
+AFTER UPDATE ON purchase.entry
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_purchase_entry_update();
+EXECUTE FUNCTION material.material_stock_after_purchase_entry_update();
 
 
---------------------------------- Material Used Trigger ------------------------------
-CREATE OR REPLACE FUNCTION material_stock_after_material_used_insert() RETURNS TRIGGER AS $$
+--------------------------------- Material Used Trigger ------------------------------ // inserted in DB
+CREATE OR REPLACE FUNCTION material.material_stock_after_material_used_insert() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock
     SET 
-    tape_making = tape_making - CASE WHEN NEW.section = 'tape_making' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    coil_forming = coil_forming - CASE WHEN NEW.section = 'coil_forming' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    dying_and_iron = dying_and_iron - CASE WHEN NEW.section = 'dying_and_iron' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    m_gapping = m_gapping - CASE WHEN NEW.section = 'm_gapping' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    v_gapping = v_gapping - CASE WHEN NEW.section = 'v_gapping' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    v_teeth_molding = v_teeth_molding - CASE WHEN NEW.section = 'v_teeth_molding' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    m_teeth_molding = m_teeth_molding - CASE WHEN NEW.section = 'm_teeth_molding' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    teeth_assembling_and_polishing = teeth_assembling_and_polishing - CASE WHEN NEW.section = 'teeth_assembling_and_polishing' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    m_teeth_cleaning = m_teeth_cleaning - CASE WHEN NEW.section = 'm_teeth_cleaning' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    v_teeth_cleaning = v_teeth_cleaning - CASE WHEN NEW.section = 'v_teeth_cleaning' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    plating_and_iron = plating_and_iron - CASE WHEN NEW.section = 'plating_and_iron' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    m_sealing = m_sealing - CASE WHEN NEW.section = 'm_sealing' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    v_sealing = v_sealing - CASE WHEN NEW.section = 'v_sealing' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    n_t_cutting = n_t_cutting - CASE WHEN NEW.section = 'n_t_cutting' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    v_t_cutting = v_t_cutting - CASE WHEN NEW.section = 'v_t_cutting' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    m_stopper = m_stopper - CASE WHEN NEW.section = 'm_stopper' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    v_stopper = v_stopper - CASE WHEN NEW.section = 'v_stopper' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    n_stopper = n_stopper - CASE WHEN NEW.section = 'n_stopper' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    cutting = cutting - CASE WHEN NEW.section = 'cutting' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    qc_and_packing = qc_and_packing - CASE WHEN NEW.section = 'qc_and_packing' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    die_casting = die_casting - CASE WHEN NEW.section = 'die_casting' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
-    slider_assembly = slider_assembly - CASE WHEN NEW.section = 'slider_assembly' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
+    tape_making = tape_making - CASE WHEN NEW.section = 'tape_making' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    coil_forming = coil_forming - CASE WHEN NEW.section = 'coil_forming' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    dying_and_iron = dying_and_iron - CASE WHEN NEW.section = 'dying_and_iron' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    m_gapping = m_gapping - CASE WHEN NEW.section = 'm_gapping' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    v_gapping = v_gapping - CASE WHEN NEW.section = 'v_gapping' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    v_teeth_molding = v_teeth_molding - CASE WHEN NEW.section = 'v_teeth_molding' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    m_teeth_molding = m_teeth_molding - CASE WHEN NEW.section = 'm_teeth_molding' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    teeth_assembling_and_polishing = teeth_assembling_and_polishing - CASE WHEN NEW.section = 'teeth_assembling_and_polishing' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    m_teeth_cleaning = m_teeth_cleaning - CASE WHEN NEW.section = 'm_teeth_cleaning' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    v_teeth_cleaning = v_teeth_cleaning - CASE WHEN NEW.section = 'v_teeth_cleaning' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    plating_and_iron = plating_and_iron - CASE WHEN NEW.section = 'plating_and_iron' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    m_sealing = m_sealing - CASE WHEN NEW.section = 'm_sealing' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    v_sealing = v_sealing - CASE WHEN NEW.section = 'v_sealing' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    n_t_cutting = n_t_cutting - CASE WHEN NEW.section = 'n_t_cutting' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    v_t_cutting = v_t_cutting - CASE WHEN NEW.section = 'v_t_cutting' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    m_stopper = m_stopper - CASE WHEN NEW.section = 'm_stopper' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    v_stopper = v_stopper - CASE WHEN NEW.section = 'v_stopper' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    n_stopper = n_stopper - CASE WHEN NEW.section = 'n_stopper' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    cutting = cutting - CASE WHEN NEW.section = 'cutting' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    qc_and_packing = qc_and_packing - CASE WHEN NEW.section = 'qc_and_packing' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    die_casting = die_casting - CASE WHEN NEW.section = 'die_casting' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
+    slider_assembly = slider_assembly - CASE WHEN NEW.section = 'slider_assembly' THEN NEW.used_quantity + NEW.wastage ELSE 0 END,
     coloring = coloring - CASE WHEN NEW.section = 'coloring' THEN NEW.used_quantity + NEW.wastage ELSE 0 END
    
     WHERE material_uuid = NEW.material_uuid;
@@ -527,88 +525,87 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR FUNCTION material_stock_after_material_used_delete() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_material_used_delete() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock
     SET 
-    tape_making = tape_making + CASE WHEN OLD.section = 'tape_making' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    coil_forming = coil_forming + CASE WHEN OLD.section = 'coil_forming' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    dying_and_iron = dying_and_iron + CASE WHEN OLD.section = 'dying_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_gapping = m_gapping + CASE WHEN OLD.section = 'm_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_gapping = v_gapping + CASE WHEN OLD.section = 'v_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_teeth_molding = v_teeth_molding + CASE WHEN OLD.section = 'v_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_teeth_molding = m_teeth_molding + CASE WHEN OLD.section = 'm_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    teeth_assembling_and_polishing = teeth_assembling_and_polishing + CASE WHEN OLD.section = 'teeth_assembling_and_polishing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_teeth_cleaning = m_teeth_cleaning + CASE WHEN OLD.section = 'm_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_teeth_cleaning = v_teeth_cleaning + CASE WHEN OLD.section = 'v_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    plating_and_iron = plating_and_iron + CASE WHEN OLD.section = 'plating_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_sealing = m_sealing + CASE WHEN OLD.section = 'm_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_sealing = v_sealing + CASE WHEN OLD.section = 'v_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    n_t_cutting = n_t_cutting + CASE WHEN OLD.section = 'n_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_t_cutting = v_t_cutting + CASE WHEN OLD.section = 'v_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_stopper = m_stopper + CASE WHEN OLD.section = 'm_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_stopper = v_stopper + CASE WHEN OLD.section = 'v_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    n_stopper = n_stopper + CASE WHEN OLD.section = 'n_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    cutting = cutting + CASE WHEN OLD.section = 'cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    qc_and_packing = qc_and_packing + CASE WHEN OLD.section = 'qc_and_packing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    die_casting = die_casting + CASE WHEN OLD.section = 'die_casting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    slider_assembly = slider_assembly + CASE WHEN OLD.section = 'slider_assembly' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
+    tape_making = tape_making + CASE WHEN OLD.section = 'tape_making' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    coil_forming = coil_forming + CASE WHEN OLD.section = 'coil_forming' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    dying_and_iron = dying_and_iron + CASE WHEN OLD.section = 'dying_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_gapping = m_gapping + CASE WHEN OLD.section = 'm_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_gapping = v_gapping + CASE WHEN OLD.section = 'v_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_teeth_molding = v_teeth_molding + CASE WHEN OLD.section = 'v_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_teeth_molding = m_teeth_molding + CASE WHEN OLD.section = 'm_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    teeth_assembling_and_polishing = teeth_assembling_and_polishing + CASE WHEN OLD.section = 'teeth_assembling_and_polishing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_teeth_cleaning = m_teeth_cleaning + CASE WHEN OLD.section = 'm_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_teeth_cleaning = v_teeth_cleaning + CASE WHEN OLD.section = 'v_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    plating_and_iron = plating_and_iron + CASE WHEN OLD.section = 'plating_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_sealing = m_sealing + CASE WHEN OLD.section = 'm_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_sealing = v_sealing + CASE WHEN OLD.section = 'v_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    n_t_cutting = n_t_cutting + CASE WHEN OLD.section = 'n_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_t_cutting = v_t_cutting + CASE WHEN OLD.section = 'v_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_stopper = m_stopper + CASE WHEN OLD.section = 'm_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_stopper = v_stopper + CASE WHEN OLD.section = 'v_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    n_stopper = n_stopper + CASE WHEN OLD.section = 'n_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    cutting = cutting + CASE WHEN OLD.section = 'cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    qc_and_packing = qc_and_packing + CASE WHEN OLD.section = 'qc_and_packing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    die_casting = die_casting + CASE WHEN OLD.section = 'die_casting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    slider_assembly = slider_assembly + CASE WHEN OLD.section = 'slider_assembly' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
     coloring = coloring + CASE WHEN OLD.section = 'coloring' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
     WHERE material_uuid = OLD.material_uuid;
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR FUNCTION material_stock_after_material_used_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_material_used_update() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock
     SET 
-    tape_making = tape_making - CASE WHEN OLD.section = 'tape_making' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    coil_forming = coil_forming - CASE WHEN OLD.section = 'coil_forming' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    dying_and_iron = dying_and_iron - CASE WHEN OLD.section = 'dying_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_gapping = m_gapping - CASE WHEN OLD.section = 'm_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_gapping = v_gapping - CASE WHEN OLD.section = 'v_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_teeth_molding = v_teeth_molding - CASE WHEN OLD.section = 'v_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_teeth_molding = m_teeth_molding - CASE WHEN OLD.section = 'm_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    teeth_assembling_and_polishing = teeth_assembling_and_polishing - CASE WHEN OLD.section = 'teeth_assembling_and_polishing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_teeth_cleaning = m_teeth_cleaning - CASE WHEN OLD.section = 'm_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_teeth_cleaning = v_teeth_cleaning - CASE WHEN OLD.section = 'v_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    plating_and_iron = plating_and_iron - CASE WHEN OLD.section = 'plating_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_sealing = m_sealing - CASE WHEN OLD.section = 'm_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_sealing = v_sealing - CASE WHEN OLD.section = 'v_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    n_t_cutting = n_t_cutting - CASE WHEN OLD.section = 'n_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_t_cutting = v_t_cutting - CASE WHEN OLD.section = 'v_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    m_stopper = m_stopper - CASE WHEN OLD.section = 'm_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    v_stopper = v_stopper - CASE WHEN OLD.section = 'v_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    n_stopper = n_stopper - CASE WHEN OLD.section = 'n_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    cutting = cutting - CASE WHEN OLD.section = 'cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    qc_and_packing = qc_and_packing - CASE WHEN OLD.section = 'qc_and_packing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    die_casting = die_casting - CASE WHEN OLD.section = 'die_casting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-    slider_assembly = slider_assembly - CASE WHEN OLD.section = 'slider_assembly' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
+    tape_making = tape_making - CASE WHEN OLD.section = 'tape_making' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    coil_forming = coil_forming - CASE WHEN OLD.section = 'coil_forming' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    dying_and_iron = dying_and_iron - CASE WHEN OLD.section = 'dying_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_gapping = m_gapping - CASE WHEN OLD.section = 'm_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_gapping = v_gapping - CASE WHEN OLD.section = 'v_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_teeth_molding = v_teeth_molding - CASE WHEN OLD.section = 'v_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_teeth_molding = m_teeth_molding - CASE WHEN OLD.section = 'm_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    teeth_assembling_and_polishing = teeth_assembling_and_polishing - CASE WHEN OLD.section = 'teeth_assembling_and_polishing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_teeth_cleaning = m_teeth_cleaning - CASE WHEN OLD.section = 'm_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_teeth_cleaning = v_teeth_cleaning - CASE WHEN OLD.section = 'v_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    plating_and_iron = plating_and_iron - CASE WHEN OLD.section = 'plating_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_sealing = m_sealing - CASE WHEN OLD.section = 'm_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_sealing = v_sealing - CASE WHEN OLD.section = 'v_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    n_t_cutting = n_t_cutting - CASE WHEN OLD.section = 'n_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_t_cutting = v_t_cutting - CASE WHEN OLD.section = 'v_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_stopper = m_stopper - CASE WHEN OLD.section = 'm_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_stopper = v_stopper - CASE WHEN OLD.section = 'v_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    n_stopper = n_stopper - CASE WHEN OLD.section = 'n_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    cutting = cutting - CASE WHEN OLD.section = 'cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    qc_and_packing = qc_and_packing - CASE WHEN OLD.section = 'qc_and_packing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    die_casting = die_casting - CASE WHEN OLD.section = 'die_casting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    slider_assembly = slider_assembly - CASE WHEN OLD.section = 'slider_assembly' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
     coloring = coloring - CASE WHEN OLD.section = 'coloring' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
-
     WHERE material_uuid = NEW.material_uuid;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER material_stock_after_material_used_insert
-AFTER INSERT ON material_used
+AFTER INSERT ON material.used
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_material_used_insert();
+EXECUTE FUNCTION material.material_stock_after_material_used_insert();
 
 CREATE TRIGGER material_stock_after_material_used_delete
-AFTER DELETE ON material_used
+AFTER DELETE ON material.used
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_material_used_delete();
+EXECUTE FUNCTION material.material_stock_after_material_used_delete();
 
 CREATE TRIGGER material_stock_after_material_used_update
-AFTER UPDATE ON material_used
+AFTER UPDATE ON material.used
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_material_used_update();
+EXECUTE FUNCTION material.material_stock_after_material_used_update();
 
 
---------------------------------- Material Transaction Trigger ------------------------------
+--------------------------------- Material Transaction Trigger ------------------------------ // inserted in db
 CREATE OR REPLACE FUNCTION material.material_stock_after_material_trx_insert() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock
@@ -724,7 +721,7 @@ AFTER UPDATE ON material.trx
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_material_trx_update();
 
---------------------------------- Material Stock SFG Trigger ------------------------------
+--------------------------------- Material Stock SFG Trigger ------------------------------ // inserted in DB
 CREATE OR REPLACE FUNCTION material.material_stock_sfg_after_stock_to_sfg_insert() RETURNS TRIGGER AS $$
 BEGIN
     --Update material.stock table
@@ -872,7 +869,7 @@ FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_sfg_after_stock_to_sfg_update();
 
 
--- inserted in DB
+------------------------- Material Info Trigger -------------------------- // inserted in DB
 
 CREATE OR REPLACE FUNCTION material.material_stock_after_material_info_insert() RETURNS TRIGGER AS $$
 BEGIN
