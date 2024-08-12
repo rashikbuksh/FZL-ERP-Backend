@@ -20,9 +20,9 @@ export const stock = slider.table('stock', {
 	end_type: defaultUUID('end_type').references(
 		() => zipperSchema.order_description.end_type
 	),
-	puller: defaultUUID('puller')
+	puller_type: defaultUUID('puller_type')
 		.default(null)
-		.references(() => zipperSchema.order_description.puller),
+		.references(() => zipperSchema.order_description.puller_type),
 	color: text('color').notNull(),
 	order_quantity: decimal('order_quantity', {
 		precision: 20,
@@ -197,22 +197,30 @@ export const defStock = {
 export const die_casting = slider.table('die_casting', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
-	item: defaultUUID('item')
-		.notNull()
-		.references(() => zipperSchema.order_description.item),
-	zipper_number: defaultUUID('zipper_number')
-		.notNull()
-		.references(() => zipperSchema.order_description.zipper_number),
-	type: defaultUUID('type').notNull(),
-	puller: defaultUUID('puller').notNull(),
-	logo_type: defaultUUID('logo_type')
-		.notNull()
-		.references(() => zipperSchema.order_description.logo_type),
-	body_shape: defaultUUID('body_shape'),
-	puller_link: defaultUUID('puller_link')
-		.notNull()
-		.references(() => zipperSchema.order_description.puller_link),
-	stopper: defaultUUID('stopper').notNull(),
+	item: defaultUUID('item').references(
+		() => zipperSchema.order_description.item
+	),
+	zipper_number: defaultUUID('zipper_number').references(
+		() => zipperSchema.order_description.zipper_number
+	),
+	end_type: defaultUUID('end_type').references(
+		() => zipperSchema.order_description.end_type
+	),
+	puller_type: defaultUUID('puller_type').references(
+		() => zipperSchema.order_description.puller_type
+	),
+	logo_type: defaultUUID('logo_type').references(
+		() => zipperSchema.order_description.logo_type
+	),
+	slider_body_shape: defaultUUID('slider_body_shape').references(
+		() => zipperSchema.order_description.slider_body_shape
+	),
+	puller_link: defaultUUID('puller_link').references(
+		() => zipperSchema.order_description.puller_link
+	),
+	stopper_type: defaultUUID('stopper_type').references(
+		() => zipperSchema.order_description.stopper_type
+	),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -237,11 +245,11 @@ export const defDieCasting = {
 		'name',
 		'item',
 		'zipper_number',
-		'type',
-		'puller',
+		'end_type',
+		'puller_type',
 		'logo_type',
 		'puller_link',
-		'stopper',
+		'stopper_type',
 		'quantity',
 		'weight',
 		'pcs_per_kg',
@@ -250,42 +258,55 @@ export const defDieCasting = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'die_casting 1',
 		},
 		item: {
-			type: 'number',
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		zipper_number: {
-			type: 'number',
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
-		type: {
-			type: 'number',
+		end_type: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
-		puller: {
-			type: 'number',
+		puller_type: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		logo_type: {
-			type: 'number',
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		body_shape: {
-			type: 'number',
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		puller_link: {
-			type: 'number',
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
-		stopper: {
-			type: 'number',
+		stopper_type: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		quantity: {
-			type: 'number',
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		weight: {
-			type: 'number',
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		pcs_per_kg: {
-			type: 'number',
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -299,6 +320,7 @@ export const defDieCasting = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'remarks',
 		},
 	},
 	xml: {
