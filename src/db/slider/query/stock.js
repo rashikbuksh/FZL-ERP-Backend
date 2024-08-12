@@ -1,8 +1,61 @@
 import { eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
+import * as publicSchema from '../../public/schema.js';
 import { stock } from '../schema.js';
 
+// public.properties
+const itemProperties = alias(publicSchema.properties, 'itemProperties');
+const zipperProperties = alias(publicSchema.properties, 'zipperProperties');
+const endTypeProperties = alias(publicSchema.properties, 'endTypeProperties');
+const lockTypeProperties = alias(publicSchema.properties, 'lockTypeProperties');
+const pullerTypeProperties = alias(
+	publicSchema.properties,
+	'pullerTypeProperties'
+);
+const teethColorProperties = alias(
+	publicSchema.properties,
+	'teethColorProperties'
+);
+const pullerColorProperties = alias(
+	publicSchema.properties,
+	'pullerColorProperties'
+);
+const handProperties = alias(publicSchema.properties, 'handProperties');
+const stopperProperties = alias(publicSchema.properties, 'stopperProperties');
+const coloringProperties = alias(publicSchema.properties, 'coloringProperties');
+const sliderProperties = alias(publicSchema.properties, 'sliderProperties');
+const topStopperProperties = alias(
+	publicSchema.properties,
+	'topStopperProperties'
+);
+const bottomStopperProperties = alias(
+	publicSchema.properties,
+	'bottomStopperProperties'
+);
+const logoTypeProperties = alias(publicSchema.properties, 'logoTypeProperties');
+const sliderBodyShapeProperties = alias(
+	publicSchema.properties,
+	'sliderBodyShapeProperties'
+);
+const sliderLinkProperties = alias(
+	publicSchema.properties,
+	'sliderLinkProperties'
+);
+const endUserProperties = alias(publicSchema.properties, 'endUserProperties');
+const lightPreferenceProperties = alias(
+	publicSchema.properties,
+	'lightPreferenceProperties'
+);
+const garmentsWashProperties = alias(
+	publicSchema.properties,
+	'garmentsWashProperties'
+);
+const pullerLinkProperties = alias(
+	publicSchema.properties,
+	'pullerLinkProperties'
+);
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -65,7 +118,26 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(stock);
+	const resultPromise = db
+		.select
+		//{
+		// 	uuid: stock.uuid,
+		// 	order_info_uuid: stock.order_info_uuid,
+		// 	item: stock.item,
+		// 	item_name: itemProperties.name,
+		// 	item_short_name: itemProperties.short_name,
+		// 	zipper_number: stock.zipper_number,
+		// 	zipper_name: zipperProperties.name,
+		// 	zipper_short_name: zipperProperties.short_name,
+		// 	end_type: stock.end_type,
+		// 	end_type_name: endTypeProperties.name,
+		// 	end_type_short_name: endTypeProperties.short_name,
+		// 	puller_type: stock.puller_type,
+		// 	puller_type_name: pullerTypeProperties.name,
+		// 	puller_type_short_name: pullerTypeProperties.short_name,
+		// })
+		()
+		.from(stock);
 	const toast = {
 		status: 200,
 		type: 'select_all',
