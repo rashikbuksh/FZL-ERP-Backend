@@ -183,6 +183,7 @@ export const order_description = zipper.table('order_description', {
 	garments_wash: defaultUUID('garments_wash'),
 	puller_link: defaultUUID('puller_link'),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	garments_remarks: text('garments_remarks').default(null),
 });
 
 export const def_zipper_order_description = {

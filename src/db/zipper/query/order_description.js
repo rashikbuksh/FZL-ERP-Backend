@@ -352,7 +352,7 @@ export async function selectAll(req, res, next) {
 			puller_link_short_name: pullerLinkProperties.short_name,
 			created_by: order_description.created_by,
 			created_by_name: hrSchema.users.name,
-			garments_remarks: order_description.remarks,
+			garments_remarks: order_description.garments_remarks,
 		})
 		.from(order_description)
 		.leftJoin(
@@ -544,7 +544,7 @@ export async function select(req, res, next) {
 			puller_link_short_name: pullerLinkProperties.short_name,
 			created_by: order_description.created_by,
 			created_by_name: hrSchema.users.name,
-			garments_remarks: order_description.remarks,
+			garments_remarks: order_description.garments_remarks,
 		})
 		.from(order_description)
 		.where(
