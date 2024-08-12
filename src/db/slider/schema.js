@@ -326,7 +326,9 @@ export const defDieCasting = {
 
 export const die_casting_production = slider.table('die_casting_production', {
 	uuid: uuid_primary,
-	die_casting_uuid: defaultUUID('die_casting_uuid').notNull(),
+	die_casting_uuid: defaultUUID('die_casting_uuid').references(
+		() => die_casting.uuid
+	),
 	mc_no: integer('mc_no').notNull(),
 	cavity_goods: integer('cavity_goods').notNull(),
 	cavity_defect: integer('cavity_defect').notNull(),
@@ -335,8 +337,10 @@ export const die_casting_production = slider.table('die_casting_production', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	order_info_uuid: defaultUUID('order_info_uuid'),
-	created_by: defaultUUID('created_by').notNull(),
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => zipperSchema.order_info.uuid
+	),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -358,30 +362,39 @@ export const defDieCastingProduction = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		die_casting_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		mc_no: {
 			type: 'number',
+			example: 0,
 		},
 		cavity_goods: {
 			type: 'number',
+			example: 0,
 		},
 		cavity_defect: {
 			type: 'number',
+			example: 0,
 		},
 		push: {
 			type: 'number',
+			example: 0,
 		},
 		weight: {
 			type: 'number',
+			example: 0.0,
 		},
 		order_info_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -395,6 +408,7 @@ export const defDieCastingProduction = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'remarks',
 		},
 	},
 	xml: {
@@ -431,18 +445,23 @@ export const defDieCastingTransaction = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		die_casting_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		stock_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		trx_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -456,6 +475,7 @@ export const defDieCastingTransaction = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'remarks',
 		},
 	},
 	xml: {
@@ -534,13 +554,15 @@ export const defTransaction = {
 
 export const coloring_transaction = slider.table('coloring_transaction', {
 	uuid: uuid_primary,
-	stock_uuid: defaultUUID('stock_uuid').notNull(),
-	order_info_uuid: defaultUUID('order_info_uuid').notNull(),
+	stock_uuid: defaultUUID('stock_uuid').references(() => stock.uuid),
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => zipperSchema.order_info.uuid
+	),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	created_by: defaultUUID('created_by').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -559,18 +581,23 @@ export const defColoringTransaction = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		stock_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		order_info_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		trx_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -584,6 +611,7 @@ export const defColoringTransaction = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'remarks',
 		},
 	},
 	xml: {
