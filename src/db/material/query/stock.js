@@ -1,4 +1,4 @@
-import { eq, lt, sql } from 'drizzle-orm';
+import { eq, gt, lt, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -204,7 +204,8 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 			remarks: stock.remarks,
 		})
 		.from(stock)
-		.leftJoin(info, eq(stock.material_uuid, info.uuid));
+		.leftJoin(info, eq(stock.material_uuid, info.uuid))
+		.where(sql`stock.${sql.raw(fieldName)} > 0`);
 
 	const toast = {
 		status: 200,
