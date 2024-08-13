@@ -125,3 +125,29 @@ export async function select(req, res, next) {
 	};
 	handleResponse({ promise: recipe_entryPromise, res, next, ...toast });
 }
+
+export async function selectRecipeEntryByRecipeUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const recipe_entryPromise = db
+		.select({
+			uuid: recipe_entry.uuid,
+			recipe_uuid: recipe_entry.recipe_uuid,
+			recipe_name: recipe.name,
+			color: recipe_entry.color,
+			quantity: recipe_entry.quantity,
+			created_at: recipe_entry.created_at,
+			updated_at: recipe_entry.updated_at,
+			remarks: recipe_entry.remarks,
+		})
+		.from(recipe_entry)
+		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid))
+		.where(eq(recipe_entry.recipe_uuid, req.params.recipe_uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Recipe_entry',
+	};
+	handleResponse({ promise: recipe_entryPromise, res, next, ...toast });
+}
