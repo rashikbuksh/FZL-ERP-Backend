@@ -1,4 +1,5 @@
-import { eq, lt } from 'drizzle-orm';
+import { eq, gt, lt, sql } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -118,7 +119,7 @@ export async function selectAll(req, res, next) {
 }
 
 export async function select(req, res, next) {
-	// if (!(await validateRequest(req, next))) return;
+	if (!(await validateRequest(req, next))) return;
 
 	const stockPromise = db
 		.select({
@@ -185,4 +186,77 @@ export async function selectMaterialBelowThreshold(req, res, next) {
 	};
 
 	handleResponse({ promise: stockPromise, res, next, ...toast });
+}
+
+export async function selectMaterialStockForAFieldName(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { fieldName } = req.params;
+
+	console.log(fieldName);
+
+	const stockPromise = db
+		.select({
+			uuid: stock.uuid,
+			material_uuid: stock.material_uuid,
+			material_name: info.name,
+			stock: stock.stock,
+			unit: info.unit,
+			[fieldName]: sql`stock.${sql.raw(fieldName)}`,
+			remarks: stock.remarks,
+		})
+		.from(stock)
+		.leftJoin(info, eq(stock.material_uuid, info.uuid))
+		.where(sql`stock.${sql.raw(fieldName)} > 0`);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Stock',
+	};
+
+	handleResponse({ promise: stockPromise, res, next, ...toast });
+}
+
+export async function selectMaterialStockForMultiFieldNames(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	try {
+		const api = await createApi(req);
+
+		const { fieldNames } = req.params;
+
+		const fields = fieldNames.split(',');
+
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`/material/stock/by/single-field/${endpoint}`)
+				.then((res) => {
+					return res?.data;
+				});
+
+		const promises = fields.map(async (field) => {
+			const data = await fetchData(field);
+			return data;
+		});
+
+		const results = await Promise.all(promises);
+
+		const data = results.reduce((acc, result, index) => {
+			return [
+				...acc,
+				...(Array.isArray(result?.data) ? result?.data : []),
+			];
+		}, []);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Stock',
+		};
+
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

@@ -220,3 +220,28 @@ export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectRecipeByLabDipInfoUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const recipePromise = db
+		.select({
+			recipe_uuid: recipe.uuid,
+			recipe_name: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
+		})
+		.from(recipe)
+		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
+		.leftJoin(info, eq(recipe.lab_dip_info_uuid, info.uuid))
+		.leftJoin(
+			zipperSchema.order_info,
+			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
+		)
+		.where(eq(recipe.lab_dip_info_uuid, req.params.lab_dip_info_uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Recipe',
+	};
+	handleResponse({ promise: recipePromise, res, next, ...toast });
+}
