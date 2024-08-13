@@ -7,6 +7,7 @@ import * as stockToSfgOperations from './query/stock_to_sfg.js';
 import * as trxOperations from './query/trx.js';
 import * as typeOperations from './query/type.js';
 import * as usedOperations from './query/used.js';
+import material from './schema.js';
 
 const materialRouter = Router();
 
@@ -686,6 +687,110 @@ export const pathMaterialStock = {
 			},
 		},
 	},
+	'/material/stock/by/single-field/{fieldName}': {
+		get: {
+			tags: ['material.stock'],
+			summary: 'Get material stock for a field name',
+			description: 'Get material stock for a field name',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'fieldName',
+					in: 'path',
+					description: ' field name to get stock',
+					required: true,
+					type: 'string',
+					example: 'tape_making',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_name: {
+								type: 'string',
+								example: 'material 1',
+							},
+							stock: { type: 'number', example: 10.0 },
+							fieldName: { type: 'number', example: 10.0 },
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material stock not found',
+				},
+			},
+		},
+	},
+	'/material/stock/by/multi-field/{fieldNames}': {
+		get: {
+			tags: ['material.stock'],
+			summary: 'Get material stock for multiple field names',
+			description: 'Get material stock for multiple field names',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'fieldNames',
+					in: 'path',
+					description: ' field names to get stock',
+					required: true,
+					type: 'string',
+					example: 'tape_making,coil_forming',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_name: {
+								type: 'string',
+								example: 'material 1',
+							},
+							stock: { type: 'number', example: 10.0 },
+							fieldNames: { type: 'number', example: 10.0 },
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material stock not found',
+				},
+			},
+		},
+	},
 };
 
 materialRouter.get('/stock', stockOperations.selectAll);
@@ -696,6 +801,14 @@ materialRouter.delete('/stock/:uuid', stockOperations.remove);
 materialRouter.get(
 	'/stock-threshold',
 	stockOperations.selectMaterialBelowThreshold
+);
+materialRouter.get(
+	'/stock/by/single-field/:fieldName',
+	stockOperations.selectMaterialStockForAFieldName
+);
+materialRouter.get(
+	'/stock/by/multi-field/:fieldNames',
+	stockOperations.selectMaterialStockForMultiFieldNames
 );
 
 // trx routes
