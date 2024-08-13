@@ -566,6 +566,10 @@ const pathPurchaseDescription = {
 												type: 'string',
 												example: 'nylon',
 											},
+											unit: {
+												type: 'string',
+												example: 'kg',
+											},
 											quantity: {
 												type: 'number',
 												example: 1000.0,
@@ -660,6 +664,10 @@ const pathPurchaseEntry = {
 										type: 'string',
 										example: 'nylon',
 									},
+									unit: {
+										type: 'string',
+										example: 'kg',
+									},
 									quantity: {
 										type: 'number',
 										example: 1000.0,
@@ -746,6 +754,10 @@ const pathPurchaseEntry = {
 									material_name: {
 										type: 'string',
 										example: 'nylon',
+									},
+									unit: {
+										type: 'string',
+										example: 'kg',
 									},
 									quantity: {
 										type: 'number',
@@ -858,6 +870,10 @@ const pathPurchaseEntry = {
 									material_name: {
 										type: 'string',
 										example: 'nylon',
+									},
+									unit: {
+										type: 'string',
+										example: 'kg',
 									},
 									quantity: {
 										type: 'number',
