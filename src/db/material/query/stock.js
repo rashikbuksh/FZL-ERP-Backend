@@ -201,6 +201,7 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 			material_uuid: stock.material_uuid,
 			material_name: info.name,
 			stock: stock.stock,
+			unit: info.unit,
 			[fieldName]: sql`stock.${sql.raw(fieldName)}`,
 			remarks: stock.remarks,
 		})
@@ -247,8 +248,6 @@ export async function selectMaterialStockForMultiFieldNames(req, res, next) {
 				...(Array.isArray(result?.data) ? result?.data : []),
 			];
 		}, []);
-
-		console.log(data);
 
 		const toast = {
 			status: 200,
