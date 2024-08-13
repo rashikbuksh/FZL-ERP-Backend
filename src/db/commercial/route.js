@@ -189,11 +189,7 @@ commercialRouter.get('/bank', bankOperations.selectAll);
 commercialRouter.get('/bank/:uuid', bankOperations.select);
 commercialRouter.post('/bank', bankOperations.insert);
 commercialRouter.put('/bank/:uuid', bankOperations.update);
-commercialRouter.delete(
-	'/bank/:uuid',
-
-	bankOperations.remove
-);
+commercialRouter.delete('/bank/:uuid', bankOperations.remove);
 
 // lc
 export const pathCommercialLc = {
