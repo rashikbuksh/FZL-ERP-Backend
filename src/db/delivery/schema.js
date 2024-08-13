@@ -1,4 +1,5 @@
 import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import e from 'express';
 import * as hrSchema from '../hr/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
@@ -27,15 +28,19 @@ export const defPackingList = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		carton_size: {
 			type: 'string',
+			example: '10x10x10',
 		},
 		carton_weight: {
 			type: 'string',
+			example: '10kg',
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -49,6 +54,7 @@ export const defPackingList = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -58,8 +64,10 @@ export const defPackingList = {
 
 export const packing_list_entry = delivery.table('packing_list_entry', {
 	uuid: uuid_primary,
-	packing_list_uuid: defaultUUID('packing_list_uuid'),
-	sfg_uuid: defaultUUID('sfg_uuid'),
+	packing_list_uuid: defaultUUID('packing_list_uuid').references(
+		() => packing_list.uuid
+	),
+	sfg_uuid: defaultUUID('sfg_uuid').references(() => zipperSchema.sfg.uuid),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -81,15 +89,19 @@ export const defPackingListEntry = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		packing_list_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		sfg_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		quantity: {
 			type: 'number',
+			example: 100,
 		},
 		created_at: {
 			type: 'string',
@@ -103,6 +115,7 @@ export const defPackingListEntry = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -113,7 +126,7 @@ export const defPackingListEntry = {
 export const challan = delivery.table('challan', {
 	uuid: uuid_primary,
 	carton_quantity: integer('carton_quantity').notNull(),
-	assign_to: defaultUUID('assign_to'),
+	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
 	receive_status: integer('receive_status').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
@@ -133,18 +146,23 @@ export const defChallan = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		carton_quantity: {
 			type: 'number',
+			example: 100,
 		},
 		assign_to: {
 			type: 'string',
-		},
-		created_by: {
-			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		receive_status: {
 			type: 'number',
+			example: 0,
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -158,6 +176,7 @@ export const defChallan = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -167,8 +186,10 @@ export const defChallan = {
 
 export const challan_entry = delivery.table('challan_entry', {
 	uuid: uuid_primary,
-	challan_uuid: defaultUUID('challan_uuid'),
-	packing_list_uuid: defaultUUID('packing_list_uuid'),
+	challan_uuid: defaultUUID('challan_uuid').references(() => challan.uuid),
+	packing_list_uuid: defaultUUID('packing_list_uuid').references(
+		() => packing_list.uuid
+	),
 	delivery_quantity: decimal('delivery_quantity', {
 		precision: 20,
 		scale: 4,
@@ -190,15 +211,19 @@ export const defChallanEntry = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		challan_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		packing_list_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		delivery_quantity: {
 			type: 'number',
+			example: 100,
 		},
 		created_at: {
 			type: 'string',
@@ -212,6 +237,7 @@ export const defChallanEntry = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
