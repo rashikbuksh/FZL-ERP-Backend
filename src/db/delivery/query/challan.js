@@ -1,23 +1,35 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import { alias } from 'drizzle-orm/pg-core';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { challan } from '../schema.js';
+
+const assignToUser = alias(hrSchema.users, 'assignToUser');
+const createdByUser = alias(hrSchema.users, 'createdByUser');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const challanPromise = db.insert(challan).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
-	handleResponse({
-		promise: challanPromise,
-		res,
-		next,
-		...toast,
-	});
+	const challanPromise = db
+		.insert(challan)
+		.values(req.body)
+		.returning({ insertedId: challan.uuid });
+	try {
+		const data = await challanPromise;
+		const toast = {
+			status: 201,
+			type: 'create',
+			message: `${data[0].insertedId} created`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -27,39 +39,19 @@ export async function update(req, res, next) {
 		.update(challan)
 		.set(req.body)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning({ updatedName: challan.name });
+		.returning({ updatedId: challan.uuid });
 
-	challanPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
-
-			handleResponse({
-				promise: challanPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			//for error message
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating challan - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: challanPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+	try {
+		const data = await challanPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -68,67 +60,73 @@ export async function remove(req, res, next) {
 	const challanPromise = db
 		.delete(challan)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning({ deletedName: challan.name });
+		.returning({ deletedId: challan.uuid });
 
-	challanPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
-
-			handleResponse({
-				promise: challanPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting challan - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: challanPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+	try {
+		const data = await challanPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(challan);
+	const resultPromise = db
+		.select({
+			uuid: challan.uuid,
+			carton_quantity: challan.carton_quantity,
+			assign_to: challan.assign_to,
+			assign_to_name: assignToUser.name,
+			receive_status: challan.receive_status,
+			created_by: challan.created_by,
+			created_by_name: createdByUser.name,
+			created_at: challan.created_at,
+			updated_at: challan.updated_at,
+			remarks: challan.remarks,
+		})
+		.from(challan)
+		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
+		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid));
+
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Challan list',
+		message: 'challan list',
 	};
+
+	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const challanPromise = db
-		.select()
+		.select({
+			uuid: challan.uuid,
+			carton_quantity: challan.carton_quantity,
+			assign_to: challan.assign_to,
+			assign_to_name: assignToUser.name,
+			receive_status: challan.receive_status,
+			created_by: challan.created_by,
+			created_by_name: createdByUser.name,
+			created_at: challan.created_at,
+			updated_at: challan.updated_at,
+			remarks: challan.remarks,
+		})
 		.from(challan)
+		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
+		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
 		.where(eq(challan.uuid, req.params.uuid));
 
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Challan',
+		message: 'challan',
 	};
-	handleResponse({
-		promise: challanPromise,
-		res,
-		next,
-		...toast,
-	});
+	handleResponse({ promise: challanPromise, res, next, ...toast });
 }
