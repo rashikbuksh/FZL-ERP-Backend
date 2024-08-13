@@ -700,6 +700,7 @@ export const pathMaterialStock = {
 					description: ' field name to get stock',
 					required: true,
 					type: 'string',
+					example: 'tape_making',
 				},
 			],
 			responses: {
@@ -738,6 +739,58 @@ export const pathMaterialStock = {
 			},
 		},
 	},
+	'/material/stock/by/multi-field/{fieldNames}': {
+		get: {
+			tags: ['material.stock'],
+			summary: 'Get material stock for multiple field names',
+			description: 'Get material stock for multiple field names',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'fieldNames',
+					in: 'path',
+					description: ' field names to get stock',
+					required: true,
+					type: 'string',
+					example: 'tape_making,coil_forming',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_name: {
+								type: 'string',
+								example: 'material 1',
+							},
+							stock: { type: 'number', example: 10.0 },
+							fieldNames: { type: 'number', example: 10.0 },
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material stock not found',
+				},
+			},
+		},
+	},
 };
 
 materialRouter.get('/stock', stockOperations.selectAll);
@@ -752,6 +805,10 @@ materialRouter.get(
 materialRouter.get(
 	'/stock/by/single-field/:fieldName',
 	stockOperations.selectMaterialStockForAFieldName
+);
+materialRouter.get(
+	'/stock/by/multi-field/:fieldNames',
+	stockOperations.selectMaterialStockForMultiFieldNames
 );
 
 // trx routes

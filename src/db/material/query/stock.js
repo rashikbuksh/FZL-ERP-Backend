@@ -1,4 +1,5 @@
 import { eq, gt, lt, sql } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -214,4 +215,49 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 	};
 
 	handleResponse({ promise: stockPromise, res, next, ...toast });
+}
+
+export async function selectMaterialStockForMultiFieldNames(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	try {
+		const api = await createApi(req);
+
+		const { fieldNames } = req.params;
+
+		const fields = fieldNames.split(',');
+
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`/material/stock/by/single-field/${endpoint}`)
+				.then((res) => {
+					return res?.data;
+				});
+
+		const promises = fields.map(async (field) => {
+			const data = await fetchData(field);
+			return data;
+		});
+
+		const results = await Promise.all(promises);
+
+		const data = results.reduce((acc, result, index) => {
+			return [
+				...acc,
+				...(Array.isArray(result?.data) ? result?.data : []),
+			];
+		}, []);
+
+		console.log(data);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Stock',
+		};
+
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
