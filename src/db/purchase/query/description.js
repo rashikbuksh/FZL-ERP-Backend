@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -79,13 +80,11 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: description.uuid,
 			vendor_uuid: description.vendor_uuid,
-			vendor_name: vendor.vendor_name,
+			vendor_name: vendor.name,
 			is_local: description.is_local,
 			lc_number: description.lc_number,
 			created_by: description.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: description.created_at,
 			updated_at: description.updated_at,
 			remarks: description.remarks,
@@ -121,13 +120,11 @@ export async function select(req, res, next) {
 		.select({
 			uuid: description.uuid,
 			vendor_uuid: description.vendor_uuid,
-			vendor_name: vendor.vendor_name,
+			vendor_name: vendor.name,
 			is_local: description.is_local,
 			lc_number: description.lc_number,
 			created_by: description.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: description.created_at,
 			updated_at: description.updated_at,
 			remarks: description.remarks,
@@ -137,14 +134,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 
 		.where(eq(description.uuid, req.params.uuid));
@@ -156,4 +145,79 @@ export async function select(req, res, next) {
 	};
 
 	handleResponse({ promise: descriptionPromise, res, next, ...toast });
+}
+
+export async function selectDescriptionByPurchaseDescriptionUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const descriptionPromise = db
+		.select({
+			uuid: description.uuid,
+			vendor_uuid: description.vendor_uuid,
+			vendor_name: vendor.name,
+			is_local: description.is_local,
+			lc_number: description.lc_number,
+			created_by: description.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: description.created_at,
+			updated_at: description.updated_at,
+			remarks: description.remarks,
+		})
+		.from(description)
+		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(description.created_by, hrSchema.users.uuid)
+		)
+		.where(eq(description.uuid, req.params.purchase_description_uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Description',
+	};
+
+	handleResponse({ promise: descriptionPromise, res, next, ...toast });
+}
+
+export async function selectPurchaseDetailsByPurchaseDescriptionUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { purchase_description_uuid } = req.params;
+
+	try {
+		const api = await createApi(req);
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/by/${purchase_description_uuid}`)
+				.then((response) => response);
+
+		const [purchase_description, purchase] = await Promise.all([
+			fetchData('/purchase/description'),
+			fetchData('/purchase/entry'),
+		]);
+
+		const response = {
+			...purchase_description?.data?.data[0],
+			purchase: purchase?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			msg: 'Purchase Details',
+		};
+
+		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

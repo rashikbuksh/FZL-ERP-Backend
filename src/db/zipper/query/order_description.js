@@ -697,8 +697,6 @@ export async function selectOrderDescriptionUuidToGetOrderDescriptionAndOrderEnt
 
 	const { order_description_uuid } = req.params;
 
-	console.log(order_description_uuid);
-
 	try {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
