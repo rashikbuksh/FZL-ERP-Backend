@@ -424,7 +424,7 @@ export const defMaterialTrx = {
 		'uuid',
 		'material_uuid',
 		'trx_to',
-		'quantity',
+		'trx_quantity',
 		'created_by',
 		'created_at',
 	],
@@ -441,7 +441,7 @@ export const defMaterialTrx = {
 			type: 'string',
 			example: 'ig',
 		},
-		quantity: {
+		trx_quantity: {
 			type: 'number',
 			example: 1000.0,
 		},

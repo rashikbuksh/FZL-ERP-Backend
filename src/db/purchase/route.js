@@ -656,6 +656,10 @@ const pathPurchaseEntry = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									stock: {
+										type: 'number',
+										example: 1000.0,
+									},
 									material_name: {
 										type: 'string',
 										example: 'nylon',
@@ -746,6 +750,10 @@ const pathPurchaseEntry = {
 									material_name: {
 										type: 'string',
 										example: 'nylon',
+									},
+									stock: {
+										type: 'number',
+										example: 1000.0,
 									},
 									quantity: {
 										type: 'number',
@@ -858,6 +866,10 @@ const pathPurchaseEntry = {
 									material_name: {
 										type: 'string',
 										example: 'nylon',
+									},
+									stock: {
+										type: 'number',
+										example: 1000.0,
 									},
 									quantity: {
 										type: 'number',

@@ -83,6 +83,7 @@ export async function selectAll(req, res, next) {
 			purchase_description_uuid: entry.purchase_description_uuid,
 			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
+			stock: materialSchema.stock.stock,
 			quantity: entry.quantity,
 			price: entry.price,
 			created_at: entry.created_at,
@@ -93,6 +94,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			materialSchema.info,
 			eq(entry.material_uuid, materialSchema.info.uuid)
+		)
+		.leftJoin(
+			materialSchema.stock,
+			eq(entry.material_uuid, materialSchema.stock.material_uuid)
 		);
 
 	const toast = {
@@ -113,6 +118,7 @@ export async function select(req, res, next) {
 			purchase_description_uuid: entry.purchase_description_uuid,
 			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
+			stock: materialSchema.stock.stock,
 			quantity: entry.quantity,
 			price: entry.price,
 			created_at: entry.created_at,
@@ -123,6 +129,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			materialSchema.info,
 			eq(entry.material_uuid, materialSchema.info.uuid)
+		)
+		.leftJoin(
+			materialSchema.stock,
+			eq(entry.material_uuid, materialSchema.stock.material_uuid)
 		)
 		.where(eq(entry.uuid, req.params.uuid));
 
@@ -144,6 +154,7 @@ export async function selectEntryByPurchaseDescriptionUuid(req, res, next) {
 			purchase_description_uuid: entry.purchase_description_uuid,
 			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
+			stock: materialSchema.stock.stock,
 			quantity: entry.quantity,
 			price: entry.price,
 			created_at: entry.created_at,
@@ -154,6 +165,10 @@ export async function selectEntryByPurchaseDescriptionUuid(req, res, next) {
 		.leftJoin(
 			materialSchema.info,
 			eq(entry.material_uuid, materialSchema.info.uuid)
+		)
+		.leftJoin(
+			materialSchema.stock,
+			eq(entry.material_uuid, materialSchema.stock.material_uuid)
 		)
 		.where(
 			eq(
