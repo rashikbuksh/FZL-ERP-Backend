@@ -4274,9 +4274,17 @@ export const pathZipperTapeCoilProduction = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									tape_type: {
+									type: {
 										type: 'string',
 										example: 'nylon',
+									},
+									zipper_number: {
+										type: 'number',
+										example: 3,
+									},
+									type_of_zipper: {
+										type: 'string',
+										example: 'nylon 3',
 									},
 									production_quantity: {
 										type: 'number',
@@ -4293,14 +4301,6 @@ export const pathZipperTapeCoilProduction = {
 									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
-									},
-									user_designation: {
-										type: 'string',
-										example: 'Manager',
-									},
-									user_department: {
-										type: 'string',
-										example: 'Production',
 									},
 									created_at: {
 										type: 'string',
@@ -4376,9 +4376,62 @@ export const pathZipperTapeCoilProduction = {
 				200: {
 					description: 'successful operation',
 					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_coil_production',
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							section: {
+								type: 'string',
+								example: 'zipper',
+							},
+							tape_coil_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							type: {
+								type: 'string',
+								example: 'nylon',
+							},
+							zipper_number: {
+								type: 'number',
+								example: 3,
+							},
+							type_of_zipper: {
+								type: 'string',
+								example: 'nylon 3',
+							},
+							production_quantity: {
+								type: 'number',
+								example: 10,
+							},
+							wastage: {
+								type: 'number',
+								example: 10,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'Good',
+							},
 						},
 					},
 				},
@@ -4471,6 +4524,90 @@ export const pathZipperTapeCoilProduction = {
 			},
 		},
 	},
+	'/zipper/tape-coil-production/by/{section}': {
+		get: {
+			tags: ['zipper.tape_coil_production'],
+			summary: 'Get all Tape Coil Production by Section',
+			parameters: [
+				{
+					name: 'section',
+					in: 'path',
+					description: 'tape coil production to update',
+					required: true,
+					type: 'string',
+					example: 'tape',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns all Tape Coil Production by Section',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									section: {
+										type: 'string',
+										example: 'zipper',
+									},
+									tape_coil_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									type: {
+										type: 'string',
+										example: 'nylon',
+									},
+									zipper_number: {
+										type: 'number',
+										example: 3,
+									},
+									type_of_zipper: {
+										type: 'string',
+										example: 'nylon 3',
+									},
+									production_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									wastage: {
+										type: 'number',
+										example: 10,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Good',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 // --------------------- TAPE COIL PRODUCTION ROUTES ---------------------
@@ -4493,6 +4630,10 @@ zipperRouter.delete(
 	'/tape-coil-production/:uuid',
 	// validateUuidParam(),
 	tapeCoilProductionOperations.remove
+);
+zipperRouter.get(
+	'/tape-coil-production/by/:section',
+	tapeCoilProductionOperations.selectTapeCoilProductionBySection
 );
 
 // --------------------- TAPE TO COIL ---------------------
