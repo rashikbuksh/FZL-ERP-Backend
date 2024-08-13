@@ -96,3 +96,24 @@ export async function select(req, res, next) {
 	};
 	handleResponse({ promise: packing_list_entryPromise, res, next, ...toast });
 }
+
+export async function selectPackingListEntryByPackingListUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const packing_list_entryPromise = db
+		.select()
+		.from(packing_list_entry)
+		.where(
+			eq(
+				packing_list_entry.packing_list_uuid,
+				req.params.packing_list_uuid
+			)
+		);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Packing_list_entry',
+	};
+	handleResponse({ promise: packing_list_entryPromise, res, next, ...toast });
+}

@@ -4,6 +4,7 @@ import * as challanOperations from './query/challan.js';
 import * as challanEntryOperations from './query/challan_entry.js';
 import * as packingListOperations from './query/packing_list.js';
 import * as packingListEntryOperations from './query/packing_list_entry.js';
+import { packing_list } from './schema.js';
 
 const deliveryRouter = Router();
 
@@ -189,6 +190,191 @@ export const pathDeliveryPackingList = {
 			},
 		},
 	},
+
+	'/delivery/packing-list/by/{packing_list_uuid}': {
+		get: {
+			tags: ['delivery.packing-list'],
+			summary: 'Get a packing list by packing_list_uuid',
+			description: 'Get a packing list by packing_list_uuid',
+			// operationId: "getPackingListByPackingListUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'packing_list_uuid',
+					in: 'path',
+					description: ' packing list to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Return packing list',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									carton_size: {
+										type: 'string',
+										example: '10x10x10',
+									},
+									carton_weight: {
+										type: 'string',
+										example: '10kg',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Packing list not found',
+				},
+			},
+		},
+	},
+
+	'/delivery/packing-list/details/{packing_list_uuid}': {
+		get: {
+			tags: ['delivery.packing-list'],
+			summary: 'Get a packing list details by packing_list_uuid',
+			description: 'Get a packing list details by packing_list_uuid',
+			// operationId: "getPackingListDetailsByPackingListUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'packing_list_uuid',
+					in: 'path',
+					description: ' packing list to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Return packing list',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									carton_size: {
+										type: 'string',
+										example: '10x10x10',
+									},
+									carton_weight: {
+										type: 'string',
+										example: '10kg',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									packing_list_entry: {
+										type: 'object',
+										properties: {
+											uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											packing_list_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											sfg_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											quantity: {
+												type: 'number',
+												example: 100,
+											},
+											created_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											updated_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											remarks: {
+												type: 'string',
+												example: 'Remarks',
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Packing list not found',
+				},
+			},
+		},
+	},
 };
 
 deliveryRouter.get('/packing-list', packingListOperations.selectAll);
@@ -203,6 +389,15 @@ deliveryRouter.delete(
 	'/packing-list/:uuid',
 
 	packingListOperations.remove
+);
+deliveryRouter.get(
+	'/packing-list/by/:packing_list_uuid',
+	packingListOperations.selectPackingListByPackingListUuid
+);
+
+deliveryRouter.get(
+	'/packing-list/details/:packing_list_uuid',
+	packingListOperations.selectPackingListDetailsByPackingListUuid
 );
 
 // packing_list_entry routes
@@ -384,6 +579,76 @@ export const pathDeliveryPackingListEntry = {
 			},
 		},
 	},
+	'/delivery/packing-list-entry/by/{packing_list_uuid}': {
+		get: {
+			tags: ['delivery.packing-list-entry'],
+			summary: 'Get a packing list entry by packing_list_uuid',
+			description: 'Get a packing list entry by packing_list_uuid',
+			// operationId: "getPackingListEntryByPackingListUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'packing_list_uuid',
+					in: 'path',
+					description: ' packing list entry to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Return packing list entry',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									packing_list_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sfg_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									quantity: {
+										type: 'number',
+										example: 100,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Packing list entry not found',
+				},
+			},
+		},
+	},
 };
 
 deliveryRouter.get('/packing-list-entry', packingListEntryOperations.selectAll);
@@ -401,6 +666,10 @@ deliveryRouter.delete(
 	'/packing-list-entry/:uuid',
 
 	packingListEntryOperations.remove
+);
+deliveryRouter.get(
+	'/packing-list-entry/by/:packing_list_uuid',
+	packingListEntryOperations.selectPackingListEntryByPackingListUuid
 );
 
 // challan routes
