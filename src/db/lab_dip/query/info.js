@@ -9,38 +9,18 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { info, recipe } from '../schema.js';
+import { info } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { recipe_uuid } = req.body;
-
 	const infoPromise = db
 		.insert(info)
 		.values(req.body)
-		.returning({ insertedName: info.name, insertedId: info.uuid });
+		.returning({ insertedName: info.name });
 
 	try {
 		const data = await infoPromise;
-
-		const recipePromise = db
-			.update(recipe)
-			.set({ lab_dip_info_uuid: data[0].insertedId })
-			.where(eq(recipe.uuid, recipe_uuid))
-			.returning({ updatedName: recipe.name });
-
-		const recipeData = await recipePromise;
-
-		if (!recipeData.length) {
-			const error = {
-				status: 500,
-				type: 'insert',
-				message: 'Recipe not updated',
-			};
-
-			return await handleError({ error, res });
-		}
 
 		const toast = {
 			status: 201,
@@ -57,53 +37,15 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const infoPromise = db
+		.update(info)
+		.set(req.body)
+		.where(eq(info.uuid, req.params.uuid))
+		.returning({ updatedName: info.name });
+
 	try {
-		// Step 1: Fetch existing recipes
-		const existingRecipesPromise = await db
-			.select(recipe)
-			.from(info)
-			.where(eq(recipe.lab_dip_info_uuid, req.params.uuid));
-
-		const existingRecipes =
-			(await existingRecipesPromise[0].recipe_uuid) || [];
-
-		// Step 2: Perform the update operation
-		const infoPromise = db
-			.update(info)
-			.set(req.body)
-			.where(eq(info.uuid, req.params.uuid))
-			.returning({ updatedName: info.name });
-
 		const data = await infoPromise;
 
-		// Step 3: Compare existing recipes with updated recipes
-		const updatedRecipes = req.body.recipe || [];
-		const removedRecipes = existingRecipes.filter(
-			(recipe) => !updatedRecipes.includes(recipe)
-		);
-
-		// Step 4: Handle removed recipes (e.g., log them)
-		if (removedRecipes.length > 0) {
-			const removedRecipePromise = db
-				.update(recipe)
-				.set({ lab_dip_info_uuid: null })
-				.where(eq(recipe.uuid, removedRecipes))
-				.returning({ updatedName: recipe.name });
-
-			const removedRecipeData = await removedRecipePromise;
-
-			if (!removedRecipeData.length) {
-				const error = {
-					status: 500,
-					type: 'update',
-					message: 'Recipe not updated',
-				};
-
-				return await handleError({ error, res });
-			}
-		}
-
-		// Step 5: Return the response
 		const toast = {
 			status: 201,
 			type: 'update',
@@ -122,28 +64,10 @@ export async function remove(req, res, next) {
 	const infoPromise = db
 		.delete(info)
 		.where(eq(info.uuid, req.params.uuid))
-		.returning({ deletedName: info.name, deletedId: info.uuid });
+		.returning({ deletedName: info.name });
 
 	try {
 		const data = await infoPromise;
-
-		const recipePromise = db
-			.update(recipe)
-			.set({ lab_dip_info_uuid: null })
-			.where(eq(recipe.lab_dip_info_uuid, data[0].deletedId))
-			.returning({ updatedName: recipe.name });
-
-		const recipeData = await recipePromise;
-
-		if (!recipeData.length) {
-			const error = {
-				status: 500,
-				type: 'delete',
-				message: 'Recipe not updated',
-			};
-
-			return await handleError({ error, res });
-		}
 
 		const toast = {
 			status: 200,

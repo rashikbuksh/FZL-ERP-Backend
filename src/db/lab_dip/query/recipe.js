@@ -245,3 +245,29 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 	};
 	handleResponse({ promise: recipePromise, res, next, ...toast });
 }
+
+export async function updateRecipeByLabDipInfoUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const recipePromise = db
+		.update(recipe)
+		.set({ lab_dip_info_uuid: req.body.lab_dip_info_uuid })
+		.where(eq(recipe.uuid, req.params.recipe_uuid))
+		.returning({
+			updatedName: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
+		});
+
+	try {
+		const data = await recipePromise;
+
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
