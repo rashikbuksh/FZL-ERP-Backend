@@ -6,10 +6,11 @@ BEGIN
     SET
 
         quantity = quantity  
-        - CASE WHEN NEW.type ='nylon' THEN NEW.trx_quantity ELSE 0 END,
+        - NEW.trx_quantity,
 
         trx_quantity_in_coil = trx_quantity_in_coil 
-        + CASE WHEN NEW.type = 'nylon' THEN NEW.trx_quantity ELSE 0 END
+        + NEW.trx_quantity
+
     WHERE tape_coil.uuid = NEW.tape_coil_uuid;
 RETURN NEW;
 END;
@@ -20,10 +21,10 @@ BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
     SET
-        quantity = quantity + CASE WHEN NEW.type ='nylon' THEN NEW.trx_quantity ELSE 0 END,
+        quantity = quantity + NEW.trx_quantity,
 
         trx_quantity_in_coil = trx_quantity_in_coil 
-        - CASE WHEN NEW.type = 'nylon' THEN NEW.trx_quantity ELSE 0 END
+        - NEW.trx_quantity
 
     WHERE tape_coil.uuid = NEW.tape_coil_uuid;
 
@@ -37,11 +38,11 @@ BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
     SET
-        quantity = quantity - CASE WHEN NEW.type = 'nylon' THEN NEW.trx_quantity + OLD.trx_quantity ELSE 0 END,
+        quantity = quantity - NEW.trx_quantity + OLD.trx_quantity,
 
         trx_quantity_in_coil = trx_quantity_in_coil 
-            + CASE WHEN NEW.type = 'nylon' THEN NEW.trx_quantity ELSE 0 END
-            - CASE WHEN NEW.type = 'nylon' THEN OLD.trx_quantity ELSE 0 END
+            + NEW.trx_quantity
+            - OLD.trx_quantity
 
     WHERE tape_coil.uuid = NEW.tape_coil_uuid;
 
