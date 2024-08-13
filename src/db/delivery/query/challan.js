@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -129,4 +130,67 @@ export async function select(req, res, next) {
 		message: 'challan',
 	};
 	handleResponse({ promise: challanPromise, res, next, ...toast });
+}
+
+export async function selectChallanByChallanUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const challanPromise = db
+		.select({
+			uuid: challan.uuid,
+			carton_quantity: challan.carton_quantity,
+			assign_to: challan.assign_to,
+			assign_to_name: assignToUser.name,
+			receive_status: challan.receive_status,
+			created_by: challan.created_by,
+			created_by_name: createdByUser.name,
+			created_at: challan.created_at,
+			updated_at: challan.updated_at,
+			remarks: challan.remarks,
+		})
+		.from(challan)
+		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
+		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
+		.where(eq(challan.uuid, req.params.challan_uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'challan',
+	};
+	handleResponse({ promise: challanPromise, res, next, ...toast });
+}
+
+export async function selectChallanDetailsByChallanUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { challan_uuid } = req.params;
+
+	try {
+		const api = await createApi(req);
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/by/${challan_uuid}`)
+				.then((response) => response);
+
+		const [challan, challan_entry] = await Promise.all([
+			fetchData('/delivery/challan'),
+			fetchData('/delivery/challan-entry'),
+		]);
+
+		const response = {
+			...challan?.data?.data[0],
+			challan_entry: challan_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			msg: 'Challan Details Full',
+		};
+
+		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

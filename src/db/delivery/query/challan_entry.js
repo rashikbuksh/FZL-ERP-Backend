@@ -146,3 +146,40 @@ export async function select(req, res, next) {
 		...toast,
 	});
 }
+
+export async function selectChallanEntryByChallanUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const challan_entryPromise = db
+		.select({
+			uuid: challan_entry.uuid,
+			challan_uuid: challan_entry.challan_uuid,
+			challan_assign_to: challan.assign_to,
+			challan_assign_to_name: assignToUser.name,
+			challan_created_by: challan.created_by,
+			challan_created_by_name: createdByUser.name,
+			packing_list_uuid: challan_entry.packing_list_uuid,
+			delivery_quantity: challan_entry.delivery_quantity,
+			created_at: challan_entry.created_at,
+			updated_at: challan_entry.updated_at,
+			remarks: challan_entry.remarks,
+		})
+		.from(challan_entry)
+		.leftJoin(challan, eq(challan_entry.challan_uuid, challan.uuid))
+		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
+		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
+		.where(eq(challan_entry.challan_uuid, req.params.challan_uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Challan_entry',
+	};
+
+	handleResponse({
+		promise: challan_entryPromise,
+		res,
+		next,
+		...toast,
+	});
+}
