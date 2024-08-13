@@ -8,6 +8,7 @@ import db from '../../index.js';
 
 import * as commercialSchema from '../../commercial/schema.js';
 import * as hrSchema from '../../hr/schema.js';
+import * as labDipSchema from '../../lab_dip/schema.js';
 import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
@@ -25,7 +26,7 @@ export async function selectParty(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Party list',
+		message: 'Party list',
 	};
 	handleResponse({
 		promise: partyPromise,
@@ -57,7 +58,7 @@ export async function selectMarketingUser(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'marketing user',
+		message: 'marketing user',
 	};
 
 	handleResponse({ promise: userPromise, res, next, ...toast });
@@ -74,7 +75,7 @@ export async function selectBuyer(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Buyer list',
+		message: 'Buyer list',
 	};
 	handleResponse({
 		promise: buyerPromise,
@@ -102,7 +103,7 @@ export function selectSpecificMerchandiser(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Merchandiser',
+		message: 'Merchandiser',
 	};
 
 	handleResponse({
@@ -131,7 +132,7 @@ export function selectSpecificFactory(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Factory',
+		message: 'Factory',
 	};
 
 	handleResponse({
@@ -153,7 +154,7 @@ export function selectMarketing(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Marketing list',
+		message: 'Marketing list',
 	};
 	handleResponse({
 		promise: marketingPromise,
@@ -177,7 +178,7 @@ export function selectOrderProperties(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Order Properties list',
+		message: 'Order Properties list',
 	};
 	handleResponse({
 		promise: orderPropertiesPromise,
@@ -201,7 +202,7 @@ export function selectOrderInfo(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Order Info list',
+		message: 'Order Info list',
 	};
 
 	handleResponse({
@@ -227,7 +228,7 @@ export async function selectOrderInfoToGetOrderDescription(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			msg: 'Order Info list',
+			message: 'Order Info list',
 		};
 
 		res.status(200).json({ toast, data: data?.rows });
@@ -259,7 +260,7 @@ export async function selectOrderEntry(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			msg: 'Order Entry list',
+			message: 'Order Entry list',
 		};
 
 		res.status(200).json({ toast, data: data?.rows });
@@ -280,7 +281,7 @@ export async function selectVendor(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Vendor list',
+		message: 'Vendor list',
 	};
 	handleResponse({
 		promise: vendorPromise,
@@ -302,7 +303,7 @@ export async function selectMaterialSection(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Section list',
+		message: 'Section list',
 	};
 	handleResponse({
 		promise: sectionPromise,
@@ -323,7 +324,7 @@ export async function selectMaterialType(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Type list',
+		message: 'Type list',
 	};
 	handleResponse({
 		promise: typePromise,
@@ -350,7 +351,7 @@ export async function selectMaterial(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Material list',
+		message: 'Material list',
 	};
 	handleResponse({
 		promise: infoPromise,
@@ -373,7 +374,7 @@ export async function selectBank(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Bank list',
+		message: 'Bank list',
 	};
 	handleResponse({
 		promise: bankPromise,
@@ -395,10 +396,31 @@ export async function selectDepartment(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Department list',
+		message: 'Department list',
 	};
 	handleResponse({
 		promise: departmentPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+export async function selectLabDipRecipe(req, res, next) {
+	const recipePromise = db
+		.select({
+			value: labDipSchema.recipe.uuid,
+			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
+		})
+		.from(labDipSchema.recipe);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Lab Dip Recipe list',
+	};
+	handleResponse({
+		promise: recipePromise,
 		res,
 		next,
 		...toast,

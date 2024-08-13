@@ -56,6 +56,12 @@ otherRouter.get('/bank/value/label', otherOperations.selectBank);
 // hr
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);
 
+// lab_dip
+otherRouter.get(
+	'/lab-dip/recipe/value/label',
+	otherOperations.selectLabDipRecipe
+);
+
 const pathPublic = {
 	'/other/party/value/label': {
 		get: {
@@ -591,6 +597,39 @@ const pathHr = {
 	},
 };
 
+const pathLabDip = {
+	'/other/lab-dip/recipe/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all lab dip recipes',
+			description: 'All lab dip recipes',
+			operationId: 'getAllLabDipRecipes',
+			responses: {
+				200: {
+					description: 'Returns a all lab dip recipes.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'LDR24-0001 - Recipe 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+};
+
 export const pathOthers = {
 	...pathPublic,
 	...pathPurchase,
@@ -598,6 +637,7 @@ export const pathOthers = {
 	...pathCommercial,
 	...pathZipper,
 	...pathHr,
+	...pathLabDip,
 };
 
 export const tagOthers = [
