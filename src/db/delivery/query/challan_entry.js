@@ -28,7 +28,7 @@ export async function insert(req, res, next) {
 			message: `${data[0].insertedId} created`,
 		};
 
-		return await res.status(201).json({ toast, data: result });
+		return await res.status(201).json({ toast, data });
 	} catch (error) {
 		handleError({ error, res });
 	}
@@ -85,7 +85,7 @@ export async function selectAll(req, res, next) {
 			challan_assign_to: challan.assign_to,
 			challan_assign_to_name: assignToUser.name,
 			challan_created_by: challan.created_by,
-			challan_created_by_name: assignToUser.name,
+			challan_created_by_name: createdByUser.name,
 			packing_list_uuid: challan_entry.packing_list_uuid,
 			delivery_quantity: challan_entry.delivery_quantity,
 			created_at: challan_entry.created_at,
@@ -95,12 +95,12 @@ export async function selectAll(req, res, next) {
 		.from(challan_entry)
 		.leftJoin(challan, eq(challan_entry.challan_uuid, challan.uuid))
 		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
-		.leftJoin(assignToUser, eq(challan.created_by, assignToUser.uuid));
+		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid));
 
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Challan_entry list',
+		message: 'Challan_entry list',
 	};
 	handleResponse({
 		promise: resultPromise,
@@ -118,9 +118,9 @@ export async function select(req, res, next) {
 			uuid: challan_entry.uuid,
 			challan_uuid: challan_entry.challan_uuid,
 			challan_assign_to: challan.assign_to,
-			challan_assign_to_name: hrSchema.users.name,
+			challan_assign_to_name: assignToUser.name,
 			challan_created_by: challan.created_by,
-			challan_created_by_name: assignToUser.name,
+			challan_created_by_name: createdByUser.name,
 			packing_list_uuid: challan_entry.packing_list_uuid,
 			delivery_quantity: challan_entry.delivery_quantity,
 			created_at: challan_entry.created_at,
@@ -130,13 +130,13 @@ export async function select(req, res, next) {
 		.from(challan_entry)
 		.leftJoin(challan, eq(challan_entry.challan_uuid, challan.uuid))
 		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
-		.leftJoin(assignToUser, eq(challan.created_by, assignToUser.uuid))
+		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
 		.where(eq(challan_entry.uuid, req.params.uuid));
 
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Challan_entry',
+		message: 'Challan_entry',
 	};
 
 	handleResponse({

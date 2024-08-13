@@ -21,9 +21,42 @@ export const pathDeliveryPackingList = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/delivery/packing_list',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									carton_size: {
+										type: 'string',
+										example: '10x10x10',
+									},
+									carton_weight: {
+										type: 'string',
+										example: '10kg',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -38,18 +71,17 @@ export const pathDeliveryPackingList = {
 			// operationId: "createPackingList",
 			consumes: 'application/json',
 			produces: 'application/json',
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Packing list object that needs to be added to the delivery.packing_list',
-					required: true,
-					schema: {
-						$ref: '#/definitions/delivery/packing_list',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/packing_list',
+						},
 					},
 				},
-			],
+			},
+
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -81,6 +113,7 @@ export const pathDeliveryPackingList = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -107,18 +140,18 @@ export const pathDeliveryPackingList = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Packing list object that needs to be updated to the delivery.packing_list',
-					required: true,
-					schema: {
-						$ref: '#/definitions/delivery/packing_list',
-					},
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/packing_list',
+						},
+					},
+				},
+			},
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -143,6 +176,7 @@ export const pathDeliveryPackingList = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -185,9 +219,38 @@ export const pathDeliveryPackingListEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/delivery/packing_list_entry',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									packing_list_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sfg_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									quantity: {
+										type: 'number',
+										example: 100,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -202,18 +265,17 @@ export const pathDeliveryPackingListEntry = {
 			// operationId: "createPackingListEntry",
 			consumes: 'application/json',
 			produces: 'application/json',
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Packing list entry object that needs to be added to the delivery.packing_list_entry',
-					required: true,
-					schema: {
-						$ref: '#/definitions/delivery/packing_list_entry',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/packing_list_entry',
+						},
 					},
 				},
-			],
+			},
+
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -245,6 +307,7 @@ export const pathDeliveryPackingListEntry = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -271,18 +334,19 @@ export const pathDeliveryPackingListEntry = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Packing list entry object that needs to be updated to the delivery.packing_list_entry',
-					required: true,
-					schema: {
-						$ref: '#/definitions/delivery/packing_list_entry',
-					},
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/packing_list_entry',
+						},
+					},
+				},
+			},
+
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -307,6 +371,7 @@ export const pathDeliveryPackingListEntry = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
