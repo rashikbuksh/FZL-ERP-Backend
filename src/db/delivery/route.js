@@ -594,6 +594,222 @@ export const pathDeliveryChallan = {
 			},
 		},
 	},
+	'/delivery/challan/by/{challan_uuid}': {
+		get: {
+			tags: ['delivery.challan'],
+			summary: 'Get a challan by challan_uuid',
+			description: 'Get a challan by challan_uuid',
+			// operationId: "getChallanByChallanUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'challan_uuid',
+					in: 'path',
+					description: ' challan to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Return challan',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									carton_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									assign_to: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									assign_to_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									receive_status: {
+										type: 'number',
+										example: 0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Challan not found',
+				},
+			},
+		},
+	},
+
+	'/delivery/challan/details/{challan_uuid}': {
+		get: {
+			tags: ['delivery.challan'],
+			summary: 'Get a challan details by challan_uuid',
+			description: 'Get a challan details by challan_uuid',
+			// operationId: "getChallanDetailsByChallanUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'challan_uuid',
+					in: 'path',
+					description: ' challan to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Return challan details',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									carton_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									assign_to: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									assign_to_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									receive_status: {
+										type: 'number',
+										example: 0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									challan_entry: {
+										type: 'object',
+										properties: {
+											uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											challan_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											challan_assign_to: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											challan_assign_to_name: {
+												type: 'string',
+												example: 'John Doe',
+											},
+											challan_created_by: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											challan_created_by_name: {
+												type: 'string',
+												example: 'John Doe',
+											},
+											packing_list_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											delivery_quantity: {
+												type: 'number',
+												example: 100,
+											},
+											created_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											updated_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											remarks: {
+												type: 'string',
+												example: 'Remarks',
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Challan not found',
+				},
+			},
+		},
+	},
 };
 
 deliveryRouter.get('/challan', challanOperations.selectAll);
@@ -608,6 +824,15 @@ deliveryRouter.delete(
 	'/challan/:uuid',
 
 	challanOperations.remove
+);
+deliveryRouter.get(
+	'/challan/by/:challan_uuid',
+	challanOperations.selectChallanByChallanUuid
+);
+
+deliveryRouter.get(
+	'/challan/details/:challan_uuid',
+	challanOperations.selectChallanDetailsByChallanUuid
 );
 
 // challan_entry routes
@@ -804,8 +1029,93 @@ export const pathDeliveryChallanEntry = {
 			},
 		},
 	},
+	'/delivery/challan-entry/by/{challan_uuid}': {
+		get: {
+			tags: ['delivery.challan-entry'],
+			summary: 'Get a challan entry by challan_uuid',
+			description: 'Get a challan entry by challan_uuid',
+			// operationId: "getChallanEntryByChallanUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'challan_uuid',
+					in: 'path',
+					description: ' challan to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Return challan entry',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									challan_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									challan_assign_to: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									challan_assign_to_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									challan_created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									challan_created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									packing_list_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									delivery_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Challan entry not found',
+				},
+			},
+		},
+	},
 };
-
 deliveryRouter.get('/challan-entry', challanEntryOperations.selectAll);
 deliveryRouter.get(
 	'/challan-entry/:uuid',
@@ -818,6 +1128,10 @@ deliveryRouter.delete(
 	'/challan-entry/:uuid',
 
 	challanEntryOperations.remove
+);
+deliveryRouter.get(
+	'/challan-entry/by/:challan_uuid',
+	challanEntryOperations.selectChallanEntryByChallanUuid
 );
 export const pathDelivery = {
 	...pathDeliveryPackingList,
