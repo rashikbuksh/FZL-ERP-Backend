@@ -345,7 +345,7 @@ export async function selectMaterial(req, res, next) {
 		.from(materialSchema.info)
 		.leftJoin(
 			materialSchema.stock,
-			eq(materialSchema.info.uuid, stock.material_uuid)
+			eq(materialSchema.info.uuid, materialSchema.stock.material_uuid)
 		);
 
 	const toast = {
