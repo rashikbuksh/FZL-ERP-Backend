@@ -6,10 +6,12 @@ import {
 	properties,
 } from '../public/schema.js';
 
+import { type } from '../material/schema.js';
 import * as bankOperations from './query/bank.js';
 import * as lcOperations from './query/lc.js';
 import * as piOperations from './query/pi.js';
 import * as piEntryOperations from './query/pi_entry.js';
+import { pi } from './schema.js';
 
 const commercialRouter = Router();
 
@@ -796,6 +798,345 @@ export const pathCommercialPi = {
 			},
 		},
 	},
+	'/commercial/pi/by/{pi_uuid}': {
+		get: {
+			tags: ['commercial.pi'],
+			summary: 'Get a pi by pi_uuid',
+			description: ' Get a pi by pi_uuid',
+			//operationId: "getPet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'pi_uuid',
+					in: 'path',
+					description: 'Pi to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lc_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lc_number: {
+										type: 'string',
+										example: '123456',
+									},
+									order_info_ids: {
+										type: 'array',
+										items: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'marketing',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'party',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'merchandiser',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'ABC',
+									},
+									bank_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									bank_name: {
+										type: 'string',
+										example: 'Bangladesh Bank',
+									},
+
+									bank_swift_code: {
+										type: 'string',
+										example: 'BB',
+									},
+									validity: {
+										type: 'string',
+										example: '2021-12-12',
+									},
+									payment: {
+										type: 'string',
+										example: 'paid',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'HR',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									update_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Pi not found',
+				},
+			},
+		},
+	},
+	'/commercial/pi/details/{pi_uuid}': {
+		get: {
+			tags: ['commercial.pi'],
+			summary: 'Get a pi details by pi_uuid',
+			description: ' Get a pi details by pi_uuid',
+			//operationId: "getPet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'pi_uuid',
+					in: 'path',
+					description: 'Pi to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lc_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lc_number: {
+										type: 'string',
+										example: '123456',
+									},
+									order_info_ids: {
+										type: 'array',
+										items: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'marketing',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'party',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'merchandiser',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'ABC',
+									},
+									bank_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									bank_name: {
+										type: 'string',
+										example: 'Bangladesh Bank',
+									},
+
+									bank_swift_code: {
+										type: 'string',
+										example: 'BB',
+									},
+									validity: {
+										type: 'string',
+										example: '2021-12-12',
+									},
+									payment: {
+										type: 'string',
+										example: 'paid',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'HR',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									update_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+									pi_entry: {
+										type: 'object',
+										properties: {
+											uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											pi_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											pi_number: {
+												type: 'string',
+												example: '123456',
+											},
+											pi_date: {
+												type: 'string',
+												example: '2021-12-12',
+											},
+											amount: {
+												type: 'number',
+												example: 12.3456,
+											},
+											created_by: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											created_by_name: {
+												type: 'string',
+												example: 'John Doe',
+											},
+											user_designation: {
+												type: 'string',
+												example: 'Manager',
+											},
+											user_department: {
+												type: 'string',
+												example: 'HR',
+											},
+											created_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											update_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											remarks: {
+												type: 'string',
+												example: 'remarks',
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Pi not found',
+				},
+			},
+		},
+	},
 };
 
 // pi routes
@@ -804,6 +1145,11 @@ commercialRouter.get('/pi/:uuid', piOperations.select);
 commercialRouter.post('/pi', piOperations.insert);
 commercialRouter.put('/pi/:uuid', piOperations.update);
 commercialRouter.delete('/pi/:uuid', piOperations.remove);
+commercialRouter.get('/pi/by/:pi_uuid', piOperations.selectPiByPiUuid);
+commercialRouter.get(
+	'/pi/details/:pi_uuid',
+	piOperations.selectPiDetailsByPiUuid
+);
 
 // pi_entry
 export const pathCommercialPiEntry = {
@@ -983,6 +1329,96 @@ export const pathCommercialPiEntry = {
 			},
 		},
 	},
+	'/commercial/pi-entry/by/{pi_uuid}': {
+		get: {
+			tags: ['commercial.pi_entry'],
+			summary: 'Get a pi_entry by pi_uuid',
+			description: ' Get a pi_entry by pi_uuid',
+			//operationId: "getPet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'pi_uuid',
+					in: 'path',
+					description: 'Pi to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									pi_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									pi_number: {
+										type: 'string',
+										example: '123456',
+									},
+									pi_date: {
+										type: 'string',
+										example: '2021-12-12',
+									},
+									amount: {
+										type: 'number',
+										example: 12.3456,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									user_designation: {
+										type: 'string',
+										example: 'Manager',
+									},
+									user_department: {
+										type: 'string',
+										example: 'HR',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									update_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Pi not found',
+				},
+			},
+		},
+	},
 };
 
 // pi_entry routes
@@ -998,6 +1434,10 @@ commercialRouter.delete(
 	'/pi-entry/:uuid',
 
 	piEntryOperations.remove
+);
+commercialRouter.use(
+	'/pi-entry/by/:pi_uuid',
+	piEntryOperations.selectPiEntryByPiUuid
 );
 
 export const pathCommercial = {

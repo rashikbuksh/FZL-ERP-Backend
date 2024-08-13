@@ -128,3 +128,32 @@ export async function select(req, res, next) {
 		...toast,
 	});
 }
+
+export async function selectPiEntryByPiUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const pi_entryPromise = db
+		.select({
+			uuid: pi_entry.uuid,
+			pi_uuid: pi_entry.pi_uuid,
+			sfg_uuid: pi_entry.sfg_uuid,
+			pi_quantity: pi_entry.pi_quantity,
+			created_at: pi_entry.created_at,
+			updated_at: pi_entry.updated_at,
+			remarks: pi_entry.remarks,
+		})
+		.from(pi_entry)
+		.where(eq(pi_entry.pi_uuid, req.params.pi_uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'pi_entry',
+	};
+	handleResponse({
+		promise: pi_entryPromise,
+		res,
+		next,
+		...toast,
+	});
+}
