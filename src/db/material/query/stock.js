@@ -1,4 +1,4 @@
-import { eq, lt } from 'drizzle-orm';
+import { eq, lt, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -118,7 +118,7 @@ export async function selectAll(req, res, next) {
 }
 
 export async function select(req, res, next) {
-	// if (!(await validateRequest(req, next))) return;
+	if (!(await validateRequest(req, next))) return;
 
 	const stockPromise = db
 		.select({
@@ -182,6 +182,34 @@ export async function selectMaterialBelowThreshold(req, res, next) {
 		status: 200,
 		type: 'select_all',
 		message: 'Material below threshold',
+	};
+
+	handleResponse({ promise: stockPromise, res, next, ...toast });
+}
+
+export async function selectMaterialStockForAFieldName(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { fieldName } = req.params;
+
+	console.log(fieldName);
+
+	const stockPromise = db
+		.select({
+			uuid: stock.uuid,
+			material_uuid: stock.material_uuid,
+			material_name: info.name,
+			stock: stock.stock,
+			[fieldName]: sql`stock.${sql.raw(fieldName)}`,
+			remarks: stock.remarks,
+		})
+		.from(stock)
+		.leftJoin(info, eq(stock.material_uuid, info.uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Stock',
 	};
 
 	handleResponse({ promise: stockPromise, res, next, ...toast });
