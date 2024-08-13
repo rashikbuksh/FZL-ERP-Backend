@@ -422,6 +422,229 @@ export const pathLabDipRecipe = {
 			},
 		},
 	},
+	'/lab-dip/recipe/by/{recipe_uuid}': {
+		get: {
+			tags: ['lab_dip.recipe'],
+			summary: 'Get lab dip recipe by recipe_uuid',
+			description: 'Get lab dip recipe by recipe_uuid',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'recipe_uuid',
+					in: 'path',
+					description: 'lab dip recipe to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Lab dip recipe found',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: {
+										type: 'number',
+										example: 1,
+									},
+									lab_dip_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									name: {
+										type: 'string',
+										example: 'Recipe 1',
+									},
+									approved: {
+										type: 'number',
+										example: 0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									status: {
+										type: 'number',
+										example: 0,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip recipe not found',
+				},
+			},
+		},
+	},
+	'/lab-dip/recipe/details/{recipe_uuid}': {
+		get: {
+			tags: ['lab_dip.recipe'],
+			summary: 'Get lab dip recipe details by recipe_uuid',
+			description: 'Get lab dip recipe details by recipe_uuid',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'recipe_uuid',
+					in: 'path',
+					description: 'lab dip recipe to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Lab dip recipe details found',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: {
+										type: 'number',
+										example: 1,
+									},
+									lab_dip_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									name: {
+										type: 'string',
+										example: 'Recipe 1',
+									},
+									approved: {
+										type: 'number',
+										example: 0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									status: {
+										type: 'number',
+										example: 0,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									recipe_entry: {
+										type: 'object',
+										properties: {
+											uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											recipe_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											recipe_name: {
+												type: 'string',
+												example: 'Recipe 1',
+											},
+											color: {
+												type: 'string',
+												example: 'Red',
+											},
+											quantity: {
+												type: 'number',
+												example: 10.0,
+											},
+											created_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											updated_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											remarks: {
+												type: 'string',
+												example: 'Remarks',
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip recipe details not found',
+				},
+			},
+		},
+	},
 };
 
 labDipRouter.get('/recipe', recipeOperations.selectAll);
@@ -432,6 +655,14 @@ labDipRouter.delete(
 	'/recipe/:uuid',
 	validateUuidParam(),
 	recipeOperations.remove
+);
+labDipRouter.get(
+	'/recipe/by/:recipe_uuid',
+	recipeOperations.selectRecipeByRecipeUuid
+);
+labDipRouter.get(
+	'/recipe/details/:recipe_uuid',
+	recipeOperations.selectRecipeDetailsByRecipeUuid
 );
 
 // recipe_entry routes
@@ -611,6 +842,78 @@ export const pathLabDipRecipeEntry = {
 			},
 		},
 	},
+	'/lab-dip/recipe-entry/by/{recipe_uuid}': {
+		get: {
+			tags: ['lab_dip.recipe_entry'],
+			summary: 'Get lab dip recipe entry by recipe_uuid',
+			description: 'Get lab dip recipe entry by recipe_uuid',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'recipe_uuid',
+					in: 'path',
+					description: 'lab dip recipe entry to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Lab dip recipe entry found',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									recipe_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									recipe_name: {
+										type: 'string',
+										example: 'Recipe 1',
+									},
+									color: {
+										type: 'string',
+										example: 'Red',
+									},
+									quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip recipe entry not found',
+				},
+			},
+		},
+	},
 };
 
 labDipRouter.get('/recipe-entry', recipeEntryOperations.selectAll);
@@ -626,6 +929,11 @@ labDipRouter.delete(
 	validateUuidParam(),
 	recipeEntryOperations.remove
 );
+labDipRouter.get(
+	'/recipe-entry/by/:recipe_uuid',
+	recipeEntryOperations.selectRecipeEntryByRecipeUuid
+);
+
 export const pathLabDip = {
 	...pathLabDipInfo,
 	...pathLabDipRecipe,

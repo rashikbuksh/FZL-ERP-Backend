@@ -1,4 +1,5 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -6,7 +7,8 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { recipe } from '../schema.js';
+import * as zipperSchema from '../../zipper/schema.js';
+import { info, recipe } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -84,12 +86,12 @@ export async function selectAll(req, res, next) {
 			uuid: recipe.uuid,
 			id: recipe.id,
 			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
+			order_info_uuid: info.order_info_uuid,
+			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			name: recipe.name,
 			approved: recipe.approved,
 			created_by: recipe.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			status: recipe.status,
 			created_at: recipe.created_at,
 			updated_at: recipe.updated_at,
@@ -97,13 +99,10 @@ export async function selectAll(req, res, next) {
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
+		.leftJoin(info, eq(recipe.lab_dip_info_uuid, info.uuid))
 		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
+			zipperSchema.order_info,
+			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		);
 
 	const toast = {
@@ -122,12 +121,12 @@ export async function select(req, res, next) {
 			uuid: recipe.uuid,
 			id: recipe.id,
 			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
+			order_info_uuid: info.order_info_uuid,
+			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			name: recipe.name,
 			approved: recipe.approved,
 			created_by: recipe.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			status: recipe.status,
 			created_at: recipe.created_at,
 			updated_at: recipe.updated_at,
@@ -135,13 +134,10 @@ export async function select(req, res, next) {
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
+		.leftJoin(info, eq(recipe.lab_dip_info_uuid, info.uuid))
 		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
+			zipperSchema.order_info,
+			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.where(eq(recipe.uuid, req.params.uuid));
 	const toast = {
@@ -150,4 +146,74 @@ export async function select(req, res, next) {
 		message: 'Recipe',
 	};
 	handleResponse({ promise: recipePromise, res, next, ...toast });
+}
+
+export async function selectRecipeByRecipeUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const recipePromise = db
+		.select({
+			uuid: recipe.uuid,
+			id: recipe.id,
+			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
+			order_info_uuid: info.order_info_uuid,
+			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			name: recipe.name,
+			approved: recipe.approved,
+			created_by: recipe.created_by,
+			created_by_name: hrSchema.users.name,
+			status: recipe.status,
+			created_at: recipe.created_at,
+			updated_at: recipe.updated_at,
+			remarks: recipe.remarks,
+		})
+		.from(recipe)
+		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
+		.leftJoin(info, eq(recipe.lab_dip_info_uuid, info.uuid))
+		.leftJoin(
+			zipperSchema.order_info,
+			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
+		)
+		.where(eq(recipe.uuid, req.params.recipe_uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Recipe',
+	};
+	handleResponse({ promise: recipePromise, res, next, ...toast });
+}
+
+export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const { recipe_uuid } = req.params;
+
+	try {
+		const api = await createApi(req);
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/by/${recipe_uuid}`)
+				.then((response) => response);
+
+		const [recipe, recipe_entry] = await Promise.all([
+			fetchData('/lab-dip/recipe'),
+			fetchData('/lab-dip/recipe-entry'),
+		]);
+
+		const response = {
+			...recipe?.data?.data[0],
+			recipe_entry: recipe_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			msg: 'Recipe Details Full',
+		};
+
+		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
