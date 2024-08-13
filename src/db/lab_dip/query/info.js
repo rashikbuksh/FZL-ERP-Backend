@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as publicSchema from '../../public/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import { info } from '../schema.js';
 
@@ -84,18 +85,22 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: info.uuid,
 			id: info.id,
+			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
 			order_info_uuid: info.order_info_uuid,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
 			party_uuid: zipperSchema.order_info.party_uuid,
+			party_name: publicSchema.party.name,
 			marketing_uuid: zipperSchema.order_info.marketing_uuid,
+			marketing_name: publicSchema.marketing.name,
 			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
+			merchandiser_name: publicSchema.merchandiser.name,
 			factory_uuid: zipperSchema.order_info.factory_uuid,
+			factory_name: publicSchema.factory.name,
 			lab_status: info.lab_status,
 			created_by: info.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: info.created_at,
 			updated_at: info.updated_at,
 			remarks: info.remarks,
@@ -107,12 +112,30 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
 		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+			publicSchema.buyer,
+			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
 		)
 		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
+			publicSchema.party,
+			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.marketing,
+			eq(
+				zipperSchema.order_info.marketing_uuid,
+				publicSchema.marketing.uuid
+			)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(
+				zipperSchema.order_info.merchandiser_uuid,
+				publicSchema.merchandiser.uuid
+			)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
 		);
 
 	const toast = {
@@ -130,18 +153,22 @@ export async function select(req, res, next) {
 		.select({
 			uuid: info.uuid,
 			id: info.id,
+			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
 			order_info_uuid: info.order_info_uuid,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
 			party_uuid: zipperSchema.order_info.party_uuid,
+			party_name: publicSchema.party.name,
 			marketing_uuid: zipperSchema.order_info.marketing_uuid,
+			marketing_name: publicSchema.marketing.name,
 			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
+			merchandiser_name: publicSchema.merchandiser.name,
 			factory_uuid: zipperSchema.order_info.factory_uuid,
+			factory_name: publicSchema.factory.name,
 			lab_status: info.lab_status,
 			created_by: info.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: info.created_at,
 			updated_at: info.updated_at,
 			remarks: info.remarks,
@@ -153,12 +180,30 @@ export async function select(req, res, next) {
 		)
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
 		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+			publicSchema.buyer,
+			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
 		)
 		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
+			publicSchema.party,
+			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.marketing,
+			eq(
+				zipperSchema.order_info.marketing_uuid,
+				publicSchema.marketing.uuid
+			)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(
+				zipperSchema.order_info.merchandiser_uuid,
+				publicSchema.merchandiser.uuid
+			)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
 		)
 		.where(eq(info.uuid, req.params.uuid));
 

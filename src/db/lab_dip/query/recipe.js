@@ -85,6 +85,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: recipe.uuid,
 			id: recipe.id,
+			recipe_id: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'))`,
 			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
 			order_info_uuid: info.order_info_uuid,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
@@ -120,6 +121,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: recipe.uuid,
 			id: recipe.id,
+			recipe_id: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'))`,
 			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
 			order_info_uuid: info.order_info_uuid,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
@@ -155,6 +157,7 @@ export async function selectRecipeByRecipeUuid(req, res, next) {
 		.select({
 			uuid: recipe.uuid,
 			id: recipe.id,
+			recipe_id: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'))`,
 			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
 			order_info_uuid: info.order_info_uuid,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
