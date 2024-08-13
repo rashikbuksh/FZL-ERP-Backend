@@ -115,7 +115,7 @@ export const challan = delivery.table('challan', {
 	carton_quantity: integer('carton_quantity').notNull(),
 	assign_to: defaultUUID('assign_to'),
 	receive_status: integer('receive_status').default(0),
-	created_by: defaultUUID('created_by'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

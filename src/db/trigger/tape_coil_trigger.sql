@@ -9,7 +9,7 @@ BEGIN
         - CASE WHEN NEW.type ='nylon' THEN NEW.trx_quantity ELSE 0 END,
 
         trx_quantity_in_coil = trx_quantity_in_coil 
-        + CASE WHEN type = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
+        + CASE WHEN NEW.type = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
 
     WHERE uuid = NEW.tape_coil_uuid;
 RETURN NEW;
@@ -21,10 +21,10 @@ BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
     SET
-        quantity = quantity + NEW.trx_quantity,
+        quantity = quantity + CASE WHEN NEW.type ='nylon' THEN NEW.trx_quantity ELSE 0 END,
 
         trx_quantity_in_coil = trx_quantity_in_coil 
-        - CASE WHEN type = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
+        - CASE WHEN NEW.type = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
 
     WHERE uuid = NEW.tape_coil_uuid;
 
@@ -38,11 +38,11 @@ BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
     SET
-        quantity = quantity - NEW.trx_quantity + OLD.trx_quantity
+        quantity = quantity - CASE WHEN NEW.type = 'nylon' THEN NEW.trx_quantity + OLD.trx_quantity ELSE 0 END,
 
         trx_quantity_in_coil = trx_quantity_in_coil 
-            + CASE WHEN type = 'nylon' THEN NEW.trx_quantity ELSE 0 END
-            - CASE WHEN type = 'nylon' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN NEW.type = 'nylon' THEN NEW.trx_quantity ELSE 0 END
+            - CASE WHEN NEW.type = 'nylon' THEN OLD.trx_quantity ELSE 0 END,
 
     WHERE uuid = NEW.tape_coil_uuid;
 
@@ -78,7 +78,7 @@ BEGIN
         trx_quantity_in_coil = trx_quantity_in_coil 
         - CASE WHEN NEW.section = 'coil' THEN NEW.production_quantity + NEW.wastage ELSE 0 END,
 
-        quantity_in_coil = quantity_in_coil + NEW.production_quantity
+        quantity_in_coil = quantity_in_coil + CASE WHEN NEW.section = 'coil' THEN NEW.production_quantity ELSE 0 END
 
     WHERE uuid = NEW.tape_coil_uuid;
 
@@ -98,7 +98,7 @@ BEGIN
         trx_quantity_in_coil = trx_quantity_in_coil 
         + CASE WHEN OLD.section = 'coil' THEN OLD.production_quantity + OLD.wastage ELSE 0 END,
 
-        quantity_in_coil = quantity_in_coil - OLD.production_quantity
+        quantity_in_coil = quantity_in_coil - CASE WHEN OLD.section = 'coil' THEN OLD.production_quantity ELSE 0 END
 
     WHERE uuid = OLD.tape_coil_uuid;
 
@@ -120,8 +120,8 @@ BEGIN
         - CASE WHEN NEW.section = 'coil' THEN NEW.production_quantity + NEW.wastage ELSE 0 END
         + CASE WHEN OLD.section = 'coil' THEN OLD.production_quantity + OLD.wastage ELSE 0 END,
 
-        quantity_in_coil = quantity_in_coil + NEW.production_quantity - OLD.production_quantity
-
+        quantity_in_coil = quantity_in_coil + CASE WHEN NEW.section = 'coil' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END
+        
     WHERE uuid = NEW.tape_coil_uuid;
 
 RETURN NEW;
