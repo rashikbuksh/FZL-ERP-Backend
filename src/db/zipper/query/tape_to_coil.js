@@ -78,6 +78,9 @@ export async function selectAll(req, res, next) {
 			tape_coil_uuid: tape_to_coil.tape_coil_uuid,
 			type: tape_coil.type,
 			zipper_number: tape_coil.zipper_number,
+			quantity: tape_coil.quantity,
+			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
+			quantity_in_coil: tape_coil.quantity_in_coil,
 			type_of_zipper: sql`CONCAT(tape_coil.type, ' - ', tape_coil.zipper_number)`,
 			trx_quantity: tape_to_coil.trx_quantity,
 			created_by: tape_to_coil.created_by,
@@ -109,12 +112,13 @@ export async function select(req, res, next) {
 			tape_coil_uuid: tape_to_coil.tape_coil_uuid,
 			type: tape_coil.type,
 			zipper_number: tape_coil.zipper_number,
+			quantity: tape_coil.quantity,
+			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
+			quantity_in_coil: tape_coil.quantity_in_coil,
 			type_of_zipper: sql`CONCAT(tape_coil.type, ' - ', tape_coil.zipper_number)`,
 			trx_quantity: tape_to_coil.trx_quantity,
 			created_by: tape_to_coil.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: tape_to_coil.created_at,
 			update_at: tape_to_coil.updated_at,
 			remarks: tape_to_coil.remarks,
@@ -124,14 +128,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(tape_to_coil.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 		.where(eq(tape_to_coil.uuid, req.params.uuid));
 	const toast = {
