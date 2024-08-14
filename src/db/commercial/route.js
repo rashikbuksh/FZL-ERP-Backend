@@ -1419,6 +1419,217 @@ export const pathCommercialPiEntry = {
 			},
 		},
 	},
+	'/commercial/pi-entry/details/by/{order_info_id}': {
+		get: {
+			tags: ['commercial.pi_entry'],
+			summary: 'Get a pi_entry by order_info_id',
+			description: ' Get a pi_entry by order_info_id',
+			//operationId: "getPet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'order_info_id',
+					in: 'path',
+					description: 'Pi to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sfg_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									item_description: {
+										type: 'string',
+										example: 'T-Shirt',
+									},
+									style: {
+										type: 'string',
+										example: 'St-1',
+									},
+									color: {
+										type: 'string',
+										example: 'Red',
+									},
+									size: {
+										type: 'number',
+										example: 10,
+									},
+									quantity: {
+										type: 'number',
+										example: 100,
+									},
+									given_pi_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									max_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									pi_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									is_checked: {
+										type: 'boolean',
+										example: true,
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Pi not found',
+				},
+			},
+		},
+	},
+	'/commercial/pi/details/by/order-info-ids/{order_info_uuids}/{party_uuid}/{marketing_uuid}':
+		{
+			get: {
+				tags: ['commercial.pi_entry'],
+				summary: 'Get a pi_entry by order_info_uuids',
+				description: ' Get a pi_entry by order_info_uuids',
+				//operationId: "getPet",
+				produces: ['application/json'],
+				parameters: [
+					{
+						name: 'order_info_uuids',
+						in: 'path',
+						description: 'Pi to get',
+						required: true,
+						type: 'string',
+						format: 'uuid',
+						example: 'igD0v9DIJQhJeet',
+					},
+					{
+						name: 'party_uuid',
+						in: 'path',
+						description: 'Pi to get',
+						required: true,
+						type: 'string',
+						format: 'uuid',
+						example: 'igD0v9DIJQhJeet',
+					},
+					{
+						name: 'marketing_uuid',
+						in: 'path',
+						description: 'Pi to get',
+						required: true,
+						type: 'string',
+						format: 'uuid',
+						example: 'igD0v9DIJQhJeet',
+					},
+				],
+				responses: {
+					200: {
+						description: 'Successful operation',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										uuid: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+										sfg_uuid: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+										order_info_uuid: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+										order_number: {
+											type: 'string',
+											example: 'Z24-0001',
+										},
+										item_description: {
+											type: 'string',
+											example: 'T-Shirt',
+										},
+										style: {
+											type: 'string',
+											example: 'St-1',
+										},
+										color: {
+											type: 'string',
+											example: 'Red',
+										},
+										size: {
+											type: 'number',
+											example: 10,
+										},
+										quantity: {
+											type: 'number',
+											example: 100,
+										},
+										given_pi_quantity: {
+											type: 'number',
+											example: 100,
+										},
+										max_quantity: {
+											type: 'number',
+											example: 100,
+										},
+										pi_quantity: {
+											type: 'number',
+											example: 100,
+										},
+										balance_quantity: {
+											type: 'number',
+											example: 100,
+										},
+										is_checked: {
+											type: 'boolean',
+											example: true,
+										},
+									},
+								},
+							},
+						},
+					},
+					400: {
+						description: 'Invalid UUID supplied',
+					},
+					404: {
+						description: 'Pi not found',
+					},
+				},
+			},
+		},
 };
 
 // pi_entry routes
@@ -1438,6 +1649,14 @@ commercialRouter.delete(
 commercialRouter.use(
 	'/pi-entry/by/:pi_uuid',
 	piEntryOperations.selectPiEntryByPiUuid
+);
+commercialRouter.get(
+	'/pi-entry/details/by/:order_info_id',
+	piEntryOperations.selectPiEntryByOrderInfoUuid
+);
+commercialRouter.get(
+	'/pi/details/by/order-info-ids/:order_info_uuids/:party_uuid/:marketing_uuid',
+	piEntryOperations.selectPiEntryByPiDetailsByOrderInfoUuids
 );
 
 export const pathCommercial = {

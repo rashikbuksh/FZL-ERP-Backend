@@ -269,6 +269,37 @@ export async function selectOrderEntry(req, res, next) {
 	}
 }
 
+export async function selectOrderNumberForPi(req, res, next) {
+	const query = sql`SELECT
+					DISTINCT vod.order_info_uuid AS value,
+					vod.order_number AS label
+				FROM
+					zipper.v_order_details vod
+					LEFT JOIN order_info oi ON vod.order_info_uuid = oi.uuid
+				WHERE 
+					vod.marketing_uuid = ${req.params.marketing_uuid} AND
+					oi.party_uuid = ${req.params.party_uuid} 
+				ORDER BY
+					vod.order_number ASC
+				`;
+
+	const orderNumberPromise = db.execute(query);
+
+	try {
+		const data = await orderNumberPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Number of a marketing and party',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 // purchase
 export async function selectVendor(req, res, next) {
 	const vendorPromise = db
