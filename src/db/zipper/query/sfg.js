@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -171,8 +171,12 @@ export async function selectSwatchInfo(req, res, next) {
 
 	const swatchPromise = db.execute(query);
 
+	console.log(query);
+
 	try {
 		const data = await swatchPromise;
+		console.log(data);
+
 		const toast = {
 			status: 200,
 			type: 'select',

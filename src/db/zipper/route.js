@@ -1,6 +1,4 @@
 import { Router } from 'express';
-import { type } from '../material/schema.js';
-import { properties } from '../public/schema.js';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
@@ -2741,7 +2739,7 @@ export const pathZipperSfg = {
 			},
 		},
 	},
-	'/zipper/sfg/swatch': {
+	'/zipper/sfg-swatch': {
 		get: {
 			tags: ['zipper.sfg'],
 			summary: 'Get all SFG Swatch Info',
@@ -2809,7 +2807,7 @@ export const pathZipperSfg = {
 			},
 		},
 	},
-	'/zipper/sfg/swatch/{uuid}': {
+	'/zipper/sfg-swatch/{uuid}': {
 		put: {
 			tags: ['zipper.sfg'],
 			summary: 'Update an existing swatch by sfg uuid',
@@ -2877,8 +2875,8 @@ zipperRouter.get('/sfg/:uuid', sfgOperations.select);
 zipperRouter.post('/sfg', sfgOperations.insert);
 zipperRouter.put('/sfg/:uuid', sfgOperations.update);
 zipperRouter.delete('/sfg/:uuid', sfgOperations.remove);
-zipperRouter.get('/sfg/swatch', sfgOperations.selectSwatchInfo);
-zipperRouter.put('/sfg/swatch/:uuid', sfgOperations.updateSwatchBySfgUuid);
+zipperRouter.get('/sfg-swatch', sfgOperations.selectSwatchInfo);
+zipperRouter.put('/sfg-swatch/:uuid', sfgOperations.updateSwatchBySfgUuid);
 
 // --------------------- SFG PRODUCTION ---------------------
 
