@@ -249,11 +249,8 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 export async function updateRecipeByLabDipInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { lab_dip_info_uuid } = req.body;
+	const { lab_dip_info_uuid } = req.body[0];
 	const { recipe_uuid } = req.params;
-
-	console.log('lab_dip_info_uuid', lab_dip_info_uuid);
-	console.log('recipe_uuid', recipe_uuid);
 
 	const recipePromise = db
 		.update(recipe)

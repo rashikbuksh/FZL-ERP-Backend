@@ -1209,12 +1209,11 @@ export const pathLabDipRecipe = {
 			},
 		},
 	},
-	'/lab-dip/update-recipe/by/{lab_dip_info_uuid}': {
+	'/lab-dip/update-recipe/by/{recipe_uuid}': {
 		put: {
 			tags: ['lab_dip.recipe'],
-			summary: 'Update an existing lab dip recipe by lab_dip_info_uuid',
-			description:
-				'Update an existing lab dip recipe by lab_dip_info_uuid',
+			summary: 'Update an existing lab dip recipe by recipe_uuid',
+			description: 'Update an existing lab dip recipe by recipe_uuid',
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
