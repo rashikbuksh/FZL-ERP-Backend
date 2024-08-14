@@ -32,6 +32,10 @@ otherRouter.get(
 	otherOperations.selectOrderInfoToGetOrderDescription
 );
 otherRouter.get('/order/entry/value/label', otherOperations.selectOrderEntry);
+otherRouter.get(
+	'/order-number-for-pi/value/label/:marketing_uuid/:party_uuid',
+	otherOperations.selectOrderNumberForPi
+);
 
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
@@ -249,7 +253,7 @@ const pathPublic = {
 									},
 									label: {
 										type: 'string',
-										example: 'Z-24-0001',
+										example: 'Z24-0001',
 									},
 								},
 							},
@@ -317,7 +321,7 @@ const pathPublic = {
 									label: {
 										type: 'string',
 										example:
-											'Z-24-0001 ⇾ N-5-OE-SP ⇾ st1 ⇾ black ⇾ 1000 ⇾ 1000',
+											'Z24-0001 ⇾ N-5-OE-SP ⇾ st1 ⇾ black ⇾ 1000 ⇾ 1000',
 									},
 									can_trf_quantity: {
 										type: 'number',
@@ -606,6 +610,54 @@ const pathZipper = {
 									factory_priority: {
 										type: 'string',
 										example: '',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/order-number-for-pi/value/label/{marketing_uuid}/{party_uuid}': {
+		get: {
+			tags: ['others'],
+			summary: 'get order number for pi',
+			description: 'Order number for pi',
+			operationId: 'getOrderNumberForPi',
+			parameters: [
+				{
+					name: 'marketing_uuid',
+					in: 'path',
+					description: 'marketing uuid',
+					required: true,
+					type: 'string',
+					example: '2ggcphnwHGzEUGy',
+				},
+				{
+					name: 'party_uuid',
+					in: 'path',
+					description: 'party uuid',
+					required: true,
+					type: 'string',
+					example: '2ggcphnwHGzEUGy',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns a order number.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'Z24-0001',
 									},
 								},
 							},
