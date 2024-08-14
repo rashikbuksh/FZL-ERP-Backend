@@ -274,3 +274,31 @@ export async function updateRecipeByLabDipInfoUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function updateRecipeWhenRemoveLabDipInfoUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { recipe_uuid } = req.params;
+
+	const recipePromise = db
+		.update(recipe)
+		.set({ lab_dip_info_uuid: null })
+		.where(eq(recipe.uuid, recipe_uuid))
+		.returning({
+			updatedName: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
+		});
+
+	try {
+		const data = await recipePromise;
+
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

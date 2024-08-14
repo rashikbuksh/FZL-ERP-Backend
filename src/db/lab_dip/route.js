@@ -1254,6 +1254,48 @@ export const pathLabDipRecipe = {
 			},
 		},
 	},
+	'/lab-dip/update-recipe/remove-lab-dip-info-uuid/by/{recipe_uuid}': {
+		get: {
+			tags: ['lab_dip.recipe'],
+			summary: 'Update an existing lab dip recipe by recipe_uuid',
+			description: 'Update an existing lab dip recipe by recipe_uuid',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'recipe_uuid',
+					in: 'path',
+					description: 'Lab dip info to update',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Lab dip recipe updated successfully',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									recipe_id: {
+										type: 'string',
+										example: 'LDR24-0001',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip recipe not found',
+				},
+			},
+		},
+	},
 };
 
 labDipRouter.get('/recipe', recipeOperations.selectAll);
@@ -1280,6 +1322,10 @@ labDipRouter.get(
 labDipRouter.put(
 	'/update-recipe/by/:recipe_uuid',
 	recipeOperations.updateRecipeByLabDipInfoUuid
+);
+labDipRouter.put(
+	'/update-recipe/remove-lab-dip-info-uuid/by/:recipe_uuid',
+	recipeOperations.updateRecipeWhenRemoveLabDipInfoUuid
 );
 
 // recipe_entry routes
