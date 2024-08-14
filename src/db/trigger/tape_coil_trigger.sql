@@ -21,14 +21,14 @@ BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
     SET
-        quantity = quantity + NEW.trx_quantity,
+        quantity = quantity + OLD.trx_quantity,
 
         trx_quantity_in_coil = trx_quantity_in_coil 
-        - NEW.trx_quantity
+        - OLD.trx_quantity
 
-    WHERE tape_coil.uuid = NEW.tape_coil_uuid;
+    WHERE tape_coil.uuid = OLD.tape_coil_uuid;
 
-RETURN NEW;
+RETURN OLD;
 END;
 
 $$ LANGUAGE plpgsql;

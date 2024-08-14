@@ -1,4 +1,4 @@
-import { request, Router } from 'express';
+import { Router } from 'express';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
@@ -4659,9 +4659,17 @@ export const pathZipperTapeToCoil = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									tape_type: {
+									type: {
 										type: 'string',
 										example: 'nylon',
+									},
+									zipper_number: {
+										type: 'number',
+										example: 3,
+									},
+									type_of_zipper: {
+										type: 'string',
+										example: 'nylon 3',
 									},
 									trx_quantity: {
 										type: 'number',
@@ -4674,14 +4682,6 @@ export const pathZipperTapeToCoil = {
 									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
-									},
-									user_designation: {
-										type: 'string',
-										example: 'Manager',
-									},
-									user_department: {
-										type: 'string',
-										example: 'Production',
 									},
 									created_at: {
 										type: 'string',
@@ -4757,9 +4757,54 @@ export const pathZipperTapeToCoil = {
 				200: {
 					description: 'successful operation',
 					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_to_coil',
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							tape_coil_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							type: {
+								type: 'string',
+								example: 'nylon',
+							},
+							zipper_number: {
+								type: 'number',
+								example: 3,
+							},
+							type_of_zipper: {
+								type: 'string',
+								example: 'nylon 3',
+							},
+							trx_quantity: {
+								type: 'number',
+								example: 10,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
 						},
 					},
 				},
