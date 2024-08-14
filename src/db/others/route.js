@@ -52,6 +52,10 @@ otherRouter.get(
 
 // commercial
 otherRouter.get('/bank/value/label', otherOperations.selectBank);
+otherRouter.get(
+	'/lc/value/label/:party_uuid',
+	otherOperations.selectLCByPartyUuid
+);
 
 // hr
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);
@@ -448,8 +452,54 @@ const pathCommercial = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: { type: 'string' },
-									label: { type: 'string' },
+									value: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									label: {
+										type: 'string',
+										example: 'Bank-0001',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/lc/value/label/{party_uuid}': {
+		get: {
+			tags: ['others'],
+			summary: 'get all LCs',
+			description: 'All LCs',
+			operationId: 'getAllLCs',
+			parameters: [
+				{
+					name: 'party_uuid',
+					in: 'path',
+					description: "party's uuid",
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns all LCs.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									label: {
+										type: 'string',
+										example: 'LC-0001',
+									},
 								},
 							},
 						},

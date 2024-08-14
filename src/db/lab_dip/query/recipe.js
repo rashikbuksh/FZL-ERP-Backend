@@ -249,10 +249,16 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 export async function updateRecipeByLabDipInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { lab_dip_info_uuid } = req.body;
+	const { recipe_uuid } = req.params;
+
+	console.log('lab_dip_info_uuid', lab_dip_info_uuid);
+	console.log('recipe_uuid', recipe_uuid);
+
 	const recipePromise = db
 		.update(recipe)
-		.set({ lab_dip_info_uuid: req.body.lab_dip_info_uuid })
-		.where(eq(recipe.uuid, req.params.recipe_uuid))
+		.set({ lab_dip_info_uuid: lab_dip_info_uuid })
+		.where(eq(recipe.uuid, recipe_uuid))
 		.returning({
 			updatedName: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
 		});

@@ -384,6 +384,28 @@ export async function selectBank(req, res, next) {
 	});
 }
 
+export async function selectLCByPartyUuid(req, res, next) {
+	const lcPromise = db
+		.select({
+			value: commercialSchema.lc.uuid,
+			label: commercialSchema.lc.lc_number,
+		})
+		.from(commercialSchema.lc)
+		.where(eq(commercialSchema.lc.party_uuid, req.params.party_uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'LC list of a party',
+	};
+	handleResponse({
+		promise: lcPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
 // hr
 export async function selectDepartment(req, res, next) {
 	const departmentPromise = db
