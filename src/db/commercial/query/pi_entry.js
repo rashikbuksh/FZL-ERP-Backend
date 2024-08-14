@@ -163,33 +163,35 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`SELECT
-					sfg.uuid as uuid,
-                    sfg.uuid as sfg_uuid,
-                    vod.order_info_uuid,
-                    vod.order_number as order_number,
-                    vod.item_description as item_description,
-                    oe.style as style,
-                    oe.color as color,
-                    oe.size as size,
-                    oe.quantity as quantity,
-                    sfg.pi as given_pi_quantity,
-                    (oe.quantity - sfg.pi) as max_quantity,
-                    (oe.quantity - sfg.pi) as pi_quantity,
-                    (oe.quantity - sfg.pi) as balance_quantity,
-                    false as is_checked
-                FROM
-                    zipper.sfg sfg
-                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                    LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
-                WHERE
-                    vod.order_info_uuid = ${req.params.order_info_uuid}
-				ORDER BY 
-                    vod.order_number ASC,
-					vod.item_description ASC, 
-					oe.style ASC, 
-					oe.color ASC, 
-					oe.size ASC`;
+	const query = sql`
+        SELECT
+            sfg.uuid as uuid,
+            sfg.uuid as sfg_uuid,
+            vod.order_info_uuid,
+            vod.order_number as order_number,
+            vod.item_description as item_description,
+            oe.style as style,
+            oe.color as color,
+            oe.size as size,
+            oe.quantity as quantity,
+            sfg.pi as given_pi_quantity,
+            (oe.quantity - sfg.pi) as max_quantity,
+            (oe.quantity - sfg.pi) as pi_quantity,
+            (oe.quantity - sfg.pi) as balance_quantity,
+            false as is_checked
+        FROM
+            zipper.sfg sfg
+            LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+            LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+        WHERE
+            vod.order_info_uuid = ${req.params.order_info_uuid}
+        ORDER BY 
+            vod.order_number ASC,
+            vod.item_description ASC, 
+            oe.style ASC, 
+            oe.color ASC, 
+            oe.size ASC
+    `;
 
 	const pi_entryPromise = db.execute(query);
 
@@ -198,9 +200,10 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'pi_entry',
+			message: 'pi_entry By Order Info Uuid',
 		};
-		return await res.status(200).json({ toast, data: data?.rows });
+
+		return res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -211,14 +214,18 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 		const api = await createApi(req);
 		let { order_info_uuids, party_uuid, marketing_uuid } = req?.params;
 
+		console.log('order_info_uuids', order_info_uuids);
+
 		if (order_info_uuids === 'null') {
 			return res.status(400).json({ error: 'Order Number is required' });
 		}
 
 		order_info_uuids = order_info_uuids
 			.split(',')
-			.map(Number)
+			.map(String)
 			.map((num) => [num]);
+
+		console.log('order_info_uuids', order_info_uuids, 'after split');
 
 		const fetchData = async (endpoint) =>
 			await api.get(`/commercial/pi-entry/details/by/${endpoint}`);
@@ -226,6 +233,8 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 		const results = await Promise.all(
 			order_info_uuids.flat().map((uuid) => fetchData(uuid))
 		);
+
+		console.log('results', results?.data);
 
 		const response = {
 			party_uuid,
@@ -236,9 +245,17 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			}, []),
 		};
 
-		return res.status(200).json(response);
+		console.log('response', response?.data);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			msg: 'Pi Details By Order Info Uuids',
+		};
+
+		res.status(200).json({ toast, data: response });
 	} catch (error) {
-		// console.log(error?.response);
+		console.log(error?.response);
 		return res.status(500).json(error);
 	}
 }

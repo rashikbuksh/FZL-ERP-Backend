@@ -544,7 +544,7 @@ export const pathCommercialPi = {
 										type: 'string',
 										example: '123456',
 									},
-									order_info_ids: {
+									order_info_uuids: {
 										type: 'array',
 										items: {
 											type: 'string',
@@ -836,7 +836,7 @@ export const pathCommercialPi = {
 										type: 'string',
 										example: '123456',
 									},
-									order_info_ids: {
+									order_info_uuids: {
 										type: 'array',
 										items: {
 											type: 'string',
@@ -978,7 +978,7 @@ export const pathCommercialPi = {
 										type: 'string',
 										example: '123456',
 									},
-									order_info_ids: {
+									order_info_uuids: {
 										type: 'array',
 										items: {
 											type: 'string',
@@ -1419,16 +1419,16 @@ export const pathCommercialPiEntry = {
 			},
 		},
 	},
-	'/commercial/pi-entry/details/by/{order_info_id}': {
+	'/commercial/pi-entry/details/by/{order_info_uuid}': {
 		get: {
 			tags: ['commercial.pi_entry'],
-			summary: 'Get a pi_entry by order_info_id',
-			description: ' Get a pi_entry by order_info_id',
+			summary: 'Get a pi_entry by order_info_uuid',
+			description: ' Get a pi_entry by order_info_uuid',
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
 				{
-					name: 'order_info_id',
+					name: 'order_info_uuid',
 					in: 'path',
 					description: 'Pi to get',
 					required: true,
@@ -1651,7 +1651,7 @@ commercialRouter.use(
 	piEntryOperations.selectPiEntryByPiUuid
 );
 commercialRouter.get(
-	'/pi-entry/details/by/:order_info_id',
+	'/pi-entry/details/by/:order_info_uuid',
 	piEntryOperations.selectPiEntryByOrderInfoUuid
 );
 commercialRouter.get(

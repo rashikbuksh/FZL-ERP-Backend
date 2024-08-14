@@ -1255,10 +1255,11 @@ export const pathLabDipRecipe = {
 		},
 	},
 	'/lab-dip/update-recipe/remove-lab-dip-info-uuid/by/{recipe_uuid}': {
-		get: {
+		put: {
 			tags: ['lab_dip.recipe'],
 			summary: 'Update an existing lab dip recipe by recipe_uuid',
 			description: 'Update an existing lab dip recipe by recipe_uuid',
+			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
 				{
@@ -1271,27 +1272,14 @@ export const pathLabDipRecipe = {
 				},
 			],
 			responses: {
-				200: {
-					description: 'Lab dip recipe updated successfully',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									recipe_id: {
-										type: 'string',
-										example: 'LDR24-0001',
-									},
-								},
-							},
-						},
-					},
-				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
 				404: {
 					description: 'Lab dip recipe not found',
+				},
+				405: {
+					description: 'Validation exception',
 				},
 			},
 		},
