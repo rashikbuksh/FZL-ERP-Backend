@@ -9,20 +9,20 @@ export async function insert(req, res, next) {
 	const merchandiserPromise = db
 		.insert(merchandiser)
 		.values(req.body)
-		.returning();
+		.returning({ insertedName: merchandiser.name });
 
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
+	try {
+		const data = await merchandiserPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedName} inserted`,
+		};
 
-	handleResponse({
-		promise: merchandiserPromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -34,37 +34,18 @@ export async function update(req, res, next) {
 		.where(eq(merchandiser.uuid, req.params.uuid))
 		.returning({ updatedName: merchandiser.name });
 
-	merchandiserPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await merchandiserPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
 
-			handleResponse({
-				promise: merchandiserPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating merchandiser - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: merchandiserPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -75,37 +56,18 @@ export async function remove(req, res, next) {
 		.where(eq(merchandiser.uuid, req.params.uuid))
 		.returning({ deletedName: merchandiser.name });
 
-	merchandiserPromise
-		.then((result) => {
-			const toast = {
-				status: 200,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await merchandiserPromise;
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
 
-			handleResponse({
-				promise: merchandiserPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting merchandiser - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: merchandiserPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -126,7 +88,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Merchandiser list',
+		message: 'Merchandiser list',
 	};
 	handleResponse({
 		promise: resultPromise,
@@ -158,7 +120,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Merchandiser',
+		message: 'Merchandiser',
 	};
 	handleResponse({
 		promise: merchandiserPromise,

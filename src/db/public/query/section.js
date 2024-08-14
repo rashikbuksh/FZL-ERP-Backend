@@ -6,15 +6,23 @@ import { section } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sectionPromise = db.insert(section).values(req.body).returning();
+	const sectionPromise = db
+		.insert(section)
+		.values(req.body)
+		.returning({ insertedName: section.name });
 
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
+	try {
+		const data = await sectionPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedName} inserted`,
+		};
 
-	handleResponse({ promise: sectionPromise, res, next, ...toast });
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function update(req, res, next) {
@@ -25,24 +33,18 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(section.uuid, req.params.uuid))
 		.returning({ updatedName: section.name });
-	sectionPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
-			handleResponse({ promise: sectionPromise, res, next, ...toast });
-		})
-		.catch((error) => {
-			console.error(error);
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating section - ${error.message}`,
-			};
-			handleResponse({ promise: sectionPromise, res, next, ...toast });
-		});
+	try {
+		const data = await sectionPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function remove(req, res, next) {
@@ -53,24 +55,18 @@ export async function remove(req, res, next) {
 		.where(eq(section.uuid, req.params.uuid))
 		.returning({ deletedName: section.name });
 
-	sectionPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
-			handleResponse({ promise: sectionPromise, res, next, ...toast });
-		})
-		.catch((error) => {
-			console.error(error);
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting section - ${error.message}`,
-			};
-			handleResponse({ promise: sectionPromise, res, next, ...toast });
-		});
+	try {
+		const data = await sectionPromise;
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -79,7 +75,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'All sections selected',
+		message: 'Sections list',
 	};
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
@@ -96,7 +92,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Section selected',
+		message: 'Section ',
 	};
 
 	handleResponse({ promise: sectionPromise, res, next, ...toast });
