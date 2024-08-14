@@ -912,15 +912,19 @@ export const def_zipper_dying_batch = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		id: {
 			type: 'serial',
+			example: 1,
 		},
 		mc_no: {
 			type: 'integer',
+			example: 1,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -934,6 +938,7 @@ export const def_zipper_dying_batch = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -943,8 +948,12 @@ export const def_zipper_dying_batch = {
 
 export const dying_batch_entry = zipper.table('dying_batch_entry', {
 	uuid: uuid_primary,
-	dying_batch_uuid: defaultUUID('dying_batch_uuid'),
-	batch_entry_uuid: defaultUUID('batch_entry_uuid'),
+	dying_batch_uuid: defaultUUID('dying_batch_uuid').references(
+		() => dying_batch.uuid
+	),
+	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
+		() => batch_entry.uuid
+	),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -976,21 +985,27 @@ export const def_zipper_dying_batch_entry = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		dying_batch_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		batch_entry_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		quantity: {
 			type: 'number',
+			example: 100,
 		},
 		production_quantity: {
 			type: 'number',
+			example: 100,
 		},
 		production_quantity_in_kg: {
 			type: 'number',
+			example: 100,
 		},
 		created_at: {
 			type: 'string',
@@ -1004,6 +1019,7 @@ export const def_zipper_dying_batch_entry = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
