@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { type } from '../material/schema.js';
+import { properties } from '../public/schema.js';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
@@ -2739,6 +2741,133 @@ export const pathZipperSfg = {
 			},
 		},
 	},
+	'/zipper/sfg/swatch': {
+		get: {
+			tags: ['zipper.sfg'],
+			summary: 'Get all SFG Swatch Info',
+			responses: {
+				200: {
+					description: 'Returns all SFG Swatch Info',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_entry_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									style: {
+										type: 'string',
+										example: 'style 1',
+									},
+									color: {
+										type: 'string',
+										example: 'black',
+									},
+									size: {
+										type: 'number',
+										example: 10,
+									},
+									quantity: {
+										type: 'number',
+										example: 10,
+									},
+									recipe_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									recipe_name: {
+										type: 'string',
+										example: 'recipe 1',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0010',
+									},
+									item_description: {
+										type: 'string',
+										example: 'item description',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/zipper/sfg/swatch/{uuid}': {
+		put: {
+			tags: ['zipper.sfg'],
+			summary: 'Update an existing swatch by sfg uuid',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'sfg to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				description:
+					'SFG object that needs to be updated to the zipper',
+				required: true,
+				content: {
+					'application/json': {
+						schema: {
+							type: 'object',
+							properties: {
+								recipe_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+							},
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/sfg',
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'sfg not found',
+				},
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+	},
 };
 
 // --------------------- SFG ROUTES ---------------------
@@ -2748,6 +2877,8 @@ zipperRouter.get('/sfg/:uuid', sfgOperations.select);
 zipperRouter.post('/sfg', sfgOperations.insert);
 zipperRouter.put('/sfg/:uuid', sfgOperations.update);
 zipperRouter.delete('/sfg/:uuid', sfgOperations.remove);
+zipperRouter.get('/sfg/swatch', sfgOperations.selectSwatchInfo);
+zipperRouter.put('/sfg/swatch/:uuid', sfgOperations.updateSwatchBySfgUuid);
 
 // --------------------- SFG PRODUCTION ---------------------
 
