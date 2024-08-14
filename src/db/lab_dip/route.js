@@ -1323,7 +1323,7 @@ labDipRouter.put(
 	'/update-recipe/by/:recipe_uuid',
 	recipeOperations.updateRecipeByLabDipInfoUuid
 );
-labDipRouter.get(
+labDipRouter.put(
 	'/update-recipe/remove-lab-dip-info-uuid/by/:recipe_uuid',
 	recipeOperations.updateRecipeWhenRemoveLabDipInfoUuid
 );
