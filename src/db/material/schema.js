@@ -515,6 +515,10 @@ export const defMaterialUsed = {
 		wastage: {
 			type: 'number',
 		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
 		created_at: {
 			type: 'string',
 			format: 'date-time',
