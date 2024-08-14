@@ -1,24 +1,35 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
 import { buyer } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const buyerPromise = db.insert(buyer).values(req.body).returning();
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
+	const buyerPromise = db
+		.insert(buyer)
+		.values(req.body)
+		.returning({ insertedName: buyer.name });
 
-	handleResponse({
-		promise: buyerPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await buyerPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedName} inserted`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
 }
 
 export async function update(req, res, next) {
@@ -30,37 +41,21 @@ export async function update(req, res, next) {
 		.where(eq(buyer.uuid, req.params.uuid))
 		.returning({ updatedName: buyer.name });
 
-	buyerPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await buyerPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
 
-			handleResponse({
-				promise: buyerPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating buyer - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: buyerPromise,
-				res,
-				next,
-				...toast,
-			});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
 		});
+	}
 }
 
 export async function remove(req, res, next) {
@@ -71,37 +66,21 @@ export async function remove(req, res, next) {
 		.where(eq(buyer.uuid, req.params.uuid))
 		.returning({ deletedName: buyer.name });
 
-	buyerPromise
-		.then((result) => {
-			const toast = {
-				status: 200,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
+	try {
+		const data = await buyerPromise;
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
 
-			handleResponse({
-				promise: buyerPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-			// for error
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting buyer - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: buyerPromise,
-				res,
-				next,
-				...toast,
-			});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
 		});
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -109,7 +88,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Buyer list',
+		message: 'Buyer list',
 	};
 
 	handleResponse({
@@ -130,7 +109,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Buyer',
+		message: 'Buyer',
 	};
 
 	handleResponse({
