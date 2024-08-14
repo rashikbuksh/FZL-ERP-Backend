@@ -1,7 +1,11 @@
-import { eq } from "drizzle-orm";
-import { handleResponse, validateRequest } from "../../../util/index.js";
-import db from "../../index.js";
-import { dying_batch_entry } from "../schema.js";
+import { eq } from 'drizzle-orm';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
+import db from '../../index.js';
+import { dying_batch_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -9,8 +13,22 @@ export async function insert(req, res, next) {
 	const dyingBatchEntryPromise = db
 		.insert(dying_batch_entry)
 		.values(req.body)
-		.returning();
-	handleResponse(dyingBatchEntryPromise, res, next, 201);
+		.returning({ insertedId: dying_batch_entry.uuid });
+
+	try {
+		const data = await dyingBatchEntryPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedId} inserted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
 }
 
 export async function update(req, res, next) {
@@ -20,8 +38,22 @@ export async function update(req, res, next) {
 		.update(dying_batch_entry)
 		.set(req.body)
 		.where(eq(dying_batch_entry.uuid, req.params.uuid))
-		.returning();
-	handleResponse(dyingBatchEntryPromise, res, next, 201);
+		.returning({ updatedId: dying_batch_entry.uuid });
+
+	try {
+		const data = await dyingBatchEntryPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
 }
 
 export async function remove(req, res, next) {
@@ -30,13 +62,33 @@ export async function remove(req, res, next) {
 	const dyingBatchEntryPromise = db
 		.delete(dying_batch_entry)
 		.where(eq(dying_batch_entry.uuid, req.params.uuid))
-		.returning();
-	handleResponse(dyingBatchEntryPromise, res, next);
+		.returning({ deletedId: dying_batch_entry.uuid });
+
+	try {
+		const data = await dyingBatchEntryPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
 }
 
 export async function selectAll(req, res, next) {
 	const resultPromise = db.select().from(dying_batch_entry);
-	handleResponse(resultPromise, res, next);
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'dying_batch_entry list',
+	};
+
+	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
 
 export async function select(req, res, next) {
@@ -46,5 +98,12 @@ export async function select(req, res, next) {
 		.select()
 		.from(dying_batch_entry)
 		.where(eq(dying_batch_entry.uuid, req.params.uuid));
-	handleResponse(dyingBatchEntryPromise, res, next);
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'dying_batch_entry',
+	};
+
+	handleResponse({ promise: dyingBatchEntryPromise, res, next, ...toast });
 }
