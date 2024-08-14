@@ -502,18 +502,27 @@ export const defMaterialUsed = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		material_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		section: {
 			type: 'string',
+			example: 'ig',
 		},
 		used_quantity: {
 			type: 'number',
+			example: 0.0,
 		},
 		wastage: {
 			type: 'number',
+			example: 0.0,
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -527,6 +536,7 @@ export const defMaterialUsed = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is an entry',
 		},
 	},
 	xml: {
