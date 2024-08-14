@@ -4455,6 +4455,18 @@ export const pathZipperTapeCoilProduction = {
 										type: 'string',
 										example: 'nylon 3',
 									},
+									quantity: {
+										type: 'number',
+										example: 10,
+									},
+									trx_quantity_in_coil: {
+										type: 'number',
+										example: 10,
+									},
+									quantity_in_coil: {
+										type: 'number',
+										example: 10,
+									},
 									production_quantity: {
 										type: 'number',
 										example: 10,
@@ -4570,6 +4582,18 @@ export const pathZipperTapeCoilProduction = {
 							type_of_zipper: {
 								type: 'string',
 								example: 'nylon 3',
+							},
+							quantity: {
+								type: 'number',
+								example: 10,
+							},
+							trx_quantity_in_coil: {
+								type: 'number',
+								example: 10,
+							},
+							quantity_in_coil: {
+								type: 'number',
+								example: 10,
 							},
 							production_quantity: {
 								type: 'number',
@@ -4738,6 +4762,18 @@ export const pathZipperTapeCoilProduction = {
 									type_of_zipper: {
 										type: 'string',
 										example: 'nylon 3',
+									},
+									quantity: {
+										type: 'number',
+										example: 10,
+									},
+									trx_quantity_in_coil: {
+										type: 'number',
+										example: 10,
+									},
+									quantity_in_coil: {
+										type: 'number',
+										example: 10,
 									},
 									production_quantity: {
 										type: 'number',
