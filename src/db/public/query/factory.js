@@ -6,19 +6,26 @@ import { factory, party } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const factoryPromise = db.insert(factory).values(req.body).returning();
+	const factoryPromise = db
+		.insert(factory)
+		.values(req.body)
+		.returning({ insertedName: factory.name });
 
-	const toast = {
-		status: 201,
-		type: 'create',
-		msg: `${req.body.name} created`,
-	};
-	handleResponse({
-		promise: factoryPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await factoryPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedName} inserted`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
 }
 
 export async function update(req, res, next) {
@@ -30,37 +37,21 @@ export async function update(req, res, next) {
 		.where(eq(factory.uuid, req.params.uuid))
 		.returning({ updatedName: factory.name });
 
-	factoryPromise
-		.then((result) => {
-			const toast = {
-				status: 201,
-				type: 'update',
-				msg: `${result[0].updatedName} updated`,
-			};
+	try {
+		const data = await factoryPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
 
-			handleResponse({
-				promise: factoryPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.log(error);
-
-			const toast = {
-				status: 500,
-				type: 'update',
-				msg: `Error updating factory - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: factoryPromise,
-				res,
-				next,
-				...toast,
-			});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
 		});
+	}
 }
 
 export async function remove(req, res, next) {
@@ -71,37 +62,17 @@ export async function remove(req, res, next) {
 		.where(eq(factory.uuid, req.params.uuid))
 		.returning({ deletedName: factory.name });
 
-	factoryPromise
-		.then((result) => {
-			const toast = {
-				status: 200,
-				type: 'delete',
-				msg: `${result[0].deletedName} deleted`,
-			};
-
-			handleResponse({
-				promise: factoryPromise,
-				res,
-				next,
-				...toast,
-			});
-		})
-		.catch((error) => {
-			console.error(error);
-
-			const toast = {
-				status: 500,
-				type: 'delete',
-				msg: `Error deleting factory - ${error.message}`,
-			};
-
-			handleResponse({
-				promise: factoryPromise,
-				res,
-				next,
-				...toast,
-			});
-		});
+	try {
+		const data = await factoryPromise;
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectAll(req, res, next) {
@@ -121,7 +92,7 @@ export async function selectAll(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		msg: 'Factory list',
+		message: 'Factory list',
 	};
 	handleResponse({
 		promise: resultPromise,
@@ -151,7 +122,7 @@ export async function select(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		msg: 'Factory',
+		message: 'Factory',
 	};
 	handleResponse({
 		promise: factoryPromise,
