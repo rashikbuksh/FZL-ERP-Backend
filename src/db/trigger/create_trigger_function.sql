@@ -561,29 +561,102 @@ CREATE OR REPLACE FUNCTION material.material_stock_after_material_used_update() 
 BEGIN
     UPDATE material.stock
     SET 
-    tape_making = tape_making - CASE WHEN OLD.section = 'tape_making' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    coil_forming = coil_forming - CASE WHEN OLD.section = 'coil_forming' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    dying_and_iron = dying_and_iron - CASE WHEN OLD.section = 'dying_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    m_gapping = m_gapping - CASE WHEN OLD.section = 'm_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    v_gapping = v_gapping - CASE WHEN OLD.section = 'v_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    v_teeth_molding = v_teeth_molding - CASE WHEN OLD.section = 'v_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    m_teeth_molding = m_teeth_molding - CASE WHEN OLD.section = 'm_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    teeth_assembling_and_polishing = teeth_assembling_and_polishing - CASE WHEN OLD.section = 'teeth_assembling_and_polishing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    m_teeth_cleaning = m_teeth_cleaning - CASE WHEN OLD.section = 'm_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    v_teeth_cleaning = v_teeth_cleaning - CASE WHEN OLD.section = 'v_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    plating_and_iron = plating_and_iron - CASE WHEN OLD.section = 'plating_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    m_sealing = m_sealing - CASE WHEN OLD.section = 'm_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    v_sealing = v_sealing - CASE WHEN OLD.section = 'v_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    n_t_cutting = n_t_cutting - CASE WHEN OLD.section = 'n_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    v_t_cutting = v_t_cutting - CASE WHEN OLD.section = 'v_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    m_stopper = m_stopper - CASE WHEN OLD.section = 'm_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    v_stopper = v_stopper - CASE WHEN OLD.section = 'v_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    n_stopper = n_stopper - CASE WHEN OLD.section = 'n_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    cutting = cutting - CASE WHEN OLD.section = 'cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    qc_and_packing = qc_and_packing - CASE WHEN OLD.section = 'qc_and_packing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    die_casting = die_casting - CASE WHEN OLD.section = 'die_casting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    slider_assembly = slider_assembly - CASE WHEN OLD.section = 'slider_assembly' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
-    coloring = coloring - CASE WHEN OLD.section = 'coloring' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
+    tape_making = tape_making + 
+    CASE WHEN OLD.section = 'tape_making' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    coil_forming = coil_forming + 
+    CASE WHEN OLD.section = 'coil_forming' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    dying_and_iron = dying_and_iron + 
+    CASE WHEN OLD.section = 'dying_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_gapping = m_gapping + 
+    CASE WHEN OLD.section = 'm_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_gapping = v_gapping + 
+    CASE WHEN OLD.section = 'v_gapping' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_teeth_molding = v_teeth_molding + 
+    CASE WHEN OLD.section = 'v_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_teeth_molding = m_teeth_molding + 
+    CASE WHEN OLD.section = 'm_teeth_molding' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    teeth_assembling_and_polishing = teeth_assembling_and_polishing + 
+    CASE WHEN OLD.section = 'teeth_assembling_and_polishing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_teeth_cleaning = m_teeth_cleaning + 
+    CASE WHEN OLD.section = 'm_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_teeth_cleaning = v_teeth_cleaning + 
+    CASE WHEN OLD.section = 'v_teeth_cleaning' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    plating_and_iron = plating_and_iron + 
+    CASE WHEN OLD.section = 'plating_and_iron' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_sealing = m_sealing + 
+    CASE WHEN OLD.section = 'm_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_sealing = v_sealing + 
+    CASE WHEN OLD.section = 'v_sealing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    n_t_cutting = n_t_cutting + 
+    CASE WHEN OLD.section = 'n_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_t_cutting = v_t_cutting + 
+    CASE WHEN OLD.section = 'v_t_cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    m_stopper = m_stopper + 
+    CASE WHEN OLD.section = 'm_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    v_stopper = v_stopper + 
+    CASE WHEN OLD.section = 'v_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    n_stopper = n_stopper + 
+    CASE WHEN OLD.section = 'n_stopper' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    cutting = cutting + 
+    CASE WHEN OLD.section = 'cutting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    qc_and_packing = qc_and_packing + 
+    CASE WHEN OLD.section = 'qc_and_packing' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    die_casting = die_casting + 
+    CASE WHEN OLD.section = 'die_casting' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    slider_assembly = slider_assembly + 
+    CASE WHEN OLD.section = 'slider_assembly' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
+    coloring = coloring + 
+    CASE WHEN OLD.section = 'coloring' THEN OLD.used_quantity + OLD.wastage ELSE 0 END
+    WHERE material_uuid = NEW.material_uuid;
+
+    UPDATE material.stock
+    SET
+    tape_making = tape_making -
+    CASE WHEN NEW.section = 'tape_making' THEN NEW.used_quantity ELSE 0 END,
+    coil_forming = coil_forming -
+    CASE WHEN NEW.section = 'coil_forming' THEN NEW.used_quantity ELSE 0 END,
+    dying_and_iron = dying_and_iron -
+    CASE WHEN NEW.section = 'dying_and_iron' THEN NEW.used_quantity ELSE 0 END,
+    m_gapping = m_gapping -
+    CASE WHEN NEW.section = 'm_gapping' THEN NEW.used_quantity ELSE 0 END,
+    v_gapping = v_gapping -
+    CASE WHEN NEW.section = 'v_gapping' THEN NEW.used_quantity ELSE 0 END,
+    v_teeth_molding = v_teeth_molding -
+    CASE WHEN NEW.section = 'v_teeth_molding' THEN NEW.used_quantity ELSE 0 END,
+    m_teeth_molding = m_teeth_molding -
+    CASE WHEN NEW.section = 'm_teeth_molding' THEN NEW.used_quantity ELSE 0 END,
+    teeth_assembling_and_polishing = teeth_assembling_and_polishing -
+    CASE WHEN NEW.section = 'teeth_assembling_and_polishing' THEN NEW.used_quantity ELSE 0 END,
+    m_teeth_cleaning = m_teeth_cleaning -
+    CASE WHEN NEW.section = 'm_teeth_cleaning' THEN NEW.used_quantity ELSE 0 END,
+    v_teeth_cleaning = v_teeth_cleaning -
+    CASE WHEN NEW.section = 'v_teeth_cleaning' THEN NEW.used_quantity ELSE 0 END,
+    plating_and_iron = plating_and_iron -
+    CASE WHEN NEW.section = 'plating_and_iron' THEN NEW.used_quantity ELSE 0 END,
+    m_sealing = m_sealing -
+    CASE WHEN NEW.section = 'm_sealing' THEN NEW.used_quantity ELSE 0 END,
+    v_sealing = v_sealing -
+    CASE WHEN NEW.section = 'v_sealing' THEN NEW.used_quantity ELSE 0 END,
+    n_t_cutting = n_t_cutting -
+    CASE WHEN NEW.section = 'n_t_cutting' THEN NEW.used_quantity ELSE 0 END,
+    v_t_cutting = v_t_cutting -
+    CASE WHEN NEW.section = 'v_t_cutting' THEN NEW.used_quantity ELSE 0 END,
+    m_stopper = m_stopper -
+    CASE WHEN NEW.section = 'm_stopper' THEN NEW.used_quantity ELSE 0 END,
+    v_stopper = v_stopper -
+    CASE WHEN NEW.section = 'v_stopper' THEN NEW.used_quantity ELSE 0 END,
+    n_stopper = n_stopper -
+    CASE WHEN NEW.section = 'n_stopper' THEN NEW.used_quantity ELSE 0 END,
+    cutting = cutting -
+    CASE WHEN NEW.section = 'cutting' THEN NEW.used_quantity ELSE 0 END,
+    qc_and_packing = qc_and_packing -
+    CASE WHEN NEW.section = 'qc_and_packing' THEN NEW.used_quantity ELSE 0 END,
+    die_casting = die_casting -
+    CASE WHEN NEW.section = 'die_casting' THEN NEW.used_quantity ELSE 0 END,
+    slider_assembly = slider_assembly -
+    CASE WHEN NEW.section = 'slider_assembly' THEN NEW.used_quantity ELSE 0 END,
+    coloring = coloring -
+    CASE WHEN NEW.section = 'coloring' THEN NEW.used_quantity ELSE 0 END
     WHERE material_uuid = NEW.material_uuid;
     RETURN NEW;
 END;
