@@ -36,7 +36,7 @@ BEGIN
 
 UPDATE slider.die_casting
     SET 
-    quantity = quantity - (NEW.cavity_goods * NEW.push) + (OLD.cavity_goods * OLD.push)
+    quantity = quantity + (NEW.cavity_goods * NEW.push) - (OLD.cavity_goods * OLD.push)
     WHERE uuid = NEW.die_casting_uuid;
 
 RETURN NEW;
