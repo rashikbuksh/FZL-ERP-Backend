@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import slider from '../slider/schema.js';
 import * as infoOperations from './query/info.js';
 import * as sectionOperations from './query/section.js';
 import * as stockOperations from './query/stock.js';
@@ -1362,14 +1361,6 @@ export const pathMaterialUsed = {
 										type: 'string',
 										example: 'admin',
 									},
-									user_designation: {
-										type: 'string',
-										example: 'Admin',
-									},
-									user_department: {
-										type: 'string',
-										example: 'Admin',
-									},
 									created_at: {
 										type: 'string',
 										format: 'date-time',
@@ -1476,14 +1467,6 @@ export const pathMaterialUsed = {
 								type: 'string',
 								example: 'admin',
 							},
-							user_designation: {
-								type: 'string',
-								example: 'Admin',
-							},
-							user_department: {
-								type: 'string',
-								example: 'Admin',
-							},
 							created_at: {
 								type: 'string',
 								format: 'date-time',
@@ -1577,6 +1560,83 @@ export const pathMaterialUsed = {
 			},
 		},
 	},
+	'/material/used/by/{section}': {
+		get: {
+			tags: ['material.used'],
+			summary: 'Get material used by section',
+			description: 'Get material used by section',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'section',
+					in: 'path',
+					description: ' section to get',
+					required: true,
+					type: 'string',
+					example: 'tape_making',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_name: {
+								type: 'string',
+								example: 'material 1',
+							},
+							used_quantity: {
+								type: 'number',
+								example: 10.0,
+							},
+							wastage: { type: 'number', example: 10.0 },
+							section: {
+								type: 'string',
+								example: 'tape_making',
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'admin',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material used not found',
+				},
+			},
+		},
+	},
 };
 
 materialRouter.get('/used', usedOperations.selectAll);
@@ -1588,6 +1648,7 @@ materialRouter.delete(
 
 	usedOperations.remove
 );
+materialRouter.get('/used/by/:section', usedOperations.selectUsedBySection);
 
 // stock_to_sfg
 

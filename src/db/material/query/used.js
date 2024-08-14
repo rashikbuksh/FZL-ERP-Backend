@@ -110,8 +110,6 @@ export async function selectAll(req, res, next) {
 			wastage: used.wastage,
 			created_by: used.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation,
-			user_department: hrSchema.department,
 			created_at: used.created_at,
 			updated_at: used.updated_at,
 			remarks: used.remarks,
@@ -119,15 +117,7 @@ export async function selectAll(req, res, next) {
 		.from(used)
 		.leftJoin(info, eq(used.material_uuid, info.uuid))
 		.leftJoin(stock, eq(used.material_uuid, stock.material_uuid))
-		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		);
+		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid));
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -176,8 +166,6 @@ export async function select(req, res, next) {
 			wastage: used.wastage,
 			created_by: used.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation,
-			user_department: hrSchema.department,
 			created_at: used.created_at,
 			updated_at: used.updated_at,
 			remarks: used.remarks,
@@ -186,15 +174,65 @@ export async function select(req, res, next) {
 		.leftJoin(info, eq(used.material_uuid, info.uuid))
 		.leftJoin(stock, eq(used.material_uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		)
 		.where(eq(used.uuid, req.params.uuid));
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Used',
+	};
+
+	handleResponse({ promise: usedPromise, res, next, ...toast });
+}
+
+export async function selectUsedBySection(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const usedPromise = db
+		.select({
+			uuid: used.uuid,
+			material_uuid: used.material_uuid,
+			material_name: info.name,
+			unit: info.unit,
+			stock: stock.stock,
+			tape_making: stock.tape_making,
+			coil_forming: stock.coil_forming,
+			dying_and_iron: stock.dying_and_iron,
+			m_gapping: stock.m_gapping,
+			v_gapping: stock.v_gapping,
+			v_teeth_molding: stock.v_teeth_molding,
+			m_teeth_molding: stock.m_teeth_molding,
+			teeth_assembling_and_polishing:
+				stock.teeth_assembling_and_polishing,
+			m_teeth_cleaning: stock.m_teeth_cleaning,
+			v_teeth_cleaning: stock.v_teeth_cleaning,
+			plating_and_iron: stock.plating_and_iron,
+			m_sealing: stock.m_sealing,
+			v_sealing: stock.v_sealing,
+			n_t_cutting: stock.n_t_cutting,
+			v_t_cutting: stock.v_t_cutting,
+			m_stopper: stock.m_stopper,
+			v_stopper: stock.v_stopper,
+			n_stopper: stock.n_stopper,
+			cutting: stock.cutting,
+			qc_and_packing: stock.qc_and_packing,
+			die_casting: stock.die_casting,
+			slider_assembly: stock.slider_assembly,
+			coloring: stock.coloring,
+			section: used.section,
+			used_quantity: used.used_quantity,
+			wastage: used.wastage,
+			created_by: used.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: used.created_at,
+			updated_at: used.updated_at,
+			remarks: used.remarks,
+		})
+		.from(used)
+		.leftJoin(info, eq(used.material_uuid, info.uuid))
+		.leftJoin(stock, eq(used.material_uuid, stock.material_uuid))
+		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid))
+		.where(eq(used.section, req.params.section));
+
 	const toast = {
 		status: 200,
 		type: 'select',
