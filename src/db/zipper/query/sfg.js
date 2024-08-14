@@ -146,3 +146,63 @@ export async function select(req, res, next) {
 
 	handleResponse({ promise: sfgPromise, res, next, ...toast });
 }
+
+export async function selectSwatchInfo(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`SELECT
+					sfg.uuid as uuid,
+					sfg.order_entry_uuid as order_entry_uuid,
+					oe.order_description_uuid as order_description_uuid,
+					oe.style as style,
+					oe.color as color,
+					oe.size as size,
+					oe.quantity as quantity,
+					sfg.recipe_uuid as recipe_uuid,
+					recipe.name as recipe_name,
+					sfg.remarks as remarks,
+					vod.order_number as order_number,
+					vod.item_description as item_description
+				FROM
+					zipper.sfg sfg
+					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
+					LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid`;
+
+	const swatchPromise = db.execute(query);
+
+	try {
+		const data = await swatchPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'swatch info',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateSwatchBySfgUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const sfgPromise = db
+		.update(sfg)
+		.set({ recipe_uuid: req.body.recipe_uuid })
+		.where(eq(sfg.uuid, req.params.uuid))
+		.returning({ updatedId: sfg.uuid });
+
+	try {
+		const data = await sfgPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

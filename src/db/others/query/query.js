@@ -275,7 +275,7 @@ export async function selectOrderNumberForPi(req, res, next) {
 					vod.order_number AS label
 				FROM
 					zipper.v_order_details vod
-					LEFT JOIN order_info oi ON vod.order_info_uuid = oi.uuid
+					LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
 				WHERE 
 					vod.marketing_uuid = ${req.params.marketing_uuid} AND
 					oi.party_uuid = ${req.params.party_uuid} 
