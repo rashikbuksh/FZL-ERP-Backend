@@ -204,11 +204,12 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             (oe.quantity - sfg.pi) as max_quantity,
             (oe.quantity - sfg.pi) as pi_quantity,
             (oe.quantity - sfg.pi) as balance_quantity,
-            false as is_checked
+            CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked
         FROM
             zipper.sfg sfg
             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
             LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+			LEFT JOIN commercial.pi_entry pe ON pe.sfg_uuid = sfg.uuid
         WHERE
             vod.order_info_uuid = ${req.params.order_info_uuid}
         ORDER BY 
