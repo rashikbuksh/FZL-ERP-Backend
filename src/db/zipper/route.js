@@ -5378,18 +5378,29 @@ export const pathZipperPlanningEntry = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									week: {
-										type: 'integer',
-										example: 1,
-									},
-									created_by: {
+									planning_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-
-									created_by_name: {
+									sfg_uuid: {
 										type: 'string',
-										example: 'John Doe',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sno_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									factory_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									batch_production_quantity: {
+										type: 'number',
+										example: 100,
 									},
 									created_at: {
 										type: 'string',
@@ -5471,18 +5482,29 @@ export const pathZipperPlanningEntry = {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
-							week: {
-								type: 'integer',
-								example: 1,
-							},
-							created_by: {
+							planning_uuid: {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
-
-							created_by_name: {
+							sfg_uuid: {
 								type: 'string',
-								example: 'John Doe',
+								example: 'igD0v9DIJQhJeet',
+							},
+							sno_quantity: {
+								type: 'number',
+								example: 100,
+							},
+							factory_quantity: {
+								type: 'number',
+								example: 100,
+							},
+							production_quantity: {
+								type: 'number',
+								example: 100,
+							},
+							batch_production_quantity: {
+								type: 'number',
+								example: 100,
 							},
 							created_at: {
 								type: 'string',

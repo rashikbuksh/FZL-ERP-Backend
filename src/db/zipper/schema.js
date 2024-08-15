@@ -1310,8 +1310,8 @@ export const def_zipper_planning_entry = {
 		'uuid',
 		'planning_uuid',
 		'sfg_uuid',
-		'planned_quantity',
-		'final_quantity',
+		'sno_quantity',
+		'factory_quantity',
 		'production_quantity',
 		'batch_production_quantity',
 		'created_at',
@@ -1329,11 +1329,11 @@ export const def_zipper_planning_entry = {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
-		planned_quantity: {
+		sno_quantity: {
 			type: 'number',
 			example: 100,
 		},
-		final_quantity: {
+		factory_quantity: {
 			type: 'number',
 			example: 100,
 		},

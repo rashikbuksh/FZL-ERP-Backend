@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -138,4 +138,58 @@ export async function select(req, res, next) {
 		next,
 		...toast,
 	});
+}
+
+export async function selectPlanningEntryByPlanningUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT
+			pe.uuid as planning_entry_uuid,
+			pe.planning_uuid,
+			pe.sfg_uuid,
+			pe.sno_quantity,
+			pe.factory_quantity,
+			pe.production_quantity,
+			pe.batch_production_quantity,
+			pe.created_at,
+			pe.updated_at,
+			pe.remarks,
+			oe.style,
+			oe.color,
+			oe.size,
+			vod.order_number,
+			vod.item_description
+		FROM
+			planning_entry pe
+		LEFT JOIN
+			planning p
+		ON
+			pe.planning_uuid = p.uuid
+		LEFT JOIN
+			order_entry oe
+		ON
+			p.order_entry_uuid = oe.uuid
+		LEFT JOIN
+			view_order_details vod
+		ON
+			oe.order_uuid = vod.order_uuid
+		WHERE
+			pe.planning_uuid = ${req.params.planning_uuid}
+	`;
+
+	const planningEntryPromise = db.execute(query);
+
+	try {
+		const data = await planningEntryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'planning_entry By Planning Uuid',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
