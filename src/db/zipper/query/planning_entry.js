@@ -235,6 +235,8 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 		LEFT JOIN
 			zipper.planning_entry pe
 			ON sfg.uuid = pe.sfg_uuid
+		WHERE 
+			sfg.recipe_uuid IS NOT NULL
 	`;
 
 	const orderDetailsPromise = db.execute(query);
