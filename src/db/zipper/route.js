@@ -5940,6 +5940,108 @@ export const pathZipperPlanningEntry = {
 			},
 		},
 	},
+	'/zipper/order-planning': {
+		get: {
+			tags: ['zipper.planning'],
+			summary: 'Get all Order Planning',
+			responses: {
+				200: {
+					description: 'Returns all Order Planning',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									planning_entry_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									planning_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sfg_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sno_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									factory_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									batch_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									style: {
+										type: 'string',
+										example: 'Style 1',
+									},
+									color: {
+										type: 'string',
+										example: 'Red',
+									},
+									size: {
+										type: 'number',
+										example: 100,
+									},
+									order_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-3-OE-SP',
+									},
+									given_sno_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									given_factory_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									given_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									given_batch_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 zipperRouter.get('/planning-entry', planningEntryOperations.selectAll);
@@ -5950,6 +6052,10 @@ zipperRouter.delete('/planning-entry/:uuid', planningEntryOperations.remove);
 zipperRouter.get(
 	'/planning-entry/by/:planning_uuid',
 	planningEntryOperations.selectPlanningEntryByPlanningUuid
+);
+zipperRouter.get(
+	'/order-planning',
+	planningEntryOperations.getOrderDetailsForPlanningEntry
 );
 
 export const pathZipper = {

@@ -180,7 +180,7 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 		ON
 			oe.order_description_uuid = vod.order_description_uuid
 		WHERE
-			pe.planning_uuid = ${req.params.planning_uuid}
+			pe.planning_uuid = ${req.params.planning_uuid} AND oe.swatch_status_enum = 'approved'
 	`;
 
 	const planningEntryPromise = db.execute(query);
@@ -191,6 +191,62 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 			status: 200,
 			type: 'select',
 			message: 'planning_entry By Planning Uuid',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function getOrderDetailsForPlanningEntry(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT
+			pe.uuid as planning_entry_uuid,
+			pe.planning_uuid,
+			pe.sfg_uuid,
+			pe.sno_quantity,
+			pe.factory_quantity,
+			pe.production_quantity,
+			pe.batch_production_quantity,
+			pe.created_at,
+			pe.updated_at,
+			pe.remarks,
+			oe.style,
+			oe.color,
+			oe.size,
+			oe.quantity as order_quantity,
+			vod.order_number,
+			vod.item_description,
+			pe.sno_quantity as given_sno_quantity,
+			pe.factory_quantity as given_factory_quantity,
+			pe.production_quantity as given_production_quantity,
+			pe.batch_production_quantity as given_batch_production_quantity
+		FROM
+			zipper.order_entry oe
+		LEFT JOIN
+			zipper.v_order_details vod
+			ON oe.order_description_uuid = vod.order_description_uuid
+		LEFT JOIN 
+			zipper.sfg sfg
+			ON oe.uuid = sfg.order_entry_uuid
+		LEFT JOIN
+			zipper.planning_entry pe
+			ON sfg.uuid = pe.sfg_uuid
+		WHERE
+			pe.planning_uuid = ${req.params.planning_uuid} AND oe.swatch_status_enum = 'approved'
+	`;
+
+	const orderDetailsPromise = db.execute(query);
+
+	try {
+		const data = await orderDetailsPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'order details',
 		};
 
 		return res.status(200).json({ toast, data: data?.rows });
