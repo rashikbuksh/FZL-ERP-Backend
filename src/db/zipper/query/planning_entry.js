@@ -158,22 +158,27 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size,
+			oe.quantity as order_quantity,
 			vod.order_number,
 			vod.item_description
 		FROM
-			planning_entry pe
+			zipper.planning_entry pe
 		LEFT JOIN
-			planning p
+			zipper.planning p
 		ON
 			pe.planning_uuid = p.uuid
-		LEFT JOIN
-			order_entry oe
+		LEFT JOIN 
+			zipper.sfg sfg
 		ON
-			p.order_entry_uuid = oe.uuid
+			pe.sfg_uuid = sfg.uuid
 		LEFT JOIN
-			view_order_details vod
+			zipper.order_entry oe
 		ON
-			oe.order_uuid = vod.order_uuid
+			sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN
+			zipper.v_order_details vod
+		ON
+			oe.order_description_uuid = vod.order_description_uuid
 		WHERE
 			pe.planning_uuid = ${req.params.planning_uuid}
 	`;

@@ -155,7 +155,7 @@ export async function selectPlanningAndPlanningEntryByPlanningUuid(
 	next
 ) {
 	try {
-		const api = createApi();
+		const api = await createApi(req);
 
 		const { planning_uuid } = req.params;
 
@@ -164,20 +164,20 @@ export async function selectPlanningAndPlanningEntryByPlanningUuid(
 				.get(`${endpoint}/by/${planning_uuid}`)
 				.then((response) => response);
 
-		const [pi, pi_entry] = await Promise.all([
-			fetchData('/commercial/pi'),
-			fetchData('/commercial/pi-entry'),
+		const [planning, planning_entry] = await Promise.all([
+			fetchData('/zipper/planning'),
+			fetchData('/zipper/planning-entry'),
 		]);
 
 		const response = {
-			...pi?.data?.data[0],
-			pi_entry: pi_entry?.data?.data || [],
+			...planning?.data?.data[0],
+			planning_entry: planning_entry?.data?.data || [],
 		};
 
 		const toast = {
 			status: 200,
 			type: 'select',
-			msg: 'Recipe Details Full',
+			msg: 'Planning Details by Planning UUID',
 		};
 
 		res.status(200).json({ toast, data: response });
