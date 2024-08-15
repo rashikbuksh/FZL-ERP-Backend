@@ -236,7 +236,7 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			zipper.planning_entry pe
 			ON sfg.uuid = pe.sfg_uuid
 		WHERE
-			pe.planning_uuid = ${req.params.planning_uuid} AND oe.swatch_status_enum = 'approved'
+			oe.swatch_status_enum = 'approved'
 	`;
 
 	const orderDetailsPromise = db.execute(query);
