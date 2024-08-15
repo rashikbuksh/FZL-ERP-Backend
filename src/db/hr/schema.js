@@ -14,9 +14,11 @@ export const defDepartment = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		department: {
 			type: 'string',
+			example: 'HR',
 		},
 	},
 	xml: {
@@ -36,12 +38,15 @@ export const defDesignation = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		department_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		designation: {
 			type: 'string',
+			example: 'HR Manager',
 		},
 	},
 	xml: {
@@ -81,39 +86,53 @@ export const defHrUser = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'John Doe',
 		},
 		email: {
 			type: 'string',
+			example: 'johndoe@gmail.com',
 		},
 		pass: {
 			type: 'string',
+			example: 'password',
 		},
 		designation_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		can_access: {
 			type: 'string',
+			example: 'yes',
 		},
 		ext: {
 			type: 'string',
+			example: 'ext',
 		},
 		phone: {
 			type: 'string',
+			example: '1234567890',
 		},
 		created_at: {
 			type: 'string',
+			format: 'date-time',
+			example: '2021-01-01 00:00:00',
 		},
 		updated_at: {
 			type: 'string',
+			format: 'date-time',
+			example: '2021-01-01 00:00:00',
 		},
 		status: {
 			type: 'string',
+			example: 'active',
 		},
 		remarks: {
 			type: 'string',
+			example: 'remarks',
 		},
 	},
 	xml: {

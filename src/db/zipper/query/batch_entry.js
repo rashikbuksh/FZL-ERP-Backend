@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { batch_entry } from '../schema.js';
+import { batch_entry, planning_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -76,7 +76,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: batch_entry.uuid,
 			batch_uuid: batch_entry.batch_uuid,
-			sfg_uuid: batch_entry.sfg_uuid,
+			planning_entry_uuid: batch_entry.planning_entry_uuid,
 			quantity: batch_entry.quantity,
 			production_quantity: batch_entry.production_quantity,
 			production_quantity_in_kg: batch_entry.production_quantity_in_kg,
@@ -86,7 +86,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(batch_entry)
 		.leftJoin(batch, eq(batch.uuid, batch_entry.batch_uuid))
-		.leftJoin(sfg, eq(sfg.uuid, batch_entry.sfg_uuid));
+		.leftJoin(planning_entry, eq(planning_entry.uuid, batch_entry.planning_entry_uuid));
 
 	const toast = {
 		status: 200,
@@ -108,7 +108,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: batch_entry.uuid,
 			batch_uuid: batch_entry.batch_uuid,
-			sfg_uuid: batch_entry.sfg_uuid,
+			planning_entry_uuid: batch_entry.planning_entry_uuid,
 			quantity: batch_entry.quantity,
 			production_quantity: batch_entry.production_quantity,
 			production_quantity_in_kg: batch_entry.production_quantity_in_kg,
@@ -118,7 +118,7 @@ export async function select(req, res, next) {
 		})
 		.from(batch_entry)
 		.leftJoin(batch, eq(batch.uuid, batch_entry.batch_uuid))
-		.leftJoin(sfg, eq(sfg.uuid, batch_entry.sfg_uuid))
+		.leftJoin(planning_entry, eq(planning_entry.uuid, batch_entry.planning_entry_uuid))
 		.where(eq(batch_entry.uuid, req.params.uuid));
 
 	const toast = {

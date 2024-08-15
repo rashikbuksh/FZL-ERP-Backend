@@ -821,7 +821,7 @@ export const def_zipper_batch = {
 export const batch_entry = zipper.table('batch_entry', {
 	uuid: uuid_primary,
 	batch_uuid: defaultUUID('batch_uuid'),
-	sfg_uuid: defaultUUID('sfg_uuid'),
+	planning_entry_uuid: defaultUUID('planning_entry_uuid'),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -1234,6 +1234,137 @@ export const def_zipper_tape_coil_production = {
 	},
 };
 
+export const planning = zipper.table('planning', {
+	uuid: uuid_primary,
+	week: integer('week').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const def_zipper_planning = {
+	type: 'object',
+	required: ['uuid', 'week', 'created_by', 'created_at'],
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		week: {
+			type: 'integer',
+			example: 1,
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+	},
+	xml: {
+		name: 'Zipper/Planning',
+	},
+};
+
+export const planning_entry = zipper.table('planning_entry', {
+	uuid: uuid_primary,
+	planning_uuid: defaultUUID('planning_uuid').references(() => planning.uuid),
+	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
+	planned_quantity: decimal('planned_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	final_quantity: decimal('final_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	production_quantity: decimal('production_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	batch_production_quantity: decimal('batch_production_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const def_zipper_planning_entry = {
+	type: 'object',
+	required: [
+		'uuid',
+		'planning_uuid',
+		'sfg_uuid',
+		'planned_quantity',
+		'final_quantity',
+		'production_quantity',
+		'batch_production_quantity',
+		'created_at',
+	],
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		planning_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		sfg_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		planned_quantity: {
+			type: 'number',
+			example: 100,
+		},
+		final_quantity: {
+			type: 'number',
+			example: 100,
+		},
+		production_quantity: {
+			type: 'number',
+			example: 100,
+		},
+		batch_production_quantity: {
+			type: 'number',
+			example: 100,
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+	},
+	xml: {
+		name: 'Zipper/Planning-Entry',
+	},
+};
+
 //....................FOR TESTING.......................
 export const defZipper = {
 	order_info: def_zipper_order_info,
@@ -1249,6 +1380,7 @@ export const defZipper = {
 	tape_coil: def_zipper_tape_coil,
 	tape_to_coil: def_zipper_tape_to_coil,
 	tape_coil_production: def_zipper_tape_coil_production,
+	planning: def_zipper_planning,
 };
 
 export const tagZipper = [
@@ -1303,6 +1435,14 @@ export const tagZipper = [
 	{
 		name: 'zipper.tape_coil_production',
 		description: 'Zipper Tape Coil Production',
+	},
+	{
+		name: 'zipper.planning',
+		description: 'Zipper Planning',
+	},
+	{
+		name: 'zipper.planning_entry',
+		description: 'Zipper Planning Entry',
 	},
 ];
 
