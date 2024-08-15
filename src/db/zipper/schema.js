@@ -1283,22 +1283,22 @@ export const planning_entry = zipper.table('planning_entry', {
 	uuid: uuid_primary,
 	planning_uuid: defaultUUID('planning_uuid').references(() => planning.uuid),
 	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
-	planned_quantity: decimal('planned_quantity', {
+	sno_quantity: decimal('sno_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	final_quantity: decimal('final_quantity', {
+	factory_quantity: decimal('factory_quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	production_quantity: decimal('production_quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	batch_production_quantity: decimal('batch_production_quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
