@@ -214,8 +214,6 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 		const api = await createApi(req);
 		let { order_info_uuids, party_uuid, marketing_uuid } = req?.params;
 
-		console.log('order_info_uuids', order_info_uuids);
-
 		if (order_info_uuids === 'null') {
 			return res.status(400).json({ error: 'Order Number is required' });
 		}
@@ -223,29 +221,23 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 		order_info_uuids = order_info_uuids
 			.split(',')
 			.map(String)
-			.map((num) => [num]);
-
-		console.log('order_info_uuids', order_info_uuids, 'after split');
+			.map((String) => [String]);
 
 		const fetchData = async (endpoint) =>
 			await api.get(`/commercial/pi-entry/details/by/${endpoint}`);
 
 		const results = await Promise.all(
-			order_info_uuids.flat().map((uuid) => fetchData(uuid))
+			order_info_uuids.map((uuid) => fetchData(uuid))
 		);
-
-		console.log('results', results?.data);
 
 		const response = {
 			party_uuid,
 			marketing_uuid,
 			order_info_uuids,
-			pi_entry: results.reduce((acc, result) => {
-				return [...acc, ...(result?.data || [])];
+			pi_entry: results?.reduce((acc, result) => {
+				return [...acc, ...result?.data?.data];
 			}, []),
 		};
-
-		console.log('response', response?.data);
 
 		const toast = {
 			status: 200,
