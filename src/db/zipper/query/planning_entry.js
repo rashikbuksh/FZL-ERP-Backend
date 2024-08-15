@@ -206,7 +206,7 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 		SELECT
 			pe.uuid as planning_entry_uuid,
 			pe.planning_uuid,
-			pe.sfg_uuid,
+			sfg.uuid as sfg_uuid,
 			pe.sno_quantity,
 			pe.factory_quantity,
 			pe.production_quantity,
