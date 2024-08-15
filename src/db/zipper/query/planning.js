@@ -80,7 +80,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: planning.uuid,
 			week: planning.week,
-			created_by: hrSchema.users.uuid,
+			created_by: planning.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: planning.created_at,
 			updated_at: planning.updated_at,
@@ -104,7 +104,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: planning.uuid,
 			week: planning.week,
-			created_by: hrSchema.users.uuid,
+			created_by: planning.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: planning.created_at,
 			updated_at: planning.updated_at,
