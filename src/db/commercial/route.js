@@ -594,6 +594,14 @@ export const pathCommercialPi = {
 										type: 'string',
 										example: 'BB',
 									},
+									bank_address: {
+										type: 'string',
+										example: 'address',
+									},
+									factory_address: {
+										type: 'string',
+										example: 'address',
+									},
 									validity: {
 										type: 'string',
 										example: '2021-12-12',
@@ -886,6 +894,14 @@ export const pathCommercialPi = {
 										type: 'string',
 										example: 'BB',
 									},
+									bank_address: {
+										type: 'string',
+										example: 'address',
+									},
+									factory_address: {
+										type: 'string',
+										example: 'address',
+									},
 									validity: {
 										type: 'string',
 										example: '2021-12-12',
@@ -1027,6 +1043,14 @@ export const pathCommercialPi = {
 									bank_swift_code: {
 										type: 'string',
 										example: 'BB',
+									},
+									bank_address: {
+										type: 'string',
+										example: 'address',
+									},
+									factory_address: {
+										type: 'string',
+										example: 'address',
 									},
 									validity: {
 										type: 'string',
