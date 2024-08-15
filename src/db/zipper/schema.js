@@ -1381,6 +1381,7 @@ export const defZipper = {
 	tape_to_coil: def_zipper_tape_to_coil,
 	tape_coil_production: def_zipper_tape_coil_production,
 	planning: def_zipper_planning,
+	planning_entry: def_zipper_planning_entry,
 };
 
 export const tagZipper = [
