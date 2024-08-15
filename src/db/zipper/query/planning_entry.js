@@ -236,7 +236,7 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			zipper.planning_entry pe
 			ON sfg.uuid = pe.sfg_uuid
 		WHERE
-			oe.swatch_status_enum = 'approved'
+			sfg.recipe_uuid IS NOT NULL
 	`;
 
 	const orderDetailsPromise = db.execute(query);
