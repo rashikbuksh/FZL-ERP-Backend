@@ -6,12 +6,10 @@ import {
 	properties,
 } from '../public/schema.js';
 
-import { type } from '../material/schema.js';
 import * as bankOperations from './query/bank.js';
 import * as lcOperations from './query/lc.js';
 import * as piOperations from './query/pi.js';
 import * as piEntryOperations from './query/pi_entry.js';
-import { pi } from './schema.js';
 
 const commercialRouter = Router();
 

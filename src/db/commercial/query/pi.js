@@ -15,9 +15,37 @@ import { bank, lc, pi } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const {
+		uuid,
+		order_info_uuids,
+		marketing_uuid,
+		party_uuid,
+		merchandiser_uuid,
+		factory_uuid,
+		bank_uuid,
+		validity,
+		payment,
+		created_by,
+		created_at,
+		remarks,
+	} = req.body;
+
 	const piPromise = db
 		.insert(pi)
-		.values(req.body)
+		.values({
+			uuid,
+			order_info_uuids,
+			marketing_uuid,
+			party_uuid,
+			merchandiser_uuid,
+			factory_uuid,
+			bank_uuid,
+			validity,
+			payment,
+			created_by,
+			created_at,
+			remarks,
+		})
 		.returning({ insertedId: pi.uuid });
 	try {
 		const data = await piPromise;

@@ -255,7 +255,7 @@ export const pi = commercial.table('pi', {
 		() => publicSchema.party.uuid
 	),
 	merchandiser_uuid: defaultUUID('merchandiser_uuid').references(
-		() => publicSchema.party.uuid
+		() => publicSchema.merchandiser.uuid
 	),
 	factory_uuid: defaultUUID('factory_uuid').references(
 		() => publicSchema.factory.uuid
@@ -299,23 +299,23 @@ export const defCommercialPi = {
 			items: {
 				type: 'string',
 			},
-			example: '[{"igD0v9DIJQhJeet"}]',
+			example: '[{"J3Au9M73Zb9saxj"}]',
 		},
 		marketing_uuid: {
 			type: 'string',
-			example: 'igD0v9DIJQhJeet',
+			example: 'j14NcevenyrWSei',
 		},
 		party_uuid: {
 			type: 'string',
-			example: 'igD0v9DIJQhJeet',
+			example: 'cf-daf86b3eedf1',
 		},
 		merchandiser_uuid: {
 			type: 'string',
-			example: 'igD0v9DIJQhJeet',
+			example: 'LDedGLTqSAipBf1',
 		},
 		factory_uuid: {
 			type: 'string',
-			example: 'igD0v9DIJQhJeet',
+			example: 'cf-daf86b3eedf1',
 		},
 		bank_uuid: {
 			type: 'string',
