@@ -16,15 +16,19 @@ export const defPublicBuyer = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'John Doe',
 		},
 		short_name: {
 			type: 'string',
+			example: 'JD',
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -45,15 +49,19 @@ export const defPublicParty = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'John Doe',
 		},
 		short_name: {
 			type: 'string',
+			example: 'JD',
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -75,18 +83,23 @@ export const defPublicMarketing = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'John Doe',
 		},
 		short_name: {
 			type: 'string',
+			example: 'JD',
 		},
 		user_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -111,21 +124,27 @@ export const defPublicMerchandiser = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		party_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'John Doe',
 		},
 		email: {
 			type: 'string',
+			example: 'johndoe@gmail.com',
 		},
 		phone: {
 			type: 'string',
+			example: '1234567890',
 		},
 		address: {
 			type: 'string',
+			example: 'Address',
 		},
 		created_at: {
 			type: 'string',
@@ -165,18 +184,23 @@ export const defPublicFactory = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		party_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'John Doe',
 		},
 		phone: {
 			type: 'string',
+			example: '123456789',
 		},
 		address: {
 			type: 'string',
+			example: 'Address',
 		},
 		created_at: {
 			type: 'string',
@@ -207,16 +231,19 @@ export const defPublicSection = {
 	properties: {
 		uuid: {
 			type: 'string',
-			format: 'uuid',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'John Doe',
 		},
 		short_name: {
 			type: 'string',
+			example: 'JD',
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -242,21 +269,27 @@ export const defPublicProperties = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		item_for: {
 			type: 'string',
+			example: 'Item	for',
 		},
 		type: {
 			type: 'string',
+			example: 'Type',
 		},
 		name: {
 			type: 'string',
+			example: 'John Doe',
 		},
 		short_name: {
 			type: 'string',
+			example: 'JD',
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -270,6 +303,7 @@ export const defPublicProperties = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {

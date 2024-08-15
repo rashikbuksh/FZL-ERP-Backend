@@ -19,15 +19,19 @@ export const defMaterialSection = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'Section 1',
 		},
 		short_name: {
 			type: 'string',
+			example: 'S1',
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -48,15 +52,19 @@ export const defMaterialType = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'Type 1',
 		},
 		short_name: {
 			type: 'string',
+			example: 'T1',
 		},
 		remarks: {
 			type: 'string',
+			example: 'Remarks',
 		},
 	},
 	xml: {
@@ -96,27 +104,35 @@ export const defMaterialInfo = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		section_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		type_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		name: {
 			type: 'string',
+			example: 'Material 1',
 		},
 		short_name: {
 			type: 'string',
+			example: 'M1',
 		},
 		unit: {
 			type: 'string',
+			example: 'kg',
 		},
 		threshold: {
 			type: 'number',
+			example: 1000.0,
 		},
 		description: {
 			type: 'string',
+			example: 'This is a material',
 		},
 		created_at: {
 			type: 'string',
@@ -130,6 +146,7 @@ export const defMaterialInfo = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is an entry',
 		},
 	},
 	xml: {
@@ -580,21 +597,27 @@ export const defMaterialStockToSfg = {
 	properties: {
 		uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		material_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		order_entry_uuid: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		trx_to: {
 			type: 'string',
+			example: 'ig',
 		},
 		trx_quantity: {
 			type: 'number',
+			example: 1000.0,
 		},
 		created_by: {
 			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		created_at: {
 			type: 'string',
@@ -608,6 +631,7 @@ export const defMaterialStockToSfg = {
 		},
 		remarks: {
 			type: 'string',
+			example: 'This is an entry',
 		},
 	},
 	xml: {

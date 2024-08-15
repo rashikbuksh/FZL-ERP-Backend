@@ -6,6 +6,8 @@ import * as dyingBatchEntryOperations from './query/dying_batch_entry.js';
 import * as orderDescriptionOperations from './query/order_description.js';
 import * as orderEntryOperations from './query/order_entry.js';
 import * as orderInfoOperations from './query/order_info.js';
+import * as planningOperations from './query/planning.js';
+import * as planningEntryOperations from './query/planning_entry.js';
 import * as sfgOperations from './query/sfg.js';
 import * as sfgProductionOperations from './query/sfg_production.js';
 import * as sfgTransactionOperations from './query/sfg_transaction.js';
@@ -5110,6 +5112,498 @@ zipperRouter.delete(
 	tapeToCoilOperations.remove
 );
 
+// --------------------- PlANNING ---------------------
+
+export const pathZipperPlanning = {
+	'/zipper/planning': {
+		get: {
+			tags: ['zipper.planning'],
+			summary: 'Get all Planning',
+			responses: {
+				200: {
+					description: 'Returns all Planning',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									week: {
+										type: 'integer',
+										example: 1,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['zipper.planning'],
+			summary: 'create a planning',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/planning',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/planning',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+	'/zipper/planning/{uuid}': {
+		get: {
+			tags: ['zipper.planning'],
+			summary: 'Gets a Planning',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'planning to get',
+					required: true,
+					type: 'string',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							week: {
+								type: 'integer',
+								example: 1,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'User not found',
+				},
+			},
+		},
+
+		put: {
+			tags: ['zipper.planning'],
+			summary: 'Update an existing planning',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'planning to update',
+					required: true,
+					type: 'string',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/planning',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/planning',
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'planning not found',
+				},
+
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+
+		delete: {
+			tags: ['zipper.planning'],
+
+			summary: 'Deletes a planning',
+
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'planning to delete',
+					required: true,
+					type: 'string',
+				},
+			],
+
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/planning',
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Planning not found',
+				},
+			},
+		},
+	},
+};
+
+// --------------------- PlANNING ROUTES ---------------------
+zipperRouter.get('/planning', planningOperations.selectAll);
+zipperRouter.get('/planning/:uuid', planningOperations.select);
+zipperRouter.post('/planning', planningOperations.insert);
+zipperRouter.put('/planning/:uuid', planningOperations.update);
+zipperRouter.delete('/planning/:uuid', planningOperations.remove);
+
+// --------------------- PlANNING ---------------------
+
+export const pathZipperPlanningEntry = {
+	'/zipper/planning-entry': {
+		get: {
+			tags: ['zipper.planning_entry'],
+			summary: 'Get all Planning',
+			responses: {
+				200: {
+					description: 'Returns all Planning',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									week: {
+										type: 'integer',
+										example: 1,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['zipper.planning_entry'],
+			summary: 'create a planning entry',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/planning_entry',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/planning_entry',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+	'/zipper/planning-entry/{uuid}': {
+		get: {
+			tags: ['zipper.planning_entry'],
+			summary: 'Gets a planning entry',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'planning_entry to get',
+					required: true,
+					type: 'string',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							week: {
+								type: 'integer',
+								example: 1,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'User not found',
+				},
+			},
+		},
+		put: {
+			tags: ['zipper.planning_entry'],
+			summary: 'Update an existing planning_entry',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'planning_entry to update',
+					required: true,
+					type: 'string',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/planning_entry',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/planning_entry',
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'planning not found',
+				},
+
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+
+		delete: {
+			tags: ['zipper.planning_entry'],
+
+			summary: 'Deletes a planning_entry',
+
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'planning_entry to delete',
+					required: true,
+					type: 'string',
+				},
+			],
+
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/planning_entry',
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Planning_entry not found',
+				},
+			},
+		},
+	},
+};
+
+zipperRouter.get('/planning-entry', planningEntryOperations.selectAll);
+zipperRouter.get('/planning-entry/:uuid', planningEntryOperations.select);
+zipperRouter.post('/planning-entry', planningEntryOperations.insert);
+zipperRouter.put('/planning-entry/:uuid', planningEntryOperations.update);
+zipperRouter.delete('/planning-entry/:uuid', planningEntryOperations.remove);
+
 export const pathZipper = {
 	...pathZipperOrderInfo,
 	...pathZipperOrderDescription,
@@ -5124,6 +5618,8 @@ export const pathZipper = {
 	...pathZipperTapeCoil,
 	...pathZipperTapeCoilProduction,
 	...pathZipperTapeToCoil,
+	...pathZipperPlanning,
+	...pathZipperPlanningEntry,
 };
 
 export { zipperRouter };
