@@ -474,6 +474,7 @@ export const pathMaterialStock = {
 										example: 'material 1',
 									},
 									stock: { type: 'number', example: 10.0 },
+									lab_dip: { type: 'number', example: 10.0 },
 									tape_making: {
 										type: 'number',
 										example: 10.0,
@@ -506,40 +507,64 @@ export const pathMaterialStock = {
 										type: 'number',
 										example: 10.0,
 									},
-								},
-								m_teeth_cleaning: {
-									type: 'number',
-									example: 10.0,
-								},
-								v_teeth_cleaning: {
-									type: 'number',
-									example: 10.0,
-								},
-								plating_and_iron: {
-									type: 'number',
-									example: 10.0,
-								},
-								m_sealing: { type: 'number', example: 10.0 },
-								v_sealing: { type: 'number', example: 10.0 },
-								n_t_cutting: { type: 'number', example: 10.0 },
-								v_t_cutting: { type: 'number', example: 10.0 },
-								m_stopper: { type: 'number', example: 10.0 },
-								v_stopper: { type: 'number', example: 10.0 },
-								n_stopper: { type: 'number', example: 10.0 },
-								cutting: { type: 'number', example: 10.0 },
-								qc_and_packing: {
-									type: 'number',
-									example: 10.0,
-								},
-								die_casting: { type: 'number', example: 10.0 },
-								slider_assembly: {
-									type: 'number',
-									example: 10.0,
-								},
-								coloring: { type: 'string', example: 10.0 },
-								remarks: {
-									type: 'string',
-									example: 'This is an entry',
+									m_teeth_cleaning: {
+										type: 'number',
+										example: 10.0,
+									},
+									v_teeth_cleaning: {
+										type: 'number',
+										example: 10.0,
+									},
+									plating_and_iron: {
+										type: 'number',
+										example: 10.0,
+									},
+									m_sealing: {
+										type: 'number',
+										example: 10.0,
+									},
+									v_sealing: {
+										type: 'number',
+										example: 10.0,
+									},
+									n_t_cutting: {
+										type: 'number',
+										example: 10.0,
+									},
+									v_t_cutting: {
+										type: 'number',
+										example: 10.0,
+									},
+									m_stopper: {
+										type: 'number',
+										example: 10.0,
+									},
+									v_stopper: {
+										type: 'number',
+										example: 10.0,
+									},
+									n_stopper: {
+										type: 'number',
+										example: 10.0,
+									},
+									cutting: { type: 'number', example: 10.0 },
+									qc_and_packing: {
+										type: 'number',
+										example: 10.0,
+									},
+									die_casting: {
+										type: 'number',
+										example: 10.0,
+									},
+									slider_assembly: {
+										type: 'number',
+										example: 10.0,
+									},
+									coloring: { type: 'string', example: 10.0 },
+									remarks: {
+										type: 'string',
+										example: 'This is an entry',
+									},
 								},
 							},
 						},

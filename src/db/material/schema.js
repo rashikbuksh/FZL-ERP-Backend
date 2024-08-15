@@ -163,6 +163,10 @@ export const stock = material.table('stock', {
 	})
 		.notNull()
 		.default(0.0),
+	lab_dip: decimal('lab_dip', {
+		precision: 20,
+		scale: 4,
+	}).default(0.0),
 	tape_making: decimal('tape_making', {
 		precision: 20,
 		scale: 4,

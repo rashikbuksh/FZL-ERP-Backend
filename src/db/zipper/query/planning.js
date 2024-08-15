@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -122,4 +123,65 @@ export async function select(req, res, next) {
 	};
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
+}
+
+export async function selectPlanningByPlanningUuid(req, res, next) {
+	const resultPromise = db
+		.select({
+			uuid: planning.uuid,
+			week: planning.week,
+			created_by: hrSchema.users.uuid,
+			created_by_name: hrSchema.users.name,
+			created_at: planning.created_at,
+			updated_at: planning.updated_at,
+			remarks: planning.remarks,
+		})
+		.from(planning)
+		.leftJoin(hrSchema.users, eq(planning.created_by, hrSchema.users.uuid))
+		.where(eq(planning.uuid, req.params.uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'planning',
+	};
+
+	handleResponse({ promise: resultPromise, res, next, ...toast });
+}
+
+export async function selectPlanningAndPlanningEntryByPlanningUuid(
+	req,
+	res,
+	next
+) {
+	try {
+		const api = await createApi(req);
+
+		const { planning_uuid } = req.params;
+
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/by/${planning_uuid}`)
+				.then((response) => response);
+
+		const [planning, planning_entry] = await Promise.all([
+			fetchData('/zipper/planning'),
+			fetchData('/zipper/planning-entry'),
+		]);
+
+		const response = {
+			...planning?.data?.data[0],
+			planning_entry: planning_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			msg: 'Planning Details by Planning UUID',
+		};
+
+		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
