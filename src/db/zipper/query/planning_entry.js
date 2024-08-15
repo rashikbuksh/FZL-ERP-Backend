@@ -1,7 +1,11 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
-import { planning_entry, sfg, planning } from '../schema.js';
+import { planning, planning_entry, sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -76,18 +80,18 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: planning_entry.uuid,
 			planning_uuid: planning_entry.planning_uuid,
-            sfg_uuid: planning_entry.sfg_uuid,
+			sfg_uuid: planning_entry.sfg_uuid,
 			planned_quantity: planning_entry.planned_quantity,
-            final_quantity: planning_entry.final_quantity,
-            production_quantity: planning_entry.production_quantity,
-            batch_production_quantity: planning_entry.batch_production_quantity,
+			final_quantity: planning_entry.final_quantity,
+			production_quantity: planning_entry.production_quantity,
+			batch_production_quantity: planning_entry.batch_production_quantity,
 			created_at: planning_entry.created_at,
 			updated_at: planning_entry.updated_at,
 			remarks: planning_entry.remarks,
 		})
 		.from(planning_entry)
 		.leftJoin(sfg, eq(sfg.uuid, planning_entry.sfg_uuid))
-        .leftJoin(planning, eq(planning.uuid, planning_entry.planning_uuid));
+		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_uuid));
 
 	const toast = {
 		status: 200,
@@ -109,18 +113,18 @@ export async function select(req, res, next) {
 		.select({
 			uuid: planning_entry.uuid,
 			planning_uuid: planning_entry.planning_uuid,
-            sfg_uuid: planning_entry.sfg_uuid,
+			sfg_uuid: planning_entry.sfg_uuid,
 			planned_quantity: planning_entry.planned_quantity,
-            final_quantity: planning_entry.final_quantity,
-            production_quantity: planning_entry.production_quantity,
-            batch_production_quantity: planning_entry.batch_production_quantity,
+			final_quantity: planning_entry.final_quantity,
+			production_quantity: planning_entry.production_quantity,
+			batch_production_quantity: planning_entry.batch_production_quantity,
 			created_at: planning_entry.created_at,
 			updated_at: planning_entry.updated_at,
 			remarks: planning_entry.remarks,
 		})
 		.from(planning_entry)
 		.leftJoin(sfg, eq(sfg.uuid, planning_entry.sfg_uuid))
-        .leftJoin(planning, eq(planning.uuid, planning_entry.planning_uuid))
+		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_uuid))
 		.where(eq(planning_entry.uuid, req.params.uuid));
 
 	const toast = {
