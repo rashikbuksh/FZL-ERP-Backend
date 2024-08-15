@@ -541,10 +541,6 @@ export const defMaterialUsed = {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
 		created_at: {
 			type: 'string',
 			format: 'date-time',
