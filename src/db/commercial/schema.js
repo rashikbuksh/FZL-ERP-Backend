@@ -247,7 +247,7 @@ export const pi = commercial.table('pi', {
 	lc_uuid: defaultUUID('lc_uuid')
 		.default(null)
 		.references(() => lc.uuid),
-	order_info_ids: text('order_info_ids').notNull(), // need review
+	order_info_uuids: text('order_info_uuids').notNull(), // need review
 	marketing_uuid: defaultUUID('marketing_uuid').references(
 		() => publicSchema.marketing.uuid
 	),
@@ -294,7 +294,7 @@ export const defCommercialPi = {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
-		order_info_ids: {
+		order_info_uuids: {
 			type: 'array',
 			items: {
 				type: 'string',
