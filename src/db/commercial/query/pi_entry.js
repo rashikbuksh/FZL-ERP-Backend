@@ -134,30 +134,53 @@ export async function select(req, res, next) {
 export async function selectPiEntryByPiUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const pi_entryPromise = db
-		.select({
-			uuid: pi_entry.uuid,
-			pi_uuid: pi_entry.pi_uuid,
-			sfg_uuid: pi_entry.sfg_uuid,
-			pi_quantity: pi_entry.pi_quantity,
-			created_at: pi_entry.created_at,
-			updated_at: pi_entry.updated_at,
-			remarks: pi_entry.remarks,
-		})
-		.from(pi_entry)
-		.where(eq(pi_entry.pi_uuid, req.params.pi_uuid));
+	const query = sql`
+	SELECT
+                    pe.uuid as uuid,
+                    pe.sfg_uuid as sfg_uuid,
+                    vodf.order_info_uuid as order_info_uuid,
+                    vodf.order_number as order_number,
+					vodf.buyer_name as buyer_name,
+                    oe.style as style,
+                    oe.color as color,
+                    oe.quantity as quantity,
+                    vodf.item_description as item_description,
+                    oe.size as size,
+                    pe.pi_quantity as pi_quantity,
+                    oe.quantity as max_quantity,
+                    oe.party_price as unit_price,
+                    (pe.pi_quantity * oe.party_price) as value,
+                    (oe.quantity - sfg.pi) as balance_quantity,
+                    pe.created_at as created_at,
+                    pe.updated_at as updated_at
+                FROM
+                    commercial.pi_entry pe
+                    LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                WHERE
+                    pe.pi_uuid = ${req.params.pi_uuid}
+				ORDER BY 
+                    vodf.order_number ASC,
+					vodf.item_description ASC, 
+					oe.style ASC, 
+					oe.color ASC, 
+					oe.size ASC`;
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'pi_entry',
-	};
-	handleResponse({
-		promise: pi_entryPromise,
-		res,
-		next,
-		...toast,
-	});
+	const pi_entryPromise = db.execute(query);
+
+	try {
+		const data = await pi_entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'pi_entry By Pi Uuid',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectPiEntryByOrderInfoUuid(req, res, next) {
