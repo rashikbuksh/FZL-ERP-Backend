@@ -149,6 +149,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
                     pe.pi_quantity as pi_quantity,
                     oe.quantity as max_quantity,
                     oe.party_price as unit_price,
+					sfg.pi as given_pi_quantity,
                     (pe.pi_quantity * oe.party_price) as value,
                     (oe.quantity - sfg.pi) as balance_quantity,
                     pe.created_at as created_at,
