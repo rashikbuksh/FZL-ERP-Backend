@@ -4,7 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import  * as hrSchema from '../../hr/schema.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { planning } from '../schema.js';
 
@@ -12,9 +12,9 @@ export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const batchPromise = db
-		.insert(batch)
+		.insert(planning)
 		.values(req.body)
-		.returning({ insertedUuid: batch.uuid });
+		.returning({ insertedUuid: planning.uuid });
 	try {
 		const data = await batchPromise;
 
@@ -34,10 +34,10 @@ export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const batchPromise = db
-		.update(batch)
+		.update(planning)
 		.set(req.body)
-		.where(eq(batch.uuid, req.params.uuid))
-		.returning({ updatedUuid: batch.uuid });
+		.where(eq(planning.uuid, req.params.uuid))
+		.returning({ updatedUuid: planning.uuid });
 
 	try {
 		const data = await batchPromise;
@@ -57,9 +57,9 @@ export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const batchPromise = db
-		.delete(batch)
-		.where(eq(batch.uuid, req.params.uuid))
-		.returning({ deletedUuid: batch.uuid });
+		.delete(planning)
+		.where(eq(planning.uuid, req.params.uuid))
+		.returning({ deletedUuid: planning.uuid });
 
 	try {
 		const data = await batchPromise;
