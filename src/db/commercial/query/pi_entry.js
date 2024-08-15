@@ -134,43 +134,45 @@ export async function select(req, res, next) {
 export async function selectPiEntryByPiUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`
-	SELECT
-                    pe.uuid as uuid,
-                    pe.sfg_uuid as sfg_uuid,
-                    vodf.order_info_uuid as order_info_uuid,
-                    vodf.order_number as order_number,
+	try {
+		const query = sql`
+				SELECT
+	                pe.uuid as uuid,
+	                sfg.uuid as sfg_uuid,
+	                vodf.order_info_uuid as order_info_uuid,
+					vodf.order_description_uuid as order_description_uuid,
+	                vodf.order_number as order_number,
 					vodf.buyer_name as buyer_name,
-                    oe.style as style,
-                    oe.color as color,
-                    oe.quantity as quantity,
-                    vodf.item_description as item_description,
-                    oe.size as size,
-                    pe.pi_quantity as pi_quantity,
-                    oe.quantity as max_quantity,
-                    oe.party_price as unit_price,
+	                oe.style as style,
+	                oe.color as color,
+	                oe.quantity as quantity,
+	                vodf.item_description as item_description,
+	                oe.size as size,
+	                pe.pi_quantity as pi_quantity,
+	                oe.quantity as max_quantity,
+	                oe.party_price as unit_price,
 					sfg.pi as given_pi_quantity,
-                    (pe.pi_quantity * oe.party_price) as value,
-                    (oe.quantity - sfg.pi) as balance_quantity,
-                    pe.created_at as created_at,
-                    pe.updated_at as updated_at
-                FROM
-                    commercial.pi_entry pe
-                    LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
-                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                WHERE
-                    pe.pi_uuid = ${req.params.pi_uuid}
-				ORDER BY 
-                    vodf.order_number ASC,
-					vodf.item_description ASC, 
-					oe.style ASC, 
-					oe.color ASC, 
+	                (pe.pi_quantity * oe.party_price) as value,
+	                (oe.quantity - sfg.pi) as balance_quantity,
+	                pe.created_at as created_at,
+	                pe.updated_at as updated_at,
+					CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked
+	            FROM
+					zipper.sfg sfg
+	                LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+	                LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+					LEFT JOIN commercial.pi_entry pe ON pe.sfg_uuid = sfg.uuid
+				WHERE 
+					pe.pi_uuid = ${req.params.pi_uuid}
+				ORDER BY
+	                vodf.order_number ASC,
+					vodf.item_description ASC,
+					oe.style ASC,
+					oe.color ASC,
 					oe.size ASC`;
 
-	const pi_entryPromise = db.execute(query);
+		const pi_entryPromise = db.execute(query);
 
-	try {
 		const data = await pi_entryPromise;
 		const toast = {
 			status: 200,
@@ -251,8 +253,10 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			await api.get(`/commercial/pi-entry/details/by/${endpoint}`);
 
 		const results = await Promise.all(
-			order_info_uuids.map((uuid) => fetchData(uuid))
+			order_info_uuids.flat().map((uuid) => fetchData(uuid))
 		);
+
+		order_info_uuids = order_info_uuids.flat();
 
 		const response = {
 			party_uuid,

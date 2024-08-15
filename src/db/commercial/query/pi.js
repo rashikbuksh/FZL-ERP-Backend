@@ -130,22 +130,12 @@ export async function selectAll(req, res, next) {
 			payment: pi.payment,
 			created_by: pi.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: pi.created_at,
 			updated_at: pi.updated_at,
 			remarks: pi.remarks,
 		})
 		.from(pi)
 		.leftJoin(hrSchema.users, eq(pi.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		)
 		.leftJoin(
 			publicSchema.marketing,
 			eq(pi.marketing_uuid, publicSchema.marketing.uuid)
@@ -280,22 +270,12 @@ export async function selectPiByPiUuid(req, res, next) {
 			payment: pi.payment,
 			created_by: pi.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: pi.created_at,
 			updated_at: pi.updated_at,
 			remarks: pi.remarks,
 		})
 		.from(pi)
 		.leftJoin(hrSchema.users, eq(pi.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		)
 		.leftJoin(
 			publicSchema.marketing,
 			eq(pi.marketing_uuid, publicSchema.marketing.uuid)
