@@ -563,7 +563,7 @@ CREATE OR REPLACE FUNCTION material.material_stock_after_material_used_update() 
 BEGIN
     UPDATE material.stock
     SET 
-    lab_dip = lab_dip - 
+    lab_dip = lab_dip + 
     CASE WHEN NEW.section = 'lab_dip' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,
     tape_making = tape_making + 
     CASE WHEN OLD.section = 'tape_making' THEN OLD.used_quantity + OLD.wastage ELSE 0 END,

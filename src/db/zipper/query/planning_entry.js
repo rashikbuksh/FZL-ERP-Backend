@@ -235,7 +235,7 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 		LEFT JOIN
 			zipper.planning_entry pe
 			ON sfg.uuid = pe.sfg_uuid
-		WHERE
+		WHERE 
 			sfg.recipe_uuid IS NOT NULL
 	`;
 
@@ -243,13 +243,16 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 
 	try {
 		const data = await orderDetailsPromise;
+
+		const ggdata = { planning_entry: data?.rows };
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'order details',
 		};
 
-		return res.status(200).json({ toast, data: data?.rows });
+		return res.status(200).json({ toast, data: ggdata });
 	} catch (error) {
 		await handleError({ error, res });
 	}
