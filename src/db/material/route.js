@@ -1370,6 +1370,7 @@ export const pathMaterialUsed = {
 										example: 'material 1',
 									},
 									stock: { type: 'number', example: 10.0 },
+									lab_dip: { type: 'number', example: 10.0 },
 									tape_making: {
 										type: 'number',
 										example: 10.0,
@@ -1563,6 +1564,7 @@ export const pathMaterialUsed = {
 								example: 'material 1',
 							},
 							stock: { type: 'number', example: 10.0 },
+							lab_dip: { type: 'number', example: 10.0 },
 							tape_making: { type: 'number', example: 10.0 },
 							coil_forming: { type: 'number', example: 10.0 },
 							dying_and_iron: { type: 'number', example: 10.0 },
@@ -1737,6 +1739,7 @@ export const pathMaterialUsed = {
 								example: 'material 1',
 							},
 							stock: { type: 'number', example: 10.0 },
+							lab_dip: { type: 'number', example: 10.0 },
 							tape_making: { type: 'number', example: 10.0 },
 							coil_forming: { type: 'number', example: 10.0 },
 							dying_and_iron: { type: 'number', example: 10.0 },
