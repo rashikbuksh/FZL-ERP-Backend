@@ -12,17 +12,19 @@ import { planning } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const batchPromise = db
+	const planningPromise = db
 		.insert(planning)
 		.values(req.body)
-		.returning({ insertedUuid: planning.uuid });
+		.returning({
+			insertedWeek: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
+		});
 	try {
-		const data = await batchPromise;
+		const data = await planningPromise;
 
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedUuid} inserted`,
+			message: `${data[0].insertedWeek} inserted`,
 		};
 
 		res.status(201).json({ toast, data });
@@ -34,18 +36,20 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const batchPromise = db
+	const planningPromise = db
 		.update(planning)
 		.set(req.body)
-		.where(eq(planning.uuid, req.params.uuid))
-		.returning({ updatedUuid: planning.uuid });
+		.where(eq(planning.week, req.params.week))
+		.returning({
+			updatedWeek: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
+		});
 
 	try {
-		const data = await batchPromise;
+		const data = await planningPromise;
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedUuid} updated`,
+			message: `${data[0].updatedWeek} updated`,
 		};
 
 		res.status(201).json({ toast, data });
@@ -57,17 +61,19 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const batchPromise = db
+	const planningPromise = db
 		.delete(planning)
-		.where(eq(planning.uuid, req.params.uuid))
-		.returning({ deletedUuid: planning.uuid });
+		.where(eq(planning.week, req.params.week))
+		.returning({
+			deletedWeek: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
+		});
 
 	try {
-		const data = await batchPromise;
+		const data = await planningPromise;
 		const toast = {
 			status: 201,
 			type: 'delete',
-			message: `${data[0].deletedUuid} deleted`,
+			message: `${data[0].deletedWeek} deleted`,
 		};
 
 		res.status(201).json({ toast, data });
@@ -79,7 +85,6 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
-			uuid: planning.uuid,
 			week: planning.week,
 			week_id: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
 			created_by: planning.created_by,
@@ -104,7 +109,6 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	const resultPromise = db
 		.select({
-			uuid: planning.uuid,
 			week: planning.week,
 			week_id: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
 			created_by: planning.created_by,
@@ -115,7 +119,7 @@ export async function select(req, res, next) {
 		})
 		.from(planning)
 		.leftJoin(hrSchema.users, eq(planning.created_by, hrSchema.users.uuid))
-		.where(eq(planning.uuid, req.params.uuid));
+		.where(eq(planning.week, req.params.week));
 
 	const toast = {
 		status: 200,
@@ -129,7 +133,6 @@ export async function select(req, res, next) {
 export async function selectPlanningByPlanningUuid(req, res, next) {
 	const resultPromise = db
 		.select({
-			uuid: planning.uuid,
 			week: planning.week,
 			week_id: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
 			created_by: hrSchema.users.uuid,
@@ -140,7 +143,7 @@ export async function selectPlanningByPlanningUuid(req, res, next) {
 		})
 		.from(planning)
 		.leftJoin(hrSchema.users, eq(planning.created_by, hrSchema.users.uuid))
-		.where(eq(planning.uuid, req.params.planning_uuid));
+		.where(eq(planning.week, req.params.planning_week));
 
 	const toast = {
 		status: 200,
@@ -159,11 +162,11 @@ export async function selectPlanningAndPlanningEntryByPlanningUuid(
 	try {
 		const api = await createApi(req);
 
-		const { planning_uuid } = req.params;
+		const { planning_week } = req.params;
 
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/by/${planning_uuid}`)
+				.get(`${endpoint}/by/${planning_week}`)
 				.then((response) => response);
 
 		const [planning, planning_entry] = await Promise.all([
@@ -179,7 +182,7 @@ export async function selectPlanningAndPlanningEntryByPlanningUuid(
 		const toast = {
 			status: 200,
 			type: 'select',
-			msg: 'Planning Details by Planning UUID',
+			msg: 'Planning Details by Planning Week',
 		};
 
 		res.status(200).json({ toast, data: response });

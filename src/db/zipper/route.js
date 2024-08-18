@@ -5135,6 +5135,10 @@ export const pathZipperPlanning = {
 										type: 'string',
 										example: '24-32',
 									},
+									week_id: {
+										type: 'string',
+										example: 'DP-24-W32',
+									},
 									created_by: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -5227,6 +5231,10 @@ export const pathZipperPlanning = {
 							week: {
 								type: 'string',
 								example: '24-32',
+							},
+							week_id: {
+								type: 'string',
+								example: 'DP-24-W32',
 							},
 							created_by: {
 								type: 'string',
@@ -5379,6 +5387,10 @@ export const pathZipperPlanning = {
 									week: {
 										type: 'integer',
 										example: 1,
+									},
+									week_id: {
+										type: 'string',
+										example: 'DP-24-W32',
 									},
 									created_by: {
 										type: 'string',

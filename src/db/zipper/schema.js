@@ -1235,8 +1235,7 @@ export const def_zipper_tape_coil_production = {
 };
 
 export const planning = zipper.table('planning', {
-	uuid: uuid_primary,
-	week: text('week').notNull(),
+	week: text('week').primaryKey(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -1281,7 +1280,7 @@ export const def_zipper_planning = {
 
 export const planning_entry = zipper.table('planning_entry', {
 	uuid: uuid_primary,
-	planning_uuid: defaultUUID('planning_uuid').references(() => planning.uuid),
+	planning_week: defaultUUID('planning_week').references(() => planning.week),
 	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
 	sno_quantity: decimal('sno_quantity', {
 		precision: 20,

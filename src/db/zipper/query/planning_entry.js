@@ -10,29 +10,23 @@ import { planning, planning_entry, sfg } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	// check if this planning_uuid already exists and sfg_uuid already exists
-	const planningExistsPromise = db
-		.select(1)
-		.from(planning_entry)
-		.where(eq(planning_entry.planning_uuid, req.body.planning_uuid));
-
 	const sfgExistsPromise = db
 		.select(1)
 		.from(planning_entry)
 		.where(
-			eq(planning_entry.planning_uuid, req.body.planning_uuid),
+			eq(planning_entry.planning_week, req.body.planning_week),
 			eq(planning_entry.sfg_uuid, req.body.sfg_uuid)
 		);
 
-	const planningExists = await planningExistsPromise;
+	const sfgExists = await sfgExistsPromise;
 
 	// if planning entry and sfg already exists, then update the existing entry
-	if (sfgExistsPromise.length) {
+	if (sfgExists.length) {
 		const planningEntryPromise = db
 			.update(planning_entry)
 			.set(req.body)
 			.where(
-				eq(planning_entry.planning_uuid, req.body.planning_uuid),
+				eq(planning_entry.planning_week, req.body.planning_week),
 				eq(planning_entry.sfg_uuid, req.body.sfg_uuid)
 			)
 			.returning({ updatedUuid: planning_entry.uuid });
@@ -122,7 +116,7 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: planning_entry.uuid,
-			planning_uuid: planning_entry.planning_uuid,
+			planning_week: planning_entry.planning_week,
 			sfg_uuid: planning_entry.sfg_uuid,
 			sno_quantity: planning_entry.sno_quantity,
 			factory_quantity: planning_entry.factory_quantity,
@@ -134,7 +128,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(planning_entry)
 		.leftJoin(sfg, eq(sfg.uuid, planning_entry.sfg_uuid))
-		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_uuid));
+		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_week));
 
 	const toast = {
 		status: 200,
@@ -155,7 +149,7 @@ export async function select(req, res, next) {
 	const planningEntryPromise = db
 		.select({
 			uuid: planning_entry.uuid,
-			planning_uuid: planning_entry.planning_uuid,
+			planning_week: planning_entry.planning_week,
 			sfg_uuid: planning_entry.sfg_uuid,
 			sno_quantity: planning_entry.sno_quantity,
 			factory_quantity: planning_entry.factory_quantity,
@@ -167,7 +161,7 @@ export async function select(req, res, next) {
 		})
 		.from(planning_entry)
 		.leftJoin(sfg, eq(sfg.uuid, planning_entry.sfg_uuid))
-		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_uuid))
+		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_week))
 		.where(eq(planning_entry.uuid, req.params.uuid));
 
 	const toast = {
@@ -189,7 +183,7 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 	const query = sql`
 		SELECT
 			pe.uuid as planning_entry_uuid,
-			pe.planning_uuid,
+			pe.planning_week,
 			pe.sfg_uuid,
 			pe.sno_quantity,
 			pe.factory_quantity,
@@ -209,7 +203,7 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 		LEFT JOIN
 			zipper.planning p
 		ON
-			pe.planning_uuid = p.uuid
+			pe.planning_week = p.uuid
 		LEFT JOIN 
 			zipper.sfg sfg
 		ON
@@ -223,7 +217,7 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 		ON
 			oe.order_description_uuid = vod.order_description_uuid
 		WHERE
-			pe.planning_uuid = ${req.params.planning_uuid}
+			pe.planning_week = ${req.params.planning_week}
 	`;
 
 	//  AND oe.swatch_status_enum = 'approved' removed because of development purpose
@@ -250,7 +244,7 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 	const query = sql`
 		SELECT
 			pe.uuid as planning_entry_uuid,
-			pe.planning_uuid,
+			pe.planning_week,
 			sfg.uuid as sfg_uuid,
 			pe.created_at,
 			pe.updated_at,
