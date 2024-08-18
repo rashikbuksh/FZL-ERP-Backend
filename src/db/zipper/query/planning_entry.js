@@ -180,8 +180,10 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 		ON
 			oe.order_description_uuid = vod.order_description_uuid
 		WHERE
-			pe.planning_uuid = ${req.params.planning_uuid} AND oe.swatch_status_enum = 'approved'
+			pe.planning_uuid = ${req.params.planning_uuid}
 	`;
+
+	//  AND oe.swatch_status_enum = 'approved' removed because of development purpose
 
 	const planningEntryPromise = db.execute(query);
 

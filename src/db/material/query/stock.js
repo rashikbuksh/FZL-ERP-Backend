@@ -204,12 +204,13 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 			material_name: info.name,
 			stock: stock.stock,
 			unit: info.unit,
-			[fieldName]: sql`stock.${sql.raw(fieldName)}`,
+			field_value: sql.raw(fieldName),
+			field_name: fieldName,
 			remarks: stock.remarks,
 		})
 		.from(stock)
 		.leftJoin(info, eq(stock.material_uuid, info.uuid))
-		.where(sql`stock.${sql.raw(fieldName)} > 0`);
+		.where(sql.raw(fieldName) > 0);
 
 	const toast = {
 		status: 200,
