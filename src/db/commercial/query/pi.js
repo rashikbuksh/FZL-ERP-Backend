@@ -358,7 +358,11 @@ export async function updatePiPutLcByPiUuid(req, res, next) {
 
 	const { pi_uuid } = req.params;
 
+	console.log('pi_uuid', pi_uuid);
+
 	const { lc_uuid } = req.body;
+
+	console.log('lc_uuid', lc_uuid);
 
 	const piPromise = db
 		.update(pi)
