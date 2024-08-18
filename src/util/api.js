@@ -4,7 +4,10 @@ import { SERVER_URL } from '../lib/secret.js';
 export const createApi = async (req) => {
 	const api = axios.create({
 		baseURL: SERVER_URL,
-		headers: { 'Content-Type': 'application/json' },
+		headers: {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*',
+		},
 	});
 
 	api.interceptors.request.use(
