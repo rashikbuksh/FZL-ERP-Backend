@@ -1244,12 +1244,8 @@ export const planning = zipper.table('planning', {
 
 export const def_zipper_planning = {
 	type: 'object',
-	required: ['uuid', 'week', 'created_by', 'created_at'],
+	required: ['week', 'created_by', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
 		week: {
 			type: 'string',
 			example: '24-32',
@@ -1307,7 +1303,7 @@ export const def_zipper_planning_entry = {
 	type: 'object',
 	required: [
 		'uuid',
-		'planning_uuid',
+		'planning_week',
 		'sfg_uuid',
 		'sno_quantity',
 		'factory_quantity',
@@ -1320,9 +1316,9 @@ export const def_zipper_planning_entry = {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
-		planning_uuid: {
+		planning_week: {
 			type: 'string',
-			example: 'igD0v9DIJQhJeet',
+			example: '24-32',
 		},
 		sfg_uuid: {
 			type: 'string',
