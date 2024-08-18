@@ -204,8 +204,7 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 			material_name: info.name,
 			stock: stock.stock,
 			unit: info.unit,
-			field_value: sql.raw(fieldName),
-			field_name: [fieldName],
+			[fieldName]: sql.raw(fieldName),
 			remarks: stock.remarks,
 		})
 		.from(stock)
