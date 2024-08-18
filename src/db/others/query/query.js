@@ -437,6 +437,27 @@ export async function selectLCByPartyUuid(req, res, next) {
 	});
 }
 
+export async function selectPi(req, res, next) {
+	const piPromise = db
+		.select({
+			value: commercialSchema.pi.uuid,
+			label: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
+		})
+		.from(commercialSchema.pi);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Pi list',
+	};
+	handleResponse({
+		promise: piPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
 // hr
 export async function selectDepartment(req, res, next) {
 	const departmentPromise = db

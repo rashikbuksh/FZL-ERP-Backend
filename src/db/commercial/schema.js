@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
@@ -242,8 +243,16 @@ export const defCommercialLc = {
 	},
 };
 
+export const order_info_sequence = commercial.sequence('pi_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
 export const pi = commercial.table('pi', {
 	uuid: uuid_primary,
+	id: integer('id')
+		.default(sql`nextval('commercial.pi_sequence')`)
+		.notNull(),
 	lc_uuid: defaultUUID('lc_uuid')
 		.default(null)
 		.references(() => lc.uuid),
@@ -289,6 +298,10 @@ export const defCommercialPi = {
 		uuid: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
+		},
+		id: {
+			type: 'integer',
+			example: 1,
 		},
 		lc_uuid: {
 			type: 'string',

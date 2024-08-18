@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -46,7 +46,9 @@ export async function insert(req, res, next) {
 			created_at,
 			remarks,
 		})
-		.returning({ insertedId: pi.uuid });
+		.returning({
+			insertedId: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
+		});
 	try {
 		const data = await piPromise;
 		const toast = {
@@ -68,7 +70,9 @@ export async function update(req, res, next) {
 		.update(pi)
 		.set(req.body)
 		.where(eq(pi.uuid, req.params.uuid))
-		.returning({ insertedUserName: pi.uuid });
+		.returning({
+			insertedUserName: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await piPromise;
@@ -90,7 +94,9 @@ export async function remove(req, res, next) {
 	const piPromise = db
 		.delete(pi)
 		.where(eq(pi.uuid, req.params.uuid))
-		.returning({ deletedId: pi.uuid });
+		.returning({
+			deletedId: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await piPromise;
@@ -110,6 +116,7 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: pi.uuid,
+			id: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
 			lc_uuid: pi.lc_uuid,
 			lc_number: lc.lc_number,
 			order_info_uuids: pi.order_info_uuids,
@@ -174,6 +181,7 @@ export async function select(req, res, next) {
 	const piPromise = db
 		.select({
 			uuid: pi.uuid,
+			id: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
 			lc_uuid: pi.lc_uuid,
 			lc_number: lc.lc_number,
 			order_info_uuids: pi.order_info_uuids,
@@ -250,6 +258,7 @@ export async function selectPiByPiUuid(req, res, next) {
 	const piPromise = db
 		.select({
 			uuid: pi.uuid,
+			id: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
 			lc_uuid: pi.lc_uuid,
 			lc_number: lc.lc_number,
 			order_info_uuids: pi.order_info_uuids,
@@ -339,6 +348,35 @@ export async function selectPiDetailsByPiUuid(req, res, next) {
 		};
 
 		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updatePiPutLcByPiUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { pi_uuid } = req.params;
+
+	const { lc_uuid } = req.body;
+
+	const piPromise = db
+		.update(pi)
+		.set({ lc_uuid })
+		.where(eq(pi.uuid, pi_uuid))
+		.returning({
+			updatedId: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await piPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `updated by ${data[0].updatedId} `,
+		};
+
+		return await res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
