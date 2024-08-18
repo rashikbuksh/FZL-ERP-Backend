@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -81,6 +81,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: planning.uuid,
 			week: planning.week,
+			week_id: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
 			created_by: planning.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: planning.created_at,
@@ -105,6 +106,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: planning.uuid,
 			week: planning.week,
+			week_id: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
 			created_by: planning.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: planning.created_at,
@@ -129,6 +131,7 @@ export async function selectPlanningByPlanningUuid(req, res, next) {
 		.select({
 			uuid: planning.uuid,
 			week: planning.week,
+			week_id: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
 			created_by: hrSchema.users.uuid,
 			created_by_name: hrSchema.users.name,
 			created_at: planning.created_at,
