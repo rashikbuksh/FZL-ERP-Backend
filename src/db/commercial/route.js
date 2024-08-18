@@ -1195,7 +1195,13 @@ export const pathCommercialPi = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/commercial/pi',
+							type: 'object',
+							properties: {
+								lc_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+							},
 						},
 					},
 				},
