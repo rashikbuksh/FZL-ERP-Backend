@@ -1806,6 +1806,111 @@ export const pathMaterialUsed = {
 			},
 		},
 	},
+	'/material/used/multi-section/by/{sections}': {
+		get: {
+			tags: ['material.used'],
+			summary: 'Get material used by sections',
+			description: 'Get material used by sections',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'sections',
+					in: 'path',
+					description: ' sections to get',
+					required: true,
+					type: 'string',
+					example: 'tape_making,coil_forming',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_name: {
+								type: 'string',
+								example: 'material 1',
+							},
+							stock: { type: 'number', example: 10.0 },
+							lab_dip: { type: 'number', example: 10.0 },
+							tape_making: { type: 'number', example: 10.0 },
+							coil_forming: { type: 'number', example: 10.0 },
+							dying_and_iron: { type: 'number', example: 10.0 },
+							m_gapping: { type: 'number', example: 10.0 },
+							v_gapping: { type: 'number', example: 10.0 },
+							v_teeth_molding: { type: 'number', example: 10.0 },
+							m_teeth_molding: { type: 'number', example: 10.0 },
+							teeth_assembling_and_polishing: {
+								type: 'number',
+								example: 10.0,
+							},
+							m_teeth_cleaning: { type: 'number', example: 10.0 },
+							v_teeth_cleaning: { type: 'number', example: 10.0 },
+							plating_and_iron: { type: 'number', example: 10.0 },
+							m_sealing: { type: 'number', example: 10.0 },
+							v_sealing: { type: 'number', example: 10.0 },
+							n_t_cutting: { type: 'number', example: 10.0 },
+							v_t_cutting: { type: 'number', example: 10.0 },
+							m_stopper: { type: 'number', example: 10.0 },
+							v_stopper: { type: 'number', example: 10.0 },
+							n_stopper: { type: 'number', example: 10.0 },
+							cutting: { type: 'number', example: 10.0 },
+							qc_and_packing: { type: 'number', example: 10.0 },
+							die_casting: { type: 'number', example: 10.0 },
+							slider_assembly: { type: 'number', example: 10.0 },
+							coloring: { type: 'number', example: 10.0 },
+							used_quantity: {
+								type: 'number',
+								example: 10.0,
+							},
+							wastage: { type: 'number', example: 10.0 },
+							section: {
+								type: 'string',
+								example: 'tape_making',
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'admin',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material used not found',
+				},
+			},
+		},
+	},
 };
 
 materialRouter.get('/used', usedOperations.selectAll);
@@ -1818,6 +1923,10 @@ materialRouter.delete(
 	usedOperations.remove
 );
 materialRouter.get('/used/by/:section', usedOperations.selectUsedBySection);
+materialRouter.get(
+	'/used/multi-section/by/:sections',
+	usedOperations.selectUsedBySection
+);
 
 // stock_to_sfg
 
