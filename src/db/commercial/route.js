@@ -10,6 +10,7 @@ import * as bankOperations from './query/bank.js';
 import * as lcOperations from './query/lc.js';
 import * as piOperations from './query/pi.js';
 import * as piEntryOperations from './query/pi_entry.js';
+import commercial from './schema.js';
 
 const commercialRouter = Router();
 
@@ -534,6 +535,10 @@ export const pathCommercialPi = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									id: {
+										type: 'string',
+										example: 'PI24-0001',
+									},
 									lc_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -834,6 +839,10 @@ export const pathCommercialPi = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									id: {
+										type: 'string',
+										example: 'PI24-0001',
+									},
 									lc_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -983,6 +992,10 @@ export const pathCommercialPi = {
 									uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
+									},
+									id: {
+										type: 'string',
+										example: 'PI24-0001',
 									},
 									lc_uuid: {
 										type: 'string',
@@ -1159,6 +1172,63 @@ export const pathCommercialPi = {
 			},
 		},
 	},
+	'/commercial/pi-lc-uuid/{pi_uuid}': {
+		put: {
+			tags: ['commercial.pi'],
+			summary: 'Update a pi put lc',
+			description: 'Update a pi put lc by pi_uuid',
+			//operationId: "updatePet",
+			consume: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'pi_uuid',
+					in: 'path',
+					description: 'pi to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							type: 'object',
+							properties: {
+								lc_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+							},
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/pi',
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Pi not found',
+				},
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+	},
 };
 
 // pi routes
@@ -1171,6 +1241,10 @@ commercialRouter.get('/pi/by/:pi_uuid', piOperations.selectPiByPiUuid);
 commercialRouter.get(
 	'/pi/details/:pi_uuid',
 	piOperations.selectPiDetailsByPiUuid
+);
+commercialRouter.get(
+	'/pi-lc-uuid/:pi_uuid',
+	piOperations.updatePiPutLcByPiUuid
 );
 
 // pi_entry

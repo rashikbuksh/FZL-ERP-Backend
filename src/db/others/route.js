@@ -60,6 +60,7 @@ otherRouter.get(
 	'/lc/value/label/:party_uuid',
 	otherOperations.selectLCByPartyUuid
 );
+otherRouter.get('/pi/value/label', otherOperations.selectPi);
 
 // hr
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);
@@ -503,6 +504,36 @@ const pathCommercial = {
 									label: {
 										type: 'string',
 										example: 'LC-0001',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/pi/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all PIs',
+			description: 'All PIs',
+			operationId: 'getAllPIs',
+			responses: {
+				200: {
+					description: 'Returns all PIs.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									label: {
+										type: 'string',
+										example: 'PI24-0001',
 									},
 								},
 							},
