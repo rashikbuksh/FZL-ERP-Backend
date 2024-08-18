@@ -1501,18 +1501,15 @@ export const pathMaterialUsed = {
 			description: 'Create a new material used',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material used object that needs to be added to the material.used',
-					required: true,
-					schema: {
-						$ref: '#/definitions/material/used',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/used',
+						},
 					},
 				},
-			],
+			},
 			responses: {
 				200: {
 					description: 'successful operation',
