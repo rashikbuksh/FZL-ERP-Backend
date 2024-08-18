@@ -5127,10 +5127,6 @@ export const pathZipperPlanning = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
 									week: {
 										type: 'string',
 										example: '24-32',
@@ -5202,7 +5198,7 @@ export const pathZipperPlanning = {
 			},
 		},
 	},
-	'/zipper/planning/{uuid}': {
+	'/zipper/planning/{week}': {
 		get: {
 			tags: ['zipper.planning'],
 			summary: 'Gets a Planning',
@@ -5211,11 +5207,12 @@ export const pathZipperPlanning = {
 			produces: ['application/json'],
 			parameters: [
 				{
-					name: 'uuid',
+					name: 'week',
 					in: 'path',
 					description: 'planning to get',
 					required: true,
 					type: 'string',
+					example: '24-32'
 				},
 			],
 			responses: {
@@ -5224,10 +5221,6 @@ export const pathZipperPlanning = {
 					schema: {
 						type: 'object',
 						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
 							week: {
 								type: 'string',
 								example: '24-32',
@@ -5281,7 +5274,7 @@ export const pathZipperPlanning = {
 			produces: ['application/json'],
 			parameters: [
 				{
-					name: 'uuid',
+					name: 'week',
 					in: 'path',
 					description: 'planning to update',
 					required: true,
@@ -5331,7 +5324,7 @@ export const pathZipperPlanning = {
 			produces: ['application/json'],
 			parameters: [
 				{
-					name: 'uuid',
+					name: 'week',
 					in: 'path',
 					description: 'planning to delete',
 					required: true,
@@ -5358,13 +5351,13 @@ export const pathZipperPlanning = {
 			},
 		},
 	},
-	'/zipper/planning/by/{planning_uuid}': {
+	'/zipper/planning/by/{planning_weel}': {
 		get: {
 			tags: ['zipper.planning'],
 			summary: 'Get all Planning by Planning UUID',
 			parameters: [
 				{
-					name: 'planning_uuid',
+					name: 'planning_week',
 					in: 'path',
 					description: 'planning to get',
 					required: true,
@@ -5380,10 +5373,6 @@ export const pathZipperPlanning = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
 									week: {
 										type: 'integer',
 										example: 1,
@@ -5423,13 +5412,13 @@ export const pathZipperPlanning = {
 			},
 		},
 	},
-	'/zipper/planning-details/by/{planning_uuid}': {
+	'/zipper/planning-details/by/{planning_week}': {
 		get: {
 			tags: ['zipper.planning'],
 			summary: 'Get all Planning and Planning Entry by Planning UUID',
 			parameters: [
 				{
-					name: 'planning_uuid',
+					name: 'planning_week',
 					in: 'path',
 					description: 'planning to get',
 					required: true,
@@ -5446,10 +5435,6 @@ export const pathZipperPlanning = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
 									week: {
 										type: 'string',
 										example: '24-32',
@@ -5484,9 +5469,9 @@ export const pathZipperPlanning = {
 												type: 'string',
 												example: 'igD0v9DIJQhJeet',
 											},
-											planning_uuid: {
+											planning_week: {
 												type: 'string',
-												example: 'igD0v9DIJQhJeet',
+												example: '24-32',
 											},
 											sfg_uuid: {
 												type: 'string',
@@ -5536,17 +5521,17 @@ export const pathZipperPlanning = {
 
 // --------------------- PlANNING ROUTES ---------------------
 zipperRouter.get('/planning', planningOperations.selectAll);
-zipperRouter.get('/planning/:uuid', planningOperations.select);
+zipperRouter.get('/planning/:week', planningOperations.select);
 zipperRouter.post('/planning', planningOperations.insert);
-zipperRouter.put('/planning/:uuid', planningOperations.update);
-zipperRouter.delete('/planning/:uuid', planningOperations.remove);
+zipperRouter.put('/planning/:week', planningOperations.update);
+zipperRouter.delete('/planning/:week', planningOperations.remove);
 zipperRouter.get(
-	'/planning/by/:planning_uuid',
-	planningOperations.selectPlanningByPlanningUuid
+	'/planning/by/:planning_week',
+	planningOperations.selectPlanningByPlanningWeek
 );
 zipperRouter.get(
-	'/planning-details/by/:planning_uuid',
-	planningOperations.selectPlanningAndPlanningEntryByPlanningUuid
+	'/planning-details/by/:planning_week',
+	planningOperations.selectPlanningAndPlanningEntryByPlanningWeek
 );
 
 // --------------------- PlANNING ---------------------
@@ -5568,9 +5553,9 @@ export const pathZipperPlanningEntry = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									planning_uuid: {
+									planning_week: {
 										type: 'string',
-										example: 'igD0v9DIJQhJeet',
+										example: '23-32',
 									},
 									sfg_uuid: {
 										type: 'string',
@@ -5696,9 +5681,9 @@ export const pathZipperPlanningEntry = {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
-							planning_uuid: {
+							planning_week: {
 								type: 'string',
-								example: 'igD0v9DIJQhJeet',
+								example: '24-32',
 							},
 							sfg_uuid: {
 								type: 'string',
@@ -5856,13 +5841,13 @@ export const pathZipperPlanningEntry = {
 			},
 		},
 	},
-	'/zipper/planning-entry/by/{planning_uuid}': {
+	'/zipper/planning-entry/by/{planning_week}': {
 		get: {
 			tags: ['zipper.planning_entry'],
 			summary: 'Get all Planning Entry by Planning UUID',
 			parameters: [
 				{
-					name: 'planning_uuid',
+					name: 'planning_week',
 					in: 'path',
 					description: 'planning entry to update',
 					required: true,
@@ -5882,9 +5867,9 @@ export const pathZipperPlanningEntry = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									planning_uuid: {
+									planning_week: {
 										type: 'string',
-										example: 'igD0v9DIJQhJeet',
+										example: '24-32',
 									},
 									sfg_uuid: {
 										type: 'string',
@@ -5968,9 +5953,9 @@ export const pathZipperPlanningEntry = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									planning_uuid: {
+									planning_week: {
 										type: 'string',
-										example: 'igD0v9DIJQhJeet',
+										example: '24-32',
 									},
 									sfg_uuid: {
 										type: 'string',
@@ -6062,8 +6047,8 @@ zipperRouter.post('/planning-entry', planningEntryOperations.insert);
 zipperRouter.put('/planning-entry/:uuid', planningEntryOperations.update);
 zipperRouter.delete('/planning-entry/:uuid', planningEntryOperations.remove);
 zipperRouter.get(
-	'/planning-entry/by/:planning_uuid',
-	planningEntryOperations.selectPlanningEntryByPlanningUuid
+	'/planning-entry/by/:planning_week',
+	planningEntryOperations.selectPlanningEntryByPlanningWeek
 );
 zipperRouter.get(
 	'/order-planning',

@@ -12,22 +12,59 @@ import { planning } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const planningPromise = db
-		.insert(planning)
-		.values(req.body)
-		.returning({
-			insertedWeek: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
-		});
+	// if planning week already exists, then update the existing entry
+
+	const planningExistsPromise = db
+		.select(1)
+		.from(planning)
+		.where(eq(planning.week, req.body.week));
+
 	try {
-		const data = await planningPromise;
+		const planningExists = await planningExistsPromise;
 
-		const toast = {
-			status: 201,
-			type: 'insert',
-			message: `${data[0].insertedWeek} inserted`,
-		};
+		if (planningExists.length) {
+			const planningPromise = db
+				.update(planning)
+				.set(req.body)
+				.where(eq(planning.week, req.body.week))
+				.returning({
+					updatedWeek: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
+				});
 
-		res.status(201).json({ toast, data });
+			try {
+				const data = await planningPromise;
+				const toast = {
+					status: 201,
+					type: 'update',
+					message: `${data[0].updatedWeek} updated`,
+				};
+
+				res.status(201).json({ toast, data });
+			} catch (error) {
+				await handleError({ error, res });
+			}
+			return;
+		} else {
+			const planningPromise = db
+				.insert(planning)
+				.values(req.body)
+				.returning({
+					insertedWeek: sql` CONCAT('DP-',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 1),'-W',SPLIT_PART(CAST(${planning.week} AS TEXT), '-', 2))`,
+				});
+			try {
+				const data = await planningPromise;
+
+				const toast = {
+					status: 201,
+					type: 'insert',
+					message: `${data[0].insertedWeek} inserted`,
+				};
+
+				res.status(201).json({ toast, data });
+			} catch (error) {
+				await handleError({ error, res });
+			}
+		}
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -130,7 +167,7 @@ export async function select(req, res, next) {
 	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
 
-export async function selectPlanningByPlanningUuid(req, res, next) {
+export async function selectPlanningByPlanningWeek(req, res, next) {
 	const resultPromise = db
 		.select({
 			week: planning.week,
@@ -154,7 +191,7 @@ export async function selectPlanningByPlanningUuid(req, res, next) {
 	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
 
-export async function selectPlanningAndPlanningEntryByPlanningUuid(
+export async function selectPlanningAndPlanningEntryByPlanningWeek(
 	req,
 	res,
 	next

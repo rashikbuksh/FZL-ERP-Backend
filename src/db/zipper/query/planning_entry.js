@@ -177,7 +177,7 @@ export async function select(req, res, next) {
 	});
 }
 
-export async function selectPlanningEntryByPlanningUuid(req, res, next) {
+export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
@@ -229,7 +229,7 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'planning_entry By Planning Uuid',
+			message: 'planning_entry By Planning Week',
 		};
 
 		return res.status(200).json({ toast, data: data?.rows });
