@@ -253,7 +253,12 @@ export async function selectUsedForMultipleSection(req, res, next) {
 		const api = createApi(req);
 
 		const { sections } = req.params;
+
+		console.log(sections);
+
 		const sectionsArray = sections.split(',');
+
+		console.log(sectionsArray);
 
 		const fetchData = async (endpoint) =>
 			await api.get(`/material/used/by/${endpoint}`).then((res) => {
