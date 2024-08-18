@@ -250,34 +250,38 @@ export async function selectUsedForMultipleSection(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	try {
-		const api = createApi(req);
+		const api = await createApi(req);
 
 		const { sections } = req.params;
 
-		console.log(sections);
-
-		const sectionsArray = sections.split(',');
-
-		console.log(sectionsArray);
+		const section = sections.split(',');
 
 		const fetchData = async (endpoint) =>
 			await api.get(`/material/used/by/${endpoint}`).then((res) => {
 				return res?.data;
 			});
 
-		const promises = sectionsArray.map((section) => fetchData(section));
+		const promises = section.map(async (field) => {
+			const data = await fetchData(field);
+			return data;
+		});
 
-		const data = await Promise.all(promises);
+		const results = await Promise.all(promises);
 
-		console.log(data);
+		const data = results.reduce((acc, result, index) => {
+			return [
+				...acc,
+				...(Array.isArray(result?.data) ? result?.data : []),
+			];
+		}, []);
 
 		const toast = {
 			status: 200,
-			type: 'select_all',
-			message: 'Used list',
+			type: 'select',
+			message: 'Stock',
 		};
 
-		return await res.status(200).json({ toast, data });
+		res.status(200).json({ toast, data: data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

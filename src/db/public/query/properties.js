@@ -19,8 +19,6 @@ export async function insert(req, res, next) {
 	try {
 		const data = await propertiesPromise;
 
-		console.log(data[0].insertedName);
-
 		const toast = {
 			status: 201,
 			type: 'insert',
