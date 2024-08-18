@@ -1925,7 +1925,7 @@ materialRouter.delete(
 materialRouter.get('/used/by/:section', usedOperations.selectUsedBySection);
 materialRouter.get(
 	'/used/multi-section/by/:sections',
-	usedOperations.selectUsedBySection
+	usedOperations.selectUsedForMultipleSection
 );
 
 // stock_to_sfg

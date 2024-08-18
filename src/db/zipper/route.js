@@ -5132,8 +5132,8 @@ export const pathZipperPlanning = {
 										example: 'igD0v9DIJQhJeet',
 									},
 									week: {
-										type: 'integer',
-										example: 1,
+										type: 'string',
+										example: '24-32',
 									},
 									created_by: {
 										type: 'string',
@@ -5225,8 +5225,8 @@ export const pathZipperPlanning = {
 								example: 'igD0v9DIJQhJeet',
 							},
 							week: {
-								type: 'integer',
-								example: 1,
+								type: 'string',
+								example: '24-32',
 							},
 							created_by: {
 								type: 'string',
@@ -5439,8 +5439,8 @@ export const pathZipperPlanning = {
 										example: 'igD0v9DIJQhJeet',
 									},
 									week: {
-										type: 'integer',
-										example: 1,
+										type: 'string',
+										example: '24-32',
 									},
 									created_by: {
 										type: 'string',

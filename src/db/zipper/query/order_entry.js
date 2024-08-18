@@ -127,8 +127,6 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	console.log('req.params.uuid', req.params.uuid);
-
 	const orderEntryPromise = db
 		.delete(order_entry)
 		.where(eq(order_entry.uuid, req.params.uuid))

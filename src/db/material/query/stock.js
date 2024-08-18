@@ -195,8 +195,6 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 
 	const { fieldName } = req.params;
 
-	console.log(fieldName);
-
 	const stockPromise = db
 		.select({
 			uuid: stock.uuid,
