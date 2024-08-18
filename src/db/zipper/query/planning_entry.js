@@ -10,23 +10,66 @@ import { planning, planning_entry, sfg } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const planningEntryPromise = db
-		.insert(planning_entry)
-		.values(req.body)
-		.returning({ insertedUuid: planning_entry.uuid });
+	// check if this planning_uuid already exists and sfg_uuid already exists
+	const planningExistsPromise = db
+		.select(1)
+		.from(planning_entry)
+		.where(eq(planning_entry.planning_uuid, req.body.planning_uuid));
 
-	try {
-		const data = await planningEntryPromise;
+	const sfgExistsPromise = db
+		.select(1)
+		.from(planning_entry)
+		.where(
+			eq(planning_entry.planning_uuid, req.body.planning_uuid),
+			eq(planning_entry.sfg_uuid, req.body.sfg_uuid)
+		);
 
-		const toast = {
-			status: 201,
-			type: 'insert',
-			message: `${data[0].insertedUuid} inserted`,
-		};
+	const planningExists = await planningExistsPromise;
 
-		res.status(201).json({ toast, data });
-	} catch (error) {
-		await handleError({ error, res });
+	// if planning entry and sfg already exists, then update the existing entry
+	if (sfgExistsPromise.length) {
+		const planningEntryPromise = db
+			.update(planning_entry)
+			.set(req.body)
+			.where(
+				eq(planning_entry.planning_uuid, req.body.planning_uuid),
+				eq(planning_entry.sfg_uuid, req.body.sfg_uuid)
+			)
+			.returning({ updatedUuid: planning_entry.uuid });
+
+		try {
+			const data = await planningEntryPromise;
+			const toast = {
+				status: 201,
+				type: 'update',
+				message: `${data[0].updatedUuid} updated`,
+			};
+
+			res.status(201).json({ toast, data });
+		} catch (error) {
+			await handleError({ error, res });
+		}
+		return;
+	}
+	// if planning entry already exists, but sfg_uuid does not exist, then insert a new entry
+	else {
+		const planningEntryPromise = db
+			.insert(planning_entry)
+			.values(req.body)
+			.returning({ insertedUuid: planning_entry.uuid });
+
+		try {
+			const data = await planningEntryPromise;
+			const toast = {
+				status: 201,
+				type: 'insert',
+				message: `${data[0].insertedUuid} inserted`,
+			};
+
+			res.status(201).json({ toast, data });
+		} catch (error) {
+			await handleError({ error, res });
+		}
 	}
 }
 
