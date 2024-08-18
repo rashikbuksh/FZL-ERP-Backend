@@ -1,4 +1,5 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -243,4 +244,36 @@ export async function selectUsedBySection(req, res, next) {
 	};
 
 	handleResponse({ promise: usedPromise, res, next, ...toast });
+}
+
+export async function selectUsedForMultipleSection(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	try {
+		const api = createApi(req);
+
+		const { sections } = req.params;
+		const sectionsArray = sections.split(',');
+
+		const fetchData = async (endpoint) =>
+			await api.get(`/material/used/by/${endpoint}`).then((res) => {
+				return res?.data;
+			});
+
+		const promises = sectionsArray.map((section) => fetchData(section));
+
+		const data = await Promise.all(promises);
+
+		console.log(data);
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Used list',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

@@ -111,7 +111,6 @@ export async function select(req, res, next) {
 			updated_at: planning.updated_at,
 			remarks: planning.remarks,
 		})
-
 		.from(planning)
 		.leftJoin(hrSchema.users, eq(planning.created_by, hrSchema.users.uuid))
 		.where(eq(planning.uuid, req.params.uuid));
@@ -138,7 +137,7 @@ export async function selectPlanningByPlanningUuid(req, res, next) {
 		})
 		.from(planning)
 		.leftJoin(hrSchema.users, eq(planning.created_by, hrSchema.users.uuid))
-		.where(eq(planning.uuid, req.params.uuid));
+		.where(eq(planning.uuid, req.params.planning_uuid));
 
 	const toast = {
 		status: 200,

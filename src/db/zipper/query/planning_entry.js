@@ -154,7 +154,7 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 			pe.batch_production_quantity,
 			pe.created_at,
 			pe.updated_at,
-			pe.remarks,
+			pe.remarks as plan_entry_remarks,
 			oe.style,
 			oe.color,
 			oe.size,
@@ -180,8 +180,10 @@ export async function selectPlanningEntryByPlanningUuid(req, res, next) {
 		ON
 			oe.order_description_uuid = vod.order_description_uuid
 		WHERE
-			pe.planning_uuid = ${req.params.planning_uuid} AND oe.swatch_status_enum = 'approved'
+			pe.planning_uuid = ${req.params.planning_uuid}
 	`;
+
+	//  AND oe.swatch_status_enum = 'approved' removed because of development purpose
 
 	const planningEntryPromise = db.execute(query);
 
@@ -207,13 +209,8 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			pe.uuid as planning_entry_uuid,
 			pe.planning_uuid,
 			sfg.uuid as sfg_uuid,
-			pe.sno_quantity,
-			pe.factory_quantity,
-			pe.production_quantity,
-			pe.batch_production_quantity,
 			pe.created_at,
 			pe.updated_at,
-			pe.remarks,
 			oe.style,
 			oe.color,
 			oe.size,
