@@ -206,8 +206,6 @@ export async function selectLcPiByLcUuid(req, res, next) {
 			pi: pi?.data?.data || [],
 		};
 
-		console.log(response, 'response');
-
 		const toast = {
 			status: 200,
 			type: 'select',
