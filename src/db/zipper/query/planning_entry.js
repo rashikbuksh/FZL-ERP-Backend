@@ -10,24 +10,44 @@ import { planning, planning_entry, sfg } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgExistsPromise = db
-		.select(1)
+	const {
+		planning_week,
+		sfg_uuid,
+		sno_quantity,
+		remarks,
+		created_at,
+		uuid,
+		updated_at,
+	} = req.body;
+
+	const query = db
+		.select({
+			uuid: planning_entry.uuid,
+		})
 		.from(planning_entry)
 		.where(
-			eq(planning_entry.planning_week, req.body.planning_week),
-			eq(planning_entry.sfg_uuid, req.body.sfg_uuid)
+			eq(planning_entry.planning_week, planning_week),
+			eq(planning_entry.sfg_uuid, sfg_uuid)
 		);
 
+	const sfgExistsPromise = db.execute(query);
+
 	const sfgExists = await sfgExistsPromise;
+
+	console.log('sfgExists', sfgExists);
 
 	// if planning entry and sfg already exists, then update the existing entry
 	if (sfgExists.length) {
 		const planningEntryPromise = db
 			.update(planning_entry)
-			.set(req.body)
+			.set({
+				sno_quantity,
+				remarks,
+				updated_at,
+			})
 			.where(
-				eq(planning_entry.planning_week, req.body.planning_week),
-				eq(planning_entry.sfg_uuid, req.body.sfg_uuid)
+				eq(planning_entry.planning_week, planning_week),
+				eq(planning_entry.sfg_uuid, sfg_uuid)
 			)
 			.returning({ updatedUuid: planning_entry.uuid });
 
@@ -49,7 +69,15 @@ export async function insert(req, res, next) {
 	else {
 		const planningEntryPromise = db
 			.insert(planning_entry)
-			.values(req.body)
+			.values({
+				planning_week,
+				sfg_uuid,
+				sno_quantity,
+				remarks,
+				created_at,
+				uuid,
+				updated_at,
+			})
 			.returning({ insertedUuid: planning_entry.uuid });
 
 		try {
