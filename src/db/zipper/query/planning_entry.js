@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -28,28 +28,27 @@ export async function insert(req, res, next) {
 
 	const sfgExists = await sfgExistsPromise;
 
-	console.log('sfgExists', sfgExists);
+	console.log('sfgExists - SNO', sfgExists);
 
 	// if planning entry and sfg already exists, then update the existing entry
 	if (sfgExists.rowCount > 0) {
-		const planningEntryPromise = db
-			.update(planning_entry)
-			.set({
-				sno_quantity,
-				batch_production_quantity,
-				factory_quantity,
-				production_quantity,
-				remarks,
-				updated_at,
-			})
-			.where(
-				eq(planning_entry.planning_week, planning_week),
-				eq(planning_entry.sfg_uuid, sfg_uuid)
-			)
-			.returning({ updatedUuid: planning_entry.uuid });
-
 		try {
-			const data = await planningEntryPromise;
+			const planningEntryPromise = await db
+				.update(planning_entry)
+				.set({
+					sno_quantity: sno_quantity,
+					remarks: remarks,
+					updatedAt: updated_at,
+				})
+				.where(
+					and(
+						eq(planning_entry.planning_week, planning_week),
+						eq(planning_entry.sfg_uuid, sfg_uuid)
+					)
+				)
+				.returning({ updatedUuid: planning_entry.uuid });
+
+			const data = planningEntryPromise;
 			const toast = {
 				status: 201,
 				type: 'update',
@@ -69,9 +68,7 @@ export async function insert(req, res, next) {
 			.values({
 				planning_week,
 				sfg_uuid,
-				batch_production_quantity,
-				factory_quantity,
-				production_quantity,
+				sno_quantity,
 				remarks,
 				created_at,
 				uuid,
@@ -343,6 +340,7 @@ export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const {
+		uuid,
 		planning_week,
 		sfg_uuid,
 		factory_quantity,
@@ -361,7 +359,7 @@ export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
 
 	const sfgExists = await sfgExistsPromise;
 
-	console.log('sfgExists', sfgExists);
+	console.log('sfgExists - Factory', sfgExists);
 
 	// if planning entry and sfg already exists, then update the existing entry
 	if (sfgExists.rowCount > 0) {
@@ -375,8 +373,10 @@ export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
 				updated_at,
 			})
 			.where(
-				eq(planning_entry.planning_week, planning_week),
-				eq(planning_entry.sfg_uuid, sfg_uuid)
+				and(
+					eq(planning_entry.planning_week, planning_week),
+					eq(planning_entry.sfg_uuid, sfg_uuid)
+				)
 			)
 			.returning({ updatedUuid: planning_entry.uuid });
 
@@ -398,6 +398,7 @@ export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
 		const planningEntryPromise = db
 			.insert(planning_entry)
 			.values({
+				uuid,
 				planning_week,
 				sfg_uuid,
 				factory_quantity,
