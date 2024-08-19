@@ -103,22 +103,12 @@ export async function selectAll(req, res, next) {
 			epz: lc.epz,
 			created_by: lc.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: lc.created_at,
 			updated_at: lc.updated_at,
 			remarks: lc.remarks,
 		})
 		.from(lc)
 		.leftJoin(hrSchema.users, eq(lc.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		)
 		.leftJoin(
 			publicSchema.party,
 			eq(lc.party_uuid, publicSchema.party.uuid)
@@ -150,7 +140,7 @@ export async function select(req, res, next) {
 			lc_date: lc.lc_date,
 			payment_value: lc.payment_value,
 			payment_date: lc.payment_date,
-			ldbc_fdc: lc.ldbc_fdc,
+			ldbc_fdbc: lc.ldbc_fdbc,
 			acceptance_date: lc.acceptance_date,
 			maturity_date: lc.maturity_date,
 			commercial_executive: lc.commercial_executive,
@@ -169,22 +159,12 @@ export async function select(req, res, next) {
 			epz: lc.epz,
 			created_by: lc.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: lc.created_at,
 			updated_at: lc.updated_at,
 			remarks: lc.remarks,
 		})
 		.from(lc)
 		.leftJoin(hrSchema.users, eq(lc.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		)
 		.leftJoin(
 			publicSchema.party,
 			eq(lc.party_uuid, publicSchema.party.uuid)
