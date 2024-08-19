@@ -20,15 +20,9 @@ export async function insert(req, res, next) {
 		updated_at,
 	} = req.body;
 
-	const query = db
-		.select({
-			uuid: planning_entry.uuid,
-		})
-		.from(planning_entry)
-		.where(
-			eq(planning_entry.planning_week, planning_week),
-			eq(planning_entry.sfg_uuid, sfg_uuid)
-		);
+	const query = sql`SELECT planning_entry.uuid
+						FROM zipper.planning_entry
+						WHERE planning_week = ${planning_week} AND sfg_uuid = ${sfg_uuid};`;
 
 	const sfgExistsPromise = db.execute(query);
 
@@ -37,7 +31,7 @@ export async function insert(req, res, next) {
 	console.log('sfgExists', sfgExists);
 
 	// if planning entry and sfg already exists, then update the existing entry
-	if (sfgExists.length) {
+	if (sfgExists.rowCount > 0) {
 		const planningEntryPromise = db
 			.update(planning_entry)
 			.set({
