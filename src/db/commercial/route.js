@@ -1502,6 +1502,49 @@ export const pathCommercialPi = {
 			},
 		},
 	},
+	'/commercial/pi-lc-null/{pi_uuid}': {
+		put: {
+			tags: ['commercial.pi'],
+			summary: 'Update a pi put lc to null',
+			description: 'Update a pi put lc to null by pi_uuid',
+			//operationId: "updatePet",
+			consume: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'pi_uuid',
+					in: 'path',
+					description: 'pi to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/commercial/pi',
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Pi not found',
+				},
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+	},
+
 	'/commercial/pi-lc/{lc_uuid}': {
 		get: {
 			tags: ['commercial.pi'],
@@ -1665,6 +1708,10 @@ commercialRouter.put(
 	piOperations.updatePiPutLcByPiUuid
 );
 commercialRouter.get('/pi-lc/:lc_uuid', piOperations.selectPiByLcUuid);
+commercialRouter.put(
+	'/pi-lc-null/:pi_uuid',
+	piOperations.updatePiToNullByPiUuid
+);
 
 // pi_entry
 export const pathCommercialPiEntry = {
