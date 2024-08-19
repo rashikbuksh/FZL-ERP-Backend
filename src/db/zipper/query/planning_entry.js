@@ -14,9 +14,6 @@ export async function insert(req, res, next) {
 		planning_week,
 		sfg_uuid,
 		sno_quantity,
-		batch_production_quantity,
-		factory_quantity,
-		production_quantity,
 		remarks,
 		created_at,
 		uuid,
@@ -295,7 +292,7 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 		LEFT JOIN
 			(
 				SELECT 
-					pe.sfg_uuid,
+					sfg.uuid as sfg_uuid,
 					SUM(pe.sno_quantity) as given_sno_quantity, 
 					SUM(pe.factory_quantity) as given_factory_quantity,
 					SUM(pe.production_quantity) as given_production_quantity,
@@ -305,7 +302,7 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 				LEFT JOIN 
 					zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
 				GROUP BY
-					pe.sfg_uuid
+					sfg.uuid
 			) as pe_given ON pe_given.sfg_uuid = sfg.uuid
 		WHERE 
 			sfg.recipe_uuid IS NOT NULL
@@ -316,8 +313,8 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			oe.size, 
 			oe.quantity, 
 			vod.order_number, 
-			vod.item_description, 
-			pe_given.given_sno_quantity, 
+			vod.item_description,
+			pe_given.given_sno_quantity,
 			pe_given.given_factory_quantity,
 			pe_given.given_production_quantity,
 			pe_given.given_batch_production_quantity
@@ -339,5 +336,89 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 		return res.status(200).json({ toast, data: ggdata });
 	} catch (error) {
 		await handleError({ error, res });
+	}
+}
+
+export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const {
+		planning_week,
+		sfg_uuid,
+		factory_quantity,
+		production_quantity,
+		batch_production_quantity,
+		remarks,
+		created_at,
+		updated_at,
+	} = req.body;
+
+	const query = sql`SELECT planning_entry.uuid
+						FROM zipper.planning_entry
+						WHERE planning_week = ${planning_week} AND sfg_uuid = ${sfg_uuid};`;
+
+	const sfgExistsPromise = db.execute(query);
+
+	const sfgExists = await sfgExistsPromise;
+
+	console.log('sfgExists', sfgExists);
+
+	// if planning entry and sfg already exists, then update the existing entry
+	if (sfgExists.rowCount > 0) {
+		const planningEntryPromise = db
+			.update(planning_entry)
+			.set({
+				factory_quantity,
+				production_quantity,
+				batch_production_quantity,
+				remarks,
+				updated_at,
+			})
+			.where(
+				eq(planning_entry.planning_week, planning_week),
+				eq(planning_entry.sfg_uuid, sfg_uuid)
+			)
+			.returning({ updatedUuid: planning_entry.uuid });
+
+		try {
+			const data = await planningEntryPromise;
+			const toast = {
+				status: 201,
+				type: 'update',
+				message: `${data[0].updatedUuid} updated`,
+			};
+
+			res.status(201).json({ toast, data });
+		} catch (error) {
+			await handleError({ error, res });
+		}
+	}
+	// if planning entry already exists, but sfg_uuid does not exist, then insert a new entry
+	else {
+		const planningEntryPromise = db
+			.insert(planning_entry)
+			.values({
+				planning_week,
+				sfg_uuid,
+				factory_quantity,
+				production_quantity,
+				batch_production_quantity,
+				remarks,
+				created_at,
+			})
+			.returning({ insertedUuid: planning_entry.uuid });
+
+		try {
+			const data = await planningEntryPromise;
+			const toast = {
+				status: 201,
+				type: 'insert',
+				message: `${data[0].insertedUuid} inserted`,
+			};
+
+			res.status(201).json({ toast, data });
+		} catch (error) {
+			await handleError({ error, res });
+		}
 	}
 }
