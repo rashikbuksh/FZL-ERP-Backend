@@ -31,7 +31,7 @@ import { defZipper, tagZipper } from './db/zipper/schema.js';
 
 // Slider
 import { pathSlider } from './db/slider/route.js';
-import { defSlider, tagSlider } from './db/slider/schema.js';
+import { defSlider, tagSlider } from './db/slider/swagger.js';
 
 // Purchase
 import { pathPurchase } from './db/purchase/route.js';
@@ -83,9 +83,10 @@ const swaggerSpec = swaggerJSDoc({
 	definition: {
 		openapi: '3.0.0',
 		info: {
-			title: 'FZL API',
+			title: 'FZL ERP API',
 			version: '0.1.1',
 			description: 'FZL API Documentation',
+			contact: { email: 'rafsan@fortunezip.com' },
 		},
 		servers: [{ url: SERVER_URL, description: 'Dev' }],
 		components: {
