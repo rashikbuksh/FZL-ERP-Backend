@@ -203,7 +203,7 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 		LEFT JOIN
 			zipper.planning p
 		ON
-			pe.planning_week = p.uuid
+			pe.planning_week = p.week
 		LEFT JOIN 
 			zipper.sfg sfg
 		ON
