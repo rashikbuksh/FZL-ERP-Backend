@@ -81,7 +81,7 @@ export async function selectAll(req, res, next) {
 			lc.party_uuid,
 			array_agg(
 			concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0')
-			)) as pi_uuids,
+			)) as pi_ids,
 			party.name AS party_name,
 			(	
 				SELECT 
@@ -154,7 +154,7 @@ export async function select(req, res, next) {
 			lc.party_uuid,
 			array_agg(
 			concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0')
-			)) as pi_uuids,
+			)) as pi_ids,
 			party.name AS party_name,
 			(	
 				SELECT 
@@ -246,6 +246,80 @@ export async function selectLcPiByLcUuid(req, res, next) {
 		};
 
 		return await res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectLcByLcNumber(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT
+			lc.uuid,
+			lc.party_uuid,
+			array_agg(
+			concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0')
+			)) as pi_ids,
+			party.name AS party_name,
+			(	
+				SELECT 
+					SUM(CAST(coalesce(pi.payment,0) AS numeric) * CAST(coalesce(order_entry.party_price,0) AS numeric)) 
+				FROM commercial.pi 
+					LEFT JOIN commercial.pi_entry ON pi.uuid = pi_entry.pi_uuid 
+					LEFT JOIN zipper.sfg ON pi_entry.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+				WHERE pi.lc_uuid = lc.uuid
+			) AS total_value,
+			lc.file_no,
+			lc.lc_number,
+			lc.lc_date,
+			lc.payment_value,
+			lc.payment_date,
+			lc.ldbc_fdbc,
+			lc.acceptance_date,
+			lc.maturity_date,
+			lc.commercial_executive,
+			lc.party_bank,
+			lc.production_complete,
+			lc.lc_cancel,
+			lc.handover_date,
+			lc.shipment_date,
+			lc.expiry_date,
+			lc.ud_no,
+			lc.ud_received,
+			lc.at_sight,
+			lc.amd_date,
+			lc.amd_count,
+			lc.problematical,
+			lc.epz,
+			lc.created_by,
+			users.name AS created_by_name,
+			lc.created_at,
+			lc.updated_at,
+			lc.remarks
+		FROM
+			commercial.lc
+		LEFT JOIN
+			hr.users ON lc.created_by = users.uuid
+		LEFT JOIN
+			public.party ON lc.party_uuid = party.uuid
+		LEFT JOIN
+			commercial.pi ON lc.uuid = pi.lc_uuid
+		WHERE lc.lc_number = ${req.params.lc_number}
+		GROUP BY lc.uuid, party.name, users.name`;
+
+	const lcPromise = db.execute(query);
+
+	try {
+		const data = await lcPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'lc',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
