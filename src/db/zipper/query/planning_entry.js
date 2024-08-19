@@ -273,21 +273,17 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 
 	const query = sql`
 		SELECT
-			pe.uuid as planning_entry_uuid,
-			pe.planning_week,
 			sfg.uuid as sfg_uuid,
-			pe.created_at,
-			pe.updated_at,
 			oe.style,
 			oe.color,
 			oe.size,
 			oe.quantity as order_quantity,
 			vod.order_number,
 			vod.item_description,
-			pe.sno_quantity as given_sno_quantity,
-			pe.factory_quantity as given_factory_quantity,
-			pe.production_quantity as given_production_quantity,
-			pe.batch_production_quantity as given_batch_production_quantity
+			pe_given.given_sno_quantity as given_sno_quantity,
+			pe_given.given_factory_quantity as given_factory_quantity,
+			pe_given.given_production_quantity as given_production_quantity,
+			pe_given.given_batch_production_quantity as given_batch_production_quantity
 		FROM
 			zipper.order_entry oe
 		LEFT JOIN
@@ -297,10 +293,34 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			zipper.sfg sfg
 			ON oe.uuid = sfg.order_entry_uuid
 		LEFT JOIN
-			zipper.planning_entry pe
-			ON sfg.uuid = pe.sfg_uuid
+			(
+				SELECT 
+					pe.sfg_uuid,
+					SUM(pe.sno_quantity) as given_sno_quantity, 
+					SUM(pe.factory_quantity) as given_factory_quantity,
+					SUM(pe.production_quantity) as given_production_quantity,
+					SUM(pe.batch_production_quantity) as given_batch_production_quantity
+				FROM 
+					zipper.planning_entry pe
+				LEFT JOIN 
+					zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
+				GROUP BY
+					pe.sfg_uuid
+			) as pe_given ON pe_given.sfg_uuid = sfg.uuid
 		WHERE 
 			sfg.recipe_uuid IS NOT NULL
+		GROUP BY 
+			sfg.uuid, 
+			oe.style, 
+			oe.color, 
+			oe.size, 
+			oe.quantity, 
+			vod.order_number, 
+			vod.item_description, 
+			pe_given.given_sno_quantity, 
+			pe_given.given_factory_quantity,
+			pe_given.given_production_quantity,
+			pe_given.given_batch_production_quantity
 	`;
 
 	const orderDetailsPromise = db.execute(query);
