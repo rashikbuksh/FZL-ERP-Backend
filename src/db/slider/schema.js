@@ -19,7 +19,8 @@ export const stock = slider.table('stock', {
 	// .references(() => zipperSchema.order_description.end_type),
 	puller_type: defaultUUID('puller_type').default(null),
 	// .references(() => zipperSchema.order_description.puller_type),
-	color: text('color').notNull(),
+	puller_color: text('puller_color').notNull(),
+	// .references(() => zipperSchema.order_description.puller_color),
 	order_quantity: decimal('order_quantity', {
 		precision: 20,
 		scale: 4,
