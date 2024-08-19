@@ -1,5 +1,4 @@
-import { request, Router } from 'express';
-import { properties } from '../public/schema.js';
+import { Router } from 'express';
 import * as coloringTransactionOperations from './query/coloring_transaction.js';
 import * as dieCastingOperations from './query/die_casting.js';
 import * as dieCastingProductionOperations from './query/die_casting_production.js';
