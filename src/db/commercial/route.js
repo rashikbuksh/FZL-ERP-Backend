@@ -1242,7 +1242,7 @@ commercialRouter.get(
 	'/pi/details/:pi_uuid',
 	piOperations.selectPiDetailsByPiUuid
 );
-commercialRouter.get(
+commercialRouter.put(
 	'/pi-lc-uuid/:pi_uuid',
 	piOperations.updatePiPutLcByPiUuid
 );

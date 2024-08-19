@@ -377,7 +377,7 @@ export async function updatePiPutLcByPiUuid(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `updated by ${data[0].updatedId} `,
+			message: `${data[0].updatedId} updated`,
 		};
 
 		return await res.status(201).json({ toast, data });
