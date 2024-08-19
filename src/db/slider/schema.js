@@ -21,7 +21,7 @@ export const stock = slider.table('stock', {
 	// .references(() => publicSchema.properties.lock_type),
 	puller_type: defaultUUID('puller_type').default(null),
 	// .references(() => publicSchema.properties.puller_type),
-	puller_color: text('puller_color').notNull(),
+	puller_color: text('puller_color').default(null),
 	// .references(() => publicSchema.properties.puller_color),
 	puller_link: defaultUUID('puller_link').default(null),
 	// .references(() => publicSchema.properties.puller_link),
