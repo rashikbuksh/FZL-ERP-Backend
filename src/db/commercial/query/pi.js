@@ -386,6 +386,33 @@ export async function updatePiPutLcByPiUuid(req, res, next) {
 	}
 }
 
+export async function updatePiToNullByPiUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { pi_uuid } = req.params;
+
+	const piPromise = db
+		.update(pi)
+		.set({ lc_uuid: null })
+		.where(eq(pi.uuid, pi_uuid))
+		.returning({
+			updatedId: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await piPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function selectPiByLcUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
