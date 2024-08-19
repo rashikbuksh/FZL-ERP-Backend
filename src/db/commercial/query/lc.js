@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -183,4 +184,38 @@ export async function select(req, res, next) {
 		next,
 		...toast,
 	});
+}
+
+export async function selectLcPiByLcUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	try {
+		const api = await createApi(req);
+
+		const { lc_uuid } = req.params;
+
+		const fetchData = async (endpoint) =>
+			await api.get(`/commercial/${endpoint}/${lc_uuid}`);
+
+		const [lc, pi] = await Promise.all([
+			fetchData('lc'),
+			fetchData('pi-lc'),
+		]);
+
+		const response = {
+			...lc?.data?.data[0],
+			pi: pi?.data?.data || [],
+		};
+
+		console.log(response, 'response');
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'lc',
+		};
+
+		return await res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

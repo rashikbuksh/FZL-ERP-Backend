@@ -507,6 +507,286 @@ export const pathCommercialLc = {
 			},
 		},
 	},
+	'/commercial/lc-pi/by/{lc_uuid}': {
+		get: {
+			tags: ['commercial.lc'],
+			summary: 'Get a lc by lc_uuid',
+			description: ' Get a lc by lc_uuid',
+			//operationId: "getLcByUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'lc_uuid',
+					in: 'path',
+					description: 'Lc to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'ABC',
+									},
+									file_no: {
+										type: 'string',
+										example: '123456',
+									},
+									lc_number: {
+										type: 'string',
+										example: '123456',
+									},
+									lc_date: {
+										type: 'string',
+										example: '2021-12-12',
+									},
+									payment_value: {
+										type: 'number',
+										example: 12.3456,
+									},
+									payment_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									ldbc_fdc: {
+										type: 'string',
+										example: 'ldbc_fdc',
+									},
+									acceptance_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									maturity_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									commercial_executive: {
+										type: 'string',
+										example: 'commercial_executive',
+									},
+									party_bank: {
+										type: 'string',
+										example: 'party_bank',
+									},
+									production_complete: {
+										type: 'integer',
+										example: 1,
+									},
+									lc_cancel: {
+										type: 'integer',
+										example: 1,
+									},
+									handover_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									shipment_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									expiry_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									ud_no: {
+										type: 'string',
+										example: 'ud_no',
+									},
+									ud_received: {
+										type: 'string',
+										example: 'ud_received',
+									},
+									at_sight: {
+										type: 'string',
+										example: 'at_sight',
+									},
+									amd_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									amd_count: {
+										type: 'integer',
+										example: 1,
+									},
+									problematical: {
+										type: 'integer',
+										example: 1,
+									},
+									epz: {
+										type: 'integer',
+										example: 1,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									update_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+									pi: {
+										type: 'array',
+										items: {
+											type: 'object',
+											properties: {
+												uuid: {
+													type: 'string',
+													example: 'igD0v9DIJQhJeet',
+												},
+												id: {
+													type: 'string',
+													example: 'PI24-0001',
+												},
+												lc_uuid: {
+													type: 'string',
+													example: 'igD0v9DIJQhJeet',
+												},
+												lc_number: {
+													type: 'string',
+													example: '123456',
+												},
+												order_info_uuids: {
+													type: 'array',
+													items: {
+														type: 'string',
+														example:
+															'igD0v9DIJQhJeet',
+													},
+												},
+												marketing_uuid: {
+													type: 'string',
+													example: 'igD0v9DIJQhJeet',
+												},
+												marketing_name: {
+													type: 'string',
+													example: 'marketing',
+												},
+												party_uuid: {
+													type: 'string',
+													example: 'igD0v9DIJQhJeet',
+												},
+												party_name: {
+													type: 'string',
+													example: 'party',
+												},
+												merchandiser_uuid: {
+													type: 'string',
+													example: 'igD0v9DIJQhJeet',
+												},
+												merchandiser_name: {
+													type: 'string',
+													example: 'merchandiser',
+												},
+												factory_uuid: {
+													type: 'string',
+													example: 'igD0v9DIJQhJeet',
+												},
+												factory_name: {
+													type: 'string',
+													example: 'ABC',
+												},
+												bank_uuid: {
+													type: 'string',
+													example: 'igD0v9DIJQhJeet',
+												},
+												bank_name: {
+													type: 'string',
+													example: 'Bangladesh Bank',
+												},
+												bank_swift_code: {
+													type: 'string',
+													example: 'BB',
+												},
+												bank_address: {
+													type: 'string',
+													example: 'address',
+												},
+												factory_address: {
+													type: 'string',
+													example: 'address',
+												},
+												validity: {
+													type: 'string',
+													example: '2021-12-12',
+												},
+												payment: {
+													type: 'string',
+													example: 'paid',
+												},
+												created_by: {
+													type: 'string',
+													example: 'igD0v9DIJQhJeet',
+												},
+												created_by_name: {
+													type: 'string',
+													example: 'John Doe',
+												},
+												created_at: {
+													type: 'string',
+													format: 'date-time',
+													example:
+														'2024-01-01 00:00:00',
+												},
+												update_at: {
+													type: 'string',
+													format: 'date-time',
+													example:
+														'2024-01-01 00:00:00',
+												},
+												remarks: {
+													type: 'string',
+													example: 'remarks',
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 // lc routes
@@ -515,6 +795,7 @@ commercialRouter.get('/lc/:uuid', lcOperations.select);
 commercialRouter.post('/lc', lcOperations.insert);
 commercialRouter.put('/lc/:uuid', lcOperations.update);
 commercialRouter.delete('/lc/:uuid', lcOperations.remove);
+commercialRouter.get('/lc-pi/by/:lc_uuid', lcOperations.selectLcPiByLcUuid);
 
 // pi
 export const pathCommercialPi = {
@@ -1081,14 +1362,6 @@ export const pathCommercialPi = {
 										type: 'string',
 										example: 'John Doe',
 									},
-									user_designation: {
-										type: 'string',
-										example: 'Manager',
-									},
-									user_department: {
-										type: 'string',
-										example: 'HR',
-									},
 									created_at: {
 										type: 'string',
 										format: 'date-time',
@@ -1229,6 +1502,151 @@ export const pathCommercialPi = {
 			},
 		},
 	},
+	'/commercial/pi-lc/{lc_uuid}': {
+		get: {
+			tags: ['commercial.pi'],
+			summary: 'Get a pi by lc_uuid',
+			description: ' Get a pi by lc_uuid',
+			//operationId: "getPet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'lc_uuid',
+					in: 'path',
+					description: 'Pi to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: {
+										type: 'string',
+										example: 'PI24-0001',
+									},
+									lc_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lc_number: {
+										type: 'string',
+										example: '123456',
+									},
+									order_info_uuids: {
+										type: 'array',
+										items: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'marketing',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'party',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'merchandiser',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'ABC',
+									},
+									bank_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									bank_name: {
+										type: 'string',
+										example: 'Bangladesh Bank',
+									},
+									bank_swift_code: {
+										type: 'string',
+										example: 'BB',
+									},
+									bank_address: {
+										type: 'string',
+										example: 'address',
+									},
+									factory_address: {
+										type: 'string',
+										example: 'address',
+									},
+									validity: {
+										type: 'string',
+										example: '2021-12-12',
+									},
+									payment: {
+										type: 'string',
+										example: 'paid',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									update_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Pi not found',
+				},
+			},
+		},
+	},
 };
 
 // pi routes
@@ -1246,6 +1664,7 @@ commercialRouter.put(
 	'/pi-lc-uuid/:pi_uuid',
 	piOperations.updatePiPutLcByPiUuid
 );
+commercialRouter.get('/pi-lc/:lc_uuid', piOperations.selectPiByLcUuid);
 
 // pi_entry
 export const pathCommercialPiEntry = {
