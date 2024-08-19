@@ -242,50 +242,50 @@ export const defStock = {
 export const die_casting = slider.table('die_casting', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
-	item: defaultUUID('item'),
+	item: defaultUUID('item').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.item
 	// ),
-	zipper_number: defaultUUID('zipper_number'),
+	zipper_number: defaultUUID('zipper_number').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.zipper_number
 	// ),
-	end_type: defaultUUID('end_type'),
+	end_type: defaultUUID('end_type').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.end_type
 	// ),
-	puller_type: defaultUUID('puller_type'),
+	puller_type: defaultUUID('puller_type').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.puller_type
 	// ),
-	logo_type: defaultUUID('logo_type'),
+	logo_type: defaultUUID('logo_type').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.logo_type
 	// ),
-	slider_body_shape: defaultUUID('slider_body_shape'),
+	slider_body_shape: defaultUUID('slider_body_shape').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.slider_body_shape
 	// ),
-	puller_link: defaultUUID('puller_link'),
+	puller_link: defaultUUID('puller_link').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.puller_link
 	// ),
-	stopper_type: defaultUUID('stopper_type'),
+	stopper_type: defaultUUID('stopper_type').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.stopper_type
 	// ),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	weight: decimal('weight', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	pcs_per_kg: decimal('pcs_per_kg', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
