@@ -211,6 +211,13 @@ export const pathCommercialLc = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									pi_ids: {
+										type: 'array',
+										items: {
+											type: 'string',
+											example: 'PI24_0001',
+										},
+									},
 									party_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -218,6 +225,10 @@ export const pathCommercialLc = {
 									party_name: {
 										type: 'string',
 										example: 'ABC',
+									},
+									total_value: {
+										type: 'number',
+										example: 12.3456,
 									},
 									file_no: {
 										type: 'string',
@@ -538,6 +549,13 @@ export const pathCommercialLc = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									pi_ids: {
+										type: 'array',
+										items: {
+											type: 'string',
+											example: 'PI24_0001',
+										},
+									},
 									party_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -545,6 +563,10 @@ export const pathCommercialLc = {
 									party_name: {
 										type: 'string',
 										example: 'ABC',
+									},
+									total_value: {
+										type: 'number',
+										example: 12.3456,
 									},
 									file_no: {
 										type: 'string',
@@ -700,13 +722,24 @@ export const pathCommercialLc = {
 													type: 'string',
 													example: 'marketing',
 												},
+												pi_ids: {
+													type: 'array',
+													items: {
+														type: 'string',
+														example: 'PI24_0001',
+													},
+												},
 												party_uuid: {
 													type: 'string',
 													example: 'igD0v9DIJQhJeet',
 												},
 												party_name: {
 													type: 'string',
-													example: 'party',
+													example: 'ABC',
+												},
+												total_value: {
+													type: 'number',
+													example: 12.3456,
 												},
 												merchandiser_uuid: {
 													type: 'string',

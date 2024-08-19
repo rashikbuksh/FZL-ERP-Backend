@@ -21,6 +21,10 @@ export const stock = slider.table('stock', {
 	// .references(() => zipperSchema.order_description.puller_type),
 	puller_color: text('puller_color').notNull(),
 	// .references(() => zipperSchema.order_description.puller_color),
+	// logo_type: defaultUUID('logo_type').default(null),
+	// // .references(() => zipperSchema.order_description.logo_type),
+	// is_logo_body: integer('is_logo_body').default(0),
+	// is_logo_puller: integer('is_logo_puller').default(0),
 	order_quantity: decimal('order_quantity', {
 		precision: 20,
 		scale: 4,
