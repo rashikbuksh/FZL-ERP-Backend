@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -6,7 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { transaction } from '../schema.js';
+import { stock, transaction } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -71,88 +71,86 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: transaction.uuid,
-			stock_uuid: transaction.stock_uuid,
-			section: transaction.section,
-			trx_quantity: transaction.trx_quantity,
-			created_by: transaction.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
-			created_at: transaction.created_at,
-			updated_at: transaction.updated_at,
-			remarks: transaction.remarks,
-		})
-		.from(transaction)
-		.leftJoin(
-			hrSchema.users,
-			eq(transaction.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		);
+	const query = sql`
+		SELECT
+			transaction.uuid,
+			transaction.stock_uuid,
+			transaction.section,
+			transaction.trx_quantity,
+			transaction.created_by,
+			transaction.created_at,
+			transaction.updated_at,
+			transaction.remarks,
+			stock.item,
+			stock.zipper_number,
+			stock.end_type,
+			stock.puller_type,
+			stock.puller_color,
+			order_info.uuid AS order_info_uuid
+		FROM
+			zipper.transaction
+		LEFT JOIN
+			zipper.stock ON transaction.stock_uuid = stock.uuid
+		LEFT JOIN
+			zipper.v_order_details vod ON stock.order_info_uuid = vod.order_info_uuid
+	`;
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'transactions list',
-	};
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+	const transactionPromise = db.execute(query);
+
+	try {
+		const data = await transactionPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Transaction list',
+		};
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const transactionPromise = db
-		.select({
-			uuid: transaction.uuid,
-			stock_uuid: transaction.stock_uuid,
-			section: transaction.section,
-			trx_quantity: transaction.trx_quantity,
-			created_by: transaction.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
-			created_at: transaction.created_at,
-			updated_at: transaction.updated_at,
-			remarks: transaction.remarks,
-		})
-		.from(transaction)
-		.leftJoin(
-			hrSchema.users,
-			eq(transaction.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		)
-		.where(eq(transaction.uuid, req.params.uuid));
+	const query = sql`
+		SELECT
+			transaction.uuid,
+			transaction.stock_uuid,
+			transaction.section,
+			transaction.trx_quantity,
+			transaction.created_by,
+			transaction.created_at,
+			transaction.updated_at,
+			transaction.remarks,
+			stock.item,
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'transaction',
-	};
-	handleResponse({
-		promise: transactionPromise,
-		res,
-		next,
-		...toast,
-	});
+			stock.zipper_number,
+			stock.end_type,
+			stock.puller_type,
+			stock.puller_color,
+			order_info.uuid AS order_info_uuid
+		FROM
+			zipper.transaction
+		LEFT JOIN
+			zipper.stock ON transaction.stock_uuid = stock.uuid
+		LEFT JOIN
+			zipper.v_order_details vod ON stock.order_info_uuid = vod.order_info_uuid
+		WHERE
+			transaction.uuid = ${req.params.uuid}
+	`;
+
+	const transactionPromise = db.execute(query);
+
+	try {
+		const data = await transactionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'transaction',
+		};
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
