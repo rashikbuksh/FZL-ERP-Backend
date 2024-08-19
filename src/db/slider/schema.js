@@ -31,6 +31,8 @@ export const stock = slider.table('stock', {
 	// .references(() => publicSchema.properties.slider_body_shape),
 	slider_link: defaultUUID('slider_link').default(null),
 	// .references(() => publicSchema.properties.slider_link),
+	coloring_type: defaultUUID('coloring_type').default(null),
+	// .references(() => publicSchema.properties.coloring_type),
 	logo_type: defaultUUID('logo_type').default(null),
 	// .references(() => publicSchema.properties.logo_type),
 	is_logo_body: integer('is_logo_body').default(0),
