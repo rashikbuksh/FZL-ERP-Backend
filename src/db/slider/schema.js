@@ -10,15 +10,32 @@ export const stock = slider.table('stock', {
 	uuid: uuid_primary,
 	order_info_uuid: defaultUUID('order_info_uuid').default(null),
 	//.references(() => zipperSchema.order_info.uuid),
-	item: defaultUUID('item'),
-	//.references(() => zipperSchema.order_description.item),
-	zipper_number: defaultUUID('zipper_number'),
-	// .references(() => zipperSchema.order_description.zipper_number),
-	end_type: defaultUUID('end_type'),
-	// .references(() => zipperSchema.order_description.end_type),
+	item: defaultUUID('item').default(null),
+	//.references(() => publicSchema.properties.item),
+	zipper_number: defaultUUID('zipper_number').default(null),
+	// .references(() => publicSchema.properties.zipper_number),
+	end_type: defaultUUID('end_type').default(null),
+	// .references(() => publicSchema.properties.end_type),
+	lock_type: defaultUUID('lock_type').default(null),
+	// .references(() => publicSchema.properties.lock_type),
 	puller_type: defaultUUID('puller_type').default(null),
-	// .references(() => zipperSchema.order_description.puller_type),
-	color: text('color').notNull(),
+	// .references(() => publicSchema.properties.puller_type),
+	puller_color: text('puller_color').default(null),
+	// .references(() => publicSchema.properties.puller_color),
+	puller_link: defaultUUID('puller_link').default(null),
+	// .references(() => publicSchema.properties.puller_link),
+	slider: defaultUUID('slider').default(null),
+	// .references(() => publicSchema.properties.slider),
+	slider_body_shape: defaultUUID('slider_body_shape').default(null),
+	// .references(() => publicSchema.properties.slider_body_shape),
+	slider_link: defaultUUID('slider_link').default(null),
+	// .references(() => publicSchema.properties.slider_link),
+	coloring_type: defaultUUID('coloring_type').default(null),
+	// .references(() => publicSchema.properties.coloring_type),
+	logo_type: defaultUUID('logo_type').default(null),
+	// .references(() => publicSchema.properties.logo_type),
+	is_logo_body: integer('is_logo_body').default(0),
+	is_logo_puller: integer('is_logo_puller').default(0),
 	order_quantity: decimal('order_quantity', {
 		precision: 20,
 		scale: 4,
@@ -79,50 +96,50 @@ export const stock = slider.table('stock', {
 export const die_casting = slider.table('die_casting', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
-	item: defaultUUID('item'),
+	item: defaultUUID('item').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.item
 	// ),
-	zipper_number: defaultUUID('zipper_number'),
+	zipper_number: defaultUUID('zipper_number').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.zipper_number
 	// ),
-	end_type: defaultUUID('end_type'),
+	end_type: defaultUUID('end_type').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.end_type
 	// ),
-	puller_type: defaultUUID('puller_type'),
+	puller_type: defaultUUID('puller_type').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.puller_type
 	// ),
-	logo_type: defaultUUID('logo_type'),
+	logo_type: defaultUUID('logo_type').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.logo_type
 	// ),
-	slider_body_shape: defaultUUID('slider_body_shape'),
+	slider_body_shape: defaultUUID('slider_body_shape').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.slider_body_shape
 	// ),
-	puller_link: defaultUUID('puller_link'),
+	puller_link: defaultUUID('puller_link').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.puller_link
 	// ),
-	stopper_type: defaultUUID('stopper_type'),
+	stopper_type: defaultUUID('stopper_type').default(null),
 	// .references(
 	// 	() => zipperSchema.order_description.stopper_type
 	// ),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	weight: decimal('weight', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	pcs_per_kg: decimal('pcs_per_kg', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

@@ -5212,7 +5212,7 @@ export const pathZipperPlanning = {
 					description: 'planning to get',
 					required: true,
 					type: 'string',
-					example: '24-32'
+					example: '24-32',
 				},
 			],
 			responses: {
@@ -5351,7 +5351,7 @@ export const pathZipperPlanning = {
 			},
 		},
 	},
-	'/zipper/planning/by/{planning_weel}': {
+	'/zipper/planning/by/{planning_week}': {
 		get: {
 			tags: ['zipper.planning'],
 			summary: 'Get all Planning by Planning UUID',
@@ -5624,7 +5624,7 @@ export const pathZipperPlanningEntry = {
 		},
 		post: {
 			tags: ['zipper.planning_entry'],
-			summary: 'create a planning entry',
+			summary: 'create a planning entry for sno',
 			description: '',
 			// operationId: "addPet",
 			consumes: ['application/json'],
@@ -5634,7 +5634,39 @@ export const pathZipperPlanningEntry = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/zipper/planning_entry',
+							type: 'object',
+							properties: {
+								uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								planning_week: {
+									type: 'string',
+									example: '24-32',
+								},
+								sfg_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								sno_quantity: {
+									type: 'number',
+									example: 100,
+								},
+								created_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2024-01-01 00:00:00',
+								},
+								updated_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2024-01-01 00:00:00',
+								},
+								remarks: {
+									type: 'string',
+									example: 'Remarks',
+								},
+							},
 						},
 					},
 				},
@@ -6039,6 +6071,80 @@ export const pathZipperPlanningEntry = {
 			},
 		},
 	},
+	'/zipper/planning-entry/for/factory': {
+		post: {
+			tags: ['zipper.planning_entry'],
+			summary: 'create a planning entry for factory',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							type: 'object',
+							properties: {
+								uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								planning_week: {
+									type: 'string',
+									example: '24-32',
+								},
+								sfg_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								factory_quantity: {
+									type: 'number',
+									example: 100,
+								},
+								production_quantity: {
+									type: 'number',
+									example: 100,
+								},
+								batch_production_quantity: {
+									type: 'number',
+									example: 100,
+								},
+								created_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2024-01-01 00:00:00',
+								},
+								updated_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2024-01-01 00:00:00',
+								},
+								remarks: {
+									type: 'string',
+									example: 'Remarks',
+								},
+							},
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/planning_entry',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
 };
 
 zipperRouter.get('/planning-entry', planningEntryOperations.selectAll);
@@ -6053,6 +6159,10 @@ zipperRouter.get(
 zipperRouter.get(
 	'/order-planning',
 	planningEntryOperations.getOrderDetailsForPlanningEntry
+);
+zipperRouter.post(
+	'/planning-entry/for/factory',
+	planningEntryOperations.insertOrUpdatePlanningEntryByFactory
 );
 
 export const pathZipper = {

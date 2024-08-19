@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -10,29 +10,45 @@ import { planning, planning_entry, sfg } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgExistsPromise = db
-		.select(1)
-		.from(planning_entry)
-		.where(
-			eq(planning_entry.planning_week, req.body.planning_week),
-			eq(planning_entry.sfg_uuid, req.body.sfg_uuid)
-		);
+	const {
+		planning_week,
+		sfg_uuid,
+		sno_quantity,
+		remarks,
+		created_at,
+		uuid,
+		updated_at,
+	} = req.body;
+
+	const query = sql`SELECT planning_entry.uuid
+						FROM zipper.planning_entry
+						WHERE planning_week = ${planning_week} AND sfg_uuid = ${sfg_uuid};`;
+
+	const sfgExistsPromise = db.execute(query);
 
 	const sfgExists = await sfgExistsPromise;
 
-	// if planning entry and sfg already exists, then update the existing entry
-	if (sfgExists.length) {
-		const planningEntryPromise = db
-			.update(planning_entry)
-			.set(req.body)
-			.where(
-				eq(planning_entry.planning_week, req.body.planning_week),
-				eq(planning_entry.sfg_uuid, req.body.sfg_uuid)
-			)
-			.returning({ updatedUuid: planning_entry.uuid });
+	console.log('sfgExists - SNO', sfgExists);
 
+	// if planning entry and sfg already exists, then update the existing entry
+	if (sfgExists.rowCount > 0) {
 		try {
-			const data = await planningEntryPromise;
+			const planningEntryPromise = await db
+				.update(planning_entry)
+				.set({
+					sno_quantity: sno_quantity,
+					remarks: remarks,
+					updatedAt: updated_at,
+				})
+				.where(
+					and(
+						eq(planning_entry.planning_week, planning_week),
+						eq(planning_entry.sfg_uuid, sfg_uuid)
+					)
+				)
+				.returning({ updatedUuid: planning_entry.uuid });
+
+			const data = planningEntryPromise;
 			const toast = {
 				status: 201,
 				type: 'update',
@@ -49,7 +65,15 @@ export async function insert(req, res, next) {
 	else {
 		const planningEntryPromise = db
 			.insert(planning_entry)
-			.values(req.body)
+			.values({
+				planning_week,
+				sfg_uuid,
+				sno_quantity,
+				remarks,
+				created_at,
+				uuid,
+				updated_at,
+			})
 			.returning({ insertedUuid: planning_entry.uuid });
 
 		try {
@@ -203,7 +227,7 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 		LEFT JOIN
 			zipper.planning p
 		ON
-			pe.planning_week = p.uuid
+			pe.planning_week = p.week
 		LEFT JOIN 
 			zipper.sfg sfg
 		ON
@@ -243,21 +267,17 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 
 	const query = sql`
 		SELECT
-			pe.uuid as planning_entry_uuid,
-			pe.planning_week,
 			sfg.uuid as sfg_uuid,
-			pe.created_at,
-			pe.updated_at,
 			oe.style,
 			oe.color,
 			oe.size,
 			oe.quantity as order_quantity,
 			vod.order_number,
 			vod.item_description,
-			pe.sno_quantity as given_sno_quantity,
-			pe.factory_quantity as given_factory_quantity,
-			pe.production_quantity as given_production_quantity,
-			pe.batch_production_quantity as given_batch_production_quantity
+			pe_given.given_sno_quantity as given_sno_quantity,
+			pe_given.given_factory_quantity as given_factory_quantity,
+			pe_given.given_production_quantity as given_production_quantity,
+			pe_given.given_batch_production_quantity as given_batch_production_quantity
 		FROM
 			zipper.order_entry oe
 		LEFT JOIN
@@ -267,10 +287,34 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			zipper.sfg sfg
 			ON oe.uuid = sfg.order_entry_uuid
 		LEFT JOIN
-			zipper.planning_entry pe
-			ON sfg.uuid = pe.sfg_uuid
+			(
+				SELECT 
+					sfg.uuid as sfg_uuid,
+					SUM(pe.sno_quantity) as given_sno_quantity, 
+					SUM(pe.factory_quantity) as given_factory_quantity,
+					SUM(pe.production_quantity) as given_production_quantity,
+					SUM(pe.batch_production_quantity) as given_batch_production_quantity
+				FROM 
+					zipper.planning_entry pe
+				LEFT JOIN 
+					zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
+				GROUP BY
+					sfg.uuid
+			) as pe_given ON pe_given.sfg_uuid = sfg.uuid
 		WHERE 
 			sfg.recipe_uuid IS NOT NULL
+		GROUP BY 
+			sfg.uuid, 
+			oe.style, 
+			oe.color, 
+			oe.size, 
+			oe.quantity, 
+			vod.order_number, 
+			vod.item_description,
+			pe_given.given_sno_quantity,
+			pe_given.given_factory_quantity,
+			pe_given.given_production_quantity,
+			pe_given.given_batch_production_quantity
 	`;
 
 	const orderDetailsPromise = db.execute(query);
@@ -289,5 +333,93 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 		return res.status(200).json({ toast, data: ggdata });
 	} catch (error) {
 		await handleError({ error, res });
+	}
+}
+
+export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const {
+		uuid,
+		planning_week,
+		sfg_uuid,
+		factory_quantity,
+		production_quantity,
+		batch_production_quantity,
+		remarks,
+		created_at,
+		updated_at,
+	} = req.body;
+
+	const query = sql`SELECT planning_entry.uuid
+						FROM zipper.planning_entry
+						WHERE planning_week = ${planning_week} AND sfg_uuid = ${sfg_uuid};`;
+
+	const sfgExistsPromise = db.execute(query);
+
+	const sfgExists = await sfgExistsPromise;
+
+	console.log('sfgExists - Factory', sfgExists);
+
+	// if planning entry and sfg already exists, then update the existing entry
+	if (sfgExists.rowCount > 0) {
+		const planningEntryPromise = db
+			.update(planning_entry)
+			.set({
+				factory_quantity,
+				production_quantity,
+				batch_production_quantity,
+				remarks,
+				updated_at,
+			})
+			.where(
+				and(
+					eq(planning_entry.planning_week, planning_week),
+					eq(planning_entry.sfg_uuid, sfg_uuid)
+				)
+			)
+			.returning({ updatedUuid: planning_entry.uuid });
+
+		try {
+			const data = await planningEntryPromise;
+			const toast = {
+				status: 201,
+				type: 'update',
+				message: `${data[0].updatedUuid} updated`,
+			};
+
+			res.status(201).json({ toast, data });
+		} catch (error) {
+			await handleError({ error, res });
+		}
+	}
+	// if planning entry already exists, but sfg_uuid does not exist, then insert a new entry
+	else {
+		const planningEntryPromise = db
+			.insert(planning_entry)
+			.values({
+				uuid,
+				planning_week,
+				sfg_uuid,
+				factory_quantity,
+				production_quantity,
+				batch_production_quantity,
+				remarks,
+				created_at,
+			})
+			.returning({ insertedUuid: planning_entry.uuid });
+
+		try {
+			const data = await planningEntryPromise;
+			const toast = {
+				status: 201,
+				type: 'insert',
+				message: `${data[0].insertedUuid} inserted`,
+			};
+
+			res.status(201).json({ toast, data });
+		} catch (error) {
+			await handleError({ error, res });
+		}
 	}
 }

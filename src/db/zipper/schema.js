@@ -1281,7 +1281,7 @@ export const planning_entry = zipper.table('planning_entry', {
 	sno_quantity: decimal('sno_quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	factory_quantity: decimal('factory_quantity', {
 		precision: 20,
 		scale: 4,

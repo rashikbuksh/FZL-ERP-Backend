@@ -548,9 +548,21 @@ export const pathMaterialStock = {
 										example: 10.0,
 									},
 									cutting: { type: 'number', example: 10.0 },
-									qc_and_packing: {
+									m_qc_and_packing: {
 										type: 'number',
-										example: 10.0,
+										example: 1000.0,
+									},
+									v_qc_and_packing: {
+										type: 'number',
+										example: 1000.0,
+									},
+									n_qc_and_packing: {
+										type: 'number',
+										example: 1000.0,
+									},
+									s_qc_and_packing: {
+										type: 'number',
+										example: 1000.0,
 									},
 									die_casting: {
 										type: 'number',
@@ -1444,9 +1456,21 @@ export const pathMaterialUsed = {
 										example: 10.0,
 									},
 									cutting: { type: 'number', example: 10.0 },
-									qc_and_packing: {
+									m_qc_and_packing: {
 										type: 'number',
-										example: 10.0,
+										example: 1000.0,
+									},
+									v_qc_and_packing: {
+										type: 'number',
+										example: 1000.0,
+									},
+									n_qc_and_packing: {
+										type: 'number',
+										example: 1000.0,
+									},
+									s_qc_and_packing: {
+										type: 'number',
+										example: 1000.0,
 									},
 									die_casting: {
 										type: 'number',
@@ -1584,7 +1608,22 @@ export const pathMaterialUsed = {
 							v_stopper: { type: 'number', example: 10.0 },
 							n_stopper: { type: 'number', example: 10.0 },
 							cutting: { type: 'number', example: 10.0 },
-							qc_and_packing: { type: 'number', example: 10.0 },
+							m_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
+							v_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
+							n_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
+							s_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
 							die_casting: { type: 'number', example: 10.0 },
 							slider_assembly: { type: 'number', example: 10.0 },
 							coloring: { type: 'number', example: 10.0 },
@@ -1759,7 +1798,22 @@ export const pathMaterialUsed = {
 							v_stopper: { type: 'number', example: 10.0 },
 							n_stopper: { type: 'number', example: 10.0 },
 							cutting: { type: 'number', example: 10.0 },
-							qc_and_packing: { type: 'number', example: 10.0 },
+							m_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
+							v_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
+							n_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
+							s_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
 							die_casting: { type: 'number', example: 10.0 },
 							slider_assembly: { type: 'number', example: 10.0 },
 							coloring: { type: 'number', example: 10.0 },
@@ -1864,7 +1918,22 @@ export const pathMaterialUsed = {
 							v_stopper: { type: 'number', example: 10.0 },
 							n_stopper: { type: 'number', example: 10.0 },
 							cutting: { type: 'number', example: 10.0 },
-							qc_and_packing: { type: 'number', example: 10.0 },
+							m_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
+							v_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
+							n_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
+							s_qc_and_packing: {
+								type: 'number',
+								example: 1000.0,
+							},
 							die_casting: { type: 'number', example: 10.0 },
 							slider_assembly: { type: 'number', example: 10.0 },
 							coloring: { type: 'number', example: 10.0 },

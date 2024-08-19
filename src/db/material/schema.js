@@ -281,7 +281,25 @@ export const stock = material.table('stock', {
 	})
 		.notNull()
 		.default(0.0),
-	qc_and_packing: decimal('qc_and_packing', {
+	m_qc_and_packing: decimal('m_qc_and_packing', {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	v_qc_and_packing: decimal('v_qc_and_packing', {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	n_qc_and_packing: decimal('n_qc_and_packing', {
+		precision: 20,
+		scale: 4,
+	})
+		.notNull()
+		.default(0.0),
+	s_qc_and_packing: decimal('s_qc_and_packing', {
 		precision: 20,
 		scale: 4,
 	})
@@ -400,7 +418,19 @@ export const defMaterialStock = {
 			type: 'number',
 			example: 1000.0,
 		},
-		qc_and_packing: {
+		m_qc_and_packing: {
+			type: 'number',
+			example: 1000.0,
+		},
+		v_qc_and_packing: {
+			type: 'number',
+			example: 1000.0,
+		},
+		n_qc_and_packing: {
+			type: 'number',
+			example: 1000.0,
+		},
+		s_qc_and_packing: {
 			type: 'number',
 			example: 1000.0,
 		},
