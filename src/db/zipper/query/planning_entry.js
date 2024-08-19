@@ -14,6 +14,9 @@ export async function insert(req, res, next) {
 		planning_week,
 		sfg_uuid,
 		sno_quantity,
+		batch_production_quantity,
+		factory_quantity,
+		production_quantity,
 		remarks,
 		created_at,
 		uuid,
@@ -36,6 +39,9 @@ export async function insert(req, res, next) {
 			.update(planning_entry)
 			.set({
 				sno_quantity,
+				batch_production_quantity,
+				factory_quantity,
+				production_quantity,
 				remarks,
 				updated_at,
 			})
@@ -66,7 +72,9 @@ export async function insert(req, res, next) {
 			.values({
 				planning_week,
 				sfg_uuid,
-				sno_quantity,
+				batch_production_quantity,
+				factory_quantity,
+				production_quantity,
 				remarks,
 				created_at,
 				uuid,
