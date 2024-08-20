@@ -3,6 +3,7 @@ import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
 import * as dyingBatchEntryOperations from './query/dying_batch_entry.js';
+import * as materialTrxAgainstOrderOperations from './query/material_trx_against_order_description.js';
 import * as orderDescriptionOperations from './query/order_description.js';
 import * as orderEntryOperations from './query/order_entry.js';
 import * as orderInfoOperations from './query/order_info.js';
@@ -5977,6 +5978,22 @@ export const pathZipperPlanningEntry = {
 										type: 'number',
 										example: 100,
 									},
+									balance_sno_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_factory_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_batch_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
 								},
 							},
 						},
@@ -6076,6 +6093,22 @@ export const pathZipperPlanningEntry = {
 										example: 100,
 									},
 									given_batch_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_sno_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_factory_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_batch_production_quantity: {
 										type: 'number',
 										example: 100,
 									},
@@ -6181,6 +6214,279 @@ zipperRouter.post(
 	planningEntryOperations.insertOrUpdatePlanningEntryByFactory
 );
 
+// --------------------- material trx against order ---------------------
+
+export const pathZipperMaterialTrxAgainstOrderDescription = {
+	'/zipper/material-trx-against-order': {
+		get: {
+			tags: ['zipper.material_trx_against_order_description'],
+			summary: 'Get all Material Trx',
+			responses: {
+				200: {
+					description: 'Returns all Material Trx',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									quantity: {
+										type: 'number',
+										example: 100,
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['zipper.material_trx_against_order_description'],
+			summary: 'create a material trx',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/material_trx_against_order_description',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/material_trx_against_order_description',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+	'/zipper/material-trx-against-order/{uuid}': {
+		get: {
+			tags: ['zipper.material_trx_against_order_description'],
+			summary: 'Gets a material trx',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'material trx to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							order_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							quantity: {
+								type: 'number',
+								example: 100,
+							},
+							remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'User not found',
+				},
+			},
+		},
+		put: {
+			tags: ['zipper.material_trx_against_order_description'],
+			summary: 'Update an existing material trx',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'material trx to update',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/material_trx_against_order_description',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/material_trx_against_order_description',
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'material trx not found',
+				},
+
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+		delete: {
+			tags: ['zipper.material_trx_against_order_description'],
+			summary: 'Deletes a material trx',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'material trx to delete',
+					required: true,
+					type: 'string',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/material_trx_against_order_description',
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'material trx not found',
+				},
+			},
+		},
+	},
+};
+
+zipperRouter.get(
+	'/material-trx-against-order',
+	materialTrxAgainstOrderOperations.selectAll
+);
+zipperRouter.get(
+	'/material-trx-against-order/:uuid',
+	materialTrxAgainstOrderOperations.select
+);
+zipperRouter.post(
+	'/material-trx-against-order',
+	materialTrxAgainstOrderOperations.insert
+);
+zipperRouter.put(
+	'/material-trx-against-order/:uuid',
+	materialTrxAgainstOrderOperations.update
+);
+zipperRouter.delete(
+	'/material-trx-against-order/:uuid',
+	materialTrxAgainstOrderOperations.remove
+);
+
 export const pathZipper = {
 	...pathZipperOrderInfo,
 	...pathZipperOrderDescription,
@@ -6197,6 +6503,7 @@ export const pathZipper = {
 	...pathZipperTapeToCoil,
 	...pathZipperPlanning,
 	...pathZipperPlanningEntry,
+	...pathZipperMaterialTrxAgainstOrderDescription,
 };
 
 export { zipperRouter };

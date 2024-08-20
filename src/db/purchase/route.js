@@ -164,6 +164,10 @@ const pathPurchaseDescription = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									purchase_id: {
+										type: 'string',
+										example: 'SR24-0001',
+									},
 									vendor_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -289,6 +293,10 @@ const pathPurchaseDescription = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									purchase_id: {
+										type: 'string',
+										example: 'SR24-0001',
+									},
 									vendor_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -360,6 +368,10 @@ const pathPurchaseDescription = {
 									uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
+									},
+									purchase_id: {
+										type: 'string',
+										example: 'SR24-0001',
 									},
 									vendor_uuid: {
 										type: 'string',
@@ -435,6 +447,10 @@ const pathPurchaseDescription = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									purchase_id: {
+										type: 'string',
+										example: 'SR24-0001',
+									},
 									vendor_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -508,6 +524,10 @@ const pathPurchaseDescription = {
 									uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
+									},
+									purchase_id: {
+										type: 'string',
+										example: 'SR24-0001',
 									},
 									vendor_uuid: {
 										type: 'string',

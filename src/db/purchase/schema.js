@@ -3,6 +3,7 @@ import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
 import * as materialSchema from '../material/schema.js';
+import { sql } from 'drizzle-orm';
 
 const purchase = pgSchema('purchase');
 
@@ -54,8 +55,19 @@ export const defPurchaseVendor = {
 	},
 };
 
+export const purchase_description_sequence = purchase.sequence(
+	'purchase_description_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
+
 export const description = purchase.table('description', {
 	uuid: uuid_primary,
+	id: integer('id')
+		.default(sql`nextval('purchase.purchase_description_sequence')`)
+		.notNull(),
 	vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid),
 	is_local: integer('is_local').notNull(),
 	lc_number: text('lc_number').default(null),
