@@ -43,7 +43,6 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'item short name',
 									},
-
 									zipper_number: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -80,7 +79,6 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'puller short name',
 									},
-
 									color: {
 										type: 'string',
 										example: 'red',
@@ -441,6 +439,38 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'remarks',
 									},
+									is_body: {
+										type: 'number',
+										example: 0,
+									},
+									is_puller: {
+										type: 'number',
+										example: 0,
+									},
+									is_cap: {
+										type: 'number',
+										example: 0,
+									},
+									is_link: {
+										type: 'number',
+										example: 0,
+									},
+									is_h_bottom: {
+										type: 'number',
+										example: 0,
+									},
+									is_u_top: {
+										type: 'number',
+										example: 0,
+									},
+									is_box_pin: {
+										type: 'number',
+										example: 0,
+									},
+									is_two_way_pin: {
+										type: 'number',
+										example: 0,
+									},
 								},
 							},
 						},
@@ -500,6 +530,177 @@ export const pathSliderDieCasting = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							name: {
+								type: 'string',
+								example: 'die_casting 1',
+							},
+							item: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							item_name: {
+								type: 'string',
+								example: 'item name',
+							},
+							item_short_name: {
+								type: 'string',
+								example: 'item short name',
+							},
+							zipper_number: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							zipper_name: {
+								type: 'string',
+								example: 'zipper name',
+							},
+							zipper_short_name: {
+								type: 'string',
+								example: 'zipper short name',
+							},
+							end_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							end_type_name: {
+								type: 'string',
+								example: 'end type name',
+							},
+							end_type_short_name: {
+								type: 'string',
+								example: 'end type short name',
+							},
+							puller_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							puller_type_name: {
+								type: 'string',
+								example: 'puller type name',
+							},
+							puller_type_short_name: {
+								type: 'string',
+								example: 'puller type short name',
+							},
+
+							logo_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							logo_type_name: {
+								type: 'string',
+								example: 'logo type name',
+							},
+							logo_type_short_name: {
+								type: 'string',
+								example: 'logo type short name',
+							},
+							body_shape: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							body_shape_name: {
+								type: 'string',
+								example: 'body shape name',
+							},
+							body_shape_short_name: {
+								type: 'string',
+								example: 'body shape short name',
+							},
+							puller_link: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							puller_link_name: {
+								type: 'string',
+								example: 'puller link name',
+							},
+							puller_link_short_name: {
+								type: 'string',
+								example: 'puller link short name',
+							},
+							stopper_type: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							stopper_type_name: {
+								type: 'string',
+								example: 'stopper type name',
+							},
+							stopper_type_short_name: {
+								type: 'string',
+								example: 'stopper type short name',
+							},
+							quantity: {
+								type: 'number',
+								example: 0.0,
+							},
+							weight: {
+								type: 'number',
+								example: 0.0,
+							},
+							pcs_per_kg: {
+								type: 'number',
+								example: 0.0,
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'remarks',
+							},
+							is_body: {
+								type: 'number',
+								example: 0,
+							},
+							is_puller: {
+								type: 'number',
+								example: 0,
+							},
+							is_cap: {
+								type: 'number',
+								example: 0,
+							},
+							is_link: {
+								type: 'number',
+								example: 0,
+							},
+							is_h_bottom: {
+								type: 'number',
+								example: 0,
+							},
+							is_u_top: {
+								type: 'number',
+								example: 0,
+							},
+							is_box_pin: {
+								type: 'number',
+								example: 0,
+							},
+							is_two_way_pin: {
+								type: 'number',
+								example: 0,
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
