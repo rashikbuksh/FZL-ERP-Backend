@@ -2498,6 +2498,23 @@ export const pathZipperSfg = {
 	'/zipper/sfg': {
 		get: {
 			tags: ['zipper.sfg'],
+			operationId: 'findSfgByRecipeUuid',
+			produces: ['application/json', 'application/xml'],
+			parameters: [
+				{
+					name: 'recipe_uuid',
+					in: 'query',
+					description: 'recipe_uuid to filter SFGs.',
+					required: false,
+					type: 'array',
+					items: {
+						type: 'string',
+						enum: ['true', 'false'],
+						default: 'false',
+					},
+					collectionFormat: 'multi',
+				},
+			],
 			summary: 'Get all SFG',
 			responses: {
 				200: {
