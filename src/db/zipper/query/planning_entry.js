@@ -221,30 +221,54 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			oe.size,
 			oe.quantity as order_quantity,
 			vod.order_number,
-			vod.item_description
+			vod.item_description,
+			pe_given.given_sno_quantity as given_sno_quantity,
+			pe_given.given_factory_quantity as given_factory_quantity,
+			pe_given.given_production_quantity as given_production_quantity,
+			pe_given.given_batch_production_quantity as given_batch_production_quantity
 		FROM
 			zipper.planning_entry pe
 		LEFT JOIN
-			zipper.planning p
-		ON
-			pe.planning_week = p.week
+			zipper.planning p ON pe.planning_week = p.week
 		LEFT JOIN 
-			zipper.sfg sfg
-		ON
-			pe.sfg_uuid = sfg.uuid
+			zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
 		LEFT JOIN
-			zipper.order_entry oe
-		ON
-			sfg.order_entry_uuid = oe.uuid
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
-			zipper.v_order_details vod
-		ON
-			oe.order_description_uuid = vod.order_description_uuid
+			zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+		LEFT JOIN
+			(
+				SELECT 
+					sfg.uuid as sfg_uuid,
+					SUM(pe.sno_quantity) as given_sno_quantity, 
+					SUM(pe.factory_quantity) as given_factory_quantity,
+					SUM(pe.production_quantity) as given_production_quantity,
+					SUM(pe.batch_production_quantity) as given_batch_production_quantity
+				FROM 
+					zipper.planning_entry pe
+				LEFT JOIN 
+					zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
+				GROUP BY
+					sfg.uuid
+			) as pe_given ON pe_given.sfg_uuid = sfg.uuid
 		WHERE
 			pe.planning_week = ${req.params.planning_week}
+		GROUP BY 
+			sfg.uuid, 
+			pe.uuid,
+			oe.style, 
+			oe.color, 
+			oe.size, 
+			oe.quantity, 
+			vod.order_number, 
+			vod.item_description,
+			pe_given.given_sno_quantity,
+			pe_given.given_factory_quantity,
+			pe_given.given_production_quantity,
+			pe_given.given_batch_production_quantity
 	`;
 
-	//  AND oe.swatch_status_enum = 'approved' removed because of development purpose
+	//  AND oe.swatch_status_enum = 'approved' // removed because of development purpose
 
 	const planningEntryPromise = db.execute(query);
 
