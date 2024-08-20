@@ -6233,17 +6233,33 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									order_uuid: {
+									order_description_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-3-OE-SP',
 									},
 									material_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									quantity: {
+									material_name: {
+										type: 'string',
+										example: 'Material 1',
+									},
+									trx_quantity: {
 										type: 'number',
 										example: 100,
+									},
+									trx_to: {
+										type: 'string',
+										example: 'teeth_molding',
 									},
 									remarks: {
 										type: 'string',
@@ -6335,17 +6351,33 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
-							order_uuid: {
+							order_description_uuid: {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
+							},
+							order_number: {
+								type: 'string',
+								example: 'Z24-0001',
+							},
+							item_description: {
+								type: 'string',
+								example: 'N-3-OE-SP',
 							},
 							material_uuid: {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
-							quantity: {
+							material_name: {
+								type: 'string',
+								example: 'Material 1',
+							},
+							trx_quantity: {
 								type: 'number',
 								example: 100,
+							},
+							trx_to: {
+								type: 'string',
+								example: 'teeth_molding',
 							},
 							remarks: {
 								type: 'string',
@@ -6464,6 +6496,90 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 			},
 		},
 	},
+	'/zipper/material-trx-against-order/by/{trx_to}': {
+		get: {
+			tags: ['zipper.material_trx_against_order_description'],
+			summary: 'Get all Material Trx by trx_to',
+			parameters: [
+				{
+					name: 'trx_to',
+					in: 'path',
+					description: 'material trx to get',
+					required: true,
+					type: 'string',
+					example: 'teeth_molding',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns all Material Trx by trx_to',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-3-OE-SP',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'Material 1',
+									},
+									trx_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									trx_to: {
+										type: 'string',
+										example: 'teeth_molding',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 zipperRouter.get(
@@ -6485,6 +6601,10 @@ zipperRouter.put(
 zipperRouter.delete(
 	'/material-trx-against-order/:uuid',
 	materialTrxAgainstOrderOperations.remove
+);
+zipperRouter.get(
+	'/material-trx-against-order/by/:trx_to',
+	materialTrxAgainstOrderOperations.selectMaterialTrxLogAgainstOrderByTrxTo
 );
 
 export const pathZipper = {

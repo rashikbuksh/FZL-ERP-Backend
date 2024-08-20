@@ -167,3 +167,49 @@ export async function select(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectMaterialTrxLogAgainstOrderByTrxTo(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+    SELECT
+        mtaod.uuid,
+        mtaod.order_description_uuid,
+        vod.order_number as order_number,
+		vod.item_description,
+        mtaod.material_uuid,
+        info.name as material_name,
+        mtaod.trx_to,
+        mtaod.trx_quantity,
+        mtaod.created_by,
+		info.unit,
+        users.name as created_by_name,
+        mtaod.created_at,
+        mtaod.updated_at,
+		mtaod.remarks
+    FROM 
+        zipper.material_trx_against_order_description mtaod
+    LEFT JOIN
+        zipper.v_order_details vod ON mtaod.order_description_uuid = vod.order_description_uuid
+    LEFT JOIN
+        material.info info ON mtaod.material_uuid = info.uuid
+    LEFT JOIN
+        hr.users users ON mtaod.created_by = users.uuid
+    WHERE
+        mtaod.trx_to = ${req.params.trx_to}
+    `;
+
+	const materialTrxAgainstOrderPromise = db.execute(query);
+
+	try {
+		const data = await materialTrxAgainstOrderPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'material_trx_against_order_description details by trx_to',
+		};
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
