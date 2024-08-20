@@ -5961,6 +5961,22 @@ export const pathZipperPlanningEntry = {
 										type: 'string',
 										example: 'N-3-OE-SP',
 									},
+									given_sno_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									given_factory_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									given_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									given_batch_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
 								},
 							},
 						},
