@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { batch_entry, sfg } from '../schema.js';
