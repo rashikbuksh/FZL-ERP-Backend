@@ -17,7 +17,48 @@ const pullerTypeProperties = alias(
 	publicSchema.properties,
 	'pullerTypeProperties'
 );
-
+const teethColorProperties = alias(
+	publicSchema.properties,
+	'teethColorProperties'
+);
+const pullerColorProperties = alias(
+	publicSchema.properties,
+	'pullerColorProperties'
+);
+const handProperties = alias(publicSchema.properties, 'handProperties');
+const stopperProperties = alias(publicSchema.properties, 'stopperProperties');
+const coloringProperties = alias(publicSchema.properties, 'coloringProperties');
+const sliderProperties = alias(publicSchema.properties, 'sliderProperties');
+const topStopperProperties = alias(
+	publicSchema.properties,
+	'topStopperProperties'
+);
+const bottomStopperProperties = alias(
+	publicSchema.properties,
+	'bottomStopperProperties'
+);
+const logoTypeProperties = alias(publicSchema.properties, 'logoTypeProperties');
+const sliderBodyShapeProperties = alias(
+	publicSchema.properties,
+	'sliderBodyShapeProperties'
+);
+const sliderLinkProperties = alias(
+	publicSchema.properties,
+	'sliderLinkProperties'
+);
+const endUserProperties = alias(publicSchema.properties, 'endUserProperties');
+const lightPreferenceProperties = alias(
+	publicSchema.properties,
+	'lightPreferenceProperties'
+);
+const garmentsWashProperties = alias(
+	publicSchema.properties,
+	'garmentsWashProperties'
+);
+const pullerLinkProperties = alias(
+	publicSchema.properties,
+	'pullerLinkProperties'
+);
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -115,6 +156,14 @@ export async function selectAll(req, res, next) {
 			created_at: die_casting.created_at,
 			updated_at: die_casting.updated_at,
 			remarks: die_casting.remarks,
+			is_body: die_casting.is_body,
+			is_puller: die_casting.is_puller,
+			is_cap: die_casting.is_cap,
+			is_link: die_casting.is_link,
+			is_h_bottom: die_casting.is_h_bottom,
+			is_u_top: die_casting.is_u_top,
+			is_box_pin: die_casting.is_box_pin,
+			is_two_way_pin: die_casting.is_two_way_pin,
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))
@@ -193,6 +242,14 @@ export async function select(req, res, next) {
 			created_at: die_casting.created_at,
 			updated_at: die_casting.updated_at,
 			remarks: die_casting.remarks,
+			is_body: die_casting.is_body,
+			is_puller: die_casting.is_puller,
+			is_cap: die_casting.is_cap,
+			is_link: die_casting.is_link,
+			is_h_bottom: die_casting.is_h_bottom,
+			is_u_top: die_casting.is_u_top,
+			is_box_pin: die_casting.is_box_pin,
+			is_two_way_pin: die_casting.is_two_way_pin,
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))
