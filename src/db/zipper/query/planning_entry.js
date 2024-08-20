@@ -14,7 +14,8 @@ export async function insert(req, res, next) {
 		planning_week,
 		sfg_uuid,
 		sno_quantity,
-		remarks,
+		sno_remarks,
+		factory_remarks,
 		created_at,
 		uuid,
 		updated_at,
@@ -37,8 +38,9 @@ export async function insert(req, res, next) {
 				.update(planning_entry)
 				.set({
 					sno_quantity: sno_quantity,
-					remarks: remarks,
 					updatedAt: updated_at,
+					sno_remarks: sno_remarks,
+					factory_remarks: factory_remarks,
 				})
 				.where(
 					and(
@@ -69,7 +71,8 @@ export async function insert(req, res, next) {
 				planning_week,
 				sfg_uuid,
 				sno_quantity,
-				remarks,
+				sno_remarks: sno_remarks,
+				factory_remarks: factory_remarks,
 				created_at,
 				uuid,
 				updated_at,
@@ -148,7 +151,8 @@ export async function selectAll(req, res, next) {
 			batch_production_quantity: planning_entry.batch_production_quantity,
 			created_at: planning_entry.created_at,
 			updated_at: planning_entry.updated_at,
-			remarks: planning_entry.remarks,
+			sno_remarks: planning_entry.sno_remarks,
+			factory_remarks: planning_entry.factory_remarks,
 		})
 		.from(planning_entry)
 		.leftJoin(sfg, eq(sfg.uuid, planning_entry.sfg_uuid))
@@ -181,7 +185,8 @@ export async function select(req, res, next) {
 			batch_production_quantity: planning_entry.batch_production_quantity,
 			created_at: planning_entry.created_at,
 			updated_at: planning_entry.updated_at,
-			remarks: planning_entry.remarks,
+			sno_remarks: planning_entry.sno_remarks,
+			factory_remarks: planning_entry.factory_remarks,
 		})
 		.from(planning_entry)
 		.leftJoin(sfg, eq(sfg.uuid, planning_entry.sfg_uuid))
@@ -215,7 +220,8 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			pe.batch_production_quantity,
 			pe.created_at,
 			pe.updated_at,
-			pe.remarks as plan_entry_remarks,
+			pe.sno_remarks as sno_remarks,
+			pe.factory_remarks as factory_remarks,
 			oe.style,
 			oe.color,
 			oe.size,
@@ -378,7 +384,8 @@ export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
 		factory_quantity,
 		production_quantity,
 		batch_production_quantity,
-		remarks,
+		sno_remarks,
+		factory_remarks,
 		created_at,
 		updated_at,
 	} = req.body;
@@ -401,7 +408,8 @@ export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
 				factory_quantity,
 				production_quantity,
 				batch_production_quantity,
-				remarks,
+				sno_remarks,
+				factory_remarks,
 				updated_at,
 			})
 			.where(
@@ -436,7 +444,8 @@ export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
 				factory_quantity,
 				production_quantity,
 				batch_production_quantity,
-				remarks,
+				sno_remarks,
+				factory_remarks,
 				created_at,
 			})
 			.returning({ insertedUuid: planning_entry.uuid });
