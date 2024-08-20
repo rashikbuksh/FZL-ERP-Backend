@@ -143,6 +143,14 @@ export const die_casting = slider.table('die_casting', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	is_body: integer('is_body').default(0),
+	is_puller: integer('is_puller').default(0),
+	is_cap: integer('is_cap').default(0),
+	is_link: integer('is_link').default(0),
+	is_h_bottom: integer('is_h_bottom').default(0),
+	is_u_top: integer('is_u_top').default(0),
+	is_box_pin: integer('is_box_pin').default(0),
+	is_two_way_pin: integer('is_two_way_pin').default(0),
 });
 
 export const die_casting_production = slider.table('die_casting_production', {
