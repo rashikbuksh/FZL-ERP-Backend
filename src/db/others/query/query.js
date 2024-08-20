@@ -269,6 +269,32 @@ export async function selectOrderEntry(req, res, next) {
 	}
 }
 
+export async function selectOrderDescription(req, res, next) {
+	const query = sql`SELECT
+					vodf.order_description_uuid AS value,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label,
+				FROM
+					zipper.v_order_details_full vodf
+				`;
+	// WHERE oe.swatch_status_enum = 'approved' For development purpose, removed
+
+	const orderEntryPromise = db.execute(query);
+
+	try {
+		const data = await orderEntryPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Entry list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function selectOrderNumberForPi(req, res, next) {
 	const query = sql`SELECT
 					DISTINCT vod.order_info_uuid AS value,
