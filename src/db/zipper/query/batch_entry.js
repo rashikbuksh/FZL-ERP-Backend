@@ -244,13 +244,16 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 
 	try {
 		const data = await batchEntryPromise;
+
+		const batch_data = { batch_entry: data?.rows };
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'batch_entry By batch_entry_uuid',
 		};
 
-		return res.status(200).json({ toast, data: data?.rows });
+		return res.status(200).json({ toast, data: batch_data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
