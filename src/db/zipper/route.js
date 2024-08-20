@@ -6011,6 +6011,22 @@ export const pathZipperPlanningEntry = {
 										type: 'number',
 										example: 100,
 									},
+									max_sno_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									max_factory_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									max_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									max_batch_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
 								},
 							},
 						},
@@ -6031,51 +6047,9 @@ export const pathZipperPlanningEntry = {
 							schema: {
 								type: 'object',
 								properties: {
-									planning_entry_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									planning_week: {
-										type: 'string',
-										example: '24-32',
-									},
 									sfg_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
-									},
-									sno_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									factory_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									production_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									batch_production_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									sno_remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									factory_remarks: {
-										type: 'string',
-										example: 'Remarks',
 									},
 									style: {
 										type: 'string',

@@ -232,10 +232,14 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			pe_given.given_factory_quantity as given_factory_quantity,
 			pe_given.given_production_quantity as given_production_quantity,
 			pe_given.given_batch_production_quantity as given_batch_production_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_sno_quantity,0)  as balance_sno_quantity,
+			coalesce(oe.quantity,0) - coalesce(pe_given.given_sno_quantity,0) as balance_sno_quantity,
 			coalesce(oe.quantity,0) - coalesce(pe_given.given_factory_quantity,0) as balance_factory_quantity,
 			coalesce(oe.quantity,0) - coalesce(pe_given.given_production_quantity,0) as balance_production_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_batch_production_quantity,0) as balance_batch_production_quantity
+			coalesce(oe.quantity,0) - coalesce(pe_given.given_batch_production_quantity,0) as balance_batch_production_quantity,
+			coalesce(oe.quantity,0) - coalesce(pe_given.given_sno_quantity,0) + coalesce(pe.sno_quantity,0) as max_sno_quantity,
+			coalesce(oe.quantity,0) - coalesce(pe_given.given_factory_quantity,0) + coalesce(pe.factory_quantity,0) as max_factory_quantity,
+			coalesce(oe.quantity,0) - coalesce(pe_given.given_production_quantity,0) + coalesce(pe.production_quantity,0) as max_production_quantity,
+			coalesce(oe.quantity,0) - coalesce(pe_given.given_batch_production_quantity,0) + coalesce(pe.batch_production_quantity,0) as max_batch_production_quantity
 		FROM
 			zipper.planning_entry pe
 		LEFT JOIN
