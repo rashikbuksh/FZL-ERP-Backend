@@ -4,7 +4,6 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { material_trx_against_order_description } from '../schema.js';
 
@@ -87,14 +86,17 @@ export async function selectAll(req, res, next) {
         mtaod.uuid,
         mtaod.order_description_uuid,
         vod.order_number as order_number,
+		vod.item_description,
         mtaod.material_uuid,
         info.name as material_name,
         mtaod.trx_to,
         mtaod.trx_quantity,
         mtaod.created_by,
+		info.unit,
         users.name as created_by_name,
         mtaod.created_at,
-        mtaod.updated_at
+        mtaod.updated_at,
+		mtaod.remarks
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
@@ -128,14 +130,17 @@ export async function select(req, res, next) {
         mtaod.uuid,
         mtaod.order_description_uuid,
         vod.order_number as order_number,
+		vod.item_description,
         mtaod.material_uuid,
         info.name as material_name,
         mtaod.trx_to,
         mtaod.trx_quantity,
         mtaod.created_by,
+		info.unit,
         users.name as created_by_name,
         mtaod.created_at,
-        mtaod.updated_at
+        mtaod.updated_at,
+		mtaod.remarks
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN

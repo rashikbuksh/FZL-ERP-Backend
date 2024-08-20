@@ -27,7 +27,7 @@ import { defPublic, tagPublic } from './db/public/schema.js';
 
 // Zipper
 import { pathZipper } from './db/zipper/route.js';
-import { defZipper, tagZipper } from './db/zipper/schema.js';
+import { defZipper, tagZipper } from './db/zipper/swagger.js';
 
 // Slider
 import { pathSlider } from './db/slider/route.js';
