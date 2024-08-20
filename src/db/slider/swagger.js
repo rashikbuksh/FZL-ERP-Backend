@@ -158,7 +158,7 @@ export const defDieCasting = {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
-		body_shape: {
+		slider_body_shape: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
