@@ -258,7 +258,7 @@ export const batch = zipper.table('batch', {
 export const batch_entry = zipper.table('batch_entry', {
 	uuid: uuid_primary,
 	batch_uuid: defaultUUID('batch_uuid'),
-	planning_entry_uuid: defaultUUID('planning_entry_uuid'),
+	sfg_uuid: defaultUUID('sfg_uuid'),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
