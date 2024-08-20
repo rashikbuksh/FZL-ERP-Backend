@@ -15,14 +15,25 @@ BEGIN
     WHERE uuid = NEW.die_casting_uuid;
 
     SELECT 
-        d_is_body = is_body,
-        d_is_puller = is_puller,
-        d_is_cap = is_cap,
-        d_is_link = is_link,
-        d_h_bottom = is_h_bottom,
-        d_is_u_top = is_u_top,
-        d_is_box_pin = is_box_pin,
-        d_is_two_way_pin = is_two_way_pin
+        is_body,
+        is_puller,
+        is_cap,
+        is_link,
+        is_h_bottom,
+        is_u_top,
+        is_box_pin,
+        is_two_way_pin
+
+    INTO 
+        d_is_body,
+        d_is_puller,
+        d_is_cap,
+        d_is_link,
+        d_h_bottom,
+        d_is_u_top,
+        d_is_box_pin,
+        d_is_two_way_pin
+
     FROM slider.die_casting
     WHERE uuid = NEW.die_casting_uuid;
 
@@ -68,14 +79,25 @@ BEGIN
     WHERE uuid = OLD.die_casting_uuid;
 
     SELECT 
-        d_is_body = is_body,
-        d_is_puller = is_puller,
-        d_is_cap = is_cap,
-        d_is_link = is_link,
-        d_h_bottom = is_h_bottom,
-        d_is_u_top = is_u_top,
-        d_is_box_pin = is_box_pin,
-        d_is_two_way_pin = is_two_way_pin
+        is_body,
+        is_puller,
+        is_cap,
+        is_link,
+        is_h_bottom,
+        is_u_top,
+        is_box_pin,
+        is_two_way_pin
+
+    INTO
+        d_is_body,
+        d_is_puller,
+        d_is_cap,
+        d_is_link,
+        d_h_bottom,
+        d_is_u_top,
+        d_is_box_pin,
+        d_is_two_way_pin
+
     FROM slider.die_casting
     WHERE uuid = OLD.die_casting_uuid;
 
@@ -125,14 +147,24 @@ BEGIN
     WHERE uuid = NEW.die_casting_uuid;
 
     SELECT 
-        d_is_body = is_body,
-        d_is_puller = is_puller,
-        d_is_cap = is_cap,
-        d_is_link = is_link,
-        d_h_bottom = is_h_bottom,
-        d_is_u_top = is_u_top,
-        d_is_box_pin = is_box_pin,
-        d_is_two_way_pin = is_two_way_pin
+        is_body,
+        is_puller,
+        is_cap,
+        is_link,
+        is_h_bottom,
+        is_u_top,
+        is_box_pin,
+        is_two_way_pin
+
+    INTO
+        d_is_body,
+        d_is_puller,
+        d_is_cap,
+        d_is_link,
+        d_h_bottom,
+        d_is_u_top,
+        d_is_box_pin,
+        d_is_two_way_pin
 
     FROM slider.die_casting
 
