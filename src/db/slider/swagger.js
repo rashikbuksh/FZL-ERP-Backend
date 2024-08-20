@@ -196,6 +196,38 @@ export const defDieCasting = {
 			type: 'string',
 			example: 'remarks',
 		},
+		is_body: {
+			type: 'number',
+			example: 0,
+		},
+		is_puller: {
+			type: 'number',
+			example: 0,
+		},
+		is_cap: {
+			type: 'number',
+			example: 0,
+		},
+		is_link: {
+			type: 'number',
+			example: 0,
+		},
+		is_h_bottom: {
+			type: 'number',
+			example: 0,
+		},
+		is_u_top: {
+			type: 'number',
+			example: 0,
+		},
+		is_box_pin: {
+			type: 'number',
+			example: 0,
+		},
+		is_two_way_pin: {
+			type: 'number',
+			example: 0,
+		},
 	},
 	xml: {
 		name: 'Slider/DieCasting',
