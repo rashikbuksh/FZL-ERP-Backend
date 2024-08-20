@@ -402,7 +402,8 @@ export const planning_entry = zipper.table('planning_entry', {
 	}).default(0.0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
+	sno_remarks: text('sno_remarks').default(null),
+	factory_remarks: text('factory_remarks').default(null),
 });
 
 export const material_trx_against_order_description = zipper.table(
@@ -428,6 +429,5 @@ export const material_trx_against_order_description = zipper.table(
 		remarks: text('remarks').default(null),
 	}
 );
-
 
 export default zipper;

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { factory } from '../public/schema.js';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
@@ -5588,7 +5589,11 @@ export const pathZipperPlanningEntry = {
 										format: 'date-time',
 										example: '2024-01-01 00:00:00',
 									},
-									remarks: {
+									sno_remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									factory_remarks: {
 										type: 'string',
 										example: 'Remarks',
 									},
@@ -5663,7 +5668,11 @@ export const pathZipperPlanningEntry = {
 									format: 'date-time',
 									example: '2024-01-01 00:00:00',
 								},
-								remarks: {
+								sno_remarks: {
+									type: 'string',
+									example: 'Remarks',
+								},
+								factory_remarks: {
 									type: 'string',
 									example: 'Remarks',
 								},
@@ -5748,7 +5757,11 @@ export const pathZipperPlanningEntry = {
 								format: 'date-time',
 								example: '2024-01-01 00:00:00',
 							},
-							remarks: {
+							sno_remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
+							factory_remarks: {
 								type: 'string',
 								example: 'Remarks',
 							},
@@ -5934,7 +5947,11 @@ export const pathZipperPlanningEntry = {
 										format: 'date-time',
 										example: '2024-01-01 00:00:00',
 									},
-									remarks: {
+									sno_remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									factory_remarks: {
 										type: 'string',
 										example: 'Remarks',
 									},
@@ -6052,7 +6069,11 @@ export const pathZipperPlanningEntry = {
 										format: 'date-time',
 										example: '2024-01-01 00:00:00',
 									},
-									remarks: {
+									sno_remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									factory_remarks: {
 										type: 'string',
 										example: 'Remarks',
 									},
@@ -6169,7 +6190,11 @@ export const pathZipperPlanningEntry = {
 									format: 'date-time',
 									example: '2024-01-01 00:00:00',
 								},
-								remarks: {
+								sno_remarks: {
+									type: 'string',
+									example: 'Remarks',
+								},
+								factory_remarks: {
 									type: 'string',
 									example: 'Remarks',
 								},

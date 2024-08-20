@@ -958,7 +958,11 @@ export const def_zipper_planning_entry = {
 			format: 'date-time',
 			example: '2024-01-01 00:00:00',
 		},
-		remarks: {
+		sno_remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+		factory_remarks: {
 			type: 'string',
 			example: 'Remarks',
 		},
