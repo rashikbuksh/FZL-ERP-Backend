@@ -272,11 +272,12 @@ export async function selectOrderEntry(req, res, next) {
 export async function selectOrderDescription(req, res, next) {
 	const query = sql`SELECT
 					vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label
 				FROM
 					zipper.v_order_details_full vodf
+				WHERE 
+					vodf.item_description != '---' AND vodf.item_description != ''
 				`;
-	// WHERE oe.swatch_status_enum = 'approved' For development purpose, removed
 
 	const orderEntryPromise = db.execute(query);
 
