@@ -5977,6 +5977,22 @@ export const pathZipperPlanningEntry = {
 										type: 'number',
 										example: 100,
 									},
+									balance_sno_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_factory_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_batch_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
 								},
 							},
 						},
@@ -6076,6 +6092,22 @@ export const pathZipperPlanningEntry = {
 										example: 100,
 									},
 									given_batch_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_sno_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_factory_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									balance_batch_production_quantity: {
 										type: 'number',
 										example: 100,
 									},
