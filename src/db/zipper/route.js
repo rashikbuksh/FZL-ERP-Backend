@@ -6257,6 +6257,10 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 										type: 'string',
 										example: 'Z24-0001',
 									},
+									stock: {
+										type: 'number',
+										example: 100,
+									},
 									item_description: {
 										type: 'string',
 										example: 'N-3-OE-SP',
@@ -6378,6 +6382,10 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 							item_description: {
 								type: 'string',
 								example: 'N-3-OE-SP',
+							},
+							stock: {
+								type: 'number',
+								example: 100,
 							},
 							material_uuid: {
 								type: 'string',
@@ -6545,6 +6553,10 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 									order_number: {
 										type: 'string',
 										example: 'Z24-0001',
+									},
+									stock: {
+										type: 'number',
+										example: 100,
 									},
 									item_description: {
 										type: 'string',
