@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -15,7 +15,9 @@ export async function insert(req, res, next) {
 	const descriptionPromise = db
 		.insert(description)
 		.values(req.body)
-		.returning({ insertedId: description.uuid });
+		.returning({
+			insertedId: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await descriptionPromise;
@@ -37,7 +39,9 @@ export async function update(req, res, next) {
 		.update(description)
 		.set(req.body)
 		.where(eq(description.uuid, req.params.uuid))
-		.returning({ updatedId: description.uuid });
+		.returning({
+			updatedId: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await descriptionPromise;
@@ -59,7 +63,9 @@ export async function remove(req, res, next) {
 	const descriptionPromise = db
 		.delete(description)
 		.where(eq(description.uuid, req.params.uuid))
-		.returning({ deletedId: description.uuid });
+		.returning({
+			deletedId: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await descriptionPromise;
@@ -79,6 +85,7 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: description.uuid,
+			purchase_id: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
 			vendor_uuid: description.vendor_uuid,
 			vendor_name: vendor.name,
 			is_local: description.is_local,
@@ -94,14 +101,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 
 	const toast = {
@@ -119,6 +118,7 @@ export async function select(req, res, next) {
 	const descriptionPromise = db
 		.select({
 			uuid: description.uuid,
+			purchase_id: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
 			vendor_uuid: description.vendor_uuid,
 			vendor_name: vendor.name,
 			is_local: description.is_local,
@@ -157,6 +157,7 @@ export async function selectDescriptionByPurchaseDescriptionUuid(
 	const descriptionPromise = db
 		.select({
 			uuid: description.uuid,
+			purchase_id: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
 			vendor_uuid: description.vendor_uuid,
 			vendor_name: vendor.name,
 			is_local: description.is_local,

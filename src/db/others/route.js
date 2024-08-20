@@ -36,6 +36,10 @@ otherRouter.get(
 	'/order-number-for-pi/value/label/:marketing_uuid/:party_uuid',
 	otherOperations.selectOrderNumberForPi
 );
+otherRouter.get(
+	'/order/description/value/label',
+	otherOperations.selectOrderDescription
+);
 
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
@@ -689,6 +693,36 @@ const pathZipper = {
 									label: {
 										type: 'string',
 										example: 'Z24-0001',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/order/description/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all order descriptions',
+			description: 'All order descriptions',
+			operationId: 'getAllOrderDescriptions',
+			responses: {
+				200: {
+					description: 'Returns a all order descriptions.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'Z24-0001 -> N-5-OE-SP',
 									},
 								},
 							},

@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
+import * as materialSchema from '../material/schema.js';
 import * as publicSchema from '../public/schema.js';
 import * as sliderSchema from '../slider/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
@@ -1360,6 +1361,86 @@ export const def_zipper_planning_entry = {
 	},
 };
 
+export const material_trx_against_order_description = zipper.table(
+	'material_trx_against_order_description',
+	{
+		uuid: uuid_primary,
+		order_description_uuid: defaultUUID(
+			'order_description_uuid'
+		).references(() => order_description.uuid),
+		material_uuid: defaultUUID('material_uuid').references(
+			() => materialSchema.info.uuid
+		),
+		trx_to: text('trx_to').notNull(),
+		trx_quantity: decimal('trx_quantity', {
+			precision: 20,
+			scale: 4,
+		}).notNull(),
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		remarks: text('remarks').default(null),
+	}
+);
+
+export const def_zipper_material_trx_against_order_description = {
+	type: 'object',
+	required: [
+		'uuid',
+		'order_description_uuid',
+		'material_uuid',
+		'trx_to',
+		'trx_quantity',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		order_description_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		material_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		trx_to: {
+			type: 'string',
+			example: 'teeth_molding',
+		},
+		trx_quantity: {
+			type: 'number',
+			example: 100,
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+	},
+	xml: {
+		name: 'Zipper/Material_trx_against_order_description',
+	},
+};
+
 //....................FOR TESTING.......................
 export const defZipper = {
 	order_info: def_zipper_order_info,
@@ -1377,6 +1458,8 @@ export const defZipper = {
 	tape_coil_production: def_zipper_tape_coil_production,
 	planning: def_zipper_planning,
 	planning_entry: def_zipper_planning_entry,
+	material_trx_against_order_description:
+		def_zipper_material_trx_against_order_description,
 };
 
 export const tagZipper = [
@@ -1439,6 +1522,10 @@ export const tagZipper = [
 	{
 		name: 'zipper.planning_entry',
 		description: 'Zipper Planning Entry',
+	},
+	{
+		name: 'zipper.material_trx_against_order_description',
+		description: 'Zipper Material Trx Against Order Description',
 	},
 ];
 
