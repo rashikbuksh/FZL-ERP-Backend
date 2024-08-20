@@ -364,7 +364,6 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'puller type short name',
 									},
-
 									logo_type: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -377,15 +376,15 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'logo type short name',
 									},
-									body_shape: {
+									slider_body_shape: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									body_shape_name: {
+									slider_body_shape_name: {
 										type: 'string',
 										example: 'body shape name',
 									},
-									body_shape_short_name: {
+									slider_body_shape_short_name: {
 										type: 'string',
 										example: 'body shape short name',
 									},
@@ -604,15 +603,15 @@ export const pathSliderDieCasting = {
 								type: 'string',
 								example: 'logo type short name',
 							},
-							body_shape: {
+							slider_body_shape: {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
-							body_shape_name: {
+							slider_body_shape_name: {
 								type: 'string',
 								example: 'body shape name',
 							},
-							body_shape_short_name: {
+							slider_body_shape_short_name: {
 								type: 'string',
 								example: 'body shape short name',
 							},

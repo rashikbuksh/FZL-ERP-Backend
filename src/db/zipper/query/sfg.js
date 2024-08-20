@@ -70,6 +70,10 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { recipe_uuid } = req.query;
+
+	console.log(req.query, 'req.query');
+
 	const resultPromise = db
 		.select({
 			uuid: sfg.uuid,
@@ -96,7 +100,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			labDipSchema.recipe,
 			eq(sfg.recipe_uuid, labDipSchema.recipe.uuid)
-		);
+		)
+		.where(recipe_uuid == 'true' ? sql`sfg.recipe_uuid IS NOT NULL` : null);
 
 	const toast = {
 		status: 200,

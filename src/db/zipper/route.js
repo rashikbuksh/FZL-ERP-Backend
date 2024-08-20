@@ -16,6 +16,7 @@ import * as sfgTransactionOperations from './query/sfg_transaction.js';
 import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeToCoilOperations from './query/tape_to_coil.js';
+import { batch, batch_entry } from './schema.js';
 
 const zipperRouter = Router();
 
@@ -2498,6 +2499,23 @@ export const pathZipperSfg = {
 	'/zipper/sfg': {
 		get: {
 			tags: ['zipper.sfg'],
+			operationId: 'findSfgByRecipeUuid',
+			produces: ['application/json', 'application/xml'],
+			parameters: [
+				{
+					name: 'recipe_uuid',
+					in: 'query',
+					description: 'recipe_uuid to filter SFGs.',
+					required: false,
+					type: 'array',
+					items: {
+						type: 'string',
+						enum: ['true', 'false'],
+						default: 'false',
+					},
+					collectionFormat: 'multi',
+				},
+			],
 			summary: 'Get all SFG',
 			responses: {
 				200: {
@@ -3544,7 +3562,7 @@ export const pathZipperBatch = {
 // --------------------- BATCH ROUTES ---------------------
 
 zipperRouter.get('/batch', batchOperations.selectAll);
-// zipperRouter.get("/batch/:uuid", validateUuidParam(), batchOperations.select);
+zipperRouter.get('/batch/:uuid', batchOperations.select);
 zipperRouter.post('/batch', batchOperations.insert);
 zipperRouter.put('/batch/:uuid', batchOperations.update);
 zipperRouter.delete(
@@ -3733,6 +3751,176 @@ export const pathZipperBatchEntry = {
 			},
 		},
 	},
+	'/zipper/batch-entry/by/batch-entry-uuid/{batch_entry_uuid}': {
+		get: {
+			tags: ['zipper.batch_entry'],
+			summary: 'Get a Batch Entry by Batch Entry UUID',
+			description: '',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'batch_entry_uuid',
+					in: 'path',
+					description: 'Batch Entry UUID to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns a Batch Entry',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									batch_entry_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									batch_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sfg_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									quantity: {
+										type: 'number',
+										example: 10,
+									},
+									production_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									production_quantity_in_kg: {
+										type: 'number',
+										example: 10,
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									style: {
+										type: 'string',
+										example: 'style 1',
+									},
+									color: {
+										type: 'string',
+										example: 'black',
+									},
+									size: {
+										type: 'number',
+										example: 10,
+									},
+									order_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0010',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-5-OE-RP',
+									},
+									given_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									given_production_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									given_production_quantity_in_kg: {
+										type: 'number',
+										example: 10,
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Batch Entry not found',
+				},
+			},
+		},
+	},
+	'/zipper/order-batch': {
+		get: {
+			tags: ['zipper.batch_entry'],
+			summary: 'Get Order Details for Batch Entry',
+			description: '',
+			produces: ['application/json'],
+			responses: {
+				200: {
+					description: 'Returns a Batch Entry',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									sfg_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									style: {
+										type: 'string',
+										example: 'style 1',
+									},
+									color: {
+										type: 'string',
+										example: 'black',
+									},
+									size: {
+										type: 'number',
+										example: 10,
+									},
+									order_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0010',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-5-OE-RP',
+									},
+									given_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									given_production_quantity: {
+										type: 'number',
+										example: 10,
+									},
+									given_production_quantity_in_kg: {
+										type: 'number',
+										example: 10,
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Batch Entry not found',
+				},
+			},
+		},
+	},
 };
 
 // --------------------- BATCH ENTRY ROUTES ---------------------
@@ -3749,6 +3937,14 @@ zipperRouter.delete(
 	'/batch-entry/:uuid',
 	// validateUuidParam(),
 	batchEntryOperations.remove
+);
+zipperRouter.get(
+	'/batch-entry/by/batch-entry-uuid/:batch_entry_uuid',
+	batchEntryOperations.selectBatchEntryByBatchEntryUuid
+);
+zipperRouter.get(
+	'/order-batch',
+	batchEntryOperations.getOrderDetailsForBatchEntry
 );
 
 // --------------------- DYING BATCH ---------------------
@@ -6240,6 +6436,10 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 										type: 'string',
 										example: 'Z24-0001',
 									},
+									stock: {
+										type: 'number',
+										example: 100,
+									},
 									item_description: {
 										type: 'string',
 										example: 'N-3-OE-SP',
@@ -6361,6 +6561,10 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 							item_description: {
 								type: 'string',
 								example: 'N-3-OE-SP',
+							},
+							stock: {
+								type: 'number',
+								example: 100,
 							},
 							material_uuid: {
 								type: 'string',
@@ -6528,6 +6732,10 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 									order_number: {
 										type: 'string',
 										example: 'Z24-0001',
+									},
+									stock: {
+										type: 'number',
+										example: 100,
 									},
 									item_description: {
 										type: 'string',

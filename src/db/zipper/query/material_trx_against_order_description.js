@@ -93,6 +93,7 @@ export async function selectAll(req, res, next) {
         mtaod.trx_quantity,
         mtaod.created_by,
 		info.unit,
+		stock.stock,
         users.name as created_by_name,
         mtaod.created_at,
         mtaod.updated_at,
@@ -105,6 +106,8 @@ export async function selectAll(req, res, next) {
         material.info info ON mtaod.material_uuid = info.uuid
     LEFT JOIN
         hr.users users ON mtaod.created_by = users.uuid
+	LEFT JOIN 
+		material.stock stock ON mtaod.material_uuid = stock.material_uuid
     `;
 
 	const materialTrxAgainstOrderPromise = db.execute(query);
@@ -137,6 +140,7 @@ export async function select(req, res, next) {
         mtaod.trx_quantity,
         mtaod.created_by,
 		info.unit,
+		stock.stock,
         users.name as created_by_name,
         mtaod.created_at,
         mtaod.updated_at,
@@ -149,6 +153,8 @@ export async function select(req, res, next) {
         material.info info ON mtaod.material_uuid = info.uuid
     LEFT JOIN
         hr.users users ON mtaod.created_by = users.uuid
+	LEFT JOIN 
+		material.stock stock ON mtaod.material_uuid = stock.material_uuid
     WHERE
         mtaod.uuid = ${req.params.uuid}
     `;
@@ -183,6 +189,7 @@ export async function selectMaterialTrxLogAgainstOrderByTrxTo(req, res, next) {
         mtaod.trx_quantity,
         mtaod.created_by,
 		info.unit,
+		stock.stock,
         users.name as created_by_name,
         mtaod.created_at,
         mtaod.updated_at,
@@ -195,6 +202,8 @@ export async function selectMaterialTrxLogAgainstOrderByTrxTo(req, res, next) {
         material.info info ON mtaod.material_uuid = info.uuid
     LEFT JOIN
         hr.users users ON mtaod.created_by = users.uuid
+	LEFT JOIN 
+		material.stock stock ON mtaod.material_uuid = stock.material_uuid
     WHERE
         mtaod.trx_to = ${req.params.trx_to}
     `;
