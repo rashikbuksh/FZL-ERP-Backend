@@ -2,16 +2,16 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import { SERVER_URL } from './lib/secret.js';
 
 // Commercial
-import { pathCommercial } from './db/commercial/route.js';
-import { defCommercial, tagCommercial } from './db/commercial/schema.js';
+import { defCommercial, tagCommercial } from './db/commercial/swagger_def.js';
+import { pathCommercial } from './db/commercial/swagger_route.js';
 
 // Delivery
-import { pathDelivery } from './db/delivery/route.js';
-import { defDelivery, tagDelivery } from './db/delivery/schema.js';
+import { defDelivery, tagDelivery } from './db/delivery/swagger_def.js';
+import { pathDelivery } from './db/delivery/swagger_route.js';
 
 // HR
-import { pathHr } from './db/hr/route.js';
-import { defHr, tagHr } from './db/hr/schema.js';
+import { defHr, tagHr } from './db/hr/swagger_def.js';
+import { pathHr } from './db/hr/swagger_route.js';
 
 // Lab Dip
 import { pathLabDip } from './db/lab_dip/route.js';
