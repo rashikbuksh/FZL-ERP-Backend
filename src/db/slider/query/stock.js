@@ -8,7 +8,7 @@ import {
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { stock } from '../schema.js';
+import slider, { stock } from '../schema.js';
 
 // public.properties
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
@@ -133,15 +133,40 @@ export async function selectAll(req, res, next) {
 			item_name: itemProperties.name,
 			item_short_name: itemProperties.short_name,
 			zipper_number: stock.zipper_number,
-			zipper_name: zipperProperties.name,
-			zipper_short_name: zipperProperties.short_name,
+			zipper_number_name: zipperProperties.name,
+			zipper_number_short_name: zipperProperties.short_name,
 			end_type: stock.end_type,
 			end_type_name: endTypeProperties.name,
 			end_type_short_name: endTypeProperties.short_name,
+			lock_type: stock.lock_type,
+			lock_type_name: lockTypeProperties.name,
+			lock_type_short_name: lockTypeProperties.short_name,
 			puller_type: stock.puller_type,
 			puller_type_name: pullerTypeProperties.name,
 			puller_type_short_name: pullerTypeProperties.short_name,
-			color: stock.color,
+			puller_color: stock.puller_color,
+			puller_color_name: pullerColorProperties.name,
+			puller_color_short_name: pullerColorProperties.short_name,
+			puller_link: stock.puller_link,
+			puller_link_name: pullerLinkProperties.name,
+			puller_link_short_name: pullerLinkProperties.short_name,
+			slider: stock.slider,
+			slider_name: sliderProperties.name,
+			slider_short_name: sliderProperties.short_name,
+			slider_body_shape: stock.slider_body_shape,
+			slider_body_shape_name: sliderBodyShapeProperties.name,
+			slider_body_shape_short_name: sliderBodyShapeProperties.short_name,
+			slider_link: stock.slider_link,
+			slider_link_name: sliderLinkProperties.name,
+			slider_link_short_name: sliderLinkProperties.short_name,
+			coloring_type: stock.coloring_type,
+			coloring_type_name: coloringProperties.name,
+			coloring_type_short_name: coloringProperties.short_name,
+			logo_type: stock.logo_type,
+			logo_type_name: logoTypeProperties.name,
+			logo_type_short_name: logoTypeProperties.short_name,
+			is_logo_body: stock.is_logo_body,
+			is_logo_puller: stock.is_logo_puller,
 			order_quantity: stock.order_quantity,
 			body_quantity: stock.body_quantity,
 			cap_quantity: stock.cap_quantity,
@@ -171,10 +196,38 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(endTypeProperties, eq(stock.end_type, endTypeProperties.uuid))
 		.leftJoin(
+			lockTypeProperties,
+			eq(stock.lock_type, lockTypeProperties.uuid)
+		)
+		.leftJoin(
 			pullerTypeProperties,
 			eq(stock.puller_type, pullerTypeProperties.uuid)
 		)
-		.leftJoin(coloringProperties, eq(stock.color, coloringProperties.uuid));
+		.leftJoin(
+			pullerColorProperties,
+			eq(stock.puller_color, pullerColorProperties.uuid)
+		)
+		.leftJoin(
+			pullerLinkProperties,
+			eq(stock.puller_link, pullerLinkProperties.uuid)
+		)
+		.leftJoin(sliderProperties, eq(stock.slider, sliderProperties.uuid))
+		.leftJoin(
+			sliderBodyShapeProperties,
+			eq(stock.slider_body_shape, sliderBodyShapeProperties.uuid)
+		)
+		.leftJoin(
+			sliderLinkProperties,
+			eq(stock.slider_link, sliderLinkProperties.uuid)
+		)
+		.leftJoin(
+			coloringProperties,
+			eq(stock.coloring_type, coloringProperties.uuid)
+		)
+		.leftJoin(
+			logoTypeProperties,
+			eq(stock.logo_type, logoTypeProperties.uuid)
+		);
 
 	const toast = {
 		status: 200,
@@ -195,15 +248,40 @@ export async function select(req, res, next) {
 			item_name: itemProperties.name,
 			item_short_name: itemProperties.short_name,
 			zipper_number: stock.zipper_number,
-			zipper_name: zipperProperties.name,
-			zipper_short_name: zipperProperties.short_name,
+			zipper_number_name: zipperProperties.name,
+			zipper_number_short_name: zipperProperties.short_name,
 			end_type: stock.end_type,
 			end_type_name: endTypeProperties.name,
 			end_type_short_name: endTypeProperties.short_name,
+			lock_type: stock.lock_type,
+			lock_type_name: lockTypeProperties.name,
+			lock_type_short_name: lockTypeProperties.short_name,
 			puller_type: stock.puller_type,
 			puller_type_name: pullerTypeProperties.name,
 			puller_type_short_name: pullerTypeProperties.short_name,
-			color: stock.color,
+			puller_color: stock.puller_color,
+			puller_color_name: pullerColorProperties.name,
+			puller_color_short_name: pullerColorProperties.short_name,
+			puller_link: stock.puller_link,
+			puller_link_name: pullerLinkProperties.name,
+			puller_link_short_name: pullerLinkProperties.short_name,
+			slider: stock.slider,
+			slider_name: sliderProperties.name,
+			slider_short_name: sliderProperties.short_name,
+			slider_body_shape: stock.slider_body_shape,
+			slider_body_shape_name: sliderBodyShapeProperties.name,
+			slider_body_shape_short_name: sliderBodyShapeProperties.short_name,
+			slider_link: stock.slider_link,
+			slider_link_name: sliderLinkProperties.name,
+			slider_link_short_name: sliderLinkProperties.short_name,
+			coloring_type: stock.coloring_type,
+			coloring_type_name: coloringProperties.name,
+			coloring_type_short_name: coloringProperties.short_name,
+			logo_type: stock.logo_type,
+			logo_type_name: logoTypeProperties.name,
+			logo_type_short_name: logoTypeProperties.short_name,
+			is_logo_body: stock.is_logo_body,
+			is_logo_puller: stock.is_logo_puller,
 			order_quantity: stock.order_quantity,
 			body_quantity: stock.body_quantity,
 			cap_quantity: stock.cap_quantity,
@@ -233,10 +311,38 @@ export async function select(req, res, next) {
 		)
 		.leftJoin(endTypeProperties, eq(stock.end_type, endTypeProperties.uuid))
 		.leftJoin(
+			lockTypeProperties,
+			eq(stock.lock_type, lockTypeProperties.uuid)
+		)
+		.leftJoin(
 			pullerTypeProperties,
 			eq(stock.puller_type, pullerTypeProperties.uuid)
 		)
-		.leftJoin(coloringProperties, eq(stock.color, coloringProperties.uuid))
+		.leftJoin(
+			pullerColorProperties,
+			eq(stock.puller_color, pullerColorProperties.uuid)
+		)
+		.leftJoin(
+			pullerLinkProperties,
+			eq(stock.puller_link, pullerLinkProperties.uuid)
+		)
+		.leftJoin(sliderProperties, eq(stock.slider, sliderProperties.uuid))
+		.leftJoin(
+			sliderBodyShapeProperties,
+			eq(stock.slider_body_shape, sliderBodyShapeProperties.uuid)
+		)
+		.leftJoin(
+			sliderLinkProperties,
+			eq(stock.slider_link, sliderLinkProperties.uuid)
+		)
+		.leftJoin(
+			coloringProperties,
+			eq(stock.coloring_type, coloringProperties.uuid)
+		)
+		.leftJoin(
+			logoTypeProperties,
+			eq(stock.logo_type, logoTypeProperties.uuid)
+		)
 		.where(eq(stock.uuid, req.params.uuid));
 
 	const toast = {

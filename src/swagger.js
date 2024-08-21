@@ -26,12 +26,12 @@ import { pathPublic } from './db/public/route.js';
 import { defPublic, tagPublic } from './db/public/schema.js';
 
 // Zipper
-import { pathZipper } from './db/zipper/route.js';
-import { defZipper, tagZipper } from './db/zipper/swagger.js';
+import { defZipper, tagZipper } from './db/zipper/swagger_def.js';
+import { pathZipper } from './db/zipper/swagger_route.js';
 
 // Slider
-import { pathSlider } from './db/slider/route.js';
-import { defSlider, tagSlider } from './db/slider/swagger.js';
+import { defSlider, tagSlider } from './db/slider/swagger_def.js';
+import { pathSlider } from './db/slider/swagger_route.js';
 
 // Purchase
 import { pathPurchase } from './db/purchase/route.js';
