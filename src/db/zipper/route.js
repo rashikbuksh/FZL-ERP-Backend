@@ -128,6 +128,10 @@ zipperRouter.delete(
 	// validateUuidParam(),
 	batchOperations.remove
 );
+zipperRouter.get(
+	'/batch-details/:batch_uuid',
+	batchOperations.selectBatchDetailsByBatchUuid
+);
 
 // --------------------- BATCH ENTRY ROUTES ---------------------
 
@@ -145,8 +149,8 @@ zipperRouter.delete(
 	batchEntryOperations.remove
 );
 zipperRouter.get(
-	'/batch-entry/by/batch-entry-uuid/:batch_entry_uuid',
-	batchEntryOperations.selectBatchEntryByBatchEntryUuid
+	'/batch-entry/by/batch-uuid/:batch_uuid',
+	batchEntryOperations.selectBatchEntryByBatchUuid
 );
 zipperRouter.get(
 	'/order-batch',
