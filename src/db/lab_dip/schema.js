@@ -26,54 +26,6 @@ export const info = lab_dip.table('info', {
 	remarks: text('remarks').default(null),
 });
 
-export const defLabDipInfo = {
-	type: 'object',
-	required: ['uuid', 'name', 'order_info_uuid', 'created_by', 'created_at'],
-	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		id: {
-			type: 'integer',
-			example: 1,
-		},
-		name: {
-			type: 'string',
-			example: 'Lab Dip 1',
-		},
-		order_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		lab_status: {
-			type: 'string',
-			example: 'Pending',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
-	},
-	xml: {
-		name: 'LabDip/Info',
-	},
-};
-
 export const recipe = lab_dip.table('recipe', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
@@ -88,58 +40,6 @@ export const recipe = lab_dip.table('recipe', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
-
-export const defLabDipRecipe = {
-	type: 'object',
-	required: ['uuid', 'lab_dip_info_uuid', 'name', 'created_by', 'created_at'],
-	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		id: {
-			type: 'integer',
-			example: 1,
-		},
-		lab_dip_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'Recipe 1',
-		},
-		approved: {
-			type: 'integer',
-			example: 0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		status: {
-			type: 'integer',
-			example: 0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
-	},
-	xml: {
-		name: 'LabDip/Recipe',
-	},
-};
 
 export const recipe_entry = lab_dip.table('recipe_entry', {
 	uuid: uuid_primary,

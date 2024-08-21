@@ -2,40 +2,40 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import { SERVER_URL } from './lib/secret.js';
 
 // Commercial
-import { defCommercial, tagCommercial } from './db/commercial/swagger_def.js';
-import { pathCommercial } from './db/commercial/swagger_route.js';
+import { defCommercial, tagCommercial } from './db/commercial/swagger/def.js';
+import { pathCommercial } from './db/commercial/swagger/route.js';
 
 // Delivery
-import { defDelivery, tagDelivery } from './db/delivery/swagger_def.js';
-import { pathDelivery } from './db/delivery/swagger_route.js';
+import { defDelivery, tagDelivery } from './db/delivery/swagger/def.js';
+import { pathDelivery } from './db/delivery/swagger/route.js';
 
 // HR
-import { defHr, tagHr } from './db/hr/swagger_def.js';
-import { pathHr } from './db/hr/swagger_route.js';
+import { defHr, tagHr } from './db/hr/swagger/def.js';
+import { pathHr } from './db/hr/swagger/route.js';
 
 // Lab Dip
-import { pathLabDip } from './db/lab_dip/route.js';
-import { defLabDip, tagLabDip } from './db/lab_dip/schema.js';
+import { defLabDip, tagLabDip } from './db/lab_dip/swagger/def.js';
+import { pathLabDip } from './db/lab_dip/swagger/route.js';
 
 // Material
-import { pathMaterial } from './db/material/route.js';
-import { defMaterial, tagMaterial } from './db/material/schema.js';
+import { defMaterial, tagMaterial } from './db/material/swagger/def.js';
+import { pathMaterial } from './db/material/swagger/route.js';
 
 // Public
-import { pathPublic } from './db/public/route.js';
-import { defPublic, tagPublic } from './db/public/schema.js';
+import { defPublic, tagPublic } from './db/public/swagger/def.js';
+import { pathPublic } from './db/public/swagger/route.js';
 
 // Zipper
-import { defZipper, tagZipper } from './db/zipper/swagger_def.js';
-import { pathZipper } from './db/zipper/swagger_route.js';
+import { defZipper, tagZipper } from './db/zipper/swagger/def.js';
+import { pathZipper } from './db/zipper/swagger/route.js';
 
 // Slider
-import { defSlider, tagSlider } from './db/slider/swagger_def.js';
-import { pathSlider } from './db/slider/swagger_route.js';
+import { defSlider, tagSlider } from './db/slider/swagger/def.js';
+import { pathSlider } from './db/slider/swagger/route.js';
 
 // Purchase
-import { pathPurchase } from './db/purchase/route.js';
-import { defPurchase, tagPurchase } from './db/purchase/schema.js';
+import { defPurchase, tagPurchase } from './db/purchase/swagger/def.js';
+import { pathPurchase } from './db/purchase/swagger/route.js';
 
 // Others
 import { pathOthers, tagOthers } from './db/others/route.js';
