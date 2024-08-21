@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION material.stock_after_material_trx_against_order_description_insert() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.stock_after_material_trx_against_order_description_insert() RETURNS TRIGGER AS $$
 BEGIN
     -- Update material,stock
     UPDATE material.stock
@@ -43,11 +43,11 @@ BEGIN
             - CASE WHEN NEW.trx_to = 'cutting' THEN NEW.trx_quantity ELSE 0 END,
         m_qc_and_packing = m_qc_and_packing 
             - CASE WHEN NEW.trx_to = 'm_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END,
-            n_qc_and_packing = n_qc_and_packing 
+        n_qc_and_packing = n_qc_and_packing 
             - CASE WHEN NEW.trx_to = 'n_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END,
-            v_qc_and_packing = v_qc_and_packing 
+        v_qc_and_packing = v_qc_and_packing 
             - CASE WHEN NEW.trx_to = 'v_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END,
-            s_qc_and_packing = s_qc_and_packing 
+        s_qc_and_packing = s_qc_and_packing 
             - CASE WHEN NEW.trx_to = 's_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END,
         die_casting = die_casting 
             - CASE WHEN NEW.trx_to = 'die_casting' THEN NEW.trx_quantity ELSE 0 END,
@@ -62,7 +62,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION material.stock_after_material_trx_against_order_description_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.stock_after_material_trx_against_order_description_update() RETURNS TRIGGER AS $$
 BEGIN
     -- Update material,stock
     UPDATE material.stock
@@ -127,13 +127,13 @@ BEGIN
         m_qc_and_packing = m_qc_and_packing 
             - CASE WHEN NEW.trx_to = 'm_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END 
             + CASE WHEN OLD.trx_to = 'm_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
-            n_qc_and_packing = n_qc_and_packing 
+        n_qc_and_packing = n_qc_and_packing 
             - CASE WHEN NEW.trx_to = 'n_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END 
             + CASE WHEN OLD.trx_to = 'n_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
-            v_qc_and_packing = v_qc_and_packing 
+        v_qc_and_packing = v_qc_and_packing 
             - CASE WHEN NEW.trx_to = 'v_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END 
             + CASE WHEN OLD.trx_to = 'v_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
-            s_qc_and_packing = s_qc_and_packing 
+        s_qc_and_packing = s_qc_and_packing 
             - CASE WHEN NEW.trx_to = 's_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END 
             + CASE WHEN OLD.trx_to = 's_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
         die_casting = die_casting 
@@ -152,7 +152,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION material.stock_after_material_trx_against_order_description_delete() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.stock_after_material_trx_against_order_description_delete() RETURNS TRIGGER AS $$
 BEGIN
     -- Update material,stock
     UPDATE material.stock
@@ -197,11 +197,11 @@ BEGIN
             + CASE WHEN OLD.trx_to = 'cutting' THEN OLD.trx_quantity ELSE 0 END,
         m_qc_and_packing = m_qc_and_packing
             + CASE WHEN OLD.trx_to = 'm_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
-            n_qc_and_packing = n_qc_and_packing
+        n_qc_and_packing = n_qc_and_packing
             + CASE WHEN OLD.trx_to = 'n_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
-            v_qc_and_packing = v_qc_and_packing
+        v_qc_and_packing = v_qc_and_packing
             + CASE WHEN OLD.trx_to = 'v_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
-            s_qc_and_packing = s_qc_and_packing
+        s_qc_and_packing = s_qc_and_packing
             + CASE WHEN OLD.trx_to = 's_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
         die_casting = die_casting
             + CASE WHEN OLD.trx_to = 'die_casting' THEN OLD.trx_quantity ELSE 0 END,
@@ -223,17 +223,17 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER stock_after_material_trx_against_order_description_insert
 AFTER INSERT ON zipper.material_trx_against_order_description
 FOR EACH ROW
-EXECUTE FUNCTION material.stock_after_material_trx_against_order_description_insert();
+EXECUTE FUNCTION zipper.stock_after_material_trx_against_order_description_insert();
 
 CREATE TRIGGER stock_after_material_trx_against_order_description_update
 AFTER UPDATE ON zipper.material_trx_against_order_description
 FOR EACH ROW
-EXECUTE FUNCTION material.stock_after_material_trx_against_order_description_update();
+EXECUTE FUNCTION zipper.stock_after_material_trx_against_order_description_update();
 
 CREATE TRIGGER stock_after_material_trx_against_order_description_delete
 AFTER DELETE ON zipper.material_trx_against_order_description
 FOR EACH ROW
-EXECUTE FUNCTION material.stock_after_material_trx_against_order_description_delete();
+EXECUTE FUNCTION zipper.stock_after_material_trx_against_order_description_delete();
 
 
 
