@@ -262,15 +262,17 @@ export const batch_entry = zipper.table('batch_entry', {
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	})
+		.notNull()
+		.default(0.0),
 	production_quantity: decimal('production_quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	production_quantity_in_kg: decimal('production_quantity_in_kg', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
