@@ -1,11 +1,11 @@
-CREATE OR FUNCTION slider.slider_stock_after_die_casting_transaction_insert() RETURNS TRIGGER AS $$
-DECLARE d_is_body INT,
-        d_is_puller INT,
-        d_is_cap INT,
-        d_is_link INT,
-        d_h_bottom INT,
-        d_is_u_top INT,
-        d_is_box_pin INT,
+CREATE OR REPLACE FUNCTION slider.slider_stock_after_die_casting_transaction_insert() RETURNS TRIGGER AS $$
+DECLARE d_is_body INT;
+        d_is_puller INT;
+        d_is_cap INT;
+        d_is_link INT;
+        d_h_bottom INT;
+        d_is_u_top INT;
+        d_is_box_pin INT;
         d_is_two_way_pin INT;
 BEGIN
     --update slider.stock table
@@ -63,14 +63,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR FUNCTION slider.slider_stock_after_die_casting_transaction_delete() RETURNS TRIGGER AS $$
-DECLARE d_is_body INT,
-        d_is_puller INT,
-        d_is_cap INT,
-        d_is_link INT,
-        d_h_bottom INT,
-        d_is_u_top INT,
-        d_is_box_pin INT,
+CREATE OR REPLACE FUNCTION slider.slider_stock_after_die_casting_transaction_delete() RETURNS TRIGGER AS $$
+DECLARE d_is_body INT;
+        d_is_puller INT;
+        d_is_cap INT;
+        d_is_link INT;
+        d_h_bottom INT;
+        d_is_u_top INT;
+        d_is_box_pin INT;
         d_is_two_way_pin INT;
 BEGIN
  UPDATE slider.die_casting
@@ -129,14 +129,14 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE OR FUNCTION slider.slider_stock_after_die_casting_transaction_update() RETURNS TRIGGER AS $$
-DECLARE d_is_body INT,
-        d_is_puller INT,
-        d_is_cap INT,
-        d_is_link INT,
-        d_h_bottom INT,
-        d_is_u_top INT,
-        d_is_box_pin INT,
+CREATE OR REPLACE FUNCTION slider.slider_stock_after_die_casting_transaction_update() RETURNS TRIGGER AS $$
+DECLARE d_is_body INT;
+        d_is_puller INT;
+        d_is_cap INT;
+        d_is_link INT;
+        d_h_bottom INT;
+        d_is_u_top INT;
+        d_is_box_pin INT;
         d_is_two_way_pin INT;
 BEGIN
     --update slider.stock table
