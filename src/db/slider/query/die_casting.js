@@ -12,7 +12,6 @@ import { die_casting } from '../schema.js';
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
 const zipperProperties = alias(publicSchema.properties, 'zipperProperties');
 const endTypeProperties = alias(publicSchema.properties, 'endTypeProperties');
-const lockTypeProperties = alias(publicSchema.properties, 'lockTypeProperties');
 const pullerTypeProperties = alias(
 	publicSchema.properties,
 	'pullerTypeProperties'

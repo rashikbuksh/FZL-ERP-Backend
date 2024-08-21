@@ -75,6 +75,12 @@ otherRouter.get(
 	otherOperations.selectLabDipRecipe
 );
 
+// * Slider * //
+otherRouter.get(
+	'/slider-item-name/value/label',
+	otherOperations.selectNameFromDieCastingStock
+);
+
 const pathPublic = {
 	'/other/party/value/label': {
 		get: {
@@ -797,6 +803,39 @@ const pathLabDip = {
 	},
 };
 
+const pathSlider = {
+	'/other/slider-item-name/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all sliders',
+			description: 'All sliders',
+			operationId: 'getAllSliders',
+			responses: {
+				200: {
+					description: 'Returns a all sliders.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'cap --> N - 5 - OE - SP',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+};
+
 export const pathOthers = {
 	...pathPublic,
 	...pathPurchase,
@@ -805,6 +844,7 @@ export const pathOthers = {
 	...pathZipper,
 	...pathHr,
 	...pathLabDip,
+	...pathSlider,
 };
 
 export const tagOthers = [

@@ -237,8 +237,8 @@ export const defLabDip = {
 	info: defLabDipInfo,
 	recipe: defLabDipRecipe,
 	recipe_entry: defLabDipRecipeEntry,
-	share_recipe: defShadeRecipe,
-	share_recipe_entry: defShadeRecipeEntry,
+	shade_recipe: defShadeRecipe,
+	shade_recipe_entry: defShadeRecipeEntry,
 };
 
 // * Tag
@@ -261,11 +261,11 @@ export const tagLabDip = [
 		description: 'Operations about recipe entry of Lab dip',
 	},
 	{
-		name: 'lab_dip.share_recipe',
+		name: 'lab_dip.shade_recipe',
 		description: 'Operations about share recipe of Thread',
 	},
 	{
-		name: 'lab_dip.share_recipe_entry',
+		name: 'lab_dip.shade_recipe_entry',
 		description: 'Operations about share recipe entry of Thread',
 	},
 ];
