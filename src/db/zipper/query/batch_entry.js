@@ -155,7 +155,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			be.production_quantity_in_kg,
 			be.created_at,
 			be.updated_at,
-			be.remarks as remarks,
+			be.remarks as batch_remarks,
 			oe.style,
 			oe.color,
 			oe.size,

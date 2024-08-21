@@ -140,11 +140,105 @@ export const defLabDipRecipeEntry = {
 	},
 };
 
+// * Shade Recipe * //
+export const defShadeRecipe = {
+	type: 'object',
+	required: ['uuid', 'name'],
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		name: {
+			type: 'string',
+			example: 'Share Recipe 1',
+		},
+		sub_streat: {
+			type: 'string',
+			example: 'Sub Streat 1',
+		},
+		lab_status: {
+			type: 'string',
+			example: 'Pending',
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+	},
+	xml: {
+		name: 'LabDip/ShareRecipe',
+	},
+};
+
+// * Shade Recipe Entry * //
+export const defShadeRecipeEntry = {
+	type: 'object',
+	required: [
+		'uuid',
+		'shade_recipe_uuid',
+		'material_uuid',
+		'quantity',
+		'created_at',
+	],
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		shade_recipe_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		material_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+	},
+	xml: {
+		name: 'LabDip/ShareRecipeEntry',
+	},
+};
+
 // * Marge All
 export const defLabDip = {
 	info: defLabDipInfo,
 	recipe: defLabDipRecipe,
 	recipe_entry: defLabDipRecipeEntry,
+	share_recipe: defShadeRecipe,
+	share_recipe_entry: defShadeRecipeEntry,
 };
 
 // * Tag
@@ -165,5 +259,13 @@ export const tagLabDip = [
 	{
 		name: 'lab_dip.recipe_entry',
 		description: 'Operations about recipe entry of Lab dip',
+	},
+	{
+		name: 'lab_dip.share_recipe',
+		description: 'Operations about share recipe of Thread',
+	},
+	{
+		name: 'lab_dip.share_recipe_entry',
+		description: 'Operations about share recipe entry of Thread',
 	},
 ];
