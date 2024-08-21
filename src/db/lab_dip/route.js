@@ -3,6 +3,8 @@ import { validateUuidParam } from '../../lib/validator.js';
 import * as infoOperations from './query/info.js';
 import * as recipeOperations from './query/recipe.js';
 import * as recipeEntryOperations from './query/recipe_entry.js';
+import * as shadeRecipeOperations from './query/shade_recipe.js';
+import * as shadeRecipeEntryOperations from './query/shade_recipe_entry.js';
 
 const labDipRouter = Router();
 
@@ -72,6 +74,41 @@ labDipRouter.delete(
 labDipRouter.get(
 	'/recipe-entry/by/:recipe_uuid',
 	recipeEntryOperations.selectRecipeEntryByRecipeUuid
+);
+
+// shade recipe routes
+
+labDipRouter.get('/shade-recipe', shadeRecipeOperations.selectAll);
+labDipRouter.get(
+	'/shade-recipe/:uuid',
+	validateUuidParam(),
+	shadeRecipeOperations.select
+);
+labDipRouter.post('/shade-recipe', shadeRecipeOperations.insert);
+labDipRouter.put('/shade-recipe/:uuid', shadeRecipeOperations.update);
+labDipRouter.delete(
+	'/shade-recipe/:uuid',
+	validateUuidParam(),
+	shadeRecipeOperations.remove
+);
+
+// shade recipe entry routes
+
+labDipRouter.get('/shade-recipe-entry', shadeRecipeEntryOperations.selectAll);
+labDipRouter.get(
+	'/shade-recipe-entry/:uuid',
+	validateUuidParam(),
+	shadeRecipeEntryOperations.select
+);
+labDipRouter.post('/shade-recipe-entry', shadeRecipeEntryOperations.insert);
+labDipRouter.put(
+	'/shade-recipe-entry/:uuid',
+	shadeRecipeEntryOperations.update
+);
+labDipRouter.delete(
+	'/shade-recipe-entry/:uuid',
+	validateUuidParam(),
+	shadeRecipeEntryOperations.remove
 );
 
 export { labDipRouter };
