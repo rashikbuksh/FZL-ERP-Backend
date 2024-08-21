@@ -60,46 +60,6 @@ export const recipe_entry = lab_dip.table('recipe_entry', {
 	remarks: text('remarks').default(null),
 });
 
-export const defLabDipRecipeEntry = {
-	type: 'object',
-	required: ['uuid', 'recipe_uuid', 'color', 'quantity', 'created_at'],
-	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		recipe_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		color: {
-			type: 'string',
-			example: 'Red',
-		},
-		quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
-	},
-	xml: {
-		name: 'LabDip/RecipeEntry',
-	},
-};
-
 export const shade_recipe = lab_dip.table('shade_recipe', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
