@@ -1515,8 +1515,383 @@ export const pathLabDipRecipeEntry = {
 	},
 };
 
+//* LabDip Shade Recipe *//
+
+export const pathLabDipShadeRecipe = {
+	'/lab-dip/shade-recipe': {
+		get: {
+			tags: ['lab_dip.shade_recipe'],
+			summary: 'Get all lab dip shade recipe',
+			description: 'Get all lab dip shade recipe',
+			responses: {
+				200: {
+					description: 'Returns all lab dip shade recipe',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									name: {
+										type: 'string',
+										example: 'Recipe 1',
+									},
+									sub_streat : {
+										type: 'string',
+										example: 'Sub Streat',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['lab_dip.shade_recipe'],
+			summary: 'Create a lab dip shade recipe',
+			description: 'Create a lab dip shade recipe',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/lab_dip/shade_recipe',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Lab dip shade recipe created successfully',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/lab_dip/shade_recipe',
+							},
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+
+	'/lab-dip/shade-recipe/{uuid}': {
+
+		get: {
+			tags: ['lab_dip.shade_recipe'],
+			summary: 'Get lab dip shade recipe by uuid',
+			description: 'Get lab dip shade recipe by uuid',
+			operationId: 'getLabDipShadeRecipe',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'lab dip shade recipe to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip shade recipe not found',
+				},
+			},
+		},
+
+		put: {
+			tags: ['lab_dip.shade_recipe'],
+			summary: 'Update an existing lab dip shade recipe',
+			description: 'Update an existing lab dip shade recipe',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'Lab dip shade recipe to update',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/lab_dip/shade_recipe',
+						},
+					},
+				},
+			},
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip shade recipe not found',
+				},
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+
+		delete: {
+			tags: ['lab_dip.shade_recipe'],
+			summary: 'Delete a lab dip shade recipe',
+			description: 'Delete a lab dip shade recipe',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'Lab dip shade recipe to delete',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip shade recipe not found',
+				},
+			},
+		},
+	},
+};
+
+export const pathLabDipShadeRecipeEntry = {
+	'/lab-dip/shade-recipe-entry': {
+		get: {
+			tags: ['lab_dip.shade_recipe_entry'],
+			summary: 'Get all lab dip shade recipe entry',
+			description: 'Get all lab dip shade recipe entry',
+			responses: {
+				200: {
+					description: 'Returns all lab dip shade recipe entry',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									shade_recipe_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									shade_recipe_name: {
+										type: 'string',
+										example: 'Recipe 1',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'Material 1',
+									},
+									quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['lab_dip.shade_recipe_entry'],
+			summary: 'Create a lab dip shade recipe entry',
+			description: 'Create a lab dip shade recipe entry',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/lab_dip/shade_recipe_entry',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Lab dip shade recipe entry created successfully',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/lab_dip/shade_recipe_entry',
+							},
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+
+	'/lab-dip/shade-recipe-entry/{uuid}': {
+
+		get: {
+			tags: ['lab_dip.shade_recipe_entry'],
+			summary: 'Get lab dip shade recipe entry by uuid',
+			description: 'Get lab dip shade recipe entry by uuid',
+			operationId: 'getLabDipShadeRecipeEntry',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'lab dip shade recipe entry to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip shade recipe entry not found',
+				},
+			},
+		},
+		
+		put: {
+
+			tags: ['lab_dip.shade_recipe_entry'],
+			summary: 'Update an existing lab dip shade recipe entry',
+			description: 'Update an existing lab dip shade recipe entry',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'Lab dip shade recipe entry to update',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/lab_dip/shade_recipe_entry',
+						},
+					},
+				},
+			},
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip shade recipe entry not found',
+				},
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+
+		delete: {
+			tags: ['lab_dip.shade_recipe_entry'],
+			summary: 'Delete a lab dip shade recipe entry',
+			description: 'Delete a lab dip shade recipe entry',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'Lab dip shade recipe entry to delete',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip shade recipe entry not found',
+				},
+			},
+		},
+	},
+};
+
+
 export const pathLabDip = {
 	...pathLabDipInfo,
 	...pathLabDipRecipe,
 	...pathLabDipRecipeEntry,
+	...pathLabDipShadeRecipe,
+	...pathLabDipShadeRecipeEntry
 };
