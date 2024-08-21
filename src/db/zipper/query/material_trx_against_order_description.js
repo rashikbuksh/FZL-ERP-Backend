@@ -1,4 +1,5 @@
 import { eq, sql } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -218,6 +219,54 @@ export async function selectMaterialTrxLogAgainstOrderByTrxTo(req, res, next) {
 			message: 'material_trx_against_order_description details by trx_to',
 		};
 		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectMaterialTrxAgainstOrderDescriptionByMultipleTrxTo(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	try {
+		const api = await createApi(req);
+
+		const { trx_tos } = req.params;
+
+		const trx_to = trx_tos.split(',');
+
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`/zipper/material-trx-against-order/by/${endpoint}`)
+				.then((res) => {
+					return res?.data;
+				});
+
+		const promises = trx_to.map(async (field) => {
+			const data = await fetchData(field);
+			return data;
+		});
+
+		const results = await Promise.all(promises);
+
+		const data = results.reduce((acc, result, index) => {
+			return [
+				...acc,
+				...(Array.isArray(result?.data) ? result?.data : []),
+			];
+		}, []);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message:
+				'material_trx_against_order_description by multiple trx_to',
+		};
+
+		res.status(200).json({ toast, data: data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

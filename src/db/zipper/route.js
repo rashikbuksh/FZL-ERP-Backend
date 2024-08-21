@@ -63,7 +63,6 @@ zipperRouter.get(
 	orderDescriptionOperations.selectOrderNumberToGetOrderDescriptionAndOrderEntry
 );
 
-
 // --------------------- ORDER ENTRY ROUTES ---------------------
 
 zipperRouter.get('/order-entry', orderEntryOperations.selectAll);
@@ -303,6 +302,10 @@ zipperRouter.delete(
 zipperRouter.get(
 	'/material-trx-against-order/by/:trx_to',
 	materialTrxAgainstOrderOperations.selectMaterialTrxLogAgainstOrderByTrxTo
+);
+zipperRouter.get(
+	'/material-trx-against-order/multiple/by/:trx_tos',
+	materialTrxAgainstOrderOperations.selectMaterialTrxAgainstOrderDescriptionByMultipleTrxTo
 );
 
 export { zipperRouter };
