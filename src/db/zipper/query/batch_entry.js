@@ -143,8 +143,6 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 
 	const { batch_uuid } = req.params;
 
-	console.log(batch_uuid, 'batch_uuid');
-
 	const query = sql`
 		SELECT
 			be.uuid as batch_entry_uuid,
