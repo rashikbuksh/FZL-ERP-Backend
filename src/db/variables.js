@@ -1,4 +1,12 @@
-import { text, timestamp } from 'drizzle-orm/pg-core';
+import {
+	decimal,
+	integer,
+	pgSchema,
+	serial,
+	text,
+	timestamp,
+	uuid,
+} from 'drizzle-orm/pg-core';
 
 export const defaultUUID = (column = 'uuid') =>
 	text(column, {
@@ -12,3 +20,9 @@ export const DateTime = (column) =>
 		mode: 'string',
 		withTimezone: false,
 	});
+
+export const PG_DECIMAL = (column) =>
+	decimal(column, {
+		precision: 20,
+		scale: 4,
+	}).notNull();

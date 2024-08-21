@@ -3427,6 +3427,49 @@ export const pathZipperBatch = {
 			},
 		},
 	},
+	'/zipper/batch-details/{batch_uuid}': {
+		get: {
+			tags: ['zipper.batch'],
+			summary: 'Get a Batch by Batch UUID',
+			description: '',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'batch_uuid',
+					in: 'path',
+					description: 'Batch UUID to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns a Batch',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/zipper/batch',
+							},
+							batch_entry: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/zipper/batch_entry',
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Batch not found',
+				},
+			},
+		},
+	},
 };
 
 // * Zipper Batch Entry * //
@@ -3608,7 +3651,7 @@ export const pathZipperBatchEntry = {
 			},
 		},
 	},
-	'/zipper/batch-entry/by/batch-entry-uuid/{batch_entry_uuid}': {
+	'/zipper/batch-entry/by/batch-uuid/{batch_uuid}': {
 		get: {
 			tags: ['zipper.batch_entry'],
 			summary: 'Get a Batch Entry by Batch Entry UUID',
@@ -3616,12 +3659,13 @@ export const pathZipperBatchEntry = {
 			produces: ['application/json'],
 			parameters: [
 				{
-					name: 'batch_entry_uuid',
+					name: 'batch_uuid',
 					in: 'path',
 					description: 'Batch Entry UUID to get',
 					required: true,
 					type: 'string',
 					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {

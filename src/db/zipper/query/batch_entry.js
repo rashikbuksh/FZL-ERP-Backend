@@ -138,8 +138,12 @@ export async function select(req, res, next) {
 	});
 }
 
-export async function selectBatchEntryByBatchEntryUuid(req, res, next) {
+export async function selectBatchEntryByBatchUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	const { batch_uuid } = req.params;
+
+	console.log(batch_uuid, 'batch_uuid');
 
 	const query = sql`
 		SELECT
@@ -186,8 +190,7 @@ export async function selectBatchEntryByBatchEntryUuid(req, res, next) {
 					sfg.uuid
 			) AS be_given ON sfg.uuid = be_given.sfg_uuid
 		WHERE
-			be.uuid = ${req.params.batch_entry_uuid} and sfg.recipe_uuid IS NOT NULL
-	`;
+			be.batch_uuid = ${batch_uuid}`;
 
 	const batchEntryPromise = db.execute(query);
 

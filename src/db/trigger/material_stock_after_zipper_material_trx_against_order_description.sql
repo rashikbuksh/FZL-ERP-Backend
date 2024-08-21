@@ -41,14 +41,20 @@ BEGIN
             - CASE WHEN NEW.trx_to = 'n_stopper' THEN NEW.trx_quantity ELSE 0 END,
         cutting = cutting 
             - CASE WHEN NEW.trx_to = 'cutting' THEN NEW.trx_quantity ELSE 0 END,
-        qc_and_packing = qc_and_packing 
-            - CASE WHEN NEW.trx_to = 'qc_and_packing' THEN NEW.trx_quantity ELSE 0 END,
+        m_qc_and_packing = m_qc_and_packing 
+            - CASE WHEN NEW.trx_to = 'm_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END,
+            n_qc_and_packing = n_qc_and_packing 
+            - CASE WHEN NEW.trx_to = 'n_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END,
+            v_qc_and_packing = v_qc_and_packing 
+            - CASE WHEN NEW.trx_to = 'v_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END,
+            s_qc_and_packing = s_qc_and_packing 
+            - CASE WHEN NEW.trx_to = 's_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END,
         die_casting = die_casting 
             - CASE WHEN NEW.trx_to = 'die_casting' THEN NEW.trx_quantity ELSE 0 END,
         slider_assembly = slider_assembly 
             - CASE WHEN NEW.trx_to = 'slider_assembly' THEN NEW.trx_quantity ELSE 0 END,
         coloring = coloring 
-            - CASE WHEN NEW.trx_to = 'coloring' THEN NEW.trx_quantity ELSE 0 END,
+            - CASE WHEN NEW.trx_to = 'coloring' THEN NEW.trx_quantity ELSE 0 END
 
     WHERE material_uuid = NEW.material_uuid;
 
@@ -118,9 +124,18 @@ BEGIN
         cutting = cutting 
             - CASE WHEN NEW.trx_to = 'cutting' THEN NEW.trx_quantity ELSE 0 END 
             + CASE WHEN OLD.trx_to = 'cutting' THEN OLD.trx_quantity ELSE 0 END,
-        qc_and_packing = qc_and_packing 
-            - CASE WHEN NEW.trx_to = 'qc_and_packing' THEN NEW.trx_quantity ELSE 0 END 
-            + CASE WHEN OLD.trx_to = 'qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
+        m_qc_and_packing = m_qc_and_packing 
+            - CASE WHEN NEW.trx_to = 'm_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END 
+            + CASE WHEN OLD.trx_to = 'm_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
+            n_qc_and_packing = n_qc_and_packing 
+            - CASE WHEN NEW.trx_to = 'n_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END 
+            + CASE WHEN OLD.trx_to = 'n_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
+            v_qc_and_packing = v_qc_and_packing 
+            - CASE WHEN NEW.trx_to = 'v_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END 
+            + CASE WHEN OLD.trx_to = 'v_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
+            s_qc_and_packing = s_qc_and_packing 
+            - CASE WHEN NEW.trx_to = 's_qc_and_packing' THEN NEW.trx_quantity ELSE 0 END 
+            + CASE WHEN OLD.trx_to = 's_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
         die_casting = die_casting 
             - CASE WHEN NEW.trx_to = 'die_casting' THEN NEW.trx_quantity ELSE 0 END 
             + CASE WHEN OLD.trx_to = 'die_casting' THEN OLD.trx_quantity ELSE 0 END,
@@ -129,7 +144,7 @@ BEGIN
             + CASE WHEN OLD.trx_to = 'slider_assembly' THEN OLD.trx_quantity ELSE 0 END,
         coloring = coloring 
             - CASE WHEN NEW.trx_to = 'coloring' THEN NEW.trx_quantity ELSE 0 END 
-            + CASE WHEN OLD.trx_to = 'coloring' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN OLD.trx_to = 'coloring' THEN OLD.trx_quantity ELSE 0 END
 
     WHERE material_uuid = NEW.material_uuid;
 
@@ -180,14 +195,20 @@ BEGIN
             + CASE WHEN OLD.trx_to = 'n_stopper' THEN OLD.trx_quantity ELSE 0 END,
         cutting = cutting
             + CASE WHEN OLD.trx_to = 'cutting' THEN OLD.trx_quantity ELSE 0 END,
-        qc_and_packing = qc_and_packing
-            + CASE WHEN OLD.trx_to = 'qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
+        m_qc_and_packing = m_qc_and_packing
+            + CASE WHEN OLD.trx_to = 'm_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
+            n_qc_and_packing = n_qc_and_packing
+            + CASE WHEN OLD.trx_to = 'n_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
+            v_qc_and_packing = v_qc_and_packing
+            + CASE WHEN OLD.trx_to = 'v_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
+            s_qc_and_packing = s_qc_and_packing
+            + CASE WHEN OLD.trx_to = 's_qc_and_packing' THEN OLD.trx_quantity ELSE 0 END,
         die_casting = die_casting
             + CASE WHEN OLD.trx_to = 'die_casting' THEN OLD.trx_quantity ELSE 0 END,
         slider_assembly = slider_assembly
             + CASE WHEN OLD.trx_to = 'slider_assembly' THEN OLD.trx_quantity ELSE 0 END,
         coloring = coloring
-            + CASE WHEN OLD.trx_to = 'coloring' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN OLD.trx_to = 'coloring' THEN OLD.trx_quantity ELSE 0 END
 
     WHERE material_uuid = OLD.material_uuid;
 
