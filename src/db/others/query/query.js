@@ -1,4 +1,5 @@
 import { eq, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
 	handleResponse,
@@ -12,9 +13,19 @@ import * as labDipSchema from '../../lab_dip/schema.js';
 import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
+import * as sliderSchema from '../../slider/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 
-// public
+// * Aliases * //
+const itemProperties = alias(publicSchema.properties, 'itemProperties');
+const zipperProperties = alias(publicSchema.properties, 'zipperProperties');
+const endTypeProperties = alias(publicSchema.properties, 'endTypeProperties');
+const pullerTypeProperties = alias(
+	publicSchema.properties,
+	'pullerTypeProperties'
+);
+
+//* public
 export async function selectParty(req, res, next) {
 	const partyPromise = db
 		.select({
@@ -526,4 +537,44 @@ export async function selectLabDipRecipe(req, res, next) {
 		next,
 		...toast,
 	});
+}
+
+// * Slider * //
+export async function selectNameFromDieCastingStock(req, res, next) {
+	const query = sql`
+	SELECT
+		die_casting.uuid AS value,
+		concat(
+			die_casting.name, ' --> ',
+			itemProperties.short_name, ' - ',
+			zipperProperties.short_name, ' - ',
+			endTypeProperties.short_name, ' - ',
+			pullerTypeProperties.short_name
+		) AS label
+	FROM
+		slider.die_casting
+	LEFT JOIN
+		public.properties as itemProperties ON die_casting.item = itemProperties.uuid
+	LEFT JOIN
+		public.properties as zipperProperties ON die_casting.zipper_number = zipperProperties.uuid
+	LEFT JOIN
+		public.properties as endTypeProperties ON die_casting.end_type = endTypeProperties.uuid
+	LEFT JOIN
+		public.properties as pullerTypeProperties ON die_casting.puller_type = pullerTypeProperties.uuid;`;
+
+	const namePromise = db.execute(query);
+
+	try {
+		const data = await namePromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Name list from Die Casting',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
