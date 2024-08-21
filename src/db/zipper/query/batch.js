@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -14,7 +14,9 @@ export async function insert(req, res, next) {
 	const batchPromise = db
 		.insert(batch)
 		.values(req.body)
-		.returning({ insertedUuid: batch.uuid });
+		.returning({
+			insertedUuid: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+		});
 	try {
 		const data = await batchPromise;
 
@@ -59,7 +61,9 @@ export async function remove(req, res, next) {
 	const batchPromise = db
 		.delete(batch)
 		.where(eq(batch.uuid, req.params.uuid))
-		.returning({ deletedUuid: batch.uuid });
+		.returning({
+			deletedUuid: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await batchPromise;
@@ -80,10 +84,12 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: batch.uuid,
 			id: batch.id,
+			batch_id: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			created_by: batch.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch.created_at,
 			updated_at: batch.updated_at,
+			remarks: batch.remarks,
 		})
 		.from(batch)
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid));
@@ -107,10 +113,12 @@ export async function select(req, res, next) {
 		.select({
 			uuid: batch.uuid,
 			id: batch.id,
+			batch_no: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			created_by: batch.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch.created_at,
 			updated_at: batch.updated_at,
+			remarks: batch.remarks,
 		})
 		.from(batch)
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
