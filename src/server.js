@@ -26,6 +26,7 @@ server.get(
 			validatorUrl: null,
 			headers: {
 				'Access-Control-Allow-Origin': '*', // Required to avoid CORS errors
+				'Access-Control-Allow-Credentials': true, // Required to avoid CORS errors
 			},
 		},
 	})
