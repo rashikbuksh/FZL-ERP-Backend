@@ -167,3 +167,97 @@ export async function select(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectTapeCoilToDyeingByNylon(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT
+			tape_coil_to_dyeing.uuid,
+			tape_coil_to_dyeing.tape_coil_uuid,
+			tape_coil_to_dyeing.order_description_uuid,
+			tape_coil_to_dyeing.trx_quantity,
+			tape_coil_to_dyeing.created_by,
+			users.name AS created_by_name,
+			tape_coil_to_dyeing.created_at,
+			tape_coil_to_dyeing.updated_at,
+			tape_coil_to_dyeing.remarks,
+			vod.order_number,
+			vod.item_description,
+			tape_coil.type,
+			tape_coil.zipper_number,
+			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper
+		FROM
+			zipper.tape_coil_to_dyeing
+		LEFT JOIN
+			hr.users ON tape_coil_to_dyeing.created_by = users.uuid
+		LEFT JOIN 
+			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
+		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
+		WHERE
+			tape_coil.type = 'nylon'
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil_to_dyeing detail',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectTapeCoilToDyeingForTape(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT
+			tape_coil_to_dyeing.uuid,
+			tape_coil_to_dyeing.tape_coil_uuid,
+			tape_coil_to_dyeing.order_description_uuid,
+			tape_coil_to_dyeing.trx_quantity,
+			tape_coil_to_dyeing.created_by,
+			users.name AS created_by_name,
+			tape_coil_to_dyeing.created_at,
+			tape_coil_to_dyeing.updated_at,
+			tape_coil_to_dyeing.remarks,
+			vod.order_number,
+			vod.item_description,
+			tape_coil.type,
+			tape_coil.zipper_number,
+			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper
+		FROM
+			zipper.tape_coil_to_dyeing
+		LEFT JOIN
+			hr.users ON tape_coil_to_dyeing.created_by = users.uuid
+		LEFT JOIN 
+			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
+		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
+		WHERE
+			tape_coil.type != 'nylon'
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil_to_dyeing detail',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

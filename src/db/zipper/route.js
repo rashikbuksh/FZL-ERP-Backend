@@ -330,5 +330,13 @@ zipperRouter.delete(
 	// validateUuidParam(),
 	tapeCoilToDyeingOperations.remove
 );
+zipperRouter.get(
+	'/tape-coil-to-dyeing/by/type/nylon',
+	tapeCoilToDyeingOperations.selectTapeCoilToDyeingByNylon
+);
+zipperRouter.get(
+	'/tape-coil-to-dyeing/by/type/tape',
+	tapeCoilToDyeingOperations.selectTapeCoilToDyeingForTape
+);
 
 export { zipperRouter };

@@ -6915,6 +6915,163 @@ export const pathZipperTapeCoilToDyeing = {
 			},
 		},
 	},
+	'/zipper/tape-coil-to-dyeing/by/type/nylon': {
+		get: {
+			tags: ['zipper.tape_coil_to_dyeing'],
+			summary: 'Get all Tape Coil To Dyeing by type nylon',
+			responses: {
+				200: {
+					description:
+						'Returns all Tape Coil To Dyeing by type nylon',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									tape_coil_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									trx_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-3-OE-SP',
+									},
+									type: {
+										type: 'string',
+										example: 'Nylon',
+									},
+									zipper_number: {
+										type: 'number',
+										example: 3,
+									},
+									type_of_zipper: {
+										type: 'string',
+										example: 'Nylon 3',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/zipper/tape-coil-to-dyeing/by/type/tape': {
+		get: {
+			tags: ['zipper.tape_coil_to_dyeing'],
+			summary: 'Get all Tape Coil To Dyeing by type tape',
+			responses: {
+				200: {
+					description: 'Returns all Tape Coil To Dyeing by type tape',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									tape_coil_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									trx_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-3-OE-SP',
+									},
+									type: {
+										type: 'string',
+										example: 'Nylon',
+									},
+									zipper_number: {
+										type: 'number',
+										example: 3,
+									},
+									type_of_zipper: {
+										type: 'string',
+										example: 'Nylon 3',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 // * Zipper Path Zipper * //
