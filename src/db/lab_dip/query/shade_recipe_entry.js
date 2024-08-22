@@ -91,13 +91,11 @@ export async function selectAll(req, res, next) {
 		.from(shade_recipe_entry)
 		.leftJoin(
 			shade_recipe,
-			shade_recipe_entry.shade_recipe_uuid,
-			shade_recipe.uuid
+			eq(shade_recipe_entry.shade_recipe_uuid, shade_recipe.uuid)
 		)
 		.leftJoin(
 			materialSchema.info,
-			shade_recipe_entry.material_uuid,
-			materialSchema.info.uuid
+			eq(shade_recipe_entry.material_uuid, materialSchema.info.uuid)
 		);
 
 	const toast = {
