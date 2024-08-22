@@ -6674,6 +6674,26 @@ export const pathZipperTapeCoilToDyeing = {
 										type: 'string',
 										example: 'Remarks',
 									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-3-OE-SP',
+									},
+									type: {
+										type: 'string',
+										example: 'Nylon',
+									},
+									zipper_number: {
+										type: 'number',
+										example: 3,
+									},
+									type_of_zipper: {
+										type: 'string',
+										example: 'Nylon 3',
+									},
 								},
 							},
 						},
@@ -6777,6 +6797,26 @@ export const pathZipperTapeCoilToDyeing = {
 							remarks: {
 								type: 'string',
 								example: 'Remarks',
+							},
+							order_number: {
+								type: 'string',
+								example: 'Z24-0001',
+							},
+							item_description: {
+								type: 'string',
+								example: 'N-3-OE-SP',
+							},
+							type: {
+								type: 'string',
+								example: 'Nylon',
+							},
+							zipper_number: {
+								type: 'number',
+								example: 3,
+							},
+							type_of_zipper: {
+								type: 'string',
+								example: 'Nylon 3',
 							},
 						},
 					},
