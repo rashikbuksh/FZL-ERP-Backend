@@ -202,7 +202,7 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 					stock.uuid
 				GROUP BY
 					stock.uuid
-			) die_casting_transaction_given ON stock.uuid = die_casting_given.stock_uuid
+			) die_casting_transaction_given ON stock.uuid = die_casting_transaction_given.stock_uuid
 		WHERE
 			stock.order_info_uuid = ${req.params.order_info_uuid}
 		ORDER BY
