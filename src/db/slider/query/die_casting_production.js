@@ -91,7 +91,7 @@ export async function selectAll(req, res, next) {
 			(dcp.cavity_goods * dcp.push) / dcp.weight AS pcs_per_kg,
 			dcp.order_info_uuid,
 			dcp.created_by,
-			hrSchema.users.name AS created_by_name,
+			users.name AS created_by_name,
 			dcp.created_at,
 			dcp.updated_at,
 			dcp.remarks
@@ -100,9 +100,9 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			slider.die_casting ON die_casting.uuid = dcp.die_casting_uuid
 		LEFT JOIN
-			hr.users ON hr.users.uuid = dcp.created_by
+			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN
-			v_order_details ON v_order_details.order_info_uuid = dcp.order_info_uuid
+			zipper.v_order_details ON v_order_details.order_info_uuid = dcp.order_info_uuid
 		`;
 
 	const dcpPromise = db.execute(query);
@@ -140,7 +140,7 @@ export async function select(req, res, next) {
 			(dcp.cavity_goods * dcp.push) / dcp.weight AS pcs_per_kg,
 			dcp.order_info_uuid,
 			dcp.created_by,
-			hrSchema.users.name AS created_by_name,
+			users.name AS created_by_name,
 			dcp.created_at,
 			dcp.updated_at,
 			dcp.remarks
@@ -149,9 +149,9 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			slider.die_casting ON die_casting.uuid = dcp.die_casting_uuid
 		LEFT JOIN
-			hr.users ON hr.users.uuid = dcp.created_by
+			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN
-			v_order_details ON v_order_details.order_info_uuid = dcp.order_info_uuid
+			zipper.v_order_details ON v_order_details.order_info_uuid = dcp.order_info_uuid
 		WHERE dcp.uuid = ${req.params.uuid}
 		`;
 
