@@ -84,7 +84,14 @@ export async function selectAll(req, res, next) {
 			cavity_goods: die_casting_production.cavity_goods,
 			cavity_defect: die_casting_production.cavity_defect,
 			push: die_casting_production.push,
+			production_quantity:
+				die_casting_production.cavity_goods *
+				die_casting_production.push,
 			weight: die_casting_production.weight,
+			pcs_per_kg:
+				(die_casting_production.cavity_goods *
+					die_casting_production.push) /
+				die_casting_production.weight,
 			order_info_uuid: die_casting_production.order_info_uuid,
 			created_by: die_casting_production.created_by,
 			created_by_name: hrSchema.users.name,
@@ -121,7 +128,14 @@ export async function select(req, res, next) {
 			cavity_goods: die_casting_production.cavity_goods,
 			cavity_defect: die_casting_production.cavity_defect,
 			push: die_casting_production.push,
+			production_quantity:
+				die_casting_production.cavity_goods *
+				die_casting_production.push,
 			weight: die_casting_production.weight,
+			pcs_per_kg:
+				(die_casting_production.cavity_goods *
+					die_casting_production.push) /
+				die_casting_production.weight,
 			order_info_uuid: die_casting_production.order_info_uuid,
 			created_by: die_casting_production.created_by,
 			created_by_name: hrSchema.users.name,
