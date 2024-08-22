@@ -1532,6 +1532,14 @@ export const pathLabDipShadeRecipe = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									id: {
+										type: 'number',
+										example: 1,
+									},
+									recipe_id: {
+										type: 'string',
+										example: 'TSR24-0001',
+									},
 									name: {
 										type: 'string',
 										example: 'Recipe 1',
@@ -1622,6 +1630,60 @@ export const pathLabDipShadeRecipe = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'Lab dip shade recipe found',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: {
+										type: 'number',
+										example: 1,
+									},
+									recipe_id: {
+										type: 'string',
+										example: 'TSR24-0001',
+									},
+									name: {
+										type: 'string',
+										example: 'Recipe 1',
+									},
+									sub_streat: {
+										type: 'string',
+										example: 'Sub Streat',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -1630,7 +1692,6 @@ export const pathLabDipShadeRecipe = {
 				},
 			},
 		},
-
 		put: {
 			tags: ['lab_dip.shade_recipe'],
 			summary: 'Update an existing lab dip shade recipe',
@@ -1694,6 +1755,134 @@ export const pathLabDipShadeRecipe = {
 			},
 		},
 	},
+	'/lab-dip/shade-recipe-details/by/{shade_recipe_uuid}': {
+		get: {
+			tags: ['lab_dip.shade_recipe'],
+			summary: 'Get lab dip shade recipe details by shade_recipe_uuid',
+			description:
+				'Get lab dip shade recipe details by shade_recipe_uuid',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'shade_recipe_uuid',
+					in: 'path',
+					description: 'lab dip shade recipe to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Lab dip shade recipe details found',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: {
+										type: 'number',
+										example: 1,
+									},
+									recipe_id: {
+										type: 'string',
+										example: 'TSR24-0001',
+									},
+									name: {
+										type: 'string',
+										example: 'Recipe 1',
+									},
+									sub_streat: {
+										type: 'string',
+										example: 'Sub Streat',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+									recipe_entry: {
+										type: 'object',
+										properties: {
+											uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											shade_recipe_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											shade_recipe_name: {
+												type: 'string',
+												example: 'Recipe 1',
+											},
+											material_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											material_name: {
+												type: 'string',
+												example: 'Material 1',
+											},
+											quantity: {
+												type: 'number',
+												example: 10.0,
+											},
+											unit: {
+												type: 'string',
+												example: 'kg',
+											},
+											created_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											updated_at: {
+												type: 'string',
+												format: 'date-time',
+												example: '2024-01-01 00:00:00',
+											},
+											remarks: {
+												type: 'string',
+												example: 'Remarks',
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip shade recipe details not found',
+				},
+			},
+		},
+	},
 };
 
 export const pathLabDipShadeRecipeEntry = {
@@ -1733,6 +1922,10 @@ export const pathLabDipShadeRecipeEntry = {
 									quantity: {
 										type: 'number',
 										example: 10.0,
+									},
+									unit: {
+										type: 'string',
+										example: 'kg',
 									},
 									created_at: {
 										type: 'string',
@@ -1808,6 +2001,60 @@ export const pathLabDipShadeRecipeEntry = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'Lab dip shade recipe entry found',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									shade_recipe_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									shade_recipe_name: {
+										type: 'string',
+										example: 'Recipe 1',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'Material 1',
+									},
+									quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									unit: {
+										type: 'string',
+										example: 'kg',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -1871,6 +2118,86 @@ export const pathLabDipShadeRecipeEntry = {
 				},
 			],
 			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip shade recipe entry not found',
+				},
+			},
+		},
+	},
+	'/lab-dip/shade-recipe-entry/by/{shade_recipe_uuid}': {
+		get: {
+			tags: ['lab_dip.shade_recipe_entry'],
+			summary: 'Get lab dip shade recipe entry by shade_recipe_uuid',
+			description: 'Get lab dip shade recipe entry by shade_recipe_uuid',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'shade_recipe_uuid',
+					in: 'path',
+					description: 'lab dip shade recipe to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Lab dip shade recipe entry found',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									shade_recipe_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									shade_recipe_name: {
+										type: 'string',
+										example: 'Recipe 1',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'Material 1',
+									},
+									quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									unit: {
+										type: 'string',
+										example: 'kg',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},

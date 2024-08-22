@@ -141,3 +141,44 @@ export async function select(req, res, next) {
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
+
+export async function selectShadeRecipeEntryByShadeRecipeUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const resultPromise = db
+		.select({
+			uuid: shade_recipe_entry.uuid,
+			shade_recipe_uuid: shade_recipe_entry.shade_recipe_uuid,
+			shade_recipe_name: shade_recipe.name,
+			material_uuid: shade_recipe_entry.material_uuid,
+			material_name: materialSchema.info.name,
+			unit: materialSchema.info.unit,
+			quantity: shade_recipe_entry.quantity,
+			created_at: shade_recipe_entry.created_at,
+			updated_at: shade_recipe_entry.updated_at,
+			remarks: shade_recipe_entry.remarks,
+		})
+		.from(shade_recipe_entry)
+		.leftJoin(
+			shade_recipe,
+			eq(shade_recipe_entry.shade_recipe_uuid, shade_recipe.uuid)
+		)
+		.leftJoin(
+			materialSchema.info,
+			eq(shade_recipe_entry.material_uuid, materialSchema.info.uuid)
+		)
+		.where(
+			eq(
+				shade_recipe_entry.shade_recipe_uuid,
+				req.params.shade_recipe_uuid
+			)
+		);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'shade_recipe_entry list',
+	};
+
+	handleResponse({ promise: resultPromise, res, next, ...toast });
+}
