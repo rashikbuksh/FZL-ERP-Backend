@@ -1,5 +1,3 @@
-import { order_description } from '../schema';
-
 // * Zipper Order Info * //
 export const pathZipperOrderInfo = {
 	'/zipper/order-info': {
