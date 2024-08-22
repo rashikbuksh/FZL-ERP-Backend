@@ -1,3 +1,5 @@
+import SE from '../../../util/swagger_example.js';
+
 // * Hr User * //
 export const pathHrUser = {
 	'/hr/user/login': {
@@ -8,35 +10,16 @@ export const pathHrUser = {
 			operationId: 'validateUser',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							type: 'object',
-							properties: {
-								email: {
-									type: 'string',
-									description: "User's email address",
-									example: 'admin@fzl.com',
-								},
-								pass: {
-									type: 'string',
-									description: "User's password",
-									example: '1234',
-								},
-							},
-							required: ['email', 'pass'],
-						},
-					},
+			requestBody: SE.requestBody(
+				{
+					email: SE.string('john@fzl.com'),
+					pass: SE.string('1234'),
 				},
-			},
+				['email', 'pass']
+			),
 			responses: {
-				200: {
-					description: 'successful operation',
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response(200),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -45,74 +28,23 @@ export const pathHrUser = {
 			tags: ['hr.user'],
 			summary: 'get all users',
 			description: 'All users',
-			operationId: 'getAllUsers', // unique identifier of an operation or a route
+			operationId: 'getAllUsers',
 			responses: {
-				200: {
-					description: 'Returns a all user.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									email: {
-										type: 'string',
-										example: 'john@fzl.com',
-									},
-									designation_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									designation: {
-										type: 'string',
-										example: 'Admin',
-									},
-									department_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									department: {
-										type: 'string',
-										example: 'Admin',
-									},
-									ext: {
-										type: 'string',
-										example: '123',
-									},
-									phone: {
-										type: 'string',
-										example: '12345678910',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2021-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2021-01-01 00:00:00',
-									},
-									status: {
-										type: 'integer',
-										example: 1,
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					name: SE.string('John Doe'),
+					email: SE.string('john@fzl.com'),
+					designation_uuid: SE.uuid(),
+					designation: SE.string('HR Manager'),
+					department_uuid: SE.uuid(),
+					department: SE.string('HR'),
+					ext: SE.string('562'),
+					phone: SE.string('01521533595'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					status: SE.integer(1),
+					remarks: SE.string('remarks'),
+				}),
 			},
 		},
 		post: {
@@ -122,28 +54,10 @@ export const pathHrUser = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/hr/user',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('hr/user'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/hr/user',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'hr/user'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -154,85 +68,25 @@ export const pathHrUser = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'User to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_uuid('hr.user to get')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							name: {
-								type: 'string',
-								example: 'John Doe',
-							},
-							email: {
-								type: 'string',
-								example: 'john@fzl.com',
-							},
-							designation_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							designation: {
-								type: 'string',
-								example: 'Admin',
-							},
-							department_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							department: {
-								type: 'string',
-								example: 'Admin',
-							},
-							ext: {
-								type: 'string',
-								example: '123',
-							},
-							phone: {
-								type: 'string',
-								example: '12345678910',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2021-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2021-01-01 00:00:00',
-							},
-							status: {
-								type: 'integer',
-								example: 1,
-							},
-							remarks: {
-								type: 'string',
-								example: 'remarks',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					name: SE.string('John Doe'),
+					email: SE.string('john@fzl.com'),
+					designation_uuid: SE.uuid(),
+					designation: SE.string('HR Manager'),
+					department_uuid: SE.uuid(),
+					department: SE.string('HR'),
+					ext: SE.string('562'),
+					phone: SE.string('01521533595'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					status: SE.integer(1),
+					remarks: SE.string('remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -243,64 +97,20 @@ export const pathHrUser = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'User to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
+				SE.parameter_uuid('hr.user to update'),
+				SE.parameter_schema_ref('Update a hr.user', 'hr/user'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							type: 'object',
-							properties: {
-								name: {
-									type: 'string',
-									example: 'John Doe',
-								},
-								email: {
-									type: 'string',
-									example: 'john@fzl.com',
-								},
-								designation_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								ext: {
-									type: 'string',
-									example: '123',
-								},
-								phone: {
-									type: 'string',
-									example: '12345678910',
-								},
-								created_at: {
-									type: 'string',
-									format: 'date-time',
-									example: '2021-01-01 00:00:00',
-								},
-								updated_at: {
-									type: 'string',
-									format: 'date-time',
-									example: '2021-01-01 00:00:00',
-								},
-								status: {
-									type: 'integer',
-									example: 1,
-								},
-								remarks: {
-									type: 'string',
-									example: 'remarks',
-								},
-							},
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody({
+				name: SE.string('John Doe'),
+				email: SE.string('john@fzl.com'),
+				designation_uuid: SE.uuid(),
+				ext: SE.string('562'),
+				phone: SE.string('01521533595'),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				status: SE.integer(1),
+				remarks: SE.string('remarks'),
+			}),
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -365,23 +175,11 @@ export const pathHrUser = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'User to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_uuid('hr.user to delete')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -392,36 +190,13 @@ export const pathHrUser = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'User access to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhQeey',
-				},
-			],
+			parameters: [SE.parameter_uuid('hr.user access to get')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							can_access: {
-								type: 'string',
-								example: '1,2,3',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User access not found',
-				},
+				200: SE.response_schema(200, {
+					can_access: SE.string('1,2,3'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -431,48 +206,18 @@ export const pathHrUser = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
+			parameters: [SE.parameter_uuid('hr.user access to update')],
+			requestBody: SE.requestBody(
 				{
-					name: 'uuid',
-					in: 'path',
-					description: 'User access to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhQeey',
+					can_access: SE.string('1,2,3'),
 				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							type: 'object',
-							properties: {
-								can_access: {
-									type: 'string',
-									example: '1,2,3',
-								},
-							},
-						},
-					},
-				},
-			},
+				['can_access']
+			),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							can_access: {
-								type: 'string',
-								example: '1,2,3',
-							},
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema(200, {
+					can_access: SE.string('1,2,3'),
+				}),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -483,46 +228,15 @@ export const pathHrUser = {
 			description: 'All common users',
 			operationId: 'getAllCommonUsers', // unique identifier of an operation or a route
 			responses: {
-				200: {
-					description: 'Returns all common user.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									email: {
-										type: 'string',
-										example: 'admin@fzl.com',
-									},
-									designaiton_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									designation: {
-										type: 'string',
-										example: 'Admin',
-									},
-									ext: {
-										type: 'string',
-										example: '123',
-									},
-									phone: {
-										type: 'string',
-										example: '12345678910',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					name: SE.string('John Doe'),
+					email: SE.string('admin@fzl.com'),
+					designaiton_uuid: SE.uuid(),
+					designation: SE.string('Admin'),
+					ext: SE.string('123'),
+					phone: SE.string('01521533595'),
+				}),
 			},
 		},
 	},
@@ -559,28 +273,10 @@ export const pathHrDepartment = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/hr/department',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('hr/department'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/hr/department',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'hr/department'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -723,28 +419,10 @@ export const pathHrDesignation = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/hr/designation',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('hr/designation'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/hr/designation',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'hr/designation'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -806,24 +484,11 @@ export const pathHrDesignation = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Designation to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Designation object that needs to be updated to the hr.designation',
-					required: true,
-					schema: {
-						$ref: '#/definitions/hr/designation',
-					},
-				},
+				SE.parameter_uuid('Designation to update'),
+				SE.parameter_schema_ref(
+					'Designation object that needs to be updated to the hr.designation',
+					'hr/designation'
+				),
 			],
 			responses: {
 				400: {
@@ -895,28 +560,10 @@ const pathHrPrivacyAndNotice = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/hr/policy_and_notice',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('hr/policy_and_notice'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/hr/policy_and_notice',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'hr/policy_and_notice'),
+				405: SE.response(405),
 			},
 		},
 	},
