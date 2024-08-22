@@ -163,7 +163,7 @@ export const pathThreadCountLength = {
 							schema: {
 								type: 'array',
 								items: {
-									$ref: '#/definitions/thread/count-length',
+									$ref: '#/definitions/thread/count_length',
 								},
 							},
 						},
@@ -180,7 +180,7 @@ export const pathThreadCountLength = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/thread/count-length',
+							$ref: '#/definitions/thread/count_length',
 						},
 					},
 				},
@@ -191,7 +191,7 @@ export const pathThreadCountLength = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/count-length',
+								$ref: '#/definitions/thread/count_length',
 							},
 						},
 					},
@@ -221,7 +221,7 @@ export const pathThreadCountLength = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/count-length',
+								$ref: '#/definitions/thread/count_length',
 							},
 						},
 					},
@@ -247,7 +247,7 @@ export const pathThreadCountLength = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/thread/count-length',
+							$ref: '#/definitions/thread/count_length',
 						},
 					},
 				},
@@ -258,7 +258,7 @@ export const pathThreadCountLength = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/count-length',
+								$ref: '#/definitions/thread/count_length',
 							},
 						},
 					},
@@ -287,7 +287,7 @@ export const pathThreadCountLength = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/count-length',
+								$ref: '#/definitions/thread/count_length',
 							},
 						},
 					},
@@ -313,7 +313,7 @@ export const pathThreadOrderInfo = {
 							schema: {
 								type: 'array',
 								items: {
-									$ref: '#/definitions/thread/order-info',
+									$ref: '#/definitions/thread/order_info',
 								},
 							},
 						},
@@ -330,7 +330,7 @@ export const pathThreadOrderInfo = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/thread/order-info',
+							$ref: '#/definitions/thread/order_info',
 						},
 					},
 				},
@@ -341,7 +341,7 @@ export const pathThreadOrderInfo = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/order-info',
+								$ref: '#/definitions/thread/order_info',
 							},
 						},
 					},
@@ -371,7 +371,7 @@ export const pathThreadOrderInfo = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/order-info',
+								$ref: '#/definitions/thread/order_info',
 							},
 						},
 					},
@@ -397,7 +397,7 @@ export const pathThreadOrderInfo = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/thread/order-info',
+							$ref: '#/definitions/thread/order_info',
 						},
 					},
 				},
@@ -409,7 +409,7 @@ export const pathThreadOrderInfo = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/order-info',
+								$ref: '#/definitions/thread/order_info',
 							},
 						},
 					},
@@ -438,7 +438,7 @@ export const pathThreadOrderInfo = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/order-info',
+								$ref: '#/definitions/thread/order_info',
 							},
 						},
 					},
@@ -464,7 +464,7 @@ export const pathThreadOrderEntry = {
 							schema: {
 								type: 'array',
 								items: {
-									$ref: '#/definitions/thread/order-entry',
+									$ref: '#/definitions/thread/order_entry',
 								},
 							},
 						},
@@ -481,7 +481,7 @@ export const pathThreadOrderEntry = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/thread/order-entry',
+							$ref: '#/definitions/thread/order_entry',
 						},
 					},
 				},
@@ -492,7 +492,7 @@ export const pathThreadOrderEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/order-entry',
+								$ref: '#/definitions/thread/order_entry',
 							},
 						},
 					},
@@ -522,7 +522,7 @@ export const pathThreadOrderEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/order-entry',
+								$ref: '#/definitions/thread/order_entry',
 							},
 						},
 					},
@@ -548,7 +548,7 @@ export const pathThreadOrderEntry = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/thread/order-entry',
+							$ref: '#/definitions/thread/order_entry',
 						},
 					},
 				},
@@ -560,7 +560,7 @@ export const pathThreadOrderEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/order-entry',
+								$ref: '#/definitions/thread/order_entry',
 							},
 						},
 					},
@@ -589,7 +589,7 @@ export const pathThreadOrderEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/order-entry',
+								$ref: '#/definitions/thread/order_entry',
 							},
 						},
 					},
@@ -615,7 +615,7 @@ export const pathThreadBatchEntry = {
 							schema: {
 								type: 'array',
 								items: {
-									$ref: '#/definitions/thread/batch-entry',
+									$ref: '#/definitions/thread/batch_entry',
 								},
 							},
 						},
@@ -632,7 +632,7 @@ export const pathThreadBatchEntry = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/thread/batch-entry',
+							$ref: '#/definitions/thread/batch_entry',
 						},
 					},
 				},
@@ -643,7 +643,7 @@ export const pathThreadBatchEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/batch-entry',
+								$ref: '#/definitions/thread/batch_entry',
 							},
 						},
 					},
@@ -673,7 +673,7 @@ export const pathThreadBatchEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/batch-entry',
+								$ref: '#/definitions/thread/batch_entry',
 							},
 						},
 					},
@@ -699,7 +699,7 @@ export const pathThreadBatchEntry = {
 				content: {
 					'application/json': {
 						schema: {
-							$ref: '#/definitions/thread/batch-entry',
+							$ref: '#/definitions/thread/batch_entry',
 						},
 					},
 				},
@@ -711,7 +711,7 @@ export const pathThreadBatchEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/batch-entry',
+								$ref: '#/definitions/thread/batch_entry',
 							},
 						},
 					},
@@ -740,7 +740,7 @@ export const pathThreadBatchEntry = {
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '#/definitions/thread/batch-entry',
+								$ref: '#/definitions/thread/batch_entry',
 							},
 						},
 					},
