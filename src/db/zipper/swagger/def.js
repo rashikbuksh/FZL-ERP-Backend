@@ -1,3 +1,5 @@
+import { properties } from '@/db/public/schema';
+
 // * Zipper Order Info * //
 export const def_zipper_order_info = {
 	type: 'object',
@@ -1027,6 +1029,53 @@ export const def_zipper_material_trx_against_order_description = {
 		name: 'Zipper/Material_trx_against_order_description',
 	},
 };
+// * Zipper tape coil to dyeing * //
+
+export const def_zipper_tape_coil_to_dyeing = {
+	type: 'object',
+	required: [
+		'uuid',
+		'tape_coil_uuid',
+		'order_description_uuid',
+		'trx_quantity',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		tape_coil_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		order_description_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		trx_quantity: {
+			type: 'number',
+			example: 100,
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+	},
+	xml: {
+		name: 'Zipper/Tape-Coil-To-Dyeing',
+	},
+};
 
 //....................FOR TESTING.......................
 export const defZipper = {
@@ -1047,6 +1096,7 @@ export const defZipper = {
 	planning_entry: def_zipper_planning_entry,
 	material_trx_against_order_description:
 		def_zipper_material_trx_against_order_description,
+	tape_coil_to_dyeing: def_zipper_tape_coil_to_dyeing,
 };
 
 // * Zipper Tag * //
@@ -1114,5 +1164,9 @@ export const tagZipper = [
 	{
 		name: 'zipper.material_trx_against_order_description',
 		description: 'Zipper Material Trx Against Order Description',
+	},
+	{
+		name: 'zipper.tape_coil_to_dyeing',
+		description: 'Zipper Tape Coil To Dyeing',
 	},
 ];

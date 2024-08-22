@@ -1,5 +1,12 @@
 import { sql } from 'drizzle-orm';
-import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
+import {
+	decimal,
+	integer,
+	pgSchema,
+	serial,
+	text,
+	uuid,
+} from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
 import * as materialSchema from '../material/schema.js';
@@ -431,5 +438,23 @@ export const material_trx_against_order_description = zipper.table(
 		remarks: text('remarks').default(null),
 	}
 );
+
+export const tape_coil_to_dyeing = zipper.table('tape_coil_to_dyeing', {
+	uuid: uuid_primary,
+	tape_coil_uuid: defaultUUID('tape_coil_uuid').references(
+		() => tape_coil.uuid
+	),
+	order_description_uuid: defaultUUID('order_description_uuid').references(
+		() => order_description.uuid
+	),
+	trx_quantity: decimal('trx_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
 
 export default zipper;

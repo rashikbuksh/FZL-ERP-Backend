@@ -1,3 +1,5 @@
+import { order_description } from '../schema';
+
 // * Zipper Order Info * //
 export const pathZipperOrderInfo = {
 	'/zipper/order-info': {
@@ -6622,6 +6624,263 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 	},
 };
 
+// * Zipper Tape Coil To Dyeing * //
+export const pathZipperTapeColToDyeing = {
+	'/zipper/tape-coil-to-dyeing': {
+		get: {
+			tags: ['zipper.tape_coil_to_dyeing'],
+			summary: 'Get all Tape Coil To Dyeing',
+			responses: {
+				200: {
+					description: 'Returns all Tape Coil To Dyeing',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									tape_coil_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									trx_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		post: {
+			tags: ['zipper.tape_coil_to_dyeing'],
+			summary: 'create a tape coil to dyeing',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/tape_coil_to_dyeing',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_coil_to_dyeing',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+
+	'/zipper/tape-coil-to-dyeing/{uuid}': {
+		get: {
+			tags: ['zipper.tape_coil_to_dyeing'],
+			summary: 'Gets a tape coil to dyeing',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'tape coil to dyeing to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							tape_coil_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							order_description_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							trx_quantity: {
+								type: 'number',
+								example: 100,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'User not found',
+				},
+			},
+		},
+
+		put: {
+			tags: ['zipper.tape_coil_to_dyeing'],
+			summary: 'Update an existing tape coil to dyeing',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'tape coil to dyeing to update',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/tape_coil_to_dyeing',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_coil_to_dyeing',
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'tape coil to dyeing not found',
+				},
+
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+
+		delete: {
+			tags: ['zipper.tape_coil_to_dyeing'],
+			summary: 'Deletes a tape coil to dyeing',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'tape coil to dyeing to delete',
+					required: true,
+					type: 'string',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/tape_coil_to_dyeing',
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'tape coil to dyeing not found',
+				},
+			},
+		},
+	},
+};
+
+// * Zipper Path Zipper * //
+
 export const pathZipper = {
 	...pathZipperOrderInfo,
 	...pathZipperOrderDescription,
@@ -6639,4 +6898,5 @@ export const pathZipper = {
 	...pathZipperPlanning,
 	...pathZipperPlanningEntry,
 	...pathZipperMaterialTrxAgainstOrderDescription,
+	...pathZipperTapeColToDyeing,
 };

@@ -312,4 +312,19 @@ zipperRouter.get(
 	materialTrxAgainstOrderOperations.selectMaterialTrxAgainstOrderDescriptionByMultipleTrxTo
 );
 
+//.............Tape Coil To Dyeing.....................//
+zipperRouter.get('/tape-coil-to-dyeing', tapeToCoilOperations.selectAll);
+zipperRouter.get(
+	'/tape-coil-to-dyeing/:uuid',
+	// validateUuidParam(),
+	tapeToCoilOperations.select
+);
+zipperRouter.post('/tape-coil-to-dyeing', tapeToCoilOperations.insert);
+zipperRouter.put('/tape-coil-to-dyeing/:uuid', tapeToCoilOperations.update);
+zipperRouter.delete(
+	'/tape-coil-to-dyeing/:uuid',
+	// validateUuidParam(),
+	tapeToCoilOperations.remove
+);
+
 export { zipperRouter };
