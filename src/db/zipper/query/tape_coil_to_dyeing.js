@@ -79,60 +79,91 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: tape_coil_to_dyeing.uuid,
-			tape_coil_uuid: tape_coil_to_dyeing.tape_coil_uuid,
-			order_description_uuid: tape_coil_to_dyeing.order_description_uuid,
-			trx_quantity: tape_coil_to_dyeing.trx_quantity,
-			created_by: tape_coil_to_dyeing.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: tape_coil_to_dyeing.created_at,
-			updated_at: tape_coil_to_dyeing.updated_at,
-			remarks: tape_coil_to_dyeing.remarks,
-		})
-		.from(tape_coil_to_dyeing)
-		.leftJoin(
-			hr.users,
-			eq(tape_coil_to_dyeing.created_by, hrSchema.users.uuid)
-		);
+	const query = sql`
+		SELECT
+			tape_coil_to_dyeing.uuid,
+			tape_coil_to_dyeing.tape_coil_uuid,
+			tape_coil_to_dyeing.order_description_uuid,
+			tape_coil_to_dyeing.trx_quantity,
+			tape_coil_to_dyeing.created_by,
+			users.name AS created_by_name,
+			tape_coil_to_dyeing.created_at,
+			tape_coil_to_dyeing.updated_at,
+			tape_coil_to_dyeing.remarks,
+			vod.order_number,
+			vod.item_description,
+			tape_coil.type,
+			tape_coil.zipper_number,
+			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper
+		FROM
+			zipper.tape_coil_to_dyeing
+		LEFT JOIN
+			hr.users ON tape_coil_to_dyeing.created_by = users.uuid
+		LEFT JOIN 
+			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
+		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
+	`;
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'tape_coil_to_dyeing list',
-	};
+	const resultPromise = db.execute(query);
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil_to_dyeing detail',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const resultPromise = db
-		.select({
-			uuid: tape_coil_to_dyeing.uuid,
-			tape_coil_uuid: tape_coil_to_dyeing.tape_coil_uuid,
-			order_description_uuid: tape_coil_to_dyeing.order_description_uuid,
-			trx_quantity: tape_coil_to_dyeing.trx_quantity,
-			created_by: tape_coil_to_dyeing.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: tape_coil_to_dyeing.created_at,
-			updated_at: tape_coil_to_dyeing.updated_at,
-			remarks: tape_coil_to_dyeing.remarks,
-		})
-		.from(tape_coil_to_dyeing)
-		.leftJoin(
-			hr.users,
-			eq(tape_coil_to_dyeing.created_by, hrSchema.users.uuid)
-		)
-		.where(eq(tape_coil_to_dyeing.uuid, req.params.uuid));
+	const query = sql`
+		SELECT
+			tape_coil_to_dyeing.uuid,
+			tape_coil_to_dyeing.tape_coil_uuid,
+			tape_coil_to_dyeing.order_description_uuid,
+			tape_coil_to_dyeing.trx_quantity,
+			tape_coil_to_dyeing.created_by,
+			users.name AS created_by_name,
+			tape_coil_to_dyeing.created_at,
+			tape_coil_to_dyeing.updated_at,
+			tape_coil_to_dyeing.remarks,
+			vod.order_number,
+			vod.item_description,
+			tape_coil.type,
+			tape_coil.zipper_number,
+			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper
+		FROM
+			zipper.tape_coil_to_dyeing
+		LEFT JOIN
+			hr.users ON tape_coil_to_dyeing.created_by = users.uuid
+		LEFT JOIN 
+			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
+		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
+		WHERE
+			tape_coil_to_dyeing.uuid = ${req.params.uuid}
+	`;
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'tape_coil_to_dyeing',
-	};
+	const resultPromise = db.execute(query);
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil_to_dyeing detail',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

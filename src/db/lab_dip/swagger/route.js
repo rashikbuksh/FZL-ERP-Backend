@@ -1536,7 +1536,7 @@ export const pathLabDipShadeRecipe = {
 										type: 'number',
 										example: 1,
 									},
-									recipe_id: {
+									shade_recipe_id: {
 										type: 'string',
 										example: 'TSR24-0001',
 									},
@@ -1645,7 +1645,7 @@ export const pathLabDipShadeRecipe = {
 										type: 'number',
 										example: 1,
 									},
-									recipe_id: {
+									shade_recipe_id: {
 										type: 'string',
 										example: 'TSR24-0001',
 									},
@@ -1788,7 +1788,7 @@ export const pathLabDipShadeRecipe = {
 										type: 'number',
 										example: 1,
 									},
-									recipe_id: {
+									shade_recipe_id: {
 										type: 'string',
 										example: 'TSR24-0001',
 									},
@@ -1822,7 +1822,7 @@ export const pathLabDipShadeRecipe = {
 										type: 'string',
 										example: 'Remarks',
 									},
-									recipe_entry: {
+									shade_recipe_entry: {
 										type: 'object',
 										properties: {
 											uuid: {
