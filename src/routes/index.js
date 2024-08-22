@@ -8,6 +8,7 @@ import { otherRouter } from '../db/others/route.js';
 import { publicRouter } from '../db/public/route.js';
 import { purchaseRouter } from '../db/purchase/route.js';
 import { sliderRouter } from '../db/slider/route.js';
+import { threadRouter } from '../db/Thread/route.js';
 import { zipperRouter } from '../db/zipper/route.js';
 
 const route = express.Router();
@@ -52,5 +53,8 @@ route.use('/slider', sliderRouter);
 
 // other routes
 route.use('/other', otherRouter);
+
+// thread routes
+route.use('/thread', threadRouter);
 
 export default route;

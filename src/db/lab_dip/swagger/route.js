@@ -1514,9 +1514,6 @@ export const pathLabDipRecipeEntry = {
 		},
 	},
 };
-
-//* LabDip Shade Recipe *//
-
 export const pathLabDipShadeRecipe = {
 	'/lab-dip/shade-recipe': {
 		get: {
@@ -1539,7 +1536,7 @@ export const pathLabDipShadeRecipe = {
 										type: 'string',
 										example: 'Recipe 1',
 									},
-									sub_streat : {
+									sub_streat: {
 										type: 'string',
 										example: 'Sub Streat',
 									},
@@ -1551,7 +1548,7 @@ export const pathLabDipShadeRecipe = {
 										type: 'string',
 										example: 'John Doe',
 									},
-									
+
 									created_at: {
 										type: 'string',
 										format: 'date-time',
@@ -1608,7 +1605,6 @@ export const pathLabDipShadeRecipe = {
 	},
 
 	'/lab-dip/shade-recipe/{uuid}': {
-
 		get: {
 			tags: ['lab_dip.shade_recipe'],
 			summary: 'Get lab dip shade recipe by uuid',
@@ -1777,7 +1773,8 @@ export const pathLabDipShadeRecipeEntry = {
 			},
 			responses: {
 				200: {
-					description: 'Lab dip shade recipe entry created successfully',
+					description:
+						'Lab dip shade recipe entry created successfully',
 					content: {
 						'application/json': {
 							schema: {
@@ -1794,7 +1791,6 @@ export const pathLabDipShadeRecipeEntry = {
 	},
 
 	'/lab-dip/shade-recipe-entry/{uuid}': {
-
 		get: {
 			tags: ['lab_dip.shade_recipe_entry'],
 			summary: 'Get lab dip shade recipe entry by uuid',
@@ -1820,9 +1816,8 @@ export const pathLabDipShadeRecipeEntry = {
 				},
 			},
 		},
-		
-		put: {
 
+		put: {
 			tags: ['lab_dip.shade_recipe_entry'],
 			summary: 'Update an existing lab dip shade recipe entry',
 			description: 'Update an existing lab dip shade recipe entry',
@@ -1887,11 +1882,10 @@ export const pathLabDipShadeRecipeEntry = {
 	},
 };
 
-
 export const pathLabDip = {
 	...pathLabDipInfo,
 	...pathLabDipRecipe,
 	...pathLabDipRecipeEntry,
 	...pathLabDipShadeRecipe,
-	...pathLabDipShadeRecipeEntry
+	...pathLabDipShadeRecipeEntry,
 };
