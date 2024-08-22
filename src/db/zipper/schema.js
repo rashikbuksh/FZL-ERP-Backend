@@ -5,7 +5,12 @@ import * as labDipSchema from '../lab_dip/schema.js';
 import * as materialSchema from '../material/schema.js';
 import * as publicSchema from '../public/schema.js';
 import * as sliderSchema from '../slider/schema.js';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
+import {
+	DateTime,
+	defaultUUID,
+	PG_DECIMAL,
+	uuid_primary,
+} from '../variables.js';
 
 const zipper = pgSchema('zipper');
 
@@ -65,6 +70,7 @@ export const order_description = zipper.table('order_description', {
 	order_info_uuid: defaultUUID('order_info_uuid').references(
 		() => order_info.uuid
 	),
+	tape_received: PG_DECIMAL('tape_received').default(0),
 	item: defaultUUID('item'),
 	zipper_number: defaultUUID('zipper_number'),
 	end_type: defaultUUID('end_type'),

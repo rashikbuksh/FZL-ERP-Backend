@@ -19,7 +19,7 @@ import {
 	uuid_primary,
 } from '../variables.js';
 
-const thread = pgSchema('thread');
+export const thread = pgSchema('thread');
 
 export const machine = thread.table('machine', {
 	uuid: uuid_primary,
@@ -50,7 +50,9 @@ export const count_length = thread.table(
 	},
 	(table) => {
 		return {
-			pk: primaryKey({ columns: [table.count, table.length] }),
+			pk: primaryKey({
+				columns: [table.uuid],
+			}),
 		};
 	}
 );
@@ -68,17 +70,21 @@ export const order_info = thread.table('order_info', {
 	id: integer('id')
 		.default(sql`nextval('thread.thread_order_info_sequence')`)
 		.notNull(),
-	party_uuid: uuid('party_uuid').references(() => publicSchema.party.uuid),
-	marketing_uuid: uuid('marketing_uuid').references(
+	party_uuid: defaultUUID('party_uuid').references(
+		() => publicSchema.party.uuid
+	),
+	marketing_uuid: defaultUUID('marketing_uuid').references(
 		() => publicSchema.marketing.uuid
 	),
-	factory_uuid: uuid('factory_uuid').references(
+	factory_uuid: defaultUUID('factory_uuid').references(
 		() => publicSchema.factory.uuid
 	),
-	merchandiser_uuid: uuid('merchandiser_uuid').references(
+	merchandiser_uuid: defaultUUID('merchandiser_uuid').references(
 		() => publicSchema.merchandiser.uuid
 	),
-	buyer_uuid: uuid('buyer_uuid').references(() => publicSchema.buyer.uuid),
+	buyer_uuid: defaultUUID('buyer_uuid').references(
+		() => publicSchema.buyer.uuid
+	),
 	is_sample: integer('is_sample').default(0),
 	is_bill: integer('is_bill').default(0),
 	delivery_date: DateTime('delivery_date').notNull(),
@@ -143,8 +149,8 @@ export const batch = thread.table('batch', {
 
 export const batch_entry = thread.table('batch_entry', {
 	uuid: uuid_primary,
-	batch_uuid: uuid('batch_uuid').references(() => batch.uuid),
-	order_entry_uuid: uuid('order_entry_uuid').references(
+	batch_uuid: defaultUUID('batch_uuid').references(() => batch.uuid),
+	order_entry_uuid: defaultUUID('order_entry_uuid').references(
 		() => order_entry.uuid
 	),
 	quantity: PG_DECIMAL('quantity').default(0),
