@@ -82,7 +82,10 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: shade_recipe.uuid,
 			name: shade_recipe.name,
+			id: shade_recipe.id,
+			shade_recipe_id: sql`concat('TSR', to_char(shade_recipe.created_at, 'YY'), '-', LPAD(shade_recipe.id::text, 4, '0'))`,
 			sub_streat: shade_recipe.sub_streat,
+			lab_status: shade_recipe.lab_status,
 			created_by: shade_recipe.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: shade_recipe.created_at,
@@ -109,7 +112,10 @@ export async function select(req, res, next) {
 		.select({
 			uuid: shade_recipe.uuid,
 			name: shade_recipe.name,
+			id: shade_recipe.id,
+			shade_recipe_id: sql`concat('TSR', to_char(shade_recipe.created_at, 'YY'), '-', LPAD(shade_recipe.id::text, 4, '0'))`,
 			sub_streat: shade_recipe.sub_streat,
+			lab_status: shade_recipe.lab_status,
 			created_by: shade_recipe.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: shade_recipe.created_at,
@@ -130,4 +136,39 @@ export async function select(req, res, next) {
 	};
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
+}
+
+export async function selectShadeRecipeDetailsByShadeRecipeUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+	const { shade_recipe_uuid } = req.params;
+	try {
+		const api = await createApi(req);
+
+		const fetchData = async (endpoint) =>
+			await api.get(`${endpoint}/${shade_recipe_uuid}`);
+
+		const [shade_recipe, shade_recipe_entry] = await Promise.all([
+			fetchData('/lab-dip/shade-recipe'),
+			fetchData('/lab-dip/shade-recipe-entry/by'),
+		]);
+
+		const response = {
+			...shade_recipe?.data?.data[0],
+			shade_recipe_entry: shade_recipe_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			msg: 'Order Description Full',
+		};
+
+		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

@@ -6623,7 +6623,7 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 };
 
 // * Zipper Tape Coil To Dyeing * //
-export const pathZipperTapeColToDyeing = {
+export const pathZipperTapeCoilToDyeing = {
 	'/zipper/tape-coil-to-dyeing': {
 		get: {
 			tags: ['zipper.tape_coil_to_dyeing'],
@@ -6896,5 +6896,5 @@ export const pathZipper = {
 	...pathZipperPlanning,
 	...pathZipperPlanningEntry,
 	...pathZipperMaterialTrxAgainstOrderDescription,
-	...pathZipperTapeColToDyeing,
+	...pathZipperTapeCoilToDyeing,
 };

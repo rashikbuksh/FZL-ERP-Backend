@@ -1,8 +1,8 @@
-import db from "@/db";
-import { migrate } from "drizzle-orm/pg-core/migrator";
+import { migrate } from 'drizzle-orm/pg-core/migrator';
+import db from '../db';
 
 async function MigrateData() {
-	await migrate(db, { migrationsFolder: "./drizzle" });
+	await migrate(db, { migrationsFolder: './drizzle' });
 	process.exit(0);
 }
 

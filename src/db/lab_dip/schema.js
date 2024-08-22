@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import {
 	decimal,
 	integer,
@@ -60,10 +61,22 @@ export const recipe_entry = lab_dip.table('recipe_entry', {
 	remarks: text('remarks').default(null),
 });
 
+export const lab_dip_shade_recipe_sequence = lab_dip.sequence(
+	'shade_recipe_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
+
 export const shade_recipe = lab_dip.table('shade_recipe', {
 	uuid: uuid_primary,
+	id: integer('id')
+		.notNull()
+		.default(sql`nextval('lab_dip.shade_recipe_sequence')`),
 	name: text('name').notNull(),
 	sub_streat: text('sub_streat').default(null),
+	lab_status: text('lab_status').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

@@ -91,6 +91,10 @@ labDipRouter.delete(
 	validateUuidParam(),
 	shadeRecipeOperations.remove
 );
+labDipRouter.get(
+	'/shade-recipe-details/by/:shade_recipe_uuid',
+	shadeRecipeOperations.selectShadeRecipeDetailsByShadeRecipeUuid
+);
 
 // shade recipe entry routes
 
@@ -109,6 +113,10 @@ labDipRouter.delete(
 	'/shade-recipe-entry/:uuid',
 	validateUuidParam(),
 	shadeRecipeEntryOperations.remove
+);
+labDipRouter.get(
+	'/shade-recipe-entry/by/:shade_recipe_uuid',
+	shadeRecipeEntryOperations.selectShadeRecipeEntryByShadeRecipeUuid
 );
 
 export { labDipRouter };
