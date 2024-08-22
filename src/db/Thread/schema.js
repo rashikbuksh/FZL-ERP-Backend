@@ -1,3 +1,4 @@
+import { eq, sql } from 'drizzle-orm';
 import {
 	decimal,
 	integer,
@@ -9,6 +10,7 @@ import {
 	uuid,
 } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
+import * as labDipSchema from '../lab_dip/schema.js';
 import * as publicSchema from '../public/schema.js';
 import {
 	DateTime,
@@ -63,7 +65,9 @@ export const thread_order_info_sequence = thread.sequence(
 
 export const order_info = thread.table('order_info', {
 	uuid: uuid_primary,
-	id: integer('id').notNull(),
+	id: integer('id')
+		.default(sql`nextval('thread.thread_order_info_sequence')`)
+		.notNull(),
 	party_uuid: uuid('party_uuid').references(() => publicSchema.party.uuid),
 	marketing_uuid: uuid('marketing_uuid').references(
 		() => publicSchema.marketing.uuid
@@ -75,8 +79,8 @@ export const order_info = thread.table('order_info', {
 		() => publicSchema.merchandiser.uuid
 	),
 	buyer_uuid: uuid('buyer_uuid').references(() => publicSchema.buyer.uuid),
-	is_sample: text('is_sample').notNull(),
-	is_bill: text('is_bill').notNull(),
+	is_sample: integer('is_sample').default(0),
+	is_bill: integer('is_bill').default(0),
 	delivery_date: DateTime('delivery_date').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
@@ -86,39 +90,51 @@ export const order_info = thread.table('order_info', {
 
 export const order_entry = thread.table('order_entry', {
 	uuid: uuid_primary,
-	order_info_uuid: uuid('order_info_uuid').references(() => order_info.uuid),
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => order_info.uuid
+	),
 	lab_reference: text('lab_reference').notNull(),
 	color: text('color').notNull(),
-	shade_recipe_uuid: uuid('shade_recipe_uuid').notNull(),
-	po: text('po').notNull(),
-	style: text('style').notNull(),
-	count_length_uuid: uuid('count_length_uuid').notNull(),
-	quantity: numeric('quantity').notNull(),
-	company_price: PG_DECIMAL('company_price').notNull(),
-	party_price: PG_DECIMAL('party_price').notNull(),
-	swatch_approval_date: DateTime('swatch_approval_date').notNull(),
-	production_quantity: numeric('production_quantity').notNull(),
+	shade_recipe_uuid: defaultUUID('shade_recipe_uuid').references(
+		() => labDipSchema.shade_recipe.uuid
+	),
+	po: text('po'),
+	style: text('style'),
+	count_length_uuid: defaultUUID('count_length_uuid').references(
+		() => count_length.uuid
+	),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	company_price: PG_DECIMAL('company_price').default(0),
+	party_price: PG_DECIMAL('party_price').default(0),
+	swatch_approval_date: DateTime('swatch_approval_date').default(null),
+	production_quantity: PG_DECIMAL('production_quantity').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
+export const thread_batch_sequence = thread.sequence('thread_batch_sequence', {
+	startWith: 1,
+	increment: 1,
+});
 
 export const batch = thread.table('batch', {
 	uuid: uuid_primary,
-	id: integer('id').notNull(),
-	dyeing_operator : text('dyeing_operator').notNull(),
-	reason: text('reason').notNull(),
-	category: text('category').notNull(),
-	status: text('status').notNull(),
-	pass_by: text('pass_by').notNull(),
-	shift : text('shift').notNull(),
-	dyeing_supervisor : text('dyeing_supervisor').notNull(),
-	is_dyeing_complete : text('is_dyeing_complete').notNull(),
-	coning_operator : text('coning_operator').notNull(),
-	coning_supervisor : text('coning_supervisor').notNull(),
-	coning_machines : text('coning_machines').notNull(),
+	id: integer('id')
+		.default(sql`nextval('thread.thread_batch_sequence')`)
+		.notNull(),
+	dyeing_operator: text('dyeing_operator').default(null),
+	reason: text('reason').default(null),
+	category: text('category').default(null),
+	status: text('status').default(null),
+	pass_by: text('pass_by').default(null),
+	shift: text('shift').default(null),
+	dyeing_supervisor: text('dyeing_supervisor').default(null),
+	is_dyeing_complete: text('is_dyeing_complete').default(null),
+	coning_operator: text('coning_operator').default(null),
+	coning_supervisor: text('coning_supervisor').default(null),
+	coning_machines: text('coning_machines').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -128,11 +144,17 @@ export const batch = thread.table('batch', {
 export const batch_entry = thread.table('batch_entry', {
 	uuid: uuid_primary,
 	batch_uuid: uuid('batch_uuid').references(() => batch.uuid),
-	order_entry_uuid: uuid('order_entry_uuid').references(() => order_entry.uuid),
-	quantity: numeric('quantity').notNull(),
-	yarn_quantity: numeric('yarn_quantity').notNull(),
-	coning_production_quantity: numeric('coning_production_quantity').notNull(),
-	coning_production_quantity_in_kg: numeric('coning_production_quantity_in_kg').notNull(),
+	order_entry_uuid: uuid('order_entry_uuid').references(
+		() => order_entry.uuid
+	),
+	quantity: PG_DECIMAL('quantity').default(0),
+	yarn_quantity: PG_DECIMAL('yarn_quantity').default(0),
+	coning_production_quantity: PG_DECIMAL(
+		'coning_production_quantity'
+	).default(0),
+	coning_production_quantity_in_kg: PG_DECIMAL(
+		'coning_production_quantity_in_kg'
+	).default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

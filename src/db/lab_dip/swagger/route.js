@@ -1887,5 +1887,5 @@ export const pathLabDip = {
 	...pathLabDipRecipe,
 	...pathLabDipRecipeEntry,
 	...pathLabDipShadeRecipe,
-	...pathLabDipShadeRecipeEntry,s
+	...pathLabDipShadeRecipeEntry,
 };

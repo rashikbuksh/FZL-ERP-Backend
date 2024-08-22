@@ -453,7 +453,7 @@ export const defThread = {
 };
 
 // * Tag
-export const TagThread = [
+export const tagThread = [
 	{
 		name: 'thread.machine',
 		description: 'Thread Machine',

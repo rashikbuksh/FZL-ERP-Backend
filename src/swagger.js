@@ -40,6 +40,10 @@ import { pathPurchase } from './db/purchase/swagger/route.js';
 // Others
 import { pathOthers, tagOthers } from './db/others/route.js';
 
+// Thread
+import { defThread, tagThread } from './db/Thread/swagger/def.js';
+import { pathThread } from './db/Thread/swagger/route.js';
+
 const tags = [
 	...tagHr,
 	...tagZipper,
@@ -51,6 +55,7 @@ const tags = [
 	...tagMaterial,
 	...tagPublic,
 	...tagOthers,
+	...tagThread,
 ];
 
 const definitions = {
@@ -63,6 +68,7 @@ const definitions = {
 	lab_dip: defLabDip,
 	material: defMaterial,
 	public: defPublic,
+	thread: defThread,
 };
 
 const paths = {
@@ -76,6 +82,7 @@ const paths = {
 	...pathMaterial,
 	...pathPublic,
 	...pathOthers,
+	...pathThread,
 };
 
 const swaggerSpec = swaggerJSDoc({
