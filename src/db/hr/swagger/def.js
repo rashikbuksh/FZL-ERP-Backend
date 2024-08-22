@@ -1,46 +1,26 @@
+import SE, { SED } from '../../../util/swagger_example.js';
+
 //* ./schema.js#department
-export const defDepartment = {
-	type: 'object',
+export const defDepartment = SED({
 	required: ['uuid', 'department'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		department: {
-			type: 'string',
-			example: 'HR',
-		},
+		uuid: SE.uuid(),
+		department: SE.string('HR'),
 	},
-	xml: {
-		name: 'Hr/Department',
-	},
-};
+	xml: 'Hr/Department',
+});
 
-export const defDesignation = {
-	type: 'object',
+export const defDesignation = SED({
 	required: ['uuid', 'department_uuid', 'designation'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		department_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		designation: {
-			type: 'string',
-			example: 'HR Manager',
-		},
+		uuid: SE.uuid(),
+		department_uuid: SE.uuid(),
+		designation: SE.string('HR Manager'),
 	},
-	xml: {
-		name: 'Hr/Designation',
-	},
-};
+	xml: 'Hr/Designation',
+});
 
-export const defHrUser = {
-	type: 'object',
+export const defHrUser = SED({
 	required: [
 		'uuid',
 		'name',
@@ -52,64 +32,23 @@ export const defHrUser = {
 		'status',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'John Doe',
-		},
-		email: {
-			type: 'string',
-			example: 'johndoe@gmail.com',
-		},
-		pass: {
-			type: 'string',
-			example: 'password',
-		},
-		designation_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		can_access: {
-			type: 'string',
-			example: 'yes',
-		},
-		ext: {
-			type: 'string',
-			example: 'ext',
-		},
-		phone: {
-			type: 'string',
-			example: '1234567890',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2021-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2021-01-01 00:00:00',
-		},
-		status: {
-			type: 'string',
-			example: 'active',
-		},
-		remarks: {
-			type: 'string',
-			example: 'remarks',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('John Doe'),
+		email: SE.string('john@fzl.com'),
+		pass: SE.string('1234'),
+		designation_uuid: SE.uuid(),
+		can_access: SE.string('1,2,3'),
+		ext: SE.string('562'),
+		phone: SE.string('01521533595'),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		status: SE.string('active'),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Hr/User',
-	},
-};
+	xml: 'Hr/User',
+});
 
-export const defPolicyAndNotice = {
-	type: 'object',
+export const defPolicyAndNotice = SED({
 	required: [
 		'uuid',
 		'type',
@@ -120,49 +59,18 @@ export const defPolicyAndNotice = {
 		'status',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		type: {
-			type: 'string',
-			example: 'privacy',
-		},
-		title: {
-			type: 'string',
-			example: 'Privacy',
-		},
-		sub_title: {
-			type: 'string',
-			example: 'Privacy Policy',
-		},
-		url: {
-			type: 'string',
-			example: 'https://www.example.com',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2021-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2021-01-01 00:00:00',
-		},
-		status: {
-			type: 'integer',
-			example: 1,
-		},
-		remarks: {
-			type: 'string',
-			example: 'remarks',
-		},
+		uuid: SE.uuid(),
+		type: SE.string('privacy'),
+		title: SE.string('Privacy Policy'),
+		sub_title: SE.string('Privacy Policy'),
+		url: SE.string('http://fzl.com'),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		status: SE.integer(1),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Hr/PolicyAndNotice',
-	},
-};
+	xml: 'Hr/PolicyAndNotice',
+});
 
 // * Marge All
 
@@ -179,10 +87,6 @@ export const tagHr = [
 	{
 		name: 'hr.user',
 		description: 'Everything about your Users',
-		externalDocs: {
-			description: 'Find out more',
-			url: 'http://swagger.io',
-		},
 	},
 	{
 		name: 'hr.department',
