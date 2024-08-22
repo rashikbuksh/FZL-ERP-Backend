@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -75,97 +75,98 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: die_casting_production.uuid,
-			die_casting_uuid: die_casting_production.die_casting_uuid,
-			die_casting_name: die_casting.name,
-			mc_no: die_casting_production.mc_no,
-			cavity_goods: die_casting_production.cavity_goods,
-			cavity_defect: die_casting_production.cavity_defect,
-			push: die_casting_production.push,
-			production_quantity:
-				die_casting_production.cavity_goods *
-				die_casting_production.push,
-			weight: die_casting_production.weight,
-			pcs_per_kg:
-				(die_casting_production.cavity_goods *
-					die_casting_production.push) /
-				die_casting_production.weight,
-			order_info_uuid: die_casting_production.order_info_uuid,
-			created_by: die_casting_production.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: die_casting_production.created_at,
-			updated_at: die_casting_production.updated_at,
-			remarks: die_casting_production.remarks,
-		})
-		.from(die_casting_production)
-		.leftJoin(
-			die_casting,
-			eq(die_casting.uuid, die_casting_production.die_casting_uuid)
-		)
-		.leftJoin(
-			hrSchema.users,
-			eq(hrSchema.users.uuid, die_casting_production.created_by)
-		);
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'die_casting_production list',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	const query = sql`
+		SELECT
+			dcp.uuid,
+			dcp.die_casting_uuid,
+			die_casting.name AS die_casting_name,
+			dcp.order_info_uuid,
+			v_order_details.order_number,
+			dcp.mc_no,
+			dcp.cavity_goods,
+			dcp.cavity_defect,
+			dcp.push,
+			dcp.cavity_goods * dcp.push AS production_quantity,
+			dcp.weight,
+			(dcp.cavity_goods * dcp.push) / dcp.weight AS pcs_per_kg,
+			dcp.order_info_uuid,
+			dcp.created_by,
+			users.name AS created_by_name,
+			dcp.created_at,
+			dcp.updated_at,
+			dcp.remarks
+		FROM
+			slider.die_casting_production dcp
+		LEFT JOIN
+			slider.die_casting ON die_casting.uuid = dcp.die_casting_uuid
+		LEFT JOIN
+			hr.users ON users.uuid = dcp.created_by
+		LEFT JOIN
+			zipper.v_order_details ON v_order_details.order_info_uuid = dcp.order_info_uuid
+		`;
+
+	const dcpPromise = db.execute(query);
+
+	try {
+		const data = await dcpPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'die_casting_production list',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const dieCastingProductionPromise = db
-		.select({
-			uuid: die_casting_production.uuid,
-			die_casting_uuid: die_casting_production.die_casting_uuid,
-			die_casting_name: die_casting.name,
-			mc_no: die_casting_production.mc_no,
-			cavity_goods: die_casting_production.cavity_goods,
-			cavity_defect: die_casting_production.cavity_defect,
-			push: die_casting_production.push,
-			production_quantity:
-				die_casting_production.cavity_goods *
-				die_casting_production.push,
-			weight: die_casting_production.weight,
-			pcs_per_kg:
-				(die_casting_production.cavity_goods *
-					die_casting_production.push) /
-				die_casting_production.weight,
-			order_info_uuid: die_casting_production.order_info_uuid,
-			created_by: die_casting_production.created_by,
-			created_by_name: hrSchema.users.name,
+	const query = sql`
+		SELECT
+			dcp.uuid,
+			dcp.die_casting_uuid,
+			die_casting.name AS die_casting_name,
+			dcp.order_info_uuid,
+			v_order_details.order_number,
+			dcp.mc_no,
+			dcp.cavity_goods,
+			dcp.cavity_defect,
+			dcp.push,
+			dcp.cavity_goods * dcp.push AS production_quantity,
+			dcp.weight,
+			(dcp.cavity_goods * dcp.push) / dcp.weight AS pcs_per_kg,
+			dcp.order_info_uuid,
+			dcp.created_by,
+			users.name AS created_by_name,
+			dcp.created_at,
+			dcp.updated_at,
+			dcp.remarks
+		FROM
+			slider.die_casting_production dcp
+		LEFT JOIN
+			slider.die_casting ON die_casting.uuid = dcp.die_casting_uuid
+		LEFT JOIN
+			hr.users ON users.uuid = dcp.created_by
+		LEFT JOIN
+			zipper.v_order_details ON v_order_details.order_info_uuid = dcp.order_info_uuid
+		WHERE dcp.uuid = ${req.params.uuid}
+		`;
 
-			created_at: die_casting_production.created_at,
-			updated_at: die_casting_production.updated_at,
-			remarks: die_casting_production.remarks,
-		})
-		.from(die_casting_production)
-		.leftJoin(
-			die_casting,
-			eq(die_casting.uuid, die_casting_production.die_casting_uuid)
-		)
-		.leftJoin(
-			hrSchema.users,
-			eq(hrSchema.users.uuid, die_casting_production.created_by)
-		)
+	const dcpPromise = db.execute(query);
 
-		.where(eq(die_casting_production.uuid, req.params.uuid));
+	try {
+		const data = await dcpPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'die_casting_production',
+		};
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'die_casting_production ',
-	};
-
-	handleResponse({
-		promise: dieCastingProductionPromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

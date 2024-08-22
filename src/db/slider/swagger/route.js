@@ -1119,6 +1119,14 @@ export const pathSliderDieCastingProduction = {
 										type: 'string',
 										example: 'die casting name',
 									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'order number',
+									},
 									mc_no: {
 										type: 'number',
 										example: 0,
@@ -1135,13 +1143,17 @@ export const pathSliderDieCastingProduction = {
 										type: 'number',
 										example: 0,
 									},
+									production_quantity: {
+										type: 'number',
+										example: 0,
+									},
 									weight: {
 										type: 'number',
 										example: 0.0,
 									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
+									pcs_per_kg: {
+										type: 'number',
+										example: 0.0,
 									},
 									created_by: {
 										type: 'string',
@@ -1225,6 +1237,84 @@ export const pathSliderDieCastingProduction = {
 				},
 			],
 			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							die_casting_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							die_casting_name: {
+								type: 'string',
+								example: 'die casting name',
+							},
+							order_info_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							order_number: {
+								type: 'string',
+								example: 'order number',
+							},
+							mc_no: {
+								type: 'number',
+								example: 0,
+							},
+							cavity_goods: {
+								type: 'number',
+								example: 0,
+							},
+							cavity_defect: {
+								type: 'number',
+								example: 0,
+							},
+							push: {
+								type: 'number',
+								example: 0,
+							},
+							production_quantity: {
+								type: 'number',
+								example: 0,
+							},
+							weight: {
+								type: 'number',
+								example: 0.0,
+							},
+							pcs_per_kg: {
+								type: 'number',
+								example: 0.0,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'remarks',
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
