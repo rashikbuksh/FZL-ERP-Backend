@@ -14,6 +14,7 @@ import * as sfgProductionOperations from './query/sfg_production.js';
 import * as sfgTransactionOperations from './query/sfg_transaction.js';
 import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
+import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeToCoilOperations from './query/tape_to_coil.js';
 
 const zipperRouter = Router();
@@ -313,18 +314,21 @@ zipperRouter.get(
 );
 
 //.............Tape Coil To Dyeing.....................//
-zipperRouter.get('/tape-coil-to-dyeing', tapeToCoilOperations.selectAll);
+zipperRouter.get('/tape-coil-to-dyeing', tapeCoilToDyeingOperations.selectAll);
 zipperRouter.get(
 	'/tape-coil-to-dyeing/:uuid',
 	// validateUuidParam(),
-	tapeToCoilOperations.select
+	tapeCoilToDyeingOperations.select
 );
-zipperRouter.post('/tape-coil-to-dyeing', tapeToCoilOperations.insert);
-zipperRouter.put('/tape-coil-to-dyeing/:uuid', tapeToCoilOperations.update);
+zipperRouter.post('/tape-coil-to-dyeing', tapeCoilToDyeingOperations.insert);
+zipperRouter.put(
+	'/tape-coil-to-dyeing/:uuid',
+	tapeCoilToDyeingOperations.update
+);
 zipperRouter.delete(
 	'/tape-coil-to-dyeing/:uuid',
 	// validateUuidParam(),
-	tapeToCoilOperations.remove
+	tapeCoilToDyeingOperations.remove
 );
 
 export { zipperRouter };
