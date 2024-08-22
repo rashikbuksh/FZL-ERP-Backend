@@ -1,5 +1,3 @@
-import { properties } from '@/db/public/schema';
-
 // * Zipper Order Info * //
 export const def_zipper_order_info = {
 	type: 'object',

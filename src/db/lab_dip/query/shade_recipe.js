@@ -82,6 +82,8 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: shade_recipe.uuid,
 			name: shade_recipe.name,
+			id: shade_recipe.id,
+			shade_recipe_id: sql`concat('TSR', to_char(shade_recipe.created_at, 'YY'), '-', LPAD(shade_recipe.id::text, 4, '0')`,
 			sub_streat: shade_recipe.sub_streat,
 			lab_status: shade_recipe.lab_status,
 			created_by: shade_recipe.created_by,
@@ -110,6 +112,8 @@ export async function select(req, res, next) {
 		.select({
 			uuid: shade_recipe.uuid,
 			name: shade_recipe.name,
+			id: shade_recipe.id,
+			shade_recipe_id: sql`concat('TSR', to_char(shade_recipe.created_at, 'YY'), '-', LPAD(shade_recipe.id::text, 4, '0')`,
 			sub_streat: shade_recipe.sub_streat,
 			lab_status: shade_recipe.lab_status,
 			created_by: shade_recipe.created_by,
