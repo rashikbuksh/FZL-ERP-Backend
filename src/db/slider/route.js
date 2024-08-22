@@ -77,6 +77,10 @@ sliderRouter.delete(
 
 	dieCastingTransactionOperations.remove
 );
+sliderRouter.get(
+	'/die-casting/for/slider-stock/:order_info_uuid',
+	dieCastingTransactionOperations.selectDieCastingForSliderStockByOrderInfoUuid
+);
 
 // --------------------- Transaction Routes ---------------------
 

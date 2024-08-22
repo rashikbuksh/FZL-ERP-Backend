@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -140,4 +140,88 @@ export async function select(req, res, next) {
 		next,
 		...toast,
 	});
+}
+
+export async function selectDieCastingForSliderStockByOrderInfoUuid(
+	req,
+	res,
+	next
+) {
+	const query = sql`
+		SELECT 
+			stock.uuid as stock_uuid,
+			vod.order_number,
+			vod.item_description,
+			stock.order_info_uuid,
+			stock.item,
+			item_properties.name as item_name,
+			item_properties.short_name as item_short_name,
+			stock.zipper_number,
+			zipper_properties.name as zipper_number_name,
+			zipper_properties.short_name as zipper_number_short_name,
+			stock.end_type,
+			end_type_properties.name as end_type_name,
+			end_type_properties.short_name as end_type_short_name,
+			stock.logo_type,
+			logo_type_properties.name as logo_type_name,
+			logo_type_properties.short_name as logo_type_short_name,
+			stock.puller_type,
+			puller_type_properties.name as puller_type_name,
+			puller_type_properties.short_name as puller_type_short_name,
+			stock.puller_color,
+			puller_color_properties.name as puller_color_name,
+			puller_color_properties.short_name as puller_color_short_name,
+			coalesce(stock.order_quantity, 0) as order_quantity,
+			coalesce(die_casting_transaction_given.quantity,0) as provided_quantity,
+			coalesce(stock.order_quantity, 0) - coalesce(die_casting_transaction_given.quantity, 0) as balance_quantity
+		FROM
+			slider.stock stock
+		LEFT JOIN
+			public.properties item_properties ON stock.item = item_properties.uuid
+		LEFT JOIN
+			public.properties zipper_properties ON stock.zipper_number = zipper_properties.uuid
+		LEFT JOIN
+			public.properties end_type_properties ON stock.end_type = end_type_properties.uuid
+		LEFT JOIN
+			public.properties puller_type_properties ON stock.puller_type = puller_type_properties.uuid
+		LEFT JOIN
+			public.properties puller_color_properties ON stock.puller_color = puller_color_properties.uuid
+		LEFT JOIN
+			public.properties logo_type_properties ON stock.logo_type = logo_type_properties.uuid
+		LEFT JOIN 
+			zipper.v_order_details vod ON stock.order_info_uuid = vod.order_info_uuid
+		LEFT JOIN
+			(
+				SELECT
+					stock.uuid as stock_uuid,
+					SUM(dct.trx_quantity) as quantity
+				FROM
+					slider.die_casting_transaction dct
+				LEFT JOIN
+					slider.stock ON dct.stock_uuid =
+					stock.uuid
+				GROUP BY
+					stock.uuid
+			) die_casting_transaction_given ON stock.uuid = die_casting_transaction_given.stock_uuid
+		WHERE
+			stock.order_info_uuid = ${req.params.order_info_uuid}
+		ORDER BY
+			stock.created_at DESC
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Die Casting For Slider Stock',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
