@@ -1,11 +1,11 @@
+import { defineConfig } from 'drizzle-kit';
 import {
 	DB_HOST,
 	DB_NAME,
 	DB_PASS,
 	DB_POSTGRES_PORT,
 	DB_USER,
-} from '@/lib/secret.js';
-import { defineConfig } from 'drizzle-kit';
+} from './src/lib/secret.js';
 
 const defaultConfig = {
 	dialect: 'postgresql',
