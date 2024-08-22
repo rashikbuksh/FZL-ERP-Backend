@@ -4,13 +4,13 @@ import {
 	DB_PASS,
 	DB_POSTGRES_PORT,
 	DB_USER,
-} from "@/lib/secret.js";
-import { defineConfig } from "drizzle-kit";
+} from '@/lib/secret.js';
+import { defineConfig } from 'drizzle-kit';
 
 const defaultConfig = {
-	dialect: "postgresql",
-	schema: "./src/db/*/schema.js",
-	out: "./src/db/migrations",
+	dialect: 'postgresql',
+	schema: './src/db/*/schema.js',
+	out: './src/db/migrations',
 	dbCredentials: {
 		host: DB_HOST,
 		user: DB_USER,
@@ -22,10 +22,10 @@ const defaultConfig = {
 };
 
 const command = process.argv[2];
-const isGenerateOrIntrospect = ["generate", "introspect", "studio"].includes(
+const isGenerateOrIntrospect = ['generate', 'introspect', 'studio'].includes(
 	command
 );
-const isMigrateDropOrPush = ["migrate", "drop", "push"].includes(command);
+const isMigrateDropOrPush = ['migrate', 'drop', 'push'].includes(command);
 
 var config;
 
@@ -34,21 +34,22 @@ if (isGenerateOrIntrospect) {
 	config = defineConfig({
 		...defaultConfig,
 		schemaFilter: [
-			"commercial",
-			"delivery",
-			"hr",
-			"lab_dip",
-			"material",
-			"public",
-			"purchase",
-			"slider",
-			"zipper",
+			'commercial',
+			'delivery',
+			'hr',
+			'lab_dip',
+			'material',
+			'public',
+			'purchase',
+			'slider',
+			'zipper',
+			'thread',
 		],
 	});
 } else if (isMigrateDropOrPush) {
 	config = defineConfig({
 		...defaultConfig,
-		migrations: { table: "migrations_details" },
+		migrations: { table: 'migrations_details' },
 	});
 }
 
