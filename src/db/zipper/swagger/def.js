@@ -1,6 +1,7 @@
+import SE, { SED } from '../../../util/swagger_example.js';
+
 // * Zipper Order Info * //
-export const def_zipper_order_info = {
-	type: 'object',
+export const def_zipper_order_info = SED({
 	required: [
 		'uuid',
 		'buyer_uuid',
@@ -17,76 +18,28 @@ export const def_zipper_order_info = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		id: { type: 'number', example: 1 },
-		reference_order_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		buyer_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		party_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		marketing_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		merchandiser_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		factory_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		is_sample: { type: 'integer', example: 0 },
-		is_bill: { type: 'integer', example: 0 },
-		is_cash: { type: 'integer', example: 0 },
-		marketing_priority: {
-			type: 'string',
-			example: 'Urgent',
-		},
-		merchandiser_priority: {
-			type: 'string',
-			example: 'Urgent',
-		},
-		factory_priority: {
-			type: 'string',
-			example: 'FIFO',
-		},
-		status: { type: 'integer', example: 0 },
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			example: '2021-08-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			example: '2021-08-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		buyer_uuid: SE.uuid(),
+		party_uuid: SE.uuid(),
+		marketing_uuid: SE.uuid(),
+		merchandiser_uuid: SE.uuid(),
+		factory_uuid: SE.uuid(),
+		is_sample: SE.integer(),
+		is_bill: SE.integer(),
+		is_cash: SE.integer(),
+		marketing_priority: SE.string('Urgent'),
+		factory_priority: SE.string('FIFO'),
+		status: SE.integer(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'zipper.order_info',
-	},
-};
+	xml: 'Zipper/Order-Info',
+});
 
 // * Zipper Order Description * //
-export const def_zipper_order_description = {
-	type: 'object',
+export const def_zipper_order_description = SED({
 	required: [
 		'uuid',
 		'order_info_uuid',
@@ -115,153 +68,44 @@ export const def_zipper_order_description = {
 		'created_by',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		item: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		zipper_number: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		end_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		lock_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		puller_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		teeth_color: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		puller_color: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		special_requirement: {
-			type: 'object',
-			example: '{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
-		},
-		hand: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		stopper_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		coloring_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		is_slider_provided: {
-			type: 'integer',
-			example: 0,
-		},
-		slider: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		slider_starting_section: {
-			type: 'string',
-			example: 'die_casting',
-		},
-		top_stopper: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		bottom_stopper: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		logo_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		is_logo_body: {
-			type: 'integer',
-			example: 0,
-		},
-		is_logo_puller: {
-			type: 'integer',
-			example: 0,
-		},
-		description: {
-			type: 'string',
-			example: 'Description',
-		},
-		status: {
-			type: 'integer',
-			example: 0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
-		slider_body_shape: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		slider_link: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		end_user: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		garment: {
-			type: 'string',
-			example: 'Garment',
-		},
-		light_preference: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		garments_wash: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		puller_link: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
+		uuid: SE.uuid(),
+		order_info_uuid: SE.uuid(),
+		tape_received: SE.number(10),
+		item: SE.string(),
+		zipper_number: SE.string(),
+		end_type: SE.string(),
+		lock_type: SE.string(),
+		puller_type: SE.string(),
+		teeth_color: SE.string(),
+		puller_color: SE.string(),
+		hand: SE.string(),
+		stopper_type: SE.string(),
+		coloring_type: SE.string(),
+		slider: SE.string(),
+		top_stopper: SE.string(),
+		bottom_stopper: SE.string(),
+		logo_type: SE.string(),
+		is_logo_body: SE.integer(),
+		is_logo_puller: SE.integer(),
+		description: SE.string(),
+		status: SE.integer(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
+		slider_body_shape: SE.string(),
+		slider_link: SE.string(),
+		end_user: SE.string(),
+		garment: SE.string(),
+		light_preference: SE.string(),
+		garments_wash: SE.string(),
+		puller_link: SE.string(),
+		created_by: SE.uuid(),
 	},
-	xml: {
-		name: 'zipper.order_description',
-	},
-};
+	xml: 'Zipper/Order-Description',
+});
 
 // * Zipper Order Entry * //
-export const def_zipper_order_entry = {
-	type: 'object',
+export const def_zipper_order_entry = SED({
 	required: [
 		'uuid',
 		'order_description_uuid',
@@ -272,146 +116,49 @@ export const def_zipper_order_entry = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_description_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		style: {
-			type: 'string',
-			example: 'style 1',
-		},
-		color: {
-			type: 'string',
-			example: 'black',
-		},
-		size: {
-			type: 'number',
-			example: 10,
-		},
-		quantity: {
-			type: 'number',
-			example: 100,
-		},
-		company_price: {
-			type: 'number',
-			example: 10.5,
-		},
-		party_price: {
-			type: 'number',
-			example: 10.5,
-		},
-		status: {
-			type: 'integer',
-			example: 0,
-		},
-		swatch_status: {
-			type: 'string',
-			example: 'Pending',
-		},
-		swap_approval_date: {
-			type: 'string',
-			example: '2021-08-01 00:00:00',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			example: '2021-08-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			example: '2021-08-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		order_description_uuid: SE.uuid(),
+		style: SE.string(),
+		color: SE.string(),
+		size: SE.string(),
+		quantity: SE.integer(),
+		company_price: SE.number(),
+		party_price: SE.number(),
+		status: SE.integer(),
+		swatch_status: SE.string('pending'),
+		swatch_approval_date: SE.date_time(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
 	},
-	xml: {
-		name: 'Zipper/Order-Entry',
-	},
-};
+	xml: 'Zipper/Order-Entry',
+});
 
 // * Zipper Sfg * //
-export const def_zipper_sfg = {
-	type: 'object',
-	required: ['uuid', 'order_entry_uuid', 'recipe_uuid'],
+export const def_zipper_sfg = SED({
+	required: ['uuid', 'order_entry_uuid'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_entry_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		recipe_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		dying_and_iron_prod: {
-			type: 'number',
-			example: 0.0,
-		},
-		teeth_molding_stock: {
-			type: 'number',
-			example: 0.0,
-		},
-		teeth_molding_prod: {
-			type: 'number',
-			example: 0.0,
-		},
-		teeth_coloring_stock: {
-			type: 'number',
-			example: 0.0,
-		},
-		teeth_coloring_prod: {
-			type: 'number',
-			example: 0.0,
-		},
-		finishing_stock: {
-			type: 'number',
-			example: 0.0,
-		},
-		finishing_prod: {
-			type: 'number',
-			example: 0.0,
-		},
-		coloring_prod: {
-			type: 'number',
-			example: 0.0,
-		},
-		warehouse: {
-			type: 'number',
-			example: 0.0,
-		},
-		delivered: {
-			type: 'number',
-			example: 0.0,
-		},
-		pi: {
-			type: 'number',
-			example: 0.0,
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		order_entry_uuid: SE.uuid(),
+		recipe_uuid: SE.uuid(),
+		dying_and_iron_prod: SE.number(),
+		teeth_molding_stock: SE.number(),
+		teeth_molding_prod: SE.number(),
+		teeth_coloring_stock: SE.number(),
+		teeth_coloring_prod: SE.number(),
+		finishing_stock: SE.number(),
+		finishing_prod: SE.number(),
+		coloring_prod: SE.number(),
+		warehouse: SE.number(),
+		delivered: SE.number(),
+		pi: SE.number(),
+		remarks: SE.string(),
 	},
-	xml: {
-		name: 'Zipper/Sfg',
-	},
-};
+	xml: 'Zipper/Sfg',
+});
 
 // * Zipper Sfg production * //
-export const def_zipper_sfg_production = {
-	type: 'object',
+export const def_zipper_sfg_production = SED({
 	required: [
 		'uuid',
 		'sfg_uuid',
@@ -422,57 +169,22 @@ export const def_zipper_sfg_production = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		sfg_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		section: {
-			type: 'string',
-			example: 'section 1',
-		},
-		used_quantity: {
-			type: 'number',
-			example: 10,
-		},
-		production_quantity: {
-			type: 'number',
-			example: 10,
-		},
-		wastage: {
-			type: 'number',
-			example: 10,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		sfg_uuid: SE.uuid(),
+		section: SE.string(),
+		used_quantity: SE.number(),
+		production_quantity: SE.number(),
+		wastage: SE.number(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
 	},
-	xml: {
-		name: 'Zipper/Sfg-Production',
-	},
-};
+	xml: 'Zipper/Sfg-Production',
+});
 
 // * Zipper sfg transaction * //
-export const def_zipper_sfg_transaction = {
-	type: 'object',
+export const def_zipper_sfg_transaction = SED({
 	required: [
 		'uuid',
 		'order_entry_uuid',
@@ -484,93 +196,36 @@ export const def_zipper_sfg_transaction = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_entry_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		section: {
-			type: 'string',
-			example: 'section',
-		},
-		trx_from: {
-			type: 'string',
-			example: 'trx_from',
-		},
-		trx_to: {
-			type: 'string',
-			example: 'trx_to',
-		},
-		trx_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		slider_item_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		order_entry_uuid: SE.uuid(),
+		section: SE.string(),
+		trx_from: SE.string(),
+		trx_to: SE.string(),
+		trx_quantity: SE.number('10.0'),
+		slider_item_uuid: SE.uuid(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
 	},
-	xml: {
-		name: 'Zipper/Sfg-Transaction',
-	},
-};
+	xml: 'Zipper/Sfg-Transaction',
+});
 
 // * Zipper Batch * //
-export const def_zipper_batch = {
-	type: 'object',
+export const def_zipper_batch = SED({
 	required: ['uuid', 'created_by', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
 	},
-	xml: {
-		name: 'Zipper/Batch',
-	},
-};
+	xml: 'Zipper/Batch',
+});
+
 // * Zipper Dyeing Batch Entry * //
-export const def_zipper_batch_entry = {
-	type: 'object',
+export const def_zipper_batch_entry = SED({
 	required: [
 		'uuid',
 		'batch_uuid',
@@ -581,94 +236,36 @@ export const def_zipper_batch_entry = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		batch_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		sfg_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		quantity: {
-			type: 'number',
-			example: 100,
-		},
-		production_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		production_quantity_in_kg: {
-			type: 'number',
-			example: 100,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		batch_uuid: SE.uuid(),
+		sfg_uuid: SE.uuid(),
+		quantity: SE.number(10.0),
+		production_quantity: SE.number(10.0),
+		production_quantity_in_kg: SE.number(10.0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
 	},
-	xml: {
-		name: 'Zipper/Batch-Entry',
-	},
-};
+	xml: 'Zipper/Batch-Entry',
+});
 
 // * Zipper Dyeing Batch * //
-export const def_zipper_dying_batch = {
-	type: 'object',
+export const def_zipper_dying_batch = SED({
 	required: ['uuid', 'mc_no', 'created_by', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		id: {
-			type: 'serial',
-			example: 1,
-		},
-		mc_no: {
-			type: 'integer',
-			example: 1,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		id: SE.integer(),
+		mc_no: SE.string(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
 	},
-	xml: {
-		name: 'Zipper/Dying-Batch',
-	},
-};
+	xml: 'Zipper/Dying-Batch',
+});
 
 // * Zipper Dyeing Batch Entry * //
-export const def_zipper_dying_batch_entry = {
-	type: 'object',
+export const def_zipper_dying_batch_entry = SED({
 	required: [
 		'uuid',
 		'dying_batch_uuid',
@@ -679,53 +276,21 @@ export const def_zipper_dying_batch_entry = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		dying_batch_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		batch_entry_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		quantity: {
-			type: 'number',
-			example: 100,
-		},
-		production_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		production_quantity_in_kg: {
-			type: 'number',
-			example: 100,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		dying_batch_uuid: SE.uuid(),
+		batch_entry_uuid: SE.uuid(),
+		quantity: SE.number(10.0),
+		production_quantity: SE.number(10.0),
+		production_quantity_in_kg: SE.number(10.0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
 	},
-	xml: {
-		name: 'Zipper/Dying-Batch-Entry',
-	},
-};
+	xml: 'Zipper/Dying-Batch-Entry',
+});
 
 // * Zipper Tape Coil * //
-export const def_zipper_tape_coil = {
-	type: 'object',
+export const def_zipper_tape_coil = SED({
 	required: [
 		'uuid',
 		'type',
@@ -735,43 +300,19 @@ export const def_zipper_tape_coil = {
 		'quantity_in_coil',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		type: {
-			type: 'string',
-			example: 'nylon',
-		},
-		zipper_number: {
-			type: 'number',
-			example: 1.0,
-		},
-		quantity: {
-			type: 'number',
-			example: 100,
-		},
-		trx_quantity_in_coil: {
-			type: 'number',
-			example: 100,
-		},
-		quantity_in_coil: {
-			type: 'number',
-			example: 100,
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		type: SE.string('nylon'),
+		zipper_number: SE.number('3.0'),
+		quantity: SE.number('100.0'),
+		trx_quantity_in_coil: SE.number('100.0'),
+		quantity_in_coil: SE.number('100.0'),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Zipper/Tape-Coil',
-	},
-};
+	xml: 'Zipper/Tape-Coil',
+});
 
 // * Zipper Tape To Coil * //
-export const def_zipper_tape_to_coil = {
-	type: 'object',
+export const def_zipper_tape_to_coil = SED({
 	required: [
 		'uuid',
 		'tape_coil_uuid',
@@ -780,45 +321,19 @@ export const def_zipper_tape_to_coil = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		tape_coil_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		trx_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		tape_coil_uuid: SE.uuid(),
+		trx_quantity: SE.number('100.0'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Zipper/Tape-To-Coil',
-	},
-};
+	xml: 'Zipper/Tape-To-Coil',
+});
 
 // * Zipper Tape Coil Production * //
-export const def_zipper_tape_coil_production = {
-	type: 'object',
+export const def_zipper_tape_coil_production = SED({
 	required: [
 		'uuid',
 		'section',
@@ -829,86 +344,34 @@ export const def_zipper_tape_coil_production = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		section: {
-			type: 'string',
-			example: 'Molding',
-		},
-		tape_coil_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		production_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		wastage: {
-			type: 'number',
-			example: 0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		section: SE.string(),
+		tape_coil_uuid: SE.uuid(),
+		production_quantity: SE.number('100.0'),
+		wastage: SE.number('0.0'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Zipper/Tape-Coil-Production',
-	},
-};
+	xml: 'Zipper/Tape-Coil-Production',
+});
 
 // * Zipper Planning * //
-export const def_zipper_planning = {
-	type: 'object',
+export const def_zipper_planning = SED({
 	required: ['week', 'created_by', 'created_at'],
 	properties: {
-		week: {
-			type: 'string',
-			example: '24-32',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		week: SE.string('24-32'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Zipper/Planning',
-	},
-};
+	xml: 'Zipper/Planning',
+});
 
 // * Zipper Planning Entry * //
-export const def_zipper_planning_entry = {
-	type: 'object',
+export const def_zipper_planning_entry = SED({
 	required: [
 		'uuid',
 		'planning_week',
@@ -920,60 +383,23 @@ export const def_zipper_planning_entry = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		planning_week: {
-			type: 'string',
-			example: '24-32',
-		},
-		sfg_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		sno_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		factory_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		production_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		batch_production_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		sno_remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
-		factory_remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		planning_week: SE.string('24-32'),
+		sfg_uuid: SE.uuid(),
+		sno_quantity: SE.number('100.0'),
+		factory_quantity: SE.number('100.0'),
+		production_quantity: SE.number('100.0'),
+		batch_production_quantity: SE.number('100.0'),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		sno_remarks: SE.string('Remarks'),
+		factory_remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Zipper/Planning-Entry',
-	},
-};
+	xml: 'Zipper/Planning-Entry',
+});
+
 // * Zipper material trx against order description * //
-export const def_zipper_material_trx_against_order_description = {
-	type: 'object',
+export const def_zipper_material_trx_against_order_description = SED({
 	required: [
 		'uuid',
 		'order_description_uuid',
@@ -984,53 +410,21 @@ export const def_zipper_material_trx_against_order_description = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_description_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		material_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		trx_to: {
-			type: 'string',
-			example: 'teeth_molding',
-		},
-		trx_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		order_description_uuid: SE.uuid(),
+		material_uuid: SE.uuid(),
+		trx_to: SE.string(),
+		trx_quantity: SE.number('100.0'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Zipper/Material_trx_against_order_description',
-	},
-};
+	xml: 'Zipper/Material_trx_against_order_description',
+});
 // * Zipper tape coil to dyeing * //
 
-export const def_zipper_tape_coil_to_dyeing = {
-	type: 'object',
+export const def_zipper_tape_coil_to_dyeing = SED({
 	required: [
 		'uuid',
 		'tape_coil_uuid',
@@ -1040,40 +434,16 @@ export const def_zipper_tape_coil_to_dyeing = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		tape_coil_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_description_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		trx_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		tape_coil_uuid: SE.uuid(),
+		order_description_uuid: SE.uuid(),
+		trx_quantity: SE.number('100.0'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Zipper/Tape-Coil-To-Dyeing',
-	},
-};
+	xml: 'Zipper/Tape-Coil-To-Dyeing',
+});
 
 //....................FOR TESTING.......................
 export const defZipper = {
