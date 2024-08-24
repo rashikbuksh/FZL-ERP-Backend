@@ -51,8 +51,8 @@ const SE = {
 	xml: (name = '') => ({ name }),
 
 	// * Parameters
-	parameter_uuid: (description = 'GET DATA') => ({
-		name: 'uuid',
+	parameter_uuid: (description = 'GET DATA', name = 'uuid') => ({
+		name: name,
 		in: 'path',
 		required: true,
 		type: 'string',
