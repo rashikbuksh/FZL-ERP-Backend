@@ -180,7 +180,9 @@ export const die_casting_transaction = slider.table('die_casting_transaction', {
 	die_casting_uuid: defaultUUID('die_casting_uuid').references(
 		() => die_casting.uuid
 	),
-	stock_uuid: defaultUUID('stock_uuid').references(() => stock.uuid).default(null),
+	stock_uuid: defaultUUID('stock_uuid')
+		.references(() => stock.uuid)
+		.default(null),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
