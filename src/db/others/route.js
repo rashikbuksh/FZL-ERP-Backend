@@ -75,11 +75,21 @@ otherRouter.get(
 	'/lab-dip/recipe/value/label',
 	otherOperations.selectLabDipRecipe
 );
+otherRouter.get(
+	'/lab-dip/shade-recipe/value/label',
+	otherOperations.selectLabDipShadeRecipe
+);
 
 // * Slider * //
 otherRouter.get(
 	'/slider-item-name/value/label',
 	otherOperations.selectNameFromDieCastingStock
+);
+
+// * Thread
+otherRouter.get(
+	'/thread/count-length/value/label',
+	otherOperations.selectCountLength
 );
 
 const pathPublic = {
@@ -809,6 +819,36 @@ const pathLabDip = {
 			},
 		},
 	},
+	'/other/lab-dip/shade-recipe/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all shade recipes',
+			description: 'All shade recipes',
+			operationId: 'getAllShadeRecipes',
+			responses: {
+				200: {
+					description: 'Returns a all shade recipes.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'recipe 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 const pathSlider = {
@@ -844,6 +884,33 @@ const pathSlider = {
 	},
 };
 
+const pathThread = {
+	'/other/thread/count-length/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all thread count length',
+			description: 'All thread count length',
+			operationId: 'getAllThreadCountLength',
+			responses: {
+				200: {
+					description: 'Returns a all thread count length.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: { type: 'string', example: '2ggcphnw'},
+									label: { type: 'string', example: '150D/2'},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
 export const pathOthers = {
 	...pathPublic,
 	...pathPurchase,
@@ -853,6 +920,7 @@ export const pathOthers = {
 	...pathHr,
 	...pathLabDip,
 	...pathSlider,
+	...pathThread,
 };
 
 export const tagOthers = [

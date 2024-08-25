@@ -29,8 +29,6 @@ export async function insert(req, res, next) {
 
 	const sfgExists = await sfgExistsPromise;
 
-	console.log('sfgExists - SNO', sfgExists);
-
 	// if planning entry and sfg already exists, then update the existing entry
 	if (sfgExists.rowCount > 0) {
 		try {
@@ -401,8 +399,6 @@ export async function insertOrUpdatePlanningEntryByFactory(req, res, next) {
 	const sfgExistsPromise = db.execute(query);
 
 	const sfgExists = await sfgExistsPromise;
-
-	console.log('sfgExists - Factory', sfgExists);
 
 	// if planning entry and sfg already exists, then update the existing entry
 	if (sfgExists.rowCount > 0) {

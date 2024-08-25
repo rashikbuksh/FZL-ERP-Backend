@@ -99,7 +99,7 @@ export const order_entry = thread.table('order_entry', {
 	order_info_uuid: defaultUUID('order_info_uuid').references(
 		() => order_info.uuid
 	),
-	lab_reference: text('lab_reference').notNull(),
+	lab_reference: text('lab_reference').default(null),
 	color: text('color').notNull(),
 	shade_recipe_uuid: defaultUUID('shade_recipe_uuid').references(
 		() => labDipSchema.shade_recipe.uuid

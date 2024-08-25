@@ -1,4 +1,5 @@
 import { eq, sql } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -149,14 +150,11 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 ) {
 	const { order_info_uuid } = req.params;
 
-	const orderInfoUuidArray = order_info_uuid
-		.split(',')
-		.map((uuid) => `'${uuid}'`)
-		.join(',');
-
-	const query = sql`
+	const fetchData = sql`
 		SELECT 
-			stock.uuid as stock_uuid,
+			DISTINCT stock.uuid as stock_uuid,
+			dc.uuid as die_casting_uuid,
+			dc.quantity as die_casting_quantity,
 			vod.order_number,
 			vod.item_description,
 			stock.order_info_uuid,
@@ -210,24 +208,66 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 				GROUP BY
 					stock.uuid
 			) die_casting_transaction_given ON stock.uuid = die_casting_transaction_given.stock_uuid
+		LEFT JOIN 
+			slider.die_casting dc
 		WHERE
-			stock.order_info_uuid IN (${orderInfoUuidArray})
-		ORDER BY
-			stock.created_at DESC
-	`;
+			stock.order_info_uuid = ${order_info_uuid} AND 
+			dc.item = stock.item AND
+			dc.zipper_number = stock.zipper_number AND
+			dc.end_type = stock.end_type AND
+			dc.logo_type = stock.logo_type AND
+			dc.puller_type = stock.puller_type AND
+			dc.logo_type = stock.logo_type AND 
+			dc.slider_body_shape = stock.slider_body_shape AND
+			dc.puller_link = stock.puller_link
+		`;
 
-	const resultPromise = db.execute(query);
-
+	const results = db.execute(fetchData);
 	try {
-		const data = await resultPromise;
+		const data = await results;
 
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'Die Casting For Slider Stock',
 		};
-
 		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectDieCastingForSliderStockByOrderInfoUuids(
+	req,
+	res,
+	next
+) {
+	const { order_info_uuids } = req.params;
+	const orderInfoUuidArray = order_info_uuids.split(',').map((uuid) => uuid);
+
+	try {
+		const api = await createApi(req);
+		const fetchData = async (uuid) =>
+			await api.get(`/slider/die-casting/for/slider-stock/${uuid}`);
+
+		const data = await Promise.all(
+			orderInfoUuidArray.map((uuid) => {
+				return fetchData(uuid);
+			})
+		);
+
+		const response = {
+			stocks: data?.reduce((acc, result) => {
+				return [...acc, ...result?.data?.data];
+			}, []),
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Die Casting For Slider Stock',
+		};
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}

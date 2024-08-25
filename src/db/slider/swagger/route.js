@@ -1595,7 +1595,139 @@ export const pathSliderDieCastingTransaction = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-					example: 'igD0v9DIJQhJeet,igD0v9DIJQhJeey',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Success',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									stock_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									item_description: {
+										type: 'string',
+										example: 'N-5-OE-RP',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									item: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									item_name: {
+										type: 'string',
+										example: 'item name',
+									},
+									item_short_name: {
+										type: 'string',
+										example: 'item short name',
+									},
+									zipper_number: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									zipper_number_name: {
+										type: 'string',
+										example: 'zipper name',
+									},
+									zipper_number_short_name: {
+										type: 'string',
+										example: 'zipper short name',
+									},
+									end_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_type_name: {
+										type: 'string',
+										example: 'end type name',
+									},
+									end_type_short_name: {
+										type: 'string',
+										example: 'end type short name',
+									},
+									puller_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_type_name: {
+										type: 'string',
+										example: 'puller type name',
+									},
+									puller_type_short_name: {
+										type: 'string',
+										example: 'puller type short name',
+									},
+									logo_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									logo_type_name: {
+										type: 'string',
+										example: 'logo type name',
+									},
+									logo_type_short_name: {
+										type: 'string',
+										example: 'logo type short name',
+									},
+									puller_color: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									puller_color_name: {
+										type: 'string',
+										example: 'puller color name',
+									},
+									puller_color_short_name: {
+										type: 'string',
+										example: 'puller color short name',
+									},
+									order_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									provided_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									balance_quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/slider/die-casting/for/slider-stock-multi/{order_info_uuids}': {
+		get: {
+			tags: ['slider.die_casting_transaction'],
+			summary: 'Get stock using Order Number',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'order_info_uuids',
+					in: 'path',
+					description: 'stock information',
+					required: true,
+					type: 'string',
+					format: 'string',
+					example: 'igD0v9DIJQhJeet,igD0v9DIJQhJeet',
 				},
 			],
 			responses: {

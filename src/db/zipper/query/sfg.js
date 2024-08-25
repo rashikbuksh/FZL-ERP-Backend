@@ -72,8 +72,6 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { recipe_uuid } = req.query;
 
-	console.log(req.query, 'req.query');
-
 	const resultPromise = db
 		.select({
 			uuid: sfg.uuid,
