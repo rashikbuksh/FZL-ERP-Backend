@@ -1,3 +1,32 @@
+import SE from '../../../util/swagger_example.js';
+
+const order_info_extra_schema = SE.response_schema(200, {
+	uuid: SE.uuid(),
+	id: SE.number(1),
+	reference_order_info_uuid: SE.uuid(),
+	buyer_uuid: SE.uuid(),
+	buyer_name: SE.string('John'),
+	party_uuid: SE.uuid(),
+	party_name: SE.string('John'),
+	marketing_uuid: SE.uuid(),
+	marketing_name: SE.string('John'),
+	merchandiser_uuid: SE.uuid(),
+	merchandiser_name: SE.string('John'),
+	factory_uuid: SE.uuid(),
+	factory_name: SE.string('John'),
+	is_sample: SE.number(0),
+	is_bill: SE.number(0),
+	is_cash: SE.number(0),
+	marketing_priority: SE.string('Urgent'),
+	factory_priority: SE.string('FIFO'),
+	status: SE.number(0),
+	created_by: SE.uuid(),
+	created_by_name: SE.string('John'),
+	created_at: SE.date_time(),
+	updated_at: SE.date_time(),
+	remarks: SE.string('Remarks'),
+});
+
 // * Zipper Order Info * //
 export const pathZipperOrderInfo = {
 	'/zipper/order-info': {
@@ -5,99 +34,7 @@ export const pathZipperOrderInfo = {
 			tags: ['zipper.order_info'],
 			summary: 'Get all Order Info',
 			responses: {
-				200: {
-					description: 'Returns all Order Info',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: { type: 'number', example: 1 },
-									reference_order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_name: {
-										type: 'string',
-										example: 'John',
-									},
-									party_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									party_name: {
-										type: 'string',
-										example: 'John',
-									},
-									marketing_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									marketing_name: {
-										type: 'string',
-										example: 'John',
-									},
-									merchandiser_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									merchandiser_name: {
-										type: 'string',
-										example: 'John',
-									},
-									factory_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									factory_name: {
-										type: 'string',
-										example: 'John',
-									},
-									is_sample: { type: 'integer', example: 0 },
-									is_bill: { type: 'integer', example: 0 },
-									is_cash: { type: 'integer', example: 0 },
-									marketing_priority: {
-										type: 'string',
-										example: 'Urgent',
-									},
-									factory_priority: {
-										type: 'string',
-										example: 'FIFO',
-									},
-									status: { type: 'integer', example: 0 },
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John',
-									},
-									created_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: order_info_extra_schema,
 			},
 		},
 		post: {
@@ -107,82 +44,10 @@ export const pathZipperOrderInfo = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							type: 'object',
-							properties: {
-								uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								reference_order_info_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								buyer_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								party_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								marketing_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								merchandiser_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								factory_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								is_sample: { type: 'integer', example: 0 },
-								is_bill: { type: 'integer', example: 0 },
-								is_cash: { type: 'integer', example: 0 },
-								marketing_priority: {
-									type: 'string',
-									example: 'Urgent',
-								},
-								factory_priority: {
-									type: 'string',
-									example: 'FIFO',
-								},
-								status: { type: 'integer', example: 0 },
-								created_by: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								created_at: {
-									type: 'string',
-									example: '2021-08-01 00:00:00',
-								},
-								remarks: {
-									type: 'string',
-									example: 'Remarks',
-								},
-							},
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/order_info'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/order_info',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/order_info'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -193,117 +58,11 @@ export const pathZipperOrderInfo = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'orderInfo to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('GET DATA')],
 			responses: {
-				200: {
-					description: 'Returns all Order Info',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: { type: 'number', example: 1 },
-									reference_order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_name: {
-										type: 'string',
-										example: 'John',
-									},
-									party_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									party_name: {
-										type: 'string',
-										example: 'John',
-									},
-									marketing_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									marketing_name: {
-										type: 'string',
-										example: 'John',
-									},
-									merchandiser_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									merchandiser_name: {
-										type: 'string',
-										example: 'John',
-									},
-									factory_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									factory_name: {
-										type: 'string',
-										example: 'John',
-									},
-									is_sample: { type: 'integer', example: 0 },
-									is_bill: { type: 'integer', example: 0 },
-									is_cash: { type: 'integer', example: 0 },
-									marketing_priority: {
-										type: 'string',
-										example: 'Urgent',
-									},
-									factory_priority: {
-										type: 'string',
-										example: 'FIFO',
-									},
-									status: { type: 'integer', example: 0 },
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John',
-									},
-									created_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: order_info_extra_schema,
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -313,99 +72,30 @@ export const pathZipperOrderInfo = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'uuid - string. length: 15',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							type: 'object',
-							properties: {
-								reference_order_info_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								buyer_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								party_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								marketing_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								merchandiser_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								factory_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								is_sample: { type: 'integer', example: 0 },
-								is_bill: { type: 'integer', example: 0 },
-								is_cash: { type: 'integer', example: 0 },
-								marketing_priority: {
-									type: 'string',
-									example: 'Urgent',
-								},
-								factory_priority: {
-									type: 'string',
-									example: 'FIFO',
-								},
-								status: { type: 'integer', example: 0 },
-								created_by: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								created_at: {
-									type: 'string',
-									example: '2021-08-01 00:00:00',
-								},
-								updated_at: {
-									type: 'string',
-									example: '2021-08-01 00:00:00',
-								},
-								remarks: {
-									type: 'string',
-									example: 'Remarks',
-								},
-							},
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('PUT DATA')],
+			requestBody: SE.requestBody_schema_ref({
+				reference_order_info_uuid: SE.uuid(),
+				buyer_uuid: SE.uuid(),
+				party_uuid: SE.uuid(),
+				marketing_uuid: SE.uuid(),
+				merchandiser_uuid: SE.uuid(),
+				factory_uuid: SE.uuid(),
+				is_sample: SE.number(0),
+				is_bill: SE.number(0),
+				is_cash: SE.number(0),
+				marketing_priority: SE.string('Urgent'),
+				factory_priority: SE.string('FIFO'),
+				status: SE.number(0),
+				created_by: SE.uuid(),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				remarks: SE.string('Remarks'),
+			}),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/order_info',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'order info not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/order_info'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -414,27 +104,11 @@ export const pathZipperOrderInfo = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'order info to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('order info to delete')],
 			responses: {
-				200: {
-					description: 'order info deleted',
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Order Info not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -443,113 +117,159 @@ export const pathZipperOrderInfo = {
 			tags: ['zipper.order_info'],
 			summary: 'Get Order Details',
 			responses: {
-				200: {
-					description: 'Returns all Order Details',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z21-0010',
-									},
-									item_description: {
-										type: 'string',
-										example: 'N-5-OE-SP',
-									},
-									reference_order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_name: {
-										type: 'string',
-										example: 'John',
-									},
-									party_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									party_name: {
-										type: 'string',
-										example: 'John',
-									},
-									marketing_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									marketing_name: {
-										type: 'string',
-										example: 'John',
-									},
-									merchandiser_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									merchandiser_name: {
-										type: 'string',
-										example: 'John',
-									},
-									factory_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									factory_name: {
-										type: 'string',
-										example: 'John',
-									},
-									is_sample: { type: 'integer', example: 0 },
-									is_bill: { type: 'integer', example: 0 },
-									is_cash: { type: 'integer', example: 0 },
-									marketing_priority: {
-										type: 'string',
-										example: 'Urgent',
-									},
-									factory_priority: {
-										type: 'string',
-										example: 'Urgent',
-									},
-									status: { type: 'integer', example: 0 },
-									created_by_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John',
-									},
-									created_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									order_number_wise_rank: {
-										type: 'integer',
-										example: 1,
-									},
-									order_number_wise_count: {
-										type: 'integer',
-										example: 1,
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-SP'),
+					reference_order_info_uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					buyer_uuid: SE.uuid(),
+					buyer_name: SE.string('John'),
+					party_uuid: SE.uuid(),
+					party_name: SE.string('John'),
+					marketing_uuid: SE.uuid(),
+					marketing_name: SE.string('John'),
+					merchandiser_uuid: SE.uuid(),
+					merchandiser_name: SE.string('John'),
+					factory_uuid: SE.uuid(),
+					factory_name: SE.string('John'),
+					is_sample: SE.number(0),
+					is_bill: SE.number(0),
+					is_cash: SE.number(0),
+					marketing_priority: SE.string('Urgent'),
+					factory_priority: SE.string('FIFO'),
+					status: SE.number(0),
+					created_by_uuid: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					order_number_wise_rank: SE.number(1),
+					order_number_wise_count: SE.number(1),
+				}),
 			},
 		},
 	},
+};
+
+const order_description_fields = {
+	uuid: SE.uuid(),
+	order_info_uuid: SE.uuid(),
+	tape_received: SE.number(0),
+	item: SE.uuid(),
+	item_name: SE.string('nylon'),
+	item_short_name: SE.string('nylon'),
+	zipper_number: SE.uuid(),
+	zipper_number_name: SE.string('3'),
+	zipper_number_short_name: SE.string('3'),
+	end_type: SE.uuid(),
+	end_type_name: SE.string('Open End'),
+	end_type_short_name: SE.string('OE'),
+	lock_type: SE.uuid(),
+	lock_type_name: SE.string('Auto Lock'),
+	lock_type_short_name: SE.string('AL'),
+	puller_type: SE.uuid(),
+	puller_type_name: SE.string('Standard'),
+	puller_type_short_name: SE.string('S'),
+	teeth_color: SE.uuid(),
+	teeth_color_name: SE.string('Black'),
+	teeth_color_short_name: SE.string('B'),
+	puller_color: SE.uuid(),
+	puller_color_name: SE.string('Black'),
+	puller_color_short_name: SE.string('B'),
+	special_requirement: SE.string(
+		'{"values":"{\\"values\\":[\\"v3c2emB4mU1LV6j\\"]}"}'
+	),
+	hand: SE.uuid(),
+	hand_name: SE.string('Right'),
+	hand_short_name: SE.string('R'),
+	stopper_type: SE.uuid(),
+	stopper_type_name: SE.string('Metal'),
+	stopper_type_short_name: SE.string('M'),
+	coloring_type: SE.uuid(),
+	coloring_type_name: SE.string('Dyed'),
+	coloring_type_short_name: SE.string('D'),
+	is_slider_provided: SE.number(0),
+	slider: SE.uuid(),
+	slider_name: SE.string('John'),
+	slider_short_name: SE.string('John'),
+	top_stopper: SE.uuid(),
+	top_stopper_name: SE.string('John'),
+	top_stopper_short_name: SE.string('John'),
+	bottom_stopper: SE.uuid(),
+	bottom_stopper_name: SE.string('John'),
+	bottom_stopper_short_name: SE.string('John'),
+	logo_type: SE.uuid(),
+	logo_type_name: SE.string('John'),
+	logo_type_short_name: SE.string('John'),
+	is_logo_body: SE.number(0),
+	is_logo_puller: SE.number(0),
+	description: SE.string('description'),
+	status: SE.number(0),
+	created_at: SE.date_time(),
+	updated_at: SE.date_time(),
+	remarks: SE.string('Remarks'),
+	slider_body_shape: SE.uuid(),
+	slider_body_shape_name: SE.string('John'),
+	slider_body_shape_short_name: SE.string('John'),
+	slider_link: SE.uuid(),
+	slider_link_name: SE.string('John'),
+	slider_link_short_name: SE.string('John'),
+	end_user: SE.uuid(),
+	end_user_name: SE.string('John'),
+	end_user_short_name: SE.string('John'),
+	garment: SE.uuid(),
+	light_preference: SE.uuid(),
+	light_preference_name: SE.string('John'),
+	light_preference_short_name: SE.string('John'),
+	garments_wash: SE.uuid(),
+	garments_wash_name: SE.string('John'),
+	garments_wash_short_name: SE.string('John'),
+	puller_link: SE.uuid(),
+	puller_link_name: SE.string('John'),
+	puller_link_short_name: SE.string('John'),
+	created_by: SE.uuid(),
+	created_by_name: SE.string('John Doe'),
+	garments_remarks: SE.string('Remarks'),
+};
+
+const order_description_merge_schema_fields = {
+	order_description_uuid: SE.uuid(),
+	order_number: SE.string('Z24-0010'),
+	order_info_uuid: SE.uuid(),
+	item: SE.uuid(),
+	zipper_number: SE.uuid(),
+	end_type: SE.uuid(),
+	lock_type: SE.uuid(),
+	puller_type: SE.uuid(),
+	teeth_color: SE.uuid(),
+	puller_color: SE.uuid(),
+	special_requirement: SE.string(
+		'{"values":"{\\"values\\":[\\"v3c2emB4mU1LV6j\\"]}"}'
+	),
+	hand: SE.uuid(),
+	stopper_type: SE.uuid(),
+	coloring_type: SE.uuid(),
+	is_slider_provided: SE.number(0),
+	slider: SE.uuid(),
+	top_stopper: SE.uuid(),
+	bottom_stopper: SE.uuid(),
+	logo_type: SE.uuid(),
+	is_logo_body: SE.number(0),
+	is_logo_puller: SE.number(0),
+	description: SE.string('description'),
+	status: SE.number(0),
+	created_at: SE.date_time(),
+	updated_at: SE.date_time(),
+	remarks: SE.string('Remarks'),
+	slider_body_shape: SE.uuid(),
+	slider_link: SE.uuid(),
+	end_user: SE.uuid(),
+	garment: SE.uuid(),
+	light_preference: SE.uuid(),
+	garments_wash: SE.uuid(),
+	puller_link: SE.uuid(),
+	created_by: SE.uuid(),
+	created_by_name: SE.string('John Doe'),
+	garments_remarks: SE.string('Remarks'),
 };
 
 // * Zipper Order Description * //
@@ -559,319 +279,7 @@ export const pathZipperOrderDescription = {
 			tags: ['zipper.order_description'],
 			summary: 'Get all Order Description',
 			responses: {
-				200: {
-					description: 'Returns all Order Description',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									item: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									item_name: {
-										type: 'string',
-										example: 'John',
-									},
-									item_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									zipper_number: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									zipper_number_name: {
-										type: 'string',
-										example: 'John',
-									},
-									zipper_number_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									end_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_type_name: {
-										type: 'string',
-										example: 'John',
-									},
-									end_type_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									lock_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									lock_type_name: {
-										type: 'string',
-										example: 'John',
-									},
-									lock_type_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									puller_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_type_name: {
-										type: 'string',
-										example: 'John',
-									},
-									puller_type_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									teeth_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									teeth_color_name: {
-										type: 'string',
-										example: 'John',
-									},
-									teeth_color_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									puller_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_color_name: {
-										type: 'string',
-										example: 'John',
-									},
-									puller_color_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									special_requirement: {
-										type: 'string',
-										example:
-											'{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
-									},
-									hand: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									hand_name: {
-										type: 'string',
-										example: 'John',
-									},
-									hand_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									stopper_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									stopper_type_name: {
-										type: 'string',
-										example: 'John',
-									},
-									stopper_type_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									coloring_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									coloring_type_name: {
-										type: 'string',
-										example: 'John',
-									},
-									coloring_type_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									is_slider_provided: {
-										type: 'integer',
-										example: 0,
-									},
-									slider: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									slider_name: {
-										type: 'string',
-										example: 'John',
-									},
-									slider_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									top_stopper: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									top_stopper_name: {
-										type: 'string',
-										example: 'John',
-									},
-									top_stopper_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									bottom_stopper: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									bottom_stopper_name: {
-										type: 'string',
-										example: 'John',
-									},
-									bottom_stopper_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									logo_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									logo_type_name: {
-										type: 'string',
-										example: 'John',
-									},
-									logo_type_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									is_logo_body: {
-										type: 'integer',
-										example: 0,
-									},
-									is_logo_puller: {
-										type: 'integer',
-										example: 0,
-									},
-									description: {
-										type: 'string',
-										example: 'description',
-									},
-									status: {
-										type: 'integer',
-										example: 0,
-									},
-									created_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									slider_body_shape: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									slider_body_shape_name: {
-										type: 'string',
-										example: 'John',
-									},
-									slider_body_shape_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									slider_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									slider_link_name: {
-										type: 'string',
-										example: 'John',
-									},
-									slider_link_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									end_user: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_user_name: {
-										type: 'string',
-										example: 'John',
-									},
-									end_user_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									garment: {
-										type: 'string',
-										example: 'garments',
-									},
-									light_preference: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									light_preference_name: {
-										type: 'string',
-										example: 'John',
-									},
-									light_preference_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									garments_wash: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									garments_wash_name: {
-										type: 'string',
-										example: 'John',
-									},
-									garments_wash_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									puller_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_link_name: {
-										type: 'string',
-										example: 'John',
-									},
-									puller_link_short_name: {
-										type: 'string',
-										example: 'John',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									garments_remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, order_description_fields),
 			},
 		},
 		post: {
@@ -881,166 +289,9 @@ export const pathZipperOrderDescription = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description: 'Order Description',
-					required: true,
-					schema: {
-						$ref: '#/definitions/zipper/order_description',
-					},
-				},
-			],
+			requestBody: SE.requestBody_schema_ref('zipper/order_description'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							order_info_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							item: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							zipper_number: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							end_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							lock_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							puller_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							teeth_color: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							puller_color: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							special_requirement: {
-								type: 'string',
-								example: '{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
-							},
-							hand: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							stopper_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							coloring_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							is_slider_provided: {
-								type: 'integer',
-								example: 0,
-							},
-							slider: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							top_stopper: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							bottom_stopper: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							logo_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							is_logo_body: {
-								type: 'integer',
-								example: 0,
-							},
-							is_logo_puller: {
-								type: 'integer',
-								example: 0,
-							},
-							description: {
-								type: 'string',
-								example: 'description',
-							},
-							status: {
-								type: 'integer',
-								example: 0,
-							},
-							created_at: {
-								type: 'string',
-								example: '2021-08-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								example: '2021-08-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'Remarks',
-							},
-							slider_body_shape: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							slider_link: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							end_user: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							garment: {
-								type: 'string',
-								example: 'garments',
-							},
-							light_preference: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							garments_wash: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							puller_link: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'John Doe',
-							},
-							garments_remarks: {
-								type: 'string',
-								example: 'Remarks',
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'zipper/order_description'),
 				405: {
 					description: 'Invalid input',
 				},
@@ -1054,23 +305,11 @@ export const pathZipperOrderDescription = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'orderDescription to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_uuid('GET DATA')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema(200, order_description_fields),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -1080,180 +319,50 @@ export const pathZipperOrderDescription = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'order description to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/order_description',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('PUT DATA')],
+			requestBody: SE.requestBody_schema_ref({
+				order_info_uuid: SE.uuid(),
+				item: SE.uuid(),
+				zipper_number: SE.uuid(),
+				end_type: SE.uuid(),
+				lock_type: SE.uuid(),
+				puller_type: SE.uuid(),
+				teeth_color: SE.uuid(),
+				puller_color: SE.uuid(),
+				special_requirement: SE.string(
+					'{"values":"{\\"values\\":[\\"v3c2emB4mU1LV6j\\"]}"}'
+				),
+				hand: SE.uuid(),
+				stopper_type: SE.uuid(),
+				coloring_type: SE.uuid(),
+				is_slider_provided: SE.number(0),
+				slider: SE.uuid(),
+				top_stopper: SE.uuid(),
+				bottom_stopper: SE.uuid(),
+				logo_type: SE.uuid(),
+				is_logo_body: SE.number(0),
+				is_logo_puller: SE.number(0),
+				description: SE.string('description'),
+				status: SE.number(0),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				remarks: SE.string('Remarks'),
+				slider_body_shape: SE.uuid(),
+				slider_link: SE.uuid(),
+				end_user: SE.uuid(),
+				garment: SE.uuid(),
+				light_preference: SE.uuid(),
+				garments_wash: SE.uuid(),
+				puller_link: SE.uuid(),
+				created_by: SE.uuid(),
+				created_by_name: SE.string('John Doe'),
+				garments_remarks: SE.string('Remarks'),
+			}),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							order_info_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							item: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							zipper_number: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							end_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							lock_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							puller_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							teeth_color: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							puller_color: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							special_requirement: {
-								type: 'string',
-								example: '{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
-							},
-							hand: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							stopper_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							coloring_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							is_slider_provided: {
-								type: 'integer',
-								example: 0,
-							},
-							slider: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							top_stopper: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							bottom_stopper: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							logo_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							is_logo_body: {
-								type: 'integer',
-								example: 0,
-							},
-							is_logo_puller: {
-								type: 'integer',
-								example: 0,
-							},
-							description: {
-								type: 'string',
-								example: 'description',
-							},
-							status: {
-								type: 'integer',
-								example: 0,
-							},
-							created_at: {
-								type: 'string',
-								example: '2021-08-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								example: '2021-08-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'Remarks',
-							},
-							slider_body_shape: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							slider_link: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							end_user: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							garment: {
-								type: 'string',
-								example: 'garments',
-							},
-							light_preference: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							garments_wash: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							puller_link: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'John Doe',
-							},
-							garments_remarks: {
-								type: 'string',
-								example: 'Remarks',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'order description not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/order_description'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1262,23 +371,11 @@ export const pathZipperOrderDescription = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'order description to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_uuid('order description to delete')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Order Description not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1290,177 +387,18 @@ export const pathZipperOrderDescription = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'order_description_uuid',
-					in: 'path',
-					description: 'orderDescription to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid(
+					'orderDescription to get',
+					'order_description_uuid'
+				),
 			],
 			responses: {
-				200: {
-					description:
-						'Returns all Order Description Full by Order Description UUID',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0010',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									item: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									zipper_number: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									lock_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									teeth_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									special_requirement: {
-										type: 'string',
-										example:
-											'{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
-									},
-									hand: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									stopper_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									coloring_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									is_slider_provided: {
-										type: 'integer',
-										example: 0,
-									},
-									slider: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									top_stopper: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									bottom_stopper: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									logo_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									is_logo_body: {
-										type: 'integer',
-										example: 0,
-									},
-									is_logo_puller: {
-										type: 'integer',
-										example: 0,
-									},
-									description: {
-										type: 'string',
-										example: 'description',
-									},
-									status: {
-										type: 'integer',
-										example: 0,
-									},
-									created_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									slider_body_shape: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									slider_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_user: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									garment: {
-										type: 'string',
-										example: 'garments',
-									},
-									light_preference: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									garments_wash: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema(
+					200,
+					order_description_merge_schema_fields
+				),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1473,278 +411,45 @@ export const pathZipperOrderDescription = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'order_description_uuid',
-					in: 'path',
-					description: 'orderDescription to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid(
+					'orderDescription to get',
+					'order_description_uuid'
+				),
 			],
 			responses: {
-				200: {
-					description:
-						'Returns all Order Description UUID to get Order Description and Order Entry',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0010',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									item: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									zipper_number: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									lock_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									teeth_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									special_requirement: {
-										type: 'string',
-										example:
-											'{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
-									},
-									hand: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									stopper_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									coloring_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									is_slider_provided: {
-										type: 'integer',
-										example: 0,
-									},
-									slider: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									top_stopper: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									bottom_stopper: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									logo_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									is_logo_body: {
-										type: 'integer',
-										example: 0,
-									},
-									is_logo_puller: {
-										type: 'integer',
-										example: 0,
-									},
-									description: {
-										type: 'string',
-										example: 'description',
-									},
-									status: {
-										type: 'integer',
-										example: 0,
-									},
-									created_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									slider_body_shape: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									slider_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_user: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									garment: {
-										type: 'string',
-										example: 'garments',
-									},
-									light_preference: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									garments_wash: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									order_entry: {
-										type: 'object',
-										properties: {
-											order_entry_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											order_description_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											style: {
-												type: 'string',
-												example: 'style 1',
-											},
-											color: {
-												type: 'string',
-												example: 'black',
-											},
-											size: {
-												type: 'number',
-												example: 10,
-											},
-											quantity: {
-												type: 'number',
-												example: 100,
-											},
-											company_price: {
-												type: 'number',
-												example: 10.5,
-											},
-											party_price: {
-												type: 'number',
-												example: 10.5,
-											},
-											status: {
-												type: 'integer',
-												example: 0,
-											},
-											swatch_status: {
-												type: 'string',
-												example: 'Pending',
-											},
-											swap_approval_date: {
-												type: 'string',
-												example: '2021-08-01 00:00:00',
-											},
-											created_by: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											created_at: {
-												type: 'string',
-												example: '2021-08-01 00:00:00',
-											},
-											updated_at: {
-												type: 'string',
-												example: '2021-08-01 00:00:00',
-											},
-											teeth_molding_stock: {
-												type: 'number',
-												example: 10,
-											},
-											teeth_molding_prod: {
-												type: 'number',
-												example: 10,
-											},
-											total_teeth_molding: {
-												type: 'number',
-												example: 10,
-											},
-											teeth_coloring_stock: {
-												type: 'number',
-												example: 10,
-											},
-											teeth_coloring_prod: {
-												type: 'number',
-												example: 10,
-											},
-											total_teeth_coloring: {
-												type: 'number',
-												example: 10,
-											},
-											finishing_stock: {
-												type: 'number',
-												example: 10,
-											},
-											finishing_prod: {
-												type: 'number',
-												example: 10,
-											},
-											total_finishing: {
-												type: 'number',
-												example: 10,
-											},
-											coloring_prod: {
-												type: 'number',
-												example: 10,
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema(200, {
+					...order_description_merge_schema_fields,
+					order_entry: SE.sub_response_schema({
+						order_entry_uuid: SE.uuid(),
+						order_description_uuid: SE.uuid(),
+						style: SE.string('style 1'),
+						color: SE.string('black'),
+						size: SE.number(10),
+						quantity: SE.number(100),
+						company_price: SE.number(10.5),
+						party_price: SE.number(10.5),
+						status: SE.number(0),
+						swatch_status: SE.string('Pending'),
+						swatch_approval_date: SE.date_time(),
+						created_by: SE.uuid(),
+						created_at: SE.date_time(),
+						updated_at: SE.date_time(),
+						teeth_molding_stock: SE.number(10),
+						teeth_molding_prod: SE.number(10),
+						total_teeth_molding: SE.number(10),
+						teeth_coloring_stock: SE.number(10),
+						teeth_coloring_prod: SE.number(10),
+						total_teeth_coloring: SE.number(10),
+						finishing_stock: SE.number(10),
+						finishing_prod: SE.number(10),
+						total_finishing: SE.number(10),
+						coloring_prod: SE.number(10),
+						created_by: SE.uuid(),
+						created_by_name: SE.string('John Doe'),
+					}),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1757,279 +462,40 @@ export const pathZipperOrderDescription = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'order_number',
-					in: 'path',
-					description: 'orderDescription to get',
-					required: true,
-					type: 'string',
-					example: 'Z24-0010',
-				},
+				SE.parameter_uuid('orderDescription to get', 'order_number'),
 			],
 			responses: {
-				200: {
-					description:
-						'Returns all Order Number to get Order Description and Order Entry',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0010',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									item: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									zipper_number: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									lock_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									teeth_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									special_requirement: {
-										type: 'string',
-										example:
-											'{igD0v9DIJQhJeet,igD0v9DIJQhJeey}',
-									},
-									hand: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									stopper_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									coloring_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									is_slider_provided: {
-										type: 'integer',
-										example: 0,
-									},
-									slider: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									top_stopper: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									bottom_stopper: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									logo_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									is_logo_body: {
-										type: 'integer',
-										example: 0,
-									},
-									is_logo_puller: {
-										type: 'integer',
-										example: 0,
-									},
-									description: {
-										type: 'string',
-										example: 'description',
-									},
-									status: {
-										type: 'integer',
-										example: 0,
-									},
-									created_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									slider_body_shape: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									slider_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_user: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									garment: {
-										type: 'string',
-										example: 'garments',
-									},
-									light_preference: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									garments_wash: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									order_entry: {
-										type: 'object',
-										properties: {
-											order_entry_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											order_description_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											style: {
-												type: 'string',
-												example: 'style 1',
-											},
-											color: {
-												type: 'string',
-												example: 'black',
-											},
-											size: {
-												type: 'number',
-												example: 10,
-											},
-											quantity: {
-												type: 'number',
-												example: 100,
-											},
-											company_price: {
-												type: 'number',
-												example: 10.5,
-											},
-											party_price: {
-												type: 'number',
-												example: 10.5,
-											},
-											status: {
-												type: 'integer',
-												example: 0,
-											},
-											swatch_status: {
-												type: 'string',
-												example: 'Pending',
-											},
-											swap_approval_date: {
-												type: 'string',
-												example: '2021-08-01 00:00:00',
-											},
-											created_by: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											created_at: {
-												type: 'string',
-												example: '2021-08-01 00:00:00',
-											},
-											updated_at: {
-												type: 'string',
-												example: '2021-08-01 00:00:00',
-											},
-											teeth_molding_stock: {
-												type: 'number',
-												example: 10,
-											},
-											teeth_molding_prod: {
-												type: 'number',
-												example: 10,
-											},
-											total_teeth_molding: {
-												type: 'number',
-												example: 10,
-											},
-											teeth_coloring_stock: {
-												type: 'number',
-												example: 10,
-											},
-											teeth_coloring_prod: {
-												type: 'number',
-												example: 10,
-											},
-											total_teeth_coloring: {
-												type: 'number',
-												example: 10,
-											},
-											finishing_stock: {
-												type: 'number',
-												example: 10,
-											},
-											finishing_prod: {
-												type: 'number',
-												example: 10,
-											},
-											total_finishing: {
-												type: 'number',
-												example: 10,
-											},
-											coloring_prod: {
-												type: 'number',
-												example: 10,
-											},
-											created_by: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											created_by_name: {
-												type: 'string',
-												example: 'John Doe',
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					...order_description_merge_schema_fields,
+					order_entry: SE.sub_response_schema({
+						order_entry_uuid: SE.uuid(),
+						order_description_uuid: SE.uuid(),
+						style: SE.string('style 1'),
+						color: SE.string('black'),
+						size: SE.number(10),
+						quantity: SE.number(100),
+						company_price: SE.number(10.5),
+						party_price: SE.number(10.5),
+						status: SE.number(0),
+						swatch_status: SE.string('Pending'),
+						swatch_approval_date: SE.date_time(),
+						created_by: SE.uuid(),
+						created_at: SE.date_time(),
+						updated_at: SE.date_time(),
+						teeth_molding_stock: SE.number(10),
+						teeth_molding_prod: SE.number(10),
+						total_teeth_molding: SE.number(10),
+						teeth_coloring_stock: SE.number(10),
+						teeth_coloring_prod: SE.number(10),
+						total_teeth_coloring: SE.number(10),
+						finishing_stock: SE.number(10),
+						finishing_prod: SE.number(10),
+						total_finishing: SE.number(10),
+						coloring_prod: SE.number(10),
+						created_by: SE.uuid(),
+						created_by_name: SE.string('John Doe'),
+					}),
+				}),
 				400: {
 					description: 'Invalid UUID supplied',
 				},
@@ -2041,6 +507,50 @@ export const pathZipperOrderDescription = {
 	},
 };
 
+const order_entry_fields = {
+	uuid: SE.uuid(),
+	order_description_uuid: SE.uuid(),
+	style: SE.string('style 1'),
+	color: SE.string('black'),
+	size: SE.number(10),
+	quantity: SE.number(100),
+	company_price: SE.number(10.5),
+	party_price: SE.number(10.5),
+	status: SE.number(0),
+	swatch_status: SE.string('Pending'),
+	swatch_approval_date: SE.date_time(),
+	created_by: SE.uuid(),
+	created_at: SE.date_time(),
+	updated_at: SE.date_time(),
+};
+
+const order_entry_merge_schema_fields = {
+	order_entry_uuid: SE.uuid(),
+	order_description_uuid: SE.uuid(),
+	style: SE.string('style 1'),
+	color: SE.string('black'),
+	size: SE.number(10),
+	quantity: SE.number(100),
+	company_price: SE.number(10.5),
+	party_price: SE.number(10.5),
+	status: SE.number(0),
+	swatch_status: SE.string('Pending'),
+	swatch_approval_date: SE.date_time(),
+	created_by: SE.uuid(),
+	created_at: SE.date_time(),
+	updated_at: SE.date_time(),
+	teeth_molding_stock: SE.number(10),
+	teeth_molding_prod: SE.number(10),
+	total_teeth_molding: SE.number(10),
+	teeth_coloring_stock: SE.number(10),
+	teeth_coloring_prod: SE.number(10),
+	total_teeth_coloring: SE.number(10),
+	finishing_stock: SE.number(10),
+	finishing_prod: SE.number(10),
+	total_finishing: SE.number(10),
+	coloring_prod: SE.number(10),
+};
+
 // * Zipper Order Entry * //
 export const pathZipperOrderEntry = {
 	'/zipper/order-entry': {
@@ -2048,78 +558,10 @@ export const pathZipperOrderEntry = {
 			tags: ['zipper.order_entry'],
 			summary: 'Get all Order Entry',
 			responses: {
-				200: {
-					description: 'Returns all Order Entry',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									style: {
-										type: 'string',
-										example: 'style 1',
-									},
-									color: {
-										type: 'string',
-										example: 'black',
-									},
-									size: {
-										type: 'number',
-										example: 10,
-									},
-									quantity: {
-										type: 'number',
-										example: 100,
-									},
-									company_price: {
-										type: 'number',
-										example: 10.5,
-									},
-									party_price: {
-										type: 'number',
-										example: 10.5,
-									},
-									status: {
-										type: 'integer',
-										example: 0,
-									},
-									swatch_status: {
-										type: 'string',
-										example: 'Pending',
-									},
-									swap_approval_date: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, order_entry_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		post: {
@@ -2129,30 +571,12 @@ export const pathZipperOrderEntry = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				description: 'Order Entry',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/order_entry',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/order_entry'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/order_entry',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/order_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2163,33 +587,12 @@ export const pathZipperOrderEntry = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'orderEntry to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('order entry to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/order_entry',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema(200, order_entry_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -2199,46 +602,37 @@ export const pathZipperOrderEntry = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'order entry to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
-			requestBody: {
-				description: 'Order Entry',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/order_entry',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('order entry to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref({
+				order_description_uuid: SE.uuid(),
+				style: SE.string('style 1'),
+				color: SE.string('black'),
+				size: SE.number(10),
+				quantity: SE.number(100),
+				company_price: SE.number(10.5),
+				party_price: SE.number(10.5),
+				status: SE.number(0),
+				swatch_status: SE.string('Pending'),
+				swatch_approval_date: SE.date_time(),
+				created_by: SE.uuid(),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				teeth_molding_stock: SE.number(10),
+				teeth_molding_prod: SE.number(10),
+				total_teeth_molding: SE.number(10),
+				teeth_coloring_stock: SE.number(10),
+				teeth_coloring_prod: SE.number(10),
+				total_teeth_coloring: SE.number(10),
+				finishing_stock: SE.number(10),
+				finishing_prod: SE.number(10),
+				total_finishing: SE.number(10),
+				coloring_prod: SE.number(10),
+			}),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/order_entry',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'order entry not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/order_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2247,26 +641,12 @@ export const pathZipperOrderEntry = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'order entry to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_uuid('order entry to delete', 'uuid')],
 			responses: {
-				200: {
-					description: 'order entry deleted',
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Order Entry not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2278,135 +658,40 @@ export const pathZipperOrderEntry = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'order_description_uuid',
-					in: 'path',
-					description: 'orderDescription to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid(
+					'orderDescription to get',
+					'order_description_uuid'
+				),
 			],
 			responses: {
-				200: {
-					description:
-						'Returns all Order Entry Full By Order Description UUID',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									order_entry_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									style: {
-										type: 'string',
-										example: 'style 1',
-									},
-									color: {
-										type: 'string',
-										example: 'black',
-									},
-									size: {
-										type: 'number',
-										example: 10,
-									},
-									quantity: {
-										type: 'number',
-										example: 100,
-									},
-									company_price: {
-										type: 'number',
-										example: 10.5,
-									},
-									party_price: {
-										type: 'number',
-										example: 10.5,
-									},
-									status: {
-										type: 'integer',
-										example: 0,
-									},
-									swatch_status: {
-										type: 'string',
-										example: 'Pending',
-									},
-									swap_approval_date: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										example: '2021-08-01 00:00:00',
-									},
-									teeth_molding_stock: {
-										type: 'number',
-										example: 10,
-									},
-									teeth_molding_prod: {
-										type: 'number',
-										example: 10,
-									},
-									total_teeth_molding: {
-										type: 'number',
-										example: 10,
-									},
-									teeth_coloring_stock: {
-										type: 'number',
-										example: 10,
-									},
-									teeth_coloring_prod: {
-										type: 'number',
-										example: 10,
-									},
-									total_teeth_coloring: {
-										type: 'number',
-										example: 10,
-									},
-									finishing_stock: {
-										type: 'number',
-										example: 10,
-									},
-									finishing_prod: {
-										type: 'number',
-										example: 10,
-									},
-									total_finishing: {
-										type: 'number',
-										example: 10,
-									},
-									coloring_prod: {
-										type: 'number',
-										example: 10,
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Order Entry not found',
-				},
+				200: SE.response_schema(200, order_entry_merge_schema_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
+};
+
+const sfg_extra_fields = {
+	uuid: SE.uuid(),
+	order_entry_uuid: SE.uuid(),
+	order_description_uuid: SE.uuid(),
+	order_quantity: SE.number(10),
+	recipe_uuid: SE.uuid(),
+	recipe_name: SE.string('recipe 1'),
+	dying_and_iron_prod: SE.number(10),
+	teeth_molding_stock: SE.number(10),
+	teeth_molding_prod: SE.number(10),
+	teeth_coloring_stock: SE.number(10),
+	teeth_coloring_prod: SE.number(10),
+	finishing_stock: SE.number(10),
+	finishing_prod: SE.number(10),
+	coloring_prod: SE.number(10),
+	warehouse: SE.number(10),
+	delivered: SE.number(10),
+	pi: SE.number(10),
+	remarks: SE.string('Remarks'),
 };
 
 // * Zipper SFG * //
@@ -2417,107 +702,17 @@ export const pathZipperSfg = {
 			operationId: 'findSfgByRecipeUuid',
 			produces: ['application/json', 'application/xml'],
 			parameters: [
-				{
-					name: 'recipe_uuid',
-					in: 'query',
-					description: 'recipe_uuid to filter SFGs.',
-					required: false,
-					type: 'array',
-					items: {
-						type: 'string',
-						enum: ['true', 'false'],
-						default: 'false',
-					},
-					collectionFormat: 'multi',
-				},
+				SE.parameter_query('recipe_uuid', 'recipe_uuid', [
+					'true',
+					'false',
+				]),
 			],
 			summary: 'Get all SFG',
 			responses: {
-				200: {
-					description: 'Returns all SFG',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_entry_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									recipe_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									recipe_name: {
-										type: 'string',
-										example: 'recipe 1',
-									},
-									dying_and_iron_prod: {
-										type: 'number',
-										example: 10,
-									},
-									teeth_molding_stock: {
-										type: 'number',
-										example: 10,
-									},
-									teeth_molding_prod: {
-										type: 'number',
-										example: 10,
-									},
-									teeth_coloring_stock: {
-										type: 'number',
-										example: 10,
-									},
-									teeth_coloring_prod: {
-										type: 'number',
-										example: 10,
-									},
-									finishing_stock: {
-										type: 'number',
-										example: 10,
-									},
-									finishing_prod: {
-										type: 'number',
-										example: 10,
-									},
-									coloring_prod: {
-										type: 'number',
-										example: 10,
-									},
-									warehouse: {
-										type: 'string',
-										example: 'warehouse 1',
-									},
-									delivered: {
-										type: 'number',
-										example: 10,
-									},
-									pi: {
-										type: 'string',
-										example: 'pi 1',
-									},
-
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, sfg_extra_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		post: {
@@ -2527,30 +722,12 @@ export const pathZipperSfg = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				description: 'SFG object that needs to be added to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/sfg',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/sfg'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema(200, sfg_extra_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2561,33 +738,12 @@ export const pathZipperSfg = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfg to get',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('SFG to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'Returns a SFG',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/zipper/sfg',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema(200, sfg_extra_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -2597,48 +753,31 @@ export const pathZipperSfg = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfg to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				description:
-					'SFG object that needs to be updated to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/sfg',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('sfg to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref({
+				order_entry_uuid: SE.uuid(),
+				order_description_uuid: SE.uuid(),
+				order_quantity: SE.number(10),
+				recipe_uuid: SE.uuid(),
+				recipe_name: SE.string('recipe 1'),
+				dying_and_iron_prod: SE.number(10),
+				teeth_molding_stock: SE.number(10),
+				teeth_molding_prod: SE.number(10),
+				teeth_coloring_stock: SE.number(10),
+				teeth_coloring_prod: SE.number(10),
+				finishing_stock: SE.number(10),
+				finishing_prod: SE.number(10),
+				coloring_prod: SE.number(10),
+				warehouse: SE.number(10),
+				delivered: SE.number(10),
+				pi: SE.number(10),
+				remarks: SE.string('Remarks'),
+			}),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'sfg not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema(200, sfg_extra_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2647,32 +786,12 @@ export const pathZipperSfg = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfg to delete',
-					required: true,
-					type: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('sfg to delete', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'SFG not found',
-				},
+				200: SE.response_schema(200, sfg_extra_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2681,66 +800,20 @@ export const pathZipperSfg = {
 			tags: ['zipper.sfg'],
 			summary: 'Get all SFG Swatch Info',
 			responses: {
-				200: {
-					description: 'Returns all SFG Swatch Info',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_entry_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									style: {
-										type: 'string',
-										example: 'style 1',
-									},
-									color: {
-										type: 'string',
-										example: 'black',
-									},
-									size: {
-										type: 'number',
-										example: 10,
-									},
-									quantity: {
-										type: 'number',
-										example: 10,
-									},
-									recipe_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									recipe_name: {
-										type: 'string',
-										example: 'recipe 1',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0010',
-									},
-									item_description: {
-										type: 'string',
-										example: 'item description',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					style: SE.string('style 1'),
+					color: SE.string('black'),
+					size: SE.number(10),
+					quantity: SE.number(100),
+					recipe_uuid: SE.uuid(),
+					recipe_name: SE.string('recipe 1'),
+					remarks: SE.string('Remarks'),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-SP'),
+				}),
 			},
 		},
 	},
@@ -2752,57 +825,32 @@ export const pathZipperSfg = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfg to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				description:
-					'SFG object that needs to be updated to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							type: 'object',
-							properties: {
-								recipe_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-							},
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('sfg to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref({
+				recipe_uuid: SE.uuid(),
+			}),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'sfg not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/sfg'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
+};
+
+const sfg_production_extra_fields = {
+	uuid: SE.uuid(),
+	sfg_uuid: SE.uuid(),
+	section: SE.string('section 1'),
+	used_quantity: SE.number(10),
+	production_quantity: SE.number(10),
+	wastage: SE.number(10),
+	created_by: SE.uuid(),
+	user_name: SE.string('John Doe'),
+	created_at: SE.date_time(),
+	updated_at: SE.date_time(),
+	remarks: SE.string('Remarks'),
 };
 
 // * Zipper SFG Production * //
@@ -2812,73 +860,10 @@ export const pathZipperSfgProduction = {
 			tags: ['zipper.sfg_production'],
 			summary: 'Get all SFG Production',
 			responses: {
-				200: {
-					description: 'Returns all SFG Production',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									sfg_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									section: {
-										type: 'string',
-										example: 'section 1',
-									},
-									used_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									production_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									wastage: {
-										type: 'number',
-										example: 10,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									user_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									user_designation: {
-										type: 'string',
-										example: 'Manager',
-									},
-									user_department: {
-										type: 'string',
-										example: 'Production',
-									},
-
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, sfg_production_extra_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		post: {
@@ -2888,30 +873,12 @@ export const pathZipperSfgProduction = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				description:
-					'SFG Production object that needs to be added to the zipper',
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/sfg_production',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/sfg_production'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg_production',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/sfg_production'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2922,32 +889,12 @@ export const pathZipperSfgProduction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfgProduction to get',
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('SFG Production to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'Returns a SFG Production',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/zipper/sfg_production',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema_ref(200, 'zipper/sfg_production'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -2957,48 +904,24 @@ export const pathZipperSfgProduction = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfg production to update',
-
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				description:
-					'SFG Production object that needs to be updated to the zipper',
-
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/sfg_production',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('sfg production to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref({
+				sfg_uuid: SE.uuid(),
+				section: SE.string('section 1'),
+				used_quantity: SE.number(10),
+				production_quantity: SE.number(10),
+				wastage: SE.number(10),
+				created_by: SE.uuid(),
+				user_name: SE.string('John Doe'),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				remarks: SE.string('Remarks'),
+			}),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg_production',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'sfg production not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.requestBody_schema_ref(200, 'zipper/sfg_production'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -3007,36 +930,31 @@ export const pathZipperSfgProduction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfg production to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('sfg production to delete', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg_production',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'SFG Production not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
+};
+
+const sfg_transaction_extra_fields = {
+	uuid: SE.uuid(),
+	order_entry_uuid: SE.uuid(),
+	order_description_uuid: SE.uuid(),
+	order_quantity: SE.number(10),
+	trx_from: SE.string('trx from'),
+	trx_to: SE.string('trx to'),
+	trx_quantity: SE.number(10),
+	slider_item_uuid: SE.uuid(),
+	created_by: SE.uuid(),
+	created_by_name: SE.string('John Doe'),
+	remarks: SE.string('Remarks'),
+	created_at: SE.date_time(),
+	updated_at: SE.date_time(),
 };
 
 // * Zipper SFG Transaction * //
@@ -3046,84 +964,10 @@ export const pathZipperSfgTransaction = {
 			tags: ['zipper.sfg_transaction'],
 			summary: 'Get all SFG Transaction',
 			responses: {
-				200: {
-					description: 'Returns all SFG Transaction',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_entry_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									trx_from: {
-										type: 'string',
-										example: 'trx from',
-									},
-									trx_to: {
-										type: 'string',
-										example: 'trx to',
-									},
-									trx_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									slider_item_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									user_designation: {
-										type: 'string',
-										example: 'HR',
-									},
-									user_department: {
-										type: 'string',
-										example: 'HR',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2021-08-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2021-08-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, sfg_transaction_extra_fields),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		post: {
@@ -3133,30 +977,12 @@ export const pathZipperSfgTransaction = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				description:
-					'SFG Transaction object that needs to be added to the zipper',
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/sfg_transaction',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/sfg_transaction'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg_transaction',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/sfg_transaction'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -3167,32 +993,12 @@ export const pathZipperSfgTransaction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfgTransaction to get',
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('SFG Transaction to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'Returns a SFG Transaction',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/zipper/sfg_transaction',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema_ref(200, 'zipper/sfg_transaction'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -3203,46 +1009,27 @@ export const pathZipperSfgTransaction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfg transaction to update',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('sfg transaction to update', 'uuid'),
 			],
-			requestBody: {
-				description:
-					'SFG Transaction object that needs to be updated to the zipper',
-
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/sfg_transaction',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref({
+				order_entry_uuid: SE.uuid(),
+				order_description_uuid: SE.uuid(),
+				order_quantity: SE.number(10),
+				trx_from: SE.string('trx from'),
+				trx_to: SE.string('trx to'),
+				trx_quantity: SE.number(10),
+				slider_item_uuid: SE.uuid(),
+				created_by: SE.uuid(),
+				created_by_name: SE.string('John Doe'),
+				remarks: SE.string('Remarks'),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+			}),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg_transaction',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'sfg transaction not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/sfg_transaction'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -3252,31 +1039,13 @@ export const pathZipperSfgTransaction = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'sfg transaction to delete',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('sfg transaction to delete', 'uuid'),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/sfg_transaction',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'SFG Transaction not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -3289,19 +1058,7 @@ export const pathZipperBatch = {
 			tags: ['zipper.batch'],
 			summary: 'Get all Batch',
 			responses: {
-				200: {
-					description: 'Returns all Batch',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/batch',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'zipper/batch'),
 			},
 		},
 		post: {
@@ -3311,31 +1068,12 @@ export const pathZipperBatch = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				description:
-					'Batch object that needs to be added to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/batch',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/batch'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/batch',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.requestBody_schema_ref(200, 'zipper/batch'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -3346,33 +1084,12 @@ export const pathZipperBatch = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'batch to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_uuid('batch to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'Returns a Batch',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/zipper/batch',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema_ref(200, 'zipper/batch'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -3382,48 +1099,13 @@ export const pathZipperBatch = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'batch to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				description:
-					'Batch object that needs to be updated to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/batch',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('batch to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('zipper/batch'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/batch',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'batch not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/batch'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -3433,17 +1115,7 @@ export const pathZipperBatch = {
 			summary: 'Get a Batch by Batch UUID',
 			description: '',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'batch_uuid',
-					in: 'path',
-					description: 'Batch UUID to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('batch to get', 'batch_uuid')],
 			responses: {
 				200: {
 					description: 'Returns a Batch',

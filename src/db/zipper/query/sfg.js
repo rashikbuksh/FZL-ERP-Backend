@@ -101,7 +101,9 @@ export async function selectAll(req, res, next) {
 			labDipSchema.recipe,
 			eq(sfg.recipe_uuid, labDipSchema.recipe.uuid)
 		)
-		.where(recipe_uuid == 'true' ? sql`sfg.recipe_uuid IS NOT NULL` : null);
+		.where(
+			recipe_uuid === 'true' ? sql`sfg.recipe_uuid IS NOT NULL` : null
+		);
 
 	const toast = {
 		status: 200,

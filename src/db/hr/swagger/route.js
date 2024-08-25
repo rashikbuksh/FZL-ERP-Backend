@@ -96,10 +96,7 @@ export const pathHrUser = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				SE.parameter_uuid('hr.user to update'),
-				SE.parameter_schema_ref('Update a hr.user', 'hr/user'),
-			],
+			parameters: [SE.parameter_uuid('hr.user to update')],
 			requestBody: SE.requestBody({
 				name: SE.string('John Doe'),
 				email: SE.string('john@fzl.com'),
@@ -232,7 +229,7 @@ export const pathHrUser = {
 					uuid: SE.uuid(),
 					name: SE.string('John Doe'),
 					email: SE.string('admin@fzl.com'),
-					designaiton_uuid: SE.uuid(),
+					designation_uuid: SE.uuid(),
 					designation: SE.string('Admin'),
 					ext: SE.string('123'),
 					phone: SE.string('01521533595'),
