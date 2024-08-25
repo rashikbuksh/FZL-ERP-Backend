@@ -28,6 +28,10 @@ threadRouter.get('/order-info/:uuid', order_infoOperations.select);
 threadRouter.post('/order-info', order_infoOperations.insert);
 threadRouter.put('/order-info/:uuid', order_infoOperations.update);
 threadRouter.delete('/order-info/:uuid', order_infoOperations.remove);
+threadRouter.get(
+	'/order-info-details/by/:order_info_uuid',
+	order_infoOperations.selectOrderDetailsByOrderInfoUuid
+);
 
 // order_entry routes
 threadRouter.get('/order-entry', order_entryOperations.selectAll);
@@ -35,6 +39,10 @@ threadRouter.get('/order-entry/:uuid', order_entryOperations.select);
 threadRouter.post('/order-entry', order_entryOperations.insert);
 threadRouter.put('/order-entry/:uuid', order_entryOperations.update);
 threadRouter.delete('/order-entry/:uuid', order_entryOperations.remove);
+threadRouter.get(
+	'/order-entry/by/:order_info_uuid',
+	order_entryOperations.selectOrderEntryByOrderInfoUuid
+);
 
 // batch_entry routes
 threadRouter.get('/batch-entry', batch_entryOperations.selectAll);

@@ -114,7 +114,9 @@ export const order_entry = thread.table('order_entry', {
 	party_price: PG_DECIMAL('party_price').default(0),
 	swatch_approval_date: DateTime('swatch_approval_date').default(null),
 	production_quantity: PG_DECIMAL('production_quantity').default(0),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_by: defaultUUID('created_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

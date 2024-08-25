@@ -198,3 +198,36 @@ export async function select(req, res, next) {
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
+
+export async function selectOrderDetailsByOrderInfoUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { order_info_uuid } = req.params;
+
+	try {
+		const api = await createApi(req);
+
+		const fetchData = async (endpoint) =>
+			await api.get(`/thread/${endpoint}/${order_info_uuid}`);
+
+		const [order_info, order_info_entry] = await Promise.all([
+			fetchData('order-info'),
+			fetchData('order-entry/by'),
+		]);
+
+		const response = {
+			...order_info?.data?.data[0],
+			order_info_entry: order_info_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Thread Order info',
+		};
+
+		return await res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

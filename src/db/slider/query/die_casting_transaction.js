@@ -152,7 +152,7 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 
 	const fetchData = sql`
 		SELECT 
-			DISTINCT stock.uuid as stock_uuid,
+			stock.uuid as stock_uuid,
 			dc.uuid as die_casting_uuid,
 			dc.quantity as die_casting_quantity,
 			vod.order_number,
@@ -209,17 +209,16 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 					stock.uuid
 			) die_casting_transaction_given ON stock.uuid = die_casting_transaction_given.stock_uuid
 		LEFT JOIN 
-			slider.die_casting dc
-		WHERE
-			stock.order_info_uuid = ${order_info_uuid} AND 
-			dc.item = stock.item AND
+			slider.die_casting dc ON (dc.item = stock.item AND
 			dc.zipper_number = stock.zipper_number AND
 			dc.end_type = stock.end_type AND
 			dc.logo_type = stock.logo_type AND
 			dc.puller_type = stock.puller_type AND
 			dc.logo_type = stock.logo_type AND 
 			dc.slider_body_shape = stock.slider_body_shape AND
-			dc.puller_link = stock.puller_link
+			dc.puller_link = stock.puller_link)
+		WHERE
+			stock.order_info_uuid = ${order_info_uuid}
 		`;
 
 	const results = db.execute(fetchData);

@@ -151,3 +151,43 @@ export async function select(req, res, next) {
 
 	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
+
+export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	const resultPromise = db
+		.select({
+			uuid: order_entry.uuid,
+			order_entry_uuid: order_entry.uuid,
+			order_info_uuid: order_entry.order_info_uuid,
+			lab_reference: order_entry.lab_reference,
+			color: order_entry.color,
+			shade_recipe_uuid: order_entry.shade_recipe_uuid,
+			po: order_entry.po,
+			style: order_entry.style,
+			count_length_uuid: order_entry.count_length_uuid,
+			quantity: order_entry.quantity,
+			company_price: order_entry.company_price,
+			party_price: order_entry.party_price,
+			swatch_approval_date: order_entry.swatch_approval_date,
+			production_quantity: order_entry.production_quantity,
+			created_by: order_entry.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: order_entry.created_at,
+			updated_at: order_entry.updated_at,
+			remarks: order_entry.remarks,
+		})
+		.from(order_entry)
+		.leftJoin(
+			hrSchema.users,
+			eq(order_entry.created_by, hrSchema.users.uuid)
+		)
+		.where(eq(order_entry.order_info_uuid, req.params.order_info_uuid));
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'order_entry detail',
+	};
+
+	handleResponse({ promise: resultPromise, res, next, ...toast });
+}

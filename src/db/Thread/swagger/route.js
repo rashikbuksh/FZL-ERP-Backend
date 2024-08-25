@@ -1,4 +1,5 @@
 // * Thread Machine * //
+import SE, { SED } from '../../../util/swagger_example.js';
 
 export const pathThreadMachine = {
 	'/thread/machine': {
@@ -446,6 +447,55 @@ export const pathThreadOrderInfo = {
 			},
 		},
 	},
+	'/thread/order-info-details/by/{order_info_uuid}': {
+		get: {
+			tags: ['thread.order_info'],
+			summary: 'Get Thread Order Info Details by Order Info UUID',
+			description: 'Get Thread Order Info Details by Order Info UUID',
+			parameters: [
+				SE.parameter_uuid('order_info_uuid', 'order_info_uuid'),
+			],
+			responses: {
+				200: SE.response(200, {
+					uuid: SE.uuid(),
+					party_uuid: SE.uuid(),
+					party_name: SE.string(),
+					marketing_uuid: SE.uuid(),
+					marketing_name: SE.string('John Doe'),
+					factory_uuid: SE.uuid(),
+					factory_name: SE.string('John Doe'),
+					merchandiser_uuid: SE.uuid(),
+					merchandiser_name: SE.string('John Doe'),
+					buyer_uuid: SE.uuid(),
+					buyer_name: SE.string('John Doe'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+					order_entry: {
+						uuid: SE.uuid(),
+						order_info_uuid: SE.uuid(),
+						lab_reference: SE.string(),
+						color: SE.string(),
+						shade_recipe_uuid: SE.uuid(),
+						po: SE.string(),
+						style: SE.string(),
+						count_length_uuid: SE.uuid(),
+						quantity: SE.integer(),
+						company_price: SE.number(),
+						party_price: SE.number(),
+						swatch_approval_date: SE.date_time(),
+						production_quantity: SE.integer(),
+						created_by: SE.uuid(),
+						created_by_name: SE.string('John Doe'),
+						created_at: SE.date_time(),
+						updated_at: SE.date_time(),
+					},
+				}),
+			},
+		},
+	},
 };
 
 // * Thread Order Entry * //
@@ -472,7 +522,6 @@ export const pathThreadOrderEntry = {
 				},
 			},
 		},
-
 		post: {
 			tags: ['thread.order_entry'],
 			summary: 'Create Thread Order Entry',
@@ -590,6 +639,31 @@ export const pathThreadOrderEntry = {
 						'application/json': {
 							schema: {
 								$ref: '#/definitions/thread/order_entry',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/thread/order-entry/by/{order_info_uuid}': {
+		get: {
+			tags: ['thread.order_entry'],
+			summary: 'Get Thread Order Entry by Order Info UUID',
+			description: 'Get Thread Order Entry by Order Info UUID',
+			parameters: [
+				SE.parameter_uuid('order_info_uuid', 'order_info_uuid'),
+			],
+			responses: {
+				200: {
+					description: 'Success',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/thread/order_entry',
+								},
 							},
 						},
 					},
