@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import SE, { SED } from '../../util/swagger_example.js';
 import * as otherOperations from './query/query.js';
 
 const otherRouter = Router();
@@ -714,6 +715,13 @@ const pathZipper = {
 			summary: 'get all order descriptions',
 			description: 'All order descriptions',
 			operationId: 'getAllOrderDescriptions',
+			parameters: [
+				SE.parameter_query('item', 'item', [
+					'all',
+					'nylon',
+					'without-nylon',
+				]),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all order descriptions.',
