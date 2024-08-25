@@ -281,14 +281,23 @@ export async function selectOrderEntry(req, res, next) {
 }
 
 export async function selectOrderDescription(req, res, next) {
+	const { item } = req.query;
+
 	const query = sql`SELECT
 					vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label,
+					vodf.item_name AS item_name
 				FROM
 					zipper.v_order_details_full vodf
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != ''
 				`;
+
+	if (item == 'nylon') {
+		query.append(sql` AND vodf.item_name = 'Nylon'`);
+	} else if (item == 'without-nylon') {
+		query.append(sql` AND vodf.item_name != 'Nylon'`);
+	}
 
 	const orderEntryPromise = db.execute(query);
 
@@ -298,7 +307,7 @@ export async function selectOrderDescription(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			message: 'Order Entry list',
+			message: 'Order Description list',
 		};
 
 		res.status(200).json({ toast, data: data?.rows });
