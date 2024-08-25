@@ -3534,6 +3534,262 @@ export const pathZipperTapeCoilToDyeing = {
 	},
 };
 
+// * Zipper Batch Production * //
+
+export const pathZipperBatchProduction = {
+	'/zipper/batch-production': {
+		get: {
+			tags: ['zipper.batch_production'],
+			summary: 'Get all Batch Production',
+			responses: {
+				200: {
+					description: 'Returns all Batch Production',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									batch_entry_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									production_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									production_quantity_in_kg: {
+										type: 'number',
+										example: 100,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		post: {
+			tags: ['zipper.batch_production'],
+			summary: 'create a batch production',
+			description: '',
+			// operationId: "add
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/batch_production',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/batch_production',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+
+	'/zipper/batch-production/{uuid}': {
+		get: {
+			tags: ['zipper.batch_production'],
+			summary: 'Gets a batch production',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'batch production to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							batch_entry_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							production_quantity: {
+								type: 'number',
+								example: 100,
+							},
+							production_quantity_in_kg: {
+								type: 'number',
+								example: 100,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'User not found',
+				},
+			},
+		},
+
+		put: {
+			tags: ['zipper.batch_production'],
+			summary: 'Update an existing batch production',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'batch production to update',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/zipper/batch_production',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/batch_production',
+						},
+					},
+				},
+
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'batch production not found',
+				},
+
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+
+		delete: {
+			tags: ['zipper.batch_production'],
+			summary: 'Deletes a batch production',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'batch production to delete',
+					required: true,
+					type: 'string',
+				},
+			],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/zipper/batch_production',
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'batch production not found',
+				},
+			},
+		},
+	},
+};
+
 // * Zipper Path Zipper * //
 
 export const pathZipper = {
@@ -3554,4 +3810,5 @@ export const pathZipper = {
 	...pathZipperPlanningEntry,
 	...pathZipperMaterialTrxAgainstOrderDescription,
 	...pathZipperTapeCoilToDyeing,
+	...pathZipperBatchProduction,
 };

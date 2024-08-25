@@ -463,4 +463,23 @@ export const tape_coil_to_dyeing = zipper.table('tape_coil_to_dyeing', {
 	remarks: text('remarks').default(null),
 });
 
+export const batch_production = zipper.table('batch_production', {
+	uuid: uuid_primary,
+	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
+		() => batch_entry.uuid
+	),
+	production_quantity: decimal('production_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	production_quantity_in_kg: decimal('production_quantity_in_kg', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
 export default zipper;

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
+import * as batchProductionOperations from './query/batch_production.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
 import * as dyingBatchEntryOperations from './query/dying_batch_entry.js';
 import * as materialTrxAgainstOrderOperations from './query/material_trx_against_order_description.js';
@@ -337,6 +338,22 @@ zipperRouter.get(
 zipperRouter.get(
 	'/tape-coil-to-dyeing/by/type/tape',
 	tapeCoilToDyeingOperations.selectTapeCoilToDyeingForTape
+);
+
+//.............Batch Production.....................//
+
+zipperRouter.get('/batch-production', batchProductionOperations.selectAll);
+zipperRouter.get(
+	'/batch-production/:uuid',
+	// validateUuidParam(),
+	batchProductionOperations.select
+);
+zipperRouter.post('/batch-production', batchProductionOperations.insert);
+zipperRouter.put('/batch-production/:uuid', batchProductionOperations.update);
+zipperRouter.delete(
+	'/batch-production/:uuid',
+	// validateUuidParam(),
+	batchProductionOperations.remove
 );
 
 export { zipperRouter };
