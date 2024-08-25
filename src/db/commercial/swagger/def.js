@@ -114,43 +114,18 @@ export const defCommercialPi = SED({
 });
 
 export const defCommercialPiEntry = SED({
-	type: 'object',
+	// type: 'object',
 	required: ['uuid', 'pi_uuid', 'sfg_uuid', 'pi_quantity', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		pi_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		sfg_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		pi_quantity: {
-			type: 'number',
-			example: 1000.0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		pi_uuid: SE.uuid(),
+		sfg_uuid: SE.uuid(),
+		pi_quantity: SE.number(1000.0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Commercial/PiEntry',
-	},
+	xml: 'Commercial/PiEntry',
 });
 
 // * Marge All

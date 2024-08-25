@@ -1,5 +1,5 @@
+import SE, { SED } from '../../../util/swagger_example.js';
 //* ./schema.js#info
-
 export const defLabDipInfo = {
 	type: 'object',
 	required: ['uuid', 'name', 'order_info_uuid', 'created_by', 'created_at'],
