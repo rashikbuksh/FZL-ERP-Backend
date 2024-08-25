@@ -94,7 +94,10 @@ export async function selectAll(req, res, next) {
 			vod.item_description,
 			tape_coil.type,
 			tape_coil.zipper_number,
-			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper
+			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper,
+			tape_coil.quantity_in_coil as coil_prod,
+			tape_coil.quantity as tape_prod,
+			CASE WHEN tape_coil.type = 'nylon' THEN coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) ELSE coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) END AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -139,7 +142,10 @@ export async function select(req, res, next) {
 			vod.item_description,
 			tape_coil.type,
 			tape_coil.zipper_number,
-			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper
+			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper,
+			tape_coil.quantity_in_coil as coil_prod,
+			tape_coil.quantity as tape_prod,
+			CASE WHEN tape_coil.type = 'nylon' THEN coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) ELSE coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) END AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -186,7 +192,9 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 			vod.item_description,
 			tape_coil.type,
 			tape_coil.zipper_number,
-			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper
+			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper,
+			tape_coil.quantity_in_coil as coil_prod,
+			coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -233,7 +241,9 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 			vod.item_description,
 			tape_coil.type,
 			tape_coil.zipper_number,
-			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper
+			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper,
+			tape_coil.quantity as tape_prod,
+				 coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
