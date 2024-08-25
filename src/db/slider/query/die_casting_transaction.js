@@ -216,8 +216,6 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			stock.created_at DESC
 	`;
 
-	console.log(query.queryChunks, 'query');
-
 	const resultPromise = db.execute(query);
 
 	try {
