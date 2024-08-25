@@ -7,7 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { shade_recipe } from '../schema.js';
+import { shade_recipe, shade_recipe_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -58,9 +58,15 @@ export async function update(req, res, next) {
 
 export async function remove(req, res, next) {
 	const resultPromise = db
-		.delete(shade_recipe)
-		.where(eq(shade_recipe.uuid, req.params.uuid))
-		.returning({ deletedName: shade_recipe.name });
+		.delete(shade_recipe_entry)
+		.where(eq(shade_recipe_entry.shade_recipe_uuid, req.params.uuid))
+
+		.then(() =>
+			db
+				.delete(shade_recipe)
+				.where(eq(shade_recipe.uuid, req.params.uuid))
+				.returning({ deletedName: shade_recipe.name })
+		);
 
 	try {
 		const data = await resultPromise;
