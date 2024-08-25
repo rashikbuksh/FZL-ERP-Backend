@@ -258,10 +258,17 @@ export const sfg_transaction = zipper.table('sfg_transaction', {
 	remarks: text('remarks').default(null),
 });
 
+export const batchStatusEnum = zipper.enum('batch_status', [
+	'pending',
+	'completed',
+	'rejected',
+]);
+
 // zipper batch
 export const batch = zipper.table('batch', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
+	batch_status: batchStatusEnum('batch_status').default('pending'),
 	created_by: defaultUUID('created_by'),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

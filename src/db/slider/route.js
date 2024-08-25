@@ -81,6 +81,10 @@ sliderRouter.get(
 	'/die-casting/for/slider-stock/:order_info_uuid',
 	dieCastingTransactionOperations.selectDieCastingForSliderStockByOrderInfoUuid
 );
+sliderRouter.get(
+	'/die-casting/for/slider-stock-multi/:order_info_uuids',
+	dieCastingTransactionOperations.selectDieCastingForSliderStockByOrderInfoUuids
+);
 
 // --------------------- Transaction Routes ---------------------
 

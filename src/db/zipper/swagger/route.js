@@ -1229,6 +1229,7 @@ export const pathZipperBatchEntry = {
 					given_quantity: SE.number(10),
 					given_production_quantity: SE.number(10),
 					given_production_quantity_in_kg: SE.number(10),
+					balance_quantity: SE.number(10),
 				}),
 				400: SE.response(400),
 				404: SE.response(404),

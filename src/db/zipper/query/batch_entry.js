@@ -146,6 +146,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 	const query = sql`
 		SELECT
 			be.uuid as batch_entry_uuid,
+			bp_given.batch_production_uuid,
 			be.batch_uuid,
 			be.sfg_uuid,
 			be.quantity,
@@ -160,9 +161,9 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			oe.quantity as order_quantity,
 			vod.order_number,
 			vod.item_description,
-			be_given.given_quantity,
-			be_given.given_production_quantity,
-			be_given.given_production_quantity_in_kg
+			bp_given.given_production_quantity,
+			bp_given.given_production_quantity_in_kg,
+			COALESCE(be.quantity,0) - COALESCE(bp_given.given_production_quantity,0) as balance_quantity
 		FROM
 			zipper.batch_entry be
 		LEFT JOIN
@@ -176,17 +177,17 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 		LEFT JOIN
 			(
 				SELECT
-					sfg.uuid as sfg_uuid,
-					SUM(be.quantity) AS given_quantity,
-					SUM(be.production_quantity) AS given_production_quantity,
-					SUM(be.production_quantity_in_kg) AS given_production_quantity_in_kg
+					batch_entry.uuid as batch_entry_uuid,
+					bp.uuid as batch_production_uuid,
+					SUM(bp.production_quantity) AS given_production_quantity,
+					SUM(bp.production_quantity_in_kg) AS given_production_quantity_in_kg
 				FROM
-					zipper.batch_entry be
+					zipper.batch_production bp
 				LEFT JOIN 
-					zipper.sfg sfg ON be.sfg_uuid = sfg.uuid
+					zipper.batch_entry ON bp.batch_entry_uuid = batch_entry.uuid
 				GROUP BY
-					sfg.uuid
-			) AS be_given ON sfg.uuid = be_given.sfg_uuid
+					batch_entry.uuid, bp.uuid
+			) AS bp_given ON be.uuid = bp_given.batch_entry_uuid
 		WHERE
 			be.batch_uuid = ${batch_uuid}`;
 

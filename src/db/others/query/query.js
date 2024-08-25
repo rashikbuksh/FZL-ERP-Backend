@@ -14,6 +14,7 @@ import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
+import * as threadSchema from '../../Thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 
 // * Aliases * //
@@ -527,6 +528,7 @@ export async function selectDepartment(req, res, next) {
 	});
 }
 
+// * Lab Dip * //
 export async function selectLabDipRecipe(req, res, next) {
 	const recipePromise = db
 		.select({
@@ -546,6 +548,31 @@ export async function selectLabDipRecipe(req, res, next) {
 		next,
 		...toast,
 	});
+}
+
+export async function selectLabDipShadeRecipe(req, res, next) {
+	const query = sql`
+	SELECT
+		shade_recipe.uuid AS value,
+		shade_recipe.name AS label
+	FROM
+		lab_dip.shade_recipe;`;
+
+	const shadeRecipePromise = db.execute(query);
+
+	try {
+		const data = await shadeRecipePromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Shade Recipe list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 // * Slider * //
@@ -580,6 +607,33 @@ export async function selectNameFromDieCastingStock(req, res, next) {
 			status: 200,
 			type: 'select_all',
 			message: 'Name list from Die Casting',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+// * Thread
+
+export async function selectCountLength(req, res, next) {
+	const query = sql`
+	SELECT
+		count_length.uuid AS value,
+		concat(count_length.count, '/', count_length.length) AS label
+	FROM
+		thread.count_length;`;
+
+	const countLengthPromise = db.execute(query);
+
+	try {
+		const data = await countLengthPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Count Length list',
 		};
 
 		res.status(200).json({ toast, data: data?.rows });
