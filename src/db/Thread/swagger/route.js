@@ -3,7 +3,7 @@
 export const pathThreadMachine = {
 	'/thread/machine': {
 		get: {
-			tags: ['Thread Machine'],
+			tags: ['thread.machine'],
 			summary: 'Get all Thread Machine',
 			description: 'Get all Thread Machine',
 			responses: {
@@ -24,7 +24,7 @@ export const pathThreadMachine = {
 		},
 
 		post: {
-			tags: ['Thread Machine'],
+			tags: ['thread.machine'],
 			summary: 'Create Thread Machine',
 			description: 'Create Thread Machine',
 			requestBody: {
@@ -52,7 +52,7 @@ export const pathThreadMachine = {
 	},
 	'/thread/machine/{uuid}': {
 		get: {
-			tags: ['Thread Machine'],
+			tags: ['thread.machine'],
 			summary: 'Get Thread Machine',
 			description: 'Get Thread Machine',
 			parameters: [
@@ -80,7 +80,7 @@ export const pathThreadMachine = {
 			},
 		},
 		put: {
-			tags: ['Thread Machine'],
+			tags: ['thread.machine'],
 			summary: 'Update Thread Machine',
 			description: 'Update Thread Machine',
 			parameters: [
@@ -117,7 +117,7 @@ export const pathThreadMachine = {
 			},
 		},
 		delete: {
-			tags: ['Thread Machine'],
+			tags: ['thread.machine'],
 			summary: 'Delete Thread Machine',
 			description: 'Delete Thread Machine',
 			parameters: [
@@ -152,7 +152,7 @@ export const pathThreadMachine = {
 export const pathThreadCountLength = {
 	'/thread/count-length': {
 		get: {
-			tags: ['Thread Count Length'],
+			tags: ['thread.count_length'],
 			summary: 'Get all Thread Count Length',
 			description: 'Get all Thread Count Length',
 			responses: {
@@ -173,7 +173,7 @@ export const pathThreadCountLength = {
 		},
 
 		post: {
-			tags: ['Thread Count Length'],
+			tags: ['thread.count_length'],
 			summary: 'Create Thread Count Length',
 			description: 'Create Thread Count Length',
 			requestBody: {
@@ -201,7 +201,7 @@ export const pathThreadCountLength = {
 	},
 	'/thread/count-length/{uuid}': {
 		get: {
-			tags: ['Thread Count Length'],
+			tags: ['thread.count_length'],
 			summary: 'Get Thread Count Length',
 			description: 'Get Thread Count Length',
 			parameters: [
@@ -229,7 +229,7 @@ export const pathThreadCountLength = {
 			},
 		},
 		put: {
-			tags: ['Thread Count Length'],
+			tags: ['thread.count_length'],
 			summary: 'Update Thread Count Length',
 			description: 'Update Thread Count Length',
 			parameters: [
@@ -267,7 +267,7 @@ export const pathThreadCountLength = {
 		},
 
 		delete: {
-			tags: ['Thread Count Length'],
+			tags: ['thread.count_length'],
 			summary: 'Delete Thread Count Length',
 			description: 'Delete Thread Count Length',
 			parameters: [
@@ -302,7 +302,7 @@ export const pathThreadCountLength = {
 export const pathThreadOrderInfo = {
 	'/thread/order-info': {
 		get: {
-			tags: ['Thread Order Info'],
+			tags: ['thread.order_info'],
 			summary: 'Get all Thread Order Info',
 			description: 'Get all Thread Order Info',
 			responses: {
@@ -323,7 +323,7 @@ export const pathThreadOrderInfo = {
 		},
 
 		post: {
-			tags: ['Thread Order Info'],
+			tags: ['thread.order_info'],
 			summary: 'Create Thread Order Info',
 			description: 'Create Thread Order Info',
 			requestBody: {
@@ -351,7 +351,7 @@ export const pathThreadOrderInfo = {
 	},
 	'/thread/order-info/{uuid}': {
 		get: {
-			tags: ['Thread Order Info'],
+			tags: ['thread.order_info'],
 			summary: 'Get Thread Order Info',
 			description: 'Get Thread Order Info',
 			parameters: [
@@ -379,7 +379,7 @@ export const pathThreadOrderInfo = {
 			},
 		},
 		put: {
-			tags: ['Thread Order Info'],
+			tags: ['thread.order_info'],
 			summary: 'Update Thread Order Info',
 			description: 'Update Thread Order Info',
 			parameters: [
@@ -418,7 +418,7 @@ export const pathThreadOrderInfo = {
 		},
 
 		delete: {
-			tags: ['Thread Order Info'],
+			tags: ['thread.order_info'],
 			summary: 'Delete Thread Order Info',
 			description: 'Delete Thread Order Info',
 			parameters: [
@@ -453,7 +453,7 @@ export const pathThreadOrderInfo = {
 export const pathThreadOrderEntry = {
 	'/thread/order-entry': {
 		get: {
-			tags: ['Thread Order Entry'],
+			tags: ['thread.order_entry'],
 			summary: 'Get all Thread Order Entry',
 			description: 'Get all Thread Order Entry',
 			responses: {
@@ -474,7 +474,7 @@ export const pathThreadOrderEntry = {
 		},
 
 		post: {
-			tags: ['Thread Order Entry'],
+			tags: ['thread.order_entry'],
 			summary: 'Create Thread Order Entry',
 			description: 'Create Thread Order Entry',
 			requestBody: {
@@ -502,7 +502,7 @@ export const pathThreadOrderEntry = {
 	},
 	'/thread/order-entry/{uuid}': {
 		get: {
-			tags: ['Thread Order Entry'],
+			tags: ['thread.order_entry'],
 			summary: 'Get Thread Order Entry',
 			description: 'Get Thread Order Entry',
 			parameters: [
@@ -530,7 +530,7 @@ export const pathThreadOrderEntry = {
 			},
 		},
 		put: {
-			tags: ['Thread Order Entry'],
+			tags: ['thread.order_entry'],
 			summary: 'Update Thread Order Entry',
 			description: 'Update Thread Order Entry',
 			parameters: [
@@ -569,7 +569,7 @@ export const pathThreadOrderEntry = {
 		},
 
 		delete: {
-			tags: ['Thread Order Entry'],
+			tags: ['thread.order_entry'],
 			summary: 'Delete Thread Order Entry',
 			description: 'Delete Thread Order Entry',
 			parameters: [
@@ -604,7 +604,7 @@ export const pathThreadOrderEntry = {
 export const pathThreadBatchEntry = {
 	'/thread/batch-entry': {
 		get: {
-			tags: ['Thread Batch Entry'],
+			tags: ['thread.batch_entry'],
 			summary: 'Get all Thread Batch Entry',
 			description: 'Get all Thread Batch Entry',
 			responses: {
@@ -625,7 +625,7 @@ export const pathThreadBatchEntry = {
 		},
 
 		post: {
-			tags: ['Thread Batch Entry'],
+			tags: ['thread.batch_entry'],
 			summary: 'Create Thread Batch Entry',
 			description: 'Create Thread Batch Entry',
 			requestBody: {
@@ -653,7 +653,7 @@ export const pathThreadBatchEntry = {
 	},
 	'/thread/batch-entry/{uuid}': {
 		get: {
-			tags: ['Thread Batch Entry'],
+			tags: ['thread.batch_entry'],
 			summary: 'Get Thread Batch Entry',
 			description: 'Get Thread Batch Entry',
 			parameters: [
@@ -681,7 +681,7 @@ export const pathThreadBatchEntry = {
 			},
 		},
 		put: {
-			tags: ['Thread Batch Entry'],
+			tags: ['thread.batch_entry'],
 			summary: 'Update Thread Batch Entry',
 			description: 'Update Thread Batch Entry',
 			parameters: [
@@ -720,7 +720,7 @@ export const pathThreadBatchEntry = {
 		},
 
 		delete: {
-			tags: ['Thread Batch Entry'],
+			tags: ['thread.batch_entry'],
 			summary: 'Delete Thread Batch Entry',
 			description: 'Delete Thread Batch Entry',
 			parameters: [
@@ -755,7 +755,7 @@ export const pathThreadBatchEntry = {
 export const pathThreadBatch = {
 	'/thread/batch': {
 		get: {
-			tags: ['Thread Batch'],
+			tags: ['thread.batch'],
 			summary: 'Get all Thread Batch',
 			description: 'Get all Thread Batch',
 			responses: {
@@ -776,7 +776,7 @@ export const pathThreadBatch = {
 		},
 
 		post: {
-			tags: ['Thread Batch'],
+			tags: ['thread.batch'],
 			summary: 'Create Thread Batch',
 			description: 'Create Thread Batch',
 			requestBody: {
@@ -804,7 +804,7 @@ export const pathThreadBatch = {
 	},
 	'/thread/batch/{uuid}': {
 		get: {
-			tags: ['Thread Batch'],
+			tags: ['thread.batch'],
 			summary: 'Get Thread Batch',
 			description: 'Get Thread Batch',
 			parameters: [
@@ -832,7 +832,7 @@ export const pathThreadBatch = {
 			},
 		},
 		put: {
-			tags: ['Thread Batch'],
+			tags: ['thread.batch'],
 			summary: 'Update Thread Batch',
 			description: 'Update Thread Batch',
 			parameters: [
@@ -871,7 +871,7 @@ export const pathThreadBatch = {
 		},
 
 		delete: {
-			tags: ['Thread Batch'],
+			tags: ['thread.batch'],
 			summary: 'Delete Thread Batch',
 			description: 'Delete Thread Batch',
 			parameters: [
