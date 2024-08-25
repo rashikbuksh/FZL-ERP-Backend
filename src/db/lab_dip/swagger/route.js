@@ -1548,6 +1548,10 @@ export const pathLabDipShadeRecipe = {
 										type: 'string',
 										example: 'Sub Streat',
 									},
+									lab_status: {
+										type: 'number',
+										example: 0,
+									},
 									created_by: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -1656,6 +1660,10 @@ export const pathLabDipShadeRecipe = {
 									sub_streat: {
 										type: 'string',
 										example: 'Sub Streat',
+									},
+									lab_status: {
+										type: 'number',
+										example: 0,
 									},
 									created_by: {
 										type: 'string',
@@ -1799,6 +1807,10 @@ export const pathLabDipShadeRecipe = {
 									sub_streat: {
 										type: 'string',
 										example: 'Sub Streat',
+									},
+									lab_status: {
+										type: 'number',
+										example: 0,
 									},
 									created_by: {
 										type: 'string',
