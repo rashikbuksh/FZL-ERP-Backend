@@ -147,6 +147,13 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 	res,
 	next
 ) {
+	const { order_info_uuid } = req.params;
+
+	const orderInfoUuidArray = order_info_uuid
+		.split(',')
+		.map((uuid) => `'${uuid}'`)
+		.join(',');
+
 	const query = sql`
 		SELECT 
 			stock.uuid as stock_uuid,
@@ -204,10 +211,12 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 					stock.uuid
 			) die_casting_transaction_given ON stock.uuid = die_casting_transaction_given.stock_uuid
 		WHERE
-			stock.order_info_uuid = ${req.params.order_info_uuid}
+			stock.order_info_uuid IN (${orderInfoUuidArray})
 		ORDER BY
 			stock.created_at DESC
 	`;
+
+	console.log(query.queryChunks, 'query');
 
 	const resultPromise = db.execute(query);
 
