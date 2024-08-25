@@ -1,244 +1,94 @@
+import SE, { SED } from '../../../util/swagger_example.js';
 //* ./schema.js#buyer
-
-export const defPublicBuyer = {
-	type: 'object',
+export const defPublicBuyer = SED({
 	required: ['uuid', 'name'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'John Doe',
-		},
-		short_name: {
-			type: 'string',
-			example: 'JD',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('John Doe'),
+		short_name: SE.string('JD'),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Public/Buyer',
-	},
-};
+	xml: 'Public/Buyer',
+});
 
-export const defPublicParty = {
-	type: 'object',
+export const defPublicParty = SED({
 	required: ['uuid', 'name', 'short_name', 'remarks'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'John Doe',
-		},
-		short_name: {
-			type: 'string',
-			example: 'JD',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('John Doe'),
+		short_name: SE.string('JD'),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Public/Party',
-	},
-};
+	xml: 'Public/Party',
+});
 
-export const defPublicMarketing = {
-	type: 'object',
+export const defPublicMarketing = SED({
 	required: ['uuid', 'name', 'user_uuid'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'John Doe',
-		},
-		short_name: {
-			type: 'string',
-			example: 'JD',
-		},
-		user_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('John Doe'),
+		short_name: SE.string('JD'),
+		user_uuid: SE.uuid(),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Public/Marketing',
-	},
-};
+	xml: 'Public/Marketing',
+});
 
-export const defPublicMerchandiser = {
-	type: 'object',
+export const defPublicMerchandiser = SED({
 	required: ['uuid', 'party_uuid', 'name', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		party_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'John Doe',
-		},
-		email: {
-			type: 'string',
-			example: 'johndoe@gmail.com',
-		},
-		phone: {
-			type: 'string',
-			example: '1234567890',
-		},
-		address: {
-			type: 'string',
-			example: 'Address',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
+		uuid: SE.uuid(),
+		party_uuid: SE.uuid(),
+		name: SE.string('John Doe'),
+		email: SE.string('johndoe@gmail.com'),
+		phone: SE.string('123456789'),
+		address: SE.string('Address'),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
 	},
-	xml: {
-		name: 'Public/Merchandiser',
-	},
-};
+	xml: 'Public/Merchandiser',
+});
 
-export const defPublicFactory = {
-	type: 'object',
+export const defPublicFactory = SED({
 	required: ['uuid', 'party_uuid', 'name', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		party_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'John Doe',
-		},
-		phone: {
-			type: 'string',
-			example: '123456789',
-		},
-		address: {
-			type: 'string',
-			example: 'Address',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
+		uuid: SE.uuid(),
+		party_uuid: SE.uuid(),
+		name: SE.string('John Doe'),
+		phone: SE.string('123456789'),
+		address: SE.string('Address'),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
 	},
-	xml: {
-		name: 'Public/Factory',
-	},
-};
+	xml: 'Public/Factory',
+});
 
-export const defPublicSection = {
-	type: 'object',
+export const defPublicSection = SED({
 	required: ['uuid', 'name'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'John Doe',
-		},
-		short_name: {
-			type: 'string',
-			example: 'JD',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('John Doe'),
+		short_name: SE.string('JD'),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Public/Section',
-	},
-};
+	xml: 'Public/Section',
+});
 
-export const defPublicProperties = {
-	type: 'object',
+export const defPublicProperties = SED({
 	required: ['uuid', 'item_for', 'type', 'name', 'created_by', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		item_for: {
-			type: 'string',
-			example: 'Item	for',
-		},
-		type: {
-			type: 'string',
-			example: 'Type',
-		},
-		name: {
-			type: 'string',
-			example: 'John Doe',
-		},
-		short_name: {
-			type: 'string',
-			example: 'JD',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		item_for: SE.string('Item For'),
+		type: SE.string('Type'),
+		name: SE.string('Name'),
+		short_name: SE.string('Short Name'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
 	},
-	xml: {
-		name: 'Public/Properties',
-	},
-};
+	xml: 'Public/Properties',
+});
 
 // * Marge All
 export const defPublic = {
