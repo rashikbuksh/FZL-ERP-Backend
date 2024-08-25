@@ -445,6 +445,28 @@ export const def_zipper_tape_coil_to_dyeing = SED({
 	xml: 'Zipper/Tape-Coil-To-Dyeing',
 });
 
+export const def_zipper_batch_production = SED({
+	required: [
+		'uuid',
+		'batch_entry_uuid',
+		'production_quantity',
+		'production_quantity_in_kg',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		batch_entry_uuid: SE.uuid(),
+		production_quantity: SE.number(),
+		production_quantity_in_kg: SE.number(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
+	},
+	xml: 'Zipper/Batch-Production',
+});
+
 //....................FOR TESTING.......................
 export const defZipper = {
 	order_info: def_zipper_order_info,
@@ -465,6 +487,7 @@ export const defZipper = {
 	material_trx_against_order_description:
 		def_zipper_material_trx_against_order_description,
 	tape_coil_to_dyeing: def_zipper_tape_coil_to_dyeing,
+	batch_production: def_zipper_batch_production,
 };
 
 // * Zipper Tag * //
@@ -536,5 +559,9 @@ export const tagZipper = [
 	{
 		name: 'zipper.tape_coil_to_dyeing',
 		description: 'Zipper Tape Coil To Dyeing',
+	},
+	{
+		name: 'zipper.batch_production',
+		description: 'Zipper Batch Production',
 	},
 ];
