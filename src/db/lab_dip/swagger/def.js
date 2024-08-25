@@ -158,8 +158,8 @@ export const defShadeRecipe = {
 			example: 'Sub Streat 1',
 		},
 		lab_status: {
-			type: 'string',
-			example: 'Pending',
+			type: 'number',
+			example: 0,
 		},
 		created_by: {
 			type: 'string',
