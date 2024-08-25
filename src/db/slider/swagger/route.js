@@ -1595,7 +1595,7 @@ export const pathSliderDieCastingTransaction = {
 					required: true,
 					type: 'string',
 					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
+					example: 'igD0v9DIJQhJeet,igD0v9DIJQhJeey',
 				},
 			],
 			responses: {
