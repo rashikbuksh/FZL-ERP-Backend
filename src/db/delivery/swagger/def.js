@@ -1,6 +1,8 @@
+import SE, { SED } from '../../../util/swagger_example.js';
+
 //* ./schema.js#packing_list
-export const defPackingList = {
-	type: 'object',
+export const defPackingList = SED({
+	// type: 'object',
 	required: [
 		'uuid',
 		'carton_size',
@@ -9,44 +11,19 @@ export const defPackingList = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		carton_size: {
-			type: 'string',
-			example: '10x10x10',
-		},
-		carton_weight: {
-			type: 'string',
-			example: '10kg',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		carton_size: SE.string('10x10x10'),
+		carton_weight: SE.string('10kg'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Delivery/PackingList',
-	},
-};
+	xml: 'Delivery/PackingList',
+});
 
-export const defPackingListEntry = {
-	type: 'object',
+export const defPackingListEntry = SED({
+	// type: 'object',
 	required: [
 		'uuid',
 		'packing_list_uuid',
@@ -55,43 +32,18 @@ export const defPackingListEntry = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		packing_list_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		sfg_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		quantity: {
-			type: 'number',
-			example: 100,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		packing_list_uuid: SE.uuid(),
+		sfg_uuid: SE.uuid(),
+		quantity: SE.number(100),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Delivery/PackingListEntry',
-	},
-};
+	xml: 'Delivery/PackingListEntry',
+});
 
-export const defChallan = {
+export const defChallan = SED({
 	type: 'object',
 	required: [
 		'uuid',
@@ -101,48 +53,20 @@ export const defChallan = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		carton_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		assign_to: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		receive_status: {
-			type: 'number',
-			example: 0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		carton_quantity: SE.number(100),
+		assign_to: SE.uuid(),
+		receive_status: SE.number(0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Delivery/Challan',
-	},
-};
+	xml: 'Delivery/Challan',
+});
 
-export const defChallanEntry = {
-	type: 'object',
+export const defChallanEntry = SED({
+	// type: 'object',
 	required: [
 		'uuid',
 		'challan_uuid',
@@ -151,41 +75,16 @@ export const defChallanEntry = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		challan_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		packing_list_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		delivery_quantity: {
-			type: 'number',
-			example: 100,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		challan_uuid: SE.uuid(),
+		packing_list_uuid: SE.uuid(),
+		delivery_quantity: SE.number(100),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Delivery/ChallanEntry',
-	},
-};
+	xml: 'Delivery/ChallanEntry',
+});
 
 // * Marge All
 

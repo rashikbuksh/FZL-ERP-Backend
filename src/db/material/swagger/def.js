@@ -1,59 +1,29 @@
+import SE, { SED } from '../../../util/swagger_example.js';
 //* ./schema.js#section
 
-export const defMaterialSection = {
-	type: 'object',
+export const defMaterialSection = SED({
 	required: ['uuid', 'name'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'Section 1',
-		},
-		short_name: {
-			type: 'string',
-			example: 'S1',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('Section 1'),
+		short_name: SE.string('S1'),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Material/Section',
-	},
-};
+	xml: 'Material/Section',
+});
 
-export const defMaterialType = {
-	type: 'object',
+export const defMaterialType = SED({
 	required: ['uuid', 'name'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'Type 1',
-		},
-		short_name: {
-			type: 'string',
-			example: 'T1',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('Type 1'),
+		short_name: SE.string('T1'),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Material/Type',
-	},
-};
+	xml: 'Material/Type',
+});
 
-export const defMaterialInfo = {
-	type: 'object',
+export const defMaterialInfo = SED({
 	required: [
 		'uuid',
 		'section_uuid',
@@ -64,190 +34,59 @@ export const defMaterialInfo = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		section_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		type_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'Material 1',
-		},
-		short_name: {
-			type: 'string',
-			example: 'M1',
-		},
-		unit: {
-			type: 'string',
-			example: 'kg',
-		},
-		threshold: {
-			type: 'number',
-			example: 1000.0,
-		},
-		description: {
-			type: 'string',
-			example: 'This is a material',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'This is an entry',
-		},
+		uuid: SE.uuid(),
+		section_uuid: SE.uuid(),
+		type_uuid: SE.uuid(),
+		name: SE.string('Material 1'),
+		short_name: SE.string('M1'),
+		unit: SE.string('kg'),
+		threshold: SE.number(100),
+		description: SE.string('description'),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Material/Info',
-	},
-};
+	xml: 'Material/Info',
+});
 
-export const defMaterialStock = {
-	type: 'object',
+export const defMaterialStock = SED({
 	required: ['uuid', 'material_uuid', 'stock'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		material_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		stock: {
-			type: 'number',
-			example: 1000.0,
-		},
-		tape_making: {
-			type: 'number',
-			example: 1000.0,
-		},
-		coil_forming: {
-			type: 'number',
-			example: 1000.0,
-		},
-		dying_and_iron: {
-			type: 'number',
-			example: 1000.0,
-		},
-		m_gapping: {
-			type: 'number',
-			example: 1000.0,
-		},
-		v_gapping: {
-			type: 'number',
-			example: 1000.0,
-		},
-		v_teeth_molding: {
-			type: 'number',
-			example: 1000.0,
-		},
-		m_teeth_molding: {
-			type: 'number',
-			example: 1000.0,
-		},
-		teeth_assembling_and_polishing: {
-			type: 'number',
-			example: 1000.0,
-		},
-		m_teeth_cleaning: {
-			type: 'number',
-			example: 1000.0,
-		},
-		v_teeth_cleaning: {
-			type: 'number',
-			example: 1000.0,
-		},
-		plating_and_iron: {
-			type: 'number',
-			example: 1000.0,
-		},
-		m_sealing: {
-			type: 'number',
-			example: 1000.0,
-		},
-		v_sealing: {
-			type: 'number',
-			example: 1000.0,
-		},
-		n_t_cutting: {
-			type: 'number',
-			example: 1000.0,
-		},
-		v_t_cutting: {
-			type: 'number',
-			example: 1000.0,
-		},
-		m_stopper: {
-			type: 'number',
-			example: 1000.0,
-		},
-		v_stopper: {
-			type: 'number',
-			example: 1000.0,
-		},
-		n_stopper: {
-			type: 'number',
-			example: 1000.0,
-		},
-		cutting: {
-			type: 'number',
-			example: 1000.0,
-		},
-		m_qc_and_packing: {
-			type: 'number',
-			example: 1000.0,
-		},
-		v_qc_and_packing: {
-			type: 'number',
-			example: 1000.0,
-		},
-		n_qc_and_packing: {
-			type: 'number',
-			example: 1000.0,
-		},
-		s_qc_and_packing: {
-			type: 'number',
-			example: 1000.0,
-		},
-		die_casting: {
-			type: 'number',
-			example: 1000.0,
-		},
-		slider_assembly: {
-			type: 'number',
-			example: 1000.0,
-		},
-		coloring: {
-			type: 'number',
-			example: 1000.0,
-		},
-		remarks: {
-			type: 'string',
-			example: 'This is an entry',
-		},
+		uuid: SE.uuid(),
+		material_uuid: SE.uuid(),
+		stock: SE.number(1000.0),
+		tape_making: SE.number(1000.0),
+		coil_forming: SE.number(1000.0),
+		dying_and_iron: SE.number(1000.0),
+		m_gapping: SE.number(1000.0),
+		v_gapping: SE.number(1000.0),
+		v_teeth_molding: SE.number(1000.0),
+		m_teeth_molding: SE.number(1000.0),
+		teeth_assembling_and_polishing: SE.number(1000.0),
+		m_teeth_cleaning: SE.number(1000.0),
+		v_teeth_cleaning: SE.number(1000.0),
+		plating_and_iron: SE.number(1000.0),
+		m_sealing: SE.number(1000.0),
+		v_sealing: SE.number(1000.0),
+		n_t_cutting: SE.number(1000.0),
+		v_t_cutting: SE.number(1000.0),
+		m_stopper: SE.number(1000.0),
+		v_stopper: SE.number(1000.0),
+		n_stopper: SE.number(1000.0),
+		cutting: SE.number(1000.0),
+		m_qc_and_packing: SE.number(1000.0),
+		v_qc_and_packing: SE.number(1000.0),
+		n_qc_and_packing: SE.number(1000.0),
+		s_qc_and_packing: SE.number(1000.0),
+		die_casting: SE.number(1000.0),
+		slider_assembly: SE.number(1000.0),
+		coloring: SE.number(1000.0),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Material/Stock',
-	},
-};
+	xml: 'Material/Stock',
+});
 
-export const defMaterialTrx = {
-	type: 'object',
+export const defMaterialTrx = SED({
 	required: [
 		'uuid',
 		'material_uuid',
@@ -257,48 +96,19 @@ export const defMaterialTrx = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		material_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		trx_to: {
-			type: 'string',
-			example: 'ig',
-		},
-		trx_quantity: {
-			type: 'number',
-			example: 1000.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'This is an entry',
-		},
+		uuid: SE.uuid(),
+		material_uuid: SE.uuid(),
+		trx_to: SE.string('ig'),
+		trx_quantity: SE.number(1000.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Material/Trx',
-	},
-};
+	xml: 'Material/Trx',
+});
 
-export const defMaterialUsed = {
-	type: 'object',
+export const defMaterialUsed = SED({
 	required: [
 		'uuid',
 		'material_uuid',
@@ -309,52 +119,20 @@ export const defMaterialUsed = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		material_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		section: {
-			type: 'string',
-			example: 'ig',
-		},
-		used_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		wastage: {
-			type: 'number',
-			example: 0.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'This is an entry',
-		},
+		uuid: SE.uuid(),
+		material_uuid: SE.uuid(),
+		section: SE.string('ig'),
+		used_quantity: SE.number(1000.0),
+		wastage: SE.number(1000.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Material/Used',
-	},
-};
+	xml: 'Material/Used',
+});
 
-export const defMaterialStockToSfg = {
-	type: 'object',
+export const defMaterialStockToSfg = SED({
 	required: [
 		'uuid',
 		'material_uuid',
@@ -365,49 +143,18 @@ export const defMaterialStockToSfg = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		material_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_entry_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		trx_to: {
-			type: 'string',
-			example: 'ig',
-		},
-		trx_quantity: {
-			type: 'number',
-			example: 1000.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'This is an entry',
-		},
+		uuid: SE.uuid(),
+		material_uuid: SE.uuid(),
+		order_entry_uuid: SE.uuid(),
+		trx_to: SE.string('ig'),
+		trx_quantity: SE.number(1000.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Material/StockToSfg',
-	},
-};
+	xml: 'Material/StockToSfg',
+});
 
 // * Marge All
 

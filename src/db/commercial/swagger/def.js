@@ -67,12 +67,10 @@ export const defCommercialLc = SED({
 			example: 'Remarks',
 		},
 	},
-	xml: {
-		name: 'Commercial/Lc',
-	},
+	xml: 'Commercial/Lc',
 });
 
-export const defCommercialPi = {
+export const defCommercialPi = SED({
 	type: 'object',
 	required: [
 		'uuid',
@@ -89,18 +87,10 @@ export const defCommercialPi = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		id: {
-			type: 'integer',
-			example: 1,
-		},
-		lc_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
+		uuid: SE.uuid(),
+		id: SE.integer(1),
+		lc_uuid: SE.uuid(),
+
 		order_info_uuids: {
 			type: 'array',
 			items: {
@@ -108,97 +98,35 @@ export const defCommercialPi = {
 			},
 			example: '[{"J3Au9M73Zb9saxj"}]',
 		},
-		marketing_uuid: {
-			type: 'string',
-			example: 'j14NcevenyrWSei',
-		},
-		party_uuid: {
-			type: 'string',
-			example: 'cf-daf86b3eedf1',
-		},
-		merchandiser_uuid: {
-			type: 'string',
-			example: 'LDedGLTqSAipBf1',
-		},
-		factory_uuid: {
-			type: 'string',
-			example: 'cf-daf86b3eedf1',
-		},
-		bank_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		validity: {
-			type: 'integer',
-			example: 0,
-		},
-		payment: {
-			type: 'integer',
-			example: 0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		marketing_uuid: SE.uuid(),
+		party_uuid: SE.uuid(),
+		merchandiser_uuid: SE.uuid(),
+		factory_uuid: SE.uuid(),
+		bank_uuid: SE.uuid(),
+		validity: SE.integer(0),
+		payment: SE.integer(0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Commercial/Pi',
-	},
-};
+	xml: 'Commercial/Pi',
+});
 
-export const defCommercialPiEntry = {
-	type: 'object',
+export const defCommercialPiEntry = SED({
+	// type: 'object',
 	required: ['uuid', 'pi_uuid', 'sfg_uuid', 'pi_quantity', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		pi_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		sfg_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		pi_quantity: {
-			type: 'number',
-			example: 1000.0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		pi_uuid: SE.uuid(),
+		sfg_uuid: SE.uuid(),
+		pi_quantity: SE.number(1000.0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Commercial/PiEntry',
-	},
-};
+	xml: 'Commercial/PiEntry',
+});
 
 // * Marge All
 export const defCommercial = {
