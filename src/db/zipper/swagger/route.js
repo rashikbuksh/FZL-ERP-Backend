@@ -73,24 +73,27 @@ export const pathZipperOrderInfo = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [SE.parameter_uuid('PUT DATA')],
-			requestBody: SE.requestBody_schema_ref({
-				reference_order_info_uuid: SE.uuid(),
-				buyer_uuid: SE.uuid(),
-				party_uuid: SE.uuid(),
-				marketing_uuid: SE.uuid(),
-				merchandiser_uuid: SE.uuid(),
-				factory_uuid: SE.uuid(),
-				is_sample: SE.number(0),
-				is_bill: SE.number(0),
-				is_cash: SE.number(0),
-				marketing_priority: SE.string('Urgent'),
-				factory_priority: SE.string('FIFO'),
-				status: SE.number(0),
-				created_by: SE.uuid(),
-				created_at: SE.date_time(),
-				updated_at: SE.date_time(),
-				remarks: SE.string('Remarks'),
-			}),
+			requestBody: SE.requestBody(
+				{
+					reference_order_info_uuid: SE.uuid(),
+					buyer_uuid: SE.uuid(),
+					party_uuid: SE.uuid(),
+					marketing_uuid: SE.uuid(),
+					merchandiser_uuid: SE.uuid(),
+					factory_uuid: SE.uuid(),
+					is_sample: SE.number(0),
+					is_bill: SE.number(0),
+					is_cash: SE.number(0),
+					marketing_priority: SE.string('Urgent'),
+					factory_priority: SE.string('FIFO'),
+					status: SE.number(0),
+					created_by: SE.uuid(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				},
+				[]
+			),
 			responses: {
 				200: SE.response_schema_ref(200, 'zipper/order_info'),
 				400: SE.response(400),
@@ -320,7 +323,7 @@ export const pathZipperOrderDescription = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [SE.parameter_uuid('PUT DATA')],
-			requestBody: SE.requestBody_schema_ref({
+			requestBody: SE.requestBody({
 				order_info_uuid: SE.uuid(),
 				item: SE.uuid(),
 				zipper_number: SE.uuid(),
@@ -603,7 +606,7 @@ export const pathZipperOrderEntry = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [SE.parameter_uuid('order entry to update', 'uuid')],
-			requestBody: SE.requestBody_schema_ref({
+			requestBody: SE.requestBody({
 				order_description_uuid: SE.uuid(),
 				style: SE.string('style 1'),
 				color: SE.string('black'),
@@ -754,7 +757,7 @@ export const pathZipperSfg = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [SE.parameter_uuid('sfg to update', 'uuid')],
-			requestBody: SE.requestBody_schema_ref({
+			requestBody: SE.requestBody({
 				order_entry_uuid: SE.uuid(),
 				order_description_uuid: SE.uuid(),
 				order_quantity: SE.number(10),
@@ -826,7 +829,7 @@ export const pathZipperSfg = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [SE.parameter_uuid('sfg to update', 'uuid')],
-			requestBody: SE.requestBody_schema_ref({
+			requestBody: SE.requestBody({
 				recipe_uuid: SE.uuid(),
 			}),
 			responses: {
@@ -905,7 +908,7 @@ export const pathZipperSfgProduction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [SE.parameter_uuid('sfg production to update', 'uuid')],
-			requestBody: SE.requestBody_schema_ref({
+			requestBody: SE.requestBody({
 				sfg_uuid: SE.uuid(),
 				section: SE.string('section 1'),
 				used_quantity: SE.number(10),
@@ -1011,7 +1014,7 @@ export const pathZipperSfgTransaction = {
 			parameters: [
 				SE.parameter_uuid('sfg transaction to update', 'uuid'),
 			],
-			requestBody: SE.requestBody_schema_ref({
+			requestBody: SE.requestBody({
 				order_entry_uuid: SE.uuid(),
 				order_description_uuid: SE.uuid(),
 				order_quantity: SE.number(10),
@@ -1059,6 +1062,9 @@ export const pathZipperBatch = {
 			summary: 'Get all Batch',
 			responses: {
 				200: SE.response_schema_ref(200, 'zipper/batch'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		post: {
@@ -1070,7 +1076,7 @@ export const pathZipperBatch = {
 			produces: ['application/json'],
 			requestBody: SE.requestBody_schema_ref('zipper/batch'),
 			responses: {
-				200: SE.requestBody_schema_ref(200, 'zipper/batch'),
+				200: SE.response_schema_ref(200, 'zipper/batch'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
@@ -1117,28 +1123,10 @@ export const pathZipperBatch = {
 			produces: ['application/json'],
 			parameters: [SE.parameter_uuid('batch to get', 'batch_uuid')],
 			responses: {
-				200: {
-					description: 'Returns a Batch',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/zipper/batch',
-							},
-							batch_entry: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/batch_entry',
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Batch not found',
-				},
+				200: SE.response_schema_ref(200, 'zipper/batch'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1151,19 +1139,7 @@ export const pathZipperBatchEntry = {
 			tags: ['zipper.batch_entry'],
 			summary: 'Get all Batch Entry',
 			responses: {
-				200: {
-					description: 'Returns all Batch Entry',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/batch_entry',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'zipper/batch_entry'),
 			},
 		},
 		post: {
@@ -1173,31 +1149,12 @@ export const pathZipperBatchEntry = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				description:
-					'Batch Entry object that needs to be added to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/batch_entry',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/batch_entry'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/batch_entry',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/batch_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1208,34 +1165,12 @@ export const pathZipperBatchEntry = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'batchEntry to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('batch entry to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'Returns a Batch Entry',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/zipper/batch_entry',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema_ref(200, 'zipper/batch_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -1245,47 +1180,13 @@ export const pathZipperBatchEntry = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'batch entry to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
-			requestBody: {
-				description:
-					'Batch Entry object that needs to be updated to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/batch_entry',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('batch entry to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('zipper/batch_entry'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/batch_entry',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'batch entry not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/batch_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1294,32 +1195,12 @@ export const pathZipperBatchEntry = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'batch entry to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_uuid('batch entry to delete', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/batch_entry',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Batch Entry not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1329,100 +1210,29 @@ export const pathZipperBatchEntry = {
 			summary: 'Get a Batch Entry by Batch Entry UUID',
 			description: '',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'batch_uuid',
-					in: 'path',
-					description: 'Batch Entry UUID to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('batch entry to get', 'batch_uuid')],
 			responses: {
-				200: {
-					description: 'Returns a Batch Entry',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									batch_entry_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									batch_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									sfg_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									quantity: {
-										type: 'number',
-										example: 10,
-									},
-									production_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									production_quantity_in_kg: {
-										type: 'number',
-										example: 10,
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									style: {
-										type: 'string',
-										example: 'style 1',
-									},
-									color: {
-										type: 'string',
-										example: 'black',
-									},
-									size: {
-										type: 'number',
-										example: 10,
-									},
-									order_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0010',
-									},
-									item_description: {
-										type: 'string',
-										example: 'N-5-OE-RP',
-									},
-									given_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									given_production_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									given_production_quantity_in_kg: {
-										type: 'number',
-										example: 10,
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Batch Entry not found',
-				},
+				200: SE.response(200, {
+					batch_entry_uuid: SE.uuid(),
+					batch_uuid: SE.uuid(),
+					sfg_uuid: SE.uuid(),
+					quantity: SE.number(10),
+					production_quantity: SE.number(10),
+					production_quantity_in_kg: SE.number(10),
+					remarks: SE.string('Remarks'),
+					style: SE.string('style 1'),
+					color: SE.string('black'),
+					size: SE.number(10),
+					order_quantity: SE.number(10),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-RP'),
+					given_quantity: SE.number(10),
+					given_production_quantity: SE.number(10),
+					given_production_quantity_in_kg: SE.number(10),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1433,64 +1243,21 @@ export const pathZipperBatchEntry = {
 			description: '',
 			produces: ['application/json'],
 			responses: {
-				200: {
-					description: 'Returns a Batch Entry',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									sfg_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									style: {
-										type: 'string',
-										example: 'style 1',
-									},
-									color: {
-										type: 'string',
-										example: 'black',
-									},
-									size: {
-										type: 'number',
-										example: 10,
-									},
-									order_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0010',
-									},
-									item_description: {
-										type: 'string',
-										example: 'N-5-OE-RP',
-									},
-									given_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									given_production_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									given_production_quantity_in_kg: {
-										type: 'number',
-										example: 10,
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Batch Entry not found',
-				},
+				200: SE.response(200, {
+					sfg_uuid: SE.uuid(),
+					style: SE.string('style 1'),
+					color: SE.string('black'),
+					size: SE.number(10),
+					order_quantity: SE.number(10),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-RP'),
+					given_quantity: SE.number(10),
+					given_production_quantity: SE.number(10),
+					given_production_quantity_in_kg: SE.number(10),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1503,52 +1270,16 @@ export const pathZipperDyingBatch = {
 			tags: ['zipper.dying_batch'],
 			summary: 'Get all Dying Batch',
 			responses: {
-				200: {
-					description: 'Returns all Dying Batch',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'serial',
-										example: 1,
-									},
-									mc_no: {
-										type: 'integer',
-										example: 1,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response(200, {
+					uuid: SE.uuid(),
+					id: SE.integer(1),
+					mc_no: SE.string('MC-001'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
 			},
 		},
 		post: {
@@ -1558,31 +1289,12 @@ export const pathZipperDyingBatch = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				description:
-					'Dying Batch object that needs to be added to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/dying_batch',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/dying_batch'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/dying_batch',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/dying_batch'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1593,34 +1305,12 @@ export const pathZipperDyingBatch = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'dyingBatch to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('dying batch to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'Returns a Dying Batch',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/zipper/dying_batch',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema_ref(200, 'zipper/dying_batch'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -1630,48 +1320,13 @@ export const pathZipperDyingBatch = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'dying batch to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				description:
-					'Dying Batch object that needs to be updated to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/dying_batch',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('dying batch to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('zipper/dying_batch'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/dying_batch',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'dying batch not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/dying_batch'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1680,33 +1335,12 @@ export const pathZipperDyingBatch = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'dying batch to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('dying batch to delete', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/dying_batch',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Dying Batch not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1719,19 +1353,7 @@ export const pathZipperDyingBatchEntry = {
 			tags: ['zipper.dying_batch_entry'],
 			summary: 'Get all Dying Batch',
 			responses: {
-				200: {
-					description: 'Returns all Dying Batch',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/dying_batch_entry',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'zipper/dying_batch_entry'),
 			},
 		},
 		post: {
@@ -1741,31 +1363,12 @@ export const pathZipperDyingBatchEntry = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				description:
-					'Dying Batch Entry object that needs to be added to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/dying_batch_entry',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/dying_batch_entry'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/dying_batch_entry',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/dying_batch_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1776,34 +1379,12 @@ export const pathZipperDyingBatchEntry = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'dyingBatchEntry to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('dying batch entry to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'Returns a Dying Batch Entry',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/zipper/dying_batch_entry',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Dying Batch Entry not found',
-				},
+				200: SE.response_schema_ref(200, 'zipper/dying_batch_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -1814,47 +1395,14 @@ export const pathZipperDyingBatchEntry = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'dying batch entry to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('dying batch entry to update', 'uuid'),
 			],
-			requestBody: {
-				description:
-					'Dying Batch Entry object that needs to be updated to the zipper',
-				required: true,
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/dying_batch_entry',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/dying_batch_entry'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/dying_batch_entry',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'dying batch entry not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/dying_batch_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1864,32 +1412,13 @@ export const pathZipperDyingBatchEntry = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'dying batch to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('dying batch entry to delete', 'uuid'),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/dying_batch_entry',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Dying Batch Entry not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1902,19 +1431,7 @@ export const pathZipperTapeCoil = {
 			tags: ['zipper.tape_coil'],
 			summary: 'Get all Tape Coil',
 			responses: {
-				200: {
-					description: 'Returns all Tape Coil',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/zipper/tape_coil',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'zipper/tape_coil'),
 			},
 		},
 		post: {
@@ -1924,29 +1441,12 @@ export const pathZipperTapeCoil = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/tape_coil',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/tape_coil'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_coil',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/tape_coil'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1957,32 +1457,12 @@ export const pathZipperTapeCoil = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'tapeCoil to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_uuid('tape coil to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_coil',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response_schema_ref(200, 'zipper/tape_coil'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -1992,44 +1472,13 @@ export const pathZipperTapeCoil = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'tape coil to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/tape_coil',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('tape coil to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('zipper/tape_coil'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_coil',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'tape coil not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/tape_coil'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2038,32 +1487,12 @@ export const pathZipperTapeCoil = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'tape coil to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_uuid('tape coil to delete', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_coil',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Tape Coil not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2072,42 +1501,14 @@ export const pathZipperTapeCoil = {
 			tags: ['zipper.tape_coil'],
 			summary: 'Get all Tape Coil by Nylon',
 			responses: {
-				200: {
-					description: 'Returns all Tape Coil by Nylon',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									type: {
-										type: 'string',
-										example: 'nylon',
-									},
-									zipper_number: {
-										type: 'number',
-										example: 3,
-									},
-									trx_quantity_in_coil: {
-										type: 'number',
-										example: 100,
-									},
-									quantity_in_coil: {
-										type: 'number',
-										example: 100,
-									},
-									remarks: {
-										type: 'string',
-										example: 'Good',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response(200, {
+					uuid: SE.uuid(),
+					type: SE.string('nylon'),
+					zipper_number: SE.number(3),
+					trx_quantity_in_coil: SE.number(100),
+					quantity_in_coil: SE.number(100),
+					remarks: SE.string('Remarks'),
+				}),
 			},
 		},
 	},
@@ -2120,84 +1521,24 @@ export const pathZipperTapeCoilProduction = {
 			tags: ['zipper.tape_coil_production'],
 			summary: 'Get all Tape Coil Production',
 			responses: {
-				200: {
-					description: 'Returns all Tape Coil Production',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									section: {
-										type: 'string',
-										example: 'zipper',
-									},
-									tape_coil_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									type: {
-										type: 'string',
-										example: 'nylon',
-									},
-									zipper_number: {
-										type: 'number',
-										example: 3,
-									},
-									type_of_zipper: {
-										type: 'string',
-										example: 'nylon 3',
-									},
-									quantity: {
-										type: 'number',
-										example: 10,
-									},
-									trx_quantity_in_coil: {
-										type: 'number',
-										example: 10,
-									},
-									quantity_in_coil: {
-										type: 'number',
-										example: 10,
-									},
-									production_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									wastage: {
-										type: 'number',
-										example: 10,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Good',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response(200, {
+					uuid: SE.uuid(),
+					section: SE.string('zipper'),
+					tape_coil_uuid: SE.uuid(),
+					type: SE.string('nylon'),
+					zipper_number: SE.number(3),
+					type_of_zipper: SE.string('nylon 3'),
+					quantity: SE.number(10),
+					trx_quantity_in_coil: SE.number(10),
+					quantity_in_coil: SE.number(10),
+					production_quantity: SE.number(10),
+					wastage: SE.number(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Good'),
+				}),
 			},
 		},
 		post: {
@@ -2207,29 +1548,14 @@ export const pathZipperTapeCoilProduction = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/tape_coil_production',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/tape_coil_production'
+			),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_coil_production',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/tape_coil_production'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2241,95 +1567,30 @@ export const pathZipperTapeCoilProduction = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'tapeCoilProduction to get',
-					required: true,
-					type: 'string',
-				},
+				SE.parameter_uuid('tape coil production to get', 'uuid'),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							section: {
-								type: 'string',
-								example: 'zipper',
-							},
-							tape_coil_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							type: {
-								type: 'string',
-								example: 'nylon',
-							},
-							zipper_number: {
-								type: 'number',
-								example: 3,
-							},
-							type_of_zipper: {
-								type: 'string',
-								example: 'nylon 3',
-							},
-							quantity: {
-								type: 'number',
-								example: 10,
-							},
-							trx_quantity_in_coil: {
-								type: 'number',
-								example: 10,
-							},
-							quantity_in_coil: {
-								type: 'number',
-								example: 10,
-							},
-							production_quantity: {
-								type: 'number',
-								example: 10,
-							},
-							wastage: {
-								type: 'number',
-								example: 10,
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'John Doe',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'Good',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response(200, {
+					uuid: SE.uuid(),
+					section: SE.string('zipper'),
+					tape_coil_uuid: SE.uuid(),
+					type: SE.string('nylon'),
+					zipper_number: SE.number(3),
+					type_of_zipper: SE.string('nylon 3'),
+					quantity: SE.number(10),
+					trx_quantity_in_coil: SE.number(10),
+					quantity_in_coil: SE.number(10),
+					production_quantity: SE.number(10),
+					wastage: SE.number(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Good'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -2340,43 +1601,16 @@ export const pathZipperTapeCoilProduction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'tape coil production to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
+				SE.parameter_uuid('tape coil production to update', 'uuid'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/tape_coil_production',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/tape_coil_production'
+			),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_coil_production',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'tape coil production not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/tape_coil_production'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2386,30 +1620,13 @@ export const pathZipperTapeCoilProduction = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'tape coil production to delete',
-					required: true,
-					type: 'string',
-				},
+				SE.parameter_uuid('tape coil production to delete', 'uuid'),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_coil_production',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Tape Coil Production not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2418,94 +1635,34 @@ export const pathZipperTapeCoilProduction = {
 			tags: ['zipper.tape_coil_production'],
 			summary: 'Get all Tape Coil Production by Section',
 			parameters: [
-				{
-					name: 'section',
-					in: 'path',
-					description: 'tape coil production to update',
-					required: true,
-					type: 'string',
-					example: 'tape',
-				},
+				SE.parameter_uuid(
+					'tape coil production to get',
+					'section',
+					'string'
+				),
 			],
 			responses: {
-				200: {
-					description: 'Returns all Tape Coil Production by Section',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									section: {
-										type: 'string',
-										example: 'zipper',
-									},
-									tape_coil_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									type: {
-										type: 'string',
-										example: 'nylon',
-									},
-									zipper_number: {
-										type: 'number',
-										example: 3,
-									},
-									type_of_zipper: {
-										type: 'string',
-										example: 'nylon 3',
-									},
-									quantity: {
-										type: 'number',
-										example: 10,
-									},
-									trx_quantity_in_coil: {
-										type: 'number',
-										example: 10,
-									},
-									quantity_in_coil: {
-										type: 'number',
-										example: 10,
-									},
-									production_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									wastage: {
-										type: 'number',
-										example: 10,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Good',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response(200, {
+					uuid: SE.uuid(),
+					section: SE.string('zipper'),
+					tape_coil_uuid: SE.uuid(),
+					type: SE.string('nylon'),
+					zipper_number: SE.number(3),
+					type_of_zipper: SE.string('nylon 3'),
+					quantity: SE.number(10),
+					trx_quantity_in_coil: SE.number(10),
+					quantity_in_coil: SE.number(10),
+					production_quantity: SE.number(10),
+					wastage: SE.number(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Good'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2518,64 +1675,22 @@ export const pathZipperTapeToCoil = {
 			tags: ['zipper.tape_to_coil'],
 			summary: 'Get all Tape To Coil',
 			responses: {
-				200: {
-					description: 'Returns all Tape To Coil',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									tape_coil_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									type: {
-										type: 'string',
-										example: 'nylon',
-									},
-									zipper_number: {
-										type: 'number',
-										example: 3,
-									},
-									type_of_zipper: {
-										type: 'string',
-										example: 'nylon 3',
-									},
-									trx_quantity: {
-										type: 'number',
-										example: 10,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response(200, {
+					uuid: SE.uuid(),
+					tape_coil_uuid: SE.uuid(),
+					type: SE.string('nylon'),
+					zipper_number: SE.number(3),
+					type_of_zipper: SE.string('nylon 3'),
+					trx_quantity: SE.number(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		post: {
@@ -2585,29 +1700,12 @@ export const pathZipperTapeToCoil = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/tape_to_coil',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/tape_to_coil'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_to_coil',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/tape_to_coil'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2618,76 +1716,24 @@ export const pathZipperTapeToCoil = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'tapeToCoil to get',
-					required: true,
-					type: 'string',
-				},
-			],
+			parameters: [SE.parameter_uuid('tape to coil to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							tape_coil_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							type: {
-								type: 'string',
-								example: 'nylon',
-							},
-							zipper_number: {
-								type: 'number',
-								example: 3,
-							},
-							type_of_zipper: {
-								type: 'string',
-								example: 'nylon 3',
-							},
-							trx_quantity: {
-								type: 'number',
-								example: 10,
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'John Doe',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'Remarks',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
+				200: SE.response(200, {
+					uuid: SE.uuid(),
+					tape_coil_uuid: SE.uuid(),
+					type: SE.string('nylon'),
+					zipper_number: SE.number(3),
+					type_of_zipper: SE.string('nylon 3'),
+					trx_quantity: SE.number(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -2697,43 +1743,13 @@ export const pathZipperTapeToCoil = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'tape to coil to update',
-					required: true,
-					type: 'string',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/tape_to_coil',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('tape to coil to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('zipper/tape_to_coil'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/tape_to_coil',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'tape to coil not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/tape_to_coil'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2742,22 +1758,12 @@ export const pathZipperTapeToCoil = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'tape to coil to delete',
-					required: true,
-					type: 'string',
-				},
-			],
+			parameters: [SE.parameter_uuid('tape to coil to delete', 'uuid')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Tape To Coil not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2770,49 +1776,18 @@ export const pathZipperPlanning = {
 			tags: ['zipper.planning'],
 			summary: 'Get all Planning',
 			responses: {
-				200: {
-					description: 'Returns all Planning',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									week: {
-										type: 'string',
-										example: '24-32',
-									},
-									week_id: {
-										type: 'string',
-										example: 'DP-24-W32',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response(200, {
+					week: SE.string('24-32'),
+					week_id: SE.string('DP-24-W32'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		post: {
@@ -2822,29 +1797,12 @@ export const pathZipperPlanning = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/planning',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/planning'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/planning',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'zipper/planning'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2856,37 +1814,126 @@ export const pathZipperPlanning = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'week',
-					in: 'path',
-					description: 'planning to get',
-					required: true,
-					type: 'string',
-					example: '24-32',
-				},
+				SE.parameter_uuid('planning to get', 'week', 'string'),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
+				200: SE.response(200, {
+					week: SE.string('24-32'),
+					week_id: SE.string('DP-24-W32'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		put: {
+			tags: ['zipper.planning'],
+			summary: 'Update an existing planning',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_uuid('planning to update', 'week', 'string'),
+			],
+			requestBody: SE.requestBody_schema_ref('zipper/planning'),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/planning'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['zipper.planning'],
+			summary: 'Deletes a planning',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_uuid('planning to delete', 'week', 'string'),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/planning/by/{planning_week}': {
+		get: {
+			tags: ['zipper.planning'],
+			summary: 'Get all Planning by Planning UUID',
+			parameters: [
+				SE.parameter_uuid('planning to get', 'planning_week', 'string'),
+			],
+			responses: {
+				200: SE.response(200, {
+					week: SE.string('24-32'),
+					week_id: SE.string('DP-24-W32'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/planning-details/by/{planning_week}': {
+		get: {
+			tags: ['zipper.planning'],
+			summary: 'Get all Planning and Planning Entry by Planning UUID',
+			parameters: [
+				SE.parameter_uuid('planning to get', 'planning_week', 'string'),
+			],
+			responses: {
+				200: SE.response(200, {
+					week: SE.string('24-32'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+					planning_entry: {
 						type: 'object',
 						properties: {
-							week: {
-								type: 'string',
-								example: '24-32',
-							},
-							week_id: {
-								type: 'string',
-								example: 'DP-24-W32',
-							},
-							created_by: {
+							uuid: {
 								type: 'string',
 								example: 'igD0v9DIJQhJeet',
 							},
-
-							created_by_name: {
+							planning_week: {
 								type: 'string',
-								example: 'John Doe',
+								example: '24-32',
+							},
+							sfg_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							sno_quantity: {
+								type: 'number',
+								example: 100,
+							},
+							factory_quantity: {
+								type: 'number',
+								example: 100,
+							},
+							production_quantity: {
+								type: 'number',
+								example: 100,
+							},
+							batch_production_quantity: {
+								type: 'number',
+								example: 100,
 							},
 							created_at: {
 								type: 'string',
@@ -2898,272 +1945,20 @@ export const pathZipperPlanning = {
 								format: 'date-time',
 								example: '2024-01-01 00:00:00',
 							},
-							remarks: {
+							sno_remarks: {
+								type: 'string',
+								example: 'Remarks',
+							},
+							factory_remarks: {
 								type: 'string',
 								example: 'Remarks',
 							},
 						},
 					},
-				},
-
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'User not found',
-				},
-			},
-		},
-
-		put: {
-			tags: ['zipper.planning'],
-			summary: 'Update an existing planning',
-			description: '',
-			// operationId: "updatePet",
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'week',
-					in: 'path',
-					description: 'planning to update',
-					required: true,
-					type: 'string',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/planning',
-						},
-					},
-				},
-			},
-			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/planning',
-						},
-					},
-				},
-
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'planning not found',
-				},
-
-				405: {
-					description: 'Validation exception',
-				},
-			},
-		},
-
-		delete: {
-			tags: ['zipper.planning'],
-
-			summary: 'Deletes a planning',
-
-			description: '',
-			// operationId: "deletePet",
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'week',
-					in: 'path',
-					description: 'planning to delete',
-					required: true,
-					type: 'string',
-				},
-			],
-
-			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/planning',
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Planning not found',
-				},
-			},
-		},
-	},
-	'/zipper/planning/by/{planning_week}': {
-		get: {
-			tags: ['zipper.planning'],
-			summary: 'Get all Planning by Planning UUID',
-			parameters: [
-				{
-					name: 'planning_week',
-					in: 'path',
-					description: 'planning to get',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns all Planning by Planning UUID',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									week: {
-										type: 'integer',
-										example: 1,
-									},
-									week_id: {
-										type: 'string',
-										example: 'DP-24-W32',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	},
-	'/zipper/planning-details/by/{planning_week}': {
-		get: {
-			tags: ['zipper.planning'],
-			summary: 'Get all Planning and Planning Entry by Planning UUID',
-			parameters: [
-				{
-					name: 'planning_week',
-					in: 'path',
-					description: 'planning to get',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				200: {
-					description:
-						'Returns all Planning and Planning Entry by Planning UUID',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									week: {
-										type: 'string',
-										example: '24-32',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									planning_entry: {
-										type: 'object',
-										properties: {
-											uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											planning_week: {
-												type: 'string',
-												example: '24-32',
-											},
-											sfg_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											sno_quantity: {
-												type: 'number',
-												example: 100,
-											},
-											factory_quantity: {
-												type: 'number',
-												example: 100,
-											},
-											production_quantity: {
-												type: 'number',
-												example: 100,
-											},
-											batch_production_quantity: {
-												type: 'number',
-												example: 100,
-											},
-											created_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											updated_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											remarks: {
-												type: 'string',
-												example: 'Remarks',
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -3176,88 +1971,81 @@ export const pathZipperPlanningEntry = {
 			tags: ['zipper.planning_entry'],
 			summary: 'Get all Planning',
 			responses: {
-				200: {
-					description: 'Returns all Planning',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									planning_week: {
-										type: 'string',
-										example: '23-32',
-									},
-									sfg_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									sno_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									factory_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									production_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									batch_production_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									sno_remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									factory_remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									style: {
-										type: 'string',
-										example: 'Style 1',
-									},
-									color: {
-										type: 'string',
-										example: 'Red',
-									},
-									size: {
-										type: 'number',
-										example: 10,
-									},
-									order_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
-									item_description: {
-										type: 'string',
-										example: 'N-3-OE-SP',
-									},
-								},
-							},
-						},
+				200: SE.response(200, {
+					uuid: {
+						type: 'string',
+						example: 'igD0v9DIJQhJeet',
 					},
-				},
+					planning_week: {
+						type: 'string',
+						example: '23-32',
+					},
+					sfg_uuid: {
+						type: 'string',
+						example: 'igD0v9DIJQhJeet',
+					},
+					sno_quantity: {
+						type: 'number',
+						example: 100,
+					},
+					factory_quantity: {
+						type: 'number',
+						example: 100,
+					},
+					production_quantity: {
+						type: 'number',
+						example: 100,
+					},
+					batch_production_quantity: {
+						type: 'number',
+						example: 100,
+					},
+					created_at: {
+						type: 'string',
+						format: 'date-time',
+						example: '2024-01-01 00:00:00',
+					},
+					updated_at: {
+						type: 'string',
+						format: 'date-time',
+						example: '2024-01-01 00:00:00',
+					},
+					sno_remarks: {
+						type: 'string',
+						example: 'Remarks',
+					},
+					factory_remarks: {
+						type: 'string',
+						example: 'Remarks',
+					},
+					style: {
+						type: 'string',
+						example: 'Style 1',
+					},
+					color: {
+						type: 'string',
+						example: 'Red',
+					},
+					size: {
+						type: 'number',
+						example: 10,
+					},
+					order_quantity: {
+						type: 'number',
+						example: 100,
+					},
+					order_number: {
+						type: 'string',
+						example: 'Z24-0001',
+					},
+					item_description: {
+						type: 'string',
+						example: 'N-3-OE-SP',
+					},
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		post: {

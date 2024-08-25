@@ -10,7 +10,7 @@ export const defLabDipInfo = {
 		},
 		id: {
 			type: 'integer',
-			example: 1,
+			example: 10,
 		},
 		name: {
 			type: 'string',
@@ -21,8 +21,8 @@ export const defLabDipInfo = {
 			example: 'igD0v9DIJQhJeet',
 		},
 		lab_status: {
-			type: 'string',
-			example: 'Pending',
+			type: 'number',
+			example: 0,
 		},
 		created_by: {
 			type: 'string',
