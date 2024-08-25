@@ -1,193 +1,70 @@
+import SE, { SED } from '../../../util/swagger_example.js';
 //* ./schema.js#info
-
-export const defLabDipInfo = {
-	type: 'object',
+export const defLabDipInfo = SED({
 	required: ['uuid', 'name', 'order_info_uuid', 'created_by', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		id: {
-			type: 'integer',
-			example: 10,
-		},
-		name: {
-			type: 'string',
-			example: 'Lab Dip 1',
-		},
-		order_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		lab_status: {
-			type: 'number',
-			example: 0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		id: SE.integer(1),
+		name: SE.string('Lab Dip 1'),
+		order_info_uuid: SE.uuid(),
+		lab_status: SE.integer(0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'LabDip/Info',
-	},
-};
+	xml: 'LabDip/Info',
+});
 
-export const defLabDipRecipe = {
-	type: 'object',
+export const defLabDipRecipe = SED({
 	required: ['uuid', 'lab_dip_info_uuid', 'name', 'created_by', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		id: {
-			type: 'integer',
-			example: 1,
-		},
-		lab_dip_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'Recipe 1',
-		},
-		approved: {
-			type: 'integer',
-			example: 0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		status: {
-			type: 'integer',
-			example: 0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		id: SE.integer(1),
+		lab_dip_info_uuid: SE.uuid(),
+		name: SE.string('Recipe 1'),
+		approved: SE.integer(0),
+		created_by: SE.uuid(),
+		status: SE.integer(0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'LabDip/Recipe',
-	},
-};
+	xml: 'LabDip/Recipe',
+});
 
-export const defLabDipRecipeEntry = {
-	type: 'object',
+export const defLabDipRecipeEntry = SED({
 	required: ['uuid', 'recipe_uuid', 'color', 'quantity', 'created_at'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		recipe_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		color: {
-			type: 'string',
-			example: 'Red',
-		},
-		quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		recipe_uuid: SE.uuid(),
+		color: SE.string('Red'),
+		quantity: SE.number(10),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'LabDip/RecipeEntry',
-	},
-};
+	xml: 'LabDip/RecipeEntry',
+});
 
 // * Shade Recipe * //
-export const defShadeRecipe = {
-	type: 'object',
+export const defShadeRecipe = SED({
 	required: ['uuid', 'name'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'Share Recipe 1',
-		},
-		sub_streat: {
-			type: 'string',
-			example: 'Sub Streat 1',
-		},
-		lab_status: {
-			type: 'number',
-			example: 0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('Shade Recipe 1'),
+		sub_streat: SE.string('Sub Streat 1'),
+		lab_status: SE.number(0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'LabDip/ShareRecipe',
-	},
-};
+	xml: 'LabDip/ShareRecipe',
+});
 
 // * Shade Recipe Entry * //
-export const defShadeRecipeEntry = {
-	type: 'object',
+export const defShadeRecipeEntry = SED({
 	required: [
 		'uuid',
 		'shade_recipe_uuid',
@@ -196,41 +73,16 @@ export const defShadeRecipeEntry = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		shade_recipe_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		material_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		shade_recipe_uuid: SE.uuid(),
+		material_uuid: SE.uuid(),
+		quantity: SE.number(10),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'LabDip/ShareRecipeEntry',
-	},
-};
+	xml: 'LabDip/ShareRecipeEntry',
+});
 
 // * Marge All
 export const defLabDip = {
