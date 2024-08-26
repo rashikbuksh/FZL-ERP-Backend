@@ -286,19 +286,28 @@ export async function selectOrderDescription(req, res, next) {
 
 	const query = sql`SELECT
 					vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label,
-					vodf.item_name AS item_name,
-					tape_received
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label,
+					vodf.item_name,
+					vodf.tape_received,
+					vodf.tape_transferred,
+					json_agg(colors.color) AS colors
 				FROM
 					zipper.v_order_details_full vodf
+				LEFT JOIN 
+					(
+						SELECT oe.color, oe.order_description_uuid
+						FROM zipper.order_entry oe 
+				        group by oe.order_description_uuid, oe.color
+					) AS colors ON colors.order_description_uuid = vodf.order_description_uuid 
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != ''
+				group by vodf.order_description_uuid, vodf.order_number, vodf.item_description, vodf.tape_received, vodf.tape_transferred, vodf.item_name
 				`;
 
 	if (item == 'nylon') {
-		query.append(sql` AND vodf.item_name = 'Nylon'`);
+		query.append(sql` HAVING vodf.item_name = 'Nylon'`);
 	} else if (item == 'without-nylon') {
-		query.append(sql` AND vodf.item_name != 'Nylon'`);
+		query.append(sql` HAVING vodf.item_name != 'Nylon'`);
 	}
 
 	const orderEntryPromise = db.execute(query);

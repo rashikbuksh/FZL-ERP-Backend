@@ -225,6 +225,7 @@ export const def_zipper_dyed_tape_transaction = SED({
 	properties: {
 		uuid: SE.uuid(),
 		order_description_uuid: SE.uuid(),
+		colors: SE.string('colors'),
 		section: SE.string('section'),
 		trx_quantity: SE.number('10.0'),
 		created_by: SE.uuid(),

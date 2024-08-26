@@ -1064,6 +1064,7 @@ export const pathZipperDyedTapeTransaction = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					order_description_uuid: SE.uuid(),
+					colors: SE.string('colors'),
 					section: SE.string('section'),
 					trx_quantity: SE.number('10.0'),
 					created_by: SE.uuid(),
@@ -1123,16 +1124,14 @@ export const pathZipperDyedTapeTransaction = {
 			summary: 'Update an existing dyed tape transaction',
 			description: '',
 			// operationId: "updatePet",
-
 			consumes: ['application/json'],
 			produces: ['application/json'],
-
 			parameters: [
 				SE.parameter_uuid('dyed tape transaction to update', 'uuid'),
 			],
 			requestBody: SE.requestBody({
 				order_description_uuid: SE.uuid(),
-
+				colors: SE.string('colors'),
 				section: SE.string('section'),
 				trx_quantity: SE.number('10.0'),
 				created_by: SE.uuid(),
