@@ -757,17 +757,7 @@ export const pathThreadBatchEntry = {
 			tags: ['thread.batch_entry'],
 			summary: 'Update Thread Batch Entry',
 			description: 'Update Thread Batch Entry',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -828,51 +818,59 @@ export const pathThreadBatchEntry = {
 			description: 'Get Order Details for Batch Entry',
 			produces: ['application/json'],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									count_length_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									count_length: {
-										type: 'string',
-										example: '40 - 2',
-									},
-									color: {
-										type: 'string',
-										example: 'Red',
-									},
-									po: {
-										type: 'string',
-										example: 'PO-123',
-									},
-									style: {
-										type: 'string',
-										example: 'Style-123',
-									},
-									quantity: {
-										type: 'integer',
-										example: 100,
-									},
-									shade_recipe_uuid: {
-										type: 'string',
-
-										example: 'igD0v9DIJQhJeet',
-									},
-									shade_recipe_name: {
-										type: 'string',
-										example: 'Shade Recipe',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					order_entry_uuid: SE.uuid(),
+					order_number: SE.string(),
+					style: SE.string(),
+					color: SE.string(),
+					shade_recipe_uuid: SE.uuid(),
+					shade_recipe_name: SE.string(),
+					po: SE.string(),
+					count_length_uuid: SE.uuid(),
+					count: SE.integer(),
+					length: SE.integer(),
+					count_length_name: SE.string(),
+					order_quantity: SE.integer(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/thread/batch-entry/by/{batch_uuid}': {
+		get: {
+			tags: ['thread.batch_entry'],
+			summary: 'Get Thread Batch Entry by Batch UUID',
+			description: 'Get Thread Batch Entry by Batch UUID',
+			parameters: [SE.parameter_uuid('batch_uuid', 'batch_uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					batch_uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					color: SE.string('black'),
+					po: SE.string('po 1'),
+					style: SE.string('style 1'),
+					count_length_uuid: SE.uuid(),
+					count_length: SE.string('40/2'),
+					order_quantity: SE.number(10),
+					quantity: SE.integer(10),
+					yarn_quantity: SE.integer(10),
+					coning_production_quantity: SE.integer(10),
+					coning_production_quantity_in_kg: SE.integer(10),
+					order_number: SE.string('TH24-0001'),
+					total_quantity: SE.integer(10),
+					balance_quantity: SE.integer(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+				}),
 			},
 		},
 	},
@@ -935,28 +933,9 @@ export const pathThreadBatch = {
 			tags: ['thread.batch'],
 			summary: 'Get Thread Batch',
 			description: 'Get Thread Batch',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/batch',
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'thread/batch'),
 			},
 		},
 		put: {
@@ -1024,6 +1003,59 @@ export const pathThreadBatch = {
 						},
 					},
 				},
+			},
+		},
+	},
+	'/thread/batch-details/by/{batch_uuid}': {
+		get: {
+			tags: ['thread.batch'],
+			summary: 'Get Batch Details by Batch UUID',
+			description: 'Get Batch Details by Batch UUID',
+			parameters: [SE.parameter_uuid('batch_uuid', 'batch_uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.integer(),
+					dyeing_operator: SE.string(),
+					reason: SE.string(),
+					category: SE.string(),
+					status: SE.string(),
+					pass_by: SE.string(),
+					shift: SE.string(),
+					dyeing_supervisor: SE.string(),
+					is_dyeing_complete: SE.integer(),
+					coning_operator: SE.string(),
+					coning_supervisor: SE.string(),
+					coning_machines: SE.string(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+					batch_entry: SE.sub_response_schema({
+						uuid: SE.uuid(),
+						batch_uuid: SE.uuid(),
+						order_entry_uuid: SE.uuid(),
+						color: SE.string('black'),
+						po: SE.string('po 1'),
+						style: SE.string('style 1'),
+						count_length_uuid: SE.uuid(),
+						count_length: SE.string('40/2'),
+						order_quantity: SE.number(10),
+						quantity: SE.integer(10),
+						yarn_quantity: SE.integer(10),
+						coning_production_quantity: SE.integer(10),
+						coning_production_quantity_in_kg: SE.integer(10),
+						order_number: SE.string('TH24-0001'),
+						total_quantity: SE.integer(10),
+						balance_quantity: SE.integer(10),
+						created_by: SE.uuid(),
+						created_by_name: SE.string('John Doe'),
+						created_at: SE.date_time(),
+						updated_at: SE.date_time(),
+						remarks: SE.string(),
+					}),
+				}),
 			},
 		},
 	},

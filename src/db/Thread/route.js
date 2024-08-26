@@ -55,6 +55,10 @@ threadRouter.get(
 	'/order-batch',
 	batch_entryOperations.getOrderDetailsForBatchEntry
 );
+threadRouter.get(
+	'/batch-entry/by/:batch_uuid',
+	batch_entryOperations.getBatchEntryByBatchUuid
+);
 
 // batch routes
 threadRouter.get('/batch', batchOperations.selectAll);
@@ -62,5 +66,9 @@ threadRouter.get('/batch/:uuid', batchOperations.select);
 threadRouter.post('/batch', batchOperations.insert);
 threadRouter.put('/batch/:uuid', batchOperations.update);
 threadRouter.delete('/batch/:uuid', batchOperations.remove);
+threadRouter.get(
+	'/batch-details/by/:batch_uuid',
+	batchOperations.selectBatchDetailsByBatchUuid
+);
 
 export { threadRouter };

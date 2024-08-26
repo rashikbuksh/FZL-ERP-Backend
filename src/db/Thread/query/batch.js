@@ -146,3 +146,41 @@ export async function select(req, res, next) {
 	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
 
+export async function selectBatchDetailsByBatchUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	try {
+		const api = await createApi(req);
+
+		const { batch_uuid } = req.params;
+
+		console.log(batch_uuid);
+
+		const fetchData = async (endpoint) =>
+			await api.get(`/thread/${endpoint}/${batch_uuid}`);
+
+		const [batch, batch_entry] = await Promise.all([
+			fetchData('batch'),
+			fetchData('batch-entry/by'),
+		]);
+
+		console.log('batch', batch);
+		console.log('batch_entry', batch_entry);
+
+		const response = {
+			...batch?.data?.data[0],
+			batch_entry: batch_entry?.data?.data || [],
+		};
+
+		console.log('response', response);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'batch',
+		};
+
+		return await res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
