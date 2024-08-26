@@ -7,9 +7,9 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as labDipSchema from '../../lab_dip/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { count_length, order_entry, order_info } from '../schema.js';
-import * as labDipSchema from '../../lab_dip/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -247,6 +247,7 @@ export async function selectThreadSwatch(req, res, next) {
 			uuid: order_info.uuid,
 			id: order_info.id,
 			order_number: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			order_entry_uuid: order_entry.uuid,
 			style: order_entry.style,
 			color: order_entry.color,
 			shade_recipe_uuid: order_entry.shade_recipe_uuid,
@@ -266,6 +267,10 @@ export async function selectThreadSwatch(req, res, next) {
 		.leftJoin(
 			count_length,
 			eq(order_entry.count_length_uuid, count_length.uuid)
+		)
+		.leftJoin(
+			labDipSchema.shade_recipe,
+			eq(order_entry.shade_recipe_uuid, labDipSchema.shade_recipe.uuid)
 		);
 
 	const toast = {

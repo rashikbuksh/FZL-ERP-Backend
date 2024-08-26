@@ -1,4 +1,5 @@
 // * Thread Machine * //
+import { shade_recipe } from '@/db/lab_dip/schema.js';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 export const pathThreadMachine = {
@@ -197,6 +198,9 @@ export const pathThreadCountLength = {
 						},
 					},
 				},
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -205,45 +209,25 @@ export const pathThreadCountLength = {
 			tags: ['thread.count_length'],
 			summary: 'Get Thread Count Length',
 			description: 'Get Thread Count Length',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/count_length',
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					count: SE.string(),
+					length: SE.string(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
 			tags: ['thread.count_length'],
 			summary: 'Update Thread Count Length',
 			description: 'Update Thread Count Length',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -254,16 +238,10 @@ export const pathThreadCountLength = {
 				},
 			},
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/count_length',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/count_length'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 
@@ -271,17 +249,7 @@ export const pathThreadCountLength = {
 			tags: ['thread.count_length'],
 			summary: 'Delete Thread Count Length',
 			description: 'Delete Thread Count Length',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
 				201: {
 					description: 'Success',
@@ -479,9 +447,13 @@ export const pathThreadOrderInfo = {
 						lab_reference: SE.string(),
 						color: SE.string(),
 						shade_recipe_uuid: SE.uuid(),
+						shade_recipe_name: SE.string(),
 						po: SE.string(),
 						style: SE.string(),
 						count_length_uuid: SE.uuid(),
+						count: SE.string(),
+						length: SE.string(),
+						count_length_name: SE.string(),
 						quantity: SE.integer(),
 						company_price: SE.number(),
 						party_price: SE.number(),
@@ -506,6 +478,7 @@ export const pathThreadOrderInfo = {
 					uuid: SE.uuid(),
 					id: SE.integer(),
 					order_number: SE.string(),
+					style: SE.string(),
 					color: SE.string(),
 					shade_recipe_uuid: SE.uuid(),
 					shade_recipe_name: SE.string(),
