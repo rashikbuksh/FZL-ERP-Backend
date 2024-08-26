@@ -15,7 +15,9 @@ export async function insert(req, res, next) {
 	const resultPromise = db
 		.insert(batch)
 		.values(req.body)
-		.returning({ insertedId: batch.uuid });
+		.returning({
+			insertedId: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -39,7 +41,9 @@ export async function update(req, res, next) {
 		.update(batch)
 		.set(req.body)
 		.where(eq(batch.uuid, req.params.uuid))
-		.returning({ updatedId: batch.uuid });
+		.returning({
+			updatedId: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -60,7 +64,9 @@ export async function remove(req, res, next) {
 	const resultPromise = db
 		.delete(batch)
 		.where(eq(batch.uuid, req.params.uuid))
-		.returning({ deletedId: batch.uuid });
+		.returning({
+			deletedId: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -82,6 +88,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: batch.uuid,
 			id: batch.id,
+			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			dyeing_operator: batch.dyeing_operator,
 			reason: batch.reason,
 			category: batch.category,
@@ -116,6 +123,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: batch.uuid,
 			id: batch.id,
+			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			dyeing_operator: batch.dyeing_operator,
 			reason: batch.reason,
 			category: batch.category,

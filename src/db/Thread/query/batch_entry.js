@@ -136,7 +136,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		CONCAT(cl.count, '/', cl.length) as count_length,
 		oe.shade_recipe_uuid as shade_recipe_uuid,
 		se.name as shade_recipe_name,
-		CONCAT('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 		be_given.total_quantity as total_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0)) as balance_quantity
 	FROM
@@ -194,7 +194,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		CONCAT(cl.count, '/', cl.length) as count_length,
 		oe.shade_recipe_uuid as shade_recipe_uuid,
 		se.name as shade_recipe_name,
-		CONCAT('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 		be.quantity as quantity,
 		be.yarn_quantity,
 		be.coning_production_quantity,

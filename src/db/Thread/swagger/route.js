@@ -1023,6 +1023,7 @@ export const pathThreadBatch = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					id: SE.integer(),
+					batch_id:SE.string('TB24-0001'),
 					dyeing_operator: SE.string(),
 					reason: SE.string(),
 					category: SE.string(),
