@@ -227,7 +227,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		FROM
 			zipper.sfg sfg
 		LEFT JOIN 
-			lab_dip.recipe ldr ON sfg.lab_dip_info_uuid = ldr.uuid
+			lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
 		LEFT JOIN
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
