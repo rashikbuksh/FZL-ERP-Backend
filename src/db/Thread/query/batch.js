@@ -153,8 +153,6 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 
 		const { batch_uuid } = req.params;
 
-		console.log(batch_uuid);
-
 		const fetchData = async (endpoint) =>
 			await api.get(`/thread/${endpoint}/${batch_uuid}`);
 
@@ -163,15 +161,10 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 			fetchData('batch-entry/by'),
 		]);
 
-		console.log('batch', batch);
-		console.log('batch_entry', batch_entry);
-
 		const response = {
 			...batch?.data?.data[0],
 			batch_entry: batch_entry?.data?.data || [],
 		};
-
-		console.log('response', response);
 
 		const toast = {
 			status: 200,

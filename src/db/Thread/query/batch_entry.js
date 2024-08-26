@@ -1,13 +1,10 @@
 import { eq, sql } from 'drizzle-orm';
-import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as labDipSchema from '../../lab_dip/schema.js';
 import { batch_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -227,19 +224,17 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 			batch_entry.order_entry_uuid
 	) as be_given ON be_given.order_entry_uuid = oe.uuid
 	WHERE
-		be.batch_uuid = ${req.params.uuid}
+		be.batch_uuid = ${req.params.batch_uuid}
 	`;
 
 	const resultPromise = db.execute(query);
 	try {
 		const data = await resultPromise;
 
-		console.log(data);
-
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'Order details',
+			message: 'batch_entry',
 		};
 
 		return await res.status(200).json({ toast, data: data?.rows });

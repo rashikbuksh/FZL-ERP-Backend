@@ -846,7 +846,14 @@ export const pathThreadBatchEntry = {
 			tags: ['thread.batch_entry'],
 			summary: 'Get Thread Batch Entry by Batch UUID',
 			description: 'Get Thread Batch Entry by Batch UUID',
-			parameters: [SE.parameter_uuid('batch_uuid', 'batch_uuid')],
+			parameters: [
+				SE.parameter_uuid(
+					'batch_uuid',
+					'batch_uuid',
+					'uuid',
+					'6fm2IOdfSc5p3nJ'
+				),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
