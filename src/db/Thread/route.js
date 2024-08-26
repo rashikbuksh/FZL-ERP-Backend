@@ -32,6 +32,10 @@ threadRouter.get(
 	'/order-info-details/by/:order_info_uuid',
 	order_infoOperations.selectOrderDetailsByOrderInfoUuid
 );
+threadRouter.get(
+	'/order-swatch',
+	order_infoOperations.selectThreadSwatch
+);
 
 // order_entry routes
 threadRouter.get('/order-entry', order_entryOperations.selectAll);

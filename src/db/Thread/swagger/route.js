@@ -496,6 +496,32 @@ export const pathThreadOrderInfo = {
 			},
 		},
 	},
+	'/thread/order-swatch': {
+		get: {
+			tags: ['thread.order_info'],
+			summary: 'Get Thread Order Swatch',
+			description: 'Get Thread Order Swatch',
+			responses: {
+				200: SE.response(200, {
+					uuid: SE.uuid(),
+					id: SE.integer(),
+					order_number: SE.string(),
+					color: SE.string(),
+					shade_recipe_uuid: SE.uuid(),
+					shade_recipe_name: SE.string(),
+					po: SE.string(),
+					count_length_uuid: SE.uuid(),
+					count: SE.integer(),
+					length: SE.integer(),
+					count_length_name: SE.string(),
+					order_quantity: SE.integer(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+				}),
+			},
+		},
+	},
 };
 
 // * Thread Order Entry * //
