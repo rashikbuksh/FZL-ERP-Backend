@@ -211,6 +211,8 @@ export const def_zipper_sfg_transaction = SED({
 	xml: 'Zipper/Sfg-Transaction',
 });
 
+// * Dyed Tape Transaction * //
+
 // * Zipper Batch * //
 export const def_zipper_batch = SED({
 	required: ['uuid', 'created_by', 'created_at'],

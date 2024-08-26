@@ -259,6 +259,19 @@ export const sfg_transaction = zipper.table('sfg_transaction', {
 	remarks: text('remarks').default(null),
 });
 
+export const dyed_tape_transaction = zipper.table('dyed_tape_transaction', {
+	uuid: uuid_primary,
+	order_description_uuid: defaultUUID('order_description_uuid').references(
+		() => order_description.uuid
+	),
+	section: text('section').notNull(),
+	trx_quantity: PG_DECIMAL('trx_quantity').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
 export const batchStatusEnum = zipper.enum('batch_status', [
 	'pending',
 	'completed',
