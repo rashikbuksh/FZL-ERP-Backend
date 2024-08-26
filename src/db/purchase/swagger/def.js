@@ -1,89 +1,35 @@
+import SE, { SED } from '../../../util/swagger_example.js';
 // */schema.js#vendor
-
-export const defPurchaseVendor = {
-	type: 'object',
+export const defPurchaseVendor = SED({
 	required: ['uuid', 'name', 'email', 'office_address'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
-		},
-		name: {
-			type: 'string',
-			example: 'Z Group',
-		},
-		contact_name: {
-			type: 'string',
-			example: 'Jahid Hasan',
-		},
-		email: {
-			type: 'string',
-			example: 'z456@gmail.com',
-		},
-		office_address: {
-			type: 'string',
-			example: 'Dhaka, Bangladesh',
-		},
-		contact_number: {
-			type: 'string',
-			example: '01700000000',
-		},
-		remarks: {
-			type: 'string',
-			example: 'This is a vendor',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('Z Group'),
+		contact_name: SE.string('Jahid Hasan'),
+		email: SE.string('z456@gmail.com'),
+		office_address: SE.string('Dhaka, Bangladesh'),
+		contact_number: SE.string('01700000000'),
+		remarks: SE.string('This is a vendor'),
 	},
-	xml: {
-		name: 'Purchase/Vendor',
-	},
-};
+	xml: 'Purchase/Vendor',
+});
 
-export const defPurchaseDescription = {
-	type: 'object',
+export const defPurchaseDescription = SED({
 	required: ['uuid', 'vendor_uuid', 'created_by', 'created_at', 'is_local'],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174002',
-		},
-		vendor_uuid: {
-			type: 'string',
-			example: '123e4567-e89b-12d3-a456-426614174000',
-		},
-		is_local: {
-			type: 'integer',
-			example: 1,
-		},
-		lc_number: {
-			type: 'string',
-			example: '1234',
-		},
-		created_by: {
-			type: 'string',
-			example: '1234567890',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'This is a description',
-		},
+		uuid: SE.uuid(),
+		vendor_uuid: SE.uuid(),
+		is_local: SE.integer(1),
+		lc_number: SE.string('1234'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('This is a description'),
 	},
-	xml: {
-		name: 'Purchase/Description',
-	},
-};
+	xml: 'Purchase/Description',
+});
 
-export const defPurchaseEntry = {
-	type: 'object',
+export const defPurchaseEntry = SED({
 	required: [
 		'uuid',
 		'purchase_description_uuid',
@@ -93,49 +39,18 @@ export const defPurchaseEntry = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		purchase_description_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		material_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		quantity: {
-			type: 'number',
-			example: 1000.0,
-		},
-		price: {
-			type: 'number',
-			example: 1111.0,
-		},
-		created_by: {
-			type: 'string',
-			example: '1234567890',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'This is an entry',
-		},
+		uuid: SE.uuid(),
+		purchase_description_uuid: SE.uuid(),
+		material_uuid: SE.uuid(),
+		quantity: SE.number(1000.0),
+		price: SE.number(1111.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('This is a entry'),
 	},
-	xml: {
-		name: 'Purchase/Entry',
-	},
-};
+	xml: 'Purchase/Entry',
+});
 
 // * Marge All * //
 export const defPurchase = {
