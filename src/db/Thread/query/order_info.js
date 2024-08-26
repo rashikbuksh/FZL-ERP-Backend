@@ -247,6 +247,7 @@ export async function selectThreadSwatch(req, res, next) {
 			uuid: order_info.uuid,
 			id: order_info.id,
 			order_number: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			style: order_entry.style,
 			color: order_entry.color,
 			shade_recipe_uuid: order_entry.shade_recipe_uuid,
 			shade_recipe_name: labDipSchema.shade_recipe.name,
@@ -265,8 +266,7 @@ export async function selectThreadSwatch(req, res, next) {
 		.leftJoin(
 			count_length,
 			eq(order_entry.count_length_uuid, count_length.uuid)
-		)
-		.leftJoin();
+		);
 
 	const toast = {
 		status: 200,

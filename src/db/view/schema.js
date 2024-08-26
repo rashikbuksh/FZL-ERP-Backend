@@ -47,6 +47,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_info.uuid AS order_info_uuid,
     concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
     order_description.uuid AS order_description_uuid,
+    order_description.tape_received,
+	order_description.tape_transferred,
     order_info.marketing_uuid,
     marketing.name AS marketing_name,
     order_info.buyer_uuid,

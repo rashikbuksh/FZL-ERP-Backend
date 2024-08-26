@@ -78,6 +78,7 @@ export const order_description = zipper.table('order_description', {
 		() => order_info.uuid
 	),
 	tape_received: PG_DECIMAL('tape_received').default(0),
+	tape_transferred: PG_DECIMAL('tape_transferred').default(0),
 	item: defaultUUID('item'),
 	zipper_number: defaultUUID('zipper_number'),
 	end_type: defaultUUID('end_type'),

@@ -279,6 +279,8 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: order_description.uuid,
 			order_info_uuid: order_description.order_info_uuid,
+			tape_received: order_description.tape_received,
+			tape_transferred: order_description.tape_transferred,
 			item: order_description.item,
 			item_name: itemProperties.name,
 			item_short_name: itemProperties.short_name,
@@ -471,6 +473,8 @@ export async function select(req, res, next) {
 		.select({
 			uuid: order_description.uuid,
 			order_info_uuid: order_description.order_info_uuid,
+			tape_received: order_description.tape_received,
+			tape_transferred: order_description.tape_transferred,
 			item: order_description.item,
 			item_name: itemProperties.name,
 			item_short_name: itemProperties.short_name,
