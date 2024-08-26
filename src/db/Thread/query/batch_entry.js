@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as labDipSchema from '../../lab_dip/schema.js';
 import { batch_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -135,4 +136,48 @@ export async function select(req, res, next) {
 		message: 'batch_entry',
 	};
 	handleResponse({ promise: resultPromise, res, next, ...toast });
+}
+
+export async function getOrderDetailsForBatchEntry(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	const query = sql`
+	SELECT 
+	    oe.color as color,
+		oe.po as po,
+		oe.style as style,
+		oe.count_length_uuid as count_length_uuid,
+		oe.quantity as quantity,
+		CONCAT(cl.count, ' - ', cl.length) as count_length,
+		oe.shade_recipe_uuid as shade_recipe_uuid,
+		se.name as shade_recipe_name
+
+	FROM
+		thread.order_entry oe
+	LEFT JOIN
+		thread.count_length cl
+	ON
+		oe.count_length_uuid = cl.uuid
+	LEFT JOIN
+		lab_dip.shade_recipe se
+	ON
+		oe.shade_recipe_uuid = se.uuid
+	WHERE
+	oe.shade_recipe_uuid IS NOT NULL
+	`;
+
+	const batchEntryPromise = db.select(query);
+
+	try {
+		const data = await batchEntryPromise;
+		const batch_data = { batch_entry: data?.rows };
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order details',
+		};
+
+		return await res.status(200).json({ toast, data: batch_data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

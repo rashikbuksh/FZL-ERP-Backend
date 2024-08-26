@@ -1,5 +1,6 @@
 // * Thread Machine * //
-import SE, { SED } from '../../../util/swagger_example.js';
+
+import SE from '../../../util/swagger_example.js';
 
 export const pathThreadMachine = {
 	'/thread/machine': {
@@ -813,6 +814,61 @@ export const pathThreadBatchEntry = {
 						'application/json': {
 							schema: {
 								$ref: '#/definitions/thread/batch_entry',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/thread/order-batch': {
+		get: {
+			tags: ['thread.batch_entry'],
+			summary: 'Get Order Details for Batch Entry',
+			description: 'Get Order Details for Batch Entry',
+			produces: ['application/json'],
+			responses: {
+				200: {
+					description: 'Success',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									count_length_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									count_length: {
+										type: 'string',
+										example: '40 - 2',
+									},
+									color: {
+										type: 'string',
+										example: 'Red',
+									},
+									po: {
+										type: 'string',
+										example: 'PO-123',
+									},
+									style: {
+										type: 'string',
+										example: 'Style-123',
+									},
+									quantity: {
+										type: 'integer',
+										example: 100,
+									},
+									shade_recipe_uuid: {
+										type: 'string',
+
+										example: 'igD0v9DIJQhJeet',
+									},
+									shade_recipe_name: {
+										type: 'string',
+										example: 'Shade Recipe',
+									},
+								},
 							},
 						},
 					},

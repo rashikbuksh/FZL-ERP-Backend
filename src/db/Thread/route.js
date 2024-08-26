@@ -32,10 +32,7 @@ threadRouter.get(
 	'/order-info-details/by/:order_info_uuid',
 	order_infoOperations.selectOrderDetailsByOrderInfoUuid
 );
-threadRouter.get(
-	'/order-swatch',
-	order_infoOperations.selectThreadSwatch
-);
+threadRouter.get('/order-swatch', order_infoOperations.selectThreadSwatch);
 
 // order_entry routes
 threadRouter.get('/order-entry', order_entryOperations.selectAll);
@@ -54,6 +51,10 @@ threadRouter.get('/batch-entry/:uuid', batch_entryOperations.select);
 threadRouter.post('/batch-entry', batch_entryOperations.insert);
 threadRouter.put('/batch-entry/:uuid', batch_entryOperations.update);
 threadRouter.delete('/batch-entry/:uuid', batch_entryOperations.remove);
+threadRouter.get(
+	'/order-batch',
+	batch_entryOperations.getOrderDetailsForBatchEntry
+);
 
 // batch routes
 threadRouter.get('/batch', batchOperations.selectAll);
