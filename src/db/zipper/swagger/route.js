@@ -1064,6 +1064,8 @@ export const pathZipperDyedTapeTransaction = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					order_description_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-SP'),
 					colors: SE.string('colors'),
 					section: SE.string('section'),
 					trx_quantity: SE.number('10.0'),
