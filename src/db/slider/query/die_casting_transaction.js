@@ -176,6 +176,12 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			stock.puller_color,
 			puller_color_properties.name as puller_color_name,
 			puller_color_properties.short_name as puller_color_short_name,
+			stock.slider_body_shape,
+			slider_body_shape_properties.name as slider_body_shape_name,
+			slider_body_shape_properties.short_name as slider_body_shape_short_name,
+			stock.puller_link,
+			slider_puller_link_properties.name as puller_link_name,
+			slider_puller_link_properties.short_name as puller_link_short_name,
 			coalesce(stock.order_quantity, 0) as order_quantity,
 			coalesce(die_casting_transaction_given.quantity,0) as provided_quantity,
 			coalesce(stock.order_quantity, 0) - coalesce(die_casting_transaction_given.quantity, 0) as balance_quantity
@@ -193,6 +199,10 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			public.properties puller_color_properties ON stock.puller_color = puller_color_properties.uuid
 		LEFT JOIN
 			public.properties logo_type_properties ON stock.logo_type = logo_type_properties.uuid
+		LEFT JOIN
+			public.properties slider_body_shape_properties ON stock.slider_body_shape = slider_body_shape_properties.uuid
+		LEFT JOIN
+			public.properties slider_puller_link_properties ON stock.puller_link = slider_puller_link_properties.uuid
 		LEFT JOIN 
 			zipper.v_order_details vod ON stock.order_info_uuid = vod.order_info_uuid
 		LEFT JOIN
