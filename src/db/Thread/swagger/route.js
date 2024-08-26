@@ -456,7 +456,7 @@ export const pathThreadOrderInfo = {
 				SE.parameter_uuid('order_info_uuid', 'order_info_uuid'),
 			],
 			responses: {
-				200: SE.response(200, {
+				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					party_uuid: SE.uuid(),
 					party_name: SE.string(),
@@ -502,7 +502,7 @@ export const pathThreadOrderInfo = {
 			summary: 'Get Thread Order Swatch',
 			description: 'Get Thread Order Swatch',
 			responses: {
-				200: SE.response(200, {
+				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					id: SE.integer(),
 					order_number: SE.string(),
