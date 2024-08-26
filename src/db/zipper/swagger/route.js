@@ -1054,6 +1054,122 @@ export const pathZipperSfgTransaction = {
 	},
 };
 
+// * Zipper Dyed Tape Transaction * //
+export const pathZipperDyedTapeTransaction = {
+	'/zipper/dyed-tape-transaction': {
+		get: {
+			tags: ['zipper.dyed_tape_transaction'],
+			summary: 'Get all Dyed Tape Transaction',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					section: SE.string('section'),
+					trx_quantity: SE.number('10.0'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		post: {
+			tags: ['zipper.dyed_tape_transaction'],
+			summary: 'create a dyed tape transaction',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/dyed_tape_transaction'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/dyed_tape_transaction'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/dyed-tape-transaction/{uuid}': {
+		get: {
+			tags: ['zipper.dyed_tape_transaction'],
+			summary: 'Gets a Dyed Tape Transaction',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_uuid('Dyed Tape Transaction to get', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/dyed_tape_transaction'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		put: {
+			tags: ['zipper.dyed_tape_transaction'],
+			summary: 'Update an existing dyed tape transaction',
+			description: '',
+			// operationId: "updatePet",
+
+			consumes: ['application/json'],
+			produces: ['application/json'],
+
+			parameters: [
+				SE.parameter_uuid('dyed tape transaction to update', 'uuid'),
+			],
+			requestBody: SE.requestBody({
+				order_description_uuid: SE.uuid(),
+
+				section: SE.string('section'),
+				trx_quantity: SE.number('10.0'),
+				created_by: SE.uuid(),
+				created_by_name: SE.string('John Doe'),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				remarks: SE.string('remarks'),
+			}),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/dyed_tape_transaction'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['zipper.dyed_tape_transaction'],
+			summary: 'Deletes a dyed tape transaction',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_uuid('dyed tape transaction to delete', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+};
+
 // * Zipper Batch * //
 export const pathZipperBatch = {
 	'/zipper/batch': {
@@ -3812,4 +3928,5 @@ export const pathZipper = {
 	...pathZipperMaterialTrxAgainstOrderDescription,
 	...pathZipperTapeCoilToDyeing,
 	...pathZipperBatchProduction,
+	...pathZipperDyedTapeTransaction,
 };
