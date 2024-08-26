@@ -282,7 +282,7 @@ export async function selectOrderEntry(req, res, next) {
 }
 
 export async function selectOrderDescription(req, res, next) {
-	const { item } = req.query;
+	const { item, tape_received } = req.query;
 
 	const query = sql`SELECT
 					vodf.order_description_uuid AS value,
@@ -308,6 +308,10 @@ export async function selectOrderDescription(req, res, next) {
 		query.append(sql` HAVING vodf.item_name = 'Nylon'`);
 	} else if (item == 'without-nylon') {
 		query.append(sql` HAVING vodf.item_name != 'Nylon'`);
+	}
+
+	if (tape_received == 'true') {
+		query.append(sql` HAVING vodf.tape_received > 0`);
 	}
 
 	const orderEntryPromise = db.execute(query);

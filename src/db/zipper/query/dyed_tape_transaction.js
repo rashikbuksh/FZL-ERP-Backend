@@ -5,7 +5,6 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { dyed_tape_transaction } from '../schema.js';
 
@@ -79,60 +78,76 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: dyed_tape_transaction.uuid,
-			order_description_uuid:
-				dyed_tape_transaction.order_description_uuid,
-			section: dyed_tape_transaction.section,
-			trx_quantity: dyed_tape_transaction.trx_quantity,
-			created_by: dyed_tape_transaction.created_by,
-			created_by_name: dyed_tape_transaction.created_by_name,
-			created_at: dyed_tape_transaction.created_at,
-			updated_at: dyed_tape_transaction.updated_at,
-			remarks: dyed_tape_transaction.remarks,
-		})
-		.from(dyed_tape_transaction)
-		.leftJoin(
-			hrSchema.users,
-			eq(dyed_tape_transaction.created_by, hrSchema.users.uuid)
-		);
+	const query = sql`
+		SELECT
+			dtt.uuid AS uuid,
+			dtt.order_description_uuid AS order_description_uuid,
+			vod.order_number as order_number,
+			vod.item_description as item_description,
+			dtt.section AS section,
+			dtt.colors as colors,
+			dtt.trx_quantity AS trx_quantity,
+			dtt.created_by AS created_by,
+			dtt.created_by_name AS created_by_name,
+			dtt.created_at AS created_at,
+			dtt.updated_at AS updated_at,
+			dtt.remarks AS remarks
+		FROM dyed_tape_transaction dtt
+			LEFT JOIN public.users u ON dtt.created_by = u.uuid
+			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
+	`;
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'dyed_tape_transaction list',
-	};
+	const resultPromise = db.execute(query);
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'dyed_tape_transaction list',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: dyed_tape_transaction.uuid,
-			order_description_uuid:
-				dyed_tape_transaction.order_description_uuid,
-			section: dyed_tape_transaction.section,
-			trx_quantity: dyed_tape_transaction.trx_quantity,
-			created_by: dyed_tape_transaction.created_by,
-			created_by_name: dyed_tape_transaction.created_by_name,
-			created_at: dyed_tape_transaction.created_at,
-			updated_at: dyed_tape_transaction.updated_at,
-			remarks: dyed_tape_transaction.remarks,
-		})
-		.from(dyed_tape_transaction)
-		.leftJoin(
-			hrSchema.users,
-			eq(dyed_tape_transaction.created_by, hrSchema.users.uuid)
-		)
-		.where(eq(dyed_tape_transaction.uuid, req.params.uuid));
+	const query = sql`
+		SELECT
+			dtt.uuid AS uuid,
+			dtt.order_description_uuid AS order_description_uuid,
+			vod.order_number as order_number,
+			vod.item_description as item_description,
+			dtt.section AS section,
+			dtt.colors as colors,
+			dtt.trx_quantity AS trx_quantity,
+			dtt.created_by AS created_by,
+			dtt.created_by_name AS created_by_name,
+			dtt.created_at AS created_at,
+			dtt.updated_at AS updated_at,
+			dtt.remarks AS remarks
+		FROM dyed_tape_transaction dtt
+			LEFT JOIN public.users u ON dtt.created_by = u.uuid
+			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
+		WHERE dtt.uuid = ${req.params.uuid}
+	`;
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'dyed_tape_transaction',
-	};
+	const resultPromise = db.execute(query);
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'dyed_tape_transaction list',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
