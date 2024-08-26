@@ -731,6 +731,10 @@ const pathZipper = {
 					'nylon',
 					'without-nylon',
 				]),
+				SE.parameter_query('tape_received', 'tape_received', [
+					'false',
+					'true',
+				]),
 			],
 			responses: {
 				200: {
@@ -899,8 +903,14 @@ const pathThread = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: { type: 'string', example: '2ggcphnw'},
-									label: { type: 'string', example: '150D/2'},
+									value: {
+										type: 'string',
+										example: '2ggcphnw',
+									},
+									label: {
+										type: 'string',
+										example: '150D/2',
+									},
 								},
 							},
 						},
@@ -909,7 +919,7 @@ const pathThread = {
 			},
 		},
 	},
-}
+};
 
 export const pathOthers = {
 	...pathPublic,
