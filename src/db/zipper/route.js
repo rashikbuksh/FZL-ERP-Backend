@@ -18,6 +18,7 @@ import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeToCoilOperations from './query/tape_to_coil.js';
 
+import * as dyedTapeTransactionOperations from './query/dyed_tape_transaction.js';
 const zipperRouter = Router();
 
 // --------------------- ORDER INFO ROUTES ---------------------
@@ -117,6 +118,33 @@ zipperRouter.delete(
 	'/sfg-transaction/:uuid',
 	// validateUuidParam(),
 	sfgTransactionOperations.remove
+);
+
+// --------------------- DYED TAPE TRANSACTION ROUTES ---------------------
+
+zipperRouter.get(
+	'/dyed-tape-transaction',
+	dyedTapeTransactionOperations.selectAll
+);
+
+zipperRouter.get(
+	'/dyed-tape-transaction/:uuid',
+	dyedTapeTransactionOperations.select
+);
+
+zipperRouter.post(
+	'/dyed-tape-transaction',
+	dyedTapeTransactionOperations.insert
+);
+
+zipperRouter.put(
+	'/dyed-tape-transaction/:uuid',
+	dyedTapeTransactionOperations.update
+);
+
+zipperRouter.delete(
+	'/dyed-tape-transaction/:uuid',
+	dyedTapeTransactionOperations.remove
 );
 
 // --------------------- BATCH ROUTES ---------------------
