@@ -1,6 +1,6 @@
+import SE, { SED } from '../../../util/swagger_example.js';
 // * ./schema.js#stock
-export const defStock = {
-	type: 'object',
+export const defStock = SED({
 	required: [
 		'uuid',
 		'order_info_uuid',
@@ -12,108 +12,34 @@ export const defStock = {
 		'order_quantity',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		item: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		zipper_number: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		end_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		puller_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		color: {
-			type: 'string',
-			example: 'red',
-		},
-		order_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		body_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		cap_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		puller_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		link_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		sa_prod: {
-			type: 'number',
-			example: 0.0,
-		},
-		coloring_stock: {
-			type: 'number',
-			example: 0.0,
-		},
-		coloring_prod: {
-			type: 'number',
-			example: 0.0,
-		},
-		trx_to_finishing: {
-			type: 'number',
-			example: 0.0,
-		},
-		u_top_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		h_bottom_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		box_pin_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		two_way_pin_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'remarks',
-		},
+		uuid: SE.uuid(),
+		order_info_uuid: SE.uuid(),
+		item: SE.uuid(),
+		zipper_number: SE.uuid(),
+		end_type: SE.uuid(),
+		puller_type: SE.uuid(),
+		color: SE.string('red'),
+		order_quantity: SE.number(0.0),
+		body_quantity: SE.number(0.0),
+		cap_quantity: SE.number(0.0),
+		puller_quantity: SE.number(0.0),
+		link_quantity: SE.number(0.0),
+		sa_prod: SE.number(0.0),
+		coloring_stock: SE.number(0.0),
+		coloring_prod: SE.number(0.0),
+		trx_to_finishing: SE.number(0.0),
+		u_top_quantity: SE.number(0.0),
+		h_bottom_quantity: SE.number(0.0),
+		box_pin_quantity: SE.number(0.0),
+		two_way_pin_quantity: SE.number(0.0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks	'),
 	},
-	xml: {
-		name: 'Slider/Stock',
-	},
-};
+	xml: 'Slider/Stock',
+});
 
-export const defDieCasting = {
-	type: 'object',
+export const defDieCasting = SED({
 	required: [
 		'uuid',
 		'name',
@@ -130,111 +56,34 @@ export const defDieCasting = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'die_casting 1',
-		},
-		item: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		zipper_number: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		end_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		puller_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		logo_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		slider_body_shape: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		puller_link: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		stopper_type: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		weight: {
-			type: 'number',
-			example: 0.0,
-		},
-		pcs_per_kg: {
-			type: 'number',
-			example: 0.0,
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'remarks',
-		},
-		is_body: {
-			type: 'number',
-			example: 0,
-		},
-		is_puller: {
-			type: 'number',
-			example: 0,
-		},
-		is_cap: {
-			type: 'number',
-			example: 0,
-		},
-		is_link: {
-			type: 'number',
-			example: 0,
-		},
-		is_h_bottom: {
-			type: 'number',
-			example: 0,
-		},
-		is_u_top: {
-			type: 'number',
-			example: 0,
-		},
-		is_box_pin: {
-			type: 'number',
-			example: 0,
-		},
-		is_two_way_pin: {
-			type: 'number',
-			example: 0,
-		},
+		uuid: SE.uuid(),
+		name: SE.string('die_casting 1'),
+		item: SE.uuid(),
+		zipper_number: SE.uuid(),
+		end_type: SE.uuid(),
+		puller_type: SE.uuid(),
+		logo_type: SE.uuid(),
+		slider_body_shape: SE.uuid(),
+		puller_link: SE.uuid(),
+		stopper_type: SE.uuid(),
+		quantity: SE.number(0.0),
+		weight: SE.number(0.0),
+		pcs_per_kg: SE.number(0.0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+		is_body: SE.number(0),
+		is_puller: SE.number(0),
+		is_cap: SE.number(0),
+		is_link: SE.number(0),
+		is_h_bottom: SE.number(0),
+		is_u_top: SE.number(0),
+		is_box_pin: SE.number(0),
+		is_two_way_pin: SE.number(0),
 	},
-	xml: {
-		name: 'Slider/DieCasting',
-	},
-};
-export const defDieCastingProduction = {
-	type: 'object',
+	xml: 'Slider/DieCasting',
+});
+export const defDieCastingProduction = SED({
 	required: [
 		'uuid',
 		'die_casting_uuid',
@@ -247,63 +96,22 @@ export const defDieCastingProduction = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		die_casting_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		mc_no: {
-			type: 'number',
-			example: 0,
-		},
-		cavity_goods: {
-			type: 'number',
-			example: 0,
-		},
-		cavity_defect: {
-			type: 'number',
-			example: 0,
-		},
-		push: {
-			type: 'number',
-			example: 0,
-		},
-		weight: {
-			type: 'number',
-			example: 0.0,
-		},
-		order_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'remarks',
-		},
+		uuid: SE.uuid(),
+		die_casting_uuid: SE.uuid(),
+		mc_no: SE.number(0),
+		cavity_goods: SE.number(0),
+		cavity_defect: SE.number(0),
+		push: SE.number(0),
+		weight: SE.number(0.0),
+		order_info_uuid: SE.uuid(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Slider/DieCastingProduction',
-	},
-};
-export const defDieCastingTransaction = {
-	type: 'object',
+	xml: 'Slider/DieCastingProduction',
+});
+export const defDieCastingTransaction = SED({
 	required: [
 		'uuid',
 		'die_casting_uuid',
@@ -313,47 +121,18 @@ export const defDieCastingTransaction = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		die_casting_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		stock_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		trx_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'remarks',
-		},
+		uuid: SE.uuid(),
+		die_casting_uuid: SE.uuid(),
+		stock_uuid: SE.uuid(),
+		trx_quantity: SE.number(0.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Slider/DieCastingTransaction',
-	},
-};
-export const defTransaction = {
-	type: 'object',
+	xml: 'Slider/DieCastingTransaction',
+});
+export const defTransaction = SED({
 	required: [
 		'uuid',
 		'stock_uuid',
@@ -363,47 +142,18 @@ export const defTransaction = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		stock_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		section: {
-			type: 'string',
-			example: 'section',
-		},
-		trx_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'remarks',
-		},
+		uuid: SE.uuid(),
+		stock_uuid: SE.uuid(),
+		section: SE.string('section'),
+		trx_quantity: SE.number(0.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Slider/Transaction',
-	},
-};
-export const defColoringTransaction = {
-	type: 'object',
+	xml: 'Slider/Transaction',
+});
+export const defColoringTransaction = SED({
 	required: [
 		'uuid',
 		'stock_uuid',
@@ -413,45 +163,17 @@ export const defColoringTransaction = {
 		'created_at',
 	],
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		stock_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		trx_quantity: {
-			type: 'number',
-			example: 0.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'remarks',
-		},
+		uuid: SE.uuid(),
+		stock_uuid: SE.uuid(),
+		order_info_uuid: SE.uuid(),
+		trx_quantity: SE.number(0.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
-	xml: {
-		name: 'Slider/ColoringTransaction',
-	},
-};
+	xml: 'Slider/ColoringTransaction',
+});
 
 // * Marge All
 export const defSlider = {
