@@ -7,7 +7,8 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { order_entry, order_info } from '../schema.js';
+import * as labDipSchema from '../../lab_dip/schema.js';
+import { count_length, order_entry, order_info } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -85,9 +86,13 @@ export async function selectAll(req, res, next) {
 			lab_reference: order_entry.lab_reference,
 			color: order_entry.color,
 			shade_recipe_uuid: order_entry.shade_recipe_uuid,
+			shade_recipe_name: labDipSchema.shade_recipe.name,
 			po: order_entry.po,
 			style: order_entry.style,
 			count_length_uuid: order_entry.count_length_uuid,
+			count: count_length.count,
+			length: count_length.length,
+			count_length_name: sql`concat(count_length.count, ' - ', count_length.length)`,
 			quantity: order_entry.quantity,
 			company_price: order_entry.company_price,
 			party_price: order_entry.party_price,
@@ -103,6 +108,14 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(order_entry.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			labDipSchema.shade_recipe,
+			eq(order_entry.shade_recipe_uuid, labDipSchema.shade_recipe.uuid)
+		)
+		.leftJoin(
+			count_length,
+			eq(order_entry.count_length_uuid, count_length.uuid)
 		);
 
 	const toast = {
@@ -122,9 +135,13 @@ export async function select(req, res, next) {
 			lab_reference: order_entry.lab_reference,
 			color: order_entry.color,
 			shade_recipe_uuid: order_entry.shade_recipe_uuid,
+			shade_recipe_name: labDipSchema.shade_recipe.name,
 			po: order_entry.po,
 			style: order_entry.style,
 			count_length_uuid: order_entry.count_length_uuid,
+			count: count_length.count,
+			length: count_length.length,
+			count_length_name: sql`concat(count_length.count, ' - ', count_length.length)`,
 			quantity: order_entry.quantity,
 			company_price: order_entry.company_price,
 			party_price: order_entry.party_price,
@@ -140,6 +157,14 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(order_entry.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			labDipSchema.shade_recipe,
+			eq(order_entry.shade_recipe_uuid, labDipSchema.shade_recipe.uuid)
+		)
+		.leftJoin(
+			count_length,
+			eq(order_entry.count_length_uuid, count_length.uuid)
 		)
 		.where(eq(order_entry.uuid, req.params.uuid));
 
@@ -162,9 +187,13 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			lab_reference: order_entry.lab_reference,
 			color: order_entry.color,
 			shade_recipe_uuid: order_entry.shade_recipe_uuid,
+			shade_recipe_name: labDipSchema.shade_recipe.name,
 			po: order_entry.po,
 			style: order_entry.style,
 			count_length_uuid: order_entry.count_length_uuid,
+			count: count_length.count,
+			length: count_length.length,
+			count_length_name: sql`concat(count_length.count, ' - ', count_length.length)`,
 			quantity: order_entry.quantity,
 			company_price: order_entry.company_price,
 			party_price: order_entry.party_price,
@@ -180,6 +209,14 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(order_entry.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			labDipSchema.shade_recipe,
+			eq(order_entry.shade_recipe_uuid, labDipSchema.shade_recipe.uuid)
+		)
+		.leftJoin(
+			count_length,
+			eq(order_entry.count_length_uuid, count_length.uuid)
 		)
 		.where(eq(order_entry.order_info_uuid, req.params.order_info_uuid));
 

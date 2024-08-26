@@ -8,7 +8,8 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import { order_info } from '../schema.js';
+import { count_length, order_entry, order_info } from '../schema.js';
+import * as labDipSchema from '../../lab_dip/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -16,7 +17,9 @@ export async function insert(req, res, next) {
 	const resultPromise = db
 		.insert(order_info)
 		.values(req.body)
-		.returning({ insertedId: order_info.uuid });
+		.returning({
+			insertedId: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -40,7 +43,9 @@ export async function update(req, res, next) {
 		.update(order_info)
 		.set(req.body)
 		.where(eq(order_info.uuid, req.params.uuid))
-		.returning({ updatedId: order_info.uuid });
+		.returning({
+			updatedId: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -63,7 +68,9 @@ export async function remove(req, res, next) {
 	const resultPromise = db
 		.delete(order_info)
 		.where(eq(order_info.uuid, req.params.uuid))
-		.returning({ deletedId: order_info.uuid });
+		.returning({
+			deletedId: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -85,6 +92,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: order_info.uuid,
 			id: order_info.id,
+			order_number: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			party_uuid: order_info.party_uuid,
 			party_name: publicSchema.party.name,
 			marketing_uuid: order_info.marketing_uuid,
@@ -144,6 +152,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: order_info.uuid,
 			id: order_info.id,
+			order_number: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			party_uuid: order_info.party_uuid,
 			party_name: publicSchema.party.name,
 			marketing_uuid: order_info.marketing_uuid,
@@ -230,4 +239,40 @@ export async function selectOrderDetailsByOrderInfoUuid(req, res, next) {
 	} catch (error) {
 		await handleError({ error, res });
 	}
+}
+
+export async function selectThreadSwatch(req, res, next) {
+	const resultPromise = db
+		.select({
+			uuid: order_info.uuid,
+			id: order_info.id,
+			order_number: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			color: order_entry.color,
+			shade_recipe_uuid: order_entry.shade_recipe_uuid,
+			shade_recipe_name: labDipSchema.shade_recipe.name,
+			po: order_entry.po,
+			count_length_uuid: order_entry.count_length_uuid,
+			count: count_length.count,
+			length: count_length.length,
+			count_length_name: sql`concat(count_length.count, ' - ', count_length.length)`,
+			order_quantity: order_entry.quantity,
+			created_at: order_info.created_at,
+			updated_at: order_info.updated_at,
+			remarks: order_info.remarks,
+		})
+		.from(order_info)
+		.leftJoin(order_entry, eq(order_info.uuid, order_entry.order_info_uuid))
+		.leftJoin(
+			count_length,
+			eq(order_entry.count_length_uuid, count_length.uuid)
+		)
+		.leftJoin();
+
+	const toast = {
+		status: 200,
+		type: 'select',
+		message: 'Order info',
+	};
+
+	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
