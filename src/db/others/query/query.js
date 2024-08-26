@@ -287,7 +287,8 @@ export async function selectOrderDescription(req, res, next) {
 	const query = sql`SELECT
 					vodf.order_description_uuid AS value,
 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label,
-					vodf.item_name AS item_name
+					vodf.item_name AS item_name,
+					tape_received
 				FROM
 					zipper.v_order_details_full vodf
 				WHERE 

@@ -25,6 +25,7 @@ export const machine = thread.table('machine', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	capacity: PG_DECIMAL('capacity').notNull(),
+	water_capacity: PG_DECIMAL('water_capacity').default(0),
 	created_by: defaultUUID('created_by')
 		.notNull()
 		.references(() => hrSchema.users.uuid),

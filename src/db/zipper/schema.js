@@ -264,6 +264,7 @@ export const dyed_tape_transaction = zipper.table('dyed_tape_transaction', {
 	order_description_uuid: defaultUUID('order_description_uuid').references(
 		() => order_description.uuid
 	),
+	colors: text('colors').default(null),
 	section: text('section').notNull(),
 	trx_quantity: PG_DECIMAL('trx_quantity').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

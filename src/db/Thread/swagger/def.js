@@ -15,6 +15,10 @@ export const defThreadMachine = {
 			type: 'number',
 			example: 10.0,
 		},
+		water_capacity: {
+			type: 'number',
+			example: 10.0,
+		},
 		created_by: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
