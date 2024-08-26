@@ -1,5 +1,4 @@
 // * Thread Machine * //
-import { shade_recipe } from '@/db/lab_dip/schema.js';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 export const pathThreadMachine = {
