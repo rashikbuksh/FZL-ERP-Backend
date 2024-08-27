@@ -81,7 +81,6 @@ export async function selectAll(req, res, next) {
 			batch_uuid: batch_entry.batch_uuid,
 			order_entry_uuid: batch_entry.order_entry_uuid,
 			quantity: batch_entry.quantity,
-			yarn_quantity: batch_entry.yarn_quantity,
 			coning_production_quantity: batch_entry.coning_production_quantity,
 			coning_production_quantity_in_kg:
 				batch_entry.coning_production_quantity_in_kg,
@@ -105,7 +104,6 @@ export async function select(req, res, next) {
 			batch_uuid: batch_entry.batch_uuid,
 			order_entry_uuid: batch_entry.order_entry_uuid,
 			quantity: batch_entry.quantity,
-			yarn_quantity: batch_entry.yarn_quantity,
 			coning_production_quantity: batch_entry.coning_production_quantity,
 			coning_production_quantity_in_kg:
 				batch_entry.coning_production_quantity_in_kg,
@@ -196,14 +194,14 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		se.name as shade_recipe_name,
 		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 		be.quantity as quantity,
-		be.yarn_quantity,
 		be.coning_production_quantity,
 		be.coning_production_quantity_in_kg,
 		be_given.total_quantity as total_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0)) as balance_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0) + be.quantity) as can_trx_quantity,
 		be.created_at,
-		be.updated_at
+		be.updated_at,
+		be.remarks as batch_remarks
 	FROM
 		thread.batch_entry be
 	LEFT JOIN 

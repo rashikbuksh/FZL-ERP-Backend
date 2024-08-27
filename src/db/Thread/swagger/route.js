@@ -1,5 +1,4 @@
 // * Thread Machine * //
-
 import SE from '../../../util/swagger_example.js';
 
 export const pathThreadMachine = {
@@ -14,9 +13,94 @@ export const pathThreadMachine = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/thread/machine',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									name: {
+										type: 'string',
+										example: 'Machine Name',
+									},
+									capacity: {
+										type: 'number',
+										example: 10.0,
+									},
+									water_capacity: {
+										type: 'number',
+										example: 10.0,
+									},
+									leveling_agent_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									leveling_agent_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									buffering_agent_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buffering_agent_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									sequestering_agent_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sequestering_agent_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									caustic_soad_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									caustic_soad_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									hydros_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									hydros_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									neotrolizer_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									neotrolizer_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},
@@ -65,6 +149,7 @@ export const pathThreadMachine = {
 					schema: {
 						type: 'string',
 						format: 'uuid',
+						example: 'igD0v9DIJQhJeet',
 					},
 				},
 			],
@@ -73,8 +158,93 @@ export const pathThreadMachine = {
 					description: 'Success',
 					content: {
 						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/machine',
+							properties: {
+								uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								name: {
+									type: 'string',
+									example: 'Machine Name',
+								},
+								capacity: {
+									type: 'number',
+									example: 10.0,
+								},
+								water_capacity: {
+									type: 'number',
+									example: 10.0,
+								},
+								leveling_agent_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								leveling_agent_quantity: {
+									type: 'number',
+									example: 10.0,
+								},
+								buffering_agent_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								buffering_agent_quantity: {
+									type: 'number',
+									example: 10.0,
+								},
+								sequestering_agent_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								sequestering_agent_quantity: {
+									type: 'number',
+									example: 10.0,
+								},
+								caustic_soad_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								caustic_soad_quantity: {
+									type: 'number',
+									example: 10.0,
+								},
+								hydros_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								hydros_quantity: {
+									type: 'number',
+									example: 10.0,
+								},
+								neotrolizer_uuid: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								neotrolizer_quantity: {
+									type: 'number',
+									example: 10.0,
+								},
+								created_by: {
+									type: 'string',
+									example: 'igD0v9DIJQhJeet',
+								},
+								created_by_name: {
+									type: 'string',
+									example: 'John Doe',
+								},
+								created_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2024-01-01 00:00:00',
+								},
+								updated_at: {
+									type: 'string',
+									format: 'date-time',
+									example: '2024-01-01 00:00:00',
+								},
+								remarks: {
+									type: 'string',
+									example: 'Remarks',
+								},
 							},
 						},
 					},
@@ -866,7 +1036,7 @@ export const pathThreadBatchEntry = {
 					count_length: SE.string('40/2'),
 					order_quantity: SE.number(10),
 					quantity: SE.integer(10),
-					yarn_quantity: SE.integer(10),
+
 					coning_production_quantity: SE.integer(10),
 					coning_production_quantity_in_kg: SE.integer(10),
 					order_number: SE.string('TH24-0001'),
@@ -1023,13 +1193,14 @@ export const pathThreadBatch = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					id: SE.integer(),
-					batch_id:SE.string('TB24-0001'),
+					batch_id: SE.string('TB24-0001'),
 					dyeing_operator: SE.string(),
 					reason: SE.string(),
 					category: SE.string(),
 					status: SE.string(),
 					pass_by: SE.string(),
 					shift: SE.string(),
+					yarn_quantity: SE.integer(10),
 					dyeing_supervisor: SE.string(),
 					is_dyeing_complete: SE.integer(),
 					coning_operator: SE.string(),
@@ -1051,7 +1222,7 @@ export const pathThreadBatch = {
 						count_length: SE.string('40/2'),
 						order_quantity: SE.number(10),
 						quantity: SE.integer(10),
-						yarn_quantity: SE.integer(10),
+
 						coning_production_quantity: SE.integer(10),
 						coning_production_quantity_in_kg: SE.integer(10),
 						order_number: SE.string('TH24-0001'),
