@@ -881,7 +881,7 @@ const sfg_production_extra_fields = {
 	uuid: SE.uuid(),
 	sfg_uuid: SE.uuid(),
 	section: SE.string('section 1'),
-	used_quantity: SE.number(10),
+	production_quantity_in_kg: SE.number(10),
 	production_quantity: SE.number(10),
 	wastage: SE.number(10),
 	created_by: SE.uuid(),
@@ -946,7 +946,7 @@ export const pathZipperSfgProduction = {
 			requestBody: SE.requestBody({
 				sfg_uuid: SE.uuid(),
 				section: SE.string('section 1'),
-				used_quantity: SE.number(10),
+				production_quantity_in_kg: SE.number(10),
 				production_quantity: SE.number(10),
 				wastage: SE.number(10),
 				created_by: SE.uuid(),

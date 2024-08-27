@@ -222,7 +222,7 @@ export const sfg_production = zipper.table('sfg_production', {
 	uuid: uuid_primary,
 	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
 	section: text('section').notNull(),
-	used_quantity: decimal('used_quantity', {
+	production_quantity_in_kg: decimal('production_quantity_in_kg', {
 		precision: 20,
 		scale: 4,
 	}).default(0.0),
@@ -233,9 +233,7 @@ export const sfg_production = zipper.table('sfg_production', {
 	wastage: decimal('wastage', {
 		precision: 20,
 		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
+	}).default(0.0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -244,15 +242,14 @@ export const sfg_production = zipper.table('sfg_production', {
 
 export const sfg_transaction = zipper.table('sfg_transaction', {
 	uuid: uuid_primary,
-	order_entry_uuid: defaultUUID('order_entry_uuid').references(
-		() => order_entry.uuid
-	),
+	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
 	trx_from: text('trx_from').notNull(),
 	trx_to: text('trx_to').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
+	trx_quantity_in_kg: PG_DECIMAL('trx_quantity_in_kg').default(0.0),
 	slider_item_uuid: defaultUUID('slider_item_uuid').references(
 		() => sliderSchema.stock.uuid
 	),
