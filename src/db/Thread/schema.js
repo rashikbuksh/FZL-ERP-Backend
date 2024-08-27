@@ -150,6 +150,11 @@ export const batch = thread.table('batch', {
 		.default(sql`nextval('thread.thread_batch_sequence')`)
 		.notNull(),
 	machine_uuid: defaultUUID('machine_uuid').references(() => machine.uuid),
+	lab_created_by: defaultUUID('lab_created_by').references(
+		() => hrSchema.users.uuid
+	),
+	lab_created_at: DateTime('lab_created_at').default(null),
+	lab_updated_at: DateTime('lab_updated_at').default(null),
 	dyeing_operator: text('dyeing_operator').default(null),
 	reason: text('reason').default(null),
 	category: text('category').default(null),
@@ -157,8 +162,15 @@ export const batch = thread.table('batch', {
 	pass_by: text('pass_by').default(null),
 	shift: text('shift').default(null),
 	yarn_quantity: PG_DECIMAL('yarn_quantity').default(0),
+	yarn_issue_created_by: defaultUUID('yarn_issue_created_by').references(
+		() => hrSchema.users.uuid
+	),
+	yarn_issue_created_at: DateTime('yarn_issue_created_at').default(null),
+	yarn_issue_updated_at: DateTime('yarn_issue_updated_at').default(null),
 	dyeing_supervisor: text('dyeing_supervisor').default(null),
-	is_dyeing_complete: text('is_dyeing_complete').default(null),
+	is_drying_complete: text('is_drying_complete').default(null),
+	drying_created_at: DateTime('drying_created_at').default(null),
+	drying_updated_at: DateTime('drying_updated_at').default(null),
 	coning_operator: text('coning_operator').default(null),
 	coning_supervisor: text('coning_supervisor').default(null),
 	coning_machines: text('coning_machines').default(null),

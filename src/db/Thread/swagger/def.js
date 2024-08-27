@@ -335,6 +335,8 @@ export const defThreadBatch = {
 		'uuid',
 		'id',
 		'machine_uuid',
+		'lab_created_by',
+		'lab_created_at',
 		'dyeing_operator',
 		'reason',
 		'category',
@@ -342,8 +344,11 @@ export const defThreadBatch = {
 		'pass_by',
 		'shift',
 		'yarn_quantity',
+		'yarn_issue_created_by',
+		'yarn_issue_created_at',
 		'dyeing_supervisor',
-		'is_dyeing_complete',
+		'is_drying_complete',
+		'drying_created_at',
 		'coning_operator',
 		'coning_supervisor',
 		'coning_machines',
@@ -363,6 +368,20 @@ export const defThreadBatch = {
 		machine_uuid: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
+		},
+		lab_created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		lab_created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		lab_updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		dyeing_operator: {
 			type: 'string',
@@ -392,13 +411,38 @@ export const defThreadBatch = {
 			type: 'number',
 			example: 10.0,
 		},
+		yarn_issue_created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		yarn_issue_created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		yarn_issue_updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+
 		dyeing_supervisor: {
 			type: 'string',
 			example: 'Dyeing Supervisor',
 		},
-		is_dyeing_complete: {
+		is_drying_complete: {
 			type: 'string',
 			example: 'Dyeing Complete',
+		},
+		drying_created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		drying_updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		coning_operator: {
 			type: 'string',
