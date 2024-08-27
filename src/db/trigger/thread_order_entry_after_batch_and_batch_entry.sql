@@ -1,3 +1,72 @@
+-- CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
+-- BEGIN
+--     IF NEW.is_dyeing_complete = TRUE THEN
+--         -- Update order_entry table
+--         UPDATE thread.order_entry
+--         SET production_quantity = production_quantity + NEW.quantity - OLD.quantity
+--         WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE batch_uuid = NEW.uuid);
+
+--         -- Update batch_entry table
+--         UPDATE thread.batch_entry
+--         SET quantity = quantity - NEW.quantity + OLD.quantity
+--         WHERE batch_uuid = NEW.uuid;
+--     END IF;
+
+--     RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
+BEGIN
+    -- Handle insert when is_dyeing_complete is true
+    IF TG_OP = 'INSERT' AND NEW.is_dyeing_complete = TRUE THEN
+        -- Update order_entry table
+        UPDATE thread.order_entry
+        SET production_quantity = production_quantity + NEW.quantity
+        WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE batch_uuid = NEW.uuid);
+
+        -- Update batch_entry table
+        UPDATE thread.batch_entry
+        SET quantity = quantity - NEW.quantity
+        WHERE batch_uuid = NEW.uuid;
+
+    -- Handle update when is_dyeing_complete remains true
+    ELSIF TG_OP = 'UPDATE' AND OLD.is_dyeing_complete = TRUE AND NEW.is_dyeing_complete = TRUE THEN
+        -- Update order_entry table
+        UPDATE thread.order_entry
+        SET production_quantity = production_quantity + NEW.quantity - OLD.quantity
+        WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE batch_uuid = NEW.uuid);
+
+        -- Update batch_entry table
+        UPDATE thread.batch_entry
+        SET quantity = quantity - NEW.quantity + OLD.quantity
+        WHERE batch_uuid = NEW.uuid;
+
+    -- Handle remove when is_dyeing_complete changes from true to false
+    ELSIF TG_OP = 'UPDATE' AND OLD.is_dyeing_complete = TRUE AND NEW.is_dyeing_complete = FALSE THEN
+        -- Update order_entry table
+        UPDATE thread.order_entry
+        SET production_quantity = production_quantity - OLD.quantity
+        WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE batch_uuid = NEW.uuid);
+
+        -- Update batch_entry table
+        UPDATE thread.batch_entry
+        SET quantity = quantity + OLD.quantity
+        WHERE batch_uuid = NEW.uuid;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger
+CREATE TRIGGER after_batch_insert_update
+AFTER INSERT OR UPDATE ON thread.batch
+FOR EACH ROW
+EXECUTE FUNCTION thread.order_entry_after_batch_is_dyeing_update();
+
+
+
 CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
 BEGIN
     -- Update order_entry
