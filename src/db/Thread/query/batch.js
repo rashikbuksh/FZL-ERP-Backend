@@ -124,9 +124,9 @@ export async function selectAll(req, res, next) {
 		})
 		.from(batch)
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
-		.leftJoin(hrSchema.users, eq(batch.lab_created_by, labCreated.uuid))
+		.leftJoin(labCreated, eq(batch.lab_created_by, labCreated.uuid))
 		.leftJoin(
-			hrSchema.users,
+			yarnIssueCreated,
 			eq(batch.yarn_issue_created_by, yarnIssueCreated.uuid)
 		);
 
@@ -177,9 +177,9 @@ export async function select(req, res, next) {
 		.from(batch)
 		.where(eq(batch.uuid, req.params.uuid))
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
-		.leftJoin(hrSchema.users, eq(batch.lab_created_by, labCreated.uuid))
+		.leftJoin(labCreated, eq(batch.lab_created_by, labCreated.uuid))
 		.leftJoin(
-			hrSchema.users,
+			yarnIssueCreated.users,
 			eq(batch.yarn_issue_created_by, yarnIssueCreated.uuid)
 		);
 
