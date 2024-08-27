@@ -788,6 +788,10 @@ export const pathSliderDieCasting = {
 										type: 'number',
 										example: 0,
 									},
+									quantity_in_sa: {
+										type: 'number',
+										example: 0.0,
+									},
 								},
 							},
 						},
@@ -1014,6 +1018,10 @@ export const pathSliderDieCasting = {
 							is_two_way_pin: {
 								type: 'number',
 								example: 0,
+							},
+							quantity_in_sa: {
+								type: 'number',
+								example: 0.0,
 							},
 						},
 					},
@@ -2239,6 +2247,190 @@ const pathSliderColoringTransaction = {
 	},
 };
 
+//* Trx Against Stock *//
+const pathTrxAgainstStock = {
+	'/slider/trx-against-stock': {
+		get: {
+			tags: ['slider.trx_against_stock'],
+			summary: 'Get all transaction against stock',
+			responses: {
+				200: {
+					description: 'Success',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									die_casting_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									quantity: {
+										type: 'number',
+										example: 0.0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['slider.trx_against_stock'],
+			summary: 'create a transaction against stock',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/slider/trx_against_stock',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/slider/trx_against_stock',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+
+	'/slider/trx-against-stock/{uuid}': {
+		get: {
+			tags: ['slider.trx_against_stock'],
+			summary: 'Gets a transaction against stock',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'transaction against stock to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Transaction against stock not found',
+				},
+			},
+		},
+		put: {
+			tags: ['slider.trx_against_stock'],
+			summary: 'Update an existing transaction against stock',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'Transaction against stock to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/slider/trx_against_stock',
+						},
+					},
+				},
+			},
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Transaction against stock not found',
+				},
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+		delete: {
+			tags: ['slider.trx_against_stock'],
+			summary: 'Deletes a transaction against stock',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'Transaction against stock to delete',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Transaction against stock not found',
+				},
+			},
+		},
+	},
+};
+
 export const pathSlider = {
 	...pathSliderStock,
 	...pathSliderDieCasting,
@@ -2246,4 +2438,5 @@ export const pathSlider = {
 	...pathSliderDieCastingTransaction,
 	...pathSliderTransaction,
 	...pathSliderColoringTransaction,
+	...pathTrxAgainstStock,
 };

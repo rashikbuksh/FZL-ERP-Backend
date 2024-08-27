@@ -5,6 +5,7 @@ import * as dieCastingProductionOperations from './query/die_casting_production.
 import * as dieCastingTransactionOperations from './query/die_casting_transaction.js';
 import * as stockOperations from './query/stock.js';
 import * as transactionOperations from './query/transaction.js';
+import * as trxAgainstStockOperations from './query/trx_against_stock.js';
 
 const sliderRouter = Router();
 
@@ -125,6 +126,22 @@ sliderRouter.delete(
 	'/coloring-transaction/:uuid',
 
 	coloringTransactionOperations.remove
+);
+
+// --------------------- Trx Against Stock Routes ---------------------
+
+sliderRouter.get('/trx-against-stock', trxAgainstStockOperations.selectAll);
+sliderRouter.get(
+	'/trx-against-stock/:uuid',
+
+	trxAgainstStockOperations.select
+);
+sliderRouter.post('/trx-against-stock', trxAgainstStockOperations.insert);
+sliderRouter.put('/trx-against-stock/:uuid', trxAgainstStockOperations.update);
+sliderRouter.delete(
+	'/trx-against-stock/:uuid',
+
+	trxAgainstStockOperations.remove
 );
 
 export { sliderRouter };
