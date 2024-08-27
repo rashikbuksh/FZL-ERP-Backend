@@ -336,19 +336,11 @@ const pathPublic = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: {
-										type: 'string',
-										example: '2ggcphnwHGzEUGy',
-									},
-									label: {
-										type: 'string',
-										example:
-											'Z24-0001 ⇾ N-5-OE-SP ⇾ st1 ⇾ black ⇾ 1000 ⇾ 1000',
-									},
-									can_trf_quantity: {
-										type: 'number',
-										example: 100,
-									},
+									value: SE.uuid('2ggcphnw'),
+									label: SE.string(
+										'Z24-0001 ⇾ N-5-OE-SP ⇾ st1 ⇾ black ⇾ 1000 ⇾ 1000'
+									),
+									can_trf_quantity: SE.number(10),
 								},
 							},
 						},
@@ -374,8 +366,8 @@ const pathPurchase = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: { type: 'string' },
-									label: { type: 'string' },
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('vendor 1'),
 								},
 							},
 						},
@@ -401,8 +393,8 @@ const pathMaterial = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: { type: 'string' },
-									label: { type: 'string' },
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('section 1'),
 								},
 							},
 						},
@@ -425,8 +417,8 @@ const pathMaterial = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: { type: 'string' },
-									label: { type: 'string' },
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('type 1'),
 								},
 							},
 						},
@@ -449,10 +441,10 @@ const pathMaterial = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: { type: 'string' },
-									label: { type: 'string' },
-									unit: { type: 'string' },
-									stock: { type: 'number' },
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('material 1'),
+									unit: SE.string('kg'),
+									stock: SE.number(10),
 								},
 							},
 						},
@@ -478,14 +470,8 @@ const pathCommercial = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									label: {
-										type: 'string',
-										example: 'Bank-0001',
-									},
+									value: SE.string('igD0v9DIJQhJeet'),
+									label: SE.string('Bank-0001'),
 								},
 							},
 						},
@@ -501,14 +487,11 @@ const pathCommercial = {
 			description: 'All LCs',
 			operationId: 'getAllLCs',
 			parameters: [
-				{
-					name: 'party_uuid',
-					in: 'path',
-					description: "party's uuid",
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_query(
+					'party_uuid',
+					'party_uuid',
+					'2ggcphnwHGzEUGy'
+				),
 			],
 			responses: {
 				200: {
@@ -518,14 +501,8 @@ const pathCommercial = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									label: {
-										type: 'string',
-										example: 'LC-0001',
-									},
+									value: SE.string('igD0v9DIJQhJeet'),
+									label: SE.string('LC-0001'),
 								},
 							},
 						},
@@ -548,14 +525,8 @@ const pathCommercial = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									label: {
-										type: 'string',
-										example: 'PI24-0001',
-									},
+									value: SE.string('igD0v9DIJQhJeet'),
+									label: SE.string('PI24-0001'),
 								},
 							},
 						},
@@ -574,14 +545,7 @@ const pathZipper = {
 			description: 'Order description uuid by order number',
 			operationId: 'getOrderDescriptionUuid',
 			parameters: [
-				{
-					name: 'order_number',
-					in: 'path',
-					description: 'order number',
-					required: true,
-					type: 'string',
-					example: 'Z24-0003',
-				},
+				SE.parameter_query('order_number', 'order_number', 'Z24-0001'),
 			],
 			responses: {
 				200: {
@@ -678,22 +642,16 @@ const pathZipper = {
 			description: 'Order number for pi',
 			operationId: 'getOrderNumberForPi',
 			parameters: [
-				{
-					name: 'marketing_uuid',
-					in: 'path',
-					description: 'marketing uuid',
-					required: true,
-					type: 'string',
-					example: '2ggcphnwHGzEUGy',
-				},
-				{
-					name: 'party_uuid',
-					in: 'path',
-					description: 'party uuid',
-					required: true,
-					type: 'string',
-					example: '2ggcphnwHGzEUGy',
-				},
+				SE.parameter_query(
+					'marketing_uuid',
+					'marketing_uuid',
+					'2ggcphnwHGzEUGy'
+				),
+				SE.parameter_query(
+					'party_uuid',
+					'party_uuid',
+					'2ggcphnwHGzEUGy'
+				),
 			],
 			responses: {
 				200: {
@@ -703,14 +661,8 @@ const pathZipper = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: {
-										type: 'string',
-										example: '2ggcphnwHGzEUGy',
-									},
-									label: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('Z24-0001'),
 								},
 							},
 						},
@@ -744,14 +696,8 @@ const pathZipper = {
 							schema: {
 								type: 'object',
 								properties: {
-									value: {
-										type: 'string',
-										example: '2ggcphnwHGzEUGy',
-									},
-									label: {
-										type: 'string',
-										example: 'Z24-0001 -> N-5-OE-SP -> 10',
-									},
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('Z24-0001'),
 									item_name: SE.string('Nylon'),
 									tape_received: SE.number(10),
 									tape_transferred: SE.number(10),
