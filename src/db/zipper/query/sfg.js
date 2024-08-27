@@ -257,7 +257,7 @@ export async function selectSfgBySection(req, res, next) {
 			COALESCE((
 				SELECT SUM(trx_quantity) 
 				FROM zipper.sfg_transaction sfgt
-				WHERE sfgt.order_entry_uuid = sfg.order_entry_uuid AND sfgt.trx_from = ${section}
+				WHERE sfgt.sfg_uuid = sfg.uuid AND sfgt.trx_from = ${section}
 			), 0) as total_trx_quantity
 		FROM
 			zipper.sfg sfg
@@ -272,11 +272,13 @@ export async function selectSfgBySection(req, res, next) {
 			sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != ''`;
 
 	if (item_name) {
-		query.append(sql` AND op_item.name = ${item_name}`);
+		query.append(sql` AND lower(op_item.name) = lower(${item_name})`);
 	}
 
 	if (stopper_type) {
-		query.append(sql` AND op_stopper_type.name = ${stopper_type}`);
+		query.append(
+			sql` AND lower(op_stopper_type.name) = lower(${stopper_type})`
+		);
 	}
 
 	const sfgPromise = db.execute(query);
