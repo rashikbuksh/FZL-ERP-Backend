@@ -15,6 +15,7 @@ import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
 import * as threadSchema from '../../Thread/schema.js';
+import * as threadSchema from '../../Thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 
 // * Aliases * //
@@ -42,6 +43,28 @@ export async function selectParty(req, res, next) {
 	};
 	handleResponse({
 		promise: partyPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+// * Machine * //
+export async function selectMachine(req, res, next) {
+	const machinePromise = db
+		.select({
+			value: threadSchema.machine.uuid,
+			label: threadSchema.machine.name,
+		})
+		.from(sliderSchema.machine);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Machine list',
+	};
+	handleResponse({
+		promise: machinePromise,
 		res,
 		next,
 		...toast,
