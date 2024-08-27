@@ -59,7 +59,8 @@ const SE = {
 	parameter_uuid: (
 		description = 'GET DATA',
 		name = 'uuid',
-		format = 'uuid'
+		format = 'uuid',
+		example = 'J3Au9M73Zb9saxj'
 	) => ({
 		name: name,
 		in: 'path',
@@ -67,7 +68,7 @@ const SE = {
 		type: 'string',
 		format: format,
 		description,
-		example: 'J3Au9M73Zb9saxj',
+		example: example,
 	}),
 
 	// Function definition

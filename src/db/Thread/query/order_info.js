@@ -18,7 +18,7 @@ export async function insert(req, res, next) {
 		.insert(order_info)
 		.values(req.body)
 		.returning({
-			insertedId: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			insertedId: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -44,7 +44,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -69,7 +69,7 @@ export async function remove(req, res, next) {
 		.delete(order_info)
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			deletedId: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -92,7 +92,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: order_info.uuid,
 			id: order_info.id,
-			order_number: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			order_number: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			party_uuid: order_info.party_uuid,
 			party_name: publicSchema.party.name,
 			marketing_uuid: order_info.marketing_uuid,
@@ -152,7 +152,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: order_info.uuid,
 			id: order_info.id,
-			order_number: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			order_number: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			party_uuid: order_info.party_uuid,
 			party_name: publicSchema.party.name,
 			marketing_uuid: order_info.marketing_uuid,
@@ -246,7 +246,7 @@ export async function selectThreadSwatch(req, res, next) {
 		.select({
 			uuid: order_info.uuid,
 			id: order_info.id,
-			order_number: sql`concat('TH', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			order_number: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			order_entry_uuid: order_entry.uuid,
 			style: order_entry.style,
 			color: order_entry.color,

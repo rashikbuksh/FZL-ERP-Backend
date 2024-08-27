@@ -164,7 +164,6 @@ export const batch_entry = thread.table('batch_entry', {
 	coning_production_quantity_in_kg: PG_DECIMAL(
 		'coning_production_quantity_in_kg'
 	).default(0),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

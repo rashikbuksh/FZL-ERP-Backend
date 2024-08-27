@@ -47,6 +47,8 @@ export const pathZipperOrderInfo = {
 			requestBody: SE.requestBody_schema_ref('zipper/order_info'),
 			responses: {
 				200: SE.response_schema_ref(200, 'zipper/order_info'),
+				400: SE.response(400),
+				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},

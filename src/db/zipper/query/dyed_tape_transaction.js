@@ -88,12 +88,12 @@ export async function selectAll(req, res, next) {
 			dtt.colors as colors,
 			dtt.trx_quantity AS trx_quantity,
 			dtt.created_by AS created_by,
-			dtt.created_by_name AS created_by_name,
+			u.name AS created_by_name,
 			dtt.created_at AS created_at,
 			dtt.updated_at AS updated_at,
 			dtt.remarks AS remarks
-		FROM dyed_tape_transaction dtt
-			LEFT JOIN public.users u ON dtt.created_by = u.uuid
+		FROM zipper.dyed_tape_transaction dtt
+			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
 	`;
 
@@ -125,12 +125,12 @@ export async function select(req, res, next) {
 			dtt.colors as colors,
 			dtt.trx_quantity AS trx_quantity,
 			dtt.created_by AS created_by,
-			dtt.created_by_name AS created_by_name,
+			u.name AS created_by_name,
 			dtt.created_at AS created_at,
 			dtt.updated_at AS updated_at,
 			dtt.remarks AS remarks
-		FROM dyed_tape_transaction dtt
-			LEFT JOIN public.users u ON dtt.created_by = u.uuid
+		FROM zipper.dyed_tape_transaction dtt
+			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
 		WHERE dtt.uuid = ${req.params.uuid}
 	`;
