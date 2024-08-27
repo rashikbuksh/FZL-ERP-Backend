@@ -166,9 +166,7 @@ export const die_casting_production = slider.table('die_casting_production', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	order_info_uuid: defaultUUID('order_info_uuid')
-		.references(() => zipperSchema.order_info.uuid)
-		.default(null),
+	order_info_uuid: defaultUUID('order_info_uuid').default(null), //.references(() => zipperSchema.order_info.uuid)
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

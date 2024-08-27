@@ -179,7 +179,7 @@ export async function select(req, res, next) {
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
 		.leftJoin(labCreated, eq(batch.lab_created_by, labCreated.uuid))
 		.leftJoin(
-			yarnIssueCreated.users,
+			yarnIssueCreated,
 			eq(batch.yarn_issue_created_by, yarnIssueCreated.uuid)
 		);
 

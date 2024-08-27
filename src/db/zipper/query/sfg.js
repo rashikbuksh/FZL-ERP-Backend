@@ -220,7 +220,7 @@ export async function selectSfgBySection(req, res, next) {
 
 	const query = sql`
 		SELECT
-			sfg.uuid as uuid,
+			sfg.uuid as sfg_uuid,
 			sfg.order_entry_uuid as order_entry_uuid,
 			vod.order_number as order_number,
 			vod.item_description as item_description,
@@ -268,16 +268,17 @@ export async function selectSfgBySection(req, res, next) {
 			LEFT JOIN public.properties op_item ON od.item = op_item.uuid
 			LEFT JOIN public.properties op_stopper_type ON od.stopper_type = op_stopper_type.uuid
 			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
-		WHERE
-			sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != ''`;
+		`;
+	// WHERE
+	// sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != '' // * for development purpose
 
 	if (item_name) {
-		query.append(sql` AND lower(op_item.name) = lower(${item_name})`);
+		query.append(sql` WHERE lower(op_item.name) = lower(${item_name})`);
 	}
 
 	if (stopper_type) {
 		query.append(
-			sql` AND lower(op_stopper_type.name) = lower(${stopper_type})`
+			sql` WHERE lower(op_stopper_type.name) = lower(${stopper_type})`
 		);
 	}
 

@@ -173,7 +173,7 @@ export const def_zipper_sfg_production = SED({
 		uuid: SE.uuid(),
 		sfg_uuid: SE.uuid(),
 		section: SE.string(),
-		used_quantity: SE.number(),
+		production_quantity_in_kg: SE.number(),
 		production_quantity: SE.number(),
 		wastage: SE.number(),
 		created_by: SE.uuid(),
