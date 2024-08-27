@@ -137,7 +137,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		oe.shade_recipe_uuid as shade_recipe_uuid,
 		se.name as shade_recipe_name,
 		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
-		be_given.total_quantity as total_quantity,
+		be_given.total_quantity as total_trx_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0)) as balance_quantity
 	FROM
 		thread.order_entry oe
@@ -201,6 +201,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		be.coning_production_quantity_in_kg,
 		be_given.total_quantity as total_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0)) as balance_quantity,
+		(oe.quantity - coalesce(be_given.total_quantity,0) + be.quantity) as can_trx_quantity,
 		be.created_at,
 		be.updated_at
 	FROM
