@@ -1,4 +1,6 @@
 // * Thread Machine * //
+import { properties } from '@/db/public/schema.js';
+import { uuid } from 'drizzle-orm/pg-core/index.js';
 import SE from '../../../util/swagger_example.js';
 
 export const pathThreadMachine = {
@@ -1067,9 +1069,90 @@ export const pathThreadBatch = {
 					content: {
 						'application/json': {
 							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/thread/batch',
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: {
+										type: 'integer',
+										example: 1,
+									},
+									batch_id: {
+										type: 'string',
+										example: 'TB24-0001',
+									},
+									dyeing_operator: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									reason: {
+										type: 'string',
+										example: 'Reason',
+									},
+									category: {
+										type: 'string',
+										example: 'Category',
+									},
+									status: {
+										type: 'string',
+										example: 'Status',
+									},
+									pass_by: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									shift: {
+										type: 'string',
+										example: 'Shift',
+									},
+									yarn_quantity: {
+										type: 'integer',
+										example: 10,
+									},
+									dyeing_supervisor: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									is_dyeing_complete: {
+										type: 'integer',
+										example: 1,
+									},
+									coning_operator: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									coning_supervisor: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									coning_machines: {
+										type: 'string',
+										example: 'Coning Machines',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
 								},
 							},
 						},

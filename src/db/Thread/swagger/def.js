@@ -334,6 +334,7 @@ export const defThreadBatch = {
 	required: [
 		'uuid',
 		'id',
+		'machine_uuid',
 		'dyeing_operator',
 		'reason',
 		'category',
@@ -358,6 +359,10 @@ export const defThreadBatch = {
 		id: {
 			type: 'number',
 			example: 0,
+		},
+		machine_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
 		},
 		dyeing_operator: {
 			type: 'string',
