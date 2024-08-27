@@ -1,3 +1,4 @@
+------ * Inserted
 CREATE OR REPLACE FUNCTION  slider.slider_die_casting_after_trx_against_stock_insert()
 RETURNS TRIGGER AS $$
 BEGIN
