@@ -1,6 +1,4 @@
 // * Thread Machine * //
-import { properties } from '@/db/public/schema.js';
-import { uuid } from 'drizzle-orm/pg-core/index.js';
 import SE from '../../../util/swagger_example.js';
 
 export const pathThreadMachine = {
