@@ -1074,16 +1074,34 @@ export const pathThreadBatch = {
 										example: 'igD0v9DIJQhJeet',
 									},
 									id: {
-										type: 'integer',
-										example: 1,
+										type: 'number',
+										example: 0,
 									},
-									batch_id: {
+									machine_uuid: {
 										type: 'string',
-										example: 'TB24-0001',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lab_created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lab_created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									lab_created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									lab_updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
 									},
 									dyeing_operator: {
 										type: 'string',
-										example: 'John Doe',
+										example: 'Dyeing Operator',
 									},
 									reason: {
 										type: 'string',
@@ -1099,31 +1117,60 @@ export const pathThreadBatch = {
 									},
 									pass_by: {
 										type: 'string',
-										example: 'John Doe',
+										example: 'Pass By',
 									},
 									shift: {
 										type: 'string',
 										example: 'Shift',
 									},
 									yarn_quantity: {
-										type: 'integer',
-										example: 10,
+										type: 'number',
+										example: 10.0,
 									},
-									dyeing_supervisor: {
+									yarn_issue_created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									yarn_issue_created_by_name: {
 										type: 'string',
 										example: 'John Doe',
 									},
-									is_dyeing_complete: {
-										type: 'integer',
-										example: 1,
+									yarn_issue_created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									yarn_issue_updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+
+									dyeing_supervisor: {
+										type: 'string',
+										example: 'Dyeing Supervisor',
+									},
+									is_drying_complete: {
+										type: 'string',
+										example: 'Dyeing Complete',
+									},
+									drying_created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									drying_updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
 									},
 									coning_operator: {
 										type: 'string',
-										example: 'John Doe',
+										example: 'Coning Operator',
 									},
 									coning_supervisor: {
 										type: 'string',
-										example: 'John Doe',
+										example: 'Coning Supervisor',
 									},
 									coning_machines: {
 										type: 'string',
