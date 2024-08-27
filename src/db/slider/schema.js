@@ -155,6 +155,10 @@ export const die_casting = slider.table('die_casting', {
 	is_u_top: integer('is_u_top').default(0),
 	is_box_pin: integer('is_box_pin').default(0),
 	is_two_way_pin: integer('is_two_way_pin').default(0),
+	quantity_in_sa: decimal('quantity_in_sa', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
 });
 
 export const die_casting_production = slider.table('die_casting_production', {
