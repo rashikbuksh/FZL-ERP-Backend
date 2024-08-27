@@ -1,16 +1,19 @@
+-- * inserted 
 CREATE OR REPLACE FUNCTION zipper.order_description_after_dyed_tape_transaction_insert() RETURNS TRIGGER AS $$
 
 BEGIN
     -- Update order_description
     UPDATE zipper.order_description
     SET
-        tape_received = tape_received - NEW.trx_quantity
+        tape_received = tape_received - NEW.trx_quantity,
+        nylon_metallic_finishing = 
+            nylon_metallic_finishing + CASE WHEN  NEW.section = 'nylon_metallic_finishing' THEN NEW.trx_quantity ELSE 0 END,
         nylon_plastic_finishing = nylon_plastic_finishing 
-            + CASE WHEN  NEW.section = 'nylon_plastic_finishing' THEN NEW.trx_quantity ELSE 0 END
+            + CASE WHEN  NEW.section = 'nylon_plastic_finishing' THEN NEW.trx_quantity ELSE 0 END,
         vislon_teeth_molding = vislon_teeth_molding 
-            + CASE WHEN  NEW.section = 'vislon_teeth_molding' THEN NEW.trx_quantity ELSE 0 END
+            + CASE WHEN  NEW.section = 'vislon_teeth_molding' THEN NEW.trx_quantity ELSE 0 END,
         metal_teeth_molding = metal_teeth_molding 
-            + CASE WHEN  NEW.section = 'metal_teeth_molding' THEN NEW.trx_quantity ELSE 0
+            + CASE WHEN  NEW.section = 'metal_teeth_molding' THEN NEW.trx_quantity ELSE 0 END
     WHERE order_description.uuid = NEW.order_description_uuid;
 
     RETURN NEW;
@@ -23,13 +26,16 @@ BEGIN
     -- Update order_description
     UPDATE zipper.order_description
     SET
-        tape_received = tape_received + OLD.trx_quantity - NEW.trx_quantity
+        tape_received = tape_received + OLD.trx_quantity - NEW.trx_quantity,
+        nylon_metallic_finishing = 
+            nylon_metallic_finishing + CASE WHEN  NEW.section = 'nylon_metallic_finishing' THEN NEW.trx_quantity ELSE 0 END 
+            - CASE WHEN  OLD.section = 'nylon_metallic_finishing' THEN OLD.trx_quantity ELSE 0 END,
         nylon_plastic_finishing = nylon_plastic_finishing 
             + CASE WHEN  NEW.section = 'nylon_plastic_finishing' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN  OLD.section = 'nylon_plastic_finishing' THEN OLD.trx_quantity ELSE 0 END
+            - CASE WHEN  OLD.section = 'nylon_plastic_finishing' THEN OLD.trx_quantity ELSE 0 END,
         vislon_teeth_molding = vislon_teeth_molding 
             + CASE WHEN  NEW.section = 'vislon_teeth_molding' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN  OLD.section = 'vislon_teeth_molding' THEN OLD.trx_quantity ELSE 0 END
+            - CASE WHEN  OLD.section = 'vislon_teeth_molding' THEN OLD.trx_quantity ELSE 0 END,
         metal_teeth_molding = metal_teeth_molding 
             + CASE WHEN  NEW.section = 'metal_teeth_molding' THEN NEW.trx_quantity ELSE 0 END 
             - CASE WHEN  OLD.section = 'metal_teeth_molding' THEN OLD.trx_quantity ELSE 0 END
@@ -46,11 +52,14 @@ BEGIN
     -- Update order_description
     UPDATE zipper.order_description
     SET
-        tape_received = tape_received + OLD.trx_quantity
+        tape_received = tape_received + OLD.trx_quantity,
+        nylon_metallic_finishing = 
+            nylon_metallic_finishing 
+            - CASE WHEN  OLD.section = 'nylon_metallic_finishing' THEN OLD.trx_quantity ELSE 0 END,
         nylon_plastic_finishing = nylon_plastic_finishing 
-            - CASE WHEN  OLD.section = 'nylon_plastic_finishing' THEN OLD.trx_quantity ELSE 0 END
+            - CASE WHEN  OLD.section = 'nylon_plastic_finishing' THEN OLD.trx_quantity ELSE 0 END,
         vislon_teeth_molding = vislon_teeth_molding
-            - CASE WHEN  OLD.section = 'vislon_teeth_molding' THEN OLD.trx_quantity ELSE 0 END
+            - CASE WHEN  OLD.section = 'vislon_teeth_molding' THEN OLD.trx_quantity ELSE 0 END,
         metal_teeth_molding = metal_teeth_molding
             - CASE WHEN  OLD.section = 'metal_teeth_molding' THEN OLD.trx_quantity ELSE 0 END
 
