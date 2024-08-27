@@ -19,6 +19,54 @@ export const defThreadMachine = {
 			type: 'number',
 			example: 10.0,
 		},
+		leveling_agent_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		leveling_agent_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		buffering_agent_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		buffering_agent_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		sequestering_agent_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		sequestering_agent_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		caustic_soad_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		caustic_soad_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		hydros_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		hydros_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		neotrolizer_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		neotrolizer_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
 		created_by: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',

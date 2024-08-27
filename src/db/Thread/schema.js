@@ -26,6 +26,22 @@ export const machine = thread.table('machine', {
 	name: text('name').notNull(),
 	capacity: PG_DECIMAL('capacity').notNull(),
 	water_capacity: PG_DECIMAL('water_capacity').default(0),
+	leveling_agent_uuid: defaultUUID('Leveling Agent uuid').default(null),
+	leveling_agent_quantity: PG_DECIMAL('Leveling Agent Quantity').default(0),
+	buffering_agent_uuid: defaultUUID('Buffering Agent uuid').default(null),
+	buffering_agent_quantity: PG_DECIMAL('Buffering Agent Quantity').default(0),
+	sequestering_agent_uuid: defaultUUID('Sequestering Agent uuid').default(
+		null
+	),
+	sequestering_agent_quantity: PG_DECIMAL(
+		'Sequestering Agent Quantity'
+	).default(0),
+	caustic_soad_uuid: defaultUUID('Caustic Soad uuid').default(null),
+	caustic_soad_quantity: PG_DECIMAL('Caustic Soad Quantity').default(0),
+	hydros_uuid: defaultUUID('Hydros uuid').default(null),
+	hydros_quantity: PG_DECIMAL('Hydros Quantity').default(0),
+	neotrolizer_uuid: defaultUUID('Neotrolizer uuid').default(null),
+	neotrolizer_quantity: PG_DECIMAL('Neotrolizer Quantity').default(0),
 	created_by: defaultUUID('created_by')
 		.notNull()
 		.references(() => hrSchema.users.uuid),
