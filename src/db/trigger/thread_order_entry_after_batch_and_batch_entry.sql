@@ -27,7 +27,7 @@ BEGIN
 
         -- Update batch_entry table
         UPDATE thread.batch_entry
-        SET quantity = quantity + NEW.quantity
+        SET quantity = quantity - NEW.quantity
         WHERE batch_uuid = NEW.uuid;
 
     -- Handle update when is_dyeing_complete remains true
@@ -39,7 +39,7 @@ BEGIN
 
         -- Update batch_entry table
         UPDATE thread.batch_entry
-        SET quantity = quantity + NEW.quantity - OLD.quantity
+        SET quantity = quantity - NEW.quantity + OLD.quantity
         WHERE batch_uuid = NEW.uuid;
 
     -- Handle remove when is_dyeing_complete changes from true to false
@@ -51,7 +51,7 @@ BEGIN
 
         -- Update batch_entry table
         UPDATE thread.batch_entry
-        SET quantity = quantity - OLD.quantity
+        SET quantity = quantity + OLD.quantity
         WHERE batch_uuid = NEW.uuid;
     END IF;
 
