@@ -72,10 +72,10 @@ BEGIN
 
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;W;  
+$$ LANGUAGE plpgsql;
     
 
-CREATE OR FUNCTION slider.slider_stock_after_coloring_transaction_delete() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION slider.slider_stock_after_coloring_transaction_delete() RETURNS TRIGGER AS $$
 BEGIN
     -- Update slider.stock table
     UPDATE slider.stock
@@ -90,7 +90,7 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE OR FUNCTION slider.slider_stock_after_coloring_transaction_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION slider.slider_stock_after_coloring_transaction_update() RETURNS TRIGGER AS $$
 
 BEGIN
     -- Update slider.stock table
