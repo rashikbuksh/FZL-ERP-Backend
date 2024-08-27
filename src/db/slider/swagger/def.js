@@ -54,6 +54,7 @@ export const defDieCasting = SED({
 		'weight',
 		'pcs_per_kg',
 		'created_at',
+		'quantity_in_sa',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -80,6 +81,7 @@ export const defDieCasting = SED({
 		is_u_top: SE.number(0),
 		is_box_pin: SE.number(0),
 		is_two_way_pin: SE.number(0),
+		quantity_in_sa: SE.number(0.0),
 	},
 	xml: 'Slider/DieCasting',
 });
@@ -175,6 +177,26 @@ export const defColoringTransaction = SED({
 	xml: 'Slider/ColoringTransaction',
 });
 
+export const defTrxAgainstStock = SED({
+	required: [
+		'uuid',
+		'die_casting_uuid',
+		'quantity',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		die_casting_uuid: SE.uuid(),
+		quantity: SE.number(0.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Slider/TrxAgainstStock',
+});
+
 // * Marge All
 export const defSlider = {
 	die_casting: defDieCasting,
@@ -183,6 +205,7 @@ export const defSlider = {
 	stock: defStock,
 	transaction: defTransaction,
 	coloring_transaction: defColoringTransaction,
+	trx_against_stock: defTrxAgainstStock,
 };
 
 // * Tag
@@ -210,6 +233,10 @@ export const tagSlider = [
 	{
 		name: 'slider.coloring_transaction',
 		description: 'Coloring Transaction',
+	},
+	{
+		name: 'slider.trx_against_stock',
+		description: 'Trx Against Stock',
 	},
 ];
 
