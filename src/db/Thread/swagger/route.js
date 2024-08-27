@@ -1081,6 +1081,10 @@ export const pathThreadBatch = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									machine_name: {
+										type: 'string',
+										example: 'Machine Name',
+									},
 									lab_created_by: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',

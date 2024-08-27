@@ -369,6 +369,7 @@ export const defThreadBatch = {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},
+
 		lab_created_by: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',

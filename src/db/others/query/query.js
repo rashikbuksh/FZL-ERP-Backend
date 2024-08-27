@@ -15,7 +15,6 @@ import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
 import * as threadSchema from '../../Thread/schema.js';
-import * as threadSchema from '../../Thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 
 // * Aliases * //
@@ -56,7 +55,7 @@ export async function selectMachine(req, res, next) {
 			value: threadSchema.machine.uuid,
 			label: threadSchema.machine.name,
 		})
-		.from(sliderSchema.machine);
+		.from(threadSchema.machine);
 
 	const toast = {
 		status: 200,

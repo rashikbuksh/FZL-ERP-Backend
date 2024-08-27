@@ -94,6 +94,7 @@ export async function selectAll(req, res, next) {
 			id: batch.id,
 			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			machine_uuid: batch.machine_uuid,
+			machine_name: machine.name,
 			lab_created_by: batch.lab_created_by,
 			lab_created_by_name: labCreated.name,
 			lab_created_at: batch.lab_created_at,
@@ -124,6 +125,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(batch)
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
+		.leftJoin(machine, eq(batch.machine_uuid, machine.uuid))
 		.leftJoin(labCreated, eq(batch.lab_created_by, labCreated.uuid))
 		.leftJoin(
 			yarnIssueCreated,
@@ -146,6 +148,7 @@ export async function select(req, res, next) {
 			id: batch.id,
 			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			machine_uuid: batch.machine_uuid,
+			machine_name: machine.name,
 			lab_created_by: batch.lab_created_by,
 			lab_created_by_name: labCreated.name,
 			lab_created_at: batch.lab_created_at,
@@ -177,6 +180,7 @@ export async function select(req, res, next) {
 		.from(batch)
 		.where(eq(batch.uuid, req.params.uuid))
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
+		.leftJoin(machine, eq(batch.machine_uuid, machine.uuid))
 		.leftJoin(labCreated, eq(batch.lab_created_by, labCreated.uuid))
 		.leftJoin(
 			yarnIssueCreated,
