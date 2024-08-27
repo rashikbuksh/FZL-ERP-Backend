@@ -6,7 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { order_entry, sfg_transaction } from '../schema.js';
+import { order_entry, sfg, sfg_transaction } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -76,21 +76,22 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: sfg_transaction.uuid,
-			order_entry_uuid: sfg_transaction.order_entry_uuid,
+			sfg_uuid: sfg_transaction.sfg_uuid,
 			order_description_uuid: order_entry.order_description_uuid,
 			order_quantity: order_entry.quantity,
 			trx_from: sfg_transaction.trx_from,
 			trx_to: sfg_transaction.trx_to,
 			trx_quantity: sfg_transaction.trx_quantity,
+			trx_quantity_in_kg: sfg_transaction.trx_quantity_in_kg,
 			slider_item_uuid: sfg_transaction.slider_item_uuid,
 			created_by: sfg_transaction.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: sfg_transaction.created_at,
 			updated_at: sfg_transaction.updated_at,
+			remarks: sfg_transaction.remarks,
 		})
 		.from(sfg_transaction)
+		.leftJoin(sfg, eq(sfg_transaction.sfg_uuid, sfg.uuid))
 		.leftJoin(
 			order_entry,
 			eq(sfg_transaction.order_entry_uuid, order_entry.uuid)
@@ -98,14 +99,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(sfg_transaction.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 
 	const toast = {
@@ -126,21 +119,22 @@ export async function select(req, res, next) {
 	const sfgTransactionPromise = db
 		.select({
 			uuid: sfg_transaction.uuid,
-			order_entry_uuid: sfg_transaction.order_entry_uuid,
+			sfg_uuid: sfg_transaction.sfg_uuid,
 			order_description_uuid: order_entry.order_description_uuid,
 			order_quantity: order_entry.quantity,
 			trx_from: sfg_transaction.trx_from,
 			trx_to: sfg_transaction.trx_to,
 			trx_quantity: sfg_transaction.trx_quantity,
+			trx_quantity_in_kg: sfg_transaction.trx_quantity_in_kg,
 			slider_item_uuid: sfg_transaction.slider_item_uuid,
 			created_by: sfg_transaction.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: sfg_transaction.created_at,
 			updated_at: sfg_transaction.updated_at,
+			remarks: sfg_transaction.remarks,
 		})
 		.from(sfg_transaction)
+		.leftJoin(sfg, eq(sfg_transaction.sfg_uuid, sfg.uuid))
 		.leftJoin(
 			order_entry,
 			eq(sfg_transaction.order_entry_uuid, order_entry.uuid)
@@ -148,14 +142,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(sfg_transaction.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 		.where(eq(sfg_transaction.uuid, req.params.uuid));
 
