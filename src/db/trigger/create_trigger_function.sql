@@ -1,38 +1,48 @@
---------------------------------- SFG Production Trigger ------------------------------ // inserted in DB
+--------------------------------- SFG Production Trigger ------------------------------ * inserted in DB
 CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_production_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE zipper.sfg
     SET 
          teeth_molding_stock = teeth_molding_stock 
             - CASE WHEN NEW.section = 'teeth_molding' THEN 
-                CASE WHEN NEW.used_quantity = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.used_quantity + NEW.wastage END 
+                CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.production_quantity_in_kg + NEW.wastage END 
             ELSE 0 END,
 
         teeth_coloring_stock = teeth_coloring_stock 
             - CASE WHEN NEW.section = 'teeth_coloring' THEN 
-                CASE WHEN NEW.used_quantity = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.used_quantity + NEW.wastage END 
+                CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.production_quantity_in_kg + NEW.wastage END 
             ELSE 0 END,
 
         finishing_stock = finishing_stock 
             - CASE WHEN NEW.section = 'finishing' THEN 
-                CASE WHEN NEW.used_quantity = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.used_quantity + NEW.wastage END 
+                CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.production_quantity_in_kg + NEW.wastage END 
             ELSE 0 END,
 
         dying_and_iron_prod = dying_and_iron_prod 
-            + CASE WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity ELSE 0 END,
+            + CASE WHEN NEW.section = 'dying_and_iron' THEN 
+                CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+            ELSE 0 END,
 
         teeth_molding_prod = teeth_molding_prod 
-            + CASE WHEN NEW.section = 'teeth_molding' THEN NEW.production_quantity ELSE 0 END,
+            + CASE WHEN NEW.section = 'teeth_molding' THEN 
+                CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+            ELSE 0 END,
 
         teeth_coloring_prod = teeth_coloring_prod 
-            + CASE WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity ELSE 0 END,
+            + CASE WHEN NEW.section = 'teeth_coloring' THEN 
+                CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+            ELSE 0 END,
 
         finishing_prod = finishing_prod 
-            + CASE WHEN NEW.section = 'finishing' THEN NEW.production_quantity ELSE 0 END,
+            + CASE WHEN NEW.section = 'finishing' THEN 
+                CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+            ELSE 0 END,
 
         coloring_prod = coloring_prod 
-            + CASE WHEN NEW.section = 'coloring' THEN NEW.production_quantity 
-                WHEN NEW.section = 'finishing' THEN -NEW.production_quantity ELSE 0 END
+            + CASE WHEN NEW.section = 'coloring' THEN 
+                CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+            ELSE 0 END
+
         WHERE sfg.uuid = NEW.sfg_uuid;
     RETURN NEW;
     END
@@ -47,49 +57,67 @@ UPDATE zipper.sfg
 SET 
     teeth_molding_stock = teeth_molding_stock 
         + CASE WHEN OLD.section = 'teeth_molding' THEN 
-            CASE WHEN OLD.used_quantity = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.used_quantity + OLD.wastage END 
+            CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.production_quantity_in_kg + OLD.wastage END 
         ELSE 0 END
         - CASE WHEN NEW.section = 'teeth_molding' THEN 
-            CASE WHEN NEW.used_quantity = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.used_quantity + NEW.wastage END 
+            CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.production_quantity_in_kg + NEW.wastage END 
         ELSE 0 END,
 
     teeth_coloring_stock = teeth_coloring_stock 
         + CASE WHEN OLD.section = 'teeth_coloring' THEN 
-            CASE WHEN OLD.used_quantity = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.used_quantity + OLD.wastage END 
+            CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.production_quantity_in_kg + OLD.wastage END 
         ELSE 0 END
         - CASE WHEN NEW.section = 'teeth_coloring' THEN 
-            CASE WHEN NEW.used_quantity = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.used_quantity + NEW.wastage END 
+            CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.production_quantity_in_kg + NEW.wastage END 
         ELSE 0 END,
 
     finishing_stock = finishing_stock 
         + CASE WHEN OLD.section = 'finishing' THEN 
-            CASE WHEN OLD.used_quantity = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.used_quantity + OLD.wastage END 
+            CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.production_quantity_in_kg + OLD.wastage END 
         ELSE 0 END
         - CASE WHEN NEW.section = 'finishing' THEN 
-            CASE WHEN NEW.used_quantity = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.used_quantity + NEW.wastage END 
+            CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage ELSE NEW.production_quantity_in_kg + NEW.wastage END 
         ELSE 0 END,
 
     dying_and_iron_prod = dying_and_iron_prod 
-        - CASE WHEN OLD.section = 'dying_and_iron' THEN OLD.production_quantity ELSE 0 END
-        + CASE WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity ELSE 0 END,
+        - CASE WHEN OLD.section = 'dying_and_iron' THEN 
+            CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+        ELSE 0 END
+        + CASE WHEN NEW.section = 'dying_and_iron' THEN 
+            CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+        ELSE 0 END,
 
     teeth_molding_prod = teeth_molding_prod 
-        - CASE WHEN OLD.section = 'teeth_molding' THEN OLD.production_quantity ELSE 0 END
-        + CASE WHEN NEW.section = 'teeth_molding' THEN NEW.production_quantity ELSE 0 END,
+        - CASE WHEN OLD.section = 'teeth_molding' THEN 
+            CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+        ELSE 0 END
+        + CASE WHEN NEW.section = 'teeth_molding' THEN 
+            CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+        ELSE 0 END,
 
     teeth_coloring_prod = teeth_coloring_prod 
-        - CASE WHEN OLD.section = 'teeth_coloring' THEN OLD.production_quantity ELSE 0 END
-        + CASE WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity ELSE 0 END,
+        - CASE WHEN OLD.section = 'teeth_coloring' THEN 
+            CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+        ELSE 0 END
+        + CASE WHEN NEW.section = 'teeth_coloring' THEN 
+            CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+        ELSE 0 END,
 
     finishing_prod = finishing_prod 
-        - CASE WHEN OLD.section = 'finishing' THEN OLD.production_quantity ELSE 0 END
-        + CASE WHEN NEW.section = 'finishing' THEN NEW.production_quantity ELSE 0 END,
+        - CASE WHEN OLD.section = 'finishing' THEN 
+            CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+        ELSE 0 END
+        + CASE WHEN NEW.section = 'finishing' THEN 
+            CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+        ELSE 0 END,
 
     coloring_prod = coloring_prod 
-        - CASE WHEN OLD.section = 'coloring' THEN OLD.production_quantity 
-            WHEN OLD.section = 'finishing' THEN -OLD.production_quantity ELSE 0 END
-        + CASE WHEN NEW.section = 'coloring' THEN NEW.production_quantity 
-            WHEN NEW.section = 'finishing' THEN -NEW.production_quantity ELSE 0 END
+        - CASE WHEN OLD.section = 'coloring' THEN 
+            CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+        ELSE 0 END
+        + CASE WHEN NEW.section = 'coloring' THEN 
+            CASE WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity ELSE NEW.production_quantity_in_kg END 
+        ELSE 0 END
     WHERE sfg.uuid = NEW.sfg_uuid;
 RETURN NEW;
     
@@ -105,34 +133,43 @@ BEGIN
     SET 
         teeth_molding_stock = teeth_molding_stock 
             + CASE WHEN OLD.section = 'teeth_molding' THEN 
-                CASE WHEN OLD.used_quantity = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.used_quantity + OLD.wastage END 
+                CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.production_quantity_in_kg + OLD.wastage END 
             ELSE 0 END,
 
         teeth_coloring_stock = teeth_coloring_stock 
             + CASE WHEN OLD.section = 'teeth_coloring' THEN 
-                CASE WHEN OLD.used_quantity = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.used_quantity + OLD.wastage END 
+                CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.production_quantity_in_kg + OLD.wastage END 
             ELSE 0 END,
 
         finishing_stock = finishing_stock 
             + CASE WHEN OLD.section = 'finishing' THEN 
-                CASE WHEN OLD.used_quantity = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.used_quantity + OLD.wastage END 
+                CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage ELSE OLD.production_quantity_in_kg + OLD.wastage END 
             ELSE 0 END,
 
         dying_and_iron_prod = dying_and_iron_prod 
-            - CASE WHEN OLD.section = 'dying_and_iron' THEN OLD.production_quantity ELSE 0 END,
+            - CASE WHEN OLD.section = 'dying_and_iron' THEN 
+                CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+            ELSE 0 END,
 
         teeth_molding_prod = teeth_molding_prod 
-            - CASE WHEN OLD.section = 'teeth_molding' THEN OLD.production_quantity ELSE 0 END,
+            - CASE WHEN OLD.section = 'teeth_molding' THEN 
+                CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+            ELSE 0 END,
 
         teeth_coloring_prod = teeth_coloring_prod 
-            - CASE WHEN OLD.section = 'teeth_coloring' THEN OLD.production_quantity ELSE 0 END,
+            - CASE WHEN OLD.section = 'teeth_coloring' THEN 
+                CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+            ELSE 0 END,
 
         finishing_prod = finishing_prod 
-            - CASE WHEN OLD.section = 'finishing' THEN OLD.production_quantity ELSE 0 END,
+            - CASE WHEN OLD.section = 'finishing' THEN 
+                CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+            ELSE 0 END,
             
         coloring_prod = coloring_prod 
-            - CASE WHEN OLD.section = 'coloring' THEN OLD.production_quantity 
-                WHEN OLD.section = 'finishing' THEN -OLD.production_quantity ELSE 0 END
+            - CASE WHEN OLD.section = 'coloring' THEN 
+                CASE WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity ELSE OLD.production_quantity_in_kg END 
+            ELSE 0 END
 
         WHERE sfg.uuid = OLD.sfg_uuid;
 
