@@ -1,4 +1,5 @@
 import { eq, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -8,6 +9,9 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { batch, machine } from '../schema.js';
+
+const labCreated = alias(hrSchema.users, 'labCreated');
+const yarnIssueCreated = alias(hrSchema.users, 'yarnIssueCreated');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -90,6 +94,10 @@ export async function selectAll(req, res, next) {
 			id: batch.id,
 			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			machine_uuid: batch.machine_uuid,
+			lab_created_by: batch.lab_created_by,
+			lab_created_by_name: labCreated.name,
+			lab_created_at: batch.lab_created_at,
+			lab_updated_at: batch.lab_updated_at,
 			dyeing_operator: batch.dyeing_operator,
 			reason: batch.reason,
 			category: batch.category,
@@ -97,8 +105,14 @@ export async function selectAll(req, res, next) {
 			pass_by: batch.pass_by,
 			shift: batch.shift,
 			yarn_quantity: batch.yarn_quantity,
+			yarn_issue_created_by: batch.yarn_issue_created_by,
+			yarn_issue_created_by_name: yarnIssueCreated.name,
+			yarn_issue_created_at: batch.yarn_issue_created_at,
+			yarn_issue_updated_at: batch.yarn_issue_updated_at,
 			dyeing_supervisor: batch.dyeing_supervisor,
-			is_dyeing_complete: batch.is_dyeing_complete,
+			is_drying_complete: batch.is_drying_complete,
+			drying_created_at: batch.drying_created_at,
+			drying_updated_at: batch.drying_updated_at,
 			coning_operator: batch.coning_operator,
 			coning_supervisor: batch.coning_supervisor,
 			coning_machines: batch.coning_machines,
@@ -109,7 +123,12 @@ export async function selectAll(req, res, next) {
 			remarks: batch.remarks,
 		})
 		.from(batch)
-		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid));
+		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
+		.leftJoin(hrSchema.users, eq(batch.lab_created_by, labCreated.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(batch.yarn_issue_created_by, yarnIssueCreated.uuid)
+		);
 
 	const toast = {
 		status: 200,
@@ -127,6 +146,10 @@ export async function select(req, res, next) {
 			id: batch.id,
 			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			machine_uuid: batch.machine_uuid,
+			lab_created_by: batch.lab_created_by,
+			lab_created_by_name: labCreated.name,
+			lab_created_at: batch.lab_created_at,
+			lab_updated_at: batch.lab_updated_at,
 			dyeing_operator: batch.dyeing_operator,
 			reason: batch.reason,
 			category: batch.category,
@@ -134,8 +157,14 @@ export async function select(req, res, next) {
 			pass_by: batch.pass_by,
 			shift: batch.shift,
 			yarn_quantity: batch.yarn_quantity,
+			yarn_issue_created_by: batch.yarn_issue_created_by,
+			yarn_issue_created_by_name: yarnIssueCreated.name,
+			yarn_issue_created_at: batch.yarn_issue_created_at,
+			yarn_issue_updated_at: batch.yarn_issue_updated_at,
 			dyeing_supervisor: batch.dyeing_supervisor,
-			is_dyeing_complete: batch.is_dyeing_complete,
+			is_drying_complete: batch.is_drying_complete,
+			drying_created_at: batch.drying_created_at,
+			drying_updated_at: batch.drying_updated_at,
 			coning_operator: batch.coning_operator,
 			coning_supervisor: batch.coning_supervisor,
 			coning_machines: batch.coning_machines,
@@ -147,7 +176,12 @@ export async function select(req, res, next) {
 		})
 		.from(batch)
 		.where(eq(batch.uuid, req.params.uuid))
-		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid));
+		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
+		.leftJoin(hrSchema.users, eq(batch.lab_created_by, labCreated.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(batch.yarn_issue_created_by, yarnIssueCreated.uuid)
+		);
 
 	const toast = {
 		status: 200,
