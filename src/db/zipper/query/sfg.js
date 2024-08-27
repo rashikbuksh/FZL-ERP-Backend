@@ -212,3 +212,86 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectSfgBySection(req, res, next) {
+	const { section } = req.params;
+
+	const { item_name, stopper_type } = req.query;
+
+	const query = sql`
+		SELECT
+			sfg.uuid as uuid,
+			sfg.order_entry_uuid as order_entry_uuid,
+			vod.order_number as order_number,
+			vod.item_description as item_description,
+			oe.order_description_uuid as order_description_uuid,
+			oe.style as style,
+			oe.color as color,
+			oe.size as size,
+			concat(oe.style, '/', oe.color, '/', oe.size) as style_color_size,
+			oe.quantity as order_quantity,
+			sfg.recipe_uuid as recipe_uuid,
+			recipe.name as recipe_name,
+			od.item,
+			op_item.name as item_name,
+			op_item.short_name as item_short_name,
+			od.stopper_type,
+			op_stopper_type.name as stopper_type_name,
+			op_stopper_type.short_name as stopper_type_short_name,
+			od.coloring_type,
+			op_coloring_type.name as coloring_type_name,
+			op_coloring_type.short_name as coloring_type_short_name,
+			sfg.dying_and_iron_prod as dying_and_iron_prod,
+			sfg.teeth_molding_stock as teeth_molding_stock,
+			sfg.teeth_molding_prod as teeth_molding_prod,
+			sfg.teeth_coloring_stock as teeth_coloring_stock,
+			sfg.teeth_coloring_prod as teeth_coloring_prod,
+			sfg.finishing_stock as finishing_stock,
+			sfg.finishing_prod as finishing_prod,
+			sfg.coloring_prod as coloring_prod,
+			sfg.warehouse as warehouse,
+			sfg.delivered as delivered,
+			sfg.pi as pi,
+			sfg.remarks as remarks,
+			(oe.quantity - COALESCE(sfg.delivered, 0)) as balance_quantity,
+			COALESCE((
+				SELECT SUM(trx_quantity) 
+				FROM zipper.sfg_transaction sfgt
+				WHERE sfgt.order_entry_uuid = sfg.order_entry_uuid AND sfgt.trx_from = ${section}
+			), 0) as total_trx_quantity
+		FROM
+			zipper.sfg sfg
+			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+			LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
+			LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+			LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
+			LEFT JOIN public.properties op_item ON od.item = op_item.uuid
+			LEFT JOIN public.properties op_stopper_type ON od.stopper_type = op_stopper_type.uuid
+			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
+		WHERE
+			sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != ''`;
+
+	if (item_name) {
+		query.append(sql` AND op_item.name = ${item_name}`);
+	}
+
+	if (stopper_type) {
+		query.append(sql` AND op_stopper_type.name = ${stopper_type}`);
+	}
+
+	const sfgPromise = db.execute(query);
+
+	try {
+		const data = await sfgPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'sfg list',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
