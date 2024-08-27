@@ -26,6 +26,9 @@ otherRouter.get(
 	otherOperations.selectOrderProperties
 );
 
+// thread
+otherRouter.get('/machine/value/label', otherOperations.selectMachine);
+
 // zipper
 otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
 otherRouter.get(
@@ -839,7 +842,7 @@ const pathSlider = {
 };
 
 const pathThread = {
-	'/other/thread/count-length/value/label': {
+	'/other/machine/value/label': {
 		get: {
 			tags: ['others'],
 			summary: 'get all thread count length',

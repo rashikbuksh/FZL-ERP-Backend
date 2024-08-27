@@ -53,3 +53,4 @@ AFTER UPDATE ON slider.trx_against_stock
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_die_casting_after_trx_against_stock_update();
 
+
