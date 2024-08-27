@@ -842,6 +842,39 @@ export const pathZipperSfg = {
 			},
 		},
 	},
+	'/zipper/sfg/by/{section}': {
+		get: {
+			tags: ['zipper.sfg'],
+			summary: 'Get all SFG by section',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_uuid(
+					'sfg to update',
+					'section',
+					'string',
+					'teeth_molding'
+				),
+				SE.parameter_query('item_name', 'item_name', [
+					'nylon',
+					'metal',
+					'vislon',
+				]),
+				SE.parameter_query('stopper_type', 'stopper_type', [
+					'metallic',
+					'plastic',
+				]),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/sfg'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 const sfg_production_extra_fields = {
