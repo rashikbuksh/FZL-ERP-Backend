@@ -139,6 +139,7 @@ export const batch = thread.table('batch', {
 	status: text('status').default(null),
 	pass_by: text('pass_by').default(null),
 	shift: text('shift').default(null),
+	yarn_quantity: PG_DECIMAL('yarn_quantity').default(0),
 	dyeing_supervisor: text('dyeing_supervisor').default(null),
 	is_dyeing_complete: text('is_dyeing_complete').default(null),
 	coning_operator: text('coning_operator').default(null),
@@ -157,7 +158,7 @@ export const batch_entry = thread.table('batch_entry', {
 		() => order_entry.uuid
 	),
 	quantity: PG_DECIMAL('quantity').default(0),
-	yarn_quantity: PG_DECIMAL('yarn_quantity').default(0),
+
 	coning_production_quantity: PG_DECIMAL(
 		'coning_production_quantity'
 	).default(0),

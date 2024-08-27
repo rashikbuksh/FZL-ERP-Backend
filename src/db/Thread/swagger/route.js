@@ -866,7 +866,7 @@ export const pathThreadBatchEntry = {
 					count_length: SE.string('40/2'),
 					order_quantity: SE.number(10),
 					quantity: SE.integer(10),
-					yarn_quantity: SE.integer(10),
+
 					coning_production_quantity: SE.integer(10),
 					coning_production_quantity_in_kg: SE.integer(10),
 					order_number: SE.string('TH24-0001'),
@@ -1023,13 +1023,14 @@ export const pathThreadBatch = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					id: SE.integer(),
-					batch_id:SE.string('TB24-0001'),
+					batch_id: SE.string('TB24-0001'),
 					dyeing_operator: SE.string(),
 					reason: SE.string(),
 					category: SE.string(),
 					status: SE.string(),
 					pass_by: SE.string(),
 					shift: SE.string(),
+					yarn_quantity: SE.integer(10),
 					dyeing_supervisor: SE.string(),
 					is_dyeing_complete: SE.integer(),
 					coning_operator: SE.string(),
@@ -1051,7 +1052,7 @@ export const pathThreadBatch = {
 						count_length: SE.string('40/2'),
 						order_quantity: SE.number(10),
 						quantity: SE.integer(10),
-						yarn_quantity: SE.integer(10),
+
 						coning_production_quantity: SE.integer(10),
 						coning_production_quantity_in_kg: SE.integer(10),
 						order_number: SE.string('TH24-0001'),

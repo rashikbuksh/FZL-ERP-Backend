@@ -292,6 +292,7 @@ export const defThreadBatch = {
 		'status',
 		'pass_by',
 		'shift',
+		'yarn_quantity',
 		'dyeing_supervisor',
 		'is_dyeing_complete',
 		'coning_operator',
@@ -333,6 +334,10 @@ export const defThreadBatch = {
 		shift: {
 			type: 'string',
 			example: 'Shift',
+		},
+		yarn_quantity: {
+			type: 'number',
+			example: 10.0,
 		},
 		dyeing_supervisor: {
 			type: 'string',
@@ -385,7 +390,7 @@ export const defThreadBatchEntry = {
 		'batch_uuid',
 		'order_entry_uuid',
 		'quantity',
-		'yarn_quantity',
+
 		'coning_production_quantity',
 		'coning_production_quantity_in_kg',
 		'created_by',
@@ -409,10 +414,7 @@ export const defThreadBatchEntry = {
 			type: 'number',
 			example: 10.0,
 		},
-		yarn_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
+
 		coning_production_quantity: {
 			type: 'number',
 			example: 10.0,
