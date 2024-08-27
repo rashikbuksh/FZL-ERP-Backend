@@ -163,6 +163,7 @@ export async function selectAll(req, res, next) {
 			is_u_top: die_casting.is_u_top,
 			is_box_pin: die_casting.is_box_pin,
 			is_two_way_pin: die_casting.is_two_way_pin,
+			quantity_in_sa: die_casting.quantity_in_sa,
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))
@@ -249,6 +250,7 @@ export async function select(req, res, next) {
 			is_u_top: die_casting.is_u_top,
 			is_box_pin: die_casting.is_box_pin,
 			is_two_way_pin: die_casting.is_two_way_pin,
+			quantity_in_sa: die_casting.quantity_in_sa,
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))

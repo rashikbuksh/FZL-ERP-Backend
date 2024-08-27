@@ -88,6 +88,10 @@ export const stock = slider.table('stock', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+	quantity_in_sa: decimal('quantity_in_sa', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -212,6 +216,21 @@ export const coloring_transaction = slider.table('coloring_transaction', {
 		() => zipperSchema.order_info.uuid
 	),
 	trx_quantity: decimal('trx_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const trx_against_stock = slider.table('trx_against_stock', {
+	uuid: uuid_primary,
+	die_casting_uuid: defaultUUID('die_casting_uuid').references(
+		() => die_casting.uuid
+	),
+	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
