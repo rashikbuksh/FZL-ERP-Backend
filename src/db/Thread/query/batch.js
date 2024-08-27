@@ -7,7 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { batch } from '../schema.js';
+import { batch, machine } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -89,6 +89,7 @@ export async function selectAll(req, res, next) {
 			uuid: batch.uuid,
 			id: batch.id,
 			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+			machine_uuid: batch.machine_uuid,
 			dyeing_operator: batch.dyeing_operator,
 			reason: batch.reason,
 			category: batch.category,
@@ -125,6 +126,7 @@ export async function select(req, res, next) {
 			uuid: batch.uuid,
 			id: batch.id,
 			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+			machine_uuid: batch.machine_uuid,
 			dyeing_operator: batch.dyeing_operator,
 			reason: batch.reason,
 			category: batch.category,

@@ -149,6 +149,7 @@ export const batch = thread.table('batch', {
 	id: integer('id')
 		.default(sql`nextval('thread.thread_batch_sequence')`)
 		.notNull(),
+	machine_uuid: defaultUUID('machine_uuid').references(() => machine.uuid),
 	dyeing_operator: text('dyeing_operator').default(null),
 	reason: text('reason').default(null),
 	category: text('category').default(null),
