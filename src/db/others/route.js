@@ -750,8 +750,12 @@ const pathZipper = {
 									},
 									label: {
 										type: 'string',
-										example: 'Z24-0001 -> N-5-OE-SP',
+										example: 'Z24-0001 -> N-5-OE-SP -> 10',
 									},
+									item_name: SE.string('Nylon'),
+									tape_received: SE.number(10),
+									tape_transferred: SE.number(10),
+									colors: SE.string('[black, white]'),
 								},
 							},
 						},
