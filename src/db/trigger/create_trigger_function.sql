@@ -198,7 +198,7 @@ FOR EACH ROW
 EXECUTE FUNCTION zipper.sfg_after_sfg_production_delete_function();
 
 ------------------------- SFG Transaction Trigger ------------------------- 
--- * inserted in DB
+-- * inserted in DB But trigger issue exists
 
 CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_transaction_insert_function() RETURNS TRIGGER AS $$
 DECLARE
@@ -221,32 +221,13 @@ BEGIN
             warehouse = warehouse - 
             CASE WHEN NEW.trx_to = 'warehouse' THEN 
             CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
-        WHERE order_entry_uuid = NEW.order_entry_uuid;
-
-        -- Fetching tocs_uuid
-        SELECT DISTINCT tocs.uuid INTO tocs_uuid
-        FROM order_entry oe
-        JOIN v_order_details_full v_od_f ON oe.order_description_uuid = v_od_f.order_description_uuid
-        JOIN zipper.tape_coil tocs ON tocs.type = v_od_f.item_name AND tocs.zipper_number = v_od_f.zipper_name
-        WHERE oe.uuid = NEW.order_entry_uuid
-        LIMIT 1;
+        WHERE uuid = NEW.sfg_uuid;
 
         -- Updating slider stock if applicable
-        IF NEW.slider_item_uuid > 0 THEN
+        IF NEW.slider_item_uuid != null THEN
             UPDATE slider.stock SET
                 stock = stock - NEW.trx_quantity
             WHERE uuid = NEW.slider_item_uuid;
-        END IF;
-
-        -- Updating tape_coil quantities based on NEW.trx_from
-        IF NEW.trx_from = 'tape_making' THEN
-            UPDATE zipper.tape_coil SET
-                quantity = quantity + NEW.trx_quantity
-            WHERE uuid = tocs_uuid;
-        ELSIF NEW.trx_from = 'coil_forming' THEN
-            UPDATE zipper.tape_coil SET
-                quantity_in_coil = quantity_in_coil + NEW.trx_quantity
-            WHERE uuid = tocs_uuid;
         END IF;
 
         -- Updating productions based on NEW.trx_from
@@ -258,7 +239,7 @@ BEGIN
             teeth_coloring_prod = teeth_coloring_prod + CASE WHEN NEW.trx_from = 'teeth_coloring_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
             finishing_prod = finishing_prod + CASE WHEN NEW.trx_from = 'finishing_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
             warehouse = warehouse + CASE WHEN NEW.trx_from = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
-        WHERE order_entry_uuid = NEW.order_entry_uuid;
+        WHERE uuid = NEW.sfg_uuid;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -282,32 +263,13 @@ BEGIN
         warehouse = warehouse 
             - CASE WHEN OLD.trx_to = 'warehouse' THEN 
             CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
-    WHERE order_entry_uuid = OLD.order_entry_uuid;
-
-    -- Fetching tocs_uuid
-    SELECT DISTINCT tocs.uuid INTO tocs_uuid
-    FROM order_entry oe
-    JOIN v_order_details_full v_od_f ON oe.order_description_uuid = v_od_f.order_description_uuid
-    JOIN zipper.tape_coil tocs ON tocs.type = v_od_f.item_name AND tocs.zipper_number = v_od_f.zipper_name
-    WHERE oe.uuid = OLD.order_entry_uuid
-    LIMIT 1;
+    WHERE uuid = OLD.sfg_uuid;
 
     -- Updating slider stock if applicable
-    IF OLD.slider_item_uuid > 0 THEN
+    IF OLD.slider_item_uuid != null THEN
         UPDATE slider.stock SET
             stock = stock - OLD.trx_quantity
         WHERE uuid = OLD.slider_item_uuid;
-    END IF;
-
-    -- Updating tape_coil quantities based on OLD.trx_from
-    IF OLD.trx_from = 'tape_making' THEN
-        UPDATE zipper.tape_coil SET
-            quantity = quantity + OLD.trx_quantity
-        WHERE uuid = tocs_uuid;
-    ELSIF OLD.trx_from = 'coil_forming' THEN
-        UPDATE zipper.tape_coil SET
-            quantity_in_coil = quantity_in_coil + OLD.trx_quantity
-        WHERE uuid = tocs_uuid;
     END IF;
 
     -- Updating productions based on OLD.trx_from
@@ -319,7 +281,7 @@ BEGIN
         teeth_coloring_prod = teeth_coloring_prod + CASE WHEN OLD.trx_from = 'teeth_coloring_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
         finishing_prod = finishing_prod + CASE WHEN OLD.trx_from = 'finishing_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
         warehouse = warehouse + CASE WHEN OLD.trx_from = 'warehouse' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
-    WHERE order_entry_uuid = OLD.order_entry_uuid;
+    WHERE uuid = OLD.sfg_uuid;
 
     RETURN OLD;
 END;
@@ -348,32 +310,13 @@ BEGIN
         warehouse = warehouse 
             - CASE WHEN OLD.trx_to = 'warehouse' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
             + CASE WHEN NEW.trx_to = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
-    WHERE order_entry_uuid = NEW.order_entry_uuid;
-
-    -- Fetching tocs_uuid
-    SELECT DISTINCT tocs.uuid INTO tocs_uuid
-    FROM order_entry oe
-    JOIN v_order_details_full v_od_f ON oe.order_description_uuid = v_od_f.order_description_uuid
-    JOIN zipper.tape_coil tocs ON tocs.type = v_od_f.item_name AND tocs.zipper_number::varchar = v_od_f.zipper_number_name::varchar
-    WHERE oe.uuid = NEW.order_entry_uuid
-    LIMIT 1;
+    WHERE uuid = NEW.sfg_uuid;
 
     -- Updating slider stock if applicable
-    IF NEW.slider_item_id > 0 THEN
+    IF NEW.slider_item_id != null THEN
         UPDATE slider.stock SET
             stock = stock - OLD.trx_quantity + NEW.trx_quantity
         WHERE uuid = NEW.slider_item_id;
-    END IF;
-
-    -- Updating tape_coil quantities based on NEW.trx_from
-    IF NEW.trx_from = 'tape_making' THEN
-        UPDATE zipper.tape_coil SET
-            quantity = quantity + OLD.trx_quantity - NEW.trx_quantity
-        WHERE uuid = tocs_uuid;
-    ELSIF NEW.trx_from = 'coil_forming' THEN
-        UPDATE zipper.tape_coil SET
-            quantity_in_coil = quantity_in_coil + OLD.trx_quantity - NEW.trx_quantity
-        WHERE uuid = tocs_uuid;
     END IF;
 
     -- Updating productions based on OLD.trx_from and NEW.trx_from
@@ -395,7 +338,7 @@ BEGIN
         warehouse = warehouse 
             + CASE WHEN OLD.trx_from = 'warehouse' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
             - CASE WHEN NEW.trx_from = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
-    WHERE order_entry_uuid = NEW.order_entry_uuid;
+        WHERE uuid = NEW.sfg_uuid;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
