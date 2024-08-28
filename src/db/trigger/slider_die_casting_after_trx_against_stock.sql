@@ -6,6 +6,7 @@ BEGIN
 UPDATE slider.die_casting
     SET 
     quantity_in_sa = quantity_in_sa + NEW.quantity
+    quantity = quantity - NEW.quantity
     WHERE uuid = NEW.die_casting_uuid;
 
 RETURN NEW;
@@ -19,6 +20,7 @@ BEGIN
 UPDATE slider.die_casting
     SET 
     quantity_in_sa = quantity_in_sa - OLD.quantity
+    quantity = quantity + OLD.quantity
     WHERE uuid = OLD.die_casting_uuid;
 RETURN OLD;
     END;
@@ -31,6 +33,7 @@ BEGIN
 UPDATE slider.die_casting
     SET 
     quantity_in_sa = quantity_in_sa + NEW.quantity - OLD.quantity
+    quantity = quantity - NEW.quantity + OLD.quantity
     WHERE uuid = NEW.die_casting_uuid;
 
 RETURN NEW;
