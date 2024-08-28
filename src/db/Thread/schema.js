@@ -11,7 +11,9 @@ import {
 } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
+import * as materialSchema from '../material/schema.js';
 import * as publicSchema from '../public/schema.js';
+import { material } from '../schema.js';
 import {
 	DateTime,
 	defaultUUID,
@@ -220,6 +222,35 @@ export const batch_entry = thread.table('batch_entry', {
 export const dyes_category = thread.table('dyes_category', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
+	upto_percentage: PG_DECIMAL('upto_percentage').default(0),
+	pale: PG_DECIMAL('pale', {
+		precision: 20,
+		scale: 1,
+	}).default(0),
+	medium: PG_DECIMAL('medium', {
+		precision: 20,
+		scale: 1,
+	}).default(0),
+
+	dark: PG_DECIMAL('dark', {
+		precision: 20,
+		scale: 1,
+	}).default(0),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const programs = thread.table('programs', {
+	uuid: uuid_primary,
+	dyes_category_uuid: defaultUUID('dyes_category_uuid').references(
+		() => dyes_category.uuid
+	),
+	material_uuid: defaultUUID('material_uuid').references(
+		() => materialSchema.info.uuid
+	),
+	quantity: PG_DECIMAL('quantity').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
