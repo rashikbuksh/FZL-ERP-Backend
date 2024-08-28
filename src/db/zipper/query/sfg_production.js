@@ -80,9 +80,7 @@ export async function selectAll(req, res, next) {
 			production_quantity: sfg_production.production_quantity,
 			wastage: sfg_production.wastage,
 			created_by: sfg_production.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
+			created_by_name: hrSchema.users.name,
 			created_at: sfg_production.created_at,
 			updated_at: sfg_production.updated_at,
 			remarks: sfg_production.remarks,
@@ -91,14 +89,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(sfg_production.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 
 	const toast = {
@@ -126,9 +116,7 @@ export async function select(req, res, next) {
 			production_quantity: sfg_production.production_quantity,
 			wastage: sfg_production.wastage,
 			created_by: sfg_production.created_by,
-			user_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
+			created_by_name: hrSchema.users.name,
 			created_at: sfg_production.created_at,
 			updated_at: sfg_production.updated_at,
 			remarks: sfg_production.remarks,
@@ -137,14 +125,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(sfg_production.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		)
 		.where(eq(sfg_production.uuid, req.params.uuid));
 

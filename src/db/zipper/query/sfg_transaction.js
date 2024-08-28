@@ -92,10 +92,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(sfg_transaction)
 		.leftJoin(sfg, eq(sfg_transaction.sfg_uuid, sfg.uuid))
-		.leftJoin(
-			order_entry,
-			eq(sfg_transaction.order_entry_uuid, order_entry.uuid)
-		)
+		.leftJoin(order_entry, eq(sfg.order_entry_uuid, order_entry.uuid))
 		.leftJoin(
 			hrSchema.users,
 			eq(sfg_transaction.created_by, hrSchema.users.uuid)
@@ -135,10 +132,7 @@ export async function select(req, res, next) {
 		})
 		.from(sfg_transaction)
 		.leftJoin(sfg, eq(sfg_transaction.sfg_uuid, sfg.uuid))
-		.leftJoin(
-			order_entry,
-			eq(sfg_transaction.order_entry_uuid, order_entry.uuid)
-		)
+		.leftJoin(order_entry, eq(sfg.order_entry_uuid, order_entry.uuid))
 		.leftJoin(
 			hrSchema.users,
 			eq(sfg_transaction.created_by, hrSchema.users.uuid)

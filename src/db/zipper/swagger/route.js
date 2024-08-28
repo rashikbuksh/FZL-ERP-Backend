@@ -987,6 +987,7 @@ const sfg_transaction_extra_fields = {
 	trx_from: SE.string('trx from'),
 	trx_to: SE.string('trx to'),
 	trx_quantity: SE.number(10),
+	trx_quantity_in_kg: SE.number(10),
 	slider_item_uuid: SE.uuid(),
 	created_by: SE.uuid(),
 	created_by_name: SE.string('John Doe'),
@@ -1050,9 +1051,7 @@ export const pathZipperSfgTransaction = {
 				SE.parameter_uuid('sfg transaction to update', 'uuid'),
 			],
 			requestBody: SE.requestBody({
-				order_entry_uuid: SE.uuid(),
-				order_description_uuid: SE.uuid(),
-				order_quantity: SE.number(10),
+				sfg_uuid: SE.uuid(),
 				trx_from: SE.string('trx from'),
 				trx_to: SE.string('trx to'),
 				trx_quantity: SE.number(10),

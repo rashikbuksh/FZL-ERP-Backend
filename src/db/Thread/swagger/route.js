@@ -1121,11 +1121,31 @@ export const pathThreadBatch = {
 									},
 									pass_by: {
 										type: 'string',
-										example: 'Pass By',
+										example: 'igD0v9DIJQhJeet',
+									},
+									pass_by_name: {
+										type: 'string',
+										example: 'John Doe',
 									},
 									shift: {
 										type: 'string',
 										example: 'Shift',
+									},
+									dyeing_supervisor: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									dyeing_supervisor_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									dyeing_created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									dyeing_created_by_name: {
+										type: 'string',
+										example: 'John Doe',
 									},
 									yarn_quantity: {
 										type: 'number',
@@ -1148,11 +1168,6 @@ export const pathThreadBatch = {
 										type: 'string',
 										format: 'date-time',
 										example: '2024-01-01 00:00:00',
-									},
-
-									dyeing_supervisor: {
-										type: 'string',
-										example: 'Dyeing Supervisor',
 									},
 									is_drying_complete: {
 										type: 'string',
@@ -1179,6 +1194,24 @@ export const pathThreadBatch = {
 									coning_machines: {
 										type: 'string',
 										example: 'Coning Machines',
+									},
+									coning_created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									coning_created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									coning_created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									coning_updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
 									},
 									created_by: {
 										type: 'string',
