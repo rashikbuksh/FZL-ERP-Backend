@@ -48,30 +48,6 @@ export async function selectParty(req, res, next) {
 	});
 }
 
-
-
-// * Machine * //
-export async function selectMachine(req, res, next) {
-	const machinePromise = db
-		.select({
-			value: threadSchema.machine.uuid,
-			label: threadSchema.machine.name,
-		})
-		.from(threadSchema.machine);
-
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Machine list',
-	};
-	handleResponse({
-		promise: machinePromise,
-		res,
-		next,
-		...toast,
-	});
-}
-
 export async function selectMarketingUser(req, res, next) {
 	const userPromise = db
 		.select({
@@ -587,8 +563,6 @@ export async function selectHrUser(req, res, next) {
 	});
 }
 
-
-
 // * Lab Dip * //
 export async function selectLabDipRecipe(req, res, next) {
 	const recipePromise = db
@@ -701,4 +675,48 @@ export async function selectCountLength(req, res, next) {
 	} catch (error) {
 		await handleError({ error, res });
 	}
+}
+
+export async function selectBatchId(req, res, next) {
+	const batchIdPromise = db
+		.select({
+			value: threadSchema.batch.uuid,
+			label: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+		})
+		.from(threadSchema.batch);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Batch Id list',
+	};
+
+	handleResponse({
+		promise: batchIdPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+// * Machine * //
+export async function selectMachine(req, res, next) {
+	const machinePromise = db
+		.select({
+			value: threadSchema.machine.uuid,
+			label: threadSchema.machine.name,
+		})
+		.from(threadSchema.machine);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Machine list',
+	};
+	handleResponse({
+		promise: machinePromise,
+		res,
+		next,
+		...toast,
+	});
 }

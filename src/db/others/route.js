@@ -27,7 +27,6 @@ otherRouter.get(
 );
 
 // thread
-otherRouter.get('/machine/value/label', otherOperations.selectMachine);
 
 // zipper
 otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
@@ -91,10 +90,18 @@ otherRouter.get(
 );
 
 // * Thread
+
+//count-length
 otherRouter.get(
 	'/thread/count-length/value/label',
 	otherOperations.selectCountLength
 );
+
+//machine
+otherRouter.get('/machine/value/label', otherOperations.selectMachine);
+
+//batch-id
+otherRouter.get('/thread/batch/value/label', otherOperations.selectBatchId);
 
 const pathPublic = {
 	'/other/party/value/label': {
@@ -870,7 +877,7 @@ const pathSlider = {
 };
 
 const pathThread = {
-	'/other/machine/value/label': {
+	'/other/thread/count-length/value/label': {
 		get: {
 			tags: ['others'],
 			summary: 'get all thread count length',
@@ -886,11 +893,71 @@ const pathThread = {
 								properties: {
 									value: {
 										type: 'string',
-										example: '2ggcphnw',
+										example: '2ggcphnwHGzEUGy',
 									},
 									label: {
 										type: 'string',
 										example: '150D/2',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/machine/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all machines',
+			description: 'All machines',
+			operationId: 'getAllMachines',
+			responses: {
+				200: {
+					description: 'Returns a all machines.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'machine 1',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/thread/batch/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all thread batch',
+			description: 'All thread batch',
+			operationId: 'getAllThreadBatch',
+			responses: {
+				200: {
+					description: 'Returns a all thread batch.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'TB24-0001',
 									},
 								},
 							},

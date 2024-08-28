@@ -216,3 +216,12 @@ export const batch_entry = thread.table('batch_entry', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
+
+export const dyes_category = thread.table('dyes_category', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});

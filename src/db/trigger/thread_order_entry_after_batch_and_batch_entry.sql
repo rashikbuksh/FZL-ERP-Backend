@@ -1,6 +1,6 @@
 -- CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
 -- BEGIN
---     IF NEW.is_dyeing_complete = TRUE THEN
+--     IF NEW.is_drying_complete = TRUE THEN
 --         -- Update order_entry table
 --         UPDATE thread.order_entry
 --         SET production_quantity = production_quantity + NEW.quantity - OLD.quantity
@@ -19,6 +19,7 @@
 CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_drying_update() RETURNS TRIGGER AS $$
 BEGIN
     -- Handle insert when is_drying_complete is true
+
     IF TG_OP = 'UPDATE' AND NEW.is_drying_complete = '1' THEN
         -- Update order_entry table
         UPDATE thread.order_entry
@@ -31,7 +32,9 @@ BEGIN
         WHERE batch_uuid = NEW.uuid;
 
     -- Handle update when is_drying_complete remains true
+
     ELSIF TG_OP = 'UPDATE' AND OLD.is_drying_complete = '1' AND NEW.is_drying_complete = '1' THEN
+
         -- Update order_entry table
         UPDATE thread.order_entry
         SET production_quantity = production_quantity + NEW.quantity - OLD.quantity
@@ -43,6 +46,7 @@ BEGIN
         WHERE batch_uuid = NEW.uuid;
 
     -- Handle remove when is_drying_complete changes from true to false
+
     ELSIF TG_OP = 'UPDATE' AND OLD.is_drying_complete = '1' AND NEW.is_drying_complete = '0' THEN
         -- Update order_entry table
         UPDATE thread.order_entry
@@ -70,23 +74,23 @@ EXECUTE FUNCTION thread.order_entry_after_batch_is_drying_update();
 CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
 BEGIN
     -- Update order_entry
-    -- is is_dyeing_complete is true and old.is_dyeing_complete is false then add the quantity to production_quantity
+    -- is is_drying_complete is true and old.is_drying_complete is false then add the quantity to production_quantity
     UPDATE thread.order_entry
     LEFT JOIN thread.batch_entry ON order_entry.uuid = batch_entry.order_entry_uuid
     LEFT JOIN thread.batch ON batch_entry.batch_uuid = batch.uuid
     SET 
-        order_entry.production_quantity = order_entry.production_quantity + CASE WHEN (NEW.is_dyeing_complete = 1 AND OLD.is_dyeing_complete = 0) THEN batch_entry.quantity ELSE 0 END,
-        order_entry.production_quantity = order_entry.production_quantity - CASE WHEN (NEW.is_dyeing_complete = 0 AND OLD.is_dyeing_complete = 1) THEN batch_entry.quantity ELSE 0 END,
-        order_entry.production_quantity = order_entry.production_quantity + CASE WHEN (NEW.is_dyeing_complete = 1 AND OLD.is_dyeing_complete = 1) THEN batch_entry.quantity - batch_entry.quantity ELSE 0 END,
-        order_entry.production_quantity = order_entry.production_quantity - CASE WHEN (NEW.is_dyeing_complete = 0 AND OLD.is_dyeing_complete = 0) THEN 0 ELSE 0 END,
+        order_entry.production_quantity = order_entry.production_quantity + CASE WHEN (NEW.is_drying_complete = 1 AND OLD.is_drying_complete = 0) THEN batch_entry.quantity ELSE 0 END,
+        order_entry.production_quantity = order_entry.production_quantity - CASE WHEN (NEW.is_drying_complete = 0 AND OLD.is_drying_complete = 1) THEN batch_entry.quantity ELSE 0 END,
+        order_entry.production_quantity = order_entry.production_quantity + CASE WHEN (NEW.is_drying_complete = 1 AND OLD.is_drying_complete = 1) THEN batch_entry.quantity - batch_entry.quantity ELSE 0 END,
+        order_entry.production_quantity = order_entry.production_quantity - CASE WHEN (NEW.is_drying_complete = 0 AND OLD.is_drying_complete = 0) THEN 0 ELSE 0 END,
     WHERE batch.uuid = NEW.uuid;
 
     UPDATE thread.batch_entry
     SET
-        batch_entry.quantity = batch_entry.quantity - CASE WHEN (NEW.is_dyeing_complete = 1 AND OLD.is_dyeing_complete = 0) THEN batch_entry.quantity ELSE 0 END,
-        batch_entry.quantity = batch_entry.quantity + CASE WHEN (NEW.is_dyeing_complete = 0 AND OLD.is_dyeing_complete = 1) THEN batch_entry.quantity ELSE 0 END,
-        batch_entry.quantity = batch_entry.quantity - CASE WHEN (NEW.is_dyeing_complete = 1 AND OLD.is_dyeing_complete = 1) THEN batch_entry.quantity - batch_entry.quantity ELSE 0 END,
-        batch_entry.quantity = batch_entry.quantity + CASE WHEN (NEW.is_dyeing_complete = 0 AND OLD.is_dyeing_complete = 0) THEN 0 ELSE 0 END
+        batch_entry.quantity = batch_entry.quantity - CASE WHEN (NEW.is_drying_complete = 1 AND OLD.is_drying_complete = 0) THEN batch_entry.quantity ELSE 0 END,
+        batch_entry.quantity = batch_entry.quantity + CASE WHEN (NEW.is_drying_complete = 0 AND OLD.is_drying_complete = 1) THEN batch_entry.quantity ELSE 0 END,
+        batch_entry.quantity = batch_entry.quantity - CASE WHEN (NEW.is_drying_complete = 1 AND OLD.is_drying_complete = 1) THEN batch_entry.quantity - batch_entry.quantity ELSE 0 END,
+        batch_entry.quantity = batch_entry.quantity + CASE WHEN (NEW.is_drying_complete = 0 AND OLD.is_drying_complete = 0) THEN 0 ELSE 0 END
     WHERE batch_entry.batch_uuid = OLD.uuid;
 
     RETURN NEW;
