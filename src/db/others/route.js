@@ -72,6 +72,7 @@ otherRouter.get('/pi/value/label', otherOperations.selectPi);
 
 // hr
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);
+otherRouter.get('/hr/user/value/label', otherOperations.selectHrUser);
 
 // lab_dip
 otherRouter.get(
@@ -735,6 +736,33 @@ const pathHr = {
 										example: '2ggcphnwHGzEUGy',
 									},
 									label: { type: 'string', example: 'Admin' },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/hr/user/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all HR users',
+			description: 'All HR users',
+			operationId: 'getAllHRUsers',
+			responses: {
+				200: {
+					description: 'Returns a all HR users.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: { type: 'string', example: 'John' },
 								},
 							},
 						},

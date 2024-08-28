@@ -48,6 +48,8 @@ export async function selectParty(req, res, next) {
 	});
 }
 
+
+
 // * Machine * //
 export async function selectMachine(req, res, next) {
 	const machinePromise = db
@@ -541,8 +543,8 @@ export async function selectPi(req, res, next) {
 		...toast,
 	});
 }
-
-// hr
+// * HR * //
+//* HR Department *//
 export async function selectDepartment(req, res, next) {
 	const departmentPromise = db
 		.select({
@@ -563,6 +565,29 @@ export async function selectDepartment(req, res, next) {
 		...toast,
 	});
 }
+//* HR User *//
+export async function selectHrUser(req, res, next) {
+	const userPromise = db
+		.select({
+			value: hrSchema.users.uuid,
+			label: hrSchema.users.name,
+		})
+		.from(hrSchema.users);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'User list',
+	};
+	handleResponse({
+		promise: userPromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+
 
 // * Lab Dip * //
 export async function selectLabDipRecipe(req, res, next) {
