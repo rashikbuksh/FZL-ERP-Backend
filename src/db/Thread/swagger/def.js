@@ -1,3 +1,5 @@
+import SE, { SED } from '../../../util/swagger_example.js';
+
 export const defThreadMachine = {
 	type: 'object',
 	required: ['uuid', 'name', 'capacity', 'created_by', 'created_at'],
@@ -333,7 +335,6 @@ export const defThreadBatch = {
 	type: 'object',
 	required: [
 		'uuid',
-		'id',
 		'machine_uuid',
 		'lab_created_by',
 		'lab_created_at',
@@ -343,94 +344,44 @@ export const defThreadBatch = {
 		'status',
 		'pass_by',
 		'shift',
+		'dyeing_supervisor',
+		'dyeing_created_by',
+		'dyeing_created_at',
 		'yarn_quantity',
 		'yarn_issue_created_by',
 		'yarn_issue_created_at',
-		'dyeing_supervisor',
 		'is_drying_complete',
 		'drying_created_at',
 		'coning_operator',
 		'coning_supervisor',
 		'coning_machines',
+		'coning_created_by',
+		'coning_created_at',
 		'created_by',
 		'created_at',
 	],
 
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		id: {
-			type: 'number',
-			example: 0,
-		},
-		machine_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-
-		lab_created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		lab_created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		lab_updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		dyeing_operator: {
-			type: 'string',
-			example: 'Dyeing Operator',
-		},
-		reason: {
-			type: 'string',
-			example: 'Reason',
-		},
-		category: {
-			type: 'string',
-			example: 'Category',
-		},
-		status: {
-			type: 'string',
-			example: 'Status',
-		},
-		pass_by: {
-			type: 'string',
-			example: 'Pass By',
-		},
-		shift: {
-			type: 'string',
-			example: 'Shift',
-		},
-		yarn_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		yarn_issue_created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		yarn_issue_created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		yarn_issue_updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-
-		dyeing_supervisor: {
-			type: 'string',
-			example: 'Dyeing Supervisor',
-		},
+		uuid: SE.uuid(),
+		id: SE.integer(1),
+		machine_uuid: SE.uuid(),
+		lab_created_by: SE.uuid(),
+		lab_created_at: SE.date_time(),
+		lab_updated_at: SE.date_time(),
+		dyeing_operator: SE.uuid(),
+		reason: SE.string('reason'),
+		category: SE.string('category'),
+		status: SE.string('status'),
+		pass_by: SE.uuid(),
+		shift: SE.string('shift'),
+		dyeing_supervisor: SE.uuid(),
+		dyeing_created_by: SE.uuid(),
+		dyeing_created_at: SE.date_time(),
+		dyeing_updated_at: SE.date_time(),
+		yarn_quantity: SE.number(10),
+		yarn_issue_created_by: SE.uuid(),
+		yarn_issue_created_at: SE.date_time(),
+		yarn_issue_updated_at: SE.date_time(),
 		is_drying_complete: {
 			type: 'string',
 			example: 'Dyeing Complete',
@@ -456,6 +407,20 @@ export const defThreadBatch = {
 		coning_machines: {
 			type: 'string',
 			example: 'Coning Machines',
+		},
+		coning_created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		coning_created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		coning_updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
 		},
 		created_by: {
 			type: 'string',
