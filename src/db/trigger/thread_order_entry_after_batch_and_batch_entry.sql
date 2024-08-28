@@ -15,11 +15,11 @@
 --     RETURN NEW;
 -- END;
 -- $$ LANGUAGE plpgsql;
-
+---- * Inserted
 CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
 BEGIN
     -- Handle insert when is_dyeing_complete is true
-    IF TG_OP = 'INSERT' AND NEW.is_dyeing_complete = TRUE THEN
+    IF TG_OP = 'INSERT' AND NEW.is_dyeing_complete = 1 THEN
         -- Update order_entry table
         UPDATE thread.order_entry
         SET production_quantity = production_quantity + NEW.quantity
@@ -31,7 +31,7 @@ BEGIN
         WHERE batch_uuid = NEW.uuid;
 
     -- Handle update when is_dyeing_complete remains true
-    ELSIF TG_OP = 'UPDATE' AND OLD.is_dyeing_complete = TRUE AND NEW.is_dyeing_complete = TRUE THEN
+    ELSIF TG_OP = 'UPDATE' AND OLD.is_dyeing_complete = 1 AND NEW.is_dyeing_complete = 1 THEN
         -- Update order_entry table
         UPDATE thread.order_entry
         SET production_quantity = production_quantity + NEW.quantity - OLD.quantity
@@ -43,7 +43,7 @@ BEGIN
         WHERE batch_uuid = NEW.uuid;
 
     -- Handle remove when is_dyeing_complete changes from true to false
-    ELSIF TG_OP = 'UPDATE' AND OLD.is_dyeing_complete = TRUE AND NEW.is_dyeing_complete = FALSE THEN
+    ELSIF TG_OP = 'UPDATE' AND OLD.is_dyeing_complete = 1 AND NEW.is_dyeing_complete = 0 THEN
         -- Update order_entry table
         UPDATE thread.order_entry
         SET production_quantity = production_quantity - OLD.quantity
