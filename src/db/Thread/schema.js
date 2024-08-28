@@ -155,25 +155,41 @@ export const batch = thread.table('batch', {
 	),
 	lab_created_at: DateTime('lab_created_at').default(null),
 	lab_updated_at: DateTime('lab_updated_at').default(null),
-	dyeing_operator: text('dyeing_operator').default(null),
+	dyeing_operator: defaultUUID('dyeing_operator')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	reason: text('reason').default(null),
 	category: text('category').default(null),
 	status: text('status').default(null),
-	pass_by: text('pass_by').default(null),
+	pass_by: defaultUUID('pass_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	shift: text('shift').default(null),
+	dyeing_supervisor: defaultUUID('dyeing_supervisor')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
+	dyeing_created_by: defaultUUID('dyeing_created_by').references(
+		() => hrSchema.users.uuid
+	),
+	dyeing_created_at: DateTime('dyeing_created_at').default(null),
+	dyeing_updated_at: DateTime('dyeing_updated_at').default(null),
 	yarn_quantity: PG_DECIMAL('yarn_quantity').default(0),
 	yarn_issue_created_by: defaultUUID('yarn_issue_created_by').references(
 		() => hrSchema.users.uuid
 	),
 	yarn_issue_created_at: DateTime('yarn_issue_created_at').default(null),
 	yarn_issue_updated_at: DateTime('yarn_issue_updated_at').default(null),
-	dyeing_supervisor: text('dyeing_supervisor').default(null),
 	is_drying_complete: text('is_drying_complete').default(null),
 	drying_created_at: DateTime('drying_created_at').default(null),
 	drying_updated_at: DateTime('drying_updated_at').default(null),
 	coning_operator: text('coning_operator').default(null),
 	coning_supervisor: text('coning_supervisor').default(null),
 	coning_machines: text('coning_machines').default(null),
+	coning_created_by: defaultUUID('coning_created_by').references(
+		() => hrSchema.users.uuid
+	),
+	coning_created_at: DateTime('coning_created_at').default(null),
+	coning_updated_at: DateTime('coning_updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -194,6 +210,8 @@ export const batch_entry = thread.table('batch_entry', {
 	coning_production_quantity_in_kg: PG_DECIMAL(
 		'coning_production_quantity_in_kg'
 	).default(0),
+	coning_created_at: DateTime('coning_created_at').default(null),
+	coning_updated_at: DateTime('coning_updated_at').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

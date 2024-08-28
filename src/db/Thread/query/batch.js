@@ -12,6 +12,9 @@ import { batch, machine } from '../schema.js';
 
 const labCreated = alias(hrSchema.users, 'labCreated');
 const yarnIssueCreated = alias(hrSchema.users, 'yarnIssueCreated');
+const dyeingOperator = alias(hrSchema.users, 'dyeingOperator');
+const dyeingSupervisor = alias(hrSchema.users, 'dyeingSupervisor');
+const coningCreatedBy = alias(hrSchema.users, 'coningCreatedBy');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -65,6 +68,8 @@ export async function update(req, res, next) {
 }
 
 export async function remove(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
 	const resultPromise = db
 		.delete(batch)
 		.where(eq(batch.uuid, req.params.uuid))
@@ -100,23 +105,31 @@ export async function selectAll(req, res, next) {
 			lab_created_at: batch.lab_created_at,
 			lab_updated_at: batch.lab_updated_at,
 			dyeing_operator: batch.dyeing_operator,
+			dyeing_operator_name: dyeingOperator.name,
 			reason: batch.reason,
 			category: batch.category,
 			status: batch.status,
 			pass_by: batch.pass_by,
 			shift: batch.shift,
+			dyeing_supervisor: batch.dyeing_supervisor,
+			dyeing_supervisor_name: dyeingSupervisor.name,
+			dyeing_created_at: batch.dyeing_created_at,
+			dyeing_updated_at: batch.dyeing_updated_at,
 			yarn_quantity: batch.yarn_quantity,
 			yarn_issue_created_by: batch.yarn_issue_created_by,
 			yarn_issue_created_by_name: yarnIssueCreated.name,
 			yarn_issue_created_at: batch.yarn_issue_created_at,
 			yarn_issue_updated_at: batch.yarn_issue_updated_at,
-			dyeing_supervisor: batch.dyeing_supervisor,
 			is_drying_complete: batch.is_drying_complete,
 			drying_created_at: batch.drying_created_at,
 			drying_updated_at: batch.drying_updated_at,
 			coning_operator: batch.coning_operator,
 			coning_supervisor: batch.coning_supervisor,
 			coning_machines: batch.coning_machines,
+			coning_created_by: batch.coning_created_by,
+			coning_created_by_name: coningCreatedBy.name,
+			coning_created_at: batch.coning_created_at,
+			coning_updated_at: batch.coning_updated_at,
 			created_by: batch.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch.created_at,
@@ -130,6 +143,18 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			yarnIssueCreated,
 			eq(batch.yarn_issue_created_by, yarnIssueCreated.uuid)
+		)
+		.leftJoin(
+			dyeingOperator,
+			eq(batch.dyeing_operator, dyeingOperator.uuid)
+		)
+		.leftJoin(
+			dyeingSupervisor,
+			eq(batch.dyeing_supervisor, dyeingSupervisor.uuid)
+		)
+		.leftJoin(
+			coningCreatedBy,
+			eq(batch.coning_created_by, coningCreatedBy.uuid)
 		);
 
 	const toast = {
@@ -142,6 +167,8 @@ export async function selectAll(req, res, next) {
 }
 
 export async function select(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
 	const resultPromise = db
 		.select({
 			uuid: batch.uuid,
@@ -154,23 +181,31 @@ export async function select(req, res, next) {
 			lab_created_at: batch.lab_created_at,
 			lab_updated_at: batch.lab_updated_at,
 			dyeing_operator: batch.dyeing_operator,
+			dyeing_operator_name: dyeingOperator.name,
 			reason: batch.reason,
 			category: batch.category,
 			status: batch.status,
 			pass_by: batch.pass_by,
 			shift: batch.shift,
+			dyeing_supervisor: batch.dyeing_supervisor,
+			dyeing_supervisor_name: dyeingSupervisor.name,
+			dyeing_created_at: batch.dyeing_created_at,
+			dyeing_updated_at: batch.dyeing_updated_at,
 			yarn_quantity: batch.yarn_quantity,
 			yarn_issue_created_by: batch.yarn_issue_created_by,
 			yarn_issue_created_by_name: yarnIssueCreated.name,
 			yarn_issue_created_at: batch.yarn_issue_created_at,
 			yarn_issue_updated_at: batch.yarn_issue_updated_at,
-			dyeing_supervisor: batch.dyeing_supervisor,
 			is_drying_complete: batch.is_drying_complete,
 			drying_created_at: batch.drying_created_at,
 			drying_updated_at: batch.drying_updated_at,
 			coning_operator: batch.coning_operator,
 			coning_supervisor: batch.coning_supervisor,
 			coning_machines: batch.coning_machines,
+			coning_created_by: batch.coning_created_by,
+			coning_created_by_name: coningCreatedBy.name,
+			coning_created_at: batch.coning_created_at,
+			coning_updated_at: batch.coning_updated_at,
 			created_by: batch.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch.created_at,
@@ -178,14 +213,26 @@ export async function select(req, res, next) {
 			remarks: batch.remarks,
 		})
 		.from(batch)
-		.where(eq(batch.uuid, req.params.uuid))
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
 		.leftJoin(machine, eq(batch.machine_uuid, machine.uuid))
 		.leftJoin(labCreated, eq(batch.lab_created_by, labCreated.uuid))
 		.leftJoin(
 			yarnIssueCreated,
 			eq(batch.yarn_issue_created_by, yarnIssueCreated.uuid)
-		);
+		)
+		.leftJoin(
+			dyeingOperator,
+			eq(batch.dyeing_operator, dyeingOperator.uuid)
+		)
+		.leftJoin(
+			dyeingSupervisor,
+			eq(batch.dyeing_supervisor, dyeingSupervisor.uuid)
+		)
+		.leftJoin(
+			coningCreatedBy,
+			eq(batch.coning_created_by, coningCreatedBy.uuid)
+		)
+		.where(eq(batch.uuid, req.params.uuid));
 
 	const toast = {
 		status: 200,
