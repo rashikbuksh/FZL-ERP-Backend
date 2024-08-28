@@ -198,7 +198,7 @@ FOR EACH ROW
 EXECUTE FUNCTION zipper.sfg_after_sfg_production_delete_function();
 
 ------------------------- SFG Transaction Trigger ------------------------- 
--- * inserted in DB But trigger issue exists
+-- * inserted in DB
 
 CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_transaction_insert_function() RETURNS TRIGGER AS $$
 DECLARE
@@ -206,19 +206,19 @@ DECLARE
 BEGIN
         -- Updating stocks based on NEW.trx_to
         UPDATE zipper.sfg SET
-            teeth_molding_stock = teeth_molding_stock - 
+            teeth_molding_stock = teeth_molding_stock + 
             CASE WHEN NEW.trx_to = 'teeth_molding_stock' THEN 
             CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
 
-            teeth_coloring_stock = teeth_coloring_stock - 
+            teeth_coloring_stock = teeth_coloring_stock + 
             CASE WHEN NEW.trx_to = 'teeth_coloring_stock' THEN 
             CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
 
-            finishing_stock = finishing_stock - 
+            finishing_stock = finishing_stock + 
             CASE WHEN NEW.trx_to = 'finishing_stock' THEN 
             CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
 
-            warehouse = warehouse - 
+            warehouse = warehouse + 
             CASE WHEN NEW.trx_to = 'warehouse' THEN 
             CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
         WHERE uuid = NEW.sfg_uuid;
@@ -226,19 +226,27 @@ BEGIN
         -- Updating slider stock if applicable
         IF NEW.slider_item_uuid != null THEN
             UPDATE slider.stock SET
-                stock = stock - NEW.trx_quantity
+                stock = stock - CASE WHEN trx_from = 'coloring_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
             WHERE uuid = NEW.slider_item_uuid;
+
+            UPDATE zipper.sfg SET
+                coloring_prod = coloring_prod + CASE WHEN NEW.trx_to = 'coloring_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
+            WHERE uuid = NEW.sfg_uuid;
         END IF;
 
         -- Updating productions based on NEW.trx_from
         UPDATE zipper.sfg SET
-            dying_and_iron_prod = dying_and_iron_prod + 
+            dying_and_iron_prod = dying_and_iron_prod -
             CASE WHEN NEW.trx_from = 'dying_and_iron_prod' THEN 
             CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-            teeth_molding_prod = teeth_molding_prod + CASE WHEN NEW.trx_from = 'teeth_molding_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-            teeth_coloring_prod = teeth_coloring_prod + CASE WHEN NEW.trx_from = 'teeth_coloring_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-            finishing_prod = finishing_prod + CASE WHEN NEW.trx_from = 'finishing_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-            warehouse = warehouse + CASE WHEN NEW.trx_from = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
+            teeth_molding_prod = teeth_molding_prod - 
+            CASE WHEN NEW.trx_from = 'teeth_molding_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
+            teeth_coloring_prod = teeth_coloring_prod - 
+            CASE WHEN NEW.trx_from = 'teeth_coloring_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
+            finishing_prod = finishing_prod - 
+            CASE WHEN NEW.trx_from = 'finishing_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
+            warehouse = warehouse - 
+            CASE WHEN NEW.trx_from = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
         WHERE uuid = NEW.sfg_uuid;
     RETURN NEW;
 END;
@@ -274,12 +282,15 @@ BEGIN
 
     -- Updating productions based on OLD.trx_from
     UPDATE zipper.sfg SET
-        dying_and_iron_prod = dying_and_iron_prod 
-        + CASE WHEN OLD.trx_from = 'dying_and_iron_prod' THEN 
+        dying_and_iron_prod = dying_and_iron_prod + 
+        CASE WHEN OLD.trx_from = 'dying_and_iron_prod' THEN 
         CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
-        teeth_molding_prod = teeth_molding_prod + CASE WHEN OLD.trx_from = 'teeth_molding_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
-        teeth_coloring_prod = teeth_coloring_prod + CASE WHEN OLD.trx_from = 'teeth_coloring_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
-        finishing_prod = finishing_prod + CASE WHEN OLD.trx_from = 'finishing_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
+        teeth_molding_prod = teeth_molding_prod + 
+        CASE WHEN OLD.trx_from = 'teeth_molding_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
+        teeth_coloring_prod = teeth_coloring_prod + 
+        CASE WHEN OLD.trx_from = 'teeth_coloring_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
+        finishing_prod = finishing_prod + 
+        CASE WHEN OLD.trx_from = 'finishing_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
         warehouse = warehouse + CASE WHEN OLD.trx_from = 'warehouse' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
     WHERE uuid = OLD.sfg_uuid;
 

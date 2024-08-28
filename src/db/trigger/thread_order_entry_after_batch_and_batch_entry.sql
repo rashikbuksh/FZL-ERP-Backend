@@ -15,11 +15,11 @@
 --     RETURN NEW;
 -- END;
 -- $$ LANGUAGE plpgsql;
----- * Inserted
-CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
+---- * Inserted in DB issue persists
+CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_drying_update() RETURNS TRIGGER AS $$
 BEGIN
-    -- Handle insert when is_dyeing_complete is true
-    IF TG_OP = 'INSERT' AND NEW.is_dyeing_complete = 1 THEN
+    -- Handle insert when is_drying_complete is true
+    IF TG_OP = 'UPDATE' AND NEW.is_drying_complete = '1' THEN
         -- Update order_entry table
         UPDATE thread.order_entry
         SET production_quantity = production_quantity + NEW.quantity
@@ -30,8 +30,8 @@ BEGIN
         SET quantity = quantity - NEW.quantity
         WHERE batch_uuid = NEW.uuid;
 
-    -- Handle update when is_dyeing_complete remains true
-    ELSIF TG_OP = 'UPDATE' AND OLD.is_dyeing_complete = 1 AND NEW.is_dyeing_complete = 1 THEN
+    -- Handle update when is_drying_complete remains true
+    ELSIF TG_OP = 'UPDATE' AND OLD.is_drying_complete = '1' AND NEW.is_drying_complete = '1' THEN
         -- Update order_entry table
         UPDATE thread.order_entry
         SET production_quantity = production_quantity + NEW.quantity - OLD.quantity
@@ -42,8 +42,8 @@ BEGIN
         SET quantity = quantity - NEW.quantity + OLD.quantity
         WHERE batch_uuid = NEW.uuid;
 
-    -- Handle remove when is_dyeing_complete changes from true to false
-    ELSIF TG_OP = 'UPDATE' AND OLD.is_dyeing_complete = 1 AND NEW.is_dyeing_complete = 0 THEN
+    -- Handle remove when is_drying_complete changes from true to false
+    ELSIF TG_OP = 'UPDATE' AND OLD.is_drying_complete = '1' AND NEW.is_drying_complete = '0' THEN
         -- Update order_entry table
         UPDATE thread.order_entry
         SET production_quantity = production_quantity - OLD.quantity
@@ -60,10 +60,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create the trigger
-CREATE TRIGGER after_batch_insert_update
-AFTER INSERT OR UPDATE ON thread.batch
+CREATE TRIGGER order_entry_after_batch_is_drying_update_function
+AFTER UPDATE ON thread.batch
 FOR EACH ROW
-EXECUTE FUNCTION thread.order_entry_after_batch_is_dyeing_update();
+EXECUTE FUNCTION thread.order_entry_after_batch_is_drying_update();
 
 
 
