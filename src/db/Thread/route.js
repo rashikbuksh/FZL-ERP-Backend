@@ -2,9 +2,11 @@ import { Router } from 'express';
 import * as batchOperations from './query/batch.js';
 import * as batch_entryOperations from './query/batch_entry.js';
 import * as count_lengthOperations from './query/count_length.js';
+import * as dyes_categoryOperations from './query/dyes_category.js';
 import * as machineOperations from './query/machine.js';
 import * as order_entryOperations from './query/order_entry.js';
 import * as order_infoOperations from './query/order_info.js';
+import * as programsOperations from './query/programs.js';
 
 const threadRouter = Router();
 
@@ -70,5 +72,19 @@ threadRouter.get(
 	'/batch-details/by/:batch_uuid',
 	batchOperations.selectBatchDetailsByBatchUuid
 );
+
+// dyes_category routes
+threadRouter.get('/dyes-category', dyes_categoryOperations.selectAll);
+threadRouter.get('/dyes-category/:uuid', dyes_categoryOperations.select);
+threadRouter.post('/dyes-category', dyes_categoryOperations.insert);
+threadRouter.put('/dyes-category/:uuid', dyes_categoryOperations.update);
+threadRouter.delete('/dyes-category/:uuid', dyes_categoryOperations.remove);
+
+// programs routes
+threadRouter.get('/programs', programsOperations.selectAll);
+threadRouter.get('/programs/:uuid', programsOperations.select);
+threadRouter.post('/programs', programsOperations.insert);
+threadRouter.put('/programs/:uuid', programsOperations.update);
+threadRouter.delete('/programs/:uuid', programsOperations.remove);
 
 export { threadRouter };

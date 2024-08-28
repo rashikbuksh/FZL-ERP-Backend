@@ -510,6 +510,115 @@ export const defThreadBatchEntry = {
 	},
 };
 
+export const defThreadDyesCategory = {
+	type: 'object',
+	required: [
+		'uuid',
+		'name',
+		'pale',
+		'medium',
+		'dark',
+		'created_by',
+		'created_at',
+	],
+
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		name: {
+			type: 'string',
+			example: 'Dyes Category Name',
+		},
+		pale: {
+			type: 'number',
+			example: 10.0,
+		},
+		medium: {
+			type: 'number',
+			example: 10.0,
+		},
+		dark: {
+			type: 'number',
+			example: 10.0,
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+	},
+	xml: {
+		name: 'Thread/DyesCategory',
+	},
+};
+
+export const defThreadPrograms = {
+	type: 'object',
+	required: [
+		'uuid',
+		'dyes_category_uuid',
+		'material_uuid',
+		'quantity',
+		'created_by',
+		'created_at',
+	],
+
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		dyes_category_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		material_uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+	},
+	xml: {
+		name: 'Thread/Programs',
+	},
+};
+
 // * Marge All
 
 export const defThread = {
@@ -519,6 +628,8 @@ export const defThread = {
 	order_entry: defThreadOrderEntry,
 	batch: defThreadBatch,
 	batch_entry: defThreadBatchEntry,
+	dyes_category: defThreadDyesCategory,
+	programs: defThreadPrograms,
 };
 
 // * Tag
@@ -546,5 +657,13 @@ export const tagThread = [
 	{
 		name: 'thread.batch_entry',
 		description: 'Thread Batch Entry',
+	},
+	{
+		name: 'thread.dyes_category',
+		description: 'Thread Dyes Category',
+	},
+	{
+		name: 'thread.programs',
+		description: 'Thread Programs',
 	},
 ];

@@ -1405,6 +1405,360 @@ export const pathThreadBatch = {
 	},
 };
 
+export const pathThreadDyesCategory = {
+	'/thread/dyes-category': {
+		get: {
+			tags: ['thread.dyes_category'],
+			summary: 'Get all Thread Dyes Category',
+			description: 'Get all Thread Dyes Category',
+			responses: {
+				200: {
+					description: 'Success',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									name: {
+										type: 'string',
+										example: 'Dyes Category Name',
+									},
+									pale: {
+										type: 'number',
+										example: 10.0,
+									},
+									medium: {
+										type: 'number',
+										example: 10.0,
+									},
+									dark: {
+										type: 'number',
+										example: 10.0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		post: {
+			tags: ['thread.dyes_category'],
+			summary: 'Create Thread Dyes Category',
+			description: 'Create Thread Dyes Category',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/thread/dyes_category',
+						},
+					},
+				},
+			},
+			responses: {
+				201: {
+					description: 'Success',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/thread/dyes_category',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/thread/dyes-category/{uuid}': {
+		get: {
+			tags: ['thread.dyes_category'],
+			summary: 'Get Thread Dyes Category',
+			description: 'Get Thread Dyes Category',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					name: SE.string(),
+					pale: SE.number(),
+					medium: SE.number(),
+					dark: SE.number(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+				}),
+			},
+		},
+		put: {
+			tags: ['thread.dyes_category'],
+			summary: 'Update Thread Dyes Category',
+			description: 'Update Thread Dyes Category',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/thread/dyes_category',
+						},
+					},
+				},
+			},
+
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/dyes_category'),
+			},
+		},
+
+		delete: {
+			tags: ['thread.dyes_category'],
+			summary: 'Delete Thread Dyes Category',
+			description: 'Delete Thread Dyes Category',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/dyes_category'),
+			},
+		},
+	},
+};
+
+export const pathThreadPrograms = {
+	'/thread/programs': {
+		get: {
+			tags: ['thread.programs'],
+			summary: 'Get all Thread Programs',
+			description: 'Get all Thread Programs',
+			responses: {
+				200: {
+					description: 'Success',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									dyes_category_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									dyes_category_name: {
+										type: 'string',
+										example: 'Dyes Category Name',
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'Material Name',
+									},
+									quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		post: {
+			tags: ['thread.programs'],
+			summary: 'Create Thread Programs',
+			description: 'Create Thread Programs',
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/thread/programs',
+						},
+					},
+				},
+			},
+			responses: {
+				201: {
+					description: 'Success',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/thread/programs',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/thread/programs/{uuid}': {
+		get: {
+			tags: ['thread.programs'],
+			summary: 'Get Thread Programs',
+			description: 'Get Thread Programs',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					dyes_category_uuid: SE.uuid(),
+					dyes_category_name: SE.string('Dyes Category Name'),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('Material Name'),
+					quantity: SE.number(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+				}),
+			},
+		},
+
+		put: {
+			tags: ['thread.programs'],
+			summary: 'Update Thread Programs',
+			description: 'Update Thread Programs',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/thread/programs',
+						},
+					},
+				},
+			},
+
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/programs'),
+			},
+		},
+
+		delete: {
+			tags: ['thread.programs'],
+			summary: 'Delete Thread Programs',
+			description: 'Delete Thread Programs',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/programs'),
+			},
+		},
+	},
+};
+
 // * Thread * //
 
 export const pathThread = {
@@ -1414,4 +1768,6 @@ export const pathThread = {
 	...pathThreadOrderEntry,
 	...pathThreadBatchEntry,
 	...pathThreadBatch,
+	...pathThreadDyesCategory,
+	...pathThreadPrograms,
 };
