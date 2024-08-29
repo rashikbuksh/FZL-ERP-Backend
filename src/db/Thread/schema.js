@@ -223,6 +223,8 @@ export const dyes_category = thread.table('dyes_category', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	upto_percentage: PG_DECIMAL('upto_percentage').default(0),
+	bleaching: text('bleaching').default(null),
+	id: integer('id').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

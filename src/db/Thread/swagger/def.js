@@ -515,9 +515,9 @@ export const defThreadDyesCategory = {
 	required: [
 		'uuid',
 		'name',
-		'pale',
-		'medium',
-		'dark',
+		'upto_percentage',
+		'bleaching',
+		'id',
 		'created_by',
 		'created_at',
 	],
@@ -534,6 +534,14 @@ export const defThreadDyesCategory = {
 		upto_percentage: {
 			type: 'number',
 			example: 10.0,
+		},
+		bleaching: {
+			type: 'string',
+			example: 'Bleaching',
+		},
+		id: {
+			type: 'number',
+			example: 0,
 		},
 		created_by: {
 			type: 'string',

@@ -1387,7 +1387,6 @@ export const pathThreadBatch = {
 						count_length: SE.string('40/2'),
 						order_quantity: SE.number(10),
 						quantity: SE.integer(10),
-
 						coning_production_quantity: SE.integer(10),
 						coning_production_quantity_in_kg: SE.integer(10),
 						order_number: SE.string('TH24-0001'),
@@ -1430,6 +1429,14 @@ export const pathThreadDyesCategory = {
 									upto_percentage: {
 										type: 'number',
 										example: 10.0,
+									},
+									bleaching: {
+										type: 'string',
+										example: 'Bleaching',
+									},
+									id: {
+										type: 'number',
+										example: 5,
 									},
 									created_by: {
 										type: 'string',
@@ -1499,6 +1506,8 @@ export const pathThreadDyesCategory = {
 					uuid: SE.uuid(),
 					name: SE.string(),
 					upto_percentage: SE.number('10.0'),
+					bleaching: SE.string('Bleaching'),
+					id: SE.integer(5),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
