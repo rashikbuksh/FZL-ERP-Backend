@@ -1427,15 +1427,7 @@ export const pathThreadDyesCategory = {
 										type: 'string',
 										example: 'Dyes Category Name',
 									},
-									pale: {
-										type: 'number',
-										example: 10.0,
-									},
-									medium: {
-										type: 'number',
-										example: 10.0,
-									},
-									dark: {
+									upto_percentage: {
 										type: 'number',
 										example: 10.0,
 									},
@@ -1516,9 +1508,7 @@ export const pathThreadDyesCategory = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					name: SE.string(),
-					pale: SE.number(),
-					medium: SE.number(),
-					dark: SE.number(),
+					upto_percentage: SE.number('10.0'),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),

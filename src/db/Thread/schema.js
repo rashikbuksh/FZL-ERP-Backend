@@ -223,19 +223,6 @@ export const dyes_category = thread.table('dyes_category', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	upto_percentage: PG_DECIMAL('upto_percentage').default(0),
-	pale: PG_DECIMAL('pale', {
-		precision: 20,
-		scale: 1,
-	}).default(0),
-	medium: PG_DECIMAL('medium', {
-		precision: 20,
-		scale: 1,
-	}).default(0),
-
-	dark: PG_DECIMAL('dark', {
-		precision: 20,
-		scale: 1,
-	}).default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
