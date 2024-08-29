@@ -1,4 +1,5 @@
 import SE from '../../../util/swagger_example.js';
+import { order_description } from '../schema.js';
 
 const order_info_extra_schema = SE.response_schema(200, {
 	uuid: SE.uuid(),
@@ -1017,6 +1018,32 @@ export const pathZipperSfgProduction = {
 			},
 		},
 	},
+	'/zipper/sfg-production/by/{section}': {
+		get: {
+			tags: ['zipper.sfg_production'],
+			summary: 'Get all SFG Production by section',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_uuid('sfg production to update', 'section'),
+			],
+			responses: {
+				200: SE.response_schema(200, sfg_production_extra_fields, {
+					order_description_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-SP'),
+					style_color_size: SE.string('style 1 - black - 10'),
+					order_quantity: SE.number(100),
+					created_by_name: SE.string('John Doe'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 const sfg_transaction_extra_fields = {
@@ -1120,6 +1147,30 @@ export const pathZipperSfgTransaction = {
 			],
 			responses: {
 				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+
+	'/zipper/sfg-transaction/by/{trx_from}': {
+		get: {
+			tags: ['zipper.sfg_transaction'],
+			summary: 'Get all SFG Transaction by trx_from',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_uuid('sfg transaction to update', 'trx_from'),
+			],
+			responses: {
+				200: SE.response_schema(200, sfg_transaction_extra_fields, {
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-SP'),
+					style_color_size: SE.string('style 1 - black - 10'),
+				}),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
