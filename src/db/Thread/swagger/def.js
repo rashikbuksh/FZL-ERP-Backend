@@ -531,15 +531,7 @@ export const defThreadDyesCategory = {
 			type: 'string',
 			example: 'Dyes Category Name',
 		},
-		pale: {
-			type: 'number',
-			example: 10.0,
-		},
-		medium: {
-			type: 'number',
-			example: 10.0,
-		},
-		dark: {
+		upto_percentage: {
 			type: 'number',
 			example: 10.0,
 		},

@@ -85,9 +85,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: dyes_category.uuid,
 			name: dyes_category.name,
-			pale: dyes_category.pale,
-			medium: dyes_category.medium,
-			dark: dyes_category.dark,
+			upto_percentage: dyes_category.upto_percentage,
 			created_by: dyes_category.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: dyes_category.created_at,
@@ -115,9 +113,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: dyes_category.uuid,
 			name: dyes_category.name,
-			pale: dyes_category.pale,
-			medium: dyes_category.medium,
-			dark: dyes_category.dark,
+			upto_percentage: dyes_category.upto_percentage,
 			created_by: dyes_category.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: dyes_category.created_at,
