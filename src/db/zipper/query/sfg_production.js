@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -139,4 +139,57 @@ export async function select(req, res, next) {
 		next,
 		...toast,
 	});
+}
+
+export async function selectBySection(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { item_name } = req.query;
+
+	const query = sql`
+		SELECT
+			sfg_production.uuid,
+			sfg_production.sfg_uuid,
+			vodf.order_description_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			concat(oe.style, '-', oe.color, '-', oe.size) AS style_color_size,
+			oe.quantity as order_quantity,
+			sfg_production.section,
+			sfg_production.production_quantity_in_kg,
+			sfg_production.production_quantity,
+			sfg_production.wastage,
+			sfg_production.created_by,
+			users.name AS created_by_name,
+			sfg_production.created_at,
+			sfg_production.updated_at,
+			sfg_production.remarks
+		FROM
+			zipper.sfg_production
+		LEFT JOIN
+			hr.users ON sfg_production.created_by = users.uuid
+		LEFT JOIN
+			zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+		LEFT JOIN
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		WHERE
+			lower(vodf.item_name) = lower(${item_name}) AND
+			sfg_production.section = ${req.params.section}
+	`;
+
+	const sfgProductionPromise = db.execute(query);
+
+	try {
+		const data = await sfgProductionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'SFG Production',
+		};
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

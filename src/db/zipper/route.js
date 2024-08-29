@@ -104,6 +104,10 @@ zipperRouter.delete(
 	// validateUuidParam(),
 	sfgProductionOperations.remove
 );
+zipperRouter.get(
+	'/sfg-production/by/:section',
+	sfgProductionOperations.selectBySection
+);
 
 // --------------------- SFG TRANSACTION ROUTES ---------------------
 
@@ -119,6 +123,11 @@ zipperRouter.delete(
 	'/sfg-transaction/:uuid',
 	// validateUuidParam(),
 	sfgTransactionOperations.remove
+);
+zipperRouter.get(
+	'/sfg-transaction/by/:trx_from',
+	// validateUuidParam(),
+	sfgTransactionOperations.selectByTrxFrom
 );
 
 // --------------------- DYED TAPE TRANSACTION ROUTES ---------------------

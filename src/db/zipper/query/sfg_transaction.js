@@ -151,3 +151,57 @@ export async function select(req, res, next) {
 		...toast,
 	});
 }
+
+export async function selectByTrxFrom(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { item_name } = req.query;
+
+	const query = sql`
+		SELECT
+			sfg_transaction.uuid,
+			sfg_transaction.sfg_uuid,
+			vodf.order_description_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			concat(oe.style, '-', oe.color, '-', oe.size) AS style_color_size,
+			oe.quantity as order_quantity,
+			sfg_transaction.trx_from,
+			sfg_transaction.trx_to,
+			sfg_transaction.trx_quantity_in_kg,
+			sfg_transaction.trx_quantity,
+			sfg_transaction.created_by,
+			users.name AS created_by_name,
+			sfg_transaction.created_at,
+			sfg_transaction.updated_at,
+			sfg_transaction.remarks
+		FROM
+			zipper.sfg_transaction
+		LEFT JOIN
+			hr.users ON sfg_transaction.created_by = users.uuid
+		LEFT JOIN
+			zipper.sfg ON sfg_transaction.sfg_uuid = sfg.uuid
+		LEFT JOIN
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		WHERE
+			lower(vodf.item_name) = lower(${item_name}) AND
+			sfg_transaction.trx_from = ${req.params.trx_from}
+
+	`;
+
+	const sfgProductionPromise = db.execute(query);
+
+	try {
+		const data = await sfgProductionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'SFG Production',
+		};
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
