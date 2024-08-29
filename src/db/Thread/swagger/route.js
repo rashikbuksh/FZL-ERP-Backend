@@ -1493,17 +1493,7 @@ export const pathThreadDyesCategory = {
 			tags: ['thread.dyes_category'],
 			summary: 'Get Thread Dyes Category',
 			description: 'Get Thread Dyes Category',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -1521,17 +1511,7 @@ export const pathThreadDyesCategory = {
 			tags: ['thread.dyes_category'],
 			summary: 'Update Thread Dyes Category',
 			description: 'Update Thread Dyes Category',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -1551,17 +1531,7 @@ export const pathThreadDyesCategory = {
 			tags: ['thread.dyes_category'],
 			summary: 'Delete Thread Dyes Category',
 			description: 'Delete Thread Dyes Category',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
 				201: SE.response_schema_ref(201, 'thread/dyes_category'),
 			},
@@ -1669,17 +1639,7 @@ export const pathThreadPrograms = {
 			tags: ['thread.programs'],
 			summary: 'Get Thread Programs',
 			description: 'Get Thread Programs',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -1701,17 +1661,7 @@ export const pathThreadPrograms = {
 			tags: ['thread.programs'],
 			summary: 'Update Thread Programs',
 			description: 'Update Thread Programs',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -1731,17 +1681,7 @@ export const pathThreadPrograms = {
 			tags: ['thread.programs'],
 			summary: 'Delete Thread Programs',
 			description: 'Delete Thread Programs',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
 				201: SE.response_schema_ref(201, 'thread/programs'),
 			},

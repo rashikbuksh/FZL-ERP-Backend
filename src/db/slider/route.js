@@ -6,6 +6,7 @@ import * as dieCastingTransactionOperations from './query/die_casting_transactio
 import * as stockOperations from './query/stock.js';
 import * as transactionOperations from './query/transaction.js';
 import * as trxAgainstStockOperations from './query/trx_against_stock.js';
+import slider from './schema.js';
 
 const sliderRouter = Router();
 
@@ -85,6 +86,10 @@ sliderRouter.get(
 sliderRouter.get(
 	'/die-casting/for/slider-stock-multi/:order_info_uuids',
 	dieCastingTransactionOperations.selectDieCastingForSliderStockByOrderInfoUuids
+);
+sliderRouter.post(
+	'/die-casting-insert/by/order',
+	dieCastingTransactionOperations.insertDieCastingTransactionByOrder
 );
 
 // --------------------- Transaction Routes ---------------------

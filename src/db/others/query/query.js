@@ -650,7 +650,9 @@ export async function selectNameFromDieCastingStock(req, res, next) {
 	}
 }
 
-// * Thread
+// * Thread *//
+
+// Count Length
 
 export async function selectCountLength(req, res, next) {
 	const query = sql`
@@ -677,6 +679,8 @@ export async function selectCountLength(req, res, next) {
 	}
 }
 
+// Batch Id
+
 export async function selectBatchId(req, res, next) {
 	const batchIdPromise = db
 		.select({
@@ -699,7 +703,7 @@ export async function selectBatchId(req, res, next) {
 	});
 }
 
-// * Machine * //
+//  Machine
 export async function selectMachine(req, res, next) {
 	const machinePromise = db
 		.select({
@@ -715,6 +719,28 @@ export async function selectMachine(req, res, next) {
 	};
 	handleResponse({
 		promise: machinePromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+// Dyes Category
+export async function selectDyesCategory(req, res, next) {
+	const dyesCategoryPromise = db
+		.select({
+			value: threadSchema.dyes_category.uuid,
+			label: threadSchema.dyes_category.name,
+		})
+		.from(threadSchema.dyes_category);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Dyes Category list',
+	};
+	handleResponse({
+		promise: dyesCategoryPromise,
 		res,
 		next,
 		...toast,

@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -279,5 +279,208 @@ export async function selectDieCastingForSliderStockByOrderInfoUuids(
 		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
+	}
+}
+
+export async function insertDieCastingTransactionByOrder(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	console.log('req.body', req.body);
+
+	const { is_body, is_cap, is_puller, is_link } = req.body;
+
+	let dcUUIDisBody, dcUUIDisCap, dcUUIDisPuller, dcUUIDisLink;
+
+	if (is_body) {
+		const dieCastingPromise = db
+			.select({
+				uuid: die_casting.uuid,
+			})
+			.from(die_casting)
+			.where(
+				and(
+					eq(die_casting.item, req.body.item),
+					eq(die_casting.zipper_number, req.body.zipper_number),
+					eq(die_casting.end_type, req.body.end_type),
+					eq(die_casting.logo_type, req.body.logo_type),
+					eq(die_casting.puller_type, req.body.puller_type),
+					eq(
+						die_casting.slider_body_shape,
+						req.body.slider_body_shape
+					),
+					eq(die_casting.puller_link, req.body.puller_link)
+				)
+			);
+		dcUUIDisBody = await dieCastingPromise;
+
+		console.log('dcUUIDisBody', dcUUIDisBody);
+
+		if (dcUUIDisBody.length !== 0) {
+			const dieCastingTransactionPromise = db
+				.insert(die_casting_transaction)
+				.values({
+					uuid: req.body.is_body_uuid,
+					die_casting_uuid: dcUUIDisBody[0].uuid,
+					stock_uuid: req.body.stock_uuid,
+					trx_quantity: req.body.trx_quantity,
+					created_by: req.body.created_by,
+					remarks: req.body.remarks,
+				})
+				.returning({ insertedId: die_casting_transaction.uuid });
+			try {
+				const data = await dieCastingTransactionPromise;
+
+				console.log('data in body', data);
+
+				const toast = {
+					status: 201,
+					type: 'insert',
+					message: `${data[0].insertedId} inserted`,
+				};
+			} catch (error) {
+				await handleError({ error, res });
+			}
+		}
+	}
+
+	if (is_cap) {
+		const dieCastingPromise = db
+			.select({
+				uuid: die_casting.uuid,
+			})
+			.from(die_casting)
+			.where(
+				and(
+					eq(die_casting.item, req.body.item),
+					eq(die_casting.zipper_number, req.body.zipper_number),
+					eq(die_casting.end_type, req.body.end_type),
+					eq(die_casting.logo_type, req.body.logo_type),
+					eq(die_casting.puller_type, req.body.puller_type),
+					eq(
+						die_casting.slider_body_shape,
+						req.body.slider_body_shape
+					),
+					eq(die_casting.puller_link, req.body.puller_link)
+				)
+			);
+		dcUUIDisCap = await dieCastingPromise;
+
+		if (dcUUIDisCap.length !== 0) {
+			const dieCastingTransactionPromise = db
+				.insert(die_casting_transaction)
+				.values({
+					uuid: req.body.is_cap_uuid,
+					die_casting_uuid: dcUUIDisCap[0].uuid,
+					stock_uuid: req.body.stock_uuid,
+					trx_quantity: req.body.trx_quantity,
+					created_by: req.body.created_by,
+					remarks: req.body.remarks,
+				})
+				.returning({ insertedId: die_casting_transaction.uuid });
+			try {
+				const data = await dieCastingTransactionPromise;
+				const toast = {
+					status: 201,
+					type: 'insert',
+					message: `${data[0].insertedId} inserted`,
+				};
+			} catch (error) {
+				await handleError({ error, res });
+			}
+		}
+	}
+
+	if (is_puller) {
+		const dieCastingPromise = db
+			.select({
+				uuid: die_casting.uuid,
+			})
+			.from(die_casting)
+			.where(
+				and(
+					eq(die_casting.item, req.body.item),
+					eq(die_casting.zipper_number, req.body.zipper_number),
+					eq(die_casting.end_type, req.body.end_type),
+					eq(die_casting.logo_type, req.body.logo_type),
+					eq(die_casting.puller_type, req.body.puller_type),
+					eq(
+						die_casting.slider_body_shape,
+						req.body.slider_body_shape
+					),
+					eq(die_casting.puller_link, req.body.puller_link)
+				)
+			);
+		dcUUIDisPuller = await dieCastingPromise;
+
+		if (dcUUIDisPuller.length !== 0) {
+			const dieCastingTransactionPromise = db
+				.insert(die_casting_transaction)
+				.values({
+					uuid: req.body.is_puller_uuid,
+					die_casting_uuid: dcUUIDisCap[0].uuid,
+					stock_uuid: req.body.stock_uuid,
+					trx_quantity: req.body.trx_quantity,
+					created_by: req.body.created_by,
+					remarks: req.body.remarks,
+				})
+				.returning({ insertedId: die_casting_transaction.uuid });
+			try {
+				const data = await dieCastingTransactionPromise;
+				const toast = {
+					status: 201,
+					type: 'insert',
+					message: `${data[0].insertedId} inserted`,
+				};
+			} catch (error) {
+				await handleError({ error, res });
+			}
+		}
+	}
+
+	if (is_link) {
+		const dieCastingPromise = db
+			.select({
+				uuid: die_casting.uuid,
+			})
+			.from(die_casting)
+			.where(
+				and(
+					eq(die_casting.item, req.body.item),
+					eq(die_casting.zipper_number, req.body.zipper_number),
+					eq(die_casting.end_type, req.body.end_type),
+					eq(die_casting.logo_type, req.body.logo_type),
+					eq(die_casting.puller_type, req.body.puller_type),
+					eq(
+						die_casting.slider_body_shape,
+						req.body.slider_body_shape
+					),
+					eq(die_casting.puller_link, req.body.puller_link)
+				)
+			);
+		dcUUIDisLink = await dieCastingPromise;
+
+		if (dcUUIDisLink.length !== 0) {
+			const dieCastingTransactionPromise = db
+				.insert(die_casting_transaction)
+				.values({
+					uuid: req.body.is_link_uuid,
+					die_casting_uuid: dcUUIDisCap[0].uuid,
+					stock_uuid: req.body.stock_uuid,
+					trx_quantity: req.body.trx_quantity,
+					created_by: req.body.created_by,
+					remarks: req.body.remarks,
+				})
+				.returning({ insertedId: die_casting_transaction.uuid });
+			try {
+				const data = await dieCastingTransactionPromise;
+				const toast = {
+					status: 201,
+					type: 'insert',
+					message: `${data[0].insertedId} inserted`,
+				};
+			} catch (error) {
+				await handleError({ error, res });
+			}
+		}
 	}
 }

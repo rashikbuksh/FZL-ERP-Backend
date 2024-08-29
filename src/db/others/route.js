@@ -103,6 +103,12 @@ otherRouter.get('/machine/value/label', otherOperations.selectMachine);
 //batch-id
 otherRouter.get('/thread/batch/value/label', otherOperations.selectBatchId);
 
+// dyes-category
+otherRouter.get(
+	'/thread/dyes-category/value/label',
+	otherOperations.selectDyesCategory
+);
+
 const pathPublic = {
 	'/other/party/value/label': {
 		get: {
@@ -958,6 +964,36 @@ const pathThread = {
 									label: {
 										type: 'string',
 										example: 'TB24-0001',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/thread/dyes-category/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all thread dyes category',
+			description: 'All thread dyes category',
+			operationId: 'getAllThreadDyesCategory',
+			responses: {
+				200: {
+					description: 'Returns a all thread dyes category.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'category 1',
 									},
 								},
 							},
