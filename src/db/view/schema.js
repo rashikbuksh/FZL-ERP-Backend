@@ -77,17 +77,17 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     op_item.name AS item_name,
     op_item.short_name AS item_short_name,
     order_description.zipper_number,
-    op_zipper.name AS zipper_name,
-    op_zipper.short_name AS zipper_short_name,
+    op_zipper.name AS zipper_number_name,
+    op_zipper.short_name AS zipper_number_short_name,
     order_description.end_type,
-    op_end.name AS end_name,
-    op_end.short_name AS end_short_name,
+    op_end.name AS end_type_name,
+    op_end.short_name AS end_type_short_name,
     order_description.puller_type,
-    op_puller.name AS puller_name,
-    op_puller.short_name AS puller_short_name,
+    op_puller.name AS puller_type_name,
+    op_puller.short_name AS puller_type_short_name,
     order_description.lock_type,
-    op_lock.name AS lock_name,
-    op_lock.short_name AS lock_short_name,
+    op_lock.name AS lock_type_name,
+    op_lock.short_name AS lock_type_short_name,
     order_description.teeth_color,
     op_teeth_color.name AS teeth_color_name,
     op_teeth_color.short_name AS teeth_color_short_name,
@@ -101,8 +101,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     op_stopper.name AS stopper_type_name,
     op_stopper.short_name AS stopper_type_short_name,
     order_description.coloring_type,
-    op_coloring.name AS coloring_name,
-    op_coloring.short_name AS coloring_short_name,
+    op_coloring.name AS coloring_type_name,
+    op_coloring.short_name AS coloring_type_short_name,
     order_description.is_slider_provided,
     order_description.slider,
     op_slider.name AS slider_name,
@@ -115,8 +115,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     op_bottom_stopper.name AS bottom_stopper_name,
     op_bottom_stopper.short_name AS bottom_stopper_short_name,
     order_description.logo_type,
-    op_logo.name AS logo_name,
-    op_logo.short_name AS logo_short_name,
+    op_logo.name AS logo_type_name,
+    op_logo.short_name AS logo_type_short_name,
     order_description.is_logo_body,
     order_description.is_logo_puller,
     order_description.special_requirement,
@@ -153,7 +153,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN buyer ON buyer.uuid = order_info.buyer_uuid
      LEFT JOIN merchandiser ON merchandiser.uuid = order_info.merchandiser_uuid
      LEFT JOIN factory ON factory.uuid = order_info.factory_uuid
-     LEFT JOIN hr.users ON users.uuid = order_info.created_by
+     LEFT JOIN hr.users users ON users.uuid = order_info.created_by
      LEFT JOIN party ON party.uuid = order_info.party_uuid
      LEFT JOIN properties op_item ON op_item.uuid = order_description.item
      LEFT JOIN properties op_zipper ON op_zipper.uuid = order_description.zipper_number
@@ -175,6 +175,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
      LEFT JOIN properties op_garments_wash ON op_garments_wash.uuid = order_description.garments_wash
      LEFT JOIN properties op_puller_link ON op_puller_link.uuid = order_description.puller_link;
+
 	`; // required order_description changes
 
 export const OrderPlanningView = `

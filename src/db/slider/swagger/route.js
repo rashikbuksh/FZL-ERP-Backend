@@ -1,3 +1,5 @@
+import SE from '../../../util/swagger_example.js';
+
 // * Slider Stock * //
 export const pathSliderStock = {
 	'/slider/stock': {
@@ -1854,6 +1856,45 @@ export const pathSliderDieCastingTransaction = {
 			},
 		},
 	},
+	'/slider/die-casting-insert/by/order': {
+		post: {
+			tags: ['slider.die_casting_transaction'],
+			summary: 'Insert die casting by order',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			requestBody: SE.requestBody({
+				is_body: SE.number(1),
+				is_body_uuid: SE.uuid(),
+				is_cap: SE.number(1),
+				is_cap_uuid: SE.uuid(),
+				is_puller: SE.number(1),
+				is_puller_uuid: SE.uuid(),
+				is_link: SE.number(1),
+				is_link_uuid: SE.uuid(),
+				item: SE.uuid(),
+				zipper_number: SE.uuid(),
+				end_type: SE.uuid(),
+				logo_type: SE.uuid(),
+				puller_type: SE.uuid(),
+				slider_body_shape: SE.uuid(),
+				puller_link: SE.uuid(),
+				order_info_uuid: SE.string(),
+				trx_quantity: SE.number(100),
+				created_by: SE.uuid(),
+				created_by_name: SE.string('John Doe'),
+				remarks: SE.string(),
+			}),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'slider/die_casting_transaction'
+				),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 // * Slider Transaction * //
@@ -1863,64 +1904,18 @@ const pathSliderTransaction = {
 			tags: ['slider.transaction'],
 			summary: 'Get all transaction',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									stock_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									section: {
-										type: 'string',
-										example: 'section',
-									},
-									trx_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									user_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									user_designation: {
-										type: 'string',
-										example: 'Manager',
-									},
-									user_department: {
-										type: 'string',
-										example: 'HR',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					stock_uuid: SE.uuid(),
+					section: SE.string('section'),
+					trx_quantity: SE.number(100),
+					trx_quantity_in_kg: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+				}),
 			},
 		},
 		post: {
@@ -1931,28 +1926,10 @@ const pathSliderTransaction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/slider/transaction',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('slider/transaction'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/slider/transaction',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'slider/transaction'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1963,24 +1940,11 @@ const pathSliderTransaction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'transaction to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'transaction to get')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Transaction not found',
-				},
+				200: SE.response_schema_ref(200, 'slider/transaction'),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -1990,36 +1954,13 @@ const pathSliderTransaction = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Transaction to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/slider/transaction',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_uuid('uuid', 'Transaction to update')],
+			requestBody: SE.requestBody_schema_ref('slider/transaction'),
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Transaction not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'slider/transaction'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2028,24 +1969,11 @@ const pathSliderTransaction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Transaction to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'Transaction to delete')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Transaction not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -2085,17 +2013,9 @@ const pathSliderColoringTransaction = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
-									user_name: {
+									created_by_name: {
 										type: 'string',
 										example: 'John Doe',
-									},
-									user_designation: {
-										type: 'string',
-										example: 'Manager',
-									},
-									user_department: {
-										type: 'string',
-										example: 'HR',
 									},
 									created_at: {
 										type: 'string',

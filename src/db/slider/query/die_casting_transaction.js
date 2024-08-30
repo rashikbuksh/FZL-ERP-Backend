@@ -291,6 +291,16 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 
 	let dcUUIDisBody, dcUUIDisCap, dcUUIDisPuller, dcUUIDisLink;
 
+	let dcUUIDisBody_data,
+		dcUUIDisCap_data,
+		dcUUIDisPuller_data,
+		dcUUIDisLink_data;
+
+	let dcUUIDisBody_toast,
+		dcUUIDisCap_toast,
+		dcUUIDisPuller_toast,
+		dcUUIDisLink_toast;
+
 	if (is_body) {
 		const dieCastingPromise = db
 			.select({
@@ -328,14 +338,14 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 				})
 				.returning({ insertedId: die_casting_transaction.uuid });
 			try {
-				const data = await dieCastingTransactionPromise;
+				dcUUIDisBody_data = await dieCastingTransactionPromise;
 
-				console.log('data in body', data);
+				console.log('dcUUIDisBody_data in body', dcUUIDisBody_data);
 
-				const toast = {
+				dcUUIDisBody_toast = {
 					status: 201,
 					type: 'insert',
-					message: `${data[0].insertedId} inserted`,
+					message: `${dcUUIDisBody_data[0].insertedId} inserted`,
 				};
 			} catch (error) {
 				await handleError({ error, res });
@@ -378,11 +388,11 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 				})
 				.returning({ insertedId: die_casting_transaction.uuid });
 			try {
-				const data = await dieCastingTransactionPromise;
-				const toast = {
+				dcUUIDisCap_data = await dieCastingTransactionPromise;
+				dcUUIDisCap_toast = {
 					status: 201,
 					type: 'insert',
-					message: `${data[0].insertedId} inserted`,
+					message: `${dcUUIDisCap_data[0].insertedId} inserted`,
 				};
 			} catch (error) {
 				await handleError({ error, res });
@@ -425,11 +435,11 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 				})
 				.returning({ insertedId: die_casting_transaction.uuid });
 			try {
-				const data = await dieCastingTransactionPromise;
-				const toast = {
+				dcUUIDisPuller_data = await dieCastingTransactionPromise;
+				dcUUIDisPuller_toast = {
 					status: 201,
 					type: 'insert',
-					message: `${data[0].insertedId} inserted`,
+					message: `${dcUUIDisPuller_data[0].insertedId} inserted`,
 				};
 			} catch (error) {
 				await handleError({ error, res });
@@ -472,15 +482,37 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 				})
 				.returning({ insertedId: die_casting_transaction.uuid });
 			try {
-				const data = await dieCastingTransactionPromise;
-				const toast = {
+				dcUUIDisLink_data = await dieCastingTransactionPromise;
+				dcUUIDisLink_toast = {
 					status: 201,
 					type: 'insert',
-					message: `${data[0].insertedId} inserted`,
+					message: `${dcUUIDisLink_data[0].insertedId} inserted`,
 				};
 			} catch (error) {
 				await handleError({ error, res });
 			}
 		}
 	}
+
+	const data = {
+		dcUUIDisBody_data,
+		dcUUIDisCap_data,
+		dcUUIDisPuller_data,
+		dcUUIDisLink_data,
+	};
+
+	const toast = {
+		status: 201,
+		type: 'insert',
+		message:
+			dcUUIDisBody_toast.message +
+			' - ' +
+			dcUUIDisCap_toast.message +
+			' - ' +
+			dcUUIDisPuller_toast.message +
+			' - ' +
+			dcUUIDisLink_toast.message,
+	};
+
+	res.status(201).json({ toast, data });
 }
