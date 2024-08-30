@@ -1,4 +1,4 @@
-import SE from '../../../util/swagger_example.js';
+import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Slider Stock * //
 export const pathSliderStock = {
@@ -14,14 +14,8 @@ export const pathSliderStock = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									order_info_uuid: SE.uuid(),
 									item: {
 										type: 'string',
 										xample: 'igD0v9DIJQhJeet',
@@ -34,10 +28,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'item short name',
 									},
-									zipper_number: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									zipper_number: SE.uuid(),
 									zipper_number_name: {
 										type: 'string',
 										example: 'zipper name',
@@ -46,10 +37,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'zipper short name',
 									},
-									end_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									end_type: SE.uuid(),
 									end_type_name: {
 										type: 'string',
 										example: 'end type name',
@@ -58,10 +46,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'end type short name',
 									},
-									lock_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									lock_type: SE.uuid(),
 									lock_type_name: {
 										type: 'string',
 										example: 'Auto Lock',
@@ -70,10 +55,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'AL',
 									},
-									puller_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									puller_type: SE.uuid(),
 									puller_type_name: {
 										type: 'string',
 										example: 'puller name',
@@ -94,10 +76,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'red',
 									},
-									puller_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									puller_link: SE.uuid(),
 									puller_link_name: {
 										type: 'string',
 										example: 'puller link name',
@@ -106,10 +85,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'puller link short name',
 									},
-									slider: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									slider: SE.uuid(),
 									slider_name: {
 										type: 'string',
 										example: 'slider name',
@@ -118,10 +94,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'slider short name',
 									},
-									slider_body_shape: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									slider_body_shape: SE.uuid(),
 									slider_body_shape_name: {
 										type: 'string',
 										example: 'body shape name',
@@ -130,10 +103,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'body shape short name',
 									},
-									slider_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									slider_link: SE.uuid(),
 									slider_link_name: {
 										type: 'string',
 										example: 'slider link name',
@@ -142,10 +112,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'slider link short name',
 									},
-									coloring_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									coloring_type: SE.uuid(),
 									coloring_type_name: {
 										type: 'string',
 										example: 'coloring type name',
@@ -154,10 +121,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'coloring type short name',
 									},
-									logo_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									logo_type: SE.uuid(),
 									logo_type_name: {
 										type: 'string',
 										example: 'logo type name',
@@ -174,72 +138,22 @@ export const pathSliderStock = {
 										type: 'number',
 										example: 0,
 									},
-									order_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									body_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									cap_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									puller_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									link_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									sa_prod: {
-										type: 'number',
-										example: 0.0,
-									},
-									coloring_stock: {
-										type: 'number',
-										example: 0.0,
-									},
-									coloring_prod: {
-										type: 'number',
-										example: 0.0,
-									},
-									trx_to_finishing: {
-										type: 'number',
-										example: 0.0,
-									},
-									u_top_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									h_bottom_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									box_pin_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									two_way_pin_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
+									order_quantity: SE.number(1),
+									body_quantity: SE.number(1),
+									cap_quantity: SE.number(1),
+									puller_quantity: SE.number(1),
+									link_quantity: SE.number(1),
+									sa_prod: SE.number(1),
+									coloring_stock: SE.number(1),
+									coloring_prod: SE.number(1),
+									trx_to_finishing: SE.number(1),
+									u_top_quantity: SE.number(1),
+									h_bottom_quantity: SE.number(1),
+									box_pin_quantity: SE.number(1),
+									two_way_pin_quantity: SE.number(1),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -274,9 +188,7 @@ export const pathSliderStock = {
 						},
 					},
 				},
-				405: {
-					description: 'Invalid input',
-				},
+				405: SE.response(405),
 			},
 		},
 	},
@@ -306,14 +218,8 @@ export const pathSliderStock = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									order_info_uuid: SE.uuid(),
 									item: {
 										type: 'string',
 										xample: 'igD0v9DIJQhJeet',
@@ -326,10 +232,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'item short name',
 									},
-									zipper_number: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									zipper_number: SE.uuid(),
 									zipper_number_name: {
 										type: 'string',
 										example: 'zipper name',
@@ -338,10 +241,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'zipper short name',
 									},
-									end_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									end_type: SE.uuid(),
 									end_type_name: {
 										type: 'string',
 										example: 'end type name',
@@ -350,10 +250,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'end type short name',
 									},
-									lock_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									lock_type: SE.uuid(),
 									lock_type_name: {
 										type: 'string',
 										example: 'Auto Lock',
@@ -362,10 +259,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'AL',
 									},
-									puller_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									puller_type: SE.uuid(),
 									puller_type_name: {
 										type: 'string',
 										example: 'puller name',
@@ -386,10 +280,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'red',
 									},
-									puller_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									puller_link: SE.uuid(),
 									puller_link_name: {
 										type: 'string',
 										example: 'puller link name',
@@ -398,10 +289,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'puller link short name',
 									},
-									slider: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									slider: SE.uuid(),
 									slider_name: {
 										type: 'string',
 										example: 'slider name',
@@ -410,10 +298,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'slider short name',
 									},
-									slider_body_shape: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									slider_body_shape: SE.uuid(),
 									slider_body_shape_name: {
 										type: 'string',
 										example: 'body shape name',
@@ -422,10 +307,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'body shape short name',
 									},
-									slider_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									slider_link: SE.uuid(),
 									slider_link_name: {
 										type: 'string',
 										example: 'slider link name',
@@ -434,10 +316,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'slider link short name',
 									},
-									coloring_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									coloring_type: SE.uuid(),
 									coloring_type_name: {
 										type: 'string',
 										example: 'coloring type name',
@@ -446,10 +325,7 @@ export const pathSliderStock = {
 										type: 'string',
 										example: 'coloring type short name',
 									},
-									logo_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									logo_type: SE.uuid(),
 									logo_type_name: {
 										type: 'string',
 										example: 'logo type name',
@@ -466,80 +342,28 @@ export const pathSliderStock = {
 										type: 'number',
 										example: 0,
 									},
-									order_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									body_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									cap_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									puller_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									link_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									sa_prod: {
-										type: 'number',
-										example: 0.0,
-									},
-									coloring_stock: {
-										type: 'number',
-										example: 0.0,
-									},
-									coloring_prod: {
-										type: 'number',
-										example: 0.0,
-									},
-									trx_to_finishing: {
-										type: 'number',
-										example: 0.0,
-									},
-									u_top_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									h_bottom_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									box_pin_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									two_way_pin_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
+									order_quantity: SE.number(1),
+									body_quantity: SE.number(1),
+									cap_quantity: SE.number(1),
+									puller_quantity: SE.number(1),
+									link_quantity: SE.number(1),
+									sa_prod: SE.number(1),
+									coloring_stock: SE.number(1),
+									coloring_prod: SE.number(1),
+									trx_to_finishing: SE.number(1),
+									u_top_quantity: SE.number(1),
+									h_bottom_quantity: SE.number(1),
+									box_pin_quantity: SE.number(1),
+									two_way_pin_quantity: SE.number(1),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
 					},
 				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
+				400: SE.response(400),
 				404: {
 					description: 'Stock not found',
 				},
@@ -574,15 +398,11 @@ export const pathSliderStock = {
 			},
 
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
+				400: SE.response(400),
 				404: {
 					description: 'Stock not found',
 				},
-				405: {
-					description: 'Validation exception',
-				},
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -603,9 +423,7 @@ export const pathSliderStock = {
 				},
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
+				400: SE.response(400),
 				404: {
 					description: 'Stock not found',
 				},
@@ -628,18 +446,12 @@ export const pathSliderDieCasting = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
 									name: {
 										type: 'string',
 										example: 'die_casting 1',
 									},
-									item: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									item: SE.uuid(),
 									item_name: {
 										type: 'string',
 										example: 'item name',
@@ -648,10 +460,7 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'item short name',
 									},
-									zipper_number: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									zipper_number: SE.uuid(),
 									zipper_name: {
 										type: 'string',
 										example: 'zipper name',
@@ -660,10 +469,7 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'zipper short name',
 									},
-									end_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									end_type: SE.uuid(),
 									end_type_name: {
 										type: 'string',
 										example: 'end type name',
@@ -672,10 +478,7 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'end type short name',
 									},
-									puller_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									puller_type: SE.uuid(),
 									puller_type_name: {
 										type: 'string',
 										example: 'puller type name',
@@ -684,10 +487,7 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'puller type short name',
 									},
-									logo_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									logo_type: SE.uuid(),
 									logo_type_name: {
 										type: 'string',
 										example: 'logo type name',
@@ -696,10 +496,7 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'logo type short name',
 									},
-									slider_body_shape: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									slider_body_shape: SE.uuid(),
 									slider_body_shape_name: {
 										type: 'string',
 										example: 'body shape name',
@@ -708,10 +505,7 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'body shape short name',
 									},
-									puller_link: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									puller_link: SE.uuid(),
 									puller_link_name: {
 										type: 'string',
 										example: 'puller link name',
@@ -720,10 +514,7 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'puller link short name',
 									},
-									stopper_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									stopper_type: SE.uuid(),
 									stopper_type_name: {
 										type: 'string',
 										example: 'stopper type name',
@@ -732,32 +523,12 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'stopper type short name',
 									},
-									quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									weight: {
-										type: 'number',
-										example: 0.0,
-									},
-									pcs_per_kg: {
-										type: 'number',
-										example: 0.0,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
+									quantity: SE.number(1),
+									weight: SE.number(1),
+									pcs_per_kg: SE.number(1),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 									is_body: {
 										type: 'number',
 										example: 0,
@@ -790,10 +561,7 @@ export const pathSliderDieCasting = {
 										type: 'number',
 										example: 0,
 									},
-									quantity_in_sa: {
-										type: 'number',
-										example: 0.0,
-									},
+									quantity_in_sa: SE.number(1),
 								},
 							},
 						},
@@ -828,9 +596,7 @@ export const pathSliderDieCasting = {
 						},
 					},
 				},
-				405: {
-					description: 'Invalid input',
-				},
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1028,9 +794,7 @@ export const pathSliderDieCasting = {
 						},
 					},
 				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
+				400: SE.response(400),
 				404: {
 					description: 'Die casting not found',
 				},
@@ -1063,15 +827,11 @@ export const pathSliderDieCasting = {
 				},
 			},
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
+				400: SE.response(400),
 				404: {
 					description: 'Die casting not found',
 				},
-				405: {
-					description: 'Validation exception',
-				},
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1092,9 +852,7 @@ export const pathSliderDieCasting = {
 				},
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
+				400: SE.response(400),
 				404: {
 					description: 'Die casting not found',
 				},
@@ -1117,22 +875,13 @@ export const pathSliderDieCastingProduction = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									die_casting_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									die_casting_uuid: SE.uuid(),
 									die_casting_name: {
 										type: 'string',
 										example: 'die casting name',
 									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									order_info_uuid: SE.uuid(),
 									order_number: {
 										type: 'string',
 										example: 'order number',
@@ -1157,36 +906,13 @@ export const pathSliderDieCastingProduction = {
 										type: 'number',
 										example: 0,
 									},
-									weight: {
-										type: 'number',
-										example: 0.0,
-									},
-									pcs_per_kg: {
-										type: 'number',
-										example: 0.0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
+									weight: SE.number(1),
+									pcs_per_kg: SE.number(1),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('John Doe'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -1222,9 +948,7 @@ export const pathSliderDieCastingProduction = {
 						},
 					},
 				},
-				405: {
-					description: 'Invalid input',
-				},
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1325,9 +1049,7 @@ export const pathSliderDieCastingProduction = {
 						},
 					},
 				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
+				400: SE.response(400),
 				404: {
 					description: 'Die casting production not found',
 				},
@@ -1362,15 +1084,11 @@ export const pathSliderDieCastingProduction = {
 			},
 
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
+				400: SE.response(400),
 				404: {
 					description: 'Die casting production not found',
 				},
-				405: {
-					description: 'Validation exception',
-				},
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1391,9 +1109,7 @@ export const pathSliderDieCastingProduction = {
 				},
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
+				400: SE.response(400),
 				404: {
 					description: 'Die casting production not found',
 				},
@@ -1416,48 +1132,17 @@ export const pathSliderDieCastingTransaction = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									die_casting_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									die_casting_name: {
-										type: 'string',
-										example: 'die casting name',
-									},
-									stock_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									trx_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
+									uuid: SE.uuid(),
+									die_casting_uuid: SE.uuid(),
+									die_casting_name: SE.string('V-3-OE-SP'),
+									stock_uuid: SE.uuid(),
+									trx_quantity: SE.number(1),
+									type: SE.string('body'),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('John Doe'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -1473,29 +1158,17 @@ export const pathSliderDieCastingTransaction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/slider/die_casting_transaction',
-						},
-					},
-				},
-			},
-
+			requestBody: SE.requestBody_schema_ref(
+				'slider/die_casting_transaction'
+			),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/slider/die_casting_transaction',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(
+					200,
+					'slider/die_casting_transaction'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1506,24 +1179,15 @@ export const pathSliderDieCastingTransaction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'die casting transaction to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Die casting transaction not found',
-				},
+				200: SE.response_schema_ref(
+					200,
+					'slider/die_casting_transaction'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		put: {
@@ -1534,35 +1198,19 @@ export const pathSliderDieCastingTransaction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Die casting transaction to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('Die casting transaction to update', 'uuid'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/slider/die_casting_transaction',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref(
+				'slider/die_casting_transaction'
+			),
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Die casting transaction not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(
+					200,
+					'slider/die_casting_transaction'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1572,23 +1220,13 @@ export const pathSliderDieCastingTransaction = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Die casting transaction to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('Die casting transaction to update', 'uuid'),
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Die casting transaction not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1598,129 +1236,36 @@ export const pathSliderDieCastingTransaction = {
 			summary: 'Get stock using Order Number',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'order_info_uuid',
-					in: 'path',
-					description: 'stock information',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('stock information', 'order_info_uuid'),
 			],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									stock_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
-									item_description: {
-										type: 'string',
-										example: 'N-5-OE-RP',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									item: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									item_name: {
-										type: 'string',
-										example: 'item name',
-									},
-									item_short_name: {
-										type: 'string',
-										example: 'item short name',
-									},
-									zipper_number: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									zipper_number_name: {
-										type: 'string',
-										example: 'zipper name',
-									},
-									zipper_number_short_name: {
-										type: 'string',
-										example: 'zipper short name',
-									},
-									end_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_type_name: {
-										type: 'string',
-										example: 'end type name',
-									},
-									end_type_short_name: {
-										type: 'string',
-										example: 'end type short name',
-									},
-									puller_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_type_name: {
-										type: 'string',
-										example: 'puller type name',
-									},
-									puller_type_short_name: {
-										type: 'string',
-										example: 'puller type short name',
-									},
-									logo_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									logo_type_name: {
-										type: 'string',
-										example: 'logo type name',
-									},
-									logo_type_short_name: {
-										type: 'string',
-										example: 'logo type short name',
-									},
-									puller_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_color_name: {
-										type: 'string',
-										example: 'puller color name',
-									},
-									puller_color_short_name: {
-										type: 'string',
-										example: 'puller color short name',
-									},
-									order_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									provided_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									balance_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					stock_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0001'),
+					item_description: SE.string('N-5-OE-RP'),
+					order_info_uuid: SE.uuid(),
+					item: SE.uuid(),
+					item_name: SE.string('Nylon'),
+					item_short_name: SE.string('N'),
+					zipper_number: SE.uuid(),
+					zipper_number_name: SE.string('3'),
+					zipper_number_short_name: SE.string('3'),
+					end_type: SE.uuid(),
+					end_type_name: SE.string('Open End'),
+					end_type_short_name: SE.string('OE'),
+					puller_type: SE.uuid(),
+					puller_type_name: SE.string('Normal Puller'),
+					puller_type_short_name: SE.string('NP'),
+					logo_type: SE.uuid(),
+					logo_type_name: SE.string('FZL'),
+					logo_type_short_name: SE.string('FZL'),
+					puller_color: SE.uuid(),
+					puller_color_name: SE.string('Black'),
+					puller_color_short_name: SE.string('B'),
+					order_quantity: SE.number(100),
+					provided_quantity: SE.number(100),
+					balance_quantity: SE.number(100),
+				}),
 			},
 		},
 	},
@@ -1730,129 +1275,36 @@ export const pathSliderDieCastingTransaction = {
 			summary: 'Get stock using Order Number',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'order_info_uuids',
-					in: 'path',
-					description: 'stock information',
-					required: true,
-					type: 'string',
-					format: 'string',
-					example: 'igD0v9DIJQhJeet,igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('stock information', 'order_info_uuids'),
 			],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									stock_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
-									item_description: {
-										type: 'string',
-										example: 'N-5-OE-RP',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									item: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									item_name: {
-										type: 'string',
-										example: 'item name',
-									},
-									item_short_name: {
-										type: 'string',
-										example: 'item short name',
-									},
-									zipper_number: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									zipper_number_name: {
-										type: 'string',
-										example: 'zipper name',
-									},
-									zipper_number_short_name: {
-										type: 'string',
-										example: 'zipper short name',
-									},
-									end_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									end_type_name: {
-										type: 'string',
-										example: 'end type name',
-									},
-									end_type_short_name: {
-										type: 'string',
-										example: 'end type short name',
-									},
-									puller_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_type_name: {
-										type: 'string',
-										example: 'puller type name',
-									},
-									puller_type_short_name: {
-										type: 'string',
-										example: 'puller type short name',
-									},
-									logo_type: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									logo_type_name: {
-										type: 'string',
-										example: 'logo type name',
-									},
-									logo_type_short_name: {
-										type: 'string',
-										example: 'logo type short name',
-									},
-									puller_color: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									puller_color_name: {
-										type: 'string',
-										example: 'puller color name',
-									},
-									puller_color_short_name: {
-										type: 'string',
-										example: 'puller color short name',
-									},
-									order_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									provided_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									balance_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					stock_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0001'),
+					item_description: SE.string('N-5-OE-RP'),
+					order_info_uuid: SE.uuid(),
+					item: SE.uuid(),
+					item_name: SE.string('Nylon'),
+					item_short_name: SE.string('N'),
+					zipper_number: SE.uuid(),
+					zipper_number_name: SE.string('3'),
+					zipper_number_short_name: SE.string('3'),
+					end_type: SE.uuid(),
+					end_type_name: SE.string('Open End'),
+					end_type_short_name: SE.string('OE'),
+					puller_type: SE.uuid(),
+					puller_type_name: SE.string('Normal Puller'),
+					puller_type_short_name: SE.string('NP'),
+					logo_type: SE.uuid(),
+					logo_type_name: SE.string('FZL'),
+					logo_type_short_name: SE.string('FZL'),
+					puller_color: SE.uuid(),
+					puller_color_name: SE.string('Black'),
+					puller_color_short_name: SE.string('B'),
+					order_quantity: SE.number(100),
+					provided_quantity: SE.number(100),
+					balance_quantity: SE.number(100),
+				}),
 			},
 		},
 	},
@@ -1986,56 +1438,17 @@ const pathSliderColoringTransaction = {
 			tags: ['slider.coloring_transaction'],
 			summary: 'Get all coloring transaction',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									stock_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									trx_quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					stock_uuid: SE.uuid(),
+					order_info_uuid: SE.uuid(),
+					trx_quantity: SE.number(1),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
 			},
 		},
 		post: {
@@ -2045,29 +1458,12 @@ const pathSliderColoringTransaction = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/slider/coloring_transaction',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref(
+				'slider/coloring_transaction'
+			),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/slider/coloring_transaction',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'slider/coloring_transaction'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2079,23 +1475,12 @@ const pathSliderColoringTransaction = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'coloring transaction to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('Coloring transaction to get', 'uuid'),
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Coloring transaction not found',
-				},
+				200: SE.response_schema_ref(200, 'slider/coloring_transaction'),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -2106,36 +1491,16 @@ const pathSliderColoringTransaction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Coloring transaction to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_uuid('Coloring transaction to get', 'uuid'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/slider/coloring_transaction',
-						},
-					},
-				},
-			},
-
+			requestBody: SE.requestBody_schema_ref(
+				'slider/coloring_transaction'
+			),
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Coloring transaction not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'slider/coloring_transaction'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2144,24 +1509,12 @@ const pathSliderColoringTransaction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Coloring transaction to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Coloring transaction not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2174,52 +1527,16 @@ const pathTrxAgainstStock = {
 			tags: ['slider.trx_against_stock'],
 			summary: 'Get all transaction against stock',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									die_casting_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									quantity: {
-										type: 'number',
-										example: 0.0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					die_casting_uuid: SE.uuid(),
+					quantity: SE.number(1),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
 			},
 		},
 		post: {
@@ -2229,29 +1546,10 @@ const pathTrxAgainstStock = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/slider/trx_against_stock',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('slider/trx_against_stock'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/slider/trx_against_stock',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'slider/trx_against_stock'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2263,24 +1561,10 @@ const pathTrxAgainstStock = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'transaction against stock to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Transaction against stock not found',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -2290,17 +1574,7 @@ const pathTrxAgainstStock = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Transaction against stock to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -2311,15 +1585,10 @@ const pathTrxAgainstStock = {
 				},
 			},
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Transaction against stock not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'slider/trx_against_stock'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2328,24 +1597,11 @@ const pathTrxAgainstStock = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Transaction against stock to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_uuid('uuid', 'uuid')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Transaction against stock not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
