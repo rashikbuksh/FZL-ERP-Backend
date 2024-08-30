@@ -81,7 +81,7 @@ export async function selectAll(req, res, next) {
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
 			dcp.order_info_uuid,
-			v_order_details.order_number,
+			CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')),
 			dcp.mc_no,
 			dcp.cavity_goods,
 			dcp.cavity_defect,
@@ -102,7 +102,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN
-			zipper.v_order_details ON v_order_details.order_info_uuid = dcp.order_info_uuid
+			zipper.order_info ON order_info.uuid = dcp.order_info_uuid
 		`;
 
 	const dcpPromise = db.execute(query);
@@ -130,7 +130,7 @@ export async function select(req, res, next) {
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
 			dcp.order_info_uuid,
-			v_order_details.order_number,
+			CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')),
 			dcp.mc_no,
 			dcp.cavity_goods,
 			dcp.cavity_defect,
@@ -151,7 +151,7 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN
-			zipper.v_order_details ON v_order_details.order_info_uuid = dcp.order_info_uuid
+			zipper.order_info ON order_info.uuid = dcp.order_info_uuid
 		WHERE dcp.uuid = ${req.params.uuid}
 		`;
 
