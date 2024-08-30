@@ -1,5 +1,6 @@
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
+import { type } from '../material/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
@@ -193,6 +194,7 @@ export const die_casting_transaction = slider.table('die_casting_transaction', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	type: text('type').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

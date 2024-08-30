@@ -285,8 +285,6 @@ export async function selectDieCastingForSliderStockByOrderInfoUuids(
 export async function insertDieCastingTransactionByOrder(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	console.log('req.body', req.body);
-
 	const { is_body, is_cap, is_puller, is_link } = req.body;
 
 	let dcUUIDisBody, dcUUIDisCap, dcUUIDisPuller, dcUUIDisLink;
@@ -301,7 +299,19 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 		dcUUIDisPuller_toast,
 		dcUUIDisLink_toast;
 
-	if (is_body) {
+	const {
+		is_body_uuid,
+		is_cap_uuid,
+		is_link_uuid,
+		is_puller_uuid,
+		stock_uuid,
+		trx_quantity,
+		created_by,
+		created_at,
+		remarks,
+	} = req.body;
+
+	if (is_body_uuid) {
 		const dieCastingPromise = db
 			.select({
 				uuid: die_casting.uuid,
@@ -323,24 +333,22 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 			);
 		dcUUIDisBody = await dieCastingPromise;
 
-		console.log('dcUUIDisBody', dcUUIDisBody);
-
 		if (dcUUIDisBody.length !== 0) {
 			const dieCastingTransactionPromise = db
 				.insert(die_casting_transaction)
 				.values({
-					uuid: req.body.is_body_uuid,
+					uuid: is_body_uuid,
 					die_casting_uuid: dcUUIDisBody[0].uuid,
-					stock_uuid: req.body.stock_uuid,
-					trx_quantity: req.body.trx_quantity,
-					created_by: req.body.created_by,
-					remarks: req.body.remarks,
+					stock_uuid: stock_uuid,
+					trx_quantity: trx_quantity,
+					type: 'body',
+					created_by: created_by,
+					created_at: created_at,
+					remarks: remarks,
 				})
 				.returning({ insertedId: die_casting_transaction.uuid });
 			try {
 				dcUUIDisBody_data = await dieCastingTransactionPromise;
-
-				console.log('dcUUIDisBody_data in body', dcUUIDisBody_data);
 
 				dcUUIDisBody_toast = {
 					status: 201,
@@ -353,7 +361,7 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 		}
 	}
 
-	if (is_cap) {
+	if (is_cap_uuid) {
 		const dieCastingPromise = db
 			.select({
 				uuid: die_casting.uuid,
@@ -379,12 +387,14 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 			const dieCastingTransactionPromise = db
 				.insert(die_casting_transaction)
 				.values({
-					uuid: req.body.is_cap_uuid,
+					uuid: is_cap_uuid,
 					die_casting_uuid: dcUUIDisCap[0].uuid,
-					stock_uuid: req.body.stock_uuid,
-					trx_quantity: req.body.trx_quantity,
-					created_by: req.body.created_by,
-					remarks: req.body.remarks,
+					stock_uuid: stock_uuid,
+					trx_quantity: trx_quantity,
+					type: 'cap',
+					created_by: created_by,
+					created_at: created_at,
+					remarks: remarks,
 				})
 				.returning({ insertedId: die_casting_transaction.uuid });
 			try {
@@ -400,7 +410,7 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 		}
 	}
 
-	if (is_puller) {
+	if (is_puller_uuid) {
 		const dieCastingPromise = db
 			.select({
 				uuid: die_casting.uuid,
@@ -426,12 +436,14 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 			const dieCastingTransactionPromise = db
 				.insert(die_casting_transaction)
 				.values({
-					uuid: req.body.is_puller_uuid,
+					uuid: is_puller_uuid,
 					die_casting_uuid: dcUUIDisCap[0].uuid,
-					stock_uuid: req.body.stock_uuid,
-					trx_quantity: req.body.trx_quantity,
-					created_by: req.body.created_by,
-					remarks: req.body.remarks,
+					stock_uuid: stock_uuid,
+					trx_quantity: trx_quantity,
+					type: 'puller',
+					created_by: created_by,
+					created_at: created_at,
+					remarks: remarks,
 				})
 				.returning({ insertedId: die_casting_transaction.uuid });
 			try {
@@ -447,7 +459,7 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 		}
 	}
 
-	if (is_link) {
+	if (is_link_uuid) {
 		const dieCastingPromise = db
 			.select({
 				uuid: die_casting.uuid,
@@ -473,12 +485,14 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 			const dieCastingTransactionPromise = db
 				.insert(die_casting_transaction)
 				.values({
-					uuid: req.body.is_link_uuid,
+					uuid: is_link_uuid,
 					die_casting_uuid: dcUUIDisCap[0].uuid,
-					stock_uuid: req.body.stock_uuid,
-					trx_quantity: req.body.trx_quantity,
-					created_by: req.body.created_by,
-					remarks: req.body.remarks,
+					stock_uuid: stock_uuid,
+					trx_quantity: trx_quantity,
+					type: 'link',
+					created_by: created_by,
+					created_at: created_at,
+					remarks: remarks,
 				})
 				.returning({ insertedId: die_casting_transaction.uuid });
 			try {
@@ -504,15 +518,10 @@ export async function insertDieCastingTransactionByOrder(req, res, next) {
 	const toast = {
 		status: 201,
 		type: 'insert',
-		message:
-			dcUUIDisBody_toast.message +
-			' - ' +
-			dcUUIDisCap_toast.message +
-			' - ' +
-			dcUUIDisPuller_toast.message +
-			' - ' +
-			dcUUIDisLink_toast.message,
+		message: 'Die Casting Transaction By Order',
 	};
+
+	console.log('toast', toast, 'data', data);
 
 	res.status(201).json({ toast, data });
 }
