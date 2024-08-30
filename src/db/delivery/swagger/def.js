@@ -98,7 +98,7 @@ export const defDelivery = {
 // * Tag
 export const tagDelivery = [
 	{
-		name: 'delivery.packing_list',
+		name: 'delivery.packing-list',
 		description: 'Operations about Packing List',
 		externalDocs: {
 			description: 'Find out more',
@@ -106,7 +106,7 @@ export const tagDelivery = [
 		},
 	},
 	{
-		name: 'delivery.packing_list_entry',
+		name: 'delivery.packing-list-entry',
 		description: 'Operations about Packing List Entry',
 		externalDocs: {
 			description: 'Find out more',
@@ -122,7 +122,7 @@ export const tagDelivery = [
 		},
 	},
 	{
-		name: 'delivery.challan_entry',
+		name: 'delivery.challan-entry',
 		description: 'Operations about Challan Entry',
 		externalDocs: {
 			description: 'Find out more',
