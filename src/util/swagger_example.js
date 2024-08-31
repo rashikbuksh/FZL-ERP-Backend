@@ -56,7 +56,7 @@ const SE = {
 	xml: (name = '') => ({ name }),
 
 	// * Parameters
-	parameter_uuid: (
+	parameter_params: (
 		description = 'GET DATA',
 		name = 'uuid',
 		format = 'uuid',

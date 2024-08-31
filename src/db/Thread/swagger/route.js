@@ -379,7 +379,7 @@ export const pathThreadCountLength = {
 			tags: ['thread.count_length'],
 			summary: 'Get Thread Count Length',
 			description: 'Get Thread Count Length',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -397,7 +397,7 @@ export const pathThreadCountLength = {
 			tags: ['thread.count_length'],
 			summary: 'Update Thread Count Length',
 			description: 'Update Thread Count Length',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -419,7 +419,7 @@ export const pathThreadCountLength = {
 			tags: ['thread.count_length'],
 			summary: 'Delete Thread Count Length',
 			description: 'Delete Thread Count Length',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				201: {
 					description: 'Success',
@@ -591,7 +591,7 @@ export const pathThreadOrderInfo = {
 			summary: 'Get Thread Order Info Details by Order Info UUID',
 			description: 'Get Thread Order Info Details by Order Info UUID',
 			parameters: [
-				SE.parameter_uuid('order_info_uuid', 'order_info_uuid'),
+				SE.parameter_params('order_info_uuid', 'order_info_uuid'),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -821,7 +821,7 @@ export const pathThreadOrderEntry = {
 			summary: 'Get Thread Order Entry by Order Info UUID',
 			description: 'Get Thread Order Entry by Order Info UUID',
 			parameters: [
-				SE.parameter_uuid('order_info_uuid', 'order_info_uuid'),
+				SE.parameter_params('order_info_uuid', 'order_info_uuid'),
 			],
 			responses: {
 				200: {
@@ -927,7 +927,7 @@ export const pathThreadBatchEntry = {
 			tags: ['thread.batch_entry'],
 			summary: 'Update Thread Batch Entry',
 			description: 'Update Thread Batch Entry',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -1017,7 +1017,7 @@ export const pathThreadBatchEntry = {
 			summary: 'Get Thread Batch Entry by Batch UUID',
 			description: 'Get Thread Batch Entry by Batch UUID',
 			parameters: [
-				SE.parameter_uuid(
+				SE.parameter_params(
 					'batch_uuid',
 					'batch_uuid',
 					'uuid',
@@ -1275,7 +1275,7 @@ export const pathThreadBatch = {
 			tags: ['thread.batch'],
 			summary: 'Get Thread Batch',
 			description: 'Get Thread Batch',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'thread/batch'),
 			},
@@ -1353,7 +1353,7 @@ export const pathThreadBatch = {
 			tags: ['thread.batch'],
 			summary: 'Get Batch Details by Batch UUID',
 			description: 'Get Batch Details by Batch UUID',
-			parameters: [SE.parameter_uuid('batch_uuid', 'batch_uuid')],
+			parameters: [SE.parameter_params('batch_uuid', 'batch_uuid')],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -1500,7 +1500,7 @@ export const pathThreadDyesCategory = {
 			tags: ['thread.dyes_category'],
 			summary: 'Get Thread Dyes Category',
 			description: 'Get Thread Dyes Category',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -1520,7 +1520,7 @@ export const pathThreadDyesCategory = {
 			tags: ['thread.dyes_category'],
 			summary: 'Update Thread Dyes Category',
 			description: 'Update Thread Dyes Category',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -1540,7 +1540,7 @@ export const pathThreadDyesCategory = {
 			tags: ['thread.dyes_category'],
 			summary: 'Delete Thread Dyes Category',
 			description: 'Delete Thread Dyes Category',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				201: SE.response_schema_ref(201, 'thread/dyes_category'),
 			},
@@ -1648,7 +1648,7 @@ export const pathThreadPrograms = {
 			tags: ['thread.programs'],
 			summary: 'Get Thread Programs',
 			description: 'Get Thread Programs',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -1670,7 +1670,7 @@ export const pathThreadPrograms = {
 			tags: ['thread.programs'],
 			summary: 'Update Thread Programs',
 			description: 'Update Thread Programs',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -1690,7 +1690,7 @@ export const pathThreadPrograms = {
 			tags: ['thread.programs'],
 			summary: 'Delete Thread Programs',
 			description: 'Delete Thread Programs',
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				201: SE.response_schema_ref(201, 'thread/programs'),
 			},

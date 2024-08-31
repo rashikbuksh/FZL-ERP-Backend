@@ -115,7 +115,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: batch.uuid,
 			id: batch.id,
-			batch_no: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+			batch_id: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			batch_status: batch.batch_status,
 			created_by: batch.created_by,
 			created_by_name: hrSchema.users.name,

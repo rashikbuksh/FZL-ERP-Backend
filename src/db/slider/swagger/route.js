@@ -1179,7 +1179,7 @@ export const pathSliderDieCastingTransaction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(
 					200,
@@ -1198,7 +1198,10 @@ export const pathSliderDieCastingTransaction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_uuid('Die casting transaction to update', 'uuid'),
+				SE.parameter_params(
+					'Die casting transaction to update',
+					'uuid'
+				),
 			],
 			requestBody: SE.requestBody_schema_ref(
 				'slider/die_casting_transaction'
@@ -1220,7 +1223,10 @@ export const pathSliderDieCastingTransaction = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_uuid('Die casting transaction to update', 'uuid'),
+				SE.parameter_params(
+					'Die casting transaction to update',
+					'uuid'
+				),
 			],
 			responses: {
 				200: SE.response(200),
@@ -1236,7 +1242,7 @@ export const pathSliderDieCastingTransaction = {
 			summary: 'Get stock using Order Number',
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_uuid('stock information', 'order_info_uuid'),
+				SE.parameter_params('stock information', 'order_info_uuid'),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -1275,7 +1281,7 @@ export const pathSliderDieCastingTransaction = {
 			summary: 'Get stock using Order Number',
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_uuid('stock information', 'order_info_uuids'),
+				SE.parameter_params('stock information', 'order_info_uuids'),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -1392,7 +1398,7 @@ const pathSliderTransaction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('uuid', 'transaction to get')],
+			parameters: [SE.parameter_params('uuid', 'transaction to get')],
 			responses: {
 				200: SE.response_schema_ref(200, 'slider/transaction'),
 				400: SE.response(400),
@@ -1406,7 +1412,7 @@ const pathSliderTransaction = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('uuid', 'Transaction to update')],
+			parameters: [SE.parameter_params('uuid', 'Transaction to update')],
 			requestBody: SE.requestBody_schema_ref('slider/transaction'),
 			responses: {
 				200: SE.response_schema_ref(200, 'slider/transaction'),
@@ -1421,7 +1427,7 @@ const pathSliderTransaction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('uuid', 'Transaction to delete')],
+			parameters: [SE.parameter_params('uuid', 'Transaction to delete')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -1475,7 +1481,7 @@ const pathSliderColoringTransaction = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_uuid('Coloring transaction to get', 'uuid'),
+				SE.parameter_params('Coloring transaction to get', 'uuid'),
 			],
 			responses: {
 				200: SE.response_schema_ref(200, 'slider/coloring_transaction'),
@@ -1491,7 +1497,7 @@ const pathSliderColoringTransaction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_uuid('Coloring transaction to get', 'uuid'),
+				SE.parameter_params('Coloring transaction to get', 'uuid'),
 			],
 			requestBody: SE.requestBody_schema_ref(
 				'slider/coloring_transaction'
@@ -1509,7 +1515,7 @@ const pathSliderColoringTransaction = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -1561,7 +1567,7 @@ const pathTrxAgainstStock = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				400: SE.response(400),
 				404: SE.response(404),
@@ -1574,7 +1580,7 @@ const pathTrxAgainstStock = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -1597,7 +1603,7 @@ const pathTrxAgainstStock = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('uuid', 'uuid')],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),

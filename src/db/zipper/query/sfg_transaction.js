@@ -186,10 +186,12 @@ export async function selectByTrxFrom(req, res, next) {
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		WHERE
-			lower(vodf.item_name) = lower(${item_name}) AND
 			sfg_transaction.trx_from = ${req.params.trx_from}
-
 	`;
+
+	if (item_name) {
+		query.append(sql` AND lower(op_item.name) = lower(${item_name})`);
+	}
 
 	const sfgProductionPromise = db.execute(query);
 
@@ -198,7 +200,7 @@ export async function selectByTrxFrom(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'SFG Production',
+			message: 'SFG Transaction',
 		};
 		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {

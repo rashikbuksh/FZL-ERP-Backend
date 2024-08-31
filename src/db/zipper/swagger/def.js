@@ -545,7 +545,7 @@ export const tagZipper = [
 		description: 'Zipper SFG Transaction',
 	},
 	{
-		nname: 'zipper.dyed_tape_transaction',
+		name: 'zipper.dyed_tape_transaction',
 		description: 'Zipper Dyed Tape Transaction',
 	},
 	{

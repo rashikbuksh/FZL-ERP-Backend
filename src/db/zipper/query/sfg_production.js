@@ -175,9 +175,12 @@ export async function selectBySection(req, res, next) {
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		WHERE
-			lower(vodf.item_name) = lower(${item_name}) AND
 			sfg_production.section = ${req.params.section}
 	`;
+
+	if (item_name) {
+		query.append(sql` AND lower(op_item.name) = lower(${item_name})`);
+	}
 
 	const sfgProductionPromise = db.execute(query);
 

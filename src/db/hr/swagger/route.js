@@ -68,7 +68,7 @@ export const pathHrUser = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('hr.user to get')],
+			parameters: [SE.parameter_params('hr.user to get')],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -96,7 +96,7 @@ export const pathHrUser = {
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('hr.user to update')],
+			parameters: [SE.parameter_params('hr.user to update')],
 			requestBody: SE.requestBody({
 				name: SE.string('John Doe'),
 				email: SE.string('john@fzl.com'),
@@ -172,7 +172,7 @@ export const pathHrUser = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('hr.user to delete')],
+			parameters: [SE.parameter_params('hr.user to delete')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -187,7 +187,7 @@ export const pathHrUser = {
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('hr.user access to get')],
+			parameters: [SE.parameter_params('hr.user access to get')],
 			responses: {
 				200: SE.response_schema(200, {
 					can_access: SE.string('1,2,3'),
@@ -203,7 +203,7 @@ export const pathHrUser = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [SE.parameter_uuid('hr.user access to update')],
+			parameters: [SE.parameter_params('hr.user access to update')],
 			requestBody: SE.requestBody(
 				{
 					can_access: SE.string('1,2,3'),
@@ -481,7 +481,7 @@ export const pathHrDesignation = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_uuid('Designation to update'),
+				SE.parameter_params('Designation to update'),
 				SE.parameter_schema_ref(
 					'Designation object that needs to be updated to the hr.designation',
 					'hr/designation'
