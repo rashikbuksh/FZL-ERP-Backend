@@ -2818,6 +2818,7 @@ export const pathZipperBatchProduction = {
 					production_quantity: SE.number(100),
 					production_quantity_in_kg: SE.number(100),
 					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
 					updated_at: SE.date_time(),
 				},
@@ -2864,7 +2865,6 @@ export const pathZipperBatchProduction = {
 				404: SE.response(404),
 			},
 		},
-
 		put: {
 			tags: ['zipper.batch_production'],
 			summary: 'Update an existing batch production',
@@ -2875,39 +2875,14 @@ export const pathZipperBatchProduction = {
 			parameters: [
 				SE.parameter_schema_ref('batch production to update', 'uuid'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/zipper/batch_production',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('zipper/batch_production'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/zipper/batch_production',
-						},
-					},
-				},
-
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'batch production not found',
-				},
-
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'zipper/batch_production'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
-
 		delete: {
 			tags: ['zipper.batch_production'],
 			summary: 'Deletes a batch production',
@@ -2915,13 +2890,7 @@ export const pathZipperBatchProduction = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'batch production to delete',
-					required: true,
-					type: 'string',
-				},
+				SE.parameter_params('batch production to delete', 'uuid'),
 			],
 			responses: {
 				200: SE.response(200),
@@ -2933,7 +2902,6 @@ export const pathZipperBatchProduction = {
 };
 
 // * Zipper Path Zipper * //
-
 export const pathZipper = {
 	...pathZipperOrderInfo,
 	...pathZipperOrderDescription,

@@ -151,10 +151,14 @@ const SE = {
 
 		return {
 			description: getDescriptionByCode(code),
-			schema: {
-				type: 'array',
-				items: {
-					$ref: base_path + path,
+			content: {
+				'application/json': {
+					schema: {
+						type: 'array',
+						items: {
+							$ref: base_path + path,
+						},
+					},
 				},
 			},
 		};

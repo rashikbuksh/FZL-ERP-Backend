@@ -8,104 +8,29 @@ export const pathThreadMachine = {
 			summary: 'Get all Thread Machine',
 			description: 'Get all Thread Machine',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									name: {
-										type: 'string',
-										example: 'Machine Name',
-									},
-									capacity: {
-										type: 'number',
-										example: 10.0,
-									},
-									water_capacity: {
-										type: 'number',
-										example: 10.0,
-									},
-									leveling_agent_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									leveling_agent_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									buffering_agent_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buffering_agent_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									sequestering_agent_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									sequestering_agent_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									caustic_soad_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									caustic_soad_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									hydros_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									hydros_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									neotrolizer_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									neotrolizer_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					name: SE.string('Machine Name'),
+					capacity: SE.number(10.0),
+					water_capacity: SE.number(10.0),
+					leveling_agent_uuid: SE.uuid(),
+					leveling_agent_quantity: SE.number(10.0),
+					buffering_agent_uuid: SE.uuid(),
+					buffering_agent_quantity: SE.number(10.0),
+					sequestering_agent_uuid: SE.uuid(),
+					sequestering_agent_quantity: SE.number(10.0),
+					caustic_soad_uuid: SE.uuid(),
+					caustic_soad_quantity: SE.number(10.0),
+					hydros_uuid: SE.uuid(),
+					hydros_quantity: SE.number(10.0),
+					neotrolizer_uuid: SE.uuid(),
+					neotrolizer_quantity: SE.number(10.0),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
 			},
 		},
 
@@ -113,26 +38,9 @@ export const pathThreadMachine = {
 			tags: ['thread.machine'],
 			summary: 'Create Thread Machine',
 			description: 'Create Thread Machine',
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/machine',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/machine'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/machine',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/machine'),
 			},
 		},
 	},
@@ -142,16 +50,7 @@ export const pathThreadMachine = {
 			summary: 'Get Thread Machine',
 			description: 'Get Thread Machine',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-						example: 'igD0v9DIJQhJeet',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
 			responses: {
 				200: {
@@ -159,92 +58,27 @@ export const pathThreadMachine = {
 					content: {
 						'application/json': {
 							properties: {
-								uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								name: {
-									type: 'string',
-									example: 'Machine Name',
-								},
-								capacity: {
-									type: 'number',
-									example: 10.0,
-								},
-								water_capacity: {
-									type: 'number',
-									example: 10.0,
-								},
-								leveling_agent_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								leveling_agent_quantity: {
-									type: 'number',
-									example: 10.0,
-								},
-								buffering_agent_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								buffering_agent_quantity: {
-									type: 'number',
-									example: 10.0,
-								},
-								sequestering_agent_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								sequestering_agent_quantity: {
-									type: 'number',
-									example: 10.0,
-								},
-								caustic_soad_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								caustic_soad_quantity: {
-									type: 'number',
-									example: 10.0,
-								},
-								hydros_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								hydros_quantity: {
-									type: 'number',
-									example: 10.0,
-								},
-								neotrolizer_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								neotrolizer_quantity: {
-									type: 'number',
-									example: 10.0,
-								},
-								created_by: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								created_by_name: {
-									type: 'string',
-									example: 'John Doe',
-								},
-								created_at: {
-									type: 'string',
-									format: 'date-time',
-									example: '2024-01-01 00:00:00',
-								},
-								updated_at: {
-									type: 'string',
-									format: 'date-time',
-									example: '2024-01-01 00:00:00',
-								},
-								remarks: {
-									type: 'string',
-									example: 'Remarks',
-								},
+								uuid: SE.uuid(),
+								name: SE.string('Machine Name'),
+								capacity: SE.number(10.0),
+								water_capacity: SE.number(10.0),
+								leveling_agent_uuid: SE.uuid(),
+								leveling_agent_quantity: SE.number(10.0),
+								buffering_agent_uuid: SE.uuid(),
+								buffering_agent_quantity: SE.number(10.0),
+								sequestering_agent_uuid: SE.uuid(),
+								sequestering_agent_quantity: SE.number(10.0),
+								caustic_soad_uuid: SE.uuid(),
+								caustic_soad_quantity: SE.number(10.0),
+								hydros_uuid: SE.uuid(),
+								hydros_quantity: SE.number(10.0),
+								neotrolizer_uuid: SE.uuid(),
+								neotrolizer_quantity: SE.number(10.0),
+								created_by: SE.uuid(),
+								created_by_name: SE.string('John Doe'),
+								created_at: SE.date_time(),
+								updated_at: SE.date_time(),
+								remarks: SE.string('Remarks'),
 							},
 						},
 					},
@@ -256,36 +90,11 @@ export const pathThreadMachine = {
 			summary: 'Update Thread Machine',
 			description: 'Update Thread Machine',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/machine',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/machine'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/machine',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/machine'),
 			},
 		},
 		delete: {
@@ -293,27 +102,10 @@ export const pathThreadMachine = {
 			summary: 'Delete Thread Machine',
 			description: 'Delete Thread Machine',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/machine',
-							},
-						},
-					},
-				},
+				200: SE.response(200),
 			},
 		},
 	},
@@ -328,46 +120,16 @@ export const pathThreadCountLength = {
 			summary: 'Get all Thread Count Length',
 			description: 'Get all Thread Count Length',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/thread/count_length',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'thread/count_length'),
 			},
 		},
-
 		post: {
 			tags: ['thread.count_length'],
 			summary: 'Create Thread Count Length',
 			description: 'Create Thread Count Length',
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/count_length',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/count_length'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/count_length',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/count_length'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
@@ -381,13 +143,7 @@ export const pathThreadCountLength = {
 			description: 'Get Thread Count Length',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
-				200: SE.response_schema(200, {
-					uuid: SE.uuid(),
-					count: SE.string(),
-					length: SE.string(),
-					created_at: SE.date_time(),
-					updated_at: SE.date_time(),
-				}),
+				200: SE.response_schema_ref(200, 'thread/count_length'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
@@ -398,15 +154,7 @@ export const pathThreadCountLength = {
 			summary: 'Update Thread Count Length',
 			description: 'Update Thread Count Length',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/count_length',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/count_length'),
 			responses: {
 				201: SE.response_schema_ref(201, 'thread/count_length'),
 				400: SE.response(400),
@@ -421,16 +169,7 @@ export const pathThreadCountLength = {
 			description: 'Delete Thread Count Length',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/count_length',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/count_length'),
 			},
 		},
 	},
@@ -445,19 +184,7 @@ export const pathThreadOrderInfo = {
 			summary: 'Get all Thread Order Info',
 			description: 'Get all Thread Order Info',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/thread/order_info',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'thread/order_info'),
 			},
 		},
 
@@ -465,26 +192,9 @@ export const pathThreadOrderInfo = {
 			tags: ['thread.order_info'],
 			summary: 'Create Thread Order Info',
 			description: 'Create Thread Order Info',
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/order_info',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/order_info'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/order_info',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/order_info'),
 			},
 		},
 	},
@@ -494,27 +204,10 @@ export const pathThreadOrderInfo = {
 			summary: 'Get Thread Order Info',
 			description: 'Get Thread Order Info',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/order_info',
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'thread/order_info'),
 			},
 		},
 		put: {
@@ -522,66 +215,22 @@ export const pathThreadOrderInfo = {
 			summary: 'Update Thread Order Info',
 			description: 'Update Thread Order Info',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/order_info',
-						},
-					},
-				},
-			},
-
+			requestBody: SE.requestBody_schema_ref('thread/order_info'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/order_info',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/order_info'),
 			},
 		},
-
 		delete: {
 			tags: ['thread.order_info'],
 			summary: 'Delete Thread Order Info',
 			description: 'Delete Thread Order Info',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/order_info',
-							},
-						},
-					},
-				},
+				201: SE.response(201),
 			},
 		},
 	},
@@ -676,45 +325,16 @@ export const pathThreadOrderEntry = {
 			summary: 'Get all Thread Order Entry',
 			description: 'Get all Thread Order Entry',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/thread/order_entry',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'thread/order_entry'),
 			},
 		},
 		post: {
 			tags: ['thread.order_entry'],
 			summary: 'Create Thread Order Entry',
 			description: 'Create Thread Order Entry',
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/order_entry',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/order_entry'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/order_entry',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/order_entry'),
 			},
 		},
 	},
@@ -724,27 +344,10 @@ export const pathThreadOrderEntry = {
 			summary: 'Get Thread Order Entry',
 			description: 'Get Thread Order Entry',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/order_entry',
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'thread/order_entry'),
 			},
 		},
 		put: {
@@ -752,66 +355,22 @@ export const pathThreadOrderEntry = {
 			summary: 'Update Thread Order Entry',
 			description: 'Update Thread Order Entry',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/order_entry',
-						},
-					},
-				},
-			},
-
+			requestBody: SE.requestBody_schema_ref('thread/order_entry'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/order_entry',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/order_entry'),
 			},
 		},
-
 		delete: {
 			tags: ['thread.order_entry'],
 			summary: 'Delete Thread Order Entry',
 			description: 'Delete Thread Order Entry',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/order_entry',
-							},
-						},
-					},
-				},
+				200: SE.response(200),
 			},
 		},
 	},
@@ -824,26 +383,37 @@ export const pathThreadOrderEntry = {
 				SE.parameter_params('order_info_uuid', 'order_info_uuid'),
 			],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/thread/order_entry',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_info_uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					lab_reference: SE.string('Lab Reference'),
+					color: SE.string('black'),
+					shade_recipe_uuid: SE.uuid(),
+					shade_recipe_name: SE.string('Shade Recipe Name'),
+					po: SE.string('po 1'),
+					style: SE.string('style 1'),
+					count_length_uuid: SE.uuid(),
+					count: SE.string('40'),
+					length: SE.string('2'),
+					count_length_name: SE.string('40/2'),
+					quantity: SE.integer(10),
+					company_price: SE.number(10),
+					party_price: SE.number(10),
+					swatch_approval_date: SE.date_time(),
+					production_quantity: SE.integer(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
 			},
 		},
 	},
 };
 
 // * Thread Batch Entry * //
-
 export const pathThreadBatchEntry = {
 	'/thread/batch-entry': {
 		get: {
@@ -851,46 +421,16 @@ export const pathThreadBatchEntry = {
 			summary: 'Get all Thread Batch Entry',
 			description: 'Get all Thread Batch Entry',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/thread/batch_entry',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'thread/batch_entry'),
 			},
 		},
-
 		post: {
 			tags: ['thread.batch_entry'],
 			summary: 'Create Thread Batch Entry',
 			description: 'Create Thread Batch Entry',
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/batch_entry',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/batch_entry'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/batch_entry',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/batch_entry'),
 			},
 		},
 	},
@@ -900,27 +440,10 @@ export const pathThreadBatchEntry = {
 			summary: 'Get Thread Batch Entry',
 			description: 'Get Thread Batch Entry',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/batch_entry',
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'thread/batch_entry'),
 			},
 		},
 		put: {
@@ -928,56 +451,20 @@ export const pathThreadBatchEntry = {
 			summary: 'Update Thread Batch Entry',
 			description: 'Update Thread Batch Entry',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/batch_entry',
-						},
-					},
-				},
-			},
-
+			requestBody: SE.requestBody_schema_ref('thread/batch_entry'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/batch_entry',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/batch_entry'),
 			},
 		},
-
 		delete: {
 			tags: ['thread.batch_entry'],
 			summary: 'Delete Thread Batch Entry',
 			description: 'Delete Thread Batch Entry',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/batch_entry',
-							},
-						},
-					},
-				},
+				200: SE.response(200),
 			},
 		},
 	},
@@ -1036,7 +523,6 @@ export const pathThreadBatchEntry = {
 					count_length: SE.string('40/2'),
 					order_quantity: SE.number(10),
 					quantity: SE.integer(10),
-
 					coning_production_quantity: SE.integer(10),
 					coning_production_quantity_in_kg: SE.integer(10),
 					order_number: SE.string('TH24-0001'),
@@ -1062,211 +548,56 @@ export const pathThreadBatch = {
 			summary: 'Get all Thread Batch',
 			description: 'Get all Thread Batch',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 0,
-									},
-									machine_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									machine_name: {
-										type: 'string',
-										example: 'Machine Name',
-									},
-									lab_created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									lab_created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									lab_created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									lab_updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									dyeing_operator: {
-										type: 'string',
-										example: 'Dyeing Operator',
-									},
-									reason: {
-										type: 'string',
-										example: 'Reason',
-									},
-									category: {
-										type: 'string',
-										example: 'Category',
-									},
-									status: {
-										type: 'string',
-										example: 'Status',
-									},
-									pass_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									pass_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									shift: {
-										type: 'string',
-										example: 'Shift',
-									},
-									dyeing_supervisor: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									dyeing_supervisor_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									dyeing_created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									dyeing_created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									yarn_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									yarn_issue_created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									yarn_issue_created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									yarn_issue_created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									yarn_issue_updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									is_drying_complete: {
-										type: 'string',
-										example: 'Dyeing Complete',
-									},
-									drying_created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									drying_updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									coning_operator: {
-										type: 'string',
-										example: 'Coning Operator',
-									},
-									coning_supervisor: {
-										type: 'string',
-										example: 'Coning Supervisor',
-									},
-									coning_machines: {
-										type: 'string',
-										example: 'Coning Machines',
-									},
-									coning_created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									coning_created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									coning_created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									coning_updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.number(10),
+					machine_uuid: SE.uuid(),
+					machine_name: SE.string('Machine Name'),
+					lab_created_by: SE.uuid(),
+					lab_created_by_name: SE.string('John Doe'),
+					lab_created_at: SE.date_time(),
+					lab_updated_at: SE.date_time(),
+					dyeing_operator: SE.string('Dyeing Operator'),
+					reason: SE.string('Reason'),
+					category: SE.string('Category'),
+					status: SE.string('Status'),
+					pass_by: SE.uuid(),
+					pass_by_name: SE.string('John Doe'),
+					shift: SE.string('Shift'),
+					dyeing_supervisor: SE.uuid(),
+					dyeing_supervisor_name: SE.string('John Doe'),
+					dyeing_created_by: SE.uuid(),
+					dyeing_created_by_name: SE.string('John Doe'),
+					yarn_quantity: SE.number(10.0),
+					yarn_issue_created_by: SE.uuid(),
+					yarn_issue_created_by_name: SE.string('John Doe'),
+					yarn_issue_created_at: SE.date_time(),
+					yarn_issue_updated_at: SE.date_time(),
+					is_drying_complete: SE.string(0),
+					drying_created_at: SE.date_time(),
+					drying_updated_at: SE.date_time(),
+					coning_operator: SE.string('Coning Operator'),
+					coning_supervisor: SE.string('Coning Supervisor'),
+					coning_machines: SE.string('Coning Machines'),
+					coning_created_by: SE.uuid(),
+					coning_created_by_name: SE.string('John Doe'),
+					coning_created_at: SE.date_time(),
+					coning_updated_at: SE.date_time(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
 			},
 		},
-
 		post: {
 			tags: ['thread.batch'],
 			summary: 'Create Thread Batch',
 			description: 'Create Thread Batch',
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/batch',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/batch'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/batch',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/batch'),
 			},
 		},
 	},
@@ -1285,66 +616,22 @@ export const pathThreadBatch = {
 			summary: 'Update Thread Batch',
 			description: 'Update Thread Batch',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/batch',
-						},
-					},
-				},
-			},
-
+			requestBody: SE.requestBody_schema_ref('thread/batch'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/batch',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/batch'),
 			},
 		},
-
 		delete: {
 			tags: ['thread.batch'],
 			summary: 'Delete Thread Batch',
 			description: 'Delete Thread Batch',
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
-				},
+				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
 			],
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/batch',
-							},
-						},
-					},
-				},
+				201: SE.response(201),
 			},
 		},
 	},
@@ -1411,87 +698,27 @@ export const pathThreadDyesCategory = {
 			summary: 'Get all Thread Dyes Category',
 			description: 'Get all Thread Dyes Category',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									name: {
-										type: 'string',
-										example: 'Dyes Category Name',
-									},
-									upto_percentage: {
-										type: 'number',
-										example: 10.0,
-									},
-									bleaching: {
-										type: 'string',
-										example: 'Bleaching',
-									},
-									id: {
-										type: 'number',
-										example: 5,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					name: SE.string('Dyes Category Name'),
+					upto_percentage: SE.number(10.0),
+					bleaching: SE.string('Bleaching'),
+					id: SE.integer(5),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
 			},
 		},
-
 		post: {
 			tags: ['thread.dyes_category'],
 			summary: 'Create Thread Dyes Category',
 			description: 'Create Thread Dyes Category',
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/dyes_category',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/dyes_category'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/dyes_category',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/dyes_category'),
 			},
 		},
 	},
@@ -1521,16 +748,7 @@ export const pathThreadDyesCategory = {
 			summary: 'Update Thread Dyes Category',
 			description: 'Update Thread Dyes Category',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/dyes_category',
-						},
-					},
-				},
-			},
-
+			requestBody: SE.requestBody_schema_ref('thread/dyes_category'),
 			responses: {
 				201: SE.response_schema_ref(201, 'thread/dyes_category'),
 			},
@@ -1542,7 +760,7 @@ export const pathThreadDyesCategory = {
 			description: 'Delete Thread Dyes Category',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
-				201: SE.response_schema_ref(201, 'thread/dyes_category'),
+				200: SE.response(200),
 			},
 		},
 	},
@@ -1555,91 +773,28 @@ export const pathThreadPrograms = {
 			summary: 'Get all Thread Programs',
 			description: 'Get all Thread Programs',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									dyes_category_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									dyes_category_name: {
-										type: 'string',
-										example: 'Dyes Category Name',
-									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									material_name: {
-										type: 'string',
-										example: 'Material Name',
-									},
-									quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					dyes_category_uuid: SE.uuid(),
+					dyes_category_name: SE.string('Dyes Category Name'),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('Material Name'),
+					quantity: SE.number(10.0),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
 			},
 		},
-
 		post: {
 			tags: ['thread.programs'],
 			summary: 'Create Thread Programs',
 			description: 'Create Thread Programs',
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/programs',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('thread/programs'),
 			responses: {
-				201: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/thread/programs',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'thread/programs'),
 			},
 		},
 	},
@@ -1665,22 +820,12 @@ export const pathThreadPrograms = {
 				}),
 			},
 		},
-
 		put: {
 			tags: ['thread.programs'],
 			summary: 'Update Thread Programs',
 			description: 'Update Thread Programs',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/thread/programs',
-						},
-					},
-				},
-			},
-
+			requestBody: SE.requestBody_schema_ref('thread/programs'),
 			responses: {
 				201: SE.response_schema_ref(201, 'thread/programs'),
 			},
@@ -1692,7 +837,7 @@ export const pathThreadPrograms = {
 			description: 'Delete Thread Programs',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
-				201: SE.response_schema_ref(201, 'thread/programs'),
+				200: SE.response(200),
 			},
 		},
 	},
