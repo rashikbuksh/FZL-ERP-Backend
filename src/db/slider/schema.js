@@ -246,4 +246,21 @@ export const trx_against_stock = slider.table('trx_against_stock', {
 	remarks: text('remarks').default(null),
 });
 
+export const production = slider.table('production', {
+	uuid: uuid_primary,
+	stock_uuid: defaultUUID('stock_uuid').references(() => stock.uuid),
+	production_quantity: decimal('production_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	wastage: decimal('wastage', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+})
+
 export default slider;

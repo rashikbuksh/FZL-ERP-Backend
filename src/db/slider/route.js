@@ -3,10 +3,10 @@ import * as coloringTransactionOperations from './query/coloring_transaction.js'
 import * as dieCastingOperations from './query/die_casting.js';
 import * as dieCastingProductionOperations from './query/die_casting_production.js';
 import * as dieCastingTransactionOperations from './query/die_casting_transaction.js';
+import * as productionOperations from './query/production.js';
 import * as stockOperations from './query/stock.js';
 import * as transactionOperations from './query/transaction.js';
 import * as trxAgainstStockOperations from './query/trx_against_stock.js';
-import slider from './schema.js';
 
 const sliderRouter = Router();
 
@@ -148,5 +148,13 @@ sliderRouter.delete(
 
 	trxAgainstStockOperations.remove
 );
+
+// ---------------------  Production Routes ---------------------
+
+sliderRouter.get('/production', productionOperations.selectAll);
+sliderRouter.get('/production/:uuid', productionOperations.select);
+sliderRouter.post('/production', productionOperations.insert);
+sliderRouter.put('/production/:uuid', productionOperations.update);
+sliderRouter.delete('/production/:uuid', productionOperations.remove);
 
 export { sliderRouter };

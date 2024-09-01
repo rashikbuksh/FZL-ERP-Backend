@@ -1613,6 +1613,85 @@ const pathTrxAgainstStock = {
 	},
 };
 
+const pathSliderProduction = {
+	'/slider/production': {
+		get: {
+			tags: ['slider.production'],
+			summary: 'Get all production',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					stock_uuid: SE.uuid(),
+					production_quantity: SE.number(100),
+					wastage: SE.number(1),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['slider.production'],
+			summary: 'create a production',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			requestBody: SE.requestBody_schema_ref('slider/production'),
+			responses: {
+				200: SE.response_schema_ref(200, 'slider/production'),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/slider/production/{uuid}': {
+		get: {
+			tags: ['slider.production'],
+			summary: 'Gets a production',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response_schema_ref(200, 'slider/production'),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['slider.production'],
+			summary: 'Update an existing production',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('slider/production'),
+			responses: {
+				200: SE.response_schema_ref(200, 'slider/production'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['slider.production'],
+			summary: 'Deletes a production',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
 export const pathSlider = {
 	...pathSliderStock,
 	...pathSliderDieCasting,
@@ -1621,4 +1700,5 @@ export const pathSlider = {
 	...pathSliderTransaction,
 	...pathSliderColoringTransaction,
 	...pathTrxAgainstStock,
+	...pathSliderProduction,
 };
