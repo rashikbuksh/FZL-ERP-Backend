@@ -2,11 +2,15 @@ import express, { json, urlencoded } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { SERVER_PORT } from './lib/secret.js';
 import { VerifyToken } from './middleware/auth.js';
+import logger, { morganMiddleware } from './middleware/logger.js';
 import route from './routes/index.js';
 import swaggerSpec from './swagger.js';
 import cors from './util/cors.js';
 
 const server = express();
+
+// Middleware
+server.use(morganMiddleware);
 
 server.use(cors);
 server.use(urlencoded({ extended: true }));
