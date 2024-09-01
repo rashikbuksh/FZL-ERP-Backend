@@ -264,6 +264,10 @@ export const defThreadOrderEntry = {
 			type: 'string',
 			example: 'Bleaching',
 		},
+		transfer_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
 		created_by: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
@@ -439,6 +443,10 @@ export const defThreadBatchEntry = {
 			example: 10.0,
 		},
 		coning_production_quantity_in_kg: {
+			type: 'number',
+			example: 10.0,
+		},
+		transfer_quantity: {
 			type: 'number',
 			example: 10.0,
 		},
