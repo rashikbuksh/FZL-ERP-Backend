@@ -21,54 +21,6 @@ export const defThreadMachine = {
 			type: 'number',
 			example: 10.0,
 		},
-		leveling_agent_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		leveling_agent_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		buffering_agent_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		buffering_agent_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		sequestering_agent_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		sequestering_agent_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		caustic_soad_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		caustic_soad_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		hydros_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		hydros_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		neotrolizer_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		neotrolizer_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
 		created_by: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
@@ -249,6 +201,7 @@ export const defThreadOrderEntry = {
 		'party_price',
 		'swatch_approval_date',
 		'production_quantity',
+		'bleaching',
 		'created_by',
 		'created_at',
 	],
@@ -306,6 +259,10 @@ export const defThreadOrderEntry = {
 		production_quantity: {
 			type: 'number',
 			example: 10.0,
+		},
+		bleaching: {
+			type: 'string',
+			example: 'Bleaching',
 		},
 		created_by: {
 			type: 'string',
@@ -453,7 +410,6 @@ export const defThreadBatchEntry = {
 		'batch_uuid',
 		'order_entry_uuid',
 		'quantity',
-
 		'coning_production_quantity',
 		'coning_production_quantity_in_kg',
 		'created_by',
