@@ -199,6 +199,28 @@ export const defTrxAgainstStock = SED({
 	xml: 'Slider/TrxAgainstStock',
 });
 
+export const defProduction = SED({
+	required: [
+		'uuid',
+		'stock_uuid',
+		'production_quantity',
+		'wastage',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		stock_uuid: SE.uuid(),
+		production_quantity: SE.number(0.0),
+		wastage: SE.number(0.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Slider/Production',
+});
+
 // * Marge All
 export const defSlider = {
 	die_casting: defDieCasting,
@@ -208,6 +230,7 @@ export const defSlider = {
 	transaction: defTransaction,
 	coloring_transaction: defColoringTransaction,
 	trx_against_stock: defTrxAgainstStock,
+	production: defProduction,
 };
 
 // * Tag
@@ -239,6 +262,10 @@ export const tagSlider = [
 	{
 		name: 'slider.trx_against_stock',
 		description: 'Trx Against Stock',
+	},
+	{
+		name: 'slider.production',
+		description: 'Production',
 	},
 ];
 
