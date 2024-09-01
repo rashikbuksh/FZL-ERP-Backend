@@ -1552,6 +1552,10 @@ export const pathLabDipShadeRecipe = {
 										type: 'number',
 										example: 0,
 									},
+									bleaching: {
+										type: 'string',
+										example: 'Bleach',
+									},
 									created_by: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',

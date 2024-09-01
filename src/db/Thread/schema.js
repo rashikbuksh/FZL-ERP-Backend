@@ -118,6 +118,7 @@ export const order_entry = thread.table('order_entry', {
 	swatch_approval_date: DateTime('swatch_approval_date').default(null),
 	production_quantity: PG_DECIMAL('production_quantity').default(0),
 	bleaching: text('bleaching').default(null),
+	transfer_quantity: PG_DECIMAL('transfer_quantity').default(0),
 	created_by: defaultUUID('created_by')
 		.references(() => hrSchema.users.uuid)
 		.default(null),
@@ -199,6 +200,7 @@ export const batch_entry = thread.table('batch_entry', {
 	).default(0),
 	coning_created_at: DateTime('coning_created_at').default(null),
 	coning_updated_at: DateTime('coning_updated_at').default(null),
+	transfer_quantity: PG_DECIMAL('transfer_quantity').default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
