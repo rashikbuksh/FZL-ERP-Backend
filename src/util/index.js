@@ -1,4 +1,5 @@
 import { validationResult } from 'express-validator';
+import logger from '../middleware/logger.js';
 import { CustomError, nullValueError } from '../middleware/not_found.js';
 
 // Utility function for request validation
@@ -29,6 +30,7 @@ export async function handleResponse({
 
 		return res.status(status).json({ toast, data });
 	} catch (error) {
+		logger.error(error);
 		console.log(error);
 
 		if (error.severity === 'ERROR') {
@@ -41,6 +43,7 @@ export async function handleResponse({
 }
 
 export async function handleError({ error, res }) {
+	logger.error(error);
 	console.log(error);
 
 	if (error.severity === 'ERROR') {
