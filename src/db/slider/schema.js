@@ -204,8 +204,8 @@ export const die_casting_transaction = slider.table('die_casting_transaction', {
 export const transaction = slider.table('transaction', {
 	uuid: uuid_primary,
 	stock_uuid: defaultUUID('stock_uuid').references(() => stock.uuid),
-	from_section: text('section').notNull(),
-	to_section: text('section').notNull(),
+	from_section: text('from_section').notNull(),
+	to_section: text('to_section').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,

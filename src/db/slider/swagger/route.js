@@ -1365,7 +1365,8 @@ const pathSliderTransaction = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					stock_uuid: SE.uuid(),
-					section: SE.string('section'),
+					from_section: SE.string('from_section'),
+					to_section: SE.string('to_section'),
 					trx_quantity: SE.number(100),
 					trx_quantity_in_kg: SE.number(100),
 					created_by: SE.uuid(),
