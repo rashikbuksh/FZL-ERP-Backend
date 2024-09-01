@@ -77,6 +77,7 @@ export const shade_recipe = lab_dip.table('shade_recipe', {
 	name: text('name').notNull(),
 	sub_streat: text('sub_streat').default(null),
 	lab_status: integer('lab_status').default(0),
+	bleaching: text('bleaching').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

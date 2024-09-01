@@ -55,6 +55,7 @@ export const defShadeRecipe = SED({
 		name: SE.string('Shade Recipe 1'),
 		sub_streat: SE.string('Sub Streat 1'),
 		lab_status: SE.number(0),
+		bleaching: SE.string('bleach'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
