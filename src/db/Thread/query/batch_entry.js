@@ -84,6 +84,7 @@ export async function selectAll(req, res, next) {
 			coning_production_quantity: batch_entry.coning_production_quantity,
 			coning_production_quantity_in_kg:
 				batch_entry.coning_production_quantity_in_kg,
+			transfer_quantity: batch_entry.transfer_quantity,
 			created_at: batch_entry.created_at,
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
@@ -107,6 +108,7 @@ export async function select(req, res, next) {
 			coning_production_quantity: batch_entry.coning_production_quantity,
 			coning_production_quantity_in_kg:
 				batch_entry.coning_production_quantity_in_kg,
+			transfer_quantity: batch_entry.transfer_quantity,
 			created_at: batch_entry.created_at,
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
@@ -137,6 +139,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		se.name as shade_recipe_name,
 		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 		be_given.total_quantity as total_trx_quantity,
+		be.transfer_quantity as transfer_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0)) as balance_quantity
 	FROM
 		thread.order_entry oe
@@ -198,6 +201,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		be.quantity as quantity,
 		be.coning_production_quantity,
 		be.coning_production_quantity_in_kg,
+		be.transfer_quantity as transfer_quantity,
 		be_given.total_quantity as total_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0)) as balance_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0) + be.quantity) as can_trx_quantity,
