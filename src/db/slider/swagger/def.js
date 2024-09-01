@@ -140,7 +140,8 @@ export const defTransaction = SED({
 	required: [
 		'uuid',
 		'stock_uuid',
-		'section',
+		'from_section',
+		'to_section',
 		'trx_quantity',
 		'created_by',
 		'created_at',
@@ -148,7 +149,8 @@ export const defTransaction = SED({
 	properties: {
 		uuid: SE.uuid(),
 		stock_uuid: SE.uuid(),
-		section: SE.string('section'),
+		from_section: SE.string('sa_prod'),
+		to_section: SE.string('coloring_stock'),
 		trx_quantity: SE.number(0.0),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),

@@ -204,7 +204,8 @@ export const die_casting_transaction = slider.table('die_casting_transaction', {
 export const transaction = slider.table('transaction', {
 	uuid: uuid_primary,
 	stock_uuid: defaultUUID('stock_uuid').references(() => stock.uuid),
-	section: text('section').notNull(),
+	from_section: text('section').notNull(),
+	to_section: text('section').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
@@ -261,6 +262,6 @@ export const production = slider.table('production', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
-})
+});
 
 export default slider;
