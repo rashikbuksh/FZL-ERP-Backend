@@ -448,7 +448,7 @@ AFTER DELETE ON zipper.order_entry
 FOR EACH ROW
 EXECUTE FUNCTION zipper.sfg_after_order_entry_delete();
 
-------------------------- Purchase Entry Trigger -------------------------
+------------------------- Purchase Entry Trigger ------------------------- // inserted in DB
 CREATE OR REPLACE FUNCTION material.material_stock_after_purchase_entry_insert() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock
