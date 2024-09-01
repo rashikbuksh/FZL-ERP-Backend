@@ -128,17 +128,15 @@ export async function select(req, res, next) {
 		)
 		.where(eq(sfg_production.uuid, req.params.uuid));
 
+	const data = await sfgProductionPromise;
+
 	const toast = {
 		status: 200,
 		type: 'select',
 		message: 'SFG Production',
 	};
-	handleResponse({
-		promise: sfgProductionPromise,
-		res,
-		next,
-		...toast,
-	});
+
+	return await res.status(200).json({ toast, data: data[0] });
 }
 
 export async function selectBySection(req, res, next) {
@@ -150,6 +148,7 @@ export async function selectBySection(req, res, next) {
 		SELECT
 			sfg_production.uuid,
 			sfg_production.sfg_uuid,
+			sfg.order_entry_uuid,
 			vodf.order_description_uuid,
 			vodf.order_number,
 			vodf.item_description,
@@ -163,7 +162,24 @@ export async function selectBySection(req, res, next) {
 			users.name AS created_by_name,
 			sfg_production.created_at,
 			sfg_production.updated_at,
-			sfg_production.remarks
+			sfg_production.remarks,
+			sfg.dying_and_iron_prod,
+			sfg.teeth_molding_stock,
+			sfg.teeth_molding_prod,
+			sfg.teeth_coloring_stock,
+			sfg.teeth_coloring_prod,
+			sfg.finishing_stock,
+			sfg.finishing_prod,
+			sfg.coloring_prod,
+			sfg.warehouse,
+			sfg.delivered,
+			sfg.pi,
+			vodf.tape_received,
+			vodf.tape_transferred,
+			vodf.nylon_plastic_finishing,
+			vodf.vislon_teeth_molding,
+			vodf.metal_teeth_molding,
+			vodf.nylon_metallic_finishing
 		FROM
 			zipper.sfg_production
 		LEFT JOIN

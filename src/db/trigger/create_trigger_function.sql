@@ -304,11 +304,6 @@ DECLARE
 BEGIN
     -- Updating stocks based on OLD.trx_to and NEW.trx_to
     UPDATE zipper.sfg SET
-        dying_and_iron_stock = dying_and_iron_stock 
-            - CASE WHEN OLD.trx_to = 'dying_and_iron_stock' THEN 
-            CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
-            + CASE WHEN NEW.trx_to = 'dying_and_iron_stock' THEN 
-            CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
         teeth_molding_stock = teeth_molding_stock 
             - CASE WHEN OLD.trx_to = 'teeth_molding_stock' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
             + CASE WHEN NEW.trx_to = 'teeth_molding_stock' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
@@ -324,10 +319,10 @@ BEGIN
     WHERE uuid = NEW.sfg_uuid;
 
     -- Updating slider stock if applicable
-    IF NEW.slider_item_id != null THEN
+    IF NEW.slider_item_uuid != null THEN
         UPDATE slider.stock SET
             stock = stock - OLD.trx_quantity + NEW.trx_quantity
-        WHERE uuid = NEW.slider_item_id;
+        WHERE uuid = NEW.slider_item_uuid;
     END IF;
 
     -- Updating productions based on OLD.trx_from and NEW.trx_from
