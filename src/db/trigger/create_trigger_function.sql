@@ -28,12 +28,14 @@ BEGIN
             END,
 
         finishing_stock = finishing_stock 
-            - CASE 
-                WHEN NEW.section = 'finishing' THEN 
-                    CASE 
-                        WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
-                        ELSE NEW.production_quantity_in_kg + NEW.wastage 
-                    END 
+            - CASE WHEN NEW.section = 'finishing' THEN 
+                CASE WHEN lower(vodf.item_name) = 'nylon' OR lower(vodf.item_name) = 'vislon' THEN NEW.production_quantity_in_kg + NEW.wastage
+                    ELSE 
+                        CASE 
+                            WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
+                            ELSE NEW.production_quantity_in_kg + NEW.wastage 
+                        END 
+                    END
                 ELSE 0 
             END,
 
@@ -71,12 +73,14 @@ BEGIN
             END,
 
         finishing_prod = finishing_prod 
-            + CASE 
-                WHEN NEW.section = 'finishing' THEN 
-                    CASE 
-                        WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity 
-                        ELSE NEW.production_quantity_in_kg 
-                    END 
+            + CASE WHEN NEW.section = 'finishing' THEN 
+                CASE WHEN lower(vodf.item_name) = 'nylon' OR lower(vodf.item_name) = 'vislon' THEN NEW.production_quantity
+                    ELSE 
+                        CASE 
+                            WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity 
+                            ELSE NEW.production_quantity_in_kg 
+                        END 
+                    END
                 ELSE 0 
             END,
 
@@ -140,16 +144,22 @@ BEGIN
 
         finishing_stock = finishing_stock 
             + CASE WHEN OLD.section = 'finishing' THEN 
+            CASE WHEN lower(vodf.item_name) = 'nylon' OR lower(vodf.item_name) = 'vislon' THEN OLD.production_quantity_in_kg + OLD.wastage
+                    ELSE 
                 CASE 
                     WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage 
                     ELSE OLD.production_quantity_in_kg + OLD.wastage 
                 END 
+            END
             ELSE 0 END
             - CASE WHEN NEW.section = 'finishing' THEN 
+            CASE WHEN lower(vodf.item_name) = 'nylon' OR lower(vodf.item_name) = 'vislon' THEN NEW.production_quantity_in_kg + NEW.wastage
+                    ELSE 
                 CASE 
                     WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
                     ELSE NEW.production_quantity_in_kg + NEW.wastage 
                 END 
+                END
             ELSE 0 END,
 
         dying_and_iron_prod = dying_and_iron_prod 
@@ -202,16 +212,20 @@ BEGIN
 
         finishing_prod = finishing_prod 
             - CASE WHEN OLD.section = 'finishing' THEN 
+            CASE WHEN lower(vodf.item_name) = 'nylon' OR lower(vodf.item_name) = 'vislon' THEN OLD.production_quantity ELSE
                 CASE 
                     WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity 
                     ELSE OLD.production_quantity_in_kg 
                 END 
+                END
             ELSE 0 END
             + CASE WHEN NEW.section = 'finishing' THEN 
+            CASE WHEN lower(vodf.item_name) = 'nylon' OR lower(vodf.item_name) = 'vislon' THEN NEW.production_quantity ELSE
                 CASE 
                     WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity 
                     ELSE NEW.production_quantity_in_kg 
                 END 
+                END
             ELSE 0 END,
 
         coloring_prod = coloring_prod 
@@ -262,10 +276,13 @@ BEGIN
 
         finishing_stock = finishing_stock 
             + CASE WHEN OLD.section = 'finishing' THEN 
-                CASE 
-                    WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage 
-                    ELSE OLD.production_quantity_in_kg + OLD.wastage 
-                END 
+                CASE WHEN lower(vodf.item_name) = 'nylon' OR lower(vodf.item_name) = 'vislon' THEN OLD.production_quantity_in_kg + OLD.wastage
+                    ELSE 
+                        CASE 
+                            WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage 
+                            ELSE OLD.production_quantity_in_kg + OLD.wastage 
+                        END 
+                    END
             ELSE 0 END,
 
         dying_and_iron_prod = dying_and_iron_prod 
@@ -297,10 +314,13 @@ BEGIN
 
         finishing_prod = finishing_prod 
             - CASE WHEN OLD.section = 'finishing' THEN 
-                CASE 
-                    WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity 
-                    ELSE OLD.production_quantity_in_kg 
-                END 
+                CASE WHEN lower(vodf.item_name) = 'nylon' OR lower(vodf.item_name) = 'vislon' THEN OLD.production_quantity
+                        ELSE 
+                        CASE 
+                            WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity 
+                            ELSE OLD.production_quantity_in_kg 
+                        END 
+                    END
             ELSE 0 END,
             
         coloring_prod = coloring_prod 

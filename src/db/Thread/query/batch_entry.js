@@ -159,6 +159,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		GROUP BY 
 			batch_entry.order_entry_uuid
 	) as be_given ON be_given.order_entry_uuid = oe.uuid
+	 LEFT JOIN 
+	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
 	WHERE
 	oe.shade_recipe_uuid IS NOT NULL
 	`;
