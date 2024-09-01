@@ -286,7 +286,7 @@ export async function selectSfgBySection(req, res, next) {
 
 	if (stopper_type) {
 		query.append(
-			sql` WHERE lower(op_stopper_type.name) = lower(${stopper_type})`
+			sql` AND lower(op_stopper_type.name) = lower(${stopper_type})`
 		);
 	}
 

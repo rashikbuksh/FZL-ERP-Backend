@@ -144,7 +144,7 @@ export async function select(req, res, next) {
 export async function selectBySection(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { item_name } = req.query;
+	const { item_name, stopper_type } = req.query;
 
 	const query = sql`
 		SELECT
@@ -179,7 +179,13 @@ export async function selectBySection(req, res, next) {
 	`;
 
 	if (item_name) {
-		query.append(sql` AND lower(op_item.name) = lower(${item_name})`);
+		query.append(sql` AND lower(vodf.item_name) = lower(${item_name})`);
+	}
+
+	if (stopper_type) {
+		query.append(
+			sql` AND lower(vodf.stopper_type_name) = lower(${stopper_type})`
+		);
 	}
 
 	const sfgProductionPromise = db.execute(query);

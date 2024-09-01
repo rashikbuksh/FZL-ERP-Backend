@@ -864,8 +864,8 @@ export const pathZipperSfg = {
 					'vislon',
 				]),
 				SE.parameter_query('stopper_type', 'stopper_type', [
-					'metallic',
-					'plastic',
+					'Metallic Stopper',
+					'Plastic Stopper',
 				]),
 			],
 			responses: {
@@ -1017,11 +1017,20 @@ export const pathZipperSfgProduction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('sfg production to update', 'section'),
+				SE.parameter_params(
+					'sfg production to update',
+					'section',
+					'string',
+					'teeth_molding'
+				),
 				SE.parameter_query('item_name', 'item_name', [
 					'nylon',
 					'metal',
 					'vislon',
+				]),
+				SE.parameter_query('stopper_type', 'stopper_type', [
+					'Metallic Stopper',
+					'Plastic Stopper',
 				]),
 			],
 			responses: {
@@ -1150,11 +1159,20 @@ export const pathZipperSfgTransaction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('sfg transaction to update', 'trx_from'),
+				SE.parameter_params(
+					'sfg transaction to update',
+					'trx_from',
+					'string',
+					'teeth_molding_prod'
+				),
 				SE.parameter_query('item_name', 'item_name', [
 					'nylon',
 					'metal',
 					'vislon',
+				]),
+				SE.parameter_query('stopper_type', 'stopper_type', [
+					'Metallic Stopper',
+					'Plastic Stopper',
 				]),
 			],
 			responses: {
