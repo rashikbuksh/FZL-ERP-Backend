@@ -1625,6 +1625,7 @@ const pathSliderProduction = {
 					stock_uuid: SE.uuid(),
 					production_quantity: SE.number(100),
 					wastage: SE.number(1),
+					section: SE.string('sa_prod'),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),

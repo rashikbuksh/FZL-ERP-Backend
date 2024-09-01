@@ -215,6 +215,7 @@ export const defProduction = SED({
 		stock_uuid: SE.uuid(),
 		production_quantity: SE.number(0.0),
 		wastage: SE.number(0.0),
+		section: SE.string('sa_prod'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),

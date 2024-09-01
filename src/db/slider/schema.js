@@ -258,6 +258,7 @@ export const production = slider.table('production', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	section: text('section'),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

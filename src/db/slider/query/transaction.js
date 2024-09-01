@@ -14,7 +14,7 @@ export async function insert(req, res, next) {
 	const transactionPromise = db
 		.insert(transaction)
 		.values(req.body)
-		.returning({ insertedSection: transaction.section });
+		.returning({ insertedSection: transaction.uuid });
 
 	try {
 		const data = await transactionPromise;
@@ -36,7 +36,7 @@ export async function update(req, res, next) {
 		.update(transaction)
 		.set(req.body)
 		.where(eq(transaction.uuid, req.params.uuid))
-		.returning({ updatedSection: transaction.section });
+		.returning({ updatedSection: transaction.uuid });
 	try {
 		const data = await transactionPromise;
 		const toast = {
@@ -56,7 +56,7 @@ export async function remove(req, res, next) {
 	const transactionPromise = db
 		.delete(transaction)
 		.where(eq(transaction.uuid, req.params.uuid))
-		.returning({ deletedSection: transaction.section });
+		.returning({ deletedSection: transaction.uuid });
 	try {
 		const data = await transactionPromise;
 		const toast = {
@@ -75,7 +75,8 @@ export async function selectAll(req, res, next) {
 		SELECT
 			transaction.uuid,
 			transaction.stock_uuid,
-			transaction.section,
+			transaction.from_section,
+			transaction.to_section,
 			transaction.trx_quantity,
 			transaction.created_by,
 			transaction.created_at,
@@ -86,11 +87,11 @@ export async function selectAll(req, res, next) {
 			stock.end_type,
 			stock.puller_type,
 			stock.puller_color,
-			order_info.uuid AS order_info_uuid
+			vod.order_info_uuid AS order_info_uuid
 		FROM
-			zipper.transaction
+			slider.transaction
 		LEFT JOIN
-			zipper.stock ON transaction.stock_uuid = stock.uuid
+			slider.stock ON transaction.stock_uuid = stock.uuid
 		LEFT JOIN
 			zipper.v_order_details vod ON stock.order_info_uuid = vod.order_info_uuid
 	`;
@@ -117,23 +118,23 @@ export async function select(req, res, next) {
 		SELECT
 			transaction.uuid,
 			transaction.stock_uuid,
-			transaction.section,
+			transaction.from_section,
+			transaction.to_section,
 			transaction.trx_quantity,
 			transaction.created_by,
 			transaction.created_at,
 			transaction.updated_at,
 			transaction.remarks,
 			stock.item,
-
 			stock.zipper_number,
 			stock.end_type,
 			stock.puller_type,
 			stock.puller_color,
-			order_info.uuid AS order_info_uuid
+			vod.order_info_uuid AS order_info_uuid
 		FROM
-			zipper.transaction
+			slider.transaction
 		LEFT JOIN
-			zipper.stock ON transaction.stock_uuid = stock.uuid
+			slider.stock ON transaction.stock_uuid = stock.uuid
 		LEFT JOIN
 			zipper.v_order_details vod ON stock.order_info_uuid = vod.order_info_uuid
 		WHERE
