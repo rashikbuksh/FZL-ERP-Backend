@@ -10,7 +10,7 @@ import cors from './util/cors.js';
 const server = express();
 
 // Middleware
-server.use(morganMiddleware);
+// server.use(morganMiddleware);
 
 server.use(cors);
 server.use(urlencoded({ extended: true }));
