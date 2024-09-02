@@ -18,7 +18,7 @@ const getDescriptionByCode = (code) => {
 			break;
 
 		default:
-			description = 'Invalid Code';
+			description = 'Invalid Code: ' + code;
 			break;
 	}
 
@@ -60,7 +60,7 @@ const SE = {
 		description = 'GET DATA',
 		name = 'uuid',
 		format = 'uuid',
-		example = 'J3Au9M73Zb9saxj'
+		example = 'igD0v9DIJQhJeet'
 	) => ({
 		name: name,
 		in: 'path',

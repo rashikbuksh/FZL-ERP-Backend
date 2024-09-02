@@ -1342,6 +1342,15 @@ export const pathZipperDyedTapeTransaction = {
 					'string',
 					'teeth_molding_prod'
 				),
+				SE.parameter_query('item_name', 'item_name', [
+					'nylon',
+					'metal',
+					'vislon',
+				]),
+				SE.parameter_query('stopper_type', 'stopper_type', [
+					'Metallic Stopper',
+					'Plastic Stopper',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {

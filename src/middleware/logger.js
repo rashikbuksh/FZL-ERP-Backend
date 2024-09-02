@@ -1,17 +1,22 @@
 import morgan from 'morgan';
 import winston from 'winston';
 
-const { combine, timestamp, json } = winston.format;
+const { combine, timestamp, json, colorize } = winston.format;
 
 const logger = winston.createLogger({
 	level: 'http',
 	format: combine(
+		colorize({ all: true }),
 		timestamp({
-			format: 'YYYY-MM-DD hh:mm:ss.SSS A',
+			format: 'YYYY-MM-DD hh:mm:ss A',
 		}),
 		json()
 	),
-	transports: [new winston.transports.Console()],
+	transports: [
+		new winston.transports.Console(),
+		new winston.transports.File({ filename: 'error.log', level: 'error' }),
+		new winston.transports.File({ filename: 'combined.log' }),
+	],
 });
 
 export const morganMiddleware = morgan(
@@ -26,7 +31,7 @@ export const morganMiddleware = morgan(
 	},
 	{
 		stream: {
-			// Configure Morgan to use our custom logger with the http severity
+			// * Configure Morgan to use our custom logger with the http severity
 			write: (message) => {
 				const data = JSON.parse(message);
 				logger.http(`incoming-request`, data);
