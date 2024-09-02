@@ -1552,6 +1552,92 @@ const pathSliderTransaction = {
 			},
 		},
 	},
+	'/slider/transaction/by/{from_section}': {
+		get: {
+			tags: ['slider.transaction'],
+			summary: 'Gets a transaction',
+			description: '',
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'from_section',
+					'from_section',
+					'string',
+					'sa_prod'
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					stock_uuid: SE.uuid(),
+					from_section: SE.string('from_section'),
+					to_section: SE.string('to_section'),
+					trx_quantity: SE.number(100),
+					trx_quantity_in_kg: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+					item: SE.uuid(),
+					item_name: SE.string('item_name'),
+					item_short_name: SE.string('item_short_name'),
+					zipper_number: SE.uuid(),
+					zipper_number_name: SE.string('zipper_number_name'),
+					zipper_number_short_name: SE.string(
+						'zipper_number_short_name'
+					),
+					end_type: SE.uuid(),
+					end_type_name: SE.string('end_type_name'),
+					end_type_short_name: SE.string('end_type_short_name'),
+					lock_type: SE.uuid(),
+					lock_type_name: SE.string('lock_type_name'),
+					lock_type_short_name: SE.string('lock_type_short_name'),
+					puller_type: SE.uuid(),
+					puller_type_name: SE.string('puller_type_name'),
+					puller_type_short_name: SE.string('puller_type_short_name'),
+					puller_color: SE.uuid(),
+					puller_color_name: SE.string('puller_color_name'),
+					puller_color_short_name: SE.string(
+						'puller_color_short_name'
+					),
+					puller_link: SE.uuid(),
+					puller_link_name: SE.string('puller_link_name'),
+					puller_link_short_name: SE.string('puller_link_short_name'),
+					logo_type: SE.uuid(),
+					logo_type_name: SE.string('logo_type_name'),
+					logo_type_short_name: SE.string('logo_type_short_name'),
+					slider: SE.uuid(),
+					slider_name: SE.string('slider_name'),
+					slider_short_name: SE.string('slider_short_name'),
+					slider_body_shape: SE.uuid(),
+					slider_body_shape_name: SE.string('slider_body_shape_name'),
+					slider_body_shape_short_name: SE.string(
+						'slider_body_shape_short_name'
+					),
+					slider_link: SE.uuid(),
+					slider_link_name: SE.string('slider_link_name'),
+					slider_link_short_name: SE.string('slider_link_short_name'),
+					coloring_type: SE.uuid(),
+					coloring_type_name: SE.string('coloring_type_name'),
+					coloring_type_short_name: SE.string(
+						'coloring_type_short_name'
+					),
+					order_quantity: SE.number(1),
+					is_logo_body: SE.number(1),
+					is_puller: SE.number(1),
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0001'),
+					sa_prod: SE.number(1),
+					coloring_stock: SE.number(1),
+					coloring_prod: SE.number(1),
+					total_trx_quantity: SE.number(100),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
 };
 
 // * Slider Coloring Transaction * //

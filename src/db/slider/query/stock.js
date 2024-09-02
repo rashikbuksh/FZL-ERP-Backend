@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -8,7 +8,7 @@ import {
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import slider, { stock } from '../schema.js';
+import slider, { stock, transaction } from '../schema.js';
 
 // public.properties
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
@@ -19,26 +19,12 @@ const pullerTypeProperties = alias(
 	publicSchema.properties,
 	'pullerTypeProperties'
 );
-const teethColorProperties = alias(
-	publicSchema.properties,
-	'teethColorProperties'
-);
 const pullerColorProperties = alias(
 	publicSchema.properties,
 	'pullerColorProperties'
 );
-const handProperties = alias(publicSchema.properties, 'handProperties');
-const stopperProperties = alias(publicSchema.properties, 'stopperProperties');
 const coloringProperties = alias(publicSchema.properties, 'coloringProperties');
 const sliderProperties = alias(publicSchema.properties, 'sliderProperties');
-const topStopperProperties = alias(
-	publicSchema.properties,
-	'topStopperProperties'
-);
-const bottomStopperProperties = alias(
-	publicSchema.properties,
-	'bottomStopperProperties'
-);
 const logoTypeProperties = alias(publicSchema.properties, 'logoTypeProperties');
 const sliderBodyShapeProperties = alias(
 	publicSchema.properties,
@@ -47,15 +33,6 @@ const sliderBodyShapeProperties = alias(
 const sliderLinkProperties = alias(
 	publicSchema.properties,
 	'sliderLinkProperties'
-);
-const endUserProperties = alias(publicSchema.properties, 'endUserProperties');
-const lightPreferenceProperties = alias(
-	publicSchema.properties,
-	'lightPreferenceProperties'
-);
-const garmentsWashProperties = alias(
-	publicSchema.properties,
-	'garmentsWashProperties'
 );
 const pullerLinkProperties = alias(
 	publicSchema.properties,
@@ -125,10 +102,22 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const sliderTransactionGiven = alias(
+		sql`
+    SELECT stock.uuid, SUM(trx_quantity) as trx_quantity
+    FROM slider.transaction
+    LEFT JOIN slider.stock ON transaction.stock_uuid = stock.uuid
+    WHERE transaction.from_section = ${from_section}
+    GROUP BY stock.uuid
+    `,
+		'sliderTransactionGiven'
+	);
+
 	const resultPromise = db
 		.select({
 			uuid: stock.uuid,
 			order_info_uuid: stock.order_info_uuid,
+			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			item: stock.item,
 			item_name: itemProperties.name,
 			item_short_name: itemProperties.short_name,
@@ -227,6 +216,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			logoTypeProperties,
 			eq(stock.logo_type, logoTypeProperties.uuid)
+		)
+		.leftJoin(
+			sliderTransactionGiven,
+			eq(stock.uuid, sliderTransactionGiven.stock_uuid)
 		);
 
 	const toast = {
@@ -244,6 +237,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: stock.uuid,
 			order_info_uuid: stock.order_info_uuid,
+			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			item: stock.item,
 			item_name: itemProperties.name,
 			item_short_name: itemProperties.short_name,

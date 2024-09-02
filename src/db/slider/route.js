@@ -107,6 +107,10 @@ sliderRouter.delete(
 
 	transactionOperations.remove
 );
+sliderRouter.get(
+	'/transaction/by/:from_section',
+	transactionOperations.selectTransactionByFromSection
+);
 
 // --------------------- Coloring Transaction Routes ---------------------
 
