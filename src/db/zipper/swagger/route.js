@@ -1327,6 +1327,52 @@ export const pathZipperDyedTapeTransaction = {
 			},
 		},
 	},
+	'/zipper/dyed-tape-transaction/by/{section}': {
+		get: {
+			tags: ['zipper.dyed_tape_transaction'],
+			summary: 'Get all Dyed Tape Transaction by section',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'dyed tape transaction to update',
+					'section',
+					'string',
+					'teeth_molding_prod'
+				),
+				SE.parameter_query('item_name', 'item_name', [
+					'nylon',
+					'metal',
+					'vislon',
+				]),
+				SE.parameter_query('stopper_type', 'stopper_type', [
+					'Metallic Stopper',
+					'Plastic Stopper',
+				]),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-SP'),
+					colors: SE.string('colors'),
+					section: SE.string('section'),
+					trx_quantity: SE.number('10.0'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 // * Zipper Batch * //

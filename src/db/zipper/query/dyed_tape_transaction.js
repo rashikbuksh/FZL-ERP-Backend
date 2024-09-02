@@ -151,3 +151,47 @@ export async function select(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectDyedTapeTransactionBySection(req, res, next) {
+	const { section } = req.query;
+
+	const query = sql`
+		SELECT
+			dtt.uuid AS uuid,
+			dtt.order_description_uuid AS order_description_uuid,
+			vod.order_number as order_number,
+			vod.item_description as item_description,
+			dtt.section AS section,
+			dtt.colors as colors,
+			dtt.trx_quantity AS trx_quantity,
+			dtt.created_by AS created_by,
+			u.name AS created_by_name,
+			dtt.created_at AS created_at,
+			dtt.updated_at AS updated_at,
+			dtt.remarks AS remarks
+		FROM zipper.dyed_tape_transaction dtt
+			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
+			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
+		WHERE dtt.section = ${req.params.section}
+	`;
+
+	if (section) {
+		query.append(sql` AND dtt.section = ${section}`);
+	}
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'dyed_tape_transaction list',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
