@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
 
 // process.env
@@ -12,6 +12,7 @@ const {
 	PRIVATE_KEY,
 	SALT,
 	SERVER_URL,
+	PRODUCTION_URL,
 } = process.env;
 
 export {
@@ -24,4 +25,5 @@ export {
 	SALT,
 	SERVER_PORT,
 	SERVER_URL,
+	PRODUCTION_URL,
 };
