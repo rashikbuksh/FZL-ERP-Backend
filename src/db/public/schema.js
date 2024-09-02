@@ -42,14 +42,8 @@ export const factory = pgTable('factory', {
 	name: text('name').notNull(),
 	phone: text('phone').default(null),
 	address: text('address').default(null),
-	created_at: DateTime('created_at', {
-		mode: 'string',
-		withTimezone: false,
-	}).notNull(),
-	updated_at: DateTime('updated_at', {
-		mode: 'string',
-		withTimezone: false,
-	}).default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 });
 
 export const section = pgTable('section', {

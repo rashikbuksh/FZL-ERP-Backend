@@ -2,11 +2,13 @@
 	"recommendations": [
 		"aaron-bond.better-comments",
 		"BracketPairColorDLW.bracket-pair-color-dlw",
-		"Codeium.codeium",
 		"vivaxy.vscode-conventional-commits",
 		"donjayamanne.githistory",
 		"GitHub.vscode-pull-request-github",
 		"ms-vsliveshare.vsliveshare",
-		"esbenp.prettier-vscode"
+		"esbenp.prettier-vscode",
+		"bradlc.vscode-tailwindcss",
+		"stivo.tailwind-fold",
+		"streetsidesoftware.code-spell-checker"
 	]
 }
