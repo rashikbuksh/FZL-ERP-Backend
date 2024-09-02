@@ -97,6 +97,16 @@ BEGIN
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
     WHERE zipper.sfg.order_entry_uuid = oe.uuid AND zipper.sfg.uuid = NEW.sfg_uuid;
 
+    -- New condition for updating slider stock
+    UPDATE slider.stock SET
+        coloring_prod = slider.stock.coloring_prod - 
+        CASE WHEN NEW.section = 'finishing' THEN NEW.production_quantity ELSE 0 END
+    FROM zipper.order_entry oe
+    LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+    LEFT JOIN zipper.sfg ON zipper.sfg.order_entry_uuid = oe.uuid
+    WHERE slider.stock.order_info_uuid = vodf.order_info_uuid 
+        AND zipper.sfg.uuid = NEW.sfg_uuid;
+
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
@@ -245,6 +255,17 @@ BEGIN
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
     WHERE zipper.sfg.order_entry_uuid = oe.uuid AND zipper.sfg.uuid = NEW.sfg_uuid;
 
+        -- New condition for updating slider stock
+    UPDATE slider.stock SET
+        coloring_prod = slider.stock.coloring_prod 
+        + CASE WHEN OLD.section = 'finishing' THEN OLD.production_quantity ELSE 0 END
+        - CASE WHEN NEW.section = 'finishing' THEN NEW.production_quantity ELSE 0 END
+    FROM zipper.order_entry oe
+    LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+    LEFT JOIN zipper.sfg ON zipper.sfg.order_entry_uuid = oe.uuid
+    WHERE slider.stock.order_info_uuid = vodf.order_info_uuid 
+        AND zipper.sfg.uuid = NEW.sfg_uuid;
+
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
@@ -334,6 +355,16 @@ BEGIN
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
     WHERE zipper.sfg.order_entry_uuid = oe.uuid AND zipper.sfg.uuid = OLD.sfg_uuid;
 
+     -- New condition for updating slider stock
+    UPDATE slider.stock SET
+        coloring_prod = slider.stock.coloring_prod +
+        CASE WHEN OLD.section = 'finishing' THEN OLD.production_quantity ELSE 0 END
+    FROM zipper.order_entry oe
+    LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+    LEFT JOIN zipper.sfg ON zipper.sfg.order_entry_uuid = oe.uuid
+    WHERE slider.stock.order_info_uuid = vodf.order_info_uuid 
+        AND zipper.sfg.uuid = OLD.sfg_uuid;
+
     RETURN OLD;
 END
 $$ LANGUAGE plpgsql;
@@ -363,50 +394,48 @@ CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_transaction_insert_function() RE
 DECLARE
     tocs_uuid INT;
 BEGIN
-        -- Updating stocks based on NEW.trx_to
-        UPDATE zipper.sfg SET
-            teeth_molding_stock = teeth_molding_stock + 
-            CASE WHEN NEW.trx_to = 'teeth_molding_stock' THEN 
-            CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
+    -- Updating stocks based on NEW.trx_to
+    UPDATE zipper.sfg SET
+        teeth_molding_stock = teeth_molding_stock + 
+        CASE WHEN NEW.trx_to = 'teeth_molding_stock' THEN 
+        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
 
-            teeth_coloring_stock = teeth_coloring_stock + 
-            CASE WHEN NEW.trx_to = 'teeth_coloring_stock' THEN 
-            CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
+        teeth_coloring_stock = teeth_coloring_stock + 
+        CASE WHEN NEW.trx_to = 'teeth_coloring_stock' THEN 
+        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
 
-            finishing_stock = finishing_stock + 
-            CASE WHEN NEW.trx_to = 'finishing_stock' THEN 
-            CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
+        finishing_stock = finishing_stock + 
+        CASE WHEN NEW.trx_to = 'finishing_stock' THEN 
+        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
 
-            warehouse = warehouse + 
-            CASE WHEN NEW.trx_to = 'warehouse' THEN 
-            CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
-        WHERE uuid = NEW.sfg_uuid;
+        warehouse = warehouse + 
+        CASE WHEN NEW.trx_to = 'warehouse' THEN 
+        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
+    WHERE uuid = NEW.sfg_uuid;
 
-        -- Updating slider stock if applicable
-        IF NEW.slider_item_uuid != null THEN
-            UPDATE slider.stock SET
-                stock = stock - CASE WHEN trx_from = 'coloring_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
-            WHERE uuid = NEW.slider_item_uuid;
+    -- Updating productions based on NEW.trx_from
+    UPDATE zipper.sfg SET
+        dying_and_iron_prod = dying_and_iron_prod -
+        CASE WHEN NEW.trx_from = 'dying_and_iron_prod' THEN 
+        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
 
-            UPDATE zipper.sfg SET
-                coloring_prod = coloring_prod + CASE WHEN NEW.trx_to = 'coloring_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
-            WHERE uuid = NEW.sfg_uuid;
-        END IF;
+        teeth_molding_prod = teeth_molding_prod - 
+        CASE WHEN NEW.trx_from = 'teeth_molding_prod' THEN 
+        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
 
-        -- Updating productions based on NEW.trx_from
-        UPDATE zipper.sfg SET
-            dying_and_iron_prod = dying_and_iron_prod -
-            CASE WHEN NEW.trx_from = 'dying_and_iron_prod' THEN 
-            CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-            teeth_molding_prod = teeth_molding_prod - 
-            CASE WHEN NEW.trx_from = 'teeth_molding_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-            teeth_coloring_prod = teeth_coloring_prod - 
-            CASE WHEN NEW.trx_from = 'teeth_coloring_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-            finishing_prod = finishing_prod - 
-            CASE WHEN NEW.trx_from = 'finishing_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-            warehouse = warehouse - 
-            CASE WHEN NEW.trx_from = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
-        WHERE uuid = NEW.sfg_uuid;
+        teeth_coloring_prod = teeth_coloring_prod - 
+        CASE WHEN NEW.trx_from = 'teeth_coloring_prod' THEN 
+        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
+
+        finishing_prod = finishing_prod - 
+        CASE WHEN NEW.trx_from = 'finishing_prod' THEN 
+        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
+
+        warehouse = warehouse - 
+        CASE WHEN NEW.trx_from = 'warehouse' THEN 
+        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
+    WHERE uuid = NEW.sfg_uuid;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -431,13 +460,6 @@ BEGIN
             - CASE WHEN OLD.trx_to = 'warehouse' THEN 
             CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
     WHERE uuid = OLD.sfg_uuid;
-
-    -- Updating slider stock if applicable
-    IF OLD.slider_item_uuid != null THEN
-        UPDATE slider.stock SET
-            stock = stock - OLD.trx_quantity
-        WHERE uuid = OLD.slider_item_uuid;
-    END IF;
 
     -- Updating productions based on OLD.trx_from
     UPDATE zipper.sfg SET
@@ -477,13 +499,6 @@ BEGIN
             + CASE WHEN NEW.trx_to = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
     WHERE uuid = NEW.sfg_uuid;
 
-    -- Updating slider stock if applicable
-    IF NEW.slider_item_uuid != null THEN
-        UPDATE slider.stock SET
-            stock = stock - OLD.trx_quantity + NEW.trx_quantity
-        WHERE uuid = NEW.slider_item_uuid;
-    END IF;
-
     -- Updating productions based on OLD.trx_from and NEW.trx_from
     UPDATE zipper.sfg SET
         dying_and_iron_prod = dying_and_iron_prod 
@@ -504,6 +519,7 @@ BEGIN
             + CASE WHEN OLD.trx_from = 'warehouse' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
             - CASE WHEN NEW.trx_from = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
         WHERE uuid = NEW.sfg_uuid;
+    
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
