@@ -1,7 +1,7 @@
 import morgan from 'morgan';
 import winston from 'winston';
 
-const { combine, timestamp, json } = winston.format;
+const { combine, timestamp, json, colorize } = winston.format;
 
 const logger = winston.createLogger({
 	level: 'http',

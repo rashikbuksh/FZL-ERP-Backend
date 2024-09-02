@@ -17,6 +17,10 @@ sliderRouter.get('/stock/:uuid', stockOperations.select);
 sliderRouter.post('/stock', stockOperations.insert);
 sliderRouter.put('/stock/:uuid', stockOperations.update);
 sliderRouter.delete('/stock/:uuid', stockOperations.remove);
+sliderRouter.get(
+	'/stock/by/:from_section',
+	stockOperations.selectStockByFromSection
+);
 
 // --------------------- DIE CASTING ROUTES ---------------------
 
@@ -160,5 +164,9 @@ sliderRouter.get('/production/:uuid', productionOperations.select);
 sliderRouter.post('/production', productionOperations.insert);
 sliderRouter.put('/production/:uuid', productionOperations.update);
 sliderRouter.delete('/production/:uuid', productionOperations.remove);
+sliderRouter.get(
+	'/production/by/:section',
+	productionOperations.selectProductionBySection
+);
 
 export { sliderRouter };
