@@ -1,5 +1,5 @@
 import swaggerJSDoc from 'swagger-jsdoc';
-import { SERVER_URL } from './lib/secret.js';
+import { PRODUCTION_URL, SERVER_URL } from './lib/secret.js';
 
 // Commercial
 import { defCommercial, tagCommercial } from './db/commercial/swagger/def.js';
@@ -88,18 +88,26 @@ const paths = {
 const swaggerSpec = swaggerJSDoc({
 	failOnErrors: true,
 	definition: {
+		basePath: SERVER_URL,
 		openapi: '3.0.0',
 		info: {
 			title: 'FZL ERP API',
-			version: '0.1.1',
 			description: 'FZL API Documentation',
-			contact: { email: 'rafsan@fortunezip.com' },
+			contact: { name: 'RBR', email: 'rafsan@fortunezip.com' },
+			version: '0.1.1',
 		},
-		servers: [{ url: SERVER_URL, description: 'Dev' }],
+		servers: [
+			{ url: SERVER_URL, description: 'Dev' },
+			{ url: PRODUCTION_URL, description: 'Prod' },
+		],
 		components: {
 			securitySchemes: {
 				bearerAuth: {
 					type: 'http',
+					description:
+						'JWT Authorization header using the Bearer scheme. \nPlease input without "Bearer " prefix',
+					name: 'Authorization',
+					in: 'header',
 					scheme: 'bearer',
 					bearerFormat: 'JWT',
 				},
