@@ -224,6 +224,7 @@ export async function selectSfgBySection(req, res, next) {
 			sfg.order_entry_uuid as order_entry_uuid,
 			vod.order_number as order_number,
 			vod.item_description as item_description,
+			vod.order_info_uuid,
 			oe.order_description_uuid as order_description_uuid,
 			oe.style as style,
 			oe.color as color,
@@ -252,7 +253,6 @@ export async function selectSfgBySection(req, res, next) {
 			sfg.teeth_coloring_prod as teeth_coloring_prod,
 			sfg.finishing_stock as finishing_stock,
 			sfg.finishing_prod as finishing_prod,
-			sfg.coloring_prod as coloring_prod,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
 			sfg.pi as pi,
@@ -266,7 +266,8 @@ export async function selectSfgBySection(req, res, next) {
 					END
 				FROM zipper.sfg_transaction sfgt
 				WHERE sfgt.sfg_uuid = sfg.uuid AND sfgt.trx_from = ${section}
-			), 0) as total_trx_quantity
+			), 0) as total_trx_quantity,
+			COALESCE(ss.coloring_prod,0) as coloring_prod
 		FROM
 			zipper.sfg sfg
 			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
@@ -276,6 +277,7 @@ export async function selectSfgBySection(req, res, next) {
 			LEFT JOIN public.properties op_item ON od.item = op_item.uuid
 			LEFT JOIN public.properties op_stopper_type ON od.stopper_type = op_stopper_type.uuid
 			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
+			LEFT JOIN slider.stock ss ON vod.order_info_uuid = ss.order_info_uuid
 		`;
 	// WHERE
 	// sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != '' // * for development purpose
