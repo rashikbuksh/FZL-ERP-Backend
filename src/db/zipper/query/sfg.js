@@ -267,7 +267,13 @@ export async function selectSfgBySection(req, res, next) {
 				FROM zipper.sfg_transaction sfgt
 				WHERE sfgt.sfg_uuid = sfg.uuid AND sfgt.trx_from = ${section}
 			), 0) as total_trx_quantity,
-			COALESCE(ss.coloring_prod,0) as coloring_prod
+			COALESCE(ss.coloring_prod,0) as coloring_prod,
+			COALESCE(od.tape_received,0) as tape_received,
+			COALESCE(od.tape_transferred,0) as tape_transferred,
+			COALESCE(od.nylon_plastic_finishing,0) as nylon_plastic_finishing,
+			COALESCE(od.vislon_teeth_molding,0) as vislon_teeth_molding,
+			COALESCE(od.metal_teeth_molding,0) as metal_teeth_molding,
+			COALESCE(od.nylon_metallic_finishing,0) as nylon_metallic_finishing
 		FROM
 			zipper.sfg sfg
 			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
