@@ -157,6 +157,11 @@ zipperRouter.delete(
 	dyedTapeTransactionOperations.remove
 );
 
+zipperRouter.get(
+	'/dyed-tape-transaction/by/:section',
+	dyedTapeTransactionOperations.selectDyedTapeTransactionBySection
+);
+
 // --------------------- BATCH ROUTES ---------------------
 
 zipperRouter.get('/batch', batchOperations.selectAll);
