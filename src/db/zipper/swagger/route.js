@@ -1342,7 +1342,6 @@ export const pathZipperDyedTapeTransaction = {
 					'string',
 					'teeth_molding_prod'
 				),
-				
 			],
 			responses: {
 				200: SE.response_schema(200, {
