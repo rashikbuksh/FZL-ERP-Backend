@@ -53,6 +53,11 @@ commercialRouter.put(
 	'/pi-lc-null/:pi_uuid',
 	piOperations.updatePiToNullByPiUuid
 );
+commercialRouter.get(
+	'/pi-uuid/:pi_id',
+	piOperations.selectPiUuidByPiId
+);
+commercialRouter.get('/pi/details/by/pi-id/:pi_id', piOperations.selectPiDetailsByPiId);
 
 // pi_entry routes
 commercialRouter.get('/pi-entry', piEntryOperations.selectAll);

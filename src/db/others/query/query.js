@@ -563,6 +563,31 @@ export async function selectHrUser(req, res, next) {
 	});
 }
 
+export async function selectDepartmentAndDesignation(req, res, next) {
+	const DepartmentAndDesignation = db
+		.select({
+			value: hrSchema.designation.uuid,
+			label: sql`concat(department.department, ' - ', designation.designation)`,
+		})
+		.from(hrSchema.designation)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
+		);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Department and Designation list',
+	};
+	handleResponse({
+		promise: DepartmentAndDesignation,
+		res,
+		next,
+		...toast,
+	});
+}
+
 // * Lab Dip * //
 export async function selectLabDipRecipe(req, res, next) {
 	const recipePromise = db

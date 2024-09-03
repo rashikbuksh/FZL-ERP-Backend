@@ -70,7 +70,22 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(vendor);
+	const resultPromise = db
+		.select({
+			uuid: vendor.uuid,
+			name: vendor.name,
+			contact_name: vendor.contact_name,
+			email: vendor.email,
+			office_address: vendor.office_address,
+			contact_number: vendor.contact_number,
+			created_at: vendor.created_at,
+			updated_at: vendor.updated_at,
+			created_by: vendor.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: vendor.remarks,
+		})
+		.from(vendor)
+		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, vendor.created_by));
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -83,8 +98,21 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const vendorPromise = db
-		.select()
+		.select({
+			uuid: vendor.uuid,
+			name: vendor.name,
+			contact_name: vendor.contact_name,
+			email: vendor.email,
+			office_address: vendor.office_address,
+			contact_number: vendor.contact_number,
+			created_at: vendor.created_at,
+			updated_at: vendor.updated_at,
+			created_by: vendor.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: vendor.remarks,
+		})
 		.from(vendor)
+		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, vendor.created_by))
 		.where(eq(vendor.uuid, req.params.uuid));
 	const toast = {
 		status: 200,

@@ -16,7 +16,9 @@ export async function insert(req, res, next) {
 	const resultPromise = db
 		.insert(count_length)
 		.values(req.body)
-		.returning({ insertedId: count_length.uuid });
+		.returning({
+			insertedId: sql`concat(count_length.count, '-', count_length.length)`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -40,7 +42,9 @@ export async function update(req, res, next) {
 		.update(count_length)
 		.set(req.body)
 		.where(eq(count_length.uuid, req.params.uuid))
-		.returning({ updatedId: count_length.uuid });
+		.returning({
+			updatedId: sql`concat(count_length.count, '-', count_length.length)`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -60,7 +64,10 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	const resultPromise = db
 		.delete(count_length)
-		.where(eq(count_length.uuid, req.params.uuid));
+		.where(eq(count_length.uuid, req.params.uuid))
+		.returning({
+			deletedId: sql`concat(count_length.count, '-', count_length.length)`,
+		});
 
 	try {
 		await resultPromise;

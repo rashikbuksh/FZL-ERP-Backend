@@ -5,23 +5,36 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
-import { stock_to_sfg } from '../schema.js';
+import { info, stock_to_sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const usedPromise = db.insert(stock_to_sfg).values(req.body).returning({
-		insertedId: stock_to_sfg.material_uuid,
-	});
+	const stockToSfgPromise = db
+		.insert(stock_to_sfg)
+		.values(req.body)
+		.returning({
+			insertedId: stock_to_sfg.material_uuid,
+		});
 	try {
-		const data = await usedPromise;
+		const data = await stockToSfgPromise;
+
+		const material = db
+			.select({
+				insertedId: info.name,
+			})
+			.from(info)
+			.where(eq(info.uuid, data[0].insertedId));
+
+		const materialName = await material;
+
 		const toast = {
 			status: 201,
 			type: 'create',
-			message: `${data[0].insertedId} created`,
+			message: `${materialName[0].insertedId} created`,
 		};
 
-		return await res.status(201).json({ toast, data });
+		return await res.status(201).json({ toast, data: materialName });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -30,21 +43,31 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const usedPromise = db
+	const stockToSfgPromise = db
 		.update(stock_to_sfg)
 		.set(req.body)
 		.where(eq(stock_to_sfg.uuid, req.params.uuid))
 		.returning({ updatedName: stock_to_sfg.material_uuid });
 
 	try {
-		const data = await usedPromise;
+		const data = await stockToSfgPromise;
+
+		const material = db
+			.select({
+				updatedName: info.name,
+			})
+			.from(info)
+			.where(eq(info.uuid, data[0].updatedName));
+
+		const materialName = await material;
+
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedName} updated`,
+			message: `${materialName[0].updatedName} updated`,
 		};
 
-		return await res.status(201).json({ toast, data });
+		return await res.status(201).json({ toast, data: materialName });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -53,20 +76,30 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const usedPromise = db
+	const stockToSfgPromise = db
 		.delete(stock_to_sfg)
 		.where(eq(stock_to_sfg.uuid, req.params.uuid))
 		.returning({ deletedName: stock_to_sfg.material_uuid });
 
 	try {
-		const data = await usedPromise;
+		const data = await stockToSfgPromise;
+
+		const material = db
+			.select({
+				deletedName: info.name,
+			})
+			.from(info)
+			.where(eq(info.uuid, data[0].deletedName));
+
+		const materialName = await material;
+
 		const toast = {
 			status: 201,
 			type: 'delete',
-			message: `${data[0].deletedName} deleted`,
+			message: `${materialName[0].deletedName} deleted`,
 		};
 
-		return await res.status(201).json({ toast, data });
+		return await res.status(201).json({ toast, data: materialName });
 	} catch (error) {
 		await handleError({ error, res });
 	}

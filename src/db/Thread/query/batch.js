@@ -15,6 +15,9 @@ const yarnIssueCreated = alias(hrSchema.users, 'yarnIssueCreated');
 const dyeingOperator = alias(hrSchema.users, 'dyeingOperator');
 const dyeingSupervisor = alias(hrSchema.users, 'dyeingSupervisor');
 const coningCreatedBy = alias(hrSchema.users, 'coningCreatedBy');
+const passBy = alias(hrSchema.users, 'passBy');
+const coningOperator = alias(hrSchema.users, 'coningOperator');
+const coningSupervisor = alias(hrSchema.users, 'coningSupervisor');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -110,6 +113,7 @@ export async function selectAll(req, res, next) {
 			category: batch.category,
 			status: batch.status,
 			pass_by: batch.pass_by,
+			pass_by_name: passBy.name,
 			shift: batch.shift,
 			dyeing_supervisor: batch.dyeing_supervisor,
 			dyeing_supervisor_name: dyeingSupervisor.name,
@@ -124,7 +128,9 @@ export async function selectAll(req, res, next) {
 			drying_created_at: batch.drying_created_at,
 			drying_updated_at: batch.drying_updated_at,
 			coning_operator: batch.coning_operator,
+			coning_operator_name: coningOperator.name,
 			coning_supervisor: batch.coning_supervisor,
+			coning_supervisor_name: coningSupervisor.name,
 			coning_machines: batch.coning_machines,
 			coning_created_by: batch.coning_created_by,
 			coning_created_by_name: coningCreatedBy.name,
@@ -155,6 +161,15 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			coningCreatedBy,
 			eq(batch.coning_created_by, coningCreatedBy.uuid)
+		)
+		.leftJoin(passBy, eq(batch.pass_by, passBy.uuid))
+		.leftJoin(
+			coningOperator,
+			eq(batch.coning_operator, coningOperator.uuid)
+		)
+		.leftJoin(
+			coningSupervisor,
+			eq(batch.coning_supervisor, coningSupervisor.uuid)
 		);
 
 	const toast = {
@@ -186,6 +201,7 @@ export async function select(req, res, next) {
 			category: batch.category,
 			status: batch.status,
 			pass_by: batch.pass_by,
+			pass_by_name: passBy.name,
 			shift: batch.shift,
 			dyeing_supervisor: batch.dyeing_supervisor,
 			dyeing_supervisor_name: dyeingSupervisor.name,
@@ -200,7 +216,9 @@ export async function select(req, res, next) {
 			drying_created_at: batch.drying_created_at,
 			drying_updated_at: batch.drying_updated_at,
 			coning_operator: batch.coning_operator,
+			coning_operator_name: coningOperator.name,
 			coning_supervisor: batch.coning_supervisor,
+			coning_supervisor_name: coningSupervisor.name,
 			coning_machines: batch.coning_machines,
 			coning_created_by: batch.coning_created_by,
 			coning_created_by_name: coningCreatedBy.name,
@@ -231,6 +249,15 @@ export async function select(req, res, next) {
 		.leftJoin(
 			coningCreatedBy,
 			eq(batch.coning_created_by, coningCreatedBy.uuid)
+		)
+		.leftJoin(passBy, eq(batch.pass_by, passBy.uuid))
+		.leftJoin(
+			coningOperator,
+			eq(batch.coning_operator, coningOperator.uuid)
+		)
+		.leftJoin(
+			coningSupervisor,
+			eq(batch.coning_supervisor, coningSupervisor.uuid)
 		)
 		.where(eq(batch.uuid, req.params.uuid));
 

@@ -12,11 +12,14 @@ export const defPublicBuyer = SED({
 });
 
 export const defPublicParty = SED({
-	required: ['uuid', 'name', 'short_name', 'remarks'],
+	required: ['uuid', 'name', 'short_name', 'created_at', 'created_by'],
 	properties: {
 		uuid: SE.uuid(),
 		name: SE.string('John Doe'),
 		short_name: SE.string('JD'),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		created_by: SE.uuid(),
 		remarks: SE.string('Remarks'),
 	},
 	xml: 'Public/Party',
@@ -59,6 +62,8 @@ export const defPublicFactory = SED({
 		address: SE.string('Address'),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
+		created_by: SE.uuid(),
+		remarks: SE.string('Remarks'),
 	},
 	xml: 'Public/Factory',
 });

@@ -18,12 +18,22 @@ export async function insert(req, res, next) {
 
 	try {
 		const data = await trxPromise;
+
+		const material = db
+			.select({
+				insertedId: info.name,
+			})
+			.from(info)
+			.where(eq(info.uuid, data[0].insertedId));
+
+		const materialName = await material;
+
 		const toast = {
 			status: 201,
 			type: 'create',
-			message: `${data[0].insertedId} created`,
+			message: `${materialName[0].insertedId} created`,
 		};
-		return await res.status(201).json({ toast, data });
+		return await res.status(201).json({ toast, data: materialName });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -40,13 +50,23 @@ export async function update(req, res, next) {
 
 	try {
 		const data = await trxPromise;
+
+		const material = db
+			.select({
+				updatedId: info.name,
+			})
+			.from(info)
+			.where(eq(info.uuid, data[0]?.updatedId));
+
+		const materialName = await material;
+
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedId} updated`,
+			message: `${materialName[0]?.updatedId} updated`,
 		};
 
-		return await res.status(201).json({ toast, data });
+		return await res.status(201).json({ toast, data: materialName });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -62,13 +82,23 @@ export async function remove(req, res, next) {
 
 	try {
 		const data = await trxPromise;
+
+		const material = db
+			.select({
+				deletedId: info.name,
+			})
+			.from(info)
+			.where(eq(info.uuid, data[0]?.deletedId));
+
+		const materialName = await material;
+
 		const toast = {
 			status: 200,
 			type: 'delete',
-			message: `${data[0].deletedId} deleted`,
+			message: `${materialName[0].deletedId} deleted`,
 		};
 
-		return await res.status(200).json({ toast, data });
+		return await res.status(200).json({ toast, data: materialName });
 	} catch (error) {
 		await handleError({ error, res });
 	}

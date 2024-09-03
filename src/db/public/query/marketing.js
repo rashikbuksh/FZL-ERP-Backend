@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
 	handleResponse,
@@ -7,6 +8,8 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { marketing } from '../schema.js';
+
+const hr = alias(hrSchema.users, 'hr');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -65,7 +68,7 @@ export async function remove(req, res, next) {
 		const data = await marketingPromise;
 		const toast = {
 			status: 200,
-			type: 'remove',
+			type: 'delete',
 			message: `${data[0].deletedName} removed`,
 		};
 
@@ -83,10 +86,15 @@ export async function selectAll(req, res, next) {
 			short_name: marketing.short_name,
 			user_uuid: marketing.user_uuid,
 			user_designation: hrSchema.designation.designation,
+			created_at: marketing.created_at,
+			updated_at: marketing.updated_at,
+			created_by: marketing.created_by,
+			created_by_name: hr.name,
 			remarks: marketing.remarks,
 		})
 		.from(marketing)
 		.leftJoin(hrSchema.users, eq(marketing.user_uuid, hrSchema.users.uuid))
+		.leftJoin(hr, eq(marketing.created_by, hr.uuid))
 		.leftJoin(
 			hrSchema.designation,
 			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
@@ -116,10 +124,15 @@ export async function select(req, res, next) {
 			short_name: marketing.short_name,
 			user_uuid: marketing.user_uuid,
 			user_designation: hrSchema.designation.designation,
+			created_at: marketing.created_at,
+			updated_at: marketing.updated_at,
+			created_by: marketing.created_by,
+			created_by_name: hr.name,
 			remarks: marketing.remarks,
 		})
 		.from(marketing)
 		.leftJoin(hrSchema.users, eq(marketing.user_uuid, hrSchema.users.uuid))
+		.leftJoin(hr, eq(marketing.created_by, hr.uuid))
 		.leftJoin(
 			hrSchema.designation,
 			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)

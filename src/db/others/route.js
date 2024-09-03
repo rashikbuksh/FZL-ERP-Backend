@@ -72,6 +72,10 @@ otherRouter.get('/pi/value/label', otherOperations.selectPi);
 // hr
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);
 otherRouter.get('/hr/user/value/label', otherOperations.selectHrUser);
+otherRouter.get(
+	'/department-designation/value/label',
+	otherOperations.selectDepartmentAndDesignation
+);
 
 // lab_dip
 otherRouter.get(

@@ -1,3 +1,5 @@
+import SE, { SED } from '../../../util/swagger_example.js';
+
 // * Commercial Bank * //
 export const pathCommercialBank = {
 	'/commercial/bank': {
@@ -6,42 +8,22 @@ export const pathCommercialBank = {
 			summary: 'Get all banks',
 			description: 'All banks',
 			responses: {
-				200: {
-					description: 'Successful operation',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/commercial/bank',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'commercial/bank'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		post: {
 			tags: ['commercial.bank'],
 			summary: 'Create a bank',
 			description: 'Create a bank',
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/commercial/bank',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('commercial/bank'),
 			responses: {
-				201: {
-					description: 'Created',
-				},
-
-				405: {
-					description: 'Invalid input',
-				},
+				201: SE.response_schema_ref(201, 'commercial/bank'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -54,32 +36,13 @@ export const pathCommercialBank = {
 			//operationId: "getBankByUuid",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: "Bank's uuid",
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params('Get data using uuid', 'uuid', 'uuid'),
 			],
 			responses: {
-				200: {
-					description: 'Successful operation',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/commercial/bank',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Bank not found',
-				},
+				200: SE.response_schema_ref(200, 'commercial/bank'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -90,44 +53,14 @@ export const pathCommercialBank = {
 			consume: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'bank to update',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params('Update data using uuid', 'uuid', 'uuid'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/commercial/bank',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('commercial/bank'),
 			responses: {
-				200: {
-					description: 'Successful operation',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/commercial/bank',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Bank not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'commercial/bank'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		delete: {
@@ -137,33 +70,13 @@ export const pathCommercialBank = {
 			//operationId: "deleteBankByUuid",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: "Bank's uuid",
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params('Delete data using uuid', 'uuid', 'uuid'),
 			],
 			responses: {
-				200: {
-					description: 'Successful operation',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/commercial/bank',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Bank not found',
-				},
+				200: SE.response(200),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -178,166 +91,40 @@ export const pathCommercialLc = {
 			summary: 'Get all lcs',
 			description: 'All lcs',
 			responses: {
-				200: {
-					description: 'Returns a all lcs',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									pi_ids: {
-										type: 'array',
-										items: {
-											type: 'string',
-											example: 'PI24-0001',
-										},
-									},
-									party_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									party_name: {
-										type: 'string',
-										example: 'ABC',
-									},
-									total_value: {
-										type: 'number',
-										example: 12.3456,
-									},
-									file_no: {
-										type: 'string',
-										example: '123456',
-									},
-									lc_number: {
-										type: 'string',
-										example: '123456',
-									},
-									lc_date: {
-										type: 'string',
-										example: '2021-12-12',
-									},
-									payment_value: {
-										type: 'number',
-										example: 12.3456,
-									},
-									payment_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									ldbc_fdc: {
-										type: 'string',
-										example: 'ldbc_fdc',
-									},
-									acceptance_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									maturity_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									commercial_executive: {
-										type: 'string',
-										example: 'commercial_executive',
-									},
-									party_bank: {
-										type: 'string',
-										example: 'party_bank',
-									},
-									production_complete: {
-										type: 'integer',
-										example: 1,
-									},
-									lc_cancel: {
-										type: 'integer',
-										example: 1,
-									},
-									handover_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									shipment_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									expiry_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									ud_no: {
-										type: 'string',
-										example: 'ud_no',
-									},
-									ud_received: {
-										type: 'string',
-										example: 'ud_received',
-									},
-									at_sight: {
-										type: 'string',
-										example: 'at_sight',
-									},
-									amd_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									amd_count: {
-										type: 'integer',
-										example: 1,
-									},
-									problematical: {
-										type: 'integer',
-										example: 1,
-									},
-									epz: {
-										type: 'integer',
-										example: 1,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									user_designation: {
-										type: 'string',
-										example: 'Manager',
-									},
-									user_department: {
-										type: 'string',
-										example: 'HR',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									update_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'remarks',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema('200', {
+					uuid: SE.uuid('igD0v9DIJQhJeet'),
+					pi_ids: SE.array(SE.string('PI24-0001')),
+					party_uuid: SE.uuid('igD0v9DIJQhJeet'),
+					party_name: SE.string('ABC'),
+					total_value: SE.number(12.3456),
+					file_no: SE.string('123456'),
+					lc_number: SE.string('123456'),
+					lc_date: SE.string('2021-12-12'),
+					payment_value: SE.number(12.3456),
+					payment_date: SE.date_time(),
+					ldbc_fdc: SE.string('ldbc_fdc'),
+					acceptance_date: SE.date_time(),
+					maturity_date: SE.date_time(),
+					commercial_executive: SE.string('commercial_executive'),
+					party_bank: SE.string('party_bank'),
+					production_complete: SE.integer(1),
+					lc_cancel: SE.integer(1),
+					handover_date: SE.date_time(),
+					shipment_date: SE.date_time(),
+					expiry_date: SE.date_time(),
+					ud_no: SE.string('ud_no'),
+					ud_received: SE.string('ud_received'),
+					at_sight: SE.string('at_sight'),
+					amd_date: SE.date_time(),
+					amd_count: SE.integer(1),
+					problematical: SE.integer(1),
+					epz: SE.integer(1),
+					created_by: SE.uuid('igD0v9DIJQhJeet'),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					update_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
 			},
 		},
 		post: {
@@ -346,29 +133,12 @@ export const pathCommercialLc = {
 			description: 'Create a lc',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/commercial/lc',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('commercial/lc'),
 			responses: {
-				200: {
-					description: 'Successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/commercial/lc',
-						},
-					},
-				},
-
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'commercial/lc'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -381,33 +151,46 @@ export const pathCommercialLc = {
 			//operationId: "getLcByUuid",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Lc to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params('Get data using uuid', 'uuid', 'uuid'),
 			],
 			responses: {
-				200: {
-					description: 'Successful operation',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/commercial/lc',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Lc not found',
-				},
+				200: SE.response_schema('200', {
+					uuid: SE.uuid('igD0v9DIJQhJeet'),
+					pi_ids: SE.array(SE.string('PI24-0001')),
+					party_uuid: SE.uuid('igD0v9DIJQhJeet'),
+					party_name: SE.string('ABC'),
+					total_value: SE.number(12.3456),
+					file_no: SE.string('123456'),
+					lc_number: SE.string('123456'),
+					lc_date: SE.string('2021-12-12'),
+					payment_value: SE.number(12.3456),
+					payment_date: SE.date_time(),
+					ldbc_fdc: SE.string('ldbc_fdc'),
+					acceptance_date: SE.date_time(),
+					maturity_date: SE.date_time(),
+					commercial_executive: SE.string('commercial_executive'),
+					party_bank: SE.string('party_bank'),
+					production_complete: SE.integer(1),
+					lc_cancel: SE.integer(1),
+					handover_date: SE.date_time(),
+					shipment_date: SE.date_time(),
+					expiry_date: SE.date_time(),
+					ud_no: SE.string('ud_no'),
+					ud_received: SE.string('ud_received'),
+					at_sight: SE.string('at_sight'),
+					amd_date: SE.date_time(),
+					amd_count: SE.integer(1),
+					problematical: SE.integer(1),
+					epz: SE.integer(1),
+					created_by: SE.uuid('igD0v9DIJQhJeet'),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					update_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -418,15 +201,7 @@ export const pathCommercialLc = {
 			consume: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'lc to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params('Get data using uuid', 'uuid', 'uuid'),
 			],
 			requestBody: {
 				content: {
@@ -1865,6 +1640,164 @@ export const pathCommercialPi = {
 				},
 				404: {
 					description: 'Pi not found',
+				},
+			},
+		},
+	},
+	'/commercial/pi-uuid/{pi_id}': {
+		get: {
+			tags: ['commercial.pi'],
+			summary: 'Get a pi by pi_id',
+			description: ' Get a pi by pi_id',
+			//operationId: "getPet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Pi to get',
+					'pi_id',
+					'string',
+					'PI24-0001'
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+				}),
+			},
+		},
+	},
+	'/commercial/pi/details/by/pi-id/{pi_id}': {
+		get: {
+			tags: ['commercial.pi'],
+			summary: 'Get a pi details by pi_id',
+			description: ' Get a pi details by pi_id',
+			//operationId: "getPet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Pi to get',
+					'pi_id',
+					'string',
+					'PI24-0001'
+				),
+			],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: {
+										type: 'string',
+										example: 'PI24-0001',
+									},
+									lc_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lc_number: {
+										type: 'string',
+										example: '123456',
+									},
+									order_info_uuids: {
+										type: 'array',
+										items: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'marketing',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'party',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'merchandiser',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'ABC',
+									},
+									bank_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									bank_name: {
+										type: 'string',
+										example: 'Bangladesh Bank',
+									},
+									bank_swift_code: {
+										type: 'string',
+										example: 'BB',
+									},
+									bank_address: {
+										type: 'string',
+										example: 'address',
+									},
+									factory_address: {
+										type: 'string',
+										example: 'address',
+									},
+									validity: {
+										type: 'string',
+										example: '2021-12-12',
+									},
+									payment: {
+										type: 'string',
+										example: 'paid',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									update_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},

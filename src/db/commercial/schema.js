@@ -16,6 +16,7 @@ export const bank = commercial.table('bank', {
 	policy: text('policy').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
 
@@ -68,7 +69,7 @@ export const pi = commercial.table('pi', {
 	lc_uuid: defaultUUID('lc_uuid')
 		.default(null)
 		.references(() => lc.uuid),
-	order_info_uuids: text('order_info_uuids').notNull(), // need review
+	order_info_uuids: text('order_info_uuids').notNull(),
 	marketing_uuid: defaultUUID('marketing_uuid').references(
 		() => publicSchema.marketing.uuid
 	),
@@ -82,8 +83,8 @@ export const pi = commercial.table('pi', {
 		() => publicSchema.factory.uuid
 	),
 	bank_uuid: defaultUUID('bank_uuid').references(() => bank.uuid),
-	validity: integer('validity').notNull(), // need review
-	payment: integer('payment').notNull(), // need review
+	validity: integer('validity').notNull(),
+	payment: integer('payment').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

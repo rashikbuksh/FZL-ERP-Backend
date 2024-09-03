@@ -52,6 +52,11 @@ const SE = {
 		example: '2021-01-01 00:00:00',
 	}),
 
+	array: (items = {}) => ({
+		type: 'array',
+		items,
+	}),
+
 	// * Others
 	xml: (name = '') => ({ name }),
 

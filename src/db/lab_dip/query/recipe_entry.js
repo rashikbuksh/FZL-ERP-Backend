@@ -67,7 +67,7 @@ export async function remove(req, res, next) {
 
 		const toast = {
 			status: 201,
-			type: 'remove',
+			type: 'delete',
 			message: `${data[0].deletedId} deleted`,
 		};
 

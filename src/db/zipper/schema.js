@@ -79,25 +79,49 @@ export const order_description = zipper.table('order_description', {
 	),
 	tape_received: PG_DECIMAL('tape_received').default(0),
 	tape_transferred: PG_DECIMAL('tape_transferred').default(0),
-	item: defaultUUID('item'),
-	zipper_number: defaultUUID('zipper_number'),
-	end_type: defaultUUID('end_type'),
-	lock_type: defaultUUID('lock_type'),
-	puller_type: defaultUUID('puller_type'),
-	teeth_color: defaultUUID('teeth_color'),
-	puller_color: defaultUUID('puller_color'),
+	item: defaultUUID('item').references(() => publicSchema.properties.uuid),
+	zipper_number: defaultUUID('zipper_number').references(
+		() => publicSchema.properties.uuid
+	),
+	end_type: defaultUUID('end_type').references(
+		() => publicSchema.properties.uuid
+	),
+	lock_type: defaultUUID('lock_type').references(
+		() => publicSchema.properties.uuid
+	),
+	puller_type: defaultUUID('puller_type').references(
+		() => publicSchema.properties.uuid
+	),
+	teeth_color: defaultUUID('teeth_color').references(
+		() => publicSchema.properties.uuid
+	),
+	puller_color: defaultUUID('puller_color').references(
+		() => publicSchema.properties.uuid
+	),
 	special_requirement: text('special_requirement').default(null),
-	hand: defaultUUID('hand'),
-	stopper_type: defaultUUID('stopper_type'),
-	coloring_type: defaultUUID('coloring_type'),
+	hand: defaultUUID('hand').references(() => publicSchema.properties.uuid),
+	stopper_type: defaultUUID('stopper_type').references(
+		() => publicSchema.properties.uuid
+	),
+	coloring_type: defaultUUID('coloring_type').references(
+		() => publicSchema.properties.uuid
+	),
 	is_slider_provided: integer('is_slider_provided').default(0),
-	slider: defaultUUID('slider'),
+	slider: defaultUUID('slider').references(
+		() => publicSchema.properties.uuid
+	),
 	slider_starting_section: sliderStartingSectionEnum(
 		'slider_starting_section_enum'
 	),
-	top_stopper: defaultUUID('top_stopper'),
-	bottom_stopper: defaultUUID('bottom_stopper'),
-	logo_type: defaultUUID('logo_type'),
+	top_stopper: defaultUUID('top_stopper').references(
+		() => publicSchema.properties.uuid
+	),
+	bottom_stopper: defaultUUID('bottom_stopper').references(
+		() => publicSchema.properties.uuid
+	),
+	logo_type: defaultUUID('logo_type').references(
+		() => publicSchema.properties.uuid
+	),
 	is_logo_body: integer('is_logo_body').notNull().default(0),
 	is_logo_puller: integer('is_logo_puller').notNull().default(0),
 	description: text('description').default(null),
@@ -105,13 +129,25 @@ export const order_description = zipper.table('order_description', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
-	slider_body_shape: defaultUUID('slider_body_shape'),
-	slider_link: defaultUUID('slider_link'),
-	end_user: defaultUUID('end_user'),
+	slider_body_shape: defaultUUID('slider_body_shape').references(
+		() => publicSchema.properties.uuid
+	),
+	slider_link: defaultUUID('slider_link').references(
+		() => publicSchema.properties.uuid
+	),
+	end_user: defaultUUID('end_user').references(
+		() => publicSchema.properties.uuid
+	),
 	garment: text('garment').default(null),
-	light_preference: defaultUUID('light_preference'),
-	garments_wash: defaultUUID('garments_wash'),
-	puller_link: defaultUUID('puller_link'),
+	light_preference: defaultUUID('light_preference').references(
+		() => publicSchema.properties.uuid
+	),
+	garments_wash: defaultUUID('garments_wash').references(
+		() => publicSchema.properties.uuid
+	),
+	puller_link: defaultUUID('puller_link').references(
+		() => publicSchema.properties.uuid
+	),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	garments_remarks: text('garments_remarks').default(null),
 	nylon_plastic_finishing: PG_DECIMAL('nylon_plastic_finishing').default(0),

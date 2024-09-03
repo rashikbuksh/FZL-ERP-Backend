@@ -5,7 +5,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
-import { policy_and_notice } from '../schema.js';
+import { policy_and_notice, users } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -75,7 +75,22 @@ export async function remove(req, res, next) {
 }
 
 export function selectAll(req, res, next) {
-	const policyAndNoticePromise = db.select().from(policy_and_notice);
+	const policyAndNoticePromise = db
+		.select({
+			uuid: policy_and_notice.uuid,
+			title: policy_and_notice.title,
+			sub_title: policy_and_notice.sub_title,
+			url: policy_and_notice.url,
+			type: policy_and_notice.type,
+			created_at: policy_and_notice.created_at,
+			updated_at: policy_and_notice.updated_at,
+			created_by: policy_and_notice.created_by,
+			created_by_name: users.name,
+			remarks: policy_and_notice.remarks,
+			status: policy_and_notice.status,
+		})
+		.from(policy_and_notice)
+		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid));
 
 	const toast = {
 		status: 200,
@@ -95,8 +110,21 @@ export function select(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const policyAndNoticePromise = db
-		.select()
+		.select({
+			uuid: policy_and_notice.uuid,
+			title: policy_and_notice.title,
+			sub_title: policy_and_notice.sub_title,
+			url: policy_and_notice.url,
+			type: policy_and_notice.type,
+			created_at: policy_and_notice.created_at,
+			updated_at: policy_and_notice.updated_at,
+			created_by: policy_and_notice.created_by,
+			created_by_name: users.name,
+			remarks: policy_and_notice.remarks,
+			status: policy_and_notice.status,
+		})
 		.from(policy_and_notice)
+		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid))
 		.where(eq(policy_and_notice.uuid, req.params.uuid));
 
 	const toast = {
@@ -117,8 +145,19 @@ export function selectPolicy(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const policyPromise = db
-		.select()
+		.select({
+			uuid: policy_and_notice.uuid,
+			title: policy_and_notice.title,
+			type: policy_and_notice.type,
+			created_at: policy_and_notice.created_at,
+			updated_at: policy_and_notice.updated_at,
+			created_by: policy_and_notice.created_by,
+			created_by_name: users.name,
+			remarks: policy_and_notice.remarks,
+			status: policy_and_notice.status,
+		})
 		.from(policy_and_notice)
+		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid))
 		.where(eq(policy_and_notice.type, 'policy'));
 
 	const toast = {
@@ -139,8 +178,19 @@ export function selectNotice(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const noticePromise = db
-		.select()
+		.select({
+			uuid: policy_and_notice.uuid,
+			title: policy_and_notice.title,
+			type: policy_and_notice.type,
+			created_at: policy_and_notice.created_at,
+			updated_at: policy_and_notice.updated_at,
+			created_by: policy_and_notice.created_by,
+			created_by_name: users.name,
+			remarks: policy_and_notice.remarks,
+			status: policy_and_notice.status,
+		})
 		.from(policy_and_notice)
+		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid))
 		.where(eq(policy_and_notice.type, 'notice'));
 
 	const toast = {

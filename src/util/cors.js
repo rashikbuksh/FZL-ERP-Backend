@@ -19,6 +19,9 @@ const whitelist = [
 	'http://192.168.10.56:3000',
 	'http://192.168.10.56:4015',
 	'http://192.168.10.56:4016',
+
+	// RBR Home
+	'http://192.168.1.108:4175',
 ];
 
 var corsOptionsDelegate = function (req, callback) {

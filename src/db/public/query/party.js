@@ -4,6 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { party } from '../schema.js';
 
@@ -84,7 +85,19 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(party);
+	const resultPromise = db
+		.select({
+			uuid: party.uuid,
+			name: party.name,
+			short_name: party.short_name,
+			remarks: party.remarks,
+			created_at: party.created_at,
+			updated_at: party.updated_at,
+			created_by: party.created_by,
+			created_by_name: hrSchema.users.name,
+		})
+		.from(party)
+		.leftJoin(hrSchema.users, eq(party.created_by, hrSchema.users.uuid));
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -102,8 +115,18 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const partyPromise = db
-		.select()
+		.select({
+			uuid: party.uuid,
+			name: party.name,
+			short_name: party.short_name,
+			remarks: party.remarks,
+			created_at: party.created_at,
+			updated_at: party.updated_at,
+			created_by: party.created_by,
+			created_by_name: hrSchema.users.name,
+		})
 		.from(party)
+		.leftJoin(hrSchema.users, eq(party.created_by, hrSchema.users.uuid))
 		.where(eq(party.uuid, req.params.uuid));
 	const toast = {
 		status: 200,

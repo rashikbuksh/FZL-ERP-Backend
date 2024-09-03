@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { factory, party } from '../schema.js';
 
@@ -86,9 +87,13 @@ export async function selectAll(req, res, next) {
 			address: factory.address,
 			created_at: factory.created_at,
 			updated_at: factory.updated_at,
+			created_by: factory.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: factory.remarks,
 		})
 		.from(factory)
-		.leftJoin(party, eq(factory.party_uuid, party.uuid));
+		.leftJoin(party, eq(factory.party_uuid, party.uuid))
+		.leftJoin(hrSchema.users, eq(factory.created_by, hrSchema.users.uuid));
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -115,9 +120,13 @@ export async function select(req, res, next) {
 			address: factory.address,
 			created_at: factory.created_at,
 			updated_at: factory.updated_at,
+			created_by: factory.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: factory.remarks,
 		})
 		.from(factory)
 		.leftJoin(party, eq(factory.party_uuid, party.uuid))
+		.leftJoin(hrSchema.users, eq(factory.created_by, hrSchema.users.uuid))
 		.where(eq(factory.uuid, req.params.uuid));
 	const toast = {
 		status: 200,

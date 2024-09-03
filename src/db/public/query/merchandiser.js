@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { merchandiser, party } from '../schema.js';
 
@@ -82,9 +83,16 @@ export async function selectAll(req, res, next) {
 			address: merchandiser.address,
 			created_at: merchandiser.created_at,
 			updated_at: merchandiser.updated_at,
+			created_by: merchandiser.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: merchandiser.remarks,
 		})
 		.from(merchandiser)
-		.leftJoin(party, eq(merchandiser.party_uuid, party.uuid));
+		.leftJoin(party, eq(merchandiser.party_uuid, party.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(merchandiser.created_by, hrSchema.users.uuid)
+		);
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -112,9 +120,16 @@ export async function select(req, res, next) {
 			address: merchandiser.address,
 			created_at: merchandiser.created_at,
 			updated_at: merchandiser.updated_at,
+			created_by: merchandiser.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: merchandiser.remarks,
 		})
 		.from(merchandiser)
 		.leftJoin(party, eq(merchandiser.party_uuid, party.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(merchandiser.created_by, hrSchema.users.uuid)
+		)
 		.where(eq(merchandiser.uuid, req.params.uuid));
 
 	const toast = {

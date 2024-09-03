@@ -41,7 +41,7 @@ export const count_length = thread.table(
 	{
 		uuid: defaultUUID('uuid'),
 		count: numeric('count').notNull(),
-		length: numeric('length').notNull(),
+		length: text('length').notNull(),
 		weight: PG_DECIMAL('weight').notNull(),
 		sst: text('sst').notNull(),
 		created_by: defaultUUID('created_by')

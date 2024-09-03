@@ -9,6 +9,7 @@ import { batch_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+	
 
 	const resultPromise = db
 		.insert(batch_entry)
@@ -64,7 +65,7 @@ export async function remove(req, res, next) {
 
 		const toast = {
 			status: 201,
-			type: 'remove',
+			type: 'delete',
 			message: `${req.params.uuid} removed`,
 		};
 

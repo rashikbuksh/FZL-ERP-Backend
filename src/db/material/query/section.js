@@ -4,6 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { section } from '../schema.js';
 
@@ -79,7 +80,19 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(section);
+	const resultPromise = db
+		.select({
+			uuid: section.uuid,
+			name: section.name,
+			short_name: section.short_name,
+			remarks: section.remarks,
+			created_at: section.created_at,
+			updated_at: section.updated_at,
+			created_by: section.created_by,
+			created_by_name: hrSchema.users.name,
+		})
+		.from(section)
+		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by));
 
 	const toast = {
 		status: 200,
@@ -94,8 +107,18 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const sectionPromise = db
-		.select()
+		.select({
+			uuid: section.uuid,
+			name: section.name,
+			short_name: section.short_name,
+			remarks: section.remarks,
+			created_at: section.created_at,
+			updated_at: section.updated_at,
+			created_by: section.created_by,
+			created_by_name: hrSchema.users.name,
+		})
 		.from(section)
+		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))
 		.where(eq(section.uuid, req.params.uuid));
 	const toast = {
 		status: 200,

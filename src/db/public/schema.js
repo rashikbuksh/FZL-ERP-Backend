@@ -7,6 +7,9 @@ export const buyer = pgTable('buyer', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
+	created_at: DateTime('created_at'),
+	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
 
@@ -14,7 +17,10 @@ export const party = pgTable('party', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	short_name: text('short_name').notNull(),
-	remarks: text('remarks').notNull(),
+	created_at: DateTime('created_at'),
+	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	remarks: text('remarks').default(null),
 });
 
 export const marketing = pgTable('marketing', {
@@ -22,6 +28,9 @@ export const marketing = pgTable('marketing', {
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
 	user_uuid: defaultUUID('user_uuid').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at'),
+	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
 
@@ -34,6 +43,8 @@ export const merchandiser = pgTable('merchandiser', {
 	address: text('address').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	remarks: text('remarks').default(null),
 });
 
 export const factory = pgTable('factory', {
@@ -44,6 +55,8 @@ export const factory = pgTable('factory', {
 	address: text('address').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	remarks: text('remarks').default(null),
 });
 
 export const section = pgTable('section', {

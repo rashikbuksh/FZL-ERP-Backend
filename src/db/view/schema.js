@@ -24,7 +24,9 @@ export const OrderDetailsView = `
       order_info.status,
       order_info.created_by AS created_by_uuid,
       users.name AS created_by_name,
-      order_info.created_at AS created_at
+      order_info.created_at AS created_at,
+      order_info.updated_at AS updated_at,
+      order_info.remarks
     FROM
       zipper.order_info
       LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid

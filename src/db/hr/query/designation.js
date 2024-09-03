@@ -1,7 +1,11 @@
 import { eq } from 'drizzle-orm';
-import { handleResponse, validateRequest } from '../../../util/index.js';
+import {
+	handleError,
+	handleResponse,
+	validateRequest,
+} from '../../../util/index.js';
 import db from '../../index.js';
-import { department, designation } from '../schema.js';
+import { department, designation, users } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -80,6 +84,9 @@ export async function selectAll(req, res, next) {
 			designation: designation.designation,
 			department_uuid: designation.department_uuid,
 			department: department.department,
+			created_at: designation.created_at,
+			updated_at: designation.updated_at,
+			remarks: designation.remarks,
 		})
 		.from(designation)
 		.leftJoin(department, eq(designation.department_uuid, department.uuid));
@@ -107,6 +114,9 @@ export async function select(req, res, next) {
 			designation: designation.designation,
 			department_uuid: designation.department_uuid,
 			department: department.department,
+			created_at: designation.created_at,
+			updated_at: designation.updated_at,
+			remarks: designation.remarks,
 		})
 		.from(designation)
 		.leftJoin(department, eq(designation.department_uuid, department.uuid))

@@ -71,7 +71,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(pi.uuid, req.params.uuid))
 		.returning({
-			insertedUserName: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
+			updatedId: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -79,7 +79,7 @@ export async function update(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `updated by ${data[0].insertedUserName} `,
+			message: `updated by ${data[0].updatedId} `,
 		};
 
 		return await res.status(201).json({ toast, data });
@@ -202,22 +202,12 @@ export async function select(req, res, next) {
 			payment: pi.payment,
 			created_by: pi.created_by,
 			created_by_name: hrSchema.users.name,
-			user_designation: hrSchema.designation.designation,
-			user_department: hrSchema.department.department,
 			created_at: pi.created_at,
 			updated_at: pi.updated_at,
 			remarks: pi.remarks,
 		})
 		.from(pi)
 		.leftJoin(hrSchema.users, eq(pi.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			hrSchema.designation,
-			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		)
 		.leftJoin(
 			publicSchema.marketing,
 			eq(pi.marketing_uuid, publicSchema.marketing.uuid)
@@ -329,6 +319,75 @@ export async function selectPiDetailsByPiUuid(req, res, next) {
 		const fetchData = async (endpoint) =>
 			await api
 				.get(`${endpoint}/by/${pi_uuid}`)
+				.then((response) => response);
+
+		const [pi, pi_entry] = await Promise.all([
+			fetchData('/commercial/pi'),
+			fetchData('/commercial/pi-entry'),
+		]);
+
+		const response = {
+			...pi?.data?.data[0],
+			pi_entry: pi_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			msg: 'Recipe Details Full',
+		};
+
+		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectPiUuidByPiId(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const { pi_id } = req.params;
+
+	const piPromise = db
+		.select({
+			uuid: pi.uuid,
+		})
+		.from(pi)
+		.where(eq(pi.id, sql`split_part(${pi_id}, '-', 2)::int`));
+
+	try {
+		const data = await piPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Pi uuid',
+		};
+
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectPiDetailsByPiId(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const { pi_id } = req.params;
+
+	const api = await createApi(req);
+
+	const fetchPiUuid = async () =>
+		await api
+			.get(`/commercial/pi-uuid/${pi_id}`)
+			.then((response) => response);
+
+	const piUuid = await fetchPiUuid();
+
+	try {
+		const api = await createApi(req);
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/by/${piUuid.data.data.uuid}`)
 				.then((response) => response);
 
 		const [pi, pi_entry] = await Promise.all([

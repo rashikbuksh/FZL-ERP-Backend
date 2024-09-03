@@ -4,6 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { bank } from '../schema.js';
 
@@ -73,7 +74,21 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(bank);
+	const resultPromise = db
+		.select({
+			uuid: bank.uuid,
+			name: bank.name,
+			swift_code: bank.swift_code,
+			address: bank.address,
+			policy: bank.policy,
+			created_at: bank.created_at,
+			updated_at: bank.updated_at,
+			created_by: bank.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: bank.remarks,
+		})
+		.from(bank)
+		.leftJoin(hrSchema.users, eq(bank.created_by, hrSchema.users.uuid));
 
 	const toast = {
 		status: 200,
@@ -93,20 +108,32 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const bankPromise = db
-		.select()
+		.select({
+			uuid: bank.uuid,
+			name: bank.name,
+			swift_code: bank.swift_code,
+			address: bank.address,
+			policy: bank.policy,
+			created_at: bank.created_at,
+			updated_at: bank.updated_at,
+			created_by: bank.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: bank.remarks,
+		})
 		.from(bank)
+		.leftJoin(hrSchema.users, eq(bank.created_by, hrSchema.users.uuid))
 		.where(eq(bank.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Bank',
-	};
+	try {
+		const data = await bankPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Bank',
+		};
 
-	handleResponse({
-		promise: bankPromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

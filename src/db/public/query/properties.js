@@ -64,7 +64,7 @@ export async function remove(req, res, next) {
 		const data = await propertiesPromise;
 		const toast = {
 			status: 201,
-			type: 'remove',
+			type: 'delete',
 			message: `${data[0].deletedName} deleted`,
 		};
 		res.status(201).json({ toast, data });

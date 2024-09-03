@@ -10,6 +10,9 @@ export const section = material.table('section', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
+	created_at: DateTime('created_at'),
+	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
 
@@ -17,6 +20,9 @@ export const type = material.table('type', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
+	created_at: DateTime('created_at'),
+	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
 
@@ -36,6 +42,7 @@ export const info = material.table('info', {
 	description: text('description').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
 

@@ -4,6 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { type } from '../schema.js';
 
@@ -73,7 +74,20 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(type);
+	const resultPromise = db
+		.select({
+			uuid: type.uuid,
+			name: type.name,
+			short_name: type.short_name,
+			remarks: type.remarks,
+			created_at: type.created_at,
+			updated_at: type.updated_at,
+			created_by: type.created_by,
+			created_by_name: hrSchema.users.name,
+		})
+		.from(type)
+		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, type.created_by));
+
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -87,9 +101,20 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const typePromise = db
-		.select()
+		.select({
+			uuid: type.uuid,
+			name: type.name,
+			short_name: type.short_name,
+			remarks: type.remarks,
+			created_at: type.created_at,
+			updated_at: type.updated_at,
+			created_by: type.created_by,
+			created_by_name: hrSchema.users.name,
+		})
 		.from(type)
+		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, type.created_by))
 		.where(eq(type.uuid, req.params.uuid));
+
 	const toast = {
 		status: 200,
 		type: 'select',

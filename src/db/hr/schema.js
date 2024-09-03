@@ -1,17 +1,23 @@
 import { integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
-import { defaultUUID, uuid_primary } from '../variables.js';
+import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 const hr = pgSchema('hr');
 
 export const department = hr.table('department', {
 	uuid: uuid_primary,
 	department: text('department').notNull(),
+	created_at: DateTime('created_at'),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const designation = hr.table('designation', {
 	uuid: uuid_primary,
 	department_uuid: defaultUUID('department_uuid'),
 	designation: text('designation').notNull(),
+	created_at: DateTime('created_at'),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const users = hr.table('users', {
@@ -37,6 +43,7 @@ export const policy_and_notice = hr.table('policy_and_notice', {
 	title: text('title').notNull(),
 	sub_title: text('sub_title').notNull(),
 	url: text('url').notNull(),
+	created_by: defaultUUID('created_by').references(() => users.uuid),
 	created_at: text('created_at').notNull(),
 	updated_at: text('updated_at').default(null),
 	status: integer('status').notNull(),

@@ -65,7 +65,7 @@ export async function remove(req, res, next) {
 		const data = await packing_listPromise;
 		const toast = {
 			status: 201,
-			type: 'remove',
+			type: 'delete',
 			message: `${data[0].deletedId} removed`,
 		};
 		return await res.status(201).json({ toast, data });

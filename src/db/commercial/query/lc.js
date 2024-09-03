@@ -85,7 +85,7 @@ export async function selectAll(req, res, next) {
 			party.name AS party_name,
 			(	
 				SELECT 
-					SUM(CAST(coalesce(pi.payment,0) AS numeric) * CAST(coalesce(order_entry.party_price,0) AS numeric)) 
+					SUM(coalesce(pi.payment,0) * coalesce(order_entry.party_price,0))
 				FROM commercial.pi 
 					LEFT JOIN commercial.pi_entry ON pi.uuid = pi_entry.pi_uuid 
 					LEFT JOIN zipper.sfg ON pi_entry.sfg_uuid = sfg.uuid
@@ -158,7 +158,7 @@ export async function select(req, res, next) {
 			party.name AS party_name,
 			(	
 				SELECT 
-					SUM(CAST(coalesce(pi.payment,0) AS numeric) * CAST(coalesce(order_entry.party_price,0) AS numeric)) 
+					SUM(coalesce(pi.payment,0)  * coalesce(order_entry.party_price,0))
 				FROM commercial.pi 
 					LEFT JOIN commercial.pi_entry ON pi.uuid = pi_entry.pi_uuid 
 					LEFT JOIN zipper.sfg ON pi_entry.sfg_uuid = sfg.uuid
@@ -264,7 +264,7 @@ export async function selectLcByLcNumber(req, res, next) {
 			party.name AS party_name,
 			(	
 				SELECT 
-					SUM(CAST(coalesce(pi.payment,0) AS numeric) * CAST(coalesce(order_entry.party_price,0) AS numeric)) 
+					SUM(coalesce(pi.payment,0)  * coalesce(order_entry.party_price,0))
 				FROM commercial.pi 
 					LEFT JOIN commercial.pi_entry ON pi.uuid = pi_entry.pi_uuid 
 					LEFT JOIN zipper.sfg ON pi_entry.sfg_uuid = sfg.uuid

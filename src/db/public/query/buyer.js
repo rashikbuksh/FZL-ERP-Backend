@@ -4,6 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { buyer } from '../schema.js';
 
@@ -84,7 +85,19 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const buyerPromise = db.select().from(buyer);
+	const buyerPromise = db
+		.select({
+			uuid: buyer.uuid,
+			name: buyer.name,
+			short_name: buyer.short_name,
+			created_at: buyer.created_at,
+			updated_at: buyer.updated_at,
+			created_by: buyer.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: buyer.remarks,
+		})
+		.from(buyer)
+		.leftJoin(hrSchema.users, eq(buyer.created_by, hrSchema.users.uuid));
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -103,8 +116,18 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const buyerPromise = db
-		.select()
+		.select({
+			uuid: buyer.uuid,
+			name: buyer.name,
+			short_name: buyer.short_name,
+			created_at: buyer.created_at,
+			updated_at: buyer.updated_at,
+			created_by: buyer.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: buyer.remarks,
+		})
 		.from(buyer)
+		.leftJoin(hrSchema.users, eq(buyer.created_by, hrSchema.users.uuid))
 		.where(eq(buyer.uuid, req.params.uuid));
 	const toast = {
 		status: 200,
