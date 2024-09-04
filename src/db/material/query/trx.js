@@ -179,13 +179,18 @@ export async function select(req, res, next) {
 		)
 		.where(eq(trx.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Trx',
-	};
+	try {
+		const data = await trxPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'trx',
+		};
 
-	handleResponse({ promise: trxPromise, res, next, ...toast });
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectMaterialTrxByMaterialTrxTo(req, res, next) {

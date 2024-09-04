@@ -117,11 +117,17 @@ export async function select(req, res, next) {
 		.from(section)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))
 		.where(eq(section.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Section',
-	};
 
-	handleResponse({ promise: sectionPromise, res, next, ...toast });
+	try {
+		const data = await sectionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Section',
+		};
+
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

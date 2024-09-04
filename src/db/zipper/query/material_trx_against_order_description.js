@@ -200,7 +200,7 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: 'material_trx_against_order_description details',
 		};
-		res.status(200).json({ toast, data: data?.rows });
+		res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}

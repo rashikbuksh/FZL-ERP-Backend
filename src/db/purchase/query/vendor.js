@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -116,10 +116,16 @@ export async function select(req, res, next) {
 		.from(vendor)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, vendor.created_by))
 		.where(eq(vendor.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Vendor',
-	};
-	handleResponse({ promise: vendorPromise, res, next, ...toast });
+	try {
+		const data = await vendorPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'vendor by uuid',
+		};
+
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

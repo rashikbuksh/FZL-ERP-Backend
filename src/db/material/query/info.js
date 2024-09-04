@@ -139,10 +139,15 @@ export async function select(req, res, next) {
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
 		.where(eq(info.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Info',
-	};
-	handleResponse({ promise: infoPromise, res, next, ...toast });
+	try {
+		const data = await infoPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Info',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

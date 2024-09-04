@@ -12,14 +12,12 @@ const purchaseRouter = Router();
 purchaseRouter.get('/vendor', vendorOperations.selectAll);
 purchaseRouter.get(
 	'/vendor/:uuid',
-
 	vendorOperations.select
 );
 purchaseRouter.post('/vendor', vendorOperations.insert);
 purchaseRouter.put('/vendor/:uuid', vendorOperations.update);
 purchaseRouter.delete(
 	'/vendor/:uuid',
-
 	vendorOperations.remove
 );
 

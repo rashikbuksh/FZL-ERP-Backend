@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -116,11 +116,15 @@ export async function select(req, res, next) {
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, type.created_by))
 		.where(eq(type.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Type',
-	};
-
-	handleResponse({ promise: typePromise, res, next, ...toast });
+	try {
+		const data = await typePromise;
+		const toast = {
+			status: 201,
+			type: 'select',
+			message: `Select type`,
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

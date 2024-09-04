@@ -27,7 +27,6 @@ materialRouter.delete(
 materialRouter.get('/section', sectionOperations.selectAll);
 materialRouter.get(
 	'/section/:uuid',
-
 	sectionOperations.select
 );
 materialRouter.post('/section', sectionOperations.insert);
