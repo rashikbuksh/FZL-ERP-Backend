@@ -152,7 +152,8 @@ export async function selectAll(req, res, next) {
 		.from(used)
 		.leftJoin(info, eq(used.material_uuid, info.uuid))
 		.leftJoin(stock, eq(used.material_uuid, stock.material_uuid))
-		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid));
+		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid))
+		.orderBy(used.created_at, 'desc');
 	const toast = {
 		status: 200,
 		type: 'select_all',

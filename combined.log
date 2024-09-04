@@ -162,3 +162,16 @@
 {"code":"22P02","file":"numeric.c","length":135,"level":"\u001b[31merror\u001b[39m","line":"796","name":"error","routine":"numeric_in","severity":"ERROR","timestamp":"2024-09-03 08:43:44 PM","where":"unnamed portal parameter $3 = '...'"}
 {"code":"23503","constraint":"programs_dyes_category_uuid_dyes_category_uuid_fk","detail":"Key (uuid)=(6lA6gKagDzNvnts) is still referenced from table \"programs\".","file":"ri_triggers.c","length":356,"level":"\u001b[31merror\u001b[39m","line":"2633","name":"error","routine":"ri_ReportViolation","schema":"thread","severity":"ERROR","table":"programs","timestamp":"2024-09-03 09:47:15 PM"}
 {"level":"\u001b[31merror\u001b[39m","timestamp":"2024-09-03 10:01:51 PM"}
+{"address":"192.168.10.56","code":"ECONNREFUSED","errno":-4078,"level":"\u001b[31merror\u001b[39m","port":5432,"syscall":"connect","timestamp":"2024-09-04 12:14:01 PM"}
+{"address":"192.168.10.56","code":"ECONNREFUSED","errno":-4078,"level":"\u001b[31merror\u001b[39m","port":5432,"syscall":"connect","timestamp":"2024-09-04 12:14:02 PM"}
+{"address":"192.168.10.56","code":"ECONNREFUSED","errno":-4078,"level":"\u001b[31merror\u001b[39m","port":5432,"syscall":"connect","timestamp":"2024-09-04 12:14:06 PM"}
+{"address":"192.168.10.56","code":"ECONNREFUSED","errno":-4078,"level":"\u001b[31merror\u001b[39m","port":5432,"syscall":"connect","timestamp":"2024-09-04 12:14:06 PM"}
+{"code":"57P03","file":"postmaster.c","length":104,"level":"\u001b[31merror\u001b[39m","line":"2336","name":"error","routine":"ProcessStartupPacket","severity":"FATAL","timestamp":"2024-09-04 12:14:24 PM"}
+{"code":"57P03","file":"postmaster.c","length":104,"level":"\u001b[31merror\u001b[39m","line":"2336","name":"error","routine":"ProcessStartupPacket","severity":"FATAL","timestamp":"2024-09-04 12:14:24 PM"}
+{"code":"57P03","file":"postmaster.c","length":104,"level":"\u001b[31merror\u001b[39m","line":"2336","name":"error","routine":"ProcessStartupPacket","severity":"FATAL","timestamp":"2024-09-04 12:14:25 PM"}
+{"code":"57P03","file":"postmaster.c","length":109,"level":"\u001b[31merror\u001b[39m","line":"2358","name":"error","routine":"ProcessStartupPacket","severity":"FATAL","timestamp":"2024-09-04 12:16:12 PM"}
+{"code":"ECONNRESET","errno":-4077,"level":"\u001b[31merror\u001b[39m","syscall":"read","timestamp":"2024-09-04 12:16:12 PM"}
+{"address":"192.168.10.56","code":"ECONNREFUSED","errno":-4078,"level":"\u001b[31merror\u001b[39m","port":5432,"syscall":"connect","timestamp":"2024-09-04 12:16:40 PM"}
+{"address":"192.168.10.56","code":"ECONNREFUSED","errno":-4078,"level":"\u001b[31merror\u001b[39m","port":5432,"syscall":"connect","timestamp":"2024-09-04 12:16:49 PM"}
+{"address":"192.168.10.56","code":"ECONNREFUSED","errno":-4078,"level":"\u001b[31merror\u001b[39m","port":5432,"syscall":"connect","timestamp":"2024-09-04 12:16:51 PM"}
+{"address":"192.168.10.56","code":"ECONNREFUSED","errno":-4078,"level":"\u001b[31merror\u001b[39m","port":5432,"syscall":"connect","timestamp":"2024-09-04 12:17:00 PM"}
