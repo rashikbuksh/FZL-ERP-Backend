@@ -122,16 +122,15 @@ export async function select(req, res, next) {
 		.leftJoin(department, eq(designation.department_uuid, department.uuid))
 		.where(eq(designation.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Designation',
-	};
-
-	handleResponse({
-		promise: designationPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await designationPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Designation',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		handleError({ error, res });
+	}
 }

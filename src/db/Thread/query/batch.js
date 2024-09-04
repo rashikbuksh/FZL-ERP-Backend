@@ -261,13 +261,18 @@ export async function select(req, res, next) {
 		)
 		.where(eq(batch.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'batch detail',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'batch',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectBatchDetailsByBatchUuid(req, res, next) {
@@ -286,7 +291,7 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 		]);
 
 		const response = {
-			...batch?.data?.data[0],
+			...batch?.data?.data,
 			batch_entry: batch_entry?.data?.data || [],
 		};
 

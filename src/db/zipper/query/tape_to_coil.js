@@ -86,7 +86,7 @@ export async function selectAll(req, res, next) {
 			created_by: tape_to_coil.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_to_coil.created_at,
-			update_at: tape_to_coil.updated_at,
+			updated_at: tape_to_coil.updated_at,
 			remarks: tape_to_coil.remarks,
 		})
 		.from(tape_to_coil)
@@ -120,7 +120,7 @@ export async function select(req, res, next) {
 			created_by: tape_to_coil.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_to_coil.created_at,
-			update_at: tape_to_coil.updated_at,
+			updated_at: tape_to_coil.updated_at,
 			remarks: tape_to_coil.remarks,
 		})
 		.from(tape_to_coil)

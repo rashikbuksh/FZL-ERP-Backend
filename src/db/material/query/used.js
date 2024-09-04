@@ -215,13 +215,19 @@ export async function select(req, res, next) {
 		.leftJoin(stock, eq(used.material_uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid))
 		.where(eq(used.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Used',
-	};
 
-	handleResponse({ promise: usedPromise, res, next, ...toast });
+	try {
+		const data = await usedPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Used',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectUsedBySection(req, res, next) {

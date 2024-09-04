@@ -126,17 +126,18 @@ export async function select(req, res, next) {
 		.from(batch)
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
 		.where(eq(batch.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'batch',
-	};
-	handleResponse({
-		promise: batchPromise,
-		res,
-		next,
-		...toast,
-	});
+
+	try {
+		const data = await batchPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'batch detail',
+		};
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		handleError({ error, res });
+	}
 }
 
 export async function selectBatchDetailsByBatchUuid(req, res, next) {
@@ -157,7 +158,7 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 		]);
 
 		const response = {
-			...batch?.data?.data[0],
+			...batch?.data?.data,
 			batch_entry: batch_entry?.data?.data || [],
 		};
 

@@ -120,17 +120,18 @@ export async function select(req, res, next) {
 			eq(packing_list.created_by, hrSchema.users.uuid)
 		)
 		.where(eq(packing_list.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Packing list',
-	};
-	handleResponse({
-		promise: packing_listPromise,
-		res,
-		next,
-		...toast,
-	});
+
+	try {
+		const data = await packing_listPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Packing list',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		handleError({ error, res });
+	}
 }
 
 export async function selectPackingListByPackingListUuid(req, res, next) {

@@ -138,51 +138,18 @@ export async function select(req, res, next) {
 
 		.where(eq(description.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Description',
-	};
+	try {
+		const data = await descriptionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Description',
+		};
 
-	handleResponse({ promise: descriptionPromise, res, next, ...toast });
-}
-
-export async function selectDescriptionByPurchaseDescriptionUuid(
-	req,
-	res,
-	next
-) {
-	if (!(await validateRequest(req, next))) return;
-
-	const descriptionPromise = db
-		.select({
-			uuid: description.uuid,
-			purchase_id: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
-			vendor_uuid: description.vendor_uuid,
-			vendor_name: vendor.name,
-			is_local: description.is_local,
-			lc_number: description.lc_number,
-			created_by: description.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: description.created_at,
-			updated_at: description.updated_at,
-			remarks: description.remarks,
-		})
-		.from(description)
-		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
-		.leftJoin(
-			hrSchema.users,
-			eq(description.created_by, hrSchema.users.uuid)
-		)
-		.where(eq(description.uuid, req.params.purchase_description_uuid));
-
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Description',
-	};
-
-	handleResponse({ promise: descriptionPromise, res, next, ...toast });
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectPurchaseDetailsByPurchaseDescriptionUuid(
@@ -198,16 +165,16 @@ export async function selectPurchaseDetailsByPurchaseDescriptionUuid(
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/by/${purchase_description_uuid}`)
+				.get(`${endpoint}/${purchase_description_uuid}`)
 				.then((response) => response);
 
 		const [purchase_description, purchase] = await Promise.all([
 			fetchData('/purchase/description'),
-			fetchData('/purchase/entry'),
+			fetchData('/purchase/entry/by'),
 		]);
 
 		const response = {
-			...purchase_description?.data?.data[0],
+			...purchase_description?.data?.data,
 			purchase: purchase?.data?.data || [],
 		};
 

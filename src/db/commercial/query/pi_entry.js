@@ -118,17 +118,18 @@ export async function select(req, res, next) {
 		.from(pi_entry)
 		.where(eq(pi_entry.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'pi_entry',
-	};
-	handleResponse({
-		promise: pi_entryPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await pi_entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'pi_entry',
+		};
+
+		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectPiEntryByPiUuid(req, res, next) {

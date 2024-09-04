@@ -133,18 +133,18 @@ export async function select(req, res, next) {
 		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
 		.where(eq(challan_entry.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Challan_entry',
-	};
+	try {
+		const data = await challan_entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Challan_entry',
+		};
 
-	handleResponse({
-		promise: challan_entryPromise,
-		res,
-		next,
-		...toast,
-	});
+		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		handleError({ error, res });
+	}
 }
 
 export async function selectChallanEntryByChallanUuid(req, res, next) {
