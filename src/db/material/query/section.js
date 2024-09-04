@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -89,7 +89,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(section)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))
-		.orderBy(section.created_at, 'desc');
+		.orderBy(desc(section.created_at));
 
 	const toast = {
 		status: 200,

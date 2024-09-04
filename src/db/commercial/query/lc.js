@@ -127,7 +127,9 @@ export async function selectAll(req, res, next) {
 			public.party ON lc.party_uuid = party.uuid
 		LEFT JOIN
 			commercial.pi ON lc.uuid = pi.lc_uuid
-		GROUP BY lc.uuid, party.name, users.name`;
+		GROUP BY lc.uuid, party.name, users.name
+		ORDER BY lc.created_at DESC
+		`;
 	const resultPromise = db.execute(query);
 
 	try {

@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -87,7 +87,7 @@ export async function selectAll(req, res, next) {
 			remarks: pi_entry.remarks,
 		})
 		.from(pi_entry)
-		.orderBy(pi_entry.created_at, 'desc');
+		.orderBy(desc(pi_entry.created_at));
 
 	const toast = {
 		status: 200,
