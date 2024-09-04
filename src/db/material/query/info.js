@@ -5,42 +5,16 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { info, section, stock, type } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const {
-		uuid,
-		section_uuid,
-		type_uuid,
-		name,
-		short_name,
-		unit,
-		threshold,
-		description,
-		created_at,
-		remarks,
-	} = req.body;
-
-	const infoPromise = db
-		.insert(info)
-		.values({
-			uuid,
-			section_uuid,
-			type_uuid,
-			name,
-			short_name,
-			unit,
-			threshold,
-			description,
-			created_at,
-			remarks,
-		})
-		.returning({
-			createdName: info.name,
-		});
+	const infoPromise = db.insert(info).values(req.body).returning({
+		createdName: info.name,
+	});
 
 	try {
 		const data = await infoPromise;
@@ -59,33 +33,9 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const {
-		section_uuid,
-		type_uuid,
-		name,
-		short_name,
-		unit,
-		threshold,
-		description,
-		created_at,
-		updated_at,
-		remarks,
-	} = req.body;
-
 	const infoPromise = db
 		.update(info)
-		.set({
-			section_uuid,
-			type_uuid,
-			name,
-			short_name,
-			unit,
-			threshold,
-			description,
-			created_at,
-			updated_at,
-			remarks,
-		})
+		.set(req.body)
 		.where(eq(info.uuid, req.params.uuid))
 		.returning({ updatedName: info.name });
 
@@ -141,12 +91,16 @@ export async function selectAll(req, res, next) {
 			description: info.description,
 			created_at: info.created_at,
 			updated_at: info.updated_at,
+			created_by: info.created_by,
+			created_by_name: hrSchema.users.name,
 			remarks: info.remarks,
 		})
 		.from(info)
 		.leftJoin(section, eq(info.section_uuid, section.uuid))
 		.leftJoin(type, eq(info.type_uuid, type.uuid))
-		.leftJoin(stock, eq(info.uuid, stock.material_uuid));
+		.leftJoin(stock, eq(info.uuid, stock.material_uuid))
+		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+		.orderBy(info.created_at, 'desc');
 
 	const toast = {
 		status: 200,
@@ -174,12 +128,15 @@ export async function select(req, res, next) {
 			description: info.description,
 			created_at: info.created_at,
 			updated_at: info.updated_at,
+			created_by: info.created_by,
+			created_by_name: hrSchema.users.name,
 			remarks: info.remarks,
 		})
 		.from(info)
 		.leftJoin(section, eq(info.section_uuid, section.uuid))
 		.leftJoin(type, eq(info.type_uuid, type.uuid))
 		.leftJoin(stock, eq(info.uuid, stock.material_uuid))
+		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
 		.where(eq(info.uuid, req.params.uuid));
 
 	const toast = {

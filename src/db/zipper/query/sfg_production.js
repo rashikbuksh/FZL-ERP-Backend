@@ -29,7 +29,9 @@ export async function insert(req, res, next) {
 				sfg.uuid = ${data[0].insertedId}
 			`;
 
-		console.log(orderDescription);
+		const order_details = await db.execute(orderDescription);
+
+		console.log(order_details);
 
 		const toast = {
 			status: 201,

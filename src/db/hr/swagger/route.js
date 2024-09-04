@@ -1,4 +1,5 @@
 import SE from '../../../util/swagger_example.js';
+import { update } from '../query/department.js';
 
 // * Hr User * //
 export const pathHrUser = {
@@ -234,6 +235,38 @@ export const pathHrUser = {
 					ext: SE.string('123'),
 					phone: SE.string('01521533595'),
 				}),
+			},
+		},
+	},
+	'/hr/user/status/{uuid}': {
+		put: {
+			tags: ['hr.user'],
+			summary: 'Update an existing user status',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'User status to update',
+					'uuid',
+					'string',
+					'uuid'
+				),
+			],
+			requestBody: SE.requestBody(
+				{
+					status: SE.integer(1),
+					updated_at: SE.date_time(),
+				},
+				['status']
+			),
+			responses: {
+				200: SE.response_schema(200, {
+					status: SE.integer(1),
+					updated_at: SE.date_time(),
+				}),
+				405: SE.response(405),
 			},
 		},
 	},

@@ -6,6 +6,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import * as materialSchema from '../../material/schema.js';
 import { material_trx_against_order_description } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -15,15 +16,24 @@ export async function insert(req, res, next) {
 		.insert(material_trx_against_order_description)
 		.values(req.body)
 		.returning({
-			insertedUuid: material_trx_against_order_description.uuid,
+			insertedUuid: material_trx_against_order_description.material_uuid,
 		});
 	try {
 		const data = await materialTrxAgainstOrderPromise;
 
+		const materialName = db
+			.select({
+				insertedUuid: materialSchema.info.name,
+			})
+			.from(materialSchema.info)
+			.where(eq(materialSchema.info.uuid, data[0].insertedUuid));
+
+		const materialNameData = await materialName;
+
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedUuid} inserted`,
+			message: `${materialNameData[0].insertedUuid} inserted`,
 		};
 
 		res.status(201).json({ toast, data });
@@ -40,15 +50,25 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(material_trx_against_order_description.uuid, req.params.uuid))
 		.returning({
-			updatedUuid: material_trx_against_order_description.uuid,
+			updatedUuid: material_trx_against_order_description.material_uuid,
 		});
 
 	try {
 		const data = await materialTrxAgainstOrderPromise;
+
+		const materialName = db
+			.select({
+				updatedUuid: materialSchema.info.name,
+			})
+			.from(materialSchema.info)
+			.where(eq(materialSchema.info.uuid, data[0].updatedUuid));
+
+		const materialNameData = await materialName;
+
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedUuid} updated`,
+			message: `${materialNameData[0].updatedUuid} updated`,
 		};
 
 		res.status(201).json({ toast, data });
@@ -64,15 +84,25 @@ export async function remove(req, res, next) {
 		.delete(material_trx_against_order_description)
 		.where(eq(material_trx_against_order_description.uuid, req.params.uuid))
 		.returning({
-			deletedUuid: material_trx_against_order_description.uuid,
+			deletedUuid: material_trx_against_order_description.material_uuid,
 		});
 
 	try {
 		const data = await materialTrxAgainstOrderPromise;
+
+		const materialName = db
+			.select({
+				deletedUuid: materialSchema.info.name,
+			})
+			.from(materialSchema.info)
+			.where(eq(materialSchema.info.uuid, data[0].deletedUuid));
+
+		const materialNameData = await materialName;
+
 		const toast = {
 			status: 201,
 			type: 'delete',
-			message: `${data[0].deletedUuid} deleted`,
+			message: `${materialNameData[0].deletedUuid} deleted`,
 		};
 
 		res.status(200).json({ toast, data });
@@ -109,6 +139,7 @@ export async function selectAll(req, res, next) {
         hr.users users ON mtaod.created_by = users.uuid
 	LEFT JOIN 
 		material.stock stock ON mtaod.material_uuid = stock.material_uuid
+	ORDER BY mtaod.created_at DESC
     `;
 
 	const materialTrxAgainstOrderPromise = db.execute(query);

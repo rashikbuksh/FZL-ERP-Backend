@@ -23,17 +23,17 @@ export const designation = hr.table('designation', {
 export const users = hr.table('users', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
-	email: text('email').notNull(),
+	email: text('email').notNull().unique(),
 	pass: text('pass').notNull(),
 	designation_uuid: defaultUUID('designation_uuid').references(
 		() => designation.uuid
 	),
-	can_access: text('can_access').notNull(),
+	can_access: text('can_access').default(null),
 	ext: text('ext').default(null),
 	phone: text('phone').default(null),
 	created_at: text('created_at').notNull(),
 	updated_at: text('updated_at').default(null),
-	status: text('status').notNull(),
+	status: text('status').default(0),
 	remarks: text('remarks').default(null),
 });
 

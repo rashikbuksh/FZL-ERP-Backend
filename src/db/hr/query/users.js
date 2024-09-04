@@ -95,7 +95,8 @@ export async function selectAll(req, res, next) {
 		})
 		.from(users)
 		.leftJoin(designation, eq(users.designation_uuid, designation.uuid))
-		.leftJoin(department, eq(designation.department_uuid, department.uuid));
+		.leftJoin(department, eq(designation.department_uuid, department.uuid))
+		.orderBy(users.created_at, 'desc');
 
 	const toast = {
 		status: 200,
@@ -191,6 +192,7 @@ export async function loginUser(req, res, next) {
 	}
 
 	await ComparePass(pass, USER[0].pass).then((result) => {
+		console.log(USER[0]?.pass, ' - pass -', pass);
 		if (!result) {
 			return res.status(200).json({
 				status: 400,
@@ -271,6 +273,29 @@ export async function changeUserAccess(req, res, next) {
 	const userPromise = db
 		.update(users)
 		.set({ can_access: req.body.can_access })
+		.where(eq(users.uuid, req.params.uuid))
+		.returning({ updatedName: users.name });
+
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
+
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function changeUserStatus(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const userPromise = db
+		.update(users)
+		.set({ status: req.body.status, updated_at: req.body.updated_at })
 		.where(eq(users.uuid, req.params.uuid))
 		.returning({ updatedName: users.name });
 

@@ -20,6 +20,7 @@ hrRouter.put('/user/:uuid', userOperations.update);
 hrRouter.delete('/user/:uuid', validateUuidParam(), userOperations.remove);
 hrRouter.get('/user-common', userOperations.selectCommonUsers);
 hrRouter.put('/user/can-access/:uuid', userOperations.changeUserAccess);
+hrRouter.put('/user/status/:uuid', userOperations.changeUserStatus);
 
 // department routes
 
