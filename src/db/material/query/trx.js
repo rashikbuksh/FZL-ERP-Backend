@@ -133,7 +133,9 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.department,
 			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		);
+		)
+		.orderBy(trx.created_at, 'desc');
+
 	const toast = {
 		status: 200,
 		type: 'select_all',

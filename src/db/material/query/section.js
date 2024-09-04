@@ -11,11 +11,9 @@ import { section } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { uuid, name, short_name, remarks } = req.body;
-
 	const sectionPromise = db
 		.insert(section)
-		.values({ uuid, name, short_name, remarks })
+		.values(req.body)
 		.returning({ createdName: section.name });
 
 	try {
@@ -35,11 +33,9 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { name, short_name, remarks } = req.body;
-
 	const sectionPromise = db
 		.update(section)
-		.set({ name, short_name, remarks })
+		.set(req.body)
 		.where(eq(section.uuid, req.params.uuid))
 		.returning({ updatedName: section.name });
 
@@ -92,7 +88,8 @@ export async function selectAll(req, res, next) {
 			created_by_name: hrSchema.users.name,
 		})
 		.from(section)
-		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by));
+		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))
+		.orderBy(section.created_at, 'desc');
 
 	const toast = {
 		status: 200,

@@ -10,7 +10,7 @@ export const section = material.table('section', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
 	short_name: text('short_name').default(null),
-	created_at: DateTime('created_at'),
+	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),

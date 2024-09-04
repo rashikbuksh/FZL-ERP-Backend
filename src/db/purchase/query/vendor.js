@@ -4,6 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { vendor } from '../schema.js';
 
@@ -85,7 +86,8 @@ export async function selectAll(req, res, next) {
 			remarks: vendor.remarks,
 		})
 		.from(vendor)
-		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, vendor.created_by));
+		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, vendor.created_by))
+		.orderBy(vendor.created_at, 'desc');
 	const toast = {
 		status: 200,
 		type: 'select_all',

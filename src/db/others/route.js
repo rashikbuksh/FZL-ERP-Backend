@@ -788,6 +788,33 @@ const pathHr = {
 			},
 		},
 	},
+	'/other/department-designation/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all department and designation users',
+			description: 'All HR users',
+			operationId: 'getAllHRUsers',
+			responses: {
+				200: {
+					description: 'Returns a all HR users.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: { type: 'string', example: 'admin' },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 const pathLabDip = {
