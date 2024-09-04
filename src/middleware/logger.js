@@ -1,16 +1,24 @@
 import morgan from 'morgan';
 import winston from 'winston';
 
-const { combine, timestamp, json, colorize } = winston.format;
+const { combine, timestamp, json, colorize, printf } = winston.format;
 
 const logger = winston.createLogger({
-	level: 'http',
 	format: combine(
 		colorize({ all: true }),
 		timestamp({
 			format: 'YYYY-MM-DD hh:mm:ss A',
 		}),
-		json()
+		json(),
+		printf(({ timestamp, level, message, ...data }) => {
+			const response = {
+				level,
+				message,
+				data, // metadata
+			};
+
+			return JSON.stringify(response);
+		})
 	),
 	transports: [
 		new winston.transports.Console(),

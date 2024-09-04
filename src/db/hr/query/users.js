@@ -1,6 +1,10 @@
 // import { ComparePass, CreateToken } from "@/middleware/auth.js";
 import { eq } from 'drizzle-orm';
-import { ComparePass, CreateToken } from '../../../middleware/auth.js';
+import {
+	ComparePass,
+	CreateToken,
+	HashPass,
+} from '../../../middleware/auth.js';
 import {
 	handleError,
 	handleResponse,
@@ -12,9 +16,14 @@ import { department, designation, users } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const hashPassword = await HashPass(req.body.pass);
+
 	const userPromise = db
 		.insert(users)
-		.values(req.body)
+		.values({
+			...req.body,
+			pass: hashPassword,
+		})
 		.returning({ insertedName: users.name });
 
 	try {
@@ -304,7 +313,31 @@ export async function changeUserStatus(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'update',
-			message: `${data[0].updatedName} updated`,
+			message: `${data[0].updatedName} status updated`,
+		};
+
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+export async function changeUserPassword(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const hashPassword = await HashPass(req.body.pass);
+
+	const userPromise = db
+		.update(users)
+		.set({ pass: hashPassword, updated_at: req.body.updated_at })
+		.where(eq(users.uuid, req.params.uuid))
+		.returning({ updatedName: users.name });
+
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedName} password updated`,
 		};
 
 		return res.status(200).json({ toast, data });
