@@ -215,7 +215,7 @@ export async function select(req, res, next) {
 			message: 'lc',
 		};
 
-		return await res.status(200).json({ toast, data: data?.rows });
+		return await res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -237,7 +237,7 @@ export async function selectLcPiByLcUuid(req, res, next) {
 		]);
 
 		const response = {
-			...lc?.data?.data[0],
+			...lc?.data?.data,
 			pi: pi?.data?.data || [],
 		};
 
