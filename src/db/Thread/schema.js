@@ -90,7 +90,7 @@ export const order_info = thread.table('order_info', {
 	),
 	is_sample: integer('is_sample').default(0),
 	is_bill: integer('is_bill').default(0),
-	delivery_date: DateTime('delivery_date').notNull(),
+	delivery_date: DateTime('delivery_date').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
