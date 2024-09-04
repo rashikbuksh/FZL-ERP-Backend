@@ -124,12 +124,18 @@ export async function select(req, res, next) {
 		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
 		.where(eq(challan.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'challan',
-	};
-	handleResponse({ promise: challanPromise, res, next, ...toast });
+	try {
+		const data = await challanPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'challan',
+		};
+
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectChallanByChallanUuid(req, res, next) {

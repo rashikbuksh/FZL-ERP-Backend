@@ -81,14 +81,12 @@ labDipRouter.get(
 labDipRouter.get('/shade-recipe', shadeRecipeOperations.selectAll);
 labDipRouter.get(
 	'/shade-recipe/:uuid',
-	validateUuidParam(),
 	shadeRecipeOperations.select
 );
 labDipRouter.post('/shade-recipe', shadeRecipeOperations.insert);
 labDipRouter.put('/shade-recipe/:uuid', shadeRecipeOperations.update);
 labDipRouter.delete(
 	'/shade-recipe/:uuid',
-	validateUuidParam(),
 	shadeRecipeOperations.remove
 );
 labDipRouter.get(

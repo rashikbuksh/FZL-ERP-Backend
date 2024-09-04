@@ -158,13 +158,18 @@ export async function select(req, res, next) {
 		.leftJoin(hrSchema.users, eq(planning.created_by, hrSchema.users.uuid))
 		.where(eq(planning.week, req.params.week));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'planning',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'planning',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectPlanningByPlanningWeek(req, res, next) {

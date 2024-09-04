@@ -99,16 +99,16 @@ export async function select(req, res, next) {
 		.from(department)
 		.where(eq(department.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Designation',
-	};
+	try {
+		const data = await departmentPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Department',
+		};
 
-	handleResponse({
-		promise: departmentPromise,
-		res,
-		next,
-		...toast,
-	});
+		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

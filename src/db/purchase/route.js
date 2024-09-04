@@ -10,16 +10,10 @@ const purchaseRouter = Router();
 
 // Vendor routes
 purchaseRouter.get('/vendor', vendorOperations.selectAll);
-purchaseRouter.get(
-	'/vendor/:uuid',
-	vendorOperations.select
-);
+purchaseRouter.get('/vendor/:uuid', vendorOperations.select);
 purchaseRouter.post('/vendor', vendorOperations.insert);
 purchaseRouter.put('/vendor/:uuid', vendorOperations.update);
-purchaseRouter.delete(
-	'/vendor/:uuid',
-	vendorOperations.remove
-);
+purchaseRouter.delete('/vendor/:uuid', vendorOperations.remove);
 
 // Description routes
 purchaseRouter.get('/description', descriptionOperations.selectAll);
@@ -30,15 +24,10 @@ purchaseRouter.get(
 );
 purchaseRouter.post('/description', descriptionOperations.insert);
 purchaseRouter.put('/description/:uuid', descriptionOperations.update);
-
 purchaseRouter.delete(
 	'/description/:uuid',
 
 	descriptionOperations.remove
-);
-purchaseRouter.get(
-	'/description/by/:purchase_description_uuid',
-	descriptionOperations.selectDescriptionByPurchaseDescriptionUuid
 );
 purchaseRouter.get(
 	'/purchase-details/by/:purchase_description_uuid',

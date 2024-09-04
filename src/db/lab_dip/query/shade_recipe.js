@@ -137,13 +137,17 @@ export async function select(req, res, next) {
 		)
 		.where(eq(shade_recipe.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'shade_recipe',
-	};
-
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'shade_recipe',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		handleError({ error, res });
+	}
 }
 
 export async function selectShadeRecipeDetailsByShadeRecipeUuid(
@@ -165,7 +169,7 @@ export async function selectShadeRecipeDetailsByShadeRecipeUuid(
 		]);
 
 		const response = {
-			...shade_recipe?.data?.data[0],
+			...shade_recipe?.data?.data,
 			shade_recipe_entry: shade_recipe_entry?.data?.data || [],
 		};
 

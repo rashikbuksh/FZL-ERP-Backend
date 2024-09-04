@@ -89,12 +89,17 @@ export async function select(req, res, next) {
 		.from(packing_list_entry)
 		.where(eq(packing_list_entry.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Packing_list_entry',
-	};
-	handleResponse({ promise: packing_list_entryPromise, res, next, ...toast });
+	try {
+		const data = await packing_list_entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Packing_list_entry',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectPackingListEntryByPackingListUuid(req, res, next) {
