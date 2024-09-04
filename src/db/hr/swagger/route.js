@@ -219,6 +219,29 @@ export const pathHrUser = {
 			},
 		},
 	},
+	'/hr/user/password/{uuid}': {
+		put: {
+			tags: ['hr.user'],
+			summary: 'Update a user password',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('hr.user password to update')],
+			requestBody: SE.requestBody(
+				{
+					pass: SE.string('a very strong password'),
+				},
+				['pass']
+			),
+			responses: {
+				200: SE.response_schema(200, {
+					pass: SE.string('a very strong password'),
+				}),
+				405: SE.response(405),
+			},
+		},
+	},
 	'/hr/user-common': {
 		get: {
 			tags: ['hr.user'],
