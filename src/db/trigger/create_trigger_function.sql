@@ -549,7 +549,6 @@ BEGIN
 
     RETURN NEW;
 END;
-
 $$ LANGUAGE plpgsql;
 
 
@@ -561,7 +560,6 @@ BEGIN
 
     RETURN OLD;
 END;
-
 $$ LANGUAGE plpgsql;
 
 
@@ -573,7 +571,6 @@ BEGIN
 
     RETURN NEW;
 END;
-
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER sfg_after_commercial_pi_entry_insert_trigger

@@ -14,13 +14,27 @@ export async function insert(req, res, next) {
 	const sfgProductionPromise = db
 		.insert(sfg_production)
 		.values(req.body)
-		.returning({ insertedSection: sfg_production.section });
+		.returning({ insertedId: sfg_production.sfg_uuid });
 	try {
 		const data = await sfgProductionPromise;
+
+		const orderDescription = sql`
+			SELECT
+				concat(vodf.order_number, ' - ', vodf.item_description) as insertedId
+			FROM
+				zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+			WHERE
+				sfg.uuid = ${data[0].insertedId}
+			`;
+
+		console.log(orderDescription);
+
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedSection} inserted`,
+			message: `${data[0].insertedId} inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
