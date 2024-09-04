@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -160,7 +160,8 @@ export async function selectAll(req, res, next) {
 			eq(pi.factory_uuid, publicSchema.factory.uuid)
 		)
 		.leftJoin(bank, eq(pi.bank_uuid, bank.uuid))
-		.leftJoin(lc, eq(pi.lc_uuid, lc.uuid));
+		.leftJoin(lc, eq(pi.lc_uuid, lc.uuid))
+		.orderBy(desc(pi.created_at));
 
 	const toast = {
 		status: 200,

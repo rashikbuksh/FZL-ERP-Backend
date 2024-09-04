@@ -1,5 +1,5 @@
 // import { ComparePass, CreateToken } from "@/middleware/auth.js";
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { ComparePass, CreateToken } from '../../../middleware/auth.js';
 import {
 	handleError,
@@ -96,7 +96,7 @@ export async function selectAll(req, res, next) {
 		.from(users)
 		.leftJoin(designation, eq(users.designation_uuid, designation.uuid))
 		.leftJoin(department, eq(designation.department_uuid, department.uuid))
-		.orderBy(users.created_at, 'desc');
+		.orderBy(desc(users.created_at));
 
 	const toast = {
 		status: 200,
