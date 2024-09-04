@@ -14,7 +14,7 @@ export const vendor = purchase.table('vendor', {
 	email: text('email').notNull(),
 	office_address: text('office_address').notNull(),
 	contact_number: text('contact_number').default(null),
-	created_at: DateTime('created_at'),
+	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
