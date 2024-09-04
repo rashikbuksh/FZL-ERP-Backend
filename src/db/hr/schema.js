@@ -6,7 +6,7 @@ const hr = pgSchema('hr');
 export const department = hr.table('department', {
 	uuid: uuid_primary,
 	department: text('department').notNull(),
-	created_at: DateTime('created_at'),
+	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
@@ -15,7 +15,7 @@ export const designation = hr.table('designation', {
 	uuid: uuid_primary,
 	department_uuid: defaultUUID('department_uuid'),
 	designation: text('designation').notNull(),
-	created_at: DateTime('created_at'),
+	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
