@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -40,15 +40,24 @@ export async function update(req, res, next) {
 		.update(order_entry)
 		.set(req.body)
 		.where(eq(order_entry.uuid, req.params.uuid))
-		.returning({ updatedId: order_entry.uuid });
+		.returning({ updatedId: order_entry.order_info_uuid });
 
 	try {
 		const data = await resultPromise;
 
+		const order_info_number = db
+			.select({
+				updatedId: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			})
+			.from(order_info)
+			.where(eq(order_info.uuid, data[0].updatedId));
+
+		const orderInfoNumber = await order_info_number;
+
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedId} updated`,
+			message: `${orderInfoNumber[0].updatedId} updated`,
 		};
 
 		return await res.status(201).json({ toast, data });
@@ -118,7 +127,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			count_length,
 			eq(order_entry.count_length_uuid, count_length.uuid)
-		);
+		)
+		.orderBy(desc(order_entry.created_at));
 
 	const toast = {
 		status: 200,

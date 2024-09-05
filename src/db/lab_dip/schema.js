@@ -26,7 +26,7 @@ export const info = lab_dip.table('info', {
 	order_info_uuid: defaultUUID('order_info_uuid').references(
 		() => zipperSchema.order_info.uuid
 	),
-	lab_status: text('lab_status').default(null),
+	lab_status: integer('lab_status').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

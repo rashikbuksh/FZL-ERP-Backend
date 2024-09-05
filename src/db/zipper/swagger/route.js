@@ -227,8 +227,6 @@ const order_description_fields = {
 	light_preference_name: SE.string('John'),
 	light_preference_short_name: SE.string('John'),
 	garments_wash: SE.uuid(),
-	garments_wash_name: SE.string('John'),
-	garments_wash_short_name: SE.string('John'),
 	puller_link: SE.uuid(),
 	puller_link_name: SE.string('John'),
 	puller_link_short_name: SE.string('John'),

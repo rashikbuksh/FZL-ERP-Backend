@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -500,24 +500,47 @@ export async function selectLCByPartyUuid(req, res, next) {
 }
 
 export async function selectPi(req, res, next) {
-	const piPromise = db
-		.select({
-			value: commercialSchema.pi.uuid,
-			label: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
-		})
-		.from(commercialSchema.pi);
+	const query = sql`
+	SELECT
+		commercial.pi.uuid AS value,
+		CONCAT('PI', TO_CHAR(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0')) AS label,
+		commercial.bank.name AS pi_bank,
+		SUM(commercial.pi_entry.pi_quantity * zipper.order_entry.party_price) AS pi_value,
+		ARRAY_AGG(DISTINCT v_order_details.order_number) AS order_numbers,
+		v_order_details.marketing_name
+	FROM
+		commercial.pi
+	LEFT JOIN
+		commercial.bank ON commercial.pi.bank_uuid = commercial.bank.uuid
+	LEFT JOIN
+		commercial.pi_entry ON commercial.pi.uuid = commercial.pi_entry.pi_uuid
+	LEFT JOIN
+		zipper.sfg ON commercial.pi_entry.sfg_uuid = zipper.sfg.uuid
+	LEFT JOIN
+		zipper.order_entry ON zipper.order_entry.uuid = zipper.sfg.order_entry_uuid
+	LEFT JOIN
+		zipper.v_order_details ON v_order_details.order_description_uuid = zipper.order_entry.order_description_uuid
+	GROUP BY
+		commercial.pi.uuid,
+		commercial.bank.name,
+		v_order_details.order_number,v_order_details.marketing_name;
+	`;
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Pi list',
-	};
-	handleResponse({
-		promise: piPromise,
-		res,
-		next,
-		...toast,
-	});
+	const piPromise = db.execute(query);
+
+	try {
+		const data = await piPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'PI list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 // * HR * //
 //* HR Department *//
@@ -633,6 +656,28 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	} catch (error) {
 		await handleError({ error, res });
 	}
+}
+
+export async function selectLabDipInfo(req, res, next) {
+	const InfoPromise = db
+		.select({
+			value: labDipSchema.info.uuid,
+			label: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
+		})
+		.from(labDipSchema.info);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Info list',
+	};
+
+	handleResponse({
+		promise: InfoPromise,
+		res,
+		next,
+		...toast,
+	});
 }
 
 // * Slider * //

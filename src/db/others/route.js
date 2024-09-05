@@ -92,6 +92,7 @@ otherRouter.get(
 	'/slider-item-name/value/label',
 	otherOperations.selectNameFromDieCastingStock
 );
+otherRouter.get('/lab-dip/info/value/label', otherOperations.selectLabDipInfo);
 
 // * Thread
 
@@ -548,6 +549,10 @@ const pathCommercial = {
 								properties: {
 									value: SE.string('igD0v9DIJQhJeet'),
 									label: SE.string('PI24-0001'),
+									pi_bank: SE.string('AB BANK (PVT) LTD'),
+									pi_value: SE.number(1800.0),
+									order_numbers: SE.string('{Z24-0002}'),
+									marketing_name: SE.string('Mr Shanto'),
 								},
 							},
 						},
@@ -870,6 +875,30 @@ const pathLabDip = {
 										type: 'string',
 										example: 'recipe 1',
 									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/lab-dip/info/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all lab dip info',
+			description: 'All lab dip info',
+			operationId: 'getAllLabDipInfo',
+			responses: {
+				200: {
+					description: 'Returns a all lab dip info.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('LDI24-0001'),
 								},
 							},
 						},

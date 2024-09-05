@@ -197,6 +197,8 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 		.select({
 			recipe_uuid: recipe.uuid,
 			recipe_name: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
+			recipe_created_at: recipe.created_at,
+			recipe_updated_at: recipe.updated_at,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))

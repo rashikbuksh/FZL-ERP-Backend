@@ -314,7 +314,7 @@ export async function getOrderDetails(req, res, next) {
 					ON vod.order_number = order_number_wise_counts.order_number
 					LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
 					WHERE vod.order_description_uuid IS NOT NULL
-					ORDER BY vod.order_number DESC, order_number_wise_rank;`;
+					ORDER BY vod.created_at DESC;`;
 
 	const orderInfoPromise = db.execute(query);
 

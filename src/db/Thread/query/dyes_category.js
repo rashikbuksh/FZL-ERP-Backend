@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -98,7 +98,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(dyes_category.created_by, hrSchema.users.uuid)
-		);
+		)
+		.orderBy(desc(dyes_category.created_at));
 
 	const toast = {
 		status: 200,

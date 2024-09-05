@@ -141,8 +141,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     op_light_preference.name AS light_preference_name,
     op_light_preference.short_name AS light_preference_short_name,
     order_description.garments_wash,
-    op_garments_wash.name AS garments_wash_name,
-    op_garments_wash.short_name AS garments_wash_short_name,
     order_description.puller_link,
     op_puller_link.name AS puller_link_name,
     op_puller_link.short_name AS puller_link_short_name,
@@ -175,7 +173,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_slider_link ON op_slider_link.uuid = order_description.slider_link
      LEFT JOIN properties op_end_user ON op_end_user.uuid = order_description.end_user
      LEFT JOIN properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
-     LEFT JOIN properties op_garments_wash ON op_garments_wash.uuid = order_description.garments_wash
      LEFT JOIN properties op_puller_link ON op_puller_link.uuid = order_description.puller_link;
 
 	`; // required order_description changes

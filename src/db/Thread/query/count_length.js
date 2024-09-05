@@ -70,12 +70,12 @@ export async function remove(req, res, next) {
 		});
 
 	try {
-		await resultPromise;
+		const data = await resultPromise;
 
 		const toast = {
 			status: 201,
 			type: 'delete',
-			message: 'deleted',
+			message: `${data[0].deletedId} deleted`,
 		};
 
 		return await res.status(201).json({ toast });

@@ -34,7 +34,7 @@ export const swatchStatusEnum = zipper.enum('swatch_status_enum', [
 
 export const sliderStartingSectionEnum = zipper.enum(
 	'slider_starting_section_enum',
-	['die_casting', 'slider_assembly', 'coloring']
+	['die_casting', 'slider_assembly', 'coloring', '---']
 );
 
 export const order_info = zipper.table('order_info', {
@@ -142,9 +142,7 @@ export const order_description = zipper.table('order_description', {
 	light_preference: defaultUUID('light_preference').references(
 		() => publicSchema.properties.uuid
 	),
-	garments_wash: defaultUUID('garments_wash').references(
-		() => publicSchema.properties.uuid
-	),
+	garments_wash: text('garments_wash').default(null),
 	puller_link: defaultUUID('puller_link').references(
 		() => publicSchema.properties.uuid
 	),

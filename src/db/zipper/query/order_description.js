@@ -347,8 +347,6 @@ export async function selectAll(req, res, next) {
 			light_preference_name: lightPreferenceProperties.name,
 			light_preference_short_name: lightPreferenceProperties.short_name,
 			garments_wash: order_description.garments_wash,
-			garments_wash_name: garmentsWashProperties.name,
-			garments_wash_short_name: garmentsWashProperties.short_name,
 			puller_link: order_description.puller_link,
 			puller_link_name: pullerLinkProperties.name,
 			puller_link_short_name: pullerLinkProperties.short_name,
@@ -438,10 +436,6 @@ export async function selectAll(req, res, next) {
 				order_description.light_preference,
 				lightPreferenceProperties.uuid
 			)
-		)
-		.leftJoin(
-			garmentsWashProperties,
-			eq(order_description.garments_wash, garmentsWashProperties.uuid)
 		)
 		.leftJoin(
 			pullerLinkProperties,
@@ -541,8 +535,6 @@ export async function select(req, res, next) {
 			light_preference_name: lightPreferenceProperties.name,
 			light_preference_short_name: lightPreferenceProperties.short_name,
 			garments_wash: order_description.garments_wash,
-			garments_wash_name: garmentsWashProperties.name,
-			garments_wash_short_name: garmentsWashProperties.short_name,
 			puller_link: order_description.puller_link,
 			puller_link_name: pullerLinkProperties.name,
 			puller_link_short_name: pullerLinkProperties.short_name,
@@ -635,10 +627,6 @@ export async function select(req, res, next) {
 				order_description.light_preference,
 				lightPreferenceProperties.uuid
 			)
-		)
-		.leftJoin(
-			garmentsWashProperties,
-			eq(order_description.garments_wash, garmentsWashProperties.uuid)
 		)
 		.leftJoin(
 			pullerLinkProperties,
