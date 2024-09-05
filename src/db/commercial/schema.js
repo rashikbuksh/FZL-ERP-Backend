@@ -20,20 +20,27 @@ export const bank = commercial.table('bank', {
 	remarks: text('remarks').default(null),
 });
 
+export const lc_sequence = commercial.sequence('lc_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
 export const lc = commercial.table('lc', {
 	uuid: uuid_primary,
 	party_uuid: defaultUUID('party_uuid').references(
 		() => publicSchema.party.uuid
 	),
-	file_no: text('file_no').notNull(),
+	id: integer('id')
+		.default(sql`nextval('commercial.lc_sequence')`)
+		.notNull(),
 	lc_number: text('lc_number').notNull(),
 	lc_date: text('lc_date').notNull(),
 	payment_value: decimal('payment_value', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0),
 	payment_date: DateTime('payment_date').default(null),
-	ldbc_fdbc: text('ldbc_fdbc').notNull(),
+	ldbc_fdbc: text('ldbc_fdbc').default(null),
 	acceptance_date: DateTime('acceptance_date').default(null),
 	maturity_date: DateTime('maturity_date').default(null),
 	commercial_executive: text('commercial_executive').notNull(),
@@ -41,6 +48,7 @@ export const lc = commercial.table('lc', {
 	production_complete: integer('production_complete').default(0),
 	lc_cancel: integer('lc_cancel').default(0),
 	handover_date: DateTime('handover_date').default(null),
+	document_receive_date: DateTime('document_receive_date').default(null),
 	shipment_date: DateTime('shipment_date').default(null),
 	expiry_date: DateTime('expiry_date').default(null),
 	ud_no: text('ud_no').default(null),

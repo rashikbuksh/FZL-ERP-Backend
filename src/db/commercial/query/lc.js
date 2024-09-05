@@ -92,7 +92,9 @@ export async function selectAll(req, res, next) {
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
 				WHERE pi.lc_uuid = lc.uuid
 			) AS total_value,
-			lc.file_no,
+			concat(
+			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
+			) as file_number,
 			lc.lc_number,
 			lc.lc_date,
 			lc.payment_value,
@@ -105,6 +107,7 @@ export async function selectAll(req, res, next) {
 			lc.production_complete,
 			lc.lc_cancel,
 			lc.handover_date,
+			lc.document_receive_date,
 			lc.shipment_date,
 			lc.expiry_date,
 			lc.ud_no,
@@ -167,7 +170,9 @@ export async function select(req, res, next) {
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
 				WHERE pi.lc_uuid = lc.uuid
 			) AS total_value,
-			lc.file_no,
+			concat(
+			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
+			) as file_number,
 			lc.lc_number,
 			lc.lc_date,
 			lc.payment_value,
@@ -180,6 +185,7 @@ export async function select(req, res, next) {
 			lc.production_complete,
 			lc.lc_cancel,
 			lc.handover_date,
+			lc.document_receive_date,
 			lc.shipment_date,
 			lc.expiry_date,
 			lc.ud_no,
@@ -273,7 +279,9 @@ export async function selectLcByLcNumber(req, res, next) {
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
 				WHERE pi.lc_uuid = lc.uuid
 			) AS total_value,
-			lc.file_no,
+			concat(
+			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
+			) as file_number,
 			lc.lc_number,
 			lc.lc_date,
 			lc.payment_value,
@@ -286,6 +294,7 @@ export async function selectLcByLcNumber(req, res, next) {
 			lc.production_complete,
 			lc.lc_cancel,
 			lc.handover_date,
+			lc.document_receive_date,
 			lc.shipment_date,
 			lc.expiry_date,
 			lc.ud_no,

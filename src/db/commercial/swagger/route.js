@@ -94,10 +94,11 @@ export const pathCommercialLc = {
 				200: SE.response_schema('200', {
 					uuid: SE.uuid('igD0v9DIJQhJeet'),
 					pi_ids: SE.array(SE.string('PI24-0001')),
+					id: SE.integer(1),
+					file_number: SE.string('LC24-0001'),
 					party_uuid: SE.uuid('igD0v9DIJQhJeet'),
 					party_name: SE.string('ABC'),
 					total_value: SE.number(12.3456),
-					file_no: SE.string('123456'),
 					lc_number: SE.string('123456'),
 					lc_date: SE.string('2021-12-12'),
 					payment_value: SE.number(12.3456),
@@ -110,6 +111,7 @@ export const pathCommercialLc = {
 					production_complete: SE.integer(1),
 					lc_cancel: SE.integer(1),
 					handover_date: SE.date_time(),
+					document_receive_date: SE.date_time(),
 					shipment_date: SE.date_time(),
 					expiry_date: SE.date_time(),
 					ud_no: SE.string('ud_no'),
@@ -157,10 +159,11 @@ export const pathCommercialLc = {
 				200: SE.response_schema('200', {
 					uuid: SE.uuid('igD0v9DIJQhJeet'),
 					pi_ids: SE.array(SE.string('PI24-0001')),
+					id: SE.integer(1),
+					file_number: SE.string('LC24-0001'),
 					party_uuid: SE.uuid('igD0v9DIJQhJeet'),
 					party_name: SE.string('ABC'),
 					total_value: SE.number(12.3456),
-					file_no: SE.string('123456'),
 					lc_number: SE.string('123456'),
 					lc_date: SE.string('2021-12-12'),
 					payment_value: SE.number(12.3456),
@@ -173,6 +176,7 @@ export const pathCommercialLc = {
 					production_complete: SE.integer(1),
 					lc_cancel: SE.integer(1),
 					handover_date: SE.date_time(),
+					document_receive_date: SE.date_time(),
 					shipment_date: SE.date_time(),
 					expiry_date: SE.date_time(),
 					ud_no: SE.string('ud_no'),
@@ -309,6 +313,11 @@ export const pathCommercialLc = {
 											example: 'PI24-0001',
 										},
 									},
+									id: {
+										type: 'integer',
+										example: 1,
+									},
+									file_number: SE.string('LC24-0001'),
 									party_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -320,10 +329,6 @@ export const pathCommercialLc = {
 									total_value: {
 										type: 'number',
 										example: 12.3456,
-									},
-									file_no: {
-										type: 'string',
-										example: '123456',
 									},
 									lc_number: {
 										type: 'string',
@@ -377,6 +382,7 @@ export const pathCommercialLc = {
 										format: 'date-time',
 										example: '2024-01-01 00:00:00',
 									},
+									document_receive_date: SE.date_time(),
 									shipment_date: {
 										type: 'string',
 										format: 'date-time',
@@ -611,6 +617,8 @@ export const pathCommercialLc = {
 											example: 'PI24-0001',
 										},
 									},
+									id: SE.integer(1),
+									file_number: SE.string('LC24-0001'),
 									party_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -622,10 +630,6 @@ export const pathCommercialLc = {
 									total_value: {
 										type: 'number',
 										example: 12.3456,
-									},
-									file_no: {
-										type: 'string',
-										example: '123456',
 									},
 									lc_number: {
 										type: 'string',
@@ -679,6 +683,7 @@ export const pathCommercialLc = {
 										format: 'date-time',
 										example: '2024-01-01 00:00:00',
 									},
+									document_receive_date: SE.date_time(),
 									shipment_date: {
 										type: 'string',
 										format: 'date-time',
