@@ -135,15 +135,15 @@ export async function select(req, res, next) {
 			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
 		);
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'coloring_transaction detail',
-	};
-	handleResponse({
-		promise: coloringTransactionPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await coloringTransactionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `${req.params.uuid} selected`,
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

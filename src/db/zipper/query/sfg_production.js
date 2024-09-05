@@ -144,15 +144,19 @@ export async function select(req, res, next) {
 		)
 		.where(eq(sfg_production.uuid, req.params.uuid));
 
-	const data = await sfgProductionPromise;
+	try {
+		const data = await sfgProductionPromise;
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'SFG Production',
-	};
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'SFG Production',
+		};
 
-	return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectBySection(req, res, next) {

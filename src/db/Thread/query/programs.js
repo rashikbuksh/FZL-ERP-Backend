@@ -135,11 +135,16 @@ export async function select(req, res, next) {
 		.leftJoin(hrSchema.users, eq(programs.created_by, hrSchema.users.uuid))
 		.where(eq(programs.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'programs detail',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'programs',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

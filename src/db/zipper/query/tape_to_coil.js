@@ -130,10 +130,16 @@ export async function select(req, res, next) {
 			eq(tape_to_coil.created_by, hrSchema.users.uuid)
 		)
 		.where(eq(tape_to_coil.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'tape_to_coil',
-	};
-	handleResponse({ promise: tapeToCoilPromise, res, next, ...toast });
+
+	try {
+		const data = await tapeToCoilPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_to_coil',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

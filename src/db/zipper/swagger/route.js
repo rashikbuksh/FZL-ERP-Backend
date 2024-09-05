@@ -2244,33 +2244,6 @@ export const pathZipperPlanning = {
 			},
 		},
 	},
-	'/zipper/planning/by/{planning_week}': {
-		get: {
-			tags: ['zipper.planning'],
-			summary: 'Get all Planning by Planning UUID',
-			parameters: [
-				SE.parameter_params(
-					'planning to get',
-					'planning_week',
-					'string'
-				),
-			],
-			responses: {
-				200: SE.response_schema(200, {
-					week: SE.string('24-32'),
-					week_id: SE.string('DP-24-W32'),
-					created_by: SE.uuid(),
-					created_by_name: SE.string('John Doe'),
-					created_at: SE.date_time(),
-					updated_at: SE.date_time(),
-					remarks: SE.string('Remarks'),
-				}),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
-			},
-		},
-	},
 	'/zipper/planning-details/by/{planning_week}': {
 		get: {
 			tags: ['zipper.planning'],
@@ -2279,7 +2252,8 @@ export const pathZipperPlanning = {
 				SE.parameter_params(
 					'planning to get',
 					'planning_week',
-					'string'
+					'string',
+					'24-33'
 				),
 			],
 			responses: {
@@ -2439,7 +2413,7 @@ export const pathZipperPlanningEntry = {
 					'planning entry to get',
 					'planning_week',
 					'string',
-					'24-32'
+					'24-33'
 				),
 			],
 			responses: {

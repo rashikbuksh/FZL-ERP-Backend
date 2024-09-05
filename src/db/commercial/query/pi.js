@@ -242,73 +242,6 @@ export async function select(req, res, next) {
 	}
 }
 
-export async function selectPiByPiUuid(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
-
-	const piPromise = db
-		.select({
-			uuid: pi.uuid,
-			id: sql`concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0'))`,
-			lc_uuid: pi.lc_uuid,
-			lc_number: lc.lc_number,
-			order_info_uuids: pi.order_info_uuids,
-			marketing_uuid: pi.marketing_uuid,
-			marketing_name: publicSchema.marketing.name,
-			party_uuid: pi.party_uuid,
-			party_name: publicSchema.party.name,
-			merchandiser_uuid: pi.merchandiser_uuid,
-			merchandiser_name: publicSchema.merchandiser.name,
-			factory_uuid: pi.factory_uuid,
-			factory_name: publicSchema.factory.name,
-			bank_uuid: pi.bank_uuid,
-			bank_name: bank.name,
-			bank_swift_code: bank.swift_code,
-			bank_address: bank.address,
-			factory_address: publicSchema.factory.address,
-			validity: pi.validity,
-			payment: pi.payment,
-			created_by: pi.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: pi.created_at,
-			updated_at: pi.updated_at,
-			remarks: pi.remarks,
-		})
-		.from(pi)
-		.leftJoin(hrSchema.users, eq(pi.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			publicSchema.marketing,
-			eq(pi.marketing_uuid, publicSchema.marketing.uuid)
-		)
-		.leftJoin(
-			publicSchema.party,
-			eq(pi.party_uuid, publicSchema.party.uuid)
-		)
-		.leftJoin(
-			publicSchema.merchandiser,
-			eq(pi.merchandiser_uuid, publicSchema.merchandiser.uuid)
-		)
-		.leftJoin(
-			publicSchema.factory,
-			eq(pi.factory_uuid, publicSchema.factory.uuid)
-		)
-		.leftJoin(bank, eq(pi.bank_uuid, bank.uuid))
-		.leftJoin(lc, eq(pi.lc_uuid, lc.uuid))
-		.where(eq(pi.uuid, req.params.pi_uuid));
-
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Pi',
-	};
-
-	handleResponse({
-		promise: piPromise,
-		res,
-		next,
-		...toast,
-	});
-}
-
 export async function selectPiDetailsByPiUuid(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
@@ -318,16 +251,16 @@ export async function selectPiDetailsByPiUuid(req, res, next) {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/by/${pi_uuid}`)
+				.get(`${endpoint}/${pi_uuid}`)
 				.then((response) => response);
 
 		const [pi, pi_entry] = await Promise.all([
 			fetchData('/commercial/pi'),
-			fetchData('/commercial/pi-entry'),
+			fetchData('/commercial/pi-entry/by'),
 		]);
 
 		const response = {
-			...pi?.data?.data[0],
+			...pi?.data?.data,
 			pi_entry: pi_entry?.data?.data || [],
 		};
 
@@ -387,16 +320,16 @@ export async function selectPiDetailsByPiId(req, res, next) {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/by/${piUuid.data.data.uuid}`)
+				.get(`${endpoint}/${piUuid.data.data.uuid}`)
 				.then((response) => response);
 
 		const [pi, pi_entry] = await Promise.all([
 			fetchData('/commercial/pi'),
-			fetchData('/commercial/pi-entry'),
+			fetchData('/commercial/pi-entry/by'),
 		]);
 
 		const response = {
-			...pi?.data?.data[0],
+			...pi?.data?.data,
 			pi_entry: pi_entry?.data?.data || [],
 		};
 

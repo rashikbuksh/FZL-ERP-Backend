@@ -142,12 +142,18 @@ export async function select(req, res, next) {
 		)
 		.where(eq(tape_coil_production.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'tape_coil_production',
-	};
-	handleResponse({ promise: tapeCoilProductionPromise, res, next, ...toast });
+	try {
+		const data = await tapeCoilProductionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil_production',
+		};
+
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectTapeCoilProductionBySection(req, res, next) {

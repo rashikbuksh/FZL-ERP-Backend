@@ -134,11 +134,16 @@ export async function select(req, res, next) {
 		)
 		.where(eq(count_length.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'count_length',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'count_length',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

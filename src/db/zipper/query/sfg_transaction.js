@@ -139,15 +139,19 @@ export async function select(req, res, next) {
 		)
 		.where(eq(sfg_transaction.uuid, req.params.uuid));
 
-	const data = await sfgTransactionPromise;
+	try {
+		const data = await sfgTransactionPromise;
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'SFG Transaction',
-	};
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'SFG Transaction',
+		};
 
-	return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectByTrxFrom(req, res, next) {

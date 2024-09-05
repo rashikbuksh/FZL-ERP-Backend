@@ -129,15 +129,15 @@ export async function select(req, res, next) {
 		)
 		.where(eq(properties.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Property',
-	};
-	handleResponse({
-		promise: propertiesPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await propertiesPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Property by uuid',
+		};
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

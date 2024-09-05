@@ -142,49 +142,18 @@ export async function select(req, res, next) {
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.where(eq(recipe.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Recipe',
-	};
-	handleResponse({ promise: recipePromise, res, next, ...toast });
-}
 
-export async function selectRecipeByRecipeUuid(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
-
-	const recipePromise = db
-		.select({
-			uuid: recipe.uuid,
-			id: recipe.id,
-			recipe_id: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'))`,
-			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
-			order_info_uuid: info.order_info_uuid,
-			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
-			name: recipe.name,
-			approved: recipe.approved,
-			created_by: recipe.created_by,
-			created_by_name: hrSchema.users.name,
-			status: recipe.status,
-			created_at: recipe.created_at,
-			updated_at: recipe.updated_at,
-			remarks: recipe.remarks,
-		})
-		.from(recipe)
-		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
-		.leftJoin(info, eq(recipe.lab_dip_info_uuid, info.uuid))
-		.leftJoin(
-			zipperSchema.order_info,
-			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.where(eq(recipe.uuid, req.params.recipe_uuid));
-
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Recipe',
-	};
-	handleResponse({ promise: recipePromise, res, next, ...toast });
+	try {
+		const data = await recipePromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Recipe',
+		};
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
@@ -196,16 +165,16 @@ export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/by/${recipe_uuid}`)
+				.get(`${endpoint}/${recipe_uuid}`)
 				.then((response) => response);
 
 		const [recipe, recipe_entry] = await Promise.all([
 			fetchData('/lab-dip/recipe'),
-			fetchData('/lab-dip/recipe-entry'),
+			fetchData('/lab-dip/recipe-entry/by'),
 		]);
 
 		const response = {
-			...recipe?.data?.data[0],
+			...recipe?.data?.data,
 			recipe_entry: recipe_entry?.data?.data || [],
 		};
 

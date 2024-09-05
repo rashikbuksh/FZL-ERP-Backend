@@ -191,17 +191,18 @@ export async function select(req, res, next) {
 		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_week))
 		.where(eq(planning_entry.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'batch entry',
-	};
-	handleResponse({
-		promise: planningEntryPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await planningEntryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'planning_entry',
+		};
+
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectPlanningEntryByPlanningWeek(req, res, next) {

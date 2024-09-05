@@ -16,10 +16,6 @@ labDipRouter.post('/info', infoOperations.insert);
 labDipRouter.put('/info/:uuid', infoOperations.update);
 labDipRouter.delete('/info/:uuid', validateUuidParam(), infoOperations.remove);
 labDipRouter.get(
-	'/info/by/:lab_dip_info_uuid',
-	infoOperations.selectInfoByLabDipInfoUuid
-);
-labDipRouter.get(
 	'/info/details/:lab_dip_info_uuid',
 	infoOperations.selectInfoRecipeByLabDipInfoUuid
 );
@@ -34,10 +30,6 @@ labDipRouter.delete(
 	'/recipe/:uuid',
 	validateUuidParam(),
 	recipeOperations.remove
-);
-labDipRouter.get(
-	'/recipe/by/:recipe_uuid',
-	recipeOperations.selectRecipeByRecipeUuid
 );
 labDipRouter.get(
 	'/recipe/details/:recipe_uuid',
@@ -79,16 +71,10 @@ labDipRouter.get(
 // shade recipe routes
 
 labDipRouter.get('/shade-recipe', shadeRecipeOperations.selectAll);
-labDipRouter.get(
-	'/shade-recipe/:uuid',
-	shadeRecipeOperations.select
-);
+labDipRouter.get('/shade-recipe/:uuid', shadeRecipeOperations.select);
 labDipRouter.post('/shade-recipe', shadeRecipeOperations.insert);
 labDipRouter.put('/shade-recipe/:uuid', shadeRecipeOperations.update);
-labDipRouter.delete(
-	'/shade-recipe/:uuid',
-	shadeRecipeOperations.remove
-);
+labDipRouter.delete('/shade-recipe/:uuid', shadeRecipeOperations.remove);
 labDipRouter.get(
 	'/shade-recipe-details/by/:shade_recipe_uuid',
 	shadeRecipeOperations.selectShadeRecipeDetailsByShadeRecipeUuid

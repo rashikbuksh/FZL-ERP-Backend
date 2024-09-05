@@ -118,12 +118,19 @@ export async function select(req, res, next) {
 		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid))
 		.where(eq(recipe_entry.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Recipe_entry',
-	};
-	handleResponse({ promise: recipe_entryPromise, res, next, ...toast });
+	try {
+		const data = await recipe_entryPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Recipe_entry',
+		};
+
+		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectRecipeEntryByRecipeUuid(req, res, next) {

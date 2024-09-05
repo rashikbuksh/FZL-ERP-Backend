@@ -207,7 +207,7 @@ export async function select(req, res, next) {
 			msg: 'Stock to SFG',
 		};
 
-		res.status(200).json({ toast, data: data?.rows });
+		res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}

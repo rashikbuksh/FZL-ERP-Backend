@@ -128,15 +128,17 @@ export async function select(req, res, next) {
 		.leftJoin(party, eq(factory.party_uuid, party.uuid))
 		.leftJoin(hrSchema.users, eq(factory.created_by, hrSchema.users.uuid))
 		.where(eq(factory.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Factory',
-	};
-	handleResponse({
-		promise: factoryPromise,
-		res,
-		next,
-		...toast,
-	});
+	
+	try {
+		const data = await factoryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Factory by uuid',
+		};
+		return res.status(200).json({ toast, data: data[0] });
+	}
+	catch (error) {
+		await handleError({ error, res });
+	}
 }

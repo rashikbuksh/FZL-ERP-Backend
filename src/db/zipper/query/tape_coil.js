@@ -87,12 +87,18 @@ export async function select(req, res, next) {
 		.select()
 		.from(tape_coil)
 		.where(eq(tape_coil.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'tape_coil',
-	};
-	handleResponse({ promise: tapeCoilPromise, res, next, ...toast });
+
+	try {
+		const data = await tapeCoilPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectByNylon(req, res, next) {

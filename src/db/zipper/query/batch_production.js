@@ -129,16 +129,17 @@ export async function select(req, res, next) {
 			eq(batch_production.created_by, hrSchema.users.uuid)
 		)
 		.where(eq(batch_production.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'batch_production',
-	};
 
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'batch_production',
+		};
+
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

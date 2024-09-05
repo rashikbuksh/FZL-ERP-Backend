@@ -39,7 +39,6 @@ commercialRouter.get('/pi/:uuid', piOperations.select);
 commercialRouter.post('/pi', piOperations.insert);
 commercialRouter.put('/pi/:uuid', piOperations.update);
 commercialRouter.delete('/pi/:uuid', piOperations.remove);
-commercialRouter.get('/pi/by/:pi_uuid', piOperations.selectPiByPiUuid);
 commercialRouter.get(
 	'/pi/details/:pi_uuid',
 	piOperations.selectPiDetailsByPiUuid
@@ -53,11 +52,11 @@ commercialRouter.put(
 	'/pi-lc-null/:pi_uuid',
 	piOperations.updatePiToNullByPiUuid
 );
+commercialRouter.get('/pi-uuid/:pi_id', piOperations.selectPiUuidByPiId);
 commercialRouter.get(
-	'/pi-uuid/:pi_id',
-	piOperations.selectPiUuidByPiId
+	'/pi/details/by/pi-id/:pi_id',
+	piOperations.selectPiDetailsByPiId
 );
-commercialRouter.get('/pi/details/by/pi-id/:pi_id', piOperations.selectPiDetailsByPiId);
 
 // pi_entry routes
 commercialRouter.get('/pi-entry', piEntryOperations.selectAll);

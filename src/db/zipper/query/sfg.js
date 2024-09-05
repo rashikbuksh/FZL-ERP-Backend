@@ -143,13 +143,17 @@ export async function select(req, res, next) {
 		)
 		.where(eq(sfg.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'sfg',
-	};
-
-	handleResponse({ promise: sfgPromise, res, next, ...toast });
+	try {
+		const data = await sfgPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'sfg',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectSwatchInfo(req, res, next) {

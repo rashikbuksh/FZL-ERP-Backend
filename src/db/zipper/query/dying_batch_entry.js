@@ -99,11 +99,18 @@ export async function select(req, res, next) {
 		.from(dying_batch_entry)
 		.where(eq(dying_batch_entry.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'dying_batch_entry',
-	};
-
-	handleResponse({ promise: dyingBatchEntryPromise, res, next, ...toast });
+	try {
+		const data = await dyingBatchEntryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `${data[0].uuid} selected`,
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
 }

@@ -129,13 +129,19 @@ export async function select(req, res, next) {
 		)
 		.where(eq(production.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'production',
-	};
+	try {
+		const data = await resultPromise;
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'production',
+		};
+
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectProductionBySection(req, res, next) {

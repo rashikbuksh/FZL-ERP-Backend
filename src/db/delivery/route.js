@@ -25,11 +25,6 @@ deliveryRouter.delete(
 	packingListOperations.remove
 );
 deliveryRouter.get(
-	'/packing-list/by/:packing_list_uuid',
-	packingListOperations.selectPackingListByPackingListUuid
-);
-
-deliveryRouter.get(
 	'/packing-list/details/:packing_list_uuid',
 	packingListOperations.selectPackingListDetailsByPackingListUuid
 );
@@ -74,11 +69,6 @@ deliveryRouter.delete(
 
 	challanOperations.remove
 );
-deliveryRouter.get(
-	'/challan/by/:challan_uuid',
-	challanOperations.selectChallanByChallanUuid
-);
-
 deliveryRouter.get(
 	'/challan/details/:challan_uuid',
 	challanOperations.selectChallanDetailsByChallanUuid

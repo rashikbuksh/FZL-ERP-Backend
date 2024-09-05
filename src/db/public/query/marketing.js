@@ -139,16 +139,16 @@ export async function select(req, res, next) {
 		)
 		.where(eq(marketing.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Marketing',
-	};
+	try {
+		const data = await marketingPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Marketing',
+		};
 
-	handleResponse({
-		promise: marketingPromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

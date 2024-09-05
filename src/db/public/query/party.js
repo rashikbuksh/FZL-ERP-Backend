@@ -128,15 +128,16 @@ export async function select(req, res, next) {
 		.from(party)
 		.leftJoin(hrSchema.users, eq(party.created_by, hrSchema.users.uuid))
 		.where(eq(party.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Party',
-	};
-	handleResponse({
-		promise: partyPromise,
-		res,
-		next,
-		...toast,
-	});
+
+	try {
+		const data = await partyPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `${data[0].name} selected`,
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

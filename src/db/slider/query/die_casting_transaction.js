@@ -129,18 +129,18 @@ export async function select(req, res, next) {
 		)
 		.where(eq(die_casting_transaction.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'die_casting_transaction',
-	};
+	try {
+		const data = await dieCastingTransactionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'die_casting_transaction by uuid',
+		};
 
-	handleResponse({
-		promise: dieCastingTransactionPromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectDieCastingForSliderStockByOrderInfoUuid(

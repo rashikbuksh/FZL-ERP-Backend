@@ -9,7 +9,6 @@ import { batch_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	
 
 	const resultPromise = db
 		.insert(batch_entry)
@@ -116,12 +115,18 @@ export async function select(req, res, next) {
 		})
 		.from(batch_entry)
 		.where(eq(batch_entry.uuid, req.params.uuid));
-	const toast = {
-		status: 201,
-		type: 'select',
-		message: 'batch_entry',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 201,
+			type: 'select',
+			message: 'batch_entry',
+		};
+		return await res.status(201).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function getOrderDetailsForBatchEntry(req, res, next) {

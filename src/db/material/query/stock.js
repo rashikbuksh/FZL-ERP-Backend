@@ -165,13 +165,17 @@ export async function select(req, res, next) {
 		.leftJoin(info, eq(stock.material_uuid, info.uuid))
 		.where(eq(stock.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Stock',
-	};
-
-	handleResponse({ promise: stockPromise, res, next, ...toast });
+	try {
+		const data = await stockPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Stock',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectMaterialBelowThreshold(req, res, next) {

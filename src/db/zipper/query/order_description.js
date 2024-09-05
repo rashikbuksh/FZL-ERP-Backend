@@ -650,18 +650,17 @@ export async function select(req, res, next) {
 		)
 		.where(eq(order_description.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Order description',
-	};
-
-	handleResponse({
-		promise: orderDescriptionPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await orderDescriptionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Description',
+		};
+		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectOrderDescriptionFullByOrderDescriptionUuid(

@@ -134,39 +134,6 @@ export async function select(req, res, next) {
 	}
 }
 
-export async function selectPackingListByPackingListUuid(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
-
-	const packing_listPromise = db
-		.select({
-			uuid: packing_list.uuid,
-			carton_size: packing_list.carton_size,
-			carton_weight: packing_list.carton_weight,
-			created_by: packing_list.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: packing_list.created_at,
-			updated_at: packing_list.updated_at,
-			remarks: packing_list.remarks,
-		})
-		.from(packing_list)
-		.leftJoin(
-			hrSchema.users,
-			eq(packing_list.created_by, hrSchema.users.uuid)
-		)
-		.where(eq(packing_list.uuid, req.params.packing_list_uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Packing list',
-	};
-	handleResponse({
-		promise: packing_listPromise,
-		res,
-		next,
-		...toast,
-	});
-}
-
 export async function selectPackingListDetailsByPackingListUuid(
 	req,
 	res,
@@ -180,16 +147,16 @@ export async function selectPackingListDetailsByPackingListUuid(
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/by/${packing_list_uuid}`)
+				.get(`${endpoint}/${packing_list_uuid}`)
 				.then((response) => response);
 
 		const [packing_list, packing_list_entry] = await Promise.all([
 			fetchData('/delivery/packing-list'),
-			fetchData('/delivery/packing-list-entry'),
+			fetchData('/delivery/packing-list-entry/by'),
 		]);
 
 		const response = {
-			...packing_list?.data?.data[0],
+			...packing_list?.data?.data,
 			challan_entry: packing_list_entry?.data?.data || [],
 		};
 

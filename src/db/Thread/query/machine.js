@@ -120,11 +120,16 @@ export async function select(req, res, next) {
 		.leftJoin(hrSchema.users, eq(machine.created_by, hrSchema.users.uuid))
 		.where(eq(machine.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Machine',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Machine',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

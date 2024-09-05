@@ -128,13 +128,18 @@ export async function select(req, res, next) {
 		)
 		.where(eq(entry.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Entry',
-	};
+	try {
+		const data = await entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Entry',
+		};
 
-	handleResponse({ promise: entryPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectEntryByPurchaseDescriptionUuid(req, res, next) {

@@ -129,16 +129,17 @@ export async function select(req, res, next) {
 		.from(buyer)
 		.leftJoin(hrSchema.users, eq(buyer.created_by, hrSchema.users.uuid))
 		.where(eq(buyer.uuid, req.params.uuid));
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Buyer',
-	};
 
-	handleResponse({
-		promise: buyerPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await buyerPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Buyer by uuid',
+		};
+
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

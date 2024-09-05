@@ -165,7 +165,7 @@ export async function select(req, res, next) {
 			message: 'die_casting_production',
 		};
 
-		return await res.status(200).json({ toast, data: data?.rows });
+		return await res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}

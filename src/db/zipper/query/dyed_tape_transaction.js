@@ -138,11 +138,11 @@ export async function select(req, res, next) {
 
 		const toast = {
 			status: 200,
-			type: 'select_all',
+			type: 'select',
 			message: 'dyed_tape_transaction list',
 		};
 
-		return res.status(200).json({ toast, data: data?.rows });
+		return res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}

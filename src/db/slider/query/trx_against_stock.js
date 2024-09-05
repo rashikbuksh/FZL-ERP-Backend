@@ -120,11 +120,15 @@ export async function select(req, res, next) {
 		)
 		.where(eq(trx_against_stock.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Trx against stock detail',
-	};
-
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 201,
+			type: 'select',
+			message: `${data[0].uuid} selected`,
+		};
+		return await res.status(201).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

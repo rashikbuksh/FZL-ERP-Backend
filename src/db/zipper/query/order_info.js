@@ -282,18 +282,18 @@ export async function select(req, res, next) {
 		)
 		.where(eq(order_info.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Order Info',
-	};
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Info',
+		};
 
-	handleResponse({
-		promise: orderInfoPromise,
-		res,
-		next,
-		...toast,
-	});
+		res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function getOrderDetails(req, res, next) {

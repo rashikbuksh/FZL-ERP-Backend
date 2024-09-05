@@ -132,15 +132,16 @@ export async function select(req, res, next) {
 		)
 		.where(eq(merchandiser.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Merchandiser',
-	};
-	handleResponse({
-		promise: merchandiserPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await merchandiserPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Merchandiser by uuid',
+		};
+
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

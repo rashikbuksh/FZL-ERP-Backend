@@ -324,12 +324,17 @@ export async function select(req, res, next) {
 		)
 		.where(eq(stock.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'stock',
-	};
-	handleResponse({ promise: stockPromise, res, next, ...toast });
+	try {
+		const data = await stockPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'stock',
+		};
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectStockByFromSection(req, res, next) {
