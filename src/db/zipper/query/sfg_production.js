@@ -14,7 +14,10 @@ export async function insert(req, res, next) {
 	const sfgProductionPromise = db
 		.insert(sfg_production)
 		.values(req.body)
-		.returning({ insertedId: sfg_production.sfg_uuid });
+		.returning({
+			insertedId: sfg_production.sfg_uuid,
+			insertedSection: sfg_production.section,
+		});
 	try {
 		const data = await sfgProductionPromise;
 
@@ -36,7 +39,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedId} inserted`,
+			message: `${data[0].insertedSection} production inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
