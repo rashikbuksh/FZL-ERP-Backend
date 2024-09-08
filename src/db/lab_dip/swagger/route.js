@@ -34,6 +34,10 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
 									buyer_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -183,6 +187,10 @@ export const pathLabDipInfo = {
 									order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
 									},
 									buyer_uuid: {
 										type: 'string',
@@ -368,6 +376,10 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
 									buyer_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -496,6 +508,10 @@ export const pathLabDipRecipe = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									info_id: {
+										type: 'string',
+										example: 'LDI24-0001',
+									},
 									order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -617,6 +633,10 @@ export const pathLabDipRecipe = {
 									lab_dip_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
+									},
+									info_id: {
+										type: 'string',
+										example: 'LDI24-0001',
 									},
 									order_info_uuid: {
 										type: 'string',
@@ -777,6 +797,10 @@ export const pathLabDipRecipe = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									info_id: {
+										type: 'string',
+										example: 'LDI24-0001',
+									},
 									order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -841,6 +865,18 @@ export const pathLabDipRecipe = {
 											quantity: {
 												type: 'number',
 												example: 10.0,
+											},
+											material_uuid: {
+												type: 'string',
+												example: 'igD0v9DIJQhJeet',
+											},
+											material_name: {
+												type: 'string',
+												example: 'Material 1',
+											},
+											unit: {
+												type: 'string',
+												example: 'kg',
 											},
 											created_at: {
 												type: 'string',
@@ -911,6 +947,10 @@ export const pathLabDipRecipe = {
 									lab_dip_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
+									},
+									info_id: {
+										type: 'string',
+										example: 'LDI24-0001',
 									},
 									order_info_uuid: {
 										type: 'string',
@@ -1079,6 +1119,18 @@ export const pathLabDipRecipeEntry = {
 									quantity: {
 										type: 'number',
 										example: 10.0,
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'Material 1',
+									},
+									unit: {
+										type: 'string',
+										example: 'kg',
 									},
 									created_at: {
 										type: 'string',
@@ -1265,6 +1317,18 @@ export const pathLabDipRecipeEntry = {
 									quantity: {
 										type: 'number',
 										example: 10.0,
+									},
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'Material 1',
+									},
+									unit: {
+										type: 'string',
+										example: 'kg',
 									},
 									created_at: {
 										type: 'string',
