@@ -5,6 +5,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import * as materialSchema from '../../material/schema.js';
 import { recipe, recipe_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -85,12 +86,19 @@ export async function selectAll(req, res, next) {
 			recipe_name: recipe.name,
 			color: recipe_entry.color,
 			quantity: recipe_entry.quantity,
+			material_uuid: recipe_entry.material_uuid,
+			material_name: materialSchema.info.name,
+			unit: materialSchema.info.unit,
 			created_at: recipe_entry.created_at,
 			updated_at: recipe_entry.updated_at,
 			remarks: recipe_entry.remarks,
 		})
 		.from(recipe_entry)
-		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid));
+		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid))
+		.leftJoin(
+			materialSchema.info,
+			eq(materialSchema.info.uuid, recipe_entry.material_uuid)
+		);
 
 	const toast = {
 		status: 200,
@@ -110,12 +118,19 @@ export async function select(req, res, next) {
 			recipe_name: recipe.name,
 			color: recipe_entry.color,
 			quantity: recipe_entry.quantity,
+			material_uuid: recipe_entry.material_uuid,
+			material_name: materialSchema.info.name,
+			unit: materialSchema.info.unit,
 			created_at: recipe_entry.created_at,
 			updated_at: recipe_entry.updated_at,
 			remarks: recipe_entry.remarks,
 		})
 		.from(recipe_entry)
 		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid))
+		.leftJoin(
+			materialSchema.info,
+			eq(materialSchema.info.uuid, recipe_entry.material_uuid)
+		)
 		.where(eq(recipe_entry.uuid, req.params.uuid));
 
 	try {
@@ -143,12 +158,19 @@ export async function selectRecipeEntryByRecipeUuid(req, res, next) {
 			recipe_name: recipe.name,
 			color: recipe_entry.color,
 			quantity: recipe_entry.quantity,
+			material_uuid: recipe_entry.material_uuid,
+			material_name: materialSchema.info.name,
+			unit: materialSchema.info.unit,
 			created_at: recipe_entry.created_at,
 			updated_at: recipe_entry.updated_at,
 			remarks: recipe_entry.remarks,
 		})
 		.from(recipe_entry)
 		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid))
+		.leftJoin(
+			materialSchema.info,
+			eq(materialSchema.info.uuid, recipe_entry.material_uuid)
+		)
 		.where(eq(recipe_entry.recipe_uuid, req.params.recipe_uuid));
 
 	const toast = {

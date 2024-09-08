@@ -1,12 +1,5 @@
 import { sql } from 'drizzle-orm';
-import {
-	decimal,
-	integer,
-	pgSchema,
-	serial,
-	text,
-	uuid,
-} from 'drizzle-orm/pg-core';
+import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as materialSchema from '../material/schema.js';
 import {
@@ -56,6 +49,9 @@ export const recipe_entry = lab_dip.table('recipe_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	material_uuid: defaultUUID('material_uuid').references(
+		() => materialSchema.info.uuid
+	),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
