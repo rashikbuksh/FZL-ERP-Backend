@@ -224,7 +224,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			vod.item_description,
 			be_given.given_quantity,
 			be_given.given_production_quantity,
-			be_given.given_production_quantity_in_kg
+			be_given.given_production_quantity_in_kg,
+			coalesce(be_given.given_quantity,0) as balance_quantity
 		FROM
 			zipper.sfg sfg
 		LEFT JOIN 

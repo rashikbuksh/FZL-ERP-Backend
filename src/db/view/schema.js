@@ -99,9 +99,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.hand,
     op_hand.name AS hand_name,
     op_hand.short_name AS hand_short_name,
-    order_description.stopper_type,
-    op_stopper.name AS stopper_type_name,
-    op_stopper.short_name AS stopper_type_short_name,
     order_description.coloring_type,
     op_coloring.name AS coloring_type_name,
     op_coloring.short_name AS coloring_type_short_name,
@@ -163,7 +160,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_teeth_color ON op_teeth_color.uuid = order_description.teeth_color
      LEFT JOIN properties op_puller_color ON op_puller_color.uuid = order_description.puller_color
      LEFT JOIN properties op_hand ON op_hand.uuid = order_description.hand
-     LEFT JOIN properties op_stopper ON op_stopper.uuid = order_description.stopper_type
      LEFT JOIN properties op_coloring ON op_coloring.uuid = order_description.coloring_type
      LEFT JOIN properties op_slider ON op_slider.uuid = order_description.slider
      LEFT JOIN properties op_top_stopper ON op_top_stopper.uuid = order_description.top_stopper
@@ -174,7 +170,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_end_user ON op_end_user.uuid = order_description.end_user
      LEFT JOIN properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
      LEFT JOIN properties op_puller_link ON op_puller_link.uuid = order_description.puller_link;
-
 	`; // required order_description changes
 
 export const OrderPlanningView = `
@@ -191,7 +186,6 @@ SELECT
     oe.color AS color, 
     oe.size AS size, 
     vodf.item_name AS item_name, 
-    vodf.stopper_type_name AS stopper_type, 
     vodf.zipper_name AS zipper_number, 
     vodf.end_name AS end_type, 
     oe.size AS zipper_size, 
@@ -233,7 +227,6 @@ SElECT
     od.uuid as order_description_uuid,
 	od.item as item,
 	properties.name as item_name,
-	CASE WHEN (properties.name = 'nylon') THEN od.stopper_type as stopper_type ELSE 'N/A' END as stopper_type,
 	order_info.status as status,
 	SUM(order_entry.quantity) as total
 FROM
@@ -244,7 +237,6 @@ FROM
 GROUP BY
 	od.uuid,
 	properties.name,
-	od.stopper_type,
 	order_info.status,
 	CASE 
         WHEN od.status = 0 THEN 'not_approved' 
@@ -265,7 +257,6 @@ SELECT
 	oe.color as color,
 	oe.size as size,
 	od.item as item_name,
-	od.stopper_type as stopper_type,
 	od.zipper_number as zipper_number,
 	od.end_type as end_type,
 	oe.size as zipper_size,

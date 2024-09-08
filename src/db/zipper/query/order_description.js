@@ -78,7 +78,6 @@ export async function insert(req, res, next) {
 		puller_color,
 		special_requirement,
 		hand,
-		stopper_type,
 		coloring_type,
 		is_slider_provided,
 		slider,
@@ -117,7 +116,6 @@ export async function insert(req, res, next) {
 			puller_color,
 			special_requirement,
 			hand,
-			stopper_type,
 			coloring_type,
 			is_slider_provided,
 			slider,
@@ -171,7 +169,6 @@ export async function update(req, res, next) {
 		puller_color,
 		special_requirement,
 		hand,
-		stopper_type,
 		coloring_type,
 		is_slider_provided,
 		slider,
@@ -210,7 +207,6 @@ export async function update(req, res, next) {
 			puller_color,
 			special_requirement,
 			hand,
-			stopper_type,
 			coloring_type,
 			is_slider_provided,
 			slider,
@@ -306,9 +302,6 @@ export async function selectAll(req, res, next) {
 			hand: order_description.hand,
 			hand_name: handProperties.name,
 			hand_short_name: handProperties.short_name,
-			stopper_type: order_description.stopper_type,
-			stopper_type_name: stopperProperties.name,
-			stopper_type_short_name: stopperProperties.short_name,
 			coloring_type: order_description.coloring_type,
 			coloring_type_name: coloringProperties.name,
 			coloring_type_short_name: coloringProperties.short_name,
@@ -390,10 +383,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			handProperties,
 			eq(order_description.hand, handProperties.uuid)
-		)
-		.leftJoin(
-			stopperProperties,
-			eq(order_description.stopper_type, stopperProperties.uuid)
 		)
 		.leftJoin(
 			coloringProperties,
@@ -494,9 +483,6 @@ export async function select(req, res, next) {
 			hand: order_description.hand,
 			hand_name: handProperties.name,
 			hand_short_name: handProperties.short_name,
-			stopper_type: order_description.stopper_type,
-			stopper_type_name: stopperProperties.name,
-			stopper_type_short_name: stopperProperties.short_name,
 			coloring_type: order_description.coloring_type,
 			coloring_type_name: coloringProperties.name,
 			coloring_type_short_name: coloringProperties.short_name,
@@ -581,10 +567,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			handProperties,
 			eq(order_description.hand, handProperties.uuid)
-		)
-		.leftJoin(
-			stopperProperties,
-			eq(order_description.stopper_type, stopperProperties.uuid)
 		)
 		.leftJoin(
 			coloringProperties,

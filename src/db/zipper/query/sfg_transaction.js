@@ -157,7 +157,7 @@ export async function select(req, res, next) {
 export async function selectByTrxFrom(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { item_name, stopper_type } = req.query;
+	const { item_name } = req.query;
 
 	const query = sql`
 		SELECT
@@ -205,12 +205,6 @@ export async function selectByTrxFrom(req, res, next) {
 
 	if (item_name) {
 		query.append(sql` AND lower(vodf.item_name) = lower(${item_name})`);
-	}
-
-	if (stopper_type) {
-		query.append(
-			sql` AND lower(vodf.stopper_type_name) = lower(${stopper_type})`
-		);
 	}
 
 	const sfgProductionPromise = db.execute(query);

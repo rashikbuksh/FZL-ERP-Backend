@@ -36,6 +36,7 @@ export const description = purchase.table('description', {
 	vendor_uuid: defaultUUID('vendor_uuid').references(() => vendor.uuid),
 	is_local: integer('is_local').notNull(),
 	lc_number: text('lc_number').default(null),
+	challan_number: text('challan_number').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

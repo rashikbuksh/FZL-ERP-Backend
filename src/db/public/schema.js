@@ -5,7 +5,7 @@ import * as hrSchema from '../hr/schema.js';
 
 export const buyer = pgTable('buyer', {
 	uuid: uuid_primary,
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	short_name: text('short_name').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -15,7 +15,7 @@ export const buyer = pgTable('buyer', {
 
 export const party = pgTable('party', {
 	uuid: uuid_primary,
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	short_name: text('short_name').notNull(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -25,7 +25,7 @@ export const party = pgTable('party', {
 
 export const marketing = pgTable('marketing', {
 	uuid: uuid_primary,
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	short_name: text('short_name').default(null),
 	user_uuid: defaultUUID('user_uuid').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
@@ -37,7 +37,7 @@ export const marketing = pgTable('marketing', {
 export const merchandiser = pgTable('merchandiser', {
 	uuid: uuid_primary,
 	party_uuid: defaultUUID('party_uuid').references(() => party.uuid),
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	email: text('email').default(null),
 	phone: text('phone').default(null),
 	address: text('address').default(null),
@@ -50,7 +50,7 @@ export const merchandiser = pgTable('merchandiser', {
 export const factory = pgTable('factory', {
 	uuid: uuid_primary,
 	party_uuid: defaultUUID('party_uuid').references(() => party.uuid),
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	phone: text('phone').default(null),
 	address: text('address').default(null),
 	created_at: DateTime('created_at').notNull(),
@@ -71,7 +71,7 @@ export const properties = pgTable('properties', {
 	item_for: text('item_for').notNull(),
 	type: text('type').notNull(),
 	name: text('name').notNull(),
-	short_name: text('short_name').default(null),
+	short_name: text('short_name').notNull(),
 	created_by: defaultUUID('created_by'),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

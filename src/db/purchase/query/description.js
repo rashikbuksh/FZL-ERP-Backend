@@ -7,7 +7,8 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { description, vendor } from '../schema.js';
+import material, * as materialSchema from '../../material/schema.js';
+import { description, entry, vendor } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -90,6 +91,7 @@ export async function selectAll(req, res, next) {
 			vendor_name: vendor.name,
 			is_local: description.is_local,
 			lc_number: description.lc_number,
+			challan_number: description.challan_number,
 			created_by: description.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: description.created_at,
@@ -123,6 +125,7 @@ export async function select(req, res, next) {
 			vendor_name: vendor.name,
 			is_local: description.is_local,
 			lc_number: description.lc_number,
+			challan_number: description.challan_number,
 			created_by: description.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: description.created_at,
@@ -135,7 +138,6 @@ export async function select(req, res, next) {
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)
 		)
-
 		.where(eq(description.uuid, req.params.uuid));
 
 	try {
@@ -185,6 +187,53 @@ export async function selectPurchaseDetailsByPurchaseDescriptionUuid(
 		};
 
 		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
+	const resultPromise = db
+		.select({
+			uuid: description.uuid,
+			purchase_id: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+			vendor_uuid: description.vendor_uuid,
+			vendor_name: vendor.name,
+			is_local: description.is_local,
+			lc_number: description.lc_number,
+			challan_number: description.challan_number,
+			material_uuid: entry.material_uuid,
+			material_name: materialSchema.info.name,
+			quantity: entry.quantity,
+			price: entry.price,
+			unit: materialSchema.info.unit,
+			created_by: description.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: description.created_at,
+			updated_at: description.updated_at,
+			remarks: description.remarks,
+			entry_remarks: entry.remarks,
+		})
+		.from(description)
+		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(description.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(entry, eq(description.uuid, entry.purchase_description_uuid))
+		.leftJoin(
+			materialSchema.info,
+			eq(entry.material_uuid, materialSchema.info.uuid)
+		);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Description list',
+		};
+		return res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

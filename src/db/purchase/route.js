@@ -33,6 +33,10 @@ purchaseRouter.get(
 	'/purchase-details/by/:purchase_description_uuid',
 	descriptionOperations.selectPurchaseDetailsByPurchaseDescriptionUuid
 );
+purchaseRouter.get(
+	'/purchase-log',
+	descriptionOperations.selectAllPurchaseDescriptionAndEntry
+);
 
 // Entry routes
 purchaseRouter.get('/entry', entryOperations.selectAll);

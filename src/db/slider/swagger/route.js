@@ -598,15 +598,6 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'puller link short name',
 									},
-									stopper_type: SE.uuid(),
-									stopper_type_name: {
-										type: 'string',
-										example: 'stopper type name',
-									},
-									stopper_type_short_name: {
-										type: 'string',
-										example: 'stopper type short name',
-									},
 									quantity: SE.number(1),
 									weight: SE.number(1),
 									pcs_per_kg: SE.number(1),
@@ -800,18 +791,6 @@ export const pathSliderDieCasting = {
 							puller_link_short_name: {
 								type: 'string',
 								example: 'puller link short name',
-							},
-							stopper_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							stopper_type_name: {
-								type: 'string',
-								example: 'stopper type name',
-							},
-							stopper_type_short_name: {
-								type: 'string',
-								example: 'stopper type short name',
 							},
 							quantity: {
 								type: 'number',

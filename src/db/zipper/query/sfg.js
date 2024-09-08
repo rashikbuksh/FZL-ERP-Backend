@@ -220,7 +220,7 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 export async function selectSfgBySection(req, res, next) {
 	const { section } = req.params;
 
-	const { item_name, stopper_type } = req.query;
+	const { item_name } = req.query;
 
 	const query = sql`
 		SELECT
@@ -240,9 +240,6 @@ export async function selectSfgBySection(req, res, next) {
 			od.item,
 			op_item.name as item_name,
 			op_item.short_name as item_short_name,
-			od.stopper_type,
-			op_stopper_type.name as stopper_type_name,
-			op_stopper_type.short_name as stopper_type_short_name,
 			od.coloring_type,
 			op_coloring_type.name as coloring_type_name,
 			op_coloring_type.short_name as coloring_type_short_name,
@@ -285,7 +282,6 @@ export async function selectSfgBySection(req, res, next) {
 			LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
 			LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
 			LEFT JOIN public.properties op_item ON od.item = op_item.uuid
-			LEFT JOIN public.properties op_stopper_type ON od.stopper_type = op_stopper_type.uuid
 			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
 			LEFT JOIN slider.stock ss ON vod.order_info_uuid = ss.order_info_uuid
 		`;
@@ -294,12 +290,6 @@ export async function selectSfgBySection(req, res, next) {
 
 	if (item_name) {
 		query.append(sql` WHERE lower(op_item.name) = lower(${item_name})`);
-	}
-
-	if (stopper_type) {
-		query.append(
-			sql` AND lower(op_stopper_type.name) = lower(${stopper_type})`
-		);
 	}
 
 	const sfgPromise = db.execute(query);

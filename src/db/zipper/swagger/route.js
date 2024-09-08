@@ -187,9 +187,6 @@ const order_description_fields = {
 	hand: SE.uuid(),
 	hand_name: SE.string('Right'),
 	hand_short_name: SE.string('R'),
-	stopper_type: SE.uuid(),
-	stopper_type_name: SE.string('Metal'),
-	stopper_type_short_name: SE.string('M'),
 	coloring_type: SE.uuid(),
 	coloring_type_name: SE.string('Dyed'),
 	coloring_type_short_name: SE.string('D'),
@@ -250,7 +247,6 @@ const order_description_merge_schema_fields = {
 		'{"values":"{\\"values\\":[\\"v3c2emB4mU1LV6j\\"]}"}'
 	),
 	hand: SE.uuid(),
-	stopper_type: SE.uuid(),
 	coloring_type: SE.uuid(),
 	is_slider_provided: SE.number(0),
 	slider: SE.uuid(),
@@ -337,7 +333,6 @@ export const pathZipperOrderDescription = {
 					'{"values":"{\\"values\\":[\\"v3c2emB4mU1LV6j\\"]}"}'
 				),
 				hand: SE.uuid(),
-				stopper_type: SE.uuid(),
 				coloring_type: SE.uuid(),
 				is_slider_provided: SE.number(0),
 				slider: SE.uuid(),
@@ -861,10 +856,6 @@ export const pathZipperSfg = {
 					'metal',
 					'vislon',
 				]),
-				SE.parameter_query('stopper_type', 'stopper_type', [
-					'Metallic Stopper',
-					'Plastic Stopper',
-				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -883,9 +874,6 @@ export const pathZipperSfg = {
 					item: SE.uuid(),
 					item_name: SE.string('nylon'),
 					item_short_name: SE.string('n'),
-					stopper_type: SE.uuid(),
-					stopper_type_name: SE.string('Metal'),
-					stopper_type_short_name: SE.string('M'),
 					coloring_type: SE.uuid(),
 					coloring_type_name: SE.string('Dyed'),
 					coloring_type_short_name: SE.string('D'),
@@ -1026,10 +1014,6 @@ export const pathZipperSfgProduction = {
 					'metal',
 					'vislon',
 				]),
-				SE.parameter_query('stopper_type', 'stopper_type', [
-					'Metallic Stopper',
-					'Plastic Stopper',
-				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -1167,10 +1151,6 @@ export const pathZipperSfgTransaction = {
 					'nylon',
 					'metal',
 					'vislon',
-				]),
-				SE.parameter_query('stopper_type', 'stopper_type', [
-					'Metallic Stopper',
-					'Plastic Stopper',
 				]),
 			],
 			responses: {

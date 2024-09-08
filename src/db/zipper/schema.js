@@ -54,9 +54,9 @@ export const order_info = zipper.table('order_info', {
 	marketing_uuid: defaultUUID('marketing_uuid').references(
 		() => publicSchema.marketing.uuid
 	),
-	merchandiser_uuid: defaultUUID('merchandiser_uuid').references(
-		() => publicSchema.merchandiser.uuid
-	),
+	merchandiser_uuid: defaultUUID('merchandiser_uuid')
+		.references(() => publicSchema.merchandiser.uuid)
+		.default(null),
 	factory_uuid: defaultUUID('factory_uuid').references(
 		() => publicSchema.factory.uuid
 	),
@@ -100,16 +100,13 @@ export const order_description = zipper.table('order_description', {
 	),
 	special_requirement: text('special_requirement').default(null),
 	hand: defaultUUID('hand').references(() => publicSchema.properties.uuid),
-	stopper_type: defaultUUID('stopper_type').references(
-		() => publicSchema.properties.uuid
-	),
-	coloring_type: defaultUUID('coloring_type').references(
-		() => publicSchema.properties.uuid
-	),
+	coloring_type: defaultUUID('coloring_type')
+		.references(() => publicSchema.properties.uuid)
+		.default(null),
 	is_slider_provided: integer('is_slider_provided').default(0),
-	slider: defaultUUID('slider').references(
-		() => publicSchema.properties.uuid
-	),
+	slider: defaultUUID('slider')
+		.references(() => publicSchema.properties.uuid)
+		.default(null),
 	slider_starting_section: sliderStartingSectionEnum(
 		'slider_starting_section_enum'
 	),
