@@ -21,6 +21,7 @@ export const defPurchaseDescription = SED({
 		vendor_uuid: SE.uuid(),
 		is_local: SE.integer(1),
 		lc_number: SE.string('1234'),
+		challan_number: SE.string('1234'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),

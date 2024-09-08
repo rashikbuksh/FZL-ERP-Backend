@@ -1,5 +1,3 @@
-import { material } from '@/db/schema';
-
 // * Purchase Vendor * //
 const pathPurchaseVendor = {
 	'/purchase/vendor': {
