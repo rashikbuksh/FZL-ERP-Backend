@@ -107,6 +107,8 @@ export const die_casting = slider.table('die_casting', {
 	// .references(
 	// 	() => zipperSchema.order_description.stopper_type
 	// ),
+	is_logo_body: integer('is_logo_body').default(0),
+	is_logo_puller: integer('is_logo_puller').default(0),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
