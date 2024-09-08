@@ -40,6 +40,7 @@ export const defLabDipRecipeEntry = SED({
 		recipe_uuid: SE.uuid(),
 		color: SE.string('Red'),
 		quantity: SE.number(10),
+		material_uuid: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
