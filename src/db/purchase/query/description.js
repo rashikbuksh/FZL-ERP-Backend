@@ -202,6 +202,7 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			is_local: description.is_local,
 			lc_number: description.lc_number,
 			challan_number: description.challan_number,
+			purchase_entry_uuid: entry.uuid,
 			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
 			quantity: entry.quantity,
@@ -214,13 +215,16 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			remarks: description.remarks,
 			entry_remarks: entry.remarks,
 		})
-		.from(description)
+		.from(entry)
+		.leftJoin(
+			description,
+			eq(description.uuid, entry.purchase_description_uuid)
+		)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
 		.leftJoin(
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)
 		)
-		.leftJoin(entry, eq(description.uuid, entry.purchase_description_uuid))
 		.leftJoin(
 			materialSchema.info,
 			eq(entry.material_uuid, materialSchema.info.uuid)

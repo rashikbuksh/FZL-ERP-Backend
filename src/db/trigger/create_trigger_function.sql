@@ -104,7 +104,7 @@ BEGIN
     FROM zipper.order_entry oe
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
     LEFT JOIN zipper.sfg ON zipper.sfg.order_entry_uuid = oe.uuid
-    WHERE slider.stock.order_info_uuid = vodf.order_info_uuid 
+    WHERE slider.stock.order_description_uuid = vodf.order_description_uuid 
         AND zipper.sfg.uuid = NEW.sfg_uuid;
 
     RETURN NEW;
@@ -263,7 +263,7 @@ BEGIN
     FROM zipper.order_entry oe
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
     LEFT JOIN zipper.sfg ON zipper.sfg.order_entry_uuid = oe.uuid
-    WHERE slider.stock.order_info_uuid = vodf.order_info_uuid 
+    WHERE slider.stock.order_description_uuid = vodf.order_description_uuid 
         AND zipper.sfg.uuid = NEW.sfg_uuid;
 
     RETURN NEW;
@@ -362,7 +362,7 @@ BEGIN
     FROM zipper.order_entry oe
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
     LEFT JOIN zipper.sfg ON zipper.sfg.order_entry_uuid = oe.uuid
-    WHERE slider.stock.order_info_uuid = vodf.order_info_uuid 
+    WHERE slider.stock.order_description_uuid = vodf.order_description_uuid 
         AND zipper.sfg.uuid = OLD.sfg_uuid;
 
     RETURN OLD;

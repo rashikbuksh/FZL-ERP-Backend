@@ -283,7 +283,7 @@ export async function selectSfgBySection(req, res, next) {
 			LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
 			LEFT JOIN public.properties op_item ON od.item = op_item.uuid
 			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
-			LEFT JOIN slider.stock ss ON vod.order_info_uuid = ss.order_info_uuid
+			LEFT JOIN slider.stock ss ON od.uuid = ss.order_description_uuid
 		`;
 	// WHERE
 	// sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != '' // * for development purpose

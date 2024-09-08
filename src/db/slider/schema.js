@@ -1,6 +1,5 @@
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
-import { type } from '../material/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
@@ -9,34 +8,9 @@ const slider = pgSchema('slider');
 // * ./swagger.js#defStock
 export const stock = slider.table('stock', {
 	uuid: uuid_primary,
-	order_info_uuid: defaultUUID('order_info_uuid').default(null),
-	//.references(() => zipperSchema.order_info.uuid),
-	item: defaultUUID('item').default(null),
-	//.references(() => publicSchema.properties.item),
-	zipper_number: defaultUUID('zipper_number').default(null),
-	// .references(() => publicSchema.properties.zipper_number),
-	end_type: defaultUUID('end_type').default(null),
-	// .references(() => publicSchema.properties.end_type),
-	lock_type: defaultUUID('lock_type').default(null),
-	// .references(() => publicSchema.properties.lock_type),
-	puller_type: defaultUUID('puller_type').default(null),
-	// .references(() => publicSchema.properties.puller_type),
-	puller_color: text('puller_color').default(null),
-	// .references(() => publicSchema.properties.puller_color),
-	puller_link: defaultUUID('puller_link').default(null),
-	// .references(() => publicSchema.properties.puller_link),
-	slider: defaultUUID('slider').default(null),
-	// .references(() => publicSchema.properties.slider),
-	slider_body_shape: defaultUUID('slider_body_shape').default(null),
-	// .references(() => publicSchema.properties.slider_body_shape),
-	slider_link: defaultUUID('slider_link').default(null),
-	// .references(() => publicSchema.properties.slider_link),
-	coloring_type: defaultUUID('coloring_type').default(null),
-	// .references(() => publicSchema.properties.coloring_type),
-	logo_type: defaultUUID('logo_type').default(null),
-	// .references(() => publicSchema.properties.logo_type),
-	is_logo_body: integer('is_logo_body').default(0),
-	is_logo_puller: integer('is_logo_puller').default(0),
+	order_description_uuid: defaultUUID('order_description_uuid')
+		.references(() => zipperSchema.order_description.uuid)
+		.default(null),
 	order_quantity: decimal('order_quantity', {
 		precision: 20,
 		scale: 4,

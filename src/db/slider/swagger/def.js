@@ -14,11 +14,6 @@ export const defStock = SED({
 	properties: {
 		uuid: SE.uuid(),
 		order_info_uuid: SE.uuid(),
-		item: SE.uuid(),
-		zipper_number: SE.uuid(),
-		end_type: SE.uuid(),
-		puller_type: SE.uuid(),
-		color: SE.string('red'),
 		order_quantity: SE.number(0.0),
 		body_quantity: SE.number(0.0),
 		cap_quantity: SE.number(0.0),
