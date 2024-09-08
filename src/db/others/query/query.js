@@ -720,6 +720,37 @@ export async function selectNameFromDieCastingStock(req, res, next) {
 	}
 }
 
+export async function selectSliderStockWithOrderDescription(req, res, next) {
+	const query = sql`
+	SELECT
+		stock.uuid AS value,
+		concat(
+			vodf.order_number, ' ⇾ ',
+			vodf.item_description
+		) AS label
+	FROM
+		slider.stock
+	LEFT JOIN
+		zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid;
+		`;
+
+	const stockPromise = db.execute(query);
+
+	try {
+		const data = await stockPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Slider Stock list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 // * Thread *//
 
 // Count Length

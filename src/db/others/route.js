@@ -93,6 +93,10 @@ otherRouter.get(
 	otherOperations.selectNameFromDieCastingStock
 );
 otherRouter.get('/lab-dip/info/value/label', otherOperations.selectLabDipInfo);
+otherRouter.get(
+	'/slider/stock-with-order-description/value/label',
+	otherOperations.selectSliderStockWithOrderDescription
+);
 
 // * Thread
 
@@ -932,6 +936,31 @@ const pathSlider = {
 										type: 'string',
 										example: 'cap --> N - 5 - OE - SP',
 									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/slider/stock-with-order-description/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all slider stock with order description',
+			description: 'All slider stock with order description',
+			operationId: 'getAllSliderStockWithOrderDescription',
+			responses: {
+				200: {
+					description:
+						'Returns a all slider stock with order description.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('Z24-0001 ⇾ N-5-OE-SP'),
 								},
 							},
 						},
