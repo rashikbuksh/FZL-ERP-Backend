@@ -71,63 +71,126 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: die_casting_transaction.uuid,
-			die_casting_uuid: die_casting_transaction.die_casting_uuid,
-			die_casting_name: die_casting.name,
-			stock_uuid: die_casting_transaction.stock_uuid,
-			trx_quantity: die_casting_transaction.trx_quantity,
-			created_by: die_casting_transaction.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: die_casting_transaction.created_at,
-			updated_at: die_casting_transaction.updated_at,
-			remarks: die_casting_transaction.remarks,
-		})
-		.from(die_casting_transaction)
-		.leftJoin(
-			die_casting,
-			eq(die_casting.uuid, die_casting_transaction.die_casting_uuid)
-		)
-		.leftJoin(
-			hrSchema.users,
-			eq(hrSchema.users.uuid, die_casting_transaction.created_by)
-		);
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'die_casting_transaction list,',
-	};
+	const query = sql`
+		SELECT
+			dct.uuid as uuid,
+			dc.name,
+			dc.uuid as die_casting_uuid,
+			dc.item,
+			op_item.name as item_name,
+			op_item.short_name as item_short_name,
+			dc.zipper_number,
+			op_zipper.name AS zipper_number_name,
+			op_zipper.short_name AS zipper_number_short_name,
+			dc.end_type,
+			op_end.name AS end_type_name,
+			op_end.short_name AS end_type_short_name,
+			dc.puller_type,
+			op_puller.name AS puller_type_name,
+			op_puller.short_name AS puller_type_short_name,
+			dc.slider_body_shape,
+			op_slider_body_shape.name AS slider_body_shape_name,
+			op_slider_body_shape.short_name AS slider_body_shape_short_name,
+			dc.puller_link,
+			op_puller_link.name AS puller_link_name,
+			op_puller_link.short_name AS puller_link_short_name,
+			dct.trx_quantity,
+			dct.type,
+			dct.created_by,
+			u.name as created_by_name,
+			dct.created_at,
+			dct.updated_at,
+			dct.remarks
+		FROM
+			slider.die_casting_transaction dct
+		LEFT JOIN
+			slider.die_casting dc ON dct.die_casting_uuid = dc.uuid
+		LEFT JOIN
+			hr.users u ON dct.created_by = u.uuid
+		LEFT JOIN
+			public.properties op_item ON dc.item = op_item.uuid
+		LEFT JOIN
+			public.properties op_zipper ON dc.zipper_number = op_zipper.uuid
+		LEFT JOIN
+			public.properties op_end ON dc.end_type = op_end.uuid
+		LEFT JOIN
+			public.properties op_puller ON dc.puller_type = op_puller.uuid
+		LEFT JOIN
+			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
+		LEFT JOIN
+			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+	`;
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'die_casting_transaction',
+		};
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const dieCastingTransactionPromise = db
-		.select({
-			uuid: die_casting_transaction.uuid,
-			die_casting_uuid: die_casting_transaction.die_casting_uuid,
-			die_casting_name: die_casting.name,
-			stock_uuid: die_casting_transaction.stock_uuid,
-			trx_quantity: die_casting_transaction.trx_quantity,
-			created_by: die_casting_transaction.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: die_casting_transaction.created_at,
-			updated_at: die_casting_transaction.updated_at,
-			remarks: die_casting_transaction.remarks,
-		})
-		.from(die_casting_transaction)
-		.leftJoin(
-			die_casting,
-			eq(die_casting.uuid, die_casting_transaction.die_casting_uuid)
-		)
-		.leftJoin(
-			hrSchema.users,
-			eq(hrSchema.users.uuid, die_casting_transaction.created_by)
-		)
-		.where(eq(die_casting_transaction.uuid, req.params.uuid));
+	const query = sql`
+		SELECT
+			dct.uuid as uuid,
+			dc.name,
+			dc.uuid as die_casting_uuid,
+			dc.item,
+			op_item.name as item_name,
+			op_item.short_name as item_short_name,
+			dc.zipper_number,
+			op_zipper.name AS zipper_number_name,
+			op_zipper.short_name AS zipper_number_short_name,
+			dc.end_type,
+			op_end.name AS end_type_name,
+			op_end.short_name AS end_type_short_name,
+			dc.puller_type,
+			op_puller.name AS puller_type_name,
+			op_puller.short_name AS puller_type_short_name,
+			dc.slider_body_shape,
+			op_slider_body_shape.name AS slider_body_shape_name,
+			op_slider_body_shape.short_name AS slider_body_shape_short_name,
+			dc.puller_link,
+			op_puller_link.name AS puller_link_name,
+			op_puller_link.short_name AS puller_link_short_name,
+			dct.trx_quantity,
+			dct.type,
+			dct.created_by,
+			u.name as created_by_name,
+			dct.created_at,
+			dct.updated_at,
+			dct.remarks
+		FROM
+			slider.die_casting_transaction dct
+		LEFT JOIN
+			slider.die_casting dc ON dct.die_casting_uuid = dc.uuid
+		LEFT JOIN
+			hr.users u ON dct.created_by = u.uuid
+		LEFT JOIN
+			public.properties op_item ON dc.item = op_item.uuid
+		LEFT JOIN
+			public.properties op_zipper ON dc.zipper_number = op_zipper.uuid
+		LEFT JOIN
+			public.properties op_end ON dc.end_type = op_end.uuid
+		LEFT JOIN
+			public.properties op_puller ON dc.puller_type = op_puller.uuid
+		LEFT JOIN
+			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
+		LEFT JOIN
+			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+		WHERE dct.uuid = ${req.params.uuid}
+	`;
+
+	const dieCastingTransactionPromise = db.execute(query);
 
 	try {
 		const data = await dieCastingTransactionPromise;
@@ -137,7 +200,7 @@ export async function select(req, res, next) {
 			message: 'die_casting_transaction by uuid',
 		};
 
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}

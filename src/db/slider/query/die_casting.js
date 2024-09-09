@@ -146,9 +146,6 @@ export async function selectAll(req, res, next) {
 			puller_link: die_casting.puller_link,
 			puller_link_name: pullerLinkProperties.name,
 			puller_link_short_name: pullerTypeProperties.short_name,
-			stopper_type: die_casting.stopper_type,
-			stopper_type_name: stopperProperties.name,
-			stopper_type_short_name: stopperProperties.short_name,
 			is_logo_body: die_casting.is_logo_body,
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: die_casting.quantity,
@@ -192,10 +189,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			pullerLinkProperties,
 			eq(die_casting.puller_link, pullerLinkProperties.uuid)
-		)
-		.leftJoin(
-			stopperProperties,
-			eq(die_casting.stopper_type, stopperProperties.uuid)
 		);
 
 	const toast = {
@@ -235,9 +228,6 @@ export async function select(req, res, next) {
 			puller_link: die_casting.puller_link,
 			puller_link_name: pullerLinkProperties.name,
 			puller_link_short_name: pullerTypeProperties.short_name,
-			stopper_type: die_casting.stopper_type,
-			stopper_type_name: stopperProperties.name,
-			stopper_type_short_name: stopperProperties.short_name,
 			is_logo_body: die_casting.is_logo_body,
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: die_casting.quantity,
@@ -281,10 +271,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			pullerLinkProperties,
 			eq(die_casting.puller_link, pullerLinkProperties.uuid)
-		)
-		.leftJoin(
-			stopperProperties,
-			eq(die_casting.stopper_type, stopperProperties.uuid)
 		)
 		.where(eq(die_casting.uuid, req.params.uuid));
 

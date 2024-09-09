@@ -11,13 +11,19 @@ BEGIN
     WHERE sfg.uuid = NEW.sfg_uuid;
 
     IF lower(item_name) = 'metal' THEN
-        UPDATE zipper.sfg
+        UPDATE zipper.order_description od
         SET 
-            od.metal_teeth_molding = od.metal_teeth_molding - 
+            metal_teeth_molding = metal_teeth_molding - 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN NEW.production_quantity_in_kg + NEW.wastage 
                     ELSE 0
-                END,
+                END
+        FROM zipper.order_entry oe
+        LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+        WHERE od.uuid = oe.order_description_uuid AND oe.uuid = sfg.order_entry_uuid AND sfg.uuid = NEW.sfg_uuid;
+
+        UPDATE zipper.sfg sfg
+        SET 
             teeth_molding_prod = teeth_molding_prod + 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN NEW.production_quantity 
@@ -43,15 +49,13 @@ BEGIN
                     ELSE 
                        0
                 END
-        FROM zipper.order_entry oe
-        LEFT JOIN zipper.order_description od ON od.uuid = oe.order_description_uuid
-        WHERE sfg.uuid = NEW.sfg_uuid AND oe.uuid = sfg.order_entry_uuid;
+        WHERE sfg.uuid = NEW.sfg_uuid;
     END IF;
 
-    IF  lower(item_name) = 'vislon' THEN
-        UPDATE zipper.sfg
+    IF lower(item_name) = 'vislon' THEN
+        UPDATE zipper.order_description od
         SET 
-            od.vislon_teeth_molding = od.vislon_teeth_molding - 
+            vislon_teeth_molding = vislon_teeth_molding - 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN 
                     CASE
@@ -60,7 +64,13 @@ BEGIN
                         END
                     ELSE 
                         0
-                END,
+                END
+        FROM zipper.order_entry oe
+        LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+        WHERE od.uuid = oe.order_description_uuid AND oe.uuid = sfg.order_entry_uuid AND sfg.uuid = NEW.sfg_uuid;
+
+        UPDATE zipper.sfg sfg
+        SET 
             teeth_molding_prod = teeth_molding_prod + 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN NEW.production_quantity 
@@ -86,15 +96,13 @@ BEGIN
                     ELSE 
                        0
                 END
-        FROM zipper.order_entry oe
-        LEFT JOIN zipper.order_description od ON od.uuid = oe.order_description_uuid
-        WHERE sfg.uuid = NEW.sfg_uuid AND oe.uuid = sfg.order_entry_uuid;
+        WHERE sfg.uuid = NEW.sfg_uuid;
     END IF;
 
     IF lower(item_name) = 'nylon_plastic' THEN
-        UPDATE zipper.sfg
+        UPDATE zipper.order_description od
         SET 
-            od.nylon_plastic_finishing = od.nylon_plastic_finishing - 
+            nylon_plastic_finishing = nylon_plastic_finishing - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity_in_kg + NEW.wastage 
                     ELSE 
@@ -102,7 +110,13 @@ BEGIN
                             WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
                             ELSE NEW.production_quantity_in_kg + NEW.wastage 
                         END 
-                END,
+                END
+        FROM zipper.order_entry oe
+        LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+        WHERE od.uuid = oe.order_description_uuid AND oe.uuid = sfg.order_entry_uuid AND sfg.uuid = NEW.sfg_uuid;
+
+        UPDATE zipper.sfg sfg
+        SET 
             finishing_prod = finishing_prod +
                 CASE 
                     WHEN NEW.section = 'finishing' 
@@ -110,15 +124,13 @@ BEGIN
                     ELSE 
                        0
                 END
-        FROM zipper.order_entry oe
-        LEFT JOIN zipper.order_description od ON od.uuid = oe.order_description_uuid
-        WHERE sfg.uuid = NEW.sfg_uuid AND oe.uuid = sfg.order_entry_uuid;
+        WHERE sfg.uuid = NEW.sfg_uuid;
     END IF;
 
     IF lower(item_name) = 'nylon_metallic' THEN
-        UPDATE zipper.sfg
+        UPDATE zipper.order_description od
         SET 
-            od.nylon_metallic_finishing = od.nylon_metallic_finishing - 
+            nylon_metallic_finishing = nylon_metallic_finishing - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity_in_kg + NEW.wastage 
                     ELSE 
@@ -126,7 +138,13 @@ BEGIN
                             WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
                             ELSE NEW.production_quantity_in_kg + NEW.wastage 
                         END 
-                END,
+                END
+        FROM zipper.order_entry oe
+        LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+        WHERE od.uuid = oe.order_description_uuid AND oe.uuid = sfg.order_entry_uuid AND sfg.uuid = NEW.sfg_uuid;
+
+        UPDATE zipper.sfg sfg
+        SET 
             finishing_prod = finishing_prod +
                 CASE 
                     WHEN NEW.section = 'finishing' 
@@ -134,12 +152,10 @@ BEGIN
                     ELSE 
                        0
                 END
-        FROM zipper.order_entry oe
-        LEFT JOIN zipper.order_description od ON od.uuid = oe.order_description_uuid
-        WHERE sfg.uuid = NEW.sfg_uuid AND oe.uuid = sfg.order_entry_uuid;
+        WHERE sfg.uuid = NEW.sfg_uuid;
     END IF;
 
-    UPDATE zipper.sfg
+    UPDATE zipper.sfg sfg
     SET 
         teeth_coloring_stock = teeth_coloring_stock - 
             CASE 
@@ -168,19 +184,18 @@ BEGIN
                      NEW.production_quantity
                 ELSE 0 
             END
-    FROM zipper.order_entry oe
-    LEFT JOIN zipper.order_description od ON od.uuid = oe.order_description_uuid
-    WHERE sfg.uuid = NEW.sfg_uuid AND oe.uuid = sfg.order_entry_uuid;
+    WHERE sfg.uuid = NEW.sfg_uuid;
 
     -- New condition for updating slider stock
-   UPDATE slider.stock SET
+    UPDATE slider.stock
+    SET
         coloring_prod = slider.stock.coloring_prod - 
         CASE WHEN NEW.section = 'finishing' THEN NEW.production_quantity ELSE 0 END
     FROM zipper.order_entry oe
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-    LEFT JOIN zipper.sfg ON zipper.sfg.order_entry_uuid = oe.uuid
+    LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
     WHERE slider.stock.order_description_uuid = vodf.order_description_uuid 
-        AND zipper.sfg.uuid = NEW.sfg_uuid;
+        AND sfg.uuid = NEW.sfg_uuid;
 
     RETURN NEW;
 END;

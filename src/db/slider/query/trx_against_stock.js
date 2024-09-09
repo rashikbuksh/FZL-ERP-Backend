@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -74,51 +74,126 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: trx_against_stock.uuid,
-			die_casting_uuid: trx_against_stock.die_casting_uuid,
-			quantity: trx_against_stock.quantity,
-			created_by: trx_against_stock.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: trx_against_stock.created_at,
-			updated_at: trx_against_stock.updated_at,
-			remarks: trx_against_stock.remarks,
-		})
-		.from(trx_against_stock)
-		.leftJoin(
-			hrSchema.users,
-			eq(trx_against_stock.created_by, hrSchema.users.uuid)
-		);
-	const toast = {
-		status: 201,
-		type: 'select_all',
-		message: 'Trx against stock list',
-	};
+	const query = sql`
+		SELECT
+			tas.uuid as uuid,
+			dc.name,
+			dc.uuid as die_casting_uuid,
+			dc.item,
+			op_item.name as item_name,
+			op_item.short_name as item_short_name,
+			dc.zipper_number,
+			op_zipper.name AS zipper_number_name,
+			op_zipper.short_name AS zipper_number_short_name,
+			dc.end_type,
+			op_end.name AS end_type_name,
+			op_end.short_name AS end_type_short_name,
+			dc.puller_type,
+			op_puller.name AS puller_type_name,
+			op_puller.short_name AS puller_type_short_name,
+			dc.slider_body_shape,
+			op_slider_body_shape.name AS slider_body_shape_name,
+			op_slider_body_shape.short_name AS slider_body_shape_short_name,
+			dc.puller_link,
+			op_puller_link.name AS puller_link_name,
+			op_puller_link.short_name AS puller_link_short_name,
+			tas.quantity,
+			tas.created_by,
+			u.name as created_by_name,
+			tas.created_at,
+			tas.updated_at,
+			tas.remarks
+		FROM
+			slider.trx_against_stock tas
+		LEFT JOIN
+			slider.die_casting dc ON tas.die_casting_uuid = dc.uuid
+		LEFT JOIN
+			hr.users u ON tas.created_by = u.uuid
+		LEFT JOIN
+			public.properties op_item ON dc.item = op_item.uuid
+		LEFT JOIN
+			public.properties op_zipper ON dc.zipper_number = op_zipper.uuid
+		LEFT JOIN
+			public.properties op_end ON dc.end_type = op_end.uuid
+		LEFT JOIN
+			public.properties op_puller ON dc.puller_type = op_puller.uuid
+		LEFT JOIN
+			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
+		LEFT JOIN
+			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+			`;
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `trx against stock list`,
+		};
+		return await res.status(201).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const resultPromise = db
-		.select({
-			uuid: trx_against_stock.uuid,
-			die_casting_uuid: trx_against_stock.die_casting_uuid,
-			quantity: trx_against_stock.quantity,
-			created_by: trx_against_stock.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: trx_against_stock.created_at,
-			updated_at: trx_against_stock.updated_at,
-			remarks: trx_against_stock.remarks,
-		})
-		.from(trx_against_stock)
-		.leftJoin(
-			hrSchema.users,
-			eq(trx_against_stock.created_by, hrSchema.users.uuid)
-		)
-		.where(eq(trx_against_stock.uuid, req.params.uuid));
+	const query = sql`
+		SELECT
+			tas.uuid as uuid,
+			dc.name,
+			dc.uuid as die_casting_uuid,
+			dc.item,
+			op_item.name as item_name,
+			op_item.short_name as item_short_name,
+			dc.zipper_number,
+			op_zipper.name AS zipper_number_name,
+			op_zipper.short_name AS zipper_number_short_name,
+			dc.end_type,
+			op_end.name AS end_type_name,
+			op_end.short_name AS end_type_short_name,
+			dc.puller_type,
+			op_puller.name AS puller_type_name,
+			op_puller.short_name AS puller_type_short_name,
+			dc.slider_body_shape,
+			op_slider_body_shape.name AS slider_body_shape_name,
+			op_slider_body_shape.short_name AS slider_body_shape_short_name,
+			dc.puller_link,
+			op_puller_link.name AS puller_link_name,
+			op_puller_link.short_name AS puller_link_short_name,
+			tas.quantity,
+			tas.created_by,
+			u.name as created_by_name,
+			tas.created_at,
+			tas.updated_at,
+			tas.remarks
+		FROM
+			slider.trx_against_stock tas
+		LEFT JOIN
+			slider.die_casting dc ON tas.die_casting_uuid = dc.uuid
+		LEFT JOIN
+			hr.users u ON tas.created_by = u.uuid
+		LEFT JOIN
+			public.properties op_item ON dc.item = op_item.uuid
+		LEFT JOIN
+			public.properties op_zipper ON dc.zipper_number = op_zipper.uuid
+		LEFT JOIN
+			public.properties op_end ON dc.end_type = op_end.uuid
+		LEFT JOIN
+			public.properties op_puller ON dc.puller_type = op_puller.uuid
+		LEFT JOIN
+			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
+		LEFT JOIN
+			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+		WHERE
+			tas.uuid = ${req.params.uuid}
+			`;
+
+	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
@@ -127,7 +202,7 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: `${data[0].uuid} selected`,
 		};
-		return await res.status(201).json({ toast, data: data[0] });
+		return await res.status(201).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}

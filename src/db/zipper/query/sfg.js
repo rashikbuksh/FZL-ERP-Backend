@@ -289,7 +289,20 @@ export async function selectSfgBySection(req, res, next) {
 	// sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != '' // * for development purpose
 
 	if (item_name) {
-		query.append(sql` WHERE lower(op_item.name) = lower(${item_name})`);
+		query.append(
+			sql` WHERE lower(op_item.name) = lower(${item_name}) 
+					AND CASE 
+						WHEN lower(${item_name}) = 'vislon' 
+							THEN od.vislon_teeth_molding > 0
+						WHEN lower(${item_name}) = 'metal'
+							THEN od.metal_teeth_molding > 0
+						WHEN lower(${item_name}) = 'nylon plastic'
+							THEN od.nylon_plastic_finishing > 0
+						WHEN lower(${item_name}) = 'nylon metallic'
+							THEN od.nylon_metallic_finishing > 0 
+						ELSE false 
+					END`
+		);
 	}
 
 	const sfgPromise = db.execute(query);
