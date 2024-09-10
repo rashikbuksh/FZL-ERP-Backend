@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
@@ -93,7 +93,8 @@ export async function selectAll(req, res, next) {
 		})
 		.from(factory)
 		.leftJoin(party, eq(factory.party_uuid, party.uuid))
-		.leftJoin(hrSchema.users, eq(factory.created_by, hrSchema.users.uuid));
+		.leftJoin(hrSchema.users, eq(factory.created_by, hrSchema.users.uuid))
+		.orderBy(desc(factory.created_at));
 	const toast = {
 		status: 200,
 		type: 'select_all',
@@ -128,7 +129,7 @@ export async function select(req, res, next) {
 		.leftJoin(party, eq(factory.party_uuid, party.uuid))
 		.leftJoin(hrSchema.users, eq(factory.created_by, hrSchema.users.uuid))
 		.where(eq(factory.uuid, req.params.uuid));
-	
+
 	try {
 		const data = await factoryPromise;
 		const toast = {
@@ -137,8 +138,7 @@ export async function select(req, res, next) {
 			message: 'Factory by uuid',
 		};
 		return res.status(200).json({ toast, data: data[0] });
-	}
-	catch (error) {
+	} catch (error) {
 		await handleError({ error, res });
 	}
 }

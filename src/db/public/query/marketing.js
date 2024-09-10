@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -98,7 +98,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.designation,
 			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
-		);
+		)
+		.orderBy(desc(marketing.created_at));
 
 	const toast = {
 		status: 200,

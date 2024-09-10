@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
@@ -92,7 +92,9 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(merchandiser.created_by, hrSchema.users.uuid)
-		);
+		)
+		.orderBy(desc(merchandiser.created_at));
+
 	const toast = {
 		status: 200,
 		type: 'select_all',

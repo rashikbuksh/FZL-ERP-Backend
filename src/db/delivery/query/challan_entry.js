@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
