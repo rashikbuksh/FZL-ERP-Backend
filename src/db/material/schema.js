@@ -220,7 +220,7 @@ export const stock = material.table('stock', {
 
 export const trx = material.table('trx', {
 	uuid: uuid_primary,
-	material_uuid: defaultUUID('material_uuid'),
+	material_uuid: defaultUUID('material_uuid').references(() => info.uuid),
 	trx_to: text('trx_to').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
@@ -234,7 +234,7 @@ export const trx = material.table('trx', {
 
 export const used = material.table('used', {
 	uuid: uuid_primary,
-	material_uuid: defaultUUID('material_uuid'),
+	material_uuid: defaultUUID('material_uuid').references(() => info.uuid),
 	section: text('section').notNull(),
 	used_quantity: decimal('used_quantity', {
 		precision: 20,
@@ -255,7 +255,7 @@ export const used = material.table('used', {
 //stock to sfg table
 export const stock_to_sfg = material.table('stock_to_sfg', {
 	uuid: uuid_primary,
-	material_uuid: defaultUUID('material_uuid'),
+	material_uuid: defaultUUID('material_uuid').references(() => info.uuid),
 	order_entry_uuid: defaultUUID('order_entry_uuid').references(
 		() => zipperSchema.order_entry.uuid
 	),

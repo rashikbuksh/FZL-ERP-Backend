@@ -2,29 +2,26 @@ CREATE OR REPLACE FUNCTION slider.slider_die_casting_after_die_casting_productio
 RETURNS TRIGGER AS $$
 BEGIN 
 --update slider.die_casting table
-UPDATE slider.die_casting
-    SET 
-    quantity = quantity + (NEW.cavity_goods * NEW.push)
-    WHERE uuid = NEW.die_casting_uuid;
-
-RETURN NEW;
-END;
-
+    UPDATE slider.die_casting
+        SET 
+        quantity = quantity + (NEW.cavity_goods * NEW.push),
+        weight = weight + NEW.weight
+        WHERE uuid = NEW.die_casting_uuid;
+    RETURN NEW;
+    END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION slider.slider_die_casting_after_die_casting_production_delete()
 RETURNS TRIGGER AS $$
 BEGIN
 --update slider.die_casting table
-UPDATE slider.die_casting
-    SET 
-    quantity = quantity - (OLD.cavity_goods * OLD.push)
-    WHERE uuid = OLD.die_casting_uuid;
-
-RETURN OLD;
-
-END;
-
+    UPDATE slider.die_casting
+        SET 
+        quantity = quantity - (OLD.cavity_goods * OLD.push),
+        weight = weight - OLD.weight
+        WHERE uuid = OLD.die_casting_uuid;
+    RETURN OLD;
+    END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION slider.slider_die_casting_after_die_casting_production_update()
@@ -34,12 +31,12 @@ BEGIN
 
 --update slider.die_casting table
 
-UPDATE slider.die_casting
-    SET 
-    quantity = quantity + (NEW.cavity_goods * NEW.push) - (OLD.cavity_goods * OLD.push)
-    WHERE uuid = NEW.die_casting_uuid;
-
-RETURN NEW;
+    UPDATE slider.die_casting
+        SET 
+        quantity = quantity + (NEW.cavity_goods * NEW.push) - (OLD.cavity_goods * OLD.push),
+        weight = weight + NEW.weight - OLD.weight
+        WHERE uuid = NEW.die_casting_uuid;
+    RETURN NEW;
     END;
 
 $$ LANGUAGE plpgsql;

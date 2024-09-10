@@ -645,10 +645,22 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION material.material_stock_after_purchase_entry_update() RETURNS TRIGGER AS $$
 
 BEGIN
-    UPDATE material.stock
-        SET
-            stock = stock + NEW.quantity - OLD.quantity
-    WHERE material_uuid = NEW.material_uuid;
+    IF NEW.material_uuid <> OLD.material_uuid THEN
+        -- Deduct the old quantity from the old item's stock
+        UPDATE material.stock
+        SET stock = stock - OLD.quantity
+        WHERE material_uuid = OLD.material_uuid;
+
+        -- Add the new quantity to the new item's stock
+        UPDATE material.stock
+        SET stock = stock + NEW.quantity
+        WHERE material_uuid = NEW.material_uuid;
+    ELSE
+        -- If the item has not changed, update the stock with the difference
+        UPDATE material.stock
+        SET stock = stock + NEW.quantity - OLD.quantity
+        WHERE material_uuid = NEW.material_uuid;
+    END IF;
     RETURN NEW;
 END;
 

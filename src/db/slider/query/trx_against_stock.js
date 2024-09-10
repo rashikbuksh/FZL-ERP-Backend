@@ -102,7 +102,8 @@ export async function selectAll(req, res, next) {
 			u.name as created_by_name,
 			tas.created_at,
 			tas.updated_at,
-			tas.remarks
+			tas.remarks,
+			(dc.quantity + tas.quantity) as max_quantity
 		FROM
 			slider.trx_against_stock tas
 		LEFT JOIN
@@ -142,6 +143,8 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { uuid } = req.params;
+
 	const query = sql`
 		SELECT
 			tas.uuid as uuid,
@@ -170,7 +173,8 @@ export async function select(req, res, next) {
 			u.name as created_by_name,
 			tas.created_at,
 			tas.updated_at,
-			tas.remarks
+			tas.remarks,
+			(dc.quantity + tas.quantity) as max_quantity
 		FROM
 			slider.trx_against_stock tas
 		LEFT JOIN
@@ -190,7 +194,7 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
 		WHERE
-			tas.uuid = ${req.params.uuid}
+			tas.uuid = ${uuid};
 			`;
 
 	const resultPromise = db.execute(query);
@@ -200,7 +204,7 @@ export async function select(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'select',
-			message: `${data[0].uuid} selected`,
+			message: `trx against stock`,
 		};
 		return await res.status(201).json({ toast, data: data?.rows[0] });
 	} catch (error) {

@@ -13,8 +13,6 @@ import slider, { stock, transaction } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	console.log('req.body', req.body);
-
 	const stockPromise = db
 		.insert(stock)
 		.values(req.body)

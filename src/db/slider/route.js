@@ -91,10 +91,6 @@ sliderRouter.get(
 	'/die-casting/for/slider-stock-multi/:order_info_uuids',
 	dieCastingTransactionOperations.selectDieCastingForSliderStockByOrderInfoUuids
 );
-sliderRouter.post(
-	'/die-casting-insert/by/order',
-	dieCastingTransactionOperations.insertDieCastingTransactionByOrder
-);
 
 // --------------------- Transaction Routes ---------------------
 
@@ -144,16 +140,11 @@ sliderRouter.delete(
 // --------------------- Trx Against Stock Routes ---------------------
 
 sliderRouter.get('/trx-against-stock', trxAgainstStockOperations.selectAll);
-sliderRouter.get(
-	'/trx-against-stock/:uuid',
-
-	trxAgainstStockOperations.select
-);
+sliderRouter.get('/trx-against-stock/:uuid', trxAgainstStockOperations.select);
 sliderRouter.post('/trx-against-stock', trxAgainstStockOperations.insert);
 sliderRouter.put('/trx-against-stock/:uuid', trxAgainstStockOperations.update);
 sliderRouter.delete(
 	'/trx-against-stock/:uuid',
-
 	trxAgainstStockOperations.remove
 );
 

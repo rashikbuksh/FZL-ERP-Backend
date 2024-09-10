@@ -31,7 +31,7 @@ export async function handleResponse({
 		return res.status(status).json({ toast, data });
 	} catch (error) {
 		logger.error(error);
-		console.log(error);
+		console.error(error);
 
 		if (error.severity === 'ERROR') {
 			nullValueError(res, error);
@@ -44,7 +44,7 @@ export async function handleResponse({
 
 export async function handleError({ error, res }) {
 	logger.error(error);
-	console.log(error);
+	console.error(error);
 
 	if (error.severity === 'ERROR') {
 		nullValueError(res, error);

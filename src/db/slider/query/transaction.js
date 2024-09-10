@@ -124,8 +124,8 @@ export async function selectAll(req, res, next) {
 			stock.is_logo_body,
 			stock.is_logo_puller,
 			stock.order_quantity,
-			oi.uuid as order_info_uuid,
-			concat('Z', to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')) as order_number,
+			vodf.order_info_uuid,
+			vodf.order_number,
 			stock.sa_prod
 		FROM
 			slider.transaction
@@ -134,7 +134,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN 
 			hr.users ON transaction.created_by = users.uuid
 		LEFT JOIN 
-			zipper.order_info oi ON stock.order_info_uuid = oi.uuid
+			zipper.v_order_details vodf ON stock.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN 
 			public.properties op_item ON stock.item = op_item.uuid
 		LEFT JOIN
@@ -191,6 +191,7 @@ export async function select(req, res, next) {
 			transaction.to_section,
 			transaction.trx_quantity,
 			transaction.created_by,
+			users.name as created_by_name,
 			transaction.created_at,
 			transaction.updated_at,
 			transaction.remarks,
@@ -233,14 +234,17 @@ export async function select(req, res, next) {
 			stock.is_logo_body,
 			stock.is_logo_puller,
 			stock.order_quantity,
-			oi.uuid as order_info_uuid,
-			concat('Z', to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0'))
+			vodf.order_info_uuid,
+			vodf.order_number,
+			stock.sa_prod
 		FROM
 			slider.transaction
 		LEFT JOIN
 			slider.stock ON transaction.stock_uuid = stock.uuid
 		LEFT JOIN 
-			zipper.order_info oi ON stock.order_info_uuid = oi.uuid
+			hr.users ON transaction.created_by = users.uuid
+		LEFT JOIN 
+			zipper.v_order_details vodf ON stock.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN 
 			public.properties op_item ON stock.item = op_item.uuid
 		LEFT JOIN
@@ -338,8 +342,8 @@ export async function selectTransactionByFromSection(req, res, next) {
 			stock.is_logo_body,
 			stock.is_logo_puller,
 			stock.order_quantity,
-			oi.uuid as order_info_uuid,
-			concat('Z', to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')) as order_number,
+			vodf.order_info_uuid,
+			vodf.order_number,
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
@@ -351,7 +355,7 @@ export async function selectTransactionByFromSection(req, res, next) {
 		LEFT JOIN 
 			hr.users ON transaction.created_by = users.uuid
 		LEFT JOIN 
-			zipper.order_info oi ON stock.order_info_uuid = oi.uuid
+			zipper.v_order_details vodf ON stock.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN 
 			public.properties op_item ON stock.item = op_item.uuid
 		LEFT JOIN

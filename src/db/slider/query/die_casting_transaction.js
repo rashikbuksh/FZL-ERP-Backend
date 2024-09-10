@@ -76,6 +76,11 @@ export async function selectAll(req, res, next) {
 			dct.uuid as uuid,
 			dc.name,
 			dc.uuid as die_casting_uuid,
+			dct.stock_uuid,
+			concat(vod.order_number, ' - ', vod.item_description) as order_item_description,
+			vod.order_info_uuid,
+			vod.order_number,
+			vod.order_description_uuid,
 			dc.item,
 			op_item.name as item_name,
 			op_item.short_name as item_short_name,
@@ -95,12 +100,13 @@ export async function selectAll(req, res, next) {
 			op_puller_link.name AS puller_link_name,
 			op_puller_link.short_name AS puller_link_short_name,
 			dct.trx_quantity,
-			dct.type,
+			dc.type,
 			dct.created_by,
 			u.name as created_by_name,
 			dct.created_at,
 			dct.updated_at,
-			dct.remarks
+			dct.remarks,
+			(dc.quantity + dct.trx_quantity) as max_quantity
 		FROM
 			slider.die_casting_transaction dct
 		LEFT JOIN
@@ -119,6 +125,10 @@ export async function selectAll(req, res, next) {
 			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
 		LEFT JOIN
 			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+		LEFT JOIN 
+			slider.stock ON dct.stock_uuid = stock.uuid
+		LEFT JOIN 
+			zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
 	`;
 
 	const resultPromise = db.execute(query);
@@ -144,6 +154,11 @@ export async function select(req, res, next) {
 			dct.uuid as uuid,
 			dc.name,
 			dc.uuid as die_casting_uuid,
+			dct.stock_uuid,
+			concat(vod.order_number, ' - ', vod.item_description) as order_item_description,
+			vod.order_info_uuid,
+			vod.order_number,
+			vod.order_description_uuid,
 			dc.item,
 			op_item.name as item_name,
 			op_item.short_name as item_short_name,
@@ -163,12 +178,13 @@ export async function select(req, res, next) {
 			op_puller_link.name AS puller_link_name,
 			op_puller_link.short_name AS puller_link_short_name,
 			dct.trx_quantity,
-			dct.type,
+			dc.type,
 			dct.created_by,
 			u.name as created_by_name,
 			dct.created_at,
 			dct.updated_at,
-			dct.remarks
+			dct.remarks,
+			(dc.quantity + dct.trx_quantity) as max_quantity
 		FROM
 			slider.die_casting_transaction dct
 		LEFT JOIN
@@ -187,6 +203,10 @@ export async function select(req, res, next) {
 			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
 		LEFT JOIN
 			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+		LEFT JOIN 
+			slider.stock ON dct.stock_uuid = stock.uuid
+		LEFT JOIN 
+			zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
 		WHERE dct.uuid = ${req.params.uuid}
 	`;
 
@@ -220,7 +240,8 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			dc.quantity as die_casting_quantity,
 			vod.order_number,
 			vod.item_description,
-			stock.order_info_uuid,
+			vod.order_info_uuid,
+			stock.order_description_uuid,
 			stock.item,
 			item_properties.name as item_name,
 			item_properties.short_name as item_short_name,
@@ -267,7 +288,7 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 		LEFT JOIN
 			public.properties slider_puller_link_properties ON stock.puller_link = slider_puller_link_properties.uuid
 		LEFT JOIN 
-			zipper.v_order_details vod ON stock.order_info_uuid = vod.order_info_uuid
+			zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
 		LEFT JOIN
 			(
 				SELECT
@@ -291,7 +312,7 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			dc.slider_body_shape = stock.slider_body_shape AND
 			dc.puller_link = stock.puller_link)
 		WHERE
-			stock.order_info_uuid = ${order_info_uuid}
+			stock.order_description_uuid = ${order_info_uuid}
 		`;
 
 	const results = db.execute(fetchData);
@@ -343,248 +364,4 @@ export async function selectDieCastingForSliderStockByOrderInfoUuids(
 	} catch (error) {
 		await handleError({ error, res });
 	}
-}
-
-export async function insertDieCastingTransactionByOrder(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
-
-	const { is_body, is_cap, is_puller, is_link } = req.body;
-
-	let dcUUIDisBody, dcUUIDisCap, dcUUIDisPuller, dcUUIDisLink;
-
-	let dcUUIDisBody_data,
-		dcUUIDisCap_data,
-		dcUUIDisPuller_data,
-		dcUUIDisLink_data;
-
-	let dcUUIDisBody_toast,
-		dcUUIDisCap_toast,
-		dcUUIDisPuller_toast,
-		dcUUIDisLink_toast;
-
-	const {
-		is_body_uuid,
-		is_cap_uuid,
-		is_link_uuid,
-		is_puller_uuid,
-		stock_uuid,
-		trx_quantity,
-		created_by,
-		created_at,
-		remarks,
-	} = req.body;
-
-	if (is_body_uuid) {
-		const dieCastingPromise = db
-			.select({
-				uuid: die_casting.uuid,
-			})
-			.from(die_casting)
-			.where(
-				and(
-					eq(die_casting.item, req.body.item),
-					eq(die_casting.zipper_number, req.body.zipper_number),
-					eq(die_casting.end_type, req.body.end_type),
-					eq(die_casting.logo_type, req.body.logo_type),
-					eq(die_casting.puller_type, req.body.puller_type),
-					eq(
-						die_casting.slider_body_shape,
-						req.body.slider_body_shape
-					),
-					eq(die_casting.puller_link, req.body.puller_link)
-				)
-			);
-		dcUUIDisBody = await dieCastingPromise;
-
-		if (dcUUIDisBody.length !== 0) {
-			const dieCastingTransactionPromise = db
-				.insert(die_casting_transaction)
-				.values({
-					uuid: is_body_uuid,
-					die_casting_uuid: dcUUIDisBody[0].uuid,
-					stock_uuid: stock_uuid,
-					trx_quantity: trx_quantity,
-					type: 'body',
-					created_by: created_by,
-					created_at: created_at,
-					remarks: remarks,
-				})
-				.returning({ insertedId: die_casting_transaction.uuid });
-			try {
-				dcUUIDisBody_data = await dieCastingTransactionPromise;
-
-				dcUUIDisBody_toast = {
-					status: 201,
-					type: 'insert',
-					message: `${dcUUIDisBody_data[0].insertedId} inserted`,
-				};
-			} catch (error) {
-				await handleError({ error, res });
-			}
-		}
-	}
-
-	if (is_cap_uuid) {
-		const dieCastingPromise = db
-			.select({
-				uuid: die_casting.uuid,
-			})
-			.from(die_casting)
-			.where(
-				and(
-					eq(die_casting.item, req.body.item),
-					eq(die_casting.zipper_number, req.body.zipper_number),
-					eq(die_casting.end_type, req.body.end_type),
-					eq(die_casting.logo_type, req.body.logo_type),
-					eq(die_casting.puller_type, req.body.puller_type),
-					eq(
-						die_casting.slider_body_shape,
-						req.body.slider_body_shape
-					),
-					eq(die_casting.puller_link, req.body.puller_link)
-				)
-			);
-		dcUUIDisCap = await dieCastingPromise;
-
-		if (dcUUIDisCap.length !== 0) {
-			const dieCastingTransactionPromise = db
-				.insert(die_casting_transaction)
-				.values({
-					uuid: is_cap_uuid,
-					die_casting_uuid: dcUUIDisCap[0].uuid,
-					stock_uuid: stock_uuid,
-					trx_quantity: trx_quantity,
-					type: 'cap',
-					created_by: created_by,
-					created_at: created_at,
-					remarks: remarks,
-				})
-				.returning({ insertedId: die_casting_transaction.uuid });
-			try {
-				dcUUIDisCap_data = await dieCastingTransactionPromise;
-				dcUUIDisCap_toast = {
-					status: 201,
-					type: 'insert',
-					message: `${dcUUIDisCap_data[0].insertedId} inserted`,
-				};
-			} catch (error) {
-				await handleError({ error, res });
-			}
-		}
-	}
-
-	if (is_puller_uuid) {
-		const dieCastingPromise = db
-			.select({
-				uuid: die_casting.uuid,
-			})
-			.from(die_casting)
-			.where(
-				and(
-					eq(die_casting.item, req.body.item),
-					eq(die_casting.zipper_number, req.body.zipper_number),
-					eq(die_casting.end_type, req.body.end_type),
-					eq(die_casting.logo_type, req.body.logo_type),
-					eq(die_casting.puller_type, req.body.puller_type),
-					eq(
-						die_casting.slider_body_shape,
-						req.body.slider_body_shape
-					),
-					eq(die_casting.puller_link, req.body.puller_link)
-				)
-			);
-		dcUUIDisPuller = await dieCastingPromise;
-
-		if (dcUUIDisPuller.length !== 0) {
-			const dieCastingTransactionPromise = db
-				.insert(die_casting_transaction)
-				.values({
-					uuid: is_puller_uuid,
-					die_casting_uuid: dcUUIDisCap[0].uuid,
-					stock_uuid: stock_uuid,
-					trx_quantity: trx_quantity,
-					type: 'puller',
-					created_by: created_by,
-					created_at: created_at,
-					remarks: remarks,
-				})
-				.returning({ insertedId: die_casting_transaction.uuid });
-			try {
-				dcUUIDisPuller_data = await dieCastingTransactionPromise;
-				dcUUIDisPuller_toast = {
-					status: 201,
-					type: 'insert',
-					message: `${dcUUIDisPuller_data[0].insertedId} inserted`,
-				};
-			} catch (error) {
-				await handleError({ error, res });
-			}
-		}
-	}
-
-	if (is_link_uuid) {
-		const dieCastingPromise = db
-			.select({
-				uuid: die_casting.uuid,
-			})
-			.from(die_casting)
-			.where(
-				and(
-					eq(die_casting.item, req.body.item),
-					eq(die_casting.zipper_number, req.body.zipper_number),
-					eq(die_casting.end_type, req.body.end_type),
-					eq(die_casting.logo_type, req.body.logo_type),
-					eq(die_casting.puller_type, req.body.puller_type),
-					eq(
-						die_casting.slider_body_shape,
-						req.body.slider_body_shape
-					),
-					eq(die_casting.puller_link, req.body.puller_link)
-				)
-			);
-		dcUUIDisLink = await dieCastingPromise;
-
-		if (dcUUIDisLink.length !== 0) {
-			const dieCastingTransactionPromise = db
-				.insert(die_casting_transaction)
-				.values({
-					uuid: is_link_uuid,
-					die_casting_uuid: dcUUIDisCap[0].uuid,
-					stock_uuid: stock_uuid,
-					trx_quantity: trx_quantity,
-					type: 'link',
-					created_by: created_by,
-					created_at: created_at,
-					remarks: remarks,
-				})
-				.returning({ insertedId: die_casting_transaction.uuid });
-			try {
-				dcUUIDisLink_data = await dieCastingTransactionPromise;
-				dcUUIDisLink_toast = {
-					status: 201,
-					type: 'insert',
-					message: `${dcUUIDisLink_data[0].insertedId} inserted`,
-				};
-			} catch (error) {
-				await handleError({ error, res });
-			}
-		}
-	}
-
-	const data = {
-		dcUUIDisBody_data,
-		dcUUIDisCap_data,
-		dcUUIDisPuller_data,
-		dcUUIDisLink_data,
-	};
-
-	const toast = {
-		status: 201,
-		type: 'insert',
-		message: 'Die Casting Transaction By Order',
-	};
-
-	console.log('toast', toast, 'data', data);
-
-	res.status(201).json({ toast, data });
 }

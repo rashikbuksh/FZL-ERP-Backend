@@ -43,6 +43,7 @@ export const OrderDetailsView = `
   `;
 
 export const OrderDetailsFullView = `
+
 CREATE OR REPLACE VIEW zipper.v_order_details_full
  AS
  SELECT 
@@ -143,7 +144,9 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     op_puller_link.short_name AS puller_link_short_name,
     order_info.marketing_priority,
     order_info.factory_priority,
-    order_description.garments_remarks
+    order_description.garments_remarks,
+    stock.uuid as stock_uuid,
+    stock.order_quantity as stock_order_quantity
    FROM zipper.order_info
      LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
      LEFT JOIN marketing ON marketing.uuid = order_info.marketing_uuid
@@ -169,7 +172,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_slider_link ON op_slider_link.uuid = order_description.slider_link
      LEFT JOIN properties op_end_user ON op_end_user.uuid = order_description.end_user
      LEFT JOIN properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
-     LEFT JOIN properties op_puller_link ON op_puller_link.uuid = order_description.puller_link;
+     LEFT JOIN properties op_puller_link ON op_puller_link.uuid = order_description.puller_link
+     LEFT JOIN slider.stock ON stock.order_description_uuid = order_description.uuid;
 	`; // required order_description changes
 
 export const OrderPlanningView = `

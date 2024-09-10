@@ -11,7 +11,6 @@ export const HashPass = async (password) => {
 };
 
 export const ComparePass = async (password, hashPassword) => {
-	console.log(password, hashPassword);
 	return await compare(password, hashPassword);
 };
 

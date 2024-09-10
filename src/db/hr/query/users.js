@@ -201,7 +201,6 @@ export async function loginUser(req, res, next) {
 	}
 
 	await ComparePass(pass, USER[0].pass).then((result) => {
-		console.log(USER[0]?.pass, ' - pass -', pass);
 		if (!result) {
 			return res.status(200).json({
 				status: 400,
