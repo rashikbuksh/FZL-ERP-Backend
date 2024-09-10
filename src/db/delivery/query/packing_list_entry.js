@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -72,7 +72,10 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(packing_list_entry);
+	const resultPromise = db
+		.select()
+		.from(packing_list_entry)
+		.orderBy(desc(packing_list_entry.created_at));
 	const toast = {
 		status: 200,
 		type: 'select_all',

@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -90,7 +90,8 @@ export async function selectAll(req, res, next) {
 		})
 		.from(batch_entry)
 		.leftJoin(batch, eq(batch.uuid, batch_entry.batch_uuid))
-		.leftJoin(sfg, eq(sfg.uuid, batch_entry.sfg_uuid));
+		.leftJoin(sfg, eq(sfg.uuid, batch_entry.sfg_uuid))
+		.orderBy(desc(batch_entry.created_at));
 
 	const toast = {
 		status: 200,

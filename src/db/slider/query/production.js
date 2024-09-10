@@ -237,6 +237,8 @@ export async function selectProductionBySection(req, res, next) {
 			public.properties op_coloring_type ON stock.coloring_type = op_coloring_type.uuid
 		WHERE 
 			production.section = ${section}
+		ORDER BY
+			production.created_at DESC
 	`;
 	const resultPromise = db.execute(query);
 

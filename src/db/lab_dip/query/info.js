@@ -138,7 +138,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			publicSchema.factory,
 			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
-		);
+		)
+		.orderBy(desc(info.created_at));
 
 	const toast = {
 		status: 200,

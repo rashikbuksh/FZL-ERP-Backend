@@ -159,6 +159,7 @@ export async function selectAll(req, res, next) {
 			public.properties op_slider_link ON stock.slider_link = op_slider_link.uuid
 		LEFT JOIN
 			public.properties op_coloring_type ON stock.coloring_type = op_coloring_type.uuid
+		ORDER BY transaction.created_at DESC
 	`;
 
 	if (from_section) {

@@ -182,7 +182,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			pullerLinkProperties,
 			eq(die_casting.puller_link, pullerLinkProperties.uuid)
-		);
+		)
+		.orderBy(desc(die_casting.created_at));
 
 	const toast = {
 		status: 200,

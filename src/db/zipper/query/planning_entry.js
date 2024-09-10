@@ -1,4 +1,4 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -154,7 +154,8 @@ export async function selectAll(req, res, next) {
 		})
 		.from(planning_entry)
 		.leftJoin(sfg, eq(sfg.uuid, planning_entry.sfg_uuid))
-		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_week));
+		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_week))
+		.orderBy(desc(planning_entry.created_at));
 
 	const toast = {
 		status: 200,

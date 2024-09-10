@@ -95,7 +95,8 @@ export async function selectAll(req, res, next) {
 		.from(challan_entry)
 		.leftJoin(challan, eq(challan_entry.challan_uuid, challan.uuid))
 		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
-		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid));
+		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
+		.orderBy(desc(challan_entry.created_at));
 
 	const toast = {
 		status: 200,

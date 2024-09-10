@@ -103,6 +103,8 @@ export async function selectAll(req, res, next) {
 			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN
 			zipper.order_info ON order_info.uuid = dcp.order_info_uuid
+		ORDER BY
+			dcp.created_at DESC
 		`;
 
 	const dcpPromise = db.execute(query);

@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -89,7 +89,8 @@ export async function selectAll(req, res, next) {
 			remarks: designation.remarks,
 		})
 		.from(designation)
-		.leftJoin(department, eq(designation.department_uuid, department.uuid));
+		.leftJoin(department, eq(designation.department_uuid, department.uuid))
+		.orderBy(desc(designation.created_at));
 
 	const toast = {
 		status: 200,
