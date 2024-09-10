@@ -48,7 +48,9 @@ export const entry = purchase.table('entry', {
 	purchase_description_uuid: defaultUUID(
 		'purchase_description_uuid'
 	).references(() => description.uuid),
-	material_uuid: defaultUUID('material_uuid'),
+	material_uuid: defaultUUID('material_uuid').references(
+		() => materialSchema.info.uuid
+	),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
