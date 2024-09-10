@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -90,7 +90,8 @@ export function selectAll(req, res, next) {
 			status: policy_and_notice.status,
 		})
 		.from(policy_and_notice)
-		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid));
+		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid))
+		.orderBy(desc(policy_and_notice.created_at));
 
 	const toast = {
 		status: 200,

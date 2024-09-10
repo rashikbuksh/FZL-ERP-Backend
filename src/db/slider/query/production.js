@@ -211,6 +211,8 @@ export async function selectProductionBySection(req, res, next) {
 			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
 		WHERE 
 			production.section = ${section}
+		ORDER BY
+			production.created_at DESC
 	`;
 	const resultPromise = db.execute(query);
 

@@ -105,6 +105,8 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN 
 			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
 		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
+		ORDER BY
+			tape_coil_to_dyeing.created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);

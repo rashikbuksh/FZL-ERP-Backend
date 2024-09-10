@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -94,7 +94,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			materialSchema.info,
 			eq(entry.material_uuid, materialSchema.info.uuid)
-		);
+		)
+		.orderBy(desc(entry.created_at));
 
 	const toast = {
 		status: 200,

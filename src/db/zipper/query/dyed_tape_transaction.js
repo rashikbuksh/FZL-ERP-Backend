@@ -91,6 +91,7 @@ export async function selectAll(req, res, next) {
 		FROM zipper.dyed_tape_transaction dtt
 			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
+		ORDER BY dtt.created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);

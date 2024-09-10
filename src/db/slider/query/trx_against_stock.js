@@ -122,6 +122,8 @@ export async function selectAll(req, res, next) {
 			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
 		LEFT JOIN
 			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+		ORDER BY
+			tas.created_at DESC;
 			`;
 
 	const resultPromise = db.execute(query);

@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -75,7 +75,10 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(department);
+	const resultPromise = db
+		.select()
+		.from(department)
+		.orderBy(desc(department.created_at));
 
 	const toast = {
 		status: 200,

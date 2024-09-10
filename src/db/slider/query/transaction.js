@@ -135,6 +135,7 @@ export async function selectAll(req, res, next) {
 			hr.users ON transaction.created_by = users.uuid
 		LEFT JOIN 
 			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
+    ORDER BY transaction.created_at DESC
 	`;
 
 	if (from_section) {

@@ -129,6 +129,8 @@ export async function selectAll(req, res, next) {
 			slider.stock ON dct.stock_uuid = stock.uuid
 		LEFT JOIN 
 			zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
+		ORDER BY
+			dct.created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);

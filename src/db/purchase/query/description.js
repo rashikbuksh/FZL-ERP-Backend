@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -7,7 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import material, * as materialSchema from '../../material/schema.js';
+import * as materialSchema from '../../material/schema.js';
 import { description, entry, vendor } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -103,7 +103,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)
-		);
+		)
+		.orderBy(desc(description.created_at));
 
 	const toast = {
 		status: 200,

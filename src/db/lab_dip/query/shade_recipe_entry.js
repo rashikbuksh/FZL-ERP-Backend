@@ -98,7 +98,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			materialSchema.info,
 			eq(shade_recipe_entry.material_uuid, materialSchema.info.uuid)
-		);
+		)
+		.orderBy(desc(shade_recipe_entry.created_at));
 
 	const toast = {
 		status: 200,

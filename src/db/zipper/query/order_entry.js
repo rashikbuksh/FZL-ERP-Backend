@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -148,7 +148,10 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const order_entryPromise = db.select().from(order_entry);
+	const order_entryPromise = db
+		.select()
+		.from(order_entry)
+		.orderBy(desc(order_entry.created_at));
 
 	const toast = {
 		status: 200,

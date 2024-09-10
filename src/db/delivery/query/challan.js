@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
@@ -92,7 +92,8 @@ export async function selectAll(req, res, next) {
 		})
 		.from(challan)
 		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
-		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid));
+		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
+		.orderBy(desc(challan.created_at));
 
 	const toast = {
 		status: 200,
