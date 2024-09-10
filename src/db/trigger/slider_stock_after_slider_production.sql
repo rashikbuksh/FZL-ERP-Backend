@@ -99,7 +99,3 @@ CREATE  OR REPLACE TRIGGER slider_stock_after_slider_production_delete
 AFTER DELETE ON slider.production
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_slider_production_delete();
-
-
-
-    

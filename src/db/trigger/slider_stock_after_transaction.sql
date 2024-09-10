@@ -67,24 +67,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER slider_stock_after_transaction_insert
-AFTER INSERT ON slider.stock_transaction
+AFTER INSERT ON slider.transaction
 FOR EACH ROW
 
 EXECUTE FUNCTION slider.slider_stock_after_transaction_insert();
 
 CREATE TRIGGER slider_stock_after_transaction_delete
-AFTER DELETE ON slider.stock_transaction
+AFTER DELETE ON slider.transaction
 FOR EACH ROW
 
 EXECUTE FUNCTION slider.slider_stock_after_transaction_delete();
 
 CREATE TRIGGER slider_stock_after_transaction_update
-AFTER UPDATE ON slider.stock_transaction
+AFTER UPDATE ON slider.transaction
 FOR EACH ROW
 
 EXECUTE FUNCTION slider.slider_stock_after_transaction_update();
-
-
-
-
-
