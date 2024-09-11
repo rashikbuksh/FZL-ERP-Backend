@@ -336,9 +336,8 @@ export async function selectOrderDescriptionByItemNameAndZipperNumber(
 	res,
 	next
 ) {
-
 	const { item_name, zipper_number } = req.params;
-	
+
 	console.log('params', req.params);
 	console.log(item_name, zipper_number);
 
@@ -353,15 +352,18 @@ export async function selectOrderDescriptionByItemNameAndZipperNumber(
 					vodf.zipper_number_name = ${zipper_number}
 				`;
 
-		const orderDetailsResult = await db.execute(orderDetailsQuery);
+	const orderEntryPromise = db.execute(query);
+
+	try {
+		const data = await orderEntryPromise;
 
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			message: 'Order Description list for dyeing',
+			message: 'Order Description list',
 		};
 
-		res.status(200).json({ toast, data: orderDetailsResult?.rows });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
