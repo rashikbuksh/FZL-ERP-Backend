@@ -5,7 +5,7 @@ import {
 } from '../../../util/index.js';
 import db from '../../index.js';
 
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import * as hrSchema from '../../hr/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { order_info } from '../schema.js';
