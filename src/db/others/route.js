@@ -45,8 +45,8 @@ otherRouter.get(
 	otherOperations.selectOrderDescription
 );
 otherRouter.get(
-	'/order/order-description/value/label/by/:coil_uuid',
-	otherOperations.selectOrderDescriptionByCoilUuid
+	'/order/order-description/value/label/:item_name/:zipper_number',
+	otherOperations.selectOrderDescriptionByItemNameAndZipperNumber
 );
 
 // purchase
@@ -745,17 +745,16 @@ const pathZipper = {
 			},
 		},
 	},
-	'/other/order/order-description/value/label/by/{coil_uuid}': {
+	'/other/order/order-description/value/label/{item_name}/{zipper_number}': {
 		get: {
 			tags: ['others'],
-			summary: 'get order description by item name and zipper number',
-			description: 'Order description by item name and zipper number',
-			operationId: 'getOrderDescriptionByItemNameAndZipperNumber',
+			summary: 'get order description by item uuid',
+			description: 'Order description by item uuid',
+			operationId: 'getOrderDescriptionByItemUuid',
 			parameters: [
 				{
-					name: 'coil_uuid',
+					name: 'item_name',
 					in: 'path',
-					description: 'coil uuid',
 					required: true,
 					type: 'string',
 					format: 'uuid',
@@ -772,8 +771,6 @@ const pathZipper = {
 								properties: {
 									value: SE.string('2ggcphnwHGzEUGy'),
 									label: SE.string('Z24-0001'),
-									item_name: SE.string('Nylon'),
-									zipper_number_name: SE.string('3'),
 								},
 							},
 						},
