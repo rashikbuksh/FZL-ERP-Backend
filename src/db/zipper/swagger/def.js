@@ -99,6 +99,7 @@ export const def_zipper_order_description = SED({
 		garments_wash: SE.string(),
 		puller_link: SE.string(),
 		created_by: SE.uuid(),
+		slider_finishing_stock: SE.number(),
 	},
 	xml: 'Zipper/Order-Description',
 });

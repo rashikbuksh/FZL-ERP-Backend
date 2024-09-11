@@ -22,6 +22,7 @@ export const defStock = SED({
 		sa_prod: SE.number(0.0),
 		coloring_stock: SE.number(0.0),
 		coloring_prod: SE.number(0.0),
+		finishing_stock: SE.number(0.0),
 		trx_to_finishing: SE.number(0.0),
 		u_top_quantity: SE.number(0.0),
 		h_bottom_quantity: SE.number(0.0),
