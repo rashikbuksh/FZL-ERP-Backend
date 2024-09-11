@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import { format } from 'morgan';
 import SE, { SED } from '../../util/swagger_example.js';
 import * as otherOperations from './query/query.js';
 
@@ -44,8 +45,8 @@ otherRouter.get(
 	otherOperations.selectOrderDescription
 );
 otherRouter.get(
-	'/order/order-description/value/label/:item_name/:zipper_number',
-	otherOperations.selectOrderDescriptionByItemNameAndZipperNumber
+	'/order/order-description/value/label/by/:item_uuid',
+	otherOperations.selectOrderDescriptionByItemUuid
 );
 
 // purchase
@@ -744,32 +745,21 @@ const pathZipper = {
 			},
 		},
 	},
-	'/other/order/order-description/value/label/{item_name}/{zipper_number}': {
+	'/other/order/order-description/value/label/by/{item_uuid}': {
 		get: {
 			tags: ['others'],
-			summary: 'get order description by item name and zipper number',
-			description: 'Order description by item name and zipper number',
-			operationId: 'getOrderDescriptionByItemNameAndZipperNumber',
+			summary: 'get order description by item uuid',
+			description: 'Order description by item uuid',
+			operationId: 'getOrderDescriptionByItemUuid',
 			parameters: [
 				{
-					name: 'item_name',
+					name: 'item_uuid',
 					in: 'path',
+					description: 'item uuid',
 					required: true,
-					schema: {
-						type: 'string',
-						example: 'nylon',
-					},
-					description: 'The name of the item',
-				},
-				{
-					name: 'zipper_number',
-					in: 'path',
-					required: true,
-					schema: {
-						type: 'string',
-						example: '3',
-					},
-					description: 'The number of the zipper',
+					type: 'string',
+					format: 'uuid',
+					example: '2ggcphnwHGzEUGy',
 				},
 			],
 			responses: {
@@ -782,8 +772,6 @@ const pathZipper = {
 								properties: {
 									value: SE.string('2ggcphnwHGzEUGy'),
 									label: SE.string('Z24-0001'),
-									item_name: SE.string('Nylon'),
-									zipper_number_name: SE.string('3'),
 								},
 							},
 						},

@@ -331,16 +331,8 @@ export async function selectOrderDescription(req, res, next) {
 	}
 }
 
-export async function selectOrderDescriptionByItemNameAndZipperNumber(
-	req,
-	res,
-	next
-) {
-
-	const { item_name, zipper_number } = req.params;
-	
-	console.log('params', req.params);
-	console.log(item_name, zipper_number);
+export async function selectOrderDescriptionByItemUuid(req, res, next) {
+	const { item_uuid } = req.params;
 
 	const query = sql`SELECT
 					vodf.order_description_uuid AS value,
@@ -349,8 +341,7 @@ export async function selectOrderDescriptionByItemNameAndZipperNumber(
 				FROM
 					zipper.v_order_details_full vodf
 				WHERE
-					vodf.item_name = ${item_name} AND
-					vodf.zipper_number_name = ${zipper_number}
+					vodf.item = ${item_uuid}
 				`;
 
 	const orderEntryPromise = db.execute(query);
