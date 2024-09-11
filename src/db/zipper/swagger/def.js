@@ -1,5 +1,4 @@
 import SE, { SED } from '../../../util/swagger_example.js';
-import { dyed_tape_transaction } from '../schema.js';
 
 // * Zipper Order Info * //
 export const def_zipper_order_info = SED({
@@ -319,19 +318,38 @@ export const def_zipper_dying_batch_entry = SED({
 export const def_zipper_tape_coil = SED({
 	required: [
 		'uuid',
-		'type',
-		'zipper_number',
+		'item_uuid',
+		'zipper_number_uuid',
+		'name',
+		'is_import',
+		'is_reverse',
+		'top',
+		'bottom',
+		'raw_per_kg_meter',
+		'dyed_per_kg_meter',
 		'quantity',
 		'trx_quantity_in_coil',
 		'quantity_in_coil',
+		'created_by',
+		'created_at',
 	],
 	properties: {
 		uuid: SE.uuid(),
-		type: SE.string('nylon'),
-		zipper_number: SE.number('3.0'),
+		item_uuid: SE.uuid(),
+		zipper_number_uuid: SE.uuid(),
+		name: SE.string('Name'),
+		is_import: SE.boolean(),
+		is_reverse: SE.boolean(),
+		top: SE.number('100.0'),
+		bottom: SE.number('100.0'),
+		raw_per_kg_meter: SE.number('100.0'),
+		dyed_per_kg_meter: SE.number('100.0'),
 		quantity: SE.number('100.0'),
 		trx_quantity_in_coil: SE.number('100.0'),
 		quantity_in_coil: SE.number('100.0'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
 		remarks: SE.string('Remarks'),
 	},
 	xml: 'Zipper/Tape-Coil',

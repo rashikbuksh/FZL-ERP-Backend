@@ -44,10 +44,10 @@ otherRouter.get(
 	'/order/description/value/label',
 	otherOperations.selectOrderDescription
 );
-otherRouter.get(
-	'/order/order-description/value/label/:item_name/:zipper_number',
-	otherOperations.selectOrderDescriptionByItemNameAndZipperNumber
-);
+// otherRouter.get(
+// 	'/order/order-description/value/label/:item_name/:zipper_number',
+// 	otherOperations.selectOrderDescriptionByItemNameAndZipperNumber
+// );
 
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
@@ -745,40 +745,40 @@ const pathZipper = {
 			},
 		},
 	},
-	'/other/order/order-description/value/label/{item_name}/{zipper_number}': {
-		get: {
-			tags: ['others'],
-			summary: 'get order description by item uuid',
-			description: 'Order description by item uuid',
-			operationId: 'getOrderDescriptionByItemUuid',
-			parameters: [
-				{
-					name: 'item_name',
-					in: 'path',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: '2ggcphnwHGzEUGy',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a order description.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									value: SE.string('2ggcphnwHGzEUGy'),
-									label: SE.string('Z24-0001'),
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	},
+	// '/other/order/order-description/value/label/{item_name}/{zipper_number}': {
+	// 	get: {
+	// 		tags: ['others'],
+	// 		summary: 'get order description by item uuid',
+	// 		description: 'Order description by item uuid',
+	// 		operationId: 'getOrderDescriptionByItemUuid',
+	// 		parameters: [
+	// 			{
+	// 				name: 'item_name',
+	// 				in: 'path',
+	// 				required: true,
+	// 				type: 'string',
+	// 				format: 'uuid',
+	// 				example: '2ggcphnwHGzEUGy',
+	// 			},
+	// 		],
+	// 		responses: {
+	// 			200: {
+	// 				description: 'Returns a order description.',
+	// 				content: {
+	// 					'application/json': {
+	// 						schema: {
+	// 							type: 'object',
+	// 							properties: {
+	// 								value: SE.string('2ggcphnwHGzEUGy'),
+	// 								label: SE.string('Z24-0001'),
+	// 							},
+	// 						},
+	// 					},
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// },
 };
 
 const pathHr = {

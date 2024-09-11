@@ -4,6 +4,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { tape_coil } from '../schema.js';
 
@@ -71,7 +72,31 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db.select().from(tape_coil);
+	const resultPromise = db
+		.select({
+			uuid: tape_coil.uuid,
+			item_uuid: tape_coil.item_uuid,
+			zipper_number_uuid: tape_coil.zipper_number_uuid,
+			name: tape_coil.name,
+			is_import: tape_coil.is_import,
+			is_reverse: tape_coil.is_reverse,
+			top: tape_coil.top,
+			bottom: tape_coil.bottom,
+			raw_per_kg_meter: tape_coil.raw_per_kg_meter,
+			dyed_per_kg_meter: tape_coil.dyed_per_kg_meter,
+			quantity: tape_coil.quantity,
+			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
+			quantity_in_coil: tape_coil.quantity_in_coil,
+			created_by: tape_coil.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: tape_coil.created_at,
+			updated_at: tape_coil.updated_at,
+			remarks: tape_coil.remarks,
+		})
+		.from(tape_coil)
+		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
+		.orderBy(tape_coil.created_at, desc);
+
 	const toast = {
 		status: 200,
 		type: 'select_all',
