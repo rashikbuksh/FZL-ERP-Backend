@@ -1776,6 +1776,7 @@ export const pathZipperTapeCoil = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					item_uuid: SE.uuid(),
+					item_name: SE.string('nylon'),
 					zipper_number_uuid: SE.uuid(),
 					name: SE.string('nylon'),
 					is_import: SE.boolean(),
@@ -1823,6 +1824,7 @@ export const pathZipperTapeCoil = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					item_uuid: SE.uuid(),
+					item_name: SE.string('nylon'),
 					zipper_number_uuid: SE.uuid(),
 					name: SE.string('nylon'),
 					is_import: SE.boolean(),

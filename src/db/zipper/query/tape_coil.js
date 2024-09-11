@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as publicSchema from '../../public/schema.js';
 import { tape_coil } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -76,6 +77,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: tape_coil.uuid,
 			item_uuid: tape_coil.item_uuid,
+			item_name: publicSchema.properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
 			name: tape_coil.name,
 			is_import: tape_coil.is_import,
@@ -95,6 +97,10 @@ export async function selectAll(req, res, next) {
 		})
 		.from(tape_coil)
 		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			publicSchema.properties,
+			eq(tape_coil.item_uuid, publicSchema.properties.uuid)
+		)
 		.orderBy(tape_coil.created_at, desc);
 
 	const toast = {

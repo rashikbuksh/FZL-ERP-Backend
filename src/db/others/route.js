@@ -44,10 +44,10 @@ otherRouter.get(
 	'/order/description/value/label',
 	otherOperations.selectOrderDescription
 );
-// otherRouter.get(
-// 	'/order/order-description/value/label/:item_name/:zipper_number',
-// 	otherOperations.selectOrderDescriptionByItemNameAndZipperNumber
-// );
+otherRouter.get(
+	'/order/order-description/value/label/by/:coil_uuid',
+	otherOperations.selectOrderDescriptionByCoilUuid
+);
 
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
@@ -779,6 +779,41 @@ const pathZipper = {
 	// 		},
 	// 	},
 	// },
+
+	'/other/order/order-description/value/label/{coil_uuid}': {
+		get: {
+			tags: ['others'],
+			summary: 'get order description by coil uuid',
+			description: 'Order description by coil uuid',
+			operationId: 'getOrderDescriptionByCoilUuid',
+			parameters: [
+				{
+					name: 'coil_uuid',
+					in: 'path',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: '2ggcphnwHGzEUGy',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns a order description.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('Z24-0001'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 const pathHr = {

@@ -369,6 +369,53 @@ export async function selectOrderDescription(req, res, next) {
 // 	}
 // }
 
+export async function selectOrderDescriptionByCoilUuid(req, res, next) {
+	const { coil_uuid } = req.params;
+
+	const tapeCOilQuery = sql`
+	SELECT
+		   item_uuid,
+		   zipper_number_uuid
+	FROM
+		   zipper.tape_coil
+	WHERE
+		   uuid = ${coil_uuid}
+	`;
+
+	try {
+		const tapeCoilData = await db.execute(tapeCOilQuery);
+
+		const item_uuid = tapeCoilData.rows[0].item_uuid;
+		const zipper_number_uuid = tapeCoilData.rows[0].zipper_number_uuid;
+
+		const query = sql`
+		SELECT
+			vodf.order_description_uuid AS value,
+			CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
+
+		FROM
+			zipper.v_order_details_full vodf
+		WHERE
+			vodf.item_uuid = ${item_uuid} AND
+			vodf.zipper_number_uuid = ${zipper_number_uuid}
+		`;
+
+		const orderEntryPromise = db.execute(query);
+
+		const data = await orderEntryPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Description list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function selectOrderNumberForPi(req, res, next) {
 	const query = sql`SELECT
 					DISTINCT vod.order_info_uuid AS value,
