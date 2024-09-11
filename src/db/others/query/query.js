@@ -331,32 +331,47 @@ export async function selectOrderDescription(req, res, next) {
 	}
 }
 
-export async function selectOrderDescriptionByItemNameAndZipperNumber(
-	req,
-	res,
-	next
-) {
+export async function selectOrderDescriptionByCoilUuid(req, res, next) {
+	const { coil_uuid } = req.params;
 
-	const { item_name, zipper_number } = req.params;
-	
-	console.log('params', req.params);
-	console.log(item_name, zipper_number);
-
-	const query = sql`SELECT
-					vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
-
-				FROM
-					zipper.v_order_details_full vodf
-				WHERE
-					vodf.item_name = ${item_name} AND
-					vodf.zipper_number_name = ${zipper_number}
-				`;
-
-	const orderEntryPromise = db.execute(query);
+	const tapeCoilQuery = sql`SELECT
+                                type as item_name,
+                                zipper_number as zipper_number_name
+                            FROM
+                                zipper.tape_coil
+                            WHERE
+                                uuid = ${coil_uuid}`;
 
 	try {
-		const data = await orderEntryPromise;
+		const tapeCoilResult = await db.execute(tapeCoilQuery);
+
+		if (tapeCoilResult?.rows.length === 0) {
+			return res
+				.status(404)
+				.json({ message: 'No data found for the given coil_uuid' });
+		}
+
+		const { item_name, zipper_number_name } = tapeCoilResult.rows[0];
+
+		// Function to convert '3.0' to '3' but keep '3.5' as '3.5'
+		const convertToIntegerString = (numStr) => {
+			const num = parseFloat(numStr);
+			return Number.isInteger(num) ? num.toString() : numStr;
+		};
+
+		const convertedZipperNumber =
+			convertToIntegerString(zipper_number_name);
+
+		const orderDetailsQuery = sql`SELECT
+                                        vodf.order_description_uuid AS value,
+                                        CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
+                                    FROM
+                                        zipper.v_order_details_full vodf
+                                    WHERE
+                                LOWER(vodf.item_name) = LOWER(${item_name}) AND
+                                LOWER(vodf.zipper_number_name) = LOWER(${convertedZipperNumber})`;
+
+		const orderDetailsResult = await db.execute(orderDetailsQuery);
 
 		const toast = {
 			status: 200,
@@ -364,7 +379,7 @@ export async function selectOrderDescriptionByItemNameAndZipperNumber(
 			message: 'Order Description list for dyeing',
 		};
 
-		res.status(200).json({ toast, data: data?.rows });
+		res.status(200).json({ toast, data: orderDetailsResult?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
