@@ -43,6 +43,10 @@ otherRouter.get(
 	'/order/description/value/label',
 	otherOperations.selectOrderDescription
 );
+otherRouter.get(
+	'/order/order-description/value/label/:item_name/:zipper_number',
+	otherOperations.selectOrderDescriptionByItemNameAndZipperNumber
+);
 
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
@@ -732,6 +736,36 @@ const pathZipper = {
 									tape_received: SE.number(10),
 									tape_transferred: SE.number(10),
 									colors: SE.string('[black, white]'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/order/order-description/value/label/{item_name}/{zipper_number}': {
+		get: {
+			tags: ['others'],
+			summary: 'get order description by item name and zipper number',
+			description: 'Order description by item name and zipper number',
+			operationId: 'getOrderDescriptionByItemNameAndZipperNumber',
+			parameters: [
+				SE.parameter_query('item_name', 'item_name', 'nylon'),
+				SE.parameter_query('zipper_number', 'zipper_number', '3'),
+			],
+			responses: {
+				200: {
+					description: 'Returns a order description.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('Z24-0001'),
+									item_name: SE.string('Nylon'),
+									zipper_number_name: SE.string('3'),
 								},
 							},
 						},
