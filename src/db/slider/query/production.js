@@ -80,32 +80,87 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: production.uuid,
-			stock_uuid: production.stock_uuid,
-			production_quantity: production.production_quantity,
-			wastage: production.wastage,
-			section: production.section,
-			created_by: production.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: production.created_at,
-			updated_at: production.updated_at,
-			remarks: production.remarks,
-		})
-		.from(production)
-		.leftJoin(
-			hrSchema.users,
-			eq(production.created_by, hrSchema.users.uuid)
-		);
+	const query = sql`
+		SELECT
+			production.uuid,
+			production.stock_uuid,
+			production.production_quantity,
+			production.wastage,
+			production.section,
+			production.created_by,
+			users.name as created_by_name,
+			production.created_at,
+			production.updated_at,
+			production.remarks,
+			vodf.item,
+			vodf.item_name,
+			vodf.item_short_name,
+			vodf.zipper_number,
+			vodf.zipper_number_name,
+			vodf.zipper_number_short_name,
+			vodf.end_type,
+			vodf.end_type_name,
+			vodf.end_type_short_name,
+			vodf.lock_type,
+			vodf.lock_type_name,
+			vodf.lock_type_short_name,
+			vodf.puller_type,
+			vodf.puller_type_name,
+			vodf.puller_type_short_name,
+			vodf.puller_color,
+			vodf.puller_color_name,
+			vodf.puller_color_short_name,
+			vodf.logo_type,
+			vodf.logo_type_name,
+			vodf.logo_type_short_name,
+			vodf.puller_link,
+			vodf.puller_link_name,
+			vodf.puller_link_short_name,
+			vodf.slider,
+			vodf.slider_name,
+			vodf.slider_short_name,
+			vodf.slider_body_shape,
+			vodf.slider_body_shape_name,
+			vodf.slider_body_shape_short_name,
+			vodf.slider_link,
+			vodf.slider_link_name,
+			vodf.slider_link_short_name,
+			vodf.coloring_type,
+			vodf.coloring_type_name,
+			vodf.coloring_type_short_name,
+			stock.order_quantity,
+			vodf.order_info_uuid,
+			vodf.order_number,
+			stock.sa_prod,
+			stock.coloring_stock,
+			stock.coloring_prod,
+			LEAST(stock.body_quantity, stock.puller_quantity, stock.cap_quantity, stock.link_quantity) + production.production_quantity as max_quantity
+		FROM
+			slider.production
+		LEFT JOIN
+			slider.stock ON production.stock_uuid = stock.uuid
+		LEFT JOIN 
+			hr.users ON production.created_by = users.uuid
+		LEFT JOIN 
+			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
+		ORDER BY
+			production.created_at DESC
+	`;
+	const resultPromise = db.execute(query);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'production list',
-	};
+	try {
+		const data = await resultPromise;
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'production list',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -200,7 +255,8 @@ export async function selectProductionBySection(req, res, next) {
 			vodf.order_number,
 			stock.sa_prod,
 			stock.coloring_stock,
-			stock.coloring_prod
+			stock.coloring_prod,
+			LEAST(stock.body_quantity, stock.puller_quantity, stock.cap_quantity, stock.link_quantity) + production.production_quantity as max_quantity
 		FROM
 			slider.production
 		LEFT JOIN
