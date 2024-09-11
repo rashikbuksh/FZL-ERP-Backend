@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import {
+	boolean,
 	decimal,
 	integer,
 	pgSchema,
@@ -149,6 +150,7 @@ export const order_description = zipper.table('order_description', {
 	nylon_metallic_finishing: PG_DECIMAL('nylon_metallic_finishing').default(0),
 	vislon_teeth_molding: PG_DECIMAL('vislon_teeth_molding').default(0),
 	metal_teeth_molding: PG_DECIMAL('metal_teeth_molding').default(0),
+	slider_finishing_stock: PG_DECIMAL('slider_finishing_stock').default(0),
 });
 
 export const order_entry = zipper.table('order_entry', {
@@ -374,11 +376,19 @@ export const dying_batch_entry = zipper.table('dying_batch_entry', {
 // tape and coil
 export const tape_coil = zipper.table('tape_coil', {
 	uuid: uuid_primary,
-	type: text('type').notNull(),
-	zipper_number: decimal('zipper_number', {
-		precision: 2,
-		scale: 1,
-	}).notNull(),
+	item_uuid: defaultUUID('item_uuid').references(
+		() => publicSchema.properties.uuid
+	),
+	zipper_number_uuid: defaultUUID('zipper_number_uuid').references(
+		() => publicSchema.properties.uuid
+	),
+	name: text('name').notNull(),
+	is_import: boolean('is_import').default(false),
+	is_reverse: boolean('is_reverse').default(false),
+	top: PG_DECIMAL('top').default(0.0),
+	bottom: PG_DECIMAL('bottom').default(0.0),
+	raw_per_kg_meter: PG_DECIMAL('raw_per_kg_meter').default(0.0),
+	dyed_per_kg_meter: PG_DECIMAL('dyed_per_kg_meter').default(0.0),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -391,6 +401,9 @@ export const tape_coil = zipper.table('tape_coil', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 

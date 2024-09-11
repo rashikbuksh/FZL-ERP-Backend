@@ -13,6 +13,21 @@ BEGIN
         + CASE WHEN NEW.to_section = 'finishing' THEN NEW.trx_quantity ELSE 0 END
 
     WHERE uuid = NEW.stock_uuid;
+    IF NEW.from_section = 'coloring_prod' AND NEW.to_section = 'finishing_stock'
+    THEN
+        UPDATE slider.stock
+        SET
+        coloring_prod = coloring_prod - NEW.trx_quantity,
+        finishing_stock = finishing_stock + NEW.trx_quantity
+
+        WHERE uuid = NEW.to_stock_uuid;
+
+        UPDATE zipper.order_description
+        SET
+        slider_finishing_stock = slider_finishing_stock + NEW.trx_quantity
+        WHERE uuid = (SELECT order_description_uuid FROM slider.stock WHERE uuid = NEW.to_stock_uuid);
+        
+    END IF;
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -34,6 +49,22 @@ BEGIN
         - CASE WHEN OLD.to_section = 'finishing' THEN OLD.trx_quantity ELSE 0 END
 
     WHERE uuid = OLD.stock_uuid;
+
+    IF OLD.from_section = 'coloring_prod' AND OLD.to_section = 'finishing_stock'
+    THEN
+        UPDATE slider.stock
+        SET
+        coloring_prod = coloring_prod + OLD.trx_quantity,
+        finishing_stock = finishing_stock - OLD.trx_quantity
+
+        WHERE uuid = OLD.to_stock_uuid;
+
+        UPDATE zipper.order_description
+        SET
+        slider_finishing_stock = slider_finishing_stock - OLD.trx_quantity
+        WHERE uuid = (SELECT order_description_uuid FROM slider.stock WHERE uuid = OLD.to_stock_uuid);
+        
+    END IF;
 
 RETURN OLD;
 
@@ -69,6 +100,22 @@ BEGIN
         - CASE WHEN OLD.to_section = 'finishing' THEN OLD.trx_quantity ELSE 0 END
 
     WHERE uuid = NEW.stock_uuid;
+
+    IF NEW.from_section = 'coloring_prod' AND NEW.to_section = 'finishing_stock'
+    THEN
+        UPDATE slider.stock
+        SET
+        coloring_prod = coloring_prod - NEW.trx_quantity,
+        finishing_stock = finishing_stock + NEW.trx_quantity
+
+        WHERE uuid = NEW.to_stock_uuid;
+
+        UPDATE zipper.order_description
+        SET
+        slider_finishing_stock = slider_finishing_stock + NEW.trx_quantity
+        WHERE uuid = (SELECT order_description_uuid FROM slider.stock WHERE uuid = NEW.to_stock_uuid);
+        
+    END IF;
 
 RETURN NEW;
 END;

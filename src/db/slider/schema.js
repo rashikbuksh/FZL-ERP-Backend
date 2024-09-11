@@ -43,6 +43,10 @@ export const stock = slider.table('stock', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+	finishing_stock: decimal('finishing_stock', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
 	trx_to_finishing: decimal('trx_to_finishing', {
 		precision: 20,
 		scale: 4,
