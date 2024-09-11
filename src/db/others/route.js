@@ -751,8 +751,26 @@ const pathZipper = {
 			description: 'Order description by item name and zipper number',
 			operationId: 'getOrderDescriptionByItemNameAndZipperNumber',
 			parameters: [
-				SE.parameter_query('item_name', 'item_name', 'nylon'),
-				SE.parameter_query('zipper_number', 'zipper_number', '3'),
+				{
+					name: 'item_name',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+						example: 'nylon',
+					},
+					description: 'The name of the item',
+				},
+				{
+					name: 'zipper_number',
+					in: 'path',
+					required: true,
+					schema: {
+						type: 'string',
+						example: '3',
+					},
+					description: 'The number of the zipper',
+				},
 			],
 			responses: {
 				200: {
