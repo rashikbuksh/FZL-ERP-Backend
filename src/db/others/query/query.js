@@ -331,6 +331,43 @@ export async function selectOrderDescription(req, res, next) {
 	}
 }
 
+export async function selectOrderDescriptionByItemNameAndZipperNumber(
+	req,
+	res,
+	next
+) {
+	const { item_name, zipper_number } = req.params;
+
+	const query = sql`SELECT
+					vodf.order_description_uuid AS value,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label,
+					vodf.item_name,
+					vodf.zipper_number_name
+
+				FROM
+					zipper.v_order_details_full vodf
+				WHERE
+					vodf.item_name = ${item_name} AND
+					vodf.zipper_number_name = ${zipper_number}
+				`;
+
+	const orderEntryPromise = db.execute(query);
+
+	try {
+		const data = await orderEntryPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Description list for dyeing',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function selectOrderNumberForPi(req, res, next) {
 	const query = sql`SELECT
 					DISTINCT vod.order_info_uuid AS value,
