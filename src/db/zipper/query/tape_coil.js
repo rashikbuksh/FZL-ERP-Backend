@@ -71,10 +71,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select()
-		.from(tape_coil)
-		.orderBy(desc(tape_coil.created_at));
+	const resultPromise = db.select().from(tape_coil);
 	const toast = {
 		status: 200,
 		type: 'select_all',

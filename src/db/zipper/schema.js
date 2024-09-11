@@ -163,18 +163,8 @@ export const order_entry = zipper.table('order_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
-	company_price: decimal('company_price', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	party_price: decimal('party_price', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
+	company_price: PG_DECIMAL('company_price').default(0.0),
+	party_price: PG_DECIMAL('party_price').default(0.0),
 	status: integer('status').default(1),
 	swatch_status: swatchStatusEnum('swatch_status_enum').default('pending'),
 	swatch_approval_date: text('swatch_approval_date').default(null),
