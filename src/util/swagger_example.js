@@ -45,6 +45,10 @@ const SE = {
 		type: 'integer',
 		example,
 	}),
+	boolean: (example = false) => ({
+		type: 'boolean',
+		example,
+	}),
 
 	date_time: () => ({
 		type: 'string',

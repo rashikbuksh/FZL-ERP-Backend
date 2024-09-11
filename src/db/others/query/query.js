@@ -331,35 +331,43 @@ export async function selectOrderDescription(req, res, next) {
 	}
 }
 
-export async function selectOrderDescriptionByItemUuid(req, res, next) {
-	const { item_uuid } = req.params;
+// export async function selectOrderDescriptionByItemNameAndZipperNumber(
+// 	req,
+// 	res,
+// 	next
+// ) {
+// 	const { item_name, zipper_number } = req.params;
 
-	const query = sql`SELECT
-					vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
+// 	console.log('params', req.params);
+// 	console.log(item_name, zipper_number);
 
-				FROM
-					zipper.v_order_details_full vodf
-				WHERE
-					vodf.item = ${item_uuid}
-				`;
+// 	const query = sql`SELECT
+// 					vodf.order_description_uuid AS value,
+// 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
 
-	const orderEntryPromise = db.execute(query);
+// 				FROM
+// 					zipper.v_order_details_full vodf
+// 				WHERE
+// 					vodf.item_name = ${item_name} AND
+// 					vodf.zipper_number_name = ${zipper_number}
+// 				`;
 
-	try {
-		const data = await orderEntryPromise;
+// 	const orderEntryPromise = db.execute(query);
 
-		const toast = {
-			status: 200,
-			type: 'select_all',
-			message: 'Order Description list for dyeing',
-		};
+// 	try {
+// 		const data = await orderEntryPromise;
 
-		res.status(200).json({ toast, data: data?.rows });
-	} catch (error) {
-		await handleError({ error, res });
-	}
-}
+// 		const toast = {
+// 			status: 200,
+// 			type: 'select_all',
+// 			message: 'Order Description list',
+// 		};
+
+// 		res.status(200).json({ toast, data: data?.rows });
+// 	} catch (error) {
+// 		await handleError({ error, res });
+// 	}
+// }
 
 export async function selectOrderNumberForPi(req, res, next) {
 	const query = sql`SELECT
