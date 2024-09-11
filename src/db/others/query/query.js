@@ -336,13 +336,15 @@ export async function selectOrderDescriptionByItemNameAndZipperNumber(
 	res,
 	next
 ) {
+
 	const { item_name, zipper_number } = req.params;
+	
+	console.log('params', req.params);
+	console.log(item_name, zipper_number);
 
 	const query = sql`SELECT
 					vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label,
-					vodf.item_name,
-					vodf.zipper_number_name
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
 
 				FROM
 					zipper.v_order_details_full vodf
