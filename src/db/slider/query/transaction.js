@@ -127,7 +127,8 @@ export async function selectAll(req, res, next) {
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
-			(stock.sa_prod + transaction.trx_quantity) as max_quantity
+			(stock.sa_prod + transaction.trx_quantity) as max_sa_quantity,
+			(stock.coloring_stock + transaction.trx_quantity) as max_coloring_quantity
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -215,7 +216,8 @@ export async function select(req, res, next) {
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
-			(stock.sa_prod + transaction.trx_quantity) as max_quantity
+			(stock.sa_prod + transaction.trx_quantity) as max_sa_quantity,
+			(stock.coloring_stock + transaction.trx_quantity) as max_coloring_quantity
 		FROM
 			slider.transaction
 		LEFT JOIN

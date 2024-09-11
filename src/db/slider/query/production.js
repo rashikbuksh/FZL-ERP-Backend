@@ -134,7 +134,8 @@ export async function selectAll(req, res, next) {
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
-			LEAST(stock.body_quantity, stock.puller_quantity, stock.cap_quantity, stock.link_quantity) + production.production_quantity as max_quantity
+			LEAST(stock.body_quantity, stock.puller_quantity, stock.cap_quantity, stock.link_quantity) + production.production_quantity as max_sa_quantity,
+			stock.sa_prod + production.production_quantity as max_coloring_quantity
 		FROM
 			slider.production
 		LEFT JOIN
@@ -220,7 +221,8 @@ export async function select(req, res, next) {
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
-			LEAST(stock.body_quantity, stock.puller_quantity, stock.cap_quantity, stock.link_quantity) + production.production_quantity as max_quantity
+			LEAST(stock.body_quantity, stock.puller_quantity, stock.cap_quantity, stock.link_quantity) + production.production_quantity as max_sa_quantity,
+			stock.sa_prod + production.production_quantity as max_coloring_quantity
 		FROM
 			slider.production
 		LEFT JOIN
