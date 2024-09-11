@@ -4,8 +4,8 @@ BEGIN
 
     UPDATE zipper.tape_coil
     SET
-        quantity_in_coil = CASE WHEN type = 'nylon' THEN quantity_in_coil - NEW.trx_quantity ELSE quantity_in_coil END,
-        quantity = CASE WHEN type = 'nylon' THEN quantity ELSE quantity - NEW.trx_quantity END
+        quantity_in_coil = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity_in_coil - NEW.trx_quantity ELSE quantity_in_coil END,
+        quantity = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity ELSE quantity - NEW.trx_quantity END
     WHERE uuid = NEW.tape_coil_uuid;
     
     UPDATE zipper.order_description
@@ -21,8 +21,8 @@ CREATE OR REPLACE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_de
 BEGIN
 UPDATE zipper.tape_coil
     SET
-        quantity_in_coil = CASE WHEN type = 'nylon' THEN quantity_in_coil + OLD.trx_quantity ELSE quantity_in_coil END,
-        quantity = CASE WHEN type = 'nylon' THEN quantity ELSE quantity + OLD.trx_quantity END
+        quantity_in_coil = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity_in_coil + OLD.trx_quantity ELSE quantity_in_coil END,
+        quantity = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity ELSE quantity + OLD.trx_quantity END
     WHERE uuid = OLD.tape_coil_uuid;
 
     UPDATE zipper.order_description
@@ -38,8 +38,8 @@ CREATE OR REPLACE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_up
 BEGIN
     UPDATE zipper.tape_coil
     SET
-        quantity_in_coil = CASE WHEN type = 'nylon' THEN quantity_in_coil + OLD.trx_quantity - NEW.trx_quantity ELSE quantity_in_coil END,
-        quantity = CASE WHEN type = 'nylon' THEN quantity ELSE quantity + OLD.trx_quantity - NEW.trx_quantity END
+        quantity_in_coil = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity_in_coil + OLD.trx_quantity - NEW.trx_quantity ELSE quantity_in_coil END,
+        quantity = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity ELSE quantity + OLD.trx_quantity - NEW.trx_quantity END
     WHERE uuid = NEW.tape_coil_uuid;
 
     UPDATE zipper.order_description
