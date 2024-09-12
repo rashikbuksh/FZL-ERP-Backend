@@ -10,10 +10,10 @@ import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import zipper, { tape_coil } from '../schema.js';
 
-const itemProperties = alias(publicSchema.properties, 'itemProperties');
-const zipperNumberProperties = alias(
+const item_properties = alias(publicSchema.properties, 'item_properties');
+const zipper_number_properties = alias(
 	publicSchema.properties,
-	'zipperNumberProperties'
+	'zipper_number_properties'
 );
 
 export async function insert(req, res, next) {
@@ -84,9 +84,10 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: tape_coil.uuid,
 			item_uuid: tape_coil.item_uuid,
-			item_name: itemProperties.name,
+			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
-			zipper_number_name: zipperNumberProperties.name,
+			zipper_number_name: zipper_number_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
 			name: tape_coil.name,
 			is_import: tape_coil.is_import,
 			is_reverse: tape_coil.is_reverse,
@@ -105,10 +106,13 @@ export async function selectAll(req, res, next) {
 		})
 		.from(tape_coil)
 		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
-		.leftJoin(itemProperties, eq(tape_coil.item_uuid, itemProperties.uuid))
 		.leftJoin(
-			zipperNumberProperties,
-			eq(tape_coil.zipper_number_uuid, zipperNumberProperties.uuid)
+			item_properties,
+			eq(tape_coil.item_uuid, item_properties.uuid)
+		)
+		.leftJoin(
+			zipper_number_properties,
+			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.orderBy(tape_coil.created_at, desc);
 
@@ -124,8 +128,39 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const tapeCoilPromise = db
-		.select()
+		.select({
+			uuid: tape_coil.uuid,
+			item_uuid: tape_coil.item_uuid,
+			item_name: item_properties.name,
+			zipper_number_uuid: tape_coil.zipper_number_uuid,
+			zipper_number_name: zipper_number_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
+			name: tape_coil.name,
+			is_import: tape_coil.is_import,
+			is_reverse: tape_coil.is_reverse,
+			top: tape_coil.top,
+			bottom: tape_coil.bottom,
+			raw_per_kg_meter: tape_coil.raw_per_kg_meter,
+			dyed_per_kg_meter: tape_coil.dyed_per_kg_meter,
+			quantity: tape_coil.quantity,
+			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
+			quantity_in_coil: tape_coil.quantity_in_coil,
+			created_by: tape_coil.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: tape_coil.created_at,
+			updated_at: tape_coil.updated_at,
+			remarks: tape_coil.remarks,
+		})
 		.from(tape_coil)
+		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			item_properties,
+			eq(tape_coil.item_uuid, item_properties.uuid)
+		)
+		.leftJoin(
+			zipper_number_properties,
+			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
+		)
 		.where(eq(tape_coil.uuid, req.params.uuid));
 
 	try {
@@ -145,17 +180,40 @@ export async function selectByNylon(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const tapeCoilPromise = db
-		.select()
+		.select({
+			uuid: tape_coil.uuid,
+			item_uuid: tape_coil.item_uuid,
+			item_name: item_properties.name,
+			zipper_number_uuid: tape_coil.zipper_number_uuid,
+			zipper_number_name: zipper_number_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
+			name: tape_coil.name,
+			is_import: tape_coil.is_import,
+			is_reverse: tape_coil.is_reverse,
+			top: tape_coil.top,
+			bottom: tape_coil.bottom,
+			raw_per_kg_meter: tape_coil.raw_per_kg_meter,
+			dyed_per_kg_meter: tape_coil.dyed_per_kg_meter,
+			quantity: tape_coil.quantity,
+			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
+			quantity_in_coil: tape_coil.quantity_in_coil,
+			created_by: tape_coil.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: tape_coil.created_at,
+			updated_at: tape_coil.updated_at,
+			remarks: tape_coil.remarks,
+		})
 		.from(tape_coil)
-		.leftJoin(itemProperties, eq(tape_coil.item_uuid, itemProperties.uuid))
+		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
+		.leftJoin(item_properties, eq(tape_coil.item_uuid, item_properties.uuid))
 		.leftJoin(
-			zipperNumberProperties,
-			eq(tape_coil.zipper_number_uuid, zipperNumberProperties.uuid)
+			zipper_number_properties,
+			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.where(
 			or(
-				eq(itemProperties.name, 'Nylon Metallic'),
-				eq(itemProperties.name, 'Nylon Plastic')
+				eq(item_properties.name, 'Nylon Metallic'),
+				eq(item_properties.name, 'Nylon Plastic')
 			)
 		);
 	const toast = {

@@ -93,13 +93,11 @@ export async function selectAll(req, res, next) {
 			vod.order_number,
 			vod.item_description,
 			tape_coil.item_uuid,
-			itemProperties.name AS item_name,
+			item_properties.name AS item_name,
 			tape_coil.zipper_number_uuid,
-			zipperNumberProperties.name AS zipper_number_name,
-			concat(itemProperties.name, ' - ', zipperNumberProperties.name) AS type_of_zipper,
-			tape_coil.quantity_in_coil as coil_prod,
+			zipper_number_properties.name AS zipper_number_name,
 			tape_coil.quantity as tape_prod,
-			CASE WHEN lower(itemProperties.name) = 'nylon metallic' OR lower(itemProperties.name) = 'nylon plastic' THEN coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) ELSE coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) END AS max_trf_qty
+				 coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -107,8 +105,8 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN 
 			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
 		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
-		LEFT JOIN public.properties itemProperties ON tape_coil.item_uuid = itemProperties.uuid
-		LEFT JOIN public.properties zipperNumberProperties ON tape_coil.zipper_number_uuid = zipperNumberProperties.uuid
+		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
+		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		ORDER BY
 			tape_coil_to_dyeing.created_at DESC
 	`;
@@ -147,13 +145,12 @@ export async function select(req, res, next) {
 			vod.order_number,
 			vod.item_description,
 			tape_coil.item_uuid,
-			itemProperties.name AS item_name,
+			item_properties.name AS item_name,
 			tape_coil.zipper_number_uuid,
-			zipperNumberProperties.name AS zipper_number_name,
-			concat(itemProperties.name, ' - ', zipperNumberProperties.name) AS type_of_zipper,
-			tape_coil.quantity_in_coil as coil_prod,
+			zipper_number_properties.name AS zipper_number_name,
+			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
 			tape_coil.quantity as tape_prod,
-			CASE WHEN lower(itemProperties.name) = 'nylon metallic' OR lower(itemProperties.name) = 'nylon plastic' THEN coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) ELSE coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) END AS max_trf_qty
+				 coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -161,8 +158,8 @@ export async function select(req, res, next) {
 		LEFT JOIN 
 			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
 		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
-		LEFT JOIN public.properties itemProperties ON tape_coil.item_uuid = itemProperties.uuid
-		LEFT JOIN public.properties zipperNumberProperties ON tape_coil.zipper_number_uuid = zipperNumberProperties.uuid
+		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
+		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
 			tape_coil_to_dyeing.uuid = ${req.params.uuid}
 	`;
@@ -201,13 +198,12 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 			vod.order_number,
 			vod.item_description,
 			tape_coil.item_uuid,
-			itemProperties.name AS item_name,
+			item_properties.name AS item_name,
 			tape_coil.zipper_number_uuid,
-			zipperNumberProperties.name AS zipper_number_name,
-			concat(itemProperties.name, ' - ', zipperNumberProperties.name) AS type_of_zipper,
-			tape_coil.quantity_in_coil as coil_prod,
+			zipper_number_properties.name AS zipper_number_name,
+			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
 			tape_coil.quantity as tape_prod,
-			CASE WHEN lower(itemProperties.name) = 'nylon metallic' OR lower(itemProperties.name) = 'nylon plastic' THEN coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) ELSE coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) END AS max_trf_qty
+				 coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -215,10 +211,10 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 		LEFT JOIN 
 			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
 		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
-		LEFT JOIN public.properties itemProperties ON tape_coil.item_uuid = itemProperties.uuid
-		LEFT JOIN public.properties zipperNumberProperties ON tape_coil.zipper_number_uuid = zipperNumberProperties.uuid
+		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
+		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
-			tape_coil.type = 'nylon'
+			lower(item_properties.name) = 'nylon metallic' OR lower(item_properties.name) = 'nylon plastic'
 	`;
 
 	const resultPromise = db.execute(query);
@@ -254,9 +250,11 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 			tape_coil_to_dyeing.remarks,
 			vod.order_number,
 			vod.item_description,
-			tape_coil.type,
-			tape_coil.zipper_number,
-			concat(tape_coil.type, ' - ', tape_coil.zipper_number) AS type_of_zipper,
+			tape_coil.item_uuid,
+			item_properties.name AS item_name,
+			tape_coil.zipper_number_uuid,
+			zipper_number_properties.name AS zipper_number_name,
+			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
 			tape_coil.quantity as tape_prod,
 				 coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
 		FROM
@@ -266,8 +264,10 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 		LEFT JOIN 
 			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
 		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
+		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
+		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
-			tape_coil.type != 'nylon'
+			lower(item_properties.name) != 'nylon metallic' OR lower(item_properties.name) != 'nylon plastic'
 	`;
 
 	const resultPromise = db.execute(query);

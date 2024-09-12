@@ -10,10 +10,10 @@ import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { tape_coil, tape_coil_production } from '../schema.js';
 
-const itemProperties = alias(publicSchema.properties, 'itemProperties');
-const zipperNumberProperties = alias(
+const item_properties = alias(publicSchema.properties, 'item_properties');
+const zipper_number_properties = alias(
 	publicSchema.properties,
-	'zipperNumberProperties'
+	'zipper_number_properties'
 );
 
 export async function insert(req, res, next) {
@@ -86,10 +86,10 @@ export async function selectAll(req, res, next) {
 			section: tape_coil_production.section,
 			tape_coil_uuid: tape_coil_production.tape_coil_uuid,
 			item_uuid: tape_coil.item_uuid,
-			item_name: itemProperties.name,
+			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
-			zipper_number_name: zipperNumberProperties.name,
-			type_of_zipper: sql`CONCAT(itemProperties.name, ' - ', zipperNumberProperties.name)`,
+			zipper_number_name: zipper_number_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
 			quantity: tape_coil.quantity,
 			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
 			quantity_in_coil: tape_coil.quantity_in_coil,
@@ -110,10 +110,13 @@ export async function selectAll(req, res, next) {
 			hrSchema.users,
 			eq(tape_coil_production.created_by, hrSchema.users.uuid)
 		)
-		.leftJoin(itemProperties, eq(tape_coil.item_uuid, itemProperties.uuid))
 		.leftJoin(
-			zipperNumberProperties,
-			eq(tape_coil.zipper_number_uuid, zipperNumberProperties.uuid)
+			item_properties,
+			eq(tape_coil.item_uuid, item_properties.uuid)
+		)
+		.leftJoin(
+			zipper_number_properties,
+			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.orderBy(desc(tape_coil_production.created_at));
 
@@ -134,10 +137,10 @@ export async function select(req, res, next) {
 			section: tape_coil_production.section,
 			tape_coil_uuid: tape_coil_production.tape_coil_uuid,
 			item_uuid: tape_coil.item_uuid,
-			item_name: itemProperties.name,
+			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
-			zipper_number_name: zipperNumberProperties.name,
-			type_of_zipper: sql`CONCAT(itemProperties.name, ' - ', zipperNumberProperties.name)`,
+			zipper_number_name: zipper_number_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
 			quantity: tape_coil.quantity,
 			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
 			quantity_in_coil: tape_coil.quantity_in_coil,
@@ -158,10 +161,13 @@ export async function select(req, res, next) {
 			hrSchema.users,
 			eq(tape_coil_production.created_by, hrSchema.users.uuid)
 		)
-		.leftJoin(itemProperties, eq(tape_coil.item_uuid, itemProperties.uuid))
 		.leftJoin(
-			zipperNumberProperties,
-			eq(tape_coil.zipper_number_uuid, zipperNumberProperties.uuid)
+			item_properties,
+			eq(tape_coil.item_uuid, item_properties.uuid)
+		)
+		.leftJoin(
+			zipper_number_properties,
+			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.where(eq(tape_coil_production.uuid, req.params.uuid));
 
@@ -188,10 +194,10 @@ export async function selectTapeCoilProductionBySection(req, res, next) {
 			section: tape_coil_production.section,
 			tape_coil_uuid: tape_coil_production.tape_coil_uuid,
 			item_uuid: tape_coil.item_uuid,
-			item_name: itemProperties.name,
+			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
-			zipper_number_name: zipperNumberProperties.name,
-			type_of_zipper: sql`CONCAT(itemProperties.name, ' - ', zipperNumberProperties.name)`,
+			zipper_number_name: zipper_number_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
 			quantity: tape_coil.quantity,
 			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
 			quantity_in_coil: tape_coil.quantity_in_coil,
@@ -212,10 +218,13 @@ export async function selectTapeCoilProductionBySection(req, res, next) {
 			hrSchema.users,
 			eq(tape_coil_production.created_by, hrSchema.users.uuid)
 		)
-		.leftJoin(itemProperties, eq(tape_coil.item_uuid, itemProperties.uuid))
 		.leftJoin(
-			zipperNumberProperties,
-			eq(tape_coil.zipper_number_uuid, zipperNumberProperties.uuid)
+			item_properties,
+			eq(tape_coil.item_uuid, item_properties.uuid)
+		)
+		.leftJoin(
+			zipper_number_properties,
+			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.where(eq(tape_coil_production.section, req.params.section));
 
