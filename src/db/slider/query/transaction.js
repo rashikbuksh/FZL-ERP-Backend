@@ -321,6 +321,8 @@ export async function selectTransactionByFromSection(req, res, next) {
 				WHERE transaction.from_section = ${from_section}
 				GROUP BY stock.uuid
 			) as st_given ON transaction.stock_uuid = st_given.uuid
+		WHERE 
+			transaction.from_section = ${from_section}
 	`;
 
 	const transactionPromise = db.execute(query);
