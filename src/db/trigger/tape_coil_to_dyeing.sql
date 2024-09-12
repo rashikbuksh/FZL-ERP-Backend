@@ -4,9 +4,10 @@ BEGIN
 
     UPDATE zipper.tape_coil
     SET
-        quantity_in_coil = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity_in_coil - NEW.trx_quantity ELSE quantity_in_coil END,
-        quantity = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity ELSE quantity - NEW.trx_quantity END
-    WHERE uuid = NEW.tape_coil_uuid;
+        quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity_in_coil - NEW.trx_quantity ELSE quantity_in_coil END,
+        quantity = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity ELSE quantity - NEW.trx_quantity END
+    FROM public.properties
+    WHERE tape_coil.uuid = NEW.tape_coil_uuid AND properties.uuid = tape_coil.item_uuid;
     
     UPDATE zipper.order_description
     SET
@@ -19,28 +20,30 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_delete() returns TRIGGER AS $$
 BEGIN
-UPDATE zipper.tape_coil
-    SET
-        quantity_in_coil = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity_in_coil + OLD.trx_quantity ELSE quantity_in_coil END,
-        quantity = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity ELSE quantity + OLD.trx_quantity END
-    WHERE uuid = OLD.tape_coil_uuid;
+    UPDATE zipper.tape_coil
+        SET
+            quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity_in_coil + OLD.trx_quantity ELSE quantity_in_coil END,
+            quantity = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity ELSE quantity + OLD.trx_quantity END
+        FROM public.properties
+        WHERE tape_coil.uuid = OLD.tape_coil_uuid AND properties.uuid = tape_coil.item_uuid;
 
-    UPDATE zipper.order_description
-    SET
-        tape_received = tape_received - OLD.trx_quantity
-    WHERE uuid = OLD.order_description_uuid;
+        UPDATE zipper.order_description
+        SET
+            tape_received = tape_received - OLD.trx_quantity
+        WHERE uuid = OLD.order_description_uuid;
 
-    RETURN OLD;
-END;
+        RETURN OLD;
+    END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_update() returns TRIGGER AS $$
 BEGIN
     UPDATE zipper.tape_coil
     SET
-        quantity_in_coil = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity_in_coil + OLD.trx_quantity - NEW.trx_quantity ELSE quantity_in_coil END,
-        quantity = CASE WHEN lower(tape_coil.type) = 'nylon' THEN quantity ELSE quantity + OLD.trx_quantity - NEW.trx_quantity END
-    WHERE uuid = NEW.tape_coil_uuid;
+        quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity_in_coil + OLD.trx_quantity - NEW.trx_quantity ELSE quantity_in_coil END,
+        quantity = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity ELSE quantity + OLD.trx_quantity - NEW.trx_quantity END
+    FROM public.properties
+    WHERE tape_coil.uuid = NEW.tape_coil_uuid AND properties.uuid = tape_coil.item_uuid;
 
     UPDATE zipper.order_description
     SET

@@ -413,16 +413,6 @@ BEGIN
         CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
     WHERE uuid = NEW.sfg_uuid;
 
-    IF NEW.trx_from = 'coloring_prod' AND NEW.trx_to = 'coloring_prod' THEN
-        UPDATE zipper.sfg 
-        SET coloring_prod = coloring_prod + NEW.trx_quantity
-        WHERE sfg.uuid = NEW.sfg_uuid;
-
-        UPDATE slider.stock 
-        SET coloring_prod = coloring_prod - NEW.trx_quantity
-        WHERE stock.uuid = NEW.slider_item_uuid;
-    END IF;
-
     -- Updating productions based on NEW.trx_from
     UPDATE zipper.sfg SET
         dying_and_iron_prod = dying_and_iron_prod -
