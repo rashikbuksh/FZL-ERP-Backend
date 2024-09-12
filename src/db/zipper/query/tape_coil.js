@@ -1,4 +1,5 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, or, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
 	handleResponse,
@@ -7,7 +8,13 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import { tape_coil } from '../schema.js';
+import zipper, { tape_coil } from '../schema.js';
+
+const itemProperties = alias(publicSchema.properties, 'itemProperties');
+const zipperNumberProperties = alias(
+	publicSchema.properties,
+	'zipperNumberProperties'
+);
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -77,8 +84,9 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: tape_coil.uuid,
 			item_uuid: tape_coil.item_uuid,
-			item_name: publicSchema.properties.name,
+			item_name: itemProperties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
+			zipper_number_name: zipperNumberProperties.name,
 			name: tape_coil.name,
 			is_import: tape_coil.is_import,
 			is_reverse: tape_coil.is_reverse,
@@ -97,9 +105,10 @@ export async function selectAll(req, res, next) {
 		})
 		.from(tape_coil)
 		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
+		.leftJoin(itemProperties, eq(tape_coil.item_uuid, itemProperties.uuid))
 		.leftJoin(
-			publicSchema.properties,
-			eq(tape_coil.item_uuid, publicSchema.properties.uuid)
+			zipperNumberProperties,
+			eq(tape_coil.zipper_number_uuid, zipperNumberProperties.uuid)
 		)
 		.orderBy(tape_coil.created_at, desc);
 
@@ -138,7 +147,17 @@ export async function selectByNylon(req, res, next) {
 	const tapeCoilPromise = db
 		.select()
 		.from(tape_coil)
-		.where(eq(tape_coil.type, 'nylon'));
+		.leftJoin(itemProperties, eq(tape_coil.item_uuid, itemProperties.uuid))
+		.leftJoin(
+			zipperNumberProperties,
+			eq(tape_coil.zipper_number_uuid, zipperNumberProperties.uuid)
+		)
+		.where(
+			or(
+				eq(itemProperties.name, 'Nylon Metallic'),
+				eq(itemProperties.name, 'Nylon Plastic')
+			)
+		);
 	const toast = {
 		status: 200,
 		type: 'select',

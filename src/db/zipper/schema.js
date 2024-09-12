@@ -383,8 +383,8 @@ export const tape_coil = zipper.table('tape_coil', {
 		() => publicSchema.properties.uuid
 	),
 	name: text('name').notNull(),
-	is_import: boolean('is_import').default(false),
-	is_reverse: boolean('is_reverse').default(false),
+	is_import: integer('is_import').default(0),
+	is_reverse: integer('is_reverse').default(0),
 	top: PG_DECIMAL('top').default(0.0),
 	bottom: PG_DECIMAL('bottom').default(0.0),
 	raw_per_kg_meter: PG_DECIMAL('raw_per_kg_meter').default(0.0),
