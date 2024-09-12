@@ -127,8 +127,7 @@ export async function selectAll(req, res, next) {
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
-			(stock.sa_prod + transaction.trx_quantity) as max_sa_quantity,
-			(stock.coloring_prod + transaction.trx_quantity) as max_coloring_quantity
+			stock.trx_to_finishing
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -215,9 +214,7 @@ export async function select(req, res, next) {
 			vodf.order_number,
 			stock.sa_prod,
 			stock.coloring_stock,
-			stock.coloring_prod,
-			(stock.sa_prod + transaction.trx_quantity) as max_sa_quantity,
-			(stock.coloring_prod + transaction.trx_quantity) as max_coloring_quantity
+			stock.coloring_prod
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -304,7 +301,8 @@ export async function selectTransactionByFromSection(req, res, next) {
 			stock.coloring_prod,
 			st_given.trx_quantity as total_trx_quantity,
 			(stock.sa_prod + transaction.trx_quantity) as max_sa_quantity,
-			(stock.coloring_prod + transaction.trx_quantity) as max_coloring_quantity
+			(stock.coloring_prod + transaction.trx_quantity) as max_coloring_quantity,
+			(stock.trx_to_finishing + transaction.trx_quantity) as max_trx_to_finishing_quantity
 		FROM
 			slider.transaction
 		LEFT JOIN

@@ -396,8 +396,8 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 		FROM
 			zipper.v_order_details_full vodf
 		WHERE
-			vodf.item_uuid = ${item_uuid} AND
-			vodf.zipper_number_uuid = ${zipper_number_uuid}
+			vodf.item = ${item_uuid} AND
+			vodf.zipper_number = ${zipper_number_uuid}
 		`;
 
 		const orderEntryPromise = db.execute(query);
