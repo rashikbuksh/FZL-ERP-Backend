@@ -81,6 +81,9 @@ export const order_description = zipper.table('order_description', {
 	tape_received: PG_DECIMAL('tape_received').default(0),
 	tape_transferred: PG_DECIMAL('tape_transferred').default(0),
 	item: defaultUUID('item').references(() => publicSchema.properties.uuid),
+	nylon_stopper: defaultUUID('nylon_stopper').references(
+		() => publicSchema.properties.uuid
+	),
 	zipper_number: defaultUUID('zipper_number').references(
 		() => publicSchema.properties.uuid
 	),

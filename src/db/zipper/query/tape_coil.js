@@ -205,17 +205,16 @@ export async function selectByNylon(req, res, next) {
 		})
 		.from(tape_coil)
 		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
-		.leftJoin(item_properties, eq(tape_coil.item_uuid, item_properties.uuid))
+		.leftJoin(
+			item_properties,
+			eq(tape_coil.item_uuid, item_properties.uuid)
+		)
 		.leftJoin(
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
-		.where(
-			or(
-				eq(item_properties.name, 'Nylon Metallic'),
-				eq(item_properties.name, 'Nylon Plastic')
-			)
-		);
+		.where(eq(sql`lower(item_properties.name)`, 'nylon'));
+
 	const toast = {
 		status: 200,
 		type: 'select',

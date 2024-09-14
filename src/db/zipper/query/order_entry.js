@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { asc, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -238,7 +238,8 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 		.leftJoin(sfg, eq(order_entry.uuid, sfg.order_entry_uuid))
 		.leftJoin(sfg_production, eq(sfg.uuid, sfg_production.sfg_uuid))
 		.where(eq(order_description.uuid, order_description_uuid))
-		.groupBy(order_entry.uuid, sfg.uuid);
+		.groupBy(order_entry.uuid, sfg.uuid)
+		.orderBy(asc(order_entry.size));
 
 	const toast = {
 		status: 200,

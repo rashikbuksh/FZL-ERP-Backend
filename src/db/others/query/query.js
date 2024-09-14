@@ -305,9 +305,9 @@ export async function selectOrderDescription(req, res, next) {
 				`;
 
 	if (item == 'nylon') {
-		query.append(sql` HAVING vodf.item_name = 'Nylon'`);
+		query.append(sql` HAVING LOWER(vodf.item_name) = 'nylon'`);
 	} else if (item == 'without-nylon') {
-		query.append(sql` HAVING vodf.item_name != 'Nylon'`);
+		query.append(sql` HAVING LOWER(vodf.item_name) != 'nylon'`);
 	}
 
 	if (tape_received == 'true') {
@@ -373,13 +373,13 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 	const { coil_uuid } = req.params;
 
 	const tapeCOilQuery = sql`
-	SELECT
-		   item_uuid,
-		   zipper_number_uuid
-	FROM
-		   zipper.tape_coil
-	WHERE
-		   uuid = ${coil_uuid}
+			SELECT
+				item_uuid,
+				zipper_number_uuid
+			FROM
+				zipper.tape_coil
+			WHERE
+				uuid = ${coil_uuid}
 	`;
 
 	try {
@@ -389,15 +389,14 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 		const zipper_number_uuid = tapeCoilData.rows[0].zipper_number_uuid;
 
 		const query = sql`
-		SELECT
-			vodf.order_description_uuid AS value,
-			CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
-
-		FROM
-			zipper.v_order_details_full vodf
-		WHERE
-			vodf.item = ${item_uuid} AND
-			vodf.zipper_number = ${zipper_number_uuid}
+			SELECT
+				vodf.order_description_uuid AS value,
+				CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
+			FROM
+				zipper.v_order_details_full vodf
+			WHERE
+				vodf.item = ${item_uuid} AND
+				vodf.zipper_number = ${zipper_number_uuid}
 		`;
 
 		const orderEntryPromise = db.execute(query);
@@ -417,7 +416,8 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 }
 
 export async function selectOrderNumberForPi(req, res, next) {
-	const query = sql`SELECT
+	const query = sql`
+				SELECT
 					DISTINCT vod.order_info_uuid AS value,
 					vod.order_number AS label
 				FROM
@@ -456,17 +456,19 @@ export async function selectVendor(req, res, next) {
 		})
 		.from(purchaseSchema.vendor);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Vendor list',
-	};
-	handleResponse({
-		promise: vendorPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await vendorPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Vendor list',
+		};
+
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 // material

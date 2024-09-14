@@ -79,6 +79,9 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.item,
     op_item.name AS item_name,
     op_item.short_name AS item_short_name,
+    order_description.nylon_stopper,
+    op_nylon_stopper.name AS nylon_stopper_name,
+    op_nylon_stopper.short_name AS nylon_stopper_short_name,
     order_description.zipper_number,
     op_zipper.name AS zipper_number_name,
     op_zipper.short_name AS zipper_number_short_name,
@@ -156,6 +159,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN hr.users users ON users.uuid = order_info.created_by
      LEFT JOIN party ON party.uuid = order_info.party_uuid
      LEFT JOIN properties op_item ON op_item.uuid = order_description.item
+     LEFT JOIN properties op_nylon_stopper ON op_nylon_stopper.uuid = order_description.nylon_stopper
      LEFT JOIN properties op_zipper ON op_zipper.uuid = order_description.zipper_number
      LEFT JOIN properties op_end ON op_end.uuid = order_description.end_type
      LEFT JOIN properties op_puller ON op_puller.uuid = order_description.puller_type
