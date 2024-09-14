@@ -62,10 +62,7 @@ export const defCommercialLc = SED({
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		remarks: SE.string('remarks'),
 	},
 	xml: 'Commercial/Lc',
 });
@@ -90,14 +87,7 @@ export const defCommercialPi = SED({
 		uuid: SE.uuid(),
 		id: SE.integer(1),
 		lc_uuid: SE.uuid(),
-
-		order_info_uuids: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			example: '[{"J3Au9M73Zb9saxj"}]',
-		},
+		order_info_uuids: SE.array([SE.uuid()]),
 		marketing_uuid: SE.uuid(),
 		party_uuid: SE.uuid(),
 		merchandiser_uuid: SE.uuid(),
