@@ -93,6 +93,7 @@ export async function selectAll(req, res, next) {
 			vod.order_number,
 			vod.item_description,
 			tape_coil.item_uuid,
+			tape_coil.name,
 			item_properties.name AS item_name,
 			tape_coil.zipper_number_uuid,
 			zipper_number_properties.name AS zipper_number_name,
@@ -145,6 +146,7 @@ export async function select(req, res, next) {
 			vod.order_number,
 			vod.item_description,
 			tape_coil.item_uuid,
+			tape_coil.name,
 			item_properties.name AS item_name,
 			tape_coil.zipper_number_uuid,
 			zipper_number_properties.name AS zipper_number_name,
@@ -198,6 +200,7 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 			vod.order_number,
 			vod.item_description,
 			tape_coil.item_uuid,
+			tape_coil.name,
 			item_properties.name AS item_name,
 			tape_coil.zipper_number_uuid,
 			zipper_number_properties.name AS zipper_number_name,
@@ -214,7 +217,7 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
-			lower(item_properties.name) = 'nylon metallic' OR lower(item_properties.name) = 'nylon plastic'
+			lower(item_properties.name) = 'nylon'
 	`;
 
 	const resultPromise = db.execute(query);
@@ -251,6 +254,7 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 			vod.order_number,
 			vod.item_description,
 			tape_coil.item_uuid,
+			tape_coil.name,
 			item_properties.name AS item_name,
 			tape_coil.zipper_number_uuid,
 			zipper_number_properties.name AS zipper_number_name,
