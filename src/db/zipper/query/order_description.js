@@ -1,4 +1,4 @@
-import { eq, sql, desc } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
@@ -29,7 +29,10 @@ const pullerColorProperties = alias(
 	'pullerColorProperties'
 );
 const handProperties = alias(publicSchema.properties, 'handProperties');
-const stopperProperties = alias(publicSchema.properties, 'stopperProperties');
+const nylonStopperProperties = alias(
+	publicSchema.properties,
+	'nylonStopperProperties'
+);
 const coloringProperties = alias(publicSchema.properties, 'coloringProperties');
 const sliderProperties = alias(publicSchema.properties, 'sliderProperties');
 const topStopperProperties = alias(
@@ -70,6 +73,7 @@ export async function insert(req, res, next) {
 		uuid,
 		order_info_uuid,
 		item,
+		nylon_stopper,
 		zipper_number,
 		end_type,
 		lock_type,
@@ -108,6 +112,7 @@ export async function insert(req, res, next) {
 			uuid,
 			order_info_uuid,
 			item,
+			nylon_stopper,
 			zipper_number,
 			end_type,
 			lock_type,
@@ -161,6 +166,7 @@ export async function update(req, res, next) {
 	const {
 		order_info_uuid,
 		item,
+		nylon_stopper,
 		zipper_number,
 		end_type,
 		lock_type,
@@ -199,6 +205,7 @@ export async function update(req, res, next) {
 		.set({
 			order_info_uuid,
 			item,
+			nylon_stopper,
 			zipper_number,
 			end_type,
 			lock_type,
@@ -280,6 +287,9 @@ export async function selectAll(req, res, next) {
 			item: order_description.item,
 			item_name: itemProperties.name,
 			item_short_name: itemProperties.short_name,
+			nylon_stopper: order_description.nylon_stopper,
+			nylon_stopper_name: nylonStopperProperties.name,
+			nylon_stopper_short_name: nylonStopperProperties.short_name,
 			zipper_number: order_description.zipper_number,
 			zipper_number_name: zipperProperties.name,
 			zipper_number_short_name: zipperProperties.short_name,
@@ -355,6 +365,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			itemProperties,
 			eq(order_description.item, itemProperties.uuid)
+		)
+		.leftJoin(
+			nylonStopperProperties,
+			eq(order_description.nylon_stopper, nylonStopperProperties.uuid)
 		)
 		.leftJoin(
 			zipperProperties,
@@ -462,6 +476,9 @@ export async function select(req, res, next) {
 			item: order_description.item,
 			item_name: itemProperties.name,
 			item_short_name: itemProperties.short_name,
+			nylon_stopper: order_description.nylon_stopper,
+			nylon_stopper_name: nylonStopperProperties.name,
+			nylon_stopper_short_name: nylonStopperProperties.short_name,
 			zipper_number: order_description.zipper_number,
 			zipper_number_name: zipperProperties.name,
 			zipper_number_short_name: zipperProperties.short_name,
@@ -540,6 +557,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			itemProperties,
 			eq(order_description.item, itemProperties.uuid)
+		)
+		.leftJoin(
+			nylonStopperProperties,
+			eq(order_description.nylon_stopper, nylonStopperProperties.uuid)
 		)
 		.leftJoin(
 			zipperProperties,

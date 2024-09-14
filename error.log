@@ -1548,3 +1548,4 @@
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mMaximum call stack size exceeded\u001b[39m","data":{}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"152","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 >>>>>>> 8f060813ffe5708fe5bbab532ad481bb3a44f86e
+{"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mCannot read properties of undefined (reading 'updatedId')\u001b[39m","data":{}}
