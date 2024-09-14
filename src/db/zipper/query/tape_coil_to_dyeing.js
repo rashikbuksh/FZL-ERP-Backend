@@ -164,6 +164,8 @@ export async function select(req, res, next) {
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
 			tape_coil_to_dyeing.uuid = ${req.params.uuid}
+		ORDER BY
+			tape_coil_to_dyeing.created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);
@@ -218,6 +220,8 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
 			lower(item_properties.name) = 'nylon'
+		ORDER BY
+			tape_coil_to_dyeing.created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);
@@ -272,6 +276,8 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
 			lower(item_properties.name) != 'nylon metallic' OR lower(item_properties.name) != 'nylon plastic'
+		ORDER BY
+			tape_coil_to_dyeing.created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);
