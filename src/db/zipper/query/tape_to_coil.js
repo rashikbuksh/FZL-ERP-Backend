@@ -84,6 +84,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: tape_to_coil.uuid,
 			tape_coil_uuid: tape_to_coil.tape_coil_uuid,
+			name: tape_coil.name,
 			item_uuid: tape_coil.item_uuid,
 			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
@@ -129,6 +130,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: tape_to_coil.uuid,
 			tape_coil_uuid: tape_to_coil.tape_coil_uuid,
+			name: tape_coil.name,
 			item_uuid: tape_coil.item_uuid,
 			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,

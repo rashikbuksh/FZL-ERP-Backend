@@ -85,6 +85,7 @@ export async function selectAll(req, res, next) {
 			uuid: tape_coil_production.uuid,
 			section: tape_coil_production.section,
 			tape_coil_uuid: tape_coil_production.tape_coil_uuid,
+			name: tape_coil.name,
 			item_uuid: tape_coil.item_uuid,
 			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
@@ -136,6 +137,7 @@ export async function select(req, res, next) {
 			uuid: tape_coil_production.uuid,
 			section: tape_coil_production.section,
 			tape_coil_uuid: tape_coil_production.tape_coil_uuid,
+			name: tape_coil.name,
 			item_uuid: tape_coil.item_uuid,
 			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
@@ -193,6 +195,7 @@ export async function selectTapeCoilProductionBySection(req, res, next) {
 			uuid: tape_coil_production.uuid,
 			section: tape_coil_production.section,
 			tape_coil_uuid: tape_coil_production.tape_coil_uuid,
+			name: tape_coil.name,
 			item_uuid: tape_coil.item_uuid,
 			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
@@ -226,7 +229,8 @@ export async function selectTapeCoilProductionBySection(req, res, next) {
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
-		.where(eq(tape_coil_production.section, req.params.section));
+		.where(eq(tape_coil_production.section, req.params.section))
+		.orderBy(desc(tape_coil_production.created_at));
 
 	const toast = {
 		status: 200,
