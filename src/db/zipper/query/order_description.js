@@ -685,7 +685,7 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
         tape_coil_required.bottom 
     FROM 
         zipper.v_order_details_full 
-    JOIN 
+    LEFT JOIN 
         zipper.tape_coil_required 
     ON 
         v_order_details_full.item = tape_coil_required.item_uuid 

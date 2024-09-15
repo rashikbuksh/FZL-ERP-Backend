@@ -284,24 +284,29 @@ export async function selectOrderEntry(req, res, next) {
 export async function selectOrderDescription(req, res, next) {
 	const { item, tape_received } = req.query;
 
-	const query = sql`SELECT
+	const query = sql`
+				SELECT
 					vodf.order_description_uuid AS value,
 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label,
 					vodf.item_name,
 					vodf.tape_received,
 					vodf.tape_transferred,
-					json_agg(colors.color) AS colors
+					totals_of_oe.total_size,
+					totals_of_oe.total_quantity,
+					tcr.top,
+					tcr.bottom
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN 
 					(
-						SELECT oe.color, oe.order_description_uuid
+						SELECT oe.order_description_uuid, SUM(oe.size::numeric * oe.quantity::numeric) as total_size, 
+						SUM(oe.quantity::numeric) as total_quantity
 						FROM zipper.order_entry oe 
-				        group by oe.order_description_uuid, oe.color
-					) AS colors ON colors.order_description_uuid = vodf.order_description_uuid 
+				        group by oe.order_description_uuid
+					) AS totals_of_oe ON totals_of_oe.order_description_uuid = vodf.order_description_uuid 
+				LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid AND vodf.zipper_number = tcr.zipper_number_uuid AND vodf.end_type = tcr.end_type_uuid
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != ''
-				group by vodf.order_description_uuid, vodf.order_number, vodf.item_description, vodf.tape_received, vodf.tape_transferred, vodf.item_name
 				`;
 
 	if (item == 'nylon') {
