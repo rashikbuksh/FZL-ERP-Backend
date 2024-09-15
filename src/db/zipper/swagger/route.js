@@ -1,4 +1,7 @@
+import { raw } from 'express';
 import SE from '../../../util/swagger_example.js';
+import zipper from '../schema.js';
+import { param } from 'express-validator';
 
 const order_info_extra_schema = SE.response_schema(200, {
 	uuid: SE.uuid(),
@@ -2169,6 +2172,129 @@ export const pathZipperTapeToCoil = {
 	},
 };
 
+// * Zipper Tape Coil Required * //
+
+export const pathZipperTapeCoilRequired = {
+	'/zipper/tape-coil-required': {
+		get: {
+			tags: ['zipper.tape_coil_required'],
+			summary: 'Get all Tape Coil Required',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					end_type_uuid: SE.uuid(),
+					end_type_name: SE.string('End Type'),
+					item_uuid: SE.uuid(),
+					item_name: SE.string('nylon'),
+					nylon_stopper_uuid: SE.uuid(),
+					nylon_stopper_name: SE.string('nylon stopper'),
+					zipper_number_uuid: SE.uuid(),
+					zipper_number_name: SE.string('nylon 3'),
+					top: SE.number(10),
+					bottom: SE.number(10),
+					raw_mtr_per_kg: SE.number(10),
+					dyed_mtr_per_kg: SE.number(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		post: {
+			tags: ['zipper.tape_coil_required'],
+			summary: 'create a tape coil required',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref('zipper/tape_coil_required'),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/tape_coil_required'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/tape-coil-required/{uuid}': {
+		get: {
+			tags: ['zipper.tape_coil_required'],
+			summary: 'Gets a Tape Coil Required',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('tape coil required to get', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					end_type_uuid: SE.uuid(),
+					end_type_name: SE.string('End Type'),
+					item_uuid: SE.uuid(),
+					item_name: SE.string('nylon'),
+					nylon_stopper_uuid: SE.uuid(),
+					nylon_stopper_name: SE.string('nylon stopper'),
+					zipper_number_uuid: SE.uuid(),
+					zipper_number_name: SE.string('nylon 3'),
+					top: SE.number(10),
+					bottom: SE.number(10),
+					raw_mtr_per_kg: SE.number(10),
+					dyed_mtr_per_kg: SE.number(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		put: {
+			tags: ['zipper.tape_coil_required'],
+			summary: 'Update an existing tape coil required',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('tape coil required to update', 'uuid'),
+			],
+			requestBody: SE.requestBody_schema_ref('zipper/tape_coil_required'),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/tape_coil_required'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['zipper.tape_coil_required'],
+			summary: 'Deletes a tape coil required',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('tape coil required to delete', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+};
+
 // * Zipper Planning * //
 export const pathZipperPlanning = {
 	'/zipper/planning': {
@@ -2967,6 +3093,7 @@ export const pathZipper = {
 	...pathZipperTapeCoil,
 	...pathZipperTapeCoilProduction,
 	...pathZipperTapeToCoil,
+	...pathZipperTapeCoilRequired,
 	...pathZipperPlanning,
 	...pathZipperPlanningEntry,
 	...pathZipperMaterialTrxAgainstOrderDescription,

@@ -6,7 +6,6 @@ import {
 	pgSchema,
 	serial,
 	text,
-	uuid,
 } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
@@ -450,6 +449,49 @@ export const tape_coil_production = zipper.table('tape_coil_production', {
 	remarks: text('remarks').default(null),
 });
 
+export const tape_coil_to_dyeing = zipper.table('tape_coil_to_dyeing', {
+	uuid: uuid_primary,
+	tape_coil_uuid: defaultUUID('tape_coil_uuid').references(
+		() => tape_coil.uuid
+	),
+	order_description_uuid: defaultUUID('order_description_uuid').references(
+		() => order_description.uuid
+	),
+	trx_quantity: decimal('trx_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const tape_coil_required = zipper.table('tape_coil_required', {
+	uuid: uuid_primary,
+	end_type_uuid: defaultUUID('end_type_uuid').references(
+		() => publicSchema.properties.uuid
+	),
+	item_uuid: defaultUUID('item_uuid').references(
+		() => publicSchema.properties.uuid
+	),
+	nylon_stopper_uuid: defaultUUID('nylon_stopper_uuid').references(
+		() => publicSchema.properties.uuid
+	),
+	zipper_number_uuid: defaultUUID('zipper_number_uuid').references(
+		() => publicSchema.properties.uuid
+	),
+	top: PG_DECIMAL('top').notNull(),
+	bottom: PG_DECIMAL('bottom').notNull(),
+	raw_mtr_per_kg: PG_DECIMAL('raw_mtr_per_kg').default(0.0),
+	dyed_mtr_per_kg: PG_DECIMAL('dyed_mtr_per_kg').default(0.0),
+
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
 export const planning = zipper.table('planning', {
 	week: text('week').primaryKey(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
@@ -507,24 +549,6 @@ export const material_trx_against_order_description = zipper.table(
 		remarks: text('remarks').default(null),
 	}
 );
-
-export const tape_coil_to_dyeing = zipper.table('tape_coil_to_dyeing', {
-	uuid: uuid_primary,
-	tape_coil_uuid: defaultUUID('tape_coil_uuid').references(
-		() => tape_coil.uuid
-	),
-	order_description_uuid: defaultUUID('order_description_uuid').references(
-		() => order_description.uuid
-	),
-	trx_quantity: decimal('trx_quantity', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});
 
 export const batch_production = zipper.table('batch_production', {
 	uuid: uuid_primary,

@@ -17,7 +17,7 @@ import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeToCoilOperations from './query/tape_to_coil.js';
-
+import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as dyedTapeTransactionOperations from './query/dyed_tape_transaction.js';
 const zipperRouter = Router();
 
@@ -291,6 +291,25 @@ zipperRouter.delete(
 	'/tape-to-coil/:uuid',
 	// validateUuidParam(),
 	tapeToCoilOperations.remove
+);
+
+// --------------------- TAPE COIL REQUIRED ROUTES ---------------------
+
+zipperRouter.get('/tape-coil-required', tapeCoilRequiredOperations.selectAll);
+zipperRouter.get(
+	'/tape-coil-required/:uuid',
+	// validateUuidParam(),
+	tapeCoilRequiredOperations.select
+);
+zipperRouter.post('/tape-coil-required', tapeCoilRequiredOperations.insert);
+zipperRouter.put(
+	'/tape-coil-required/:uuid',
+	tapeCoilRequiredOperations.update
+);
+zipperRouter.delete(
+	'/tape-coil-required/:uuid',
+	// validateUuidParam(),
+	tapeCoilRequiredOperations.remove
 );
 
 // --------------------- PlANNING ROUTES ---------------------
