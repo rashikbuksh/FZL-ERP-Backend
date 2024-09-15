@@ -1,13 +1,24 @@
 import { desc, eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import hr, * as hrSchema from '../../hr/schema.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import { tape_coil_required } from '../schema';
+const endTypeProperties = alias(publicSchema.properties, 'endTypeProperties');
+const itemProperties = alias(publicSchema.properties, 'itemProperties');
+const nylonStopperProperties = alias(
+	publicSchema.properties,
+	'nylonStopperProperties'
+);
+const zipperNumberProperties = alias(
+	publicSchema.properties,
+	'zipperNumberProperties'
+);
+import { tape_coil_required } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -75,9 +86,13 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: tape_coil_required.uuid,
 			end_type_uuid: tape_coil_required.end_type_uuid,
+			end_type_name: endTypeProperties.name,
 			item_uuid: tape_coil_required.item_uuid,
+			item_name: itemProperties.name,
 			nylon_stopper_uuid: tape_coil_required.nylon_stopper_uuid,
+			nylon_stopper_name: nylonStopperProperties.name,
 			zipper_number_uuid: tape_coil_required.zipper_number_uuid,
+			zipper_number_name: zipperNumberProperties.name,
 			top: tape_coil_required.top,
 			bottom: tape_coil_required.bottom,
 			raw_mtr_per_kg: tape_coil_required.raw_mtr_per_kg,
@@ -93,6 +108,29 @@ export async function selectAll(req, res, next) {
 			hrSchema.users,
 			eq(tape_coil_required.created_by, hrSchema.users.uuid)
 		)
+		.leftJoin(
+			endTypeProperties,
+			eq(tape_coil_required.end_type_uuid, endTypeProperties.uuid)
+		)
+		.leftJoin(
+			itemProperties,
+			eq(tape_coil_required.item_uuid, itemProperties.uuid)
+		)
+		.leftJoin(
+			nylonStopperProperties,
+			eq(
+				tape_coil_required.nylon_stopper_uuid,
+				nylonStopperProperties.uuid
+			)
+		)
+		.leftJoin(
+			zipperNumberProperties,
+			eq(
+				tape_coil_required.zipper_number_uuid,
+				zipperNumberProperties.uuid
+			)
+		)
+
 		.orderBy(desc(tape_coil_required.created_at));
 
 	const toast = {
@@ -109,9 +147,13 @@ export async function select(req, res, next) {
 		.select({
 			uuid: tape_coil_required.uuid,
 			end_type_uuid: tape_coil_required.end_type_uuid,
+			end_type_name: endTypeProperties.name,
 			item_uuid: tape_coil_required.item_uuid,
+			item_name: itemProperties.name,
 			nylon_stopper_uuid: tape_coil_required.nylon_stopper_uuid,
+			nylon_stopper_name: nylonStopperProperties.name,
 			zipper_number_uuid: tape_coil_required.zipper_number_uuid,
+			zipper_number_name: zipperNumberProperties.name,
 			top: tape_coil_required.top,
 			bottom: tape_coil_required.bottom,
 			raw_mtr_per_kg: tape_coil_required.raw_mtr_per_kg,
@@ -126,6 +168,28 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(tape_coil_required.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			endTypeProperties,
+			eq(tape_coil_required.end_type_uuid, endTypeProperties.uuid)
+		)
+		.leftJoin(
+			itemProperties,
+			eq(tape_coil_required.item_uuid, itemProperties.uuid)
+		)
+		.leftJoin(
+			nylonStopperProperties,
+			eq(
+				tape_coil_required.nylon_stopper_uuid,
+				nylonStopperProperties.uuid
+			)
+		)
+		.leftJoin(
+			zipperNumberProperties,
+			eq(
+				tape_coil_required.zipper_number_uuid,
+				zipperNumberProperties.uuid
+			)
 		)
 		.where(eq(tape_coil_required.uuid, req.params.uuid))
 		.orderBy(desc(tape_coil_required.created_at));

@@ -1,6 +1,7 @@
 import { raw } from 'express';
 import SE from '../../../util/swagger_example.js';
 import zipper from '../schema.js';
+import { param } from 'express-validator';
 
 const order_info_extra_schema = SE.response_schema(200, {
 	uuid: SE.uuid(),
@@ -2182,9 +2183,13 @@ export const pathZipperTapeCoilRequired = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					end_type_uuid: SE.uuid(),
+					end_type_name: SE.string('End Type'),
 					item_uuid: SE.uuid(),
+					item_name: SE.string('nylon'),
 					nylon_stopper_uuid: SE.uuid(),
+					nylon_stopper_name: SE.string('nylon stopper'),
 					zipper_number_uuid: SE.uuid(),
+					zipper_number_name: SE.string('nylon 3'),
 					top: SE.number(10),
 					bottom: SE.number(10),
 					raw_mtr_per_kg: SE.number(10),
@@ -2207,6 +2212,7 @@ export const pathZipperTapeCoilRequired = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
+			parameters: [],
 			requestBody: SE.requestBody_schema_ref('zipper/tape_coil_required'),
 			responses: {
 				200: SE.response_schema_ref(200, 'zipper/tape_coil_required'),
@@ -2230,9 +2236,13 @@ export const pathZipperTapeCoilRequired = {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
 					end_type_uuid: SE.uuid(),
+					end_type_name: SE.string('End Type'),
 					item_uuid: SE.uuid(),
+					item_name: SE.string('nylon'),
 					nylon_stopper_uuid: SE.uuid(),
+					nylon_stopper_name: SE.string('nylon stopper'),
 					zipper_number_uuid: SE.uuid(),
+					zipper_number_name: SE.string('nylon 3'),
 					top: SE.number(10),
 					bottom: SE.number(10),
 					raw_mtr_per_kg: SE.number(10),
