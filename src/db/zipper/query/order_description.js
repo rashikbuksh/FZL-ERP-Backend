@@ -679,7 +679,21 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 
 	const { order_description_uuid } = req.params;
 
-	const query = sql`SELECT * FROM zipper.v_order_details_full WHERE v_order_details_full.order_description_uuid = ${order_description_uuid}`;
+	const query = sql`SELECT 
+        v_order_details_full.*, 
+        tape_coil_required.top, 
+        tape_coil_required.bottom 
+    FROM 
+        zipper.v_order_details_full 
+    JOIN 
+        zipper.tape_coil_required 
+    ON 
+        v_order_details_full.item = tape_coil_required.item_uuid 
+        AND v_order_details_full.nylon_stopper = tape_coil_required.nylon_stopper_uuid 
+        AND v_order_details_full.zipper_number = tape_coil_required.zipper_number_uuid 
+        AND v_order_details_full.end_type = tape_coil_required.end_type_uuid 
+    WHERE 
+        v_order_details_full.order_description_uuid = ${order_description_uuid}`;
 
 	const orderInfoPromise = db.execute(query);
 
