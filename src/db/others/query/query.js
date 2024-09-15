@@ -308,7 +308,7 @@ export async function selectOrderDescription(req, res, next) {
 				LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid AND vodf.zipper_number = tcr.zipper_number_uuid AND vodf.end_type = tcr.end_type_uuid
 				LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != ''
+					vodf.item_description != '---' AND vodf.item_description != '' AND tape_coil.dyed_per_kg_meter IS NOT NULL
 				`;
 
 	if (item == 'nylon') {
