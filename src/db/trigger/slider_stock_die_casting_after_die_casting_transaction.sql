@@ -9,23 +9,23 @@ BEGIN
     UPDATE slider.stock
     SET
         body_quantity = body_quantity 
-            + CASE WHEN NEW.type = 'body' THEN NEW.trx_quantity ELSE 0 END,
+            + CASE WHEN type = 'body' THEN NEW.trx_quantity ELSE 0 END,
         puller_quantity = puller_quantity 
-            + CASE WHEN NEW.type = 'puller' THEN NEW.trx_quantity ELSE 0 END,
+            + CASE WHEN type = 'puller' THEN NEW.trx_quantity ELSE 0 END,
         cap_quantity = cap_quantity 
-            + CASE WHEN NEW.type = 'cap' THEN NEW.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'cap' THEN NEW.trx_quantity ELSE 0 END,
         link_quantity = link_quantity 
-            + CASE WHEN NEW.type = 'link' THEN NEW.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'link' THEN NEW.trx_quantity ELSE 0 END,
         h_bottom_quantity = h_bottom_quantity 
-            + CASE WHEN NEW.type = 'h_bottom' THEN NEW.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'h_bottom' THEN NEW.trx_quantity ELSE 0 END,
         u_top_quantity = u_top_quantity 
-            + CASE WHEN NEW.type = 'u_top' THEN NEW.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'u_top' THEN NEW.trx_quantity ELSE 0 END,
         box_pin_quantity = box_pin_quantity 
-            + CASE WHEN NEW.type = 'box_pin' THEN NEW.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'box_pin' THEN NEW.trx_quantity ELSE 0 END,
         two_way_pin_quantity = two_way_pin_quantity 
-            + CASE WHEN NEW.type = 'two_way_pin' THEN NEW.trx_quantity ELSE 0 END
-
-    WHERE uuid = NEW.stock_uuid;
+            + CASE WHEN dc.type = 'two_way_pin' THEN NEW.trx_quantity ELSE 0 END
+    FROM slider.die_casting dc
+    WHERE stock.uuid = NEW.stock_uuid AND dc.uuid = NEW.die_casting_uuid;
 
 RETURN NEW;
 END;
@@ -43,23 +43,23 @@ BEGIN
     UPDATE slider.stock
     SET
         body_quantity = body_quantity 
-            - CASE WHEN OLD.type = 'body' THEN OLD.trx_quantity ELSE 0 END,
+            - CASE WHEN type = 'body' THEN OLD.trx_quantity ELSE 0 END,
         puller_quantity = puller_quantity 
-            - CASE WHEN OLD.type = 'puller' THEN OLD.trx_quantity ELSE 0 END,
+            - CASE WHEN type = 'puller' THEN OLD.trx_quantity ELSE 0 END,
         cap_quantity = cap_quantity 
-            - CASE WHEN OLD.type = 'cap' THEN OLD.trx_quantity ELSE 0 END,
+            - CASE WHEN dc.type = 'cap' THEN OLD.trx_quantity ELSE 0 END,
         link_quantity = link_quantity 
-            - CASE WHEN OLD.type = 'link' THEN OLD.trx_quantity ELSE 0 END,
+            - CASE WHEN dc.type = 'link' THEN OLD.trx_quantity ELSE 0 END,
         h_bottom_quantity = h_bottom_quantity 
-            - CASE WHEN OLD.type = 'h_bottom' THEN OLD.trx_quantity ELSE 0 END,
+            - CASE WHEN dc.type = 'h_bottom' THEN OLD.trx_quantity ELSE 0 END,
         u_top_quantity = u_top_quantity 
-            - CASE WHEN OLD.type = 'u_top' THEN OLD.trx_quantity ELSE 0 END,
+            - CASE WHEN dc.type = 'u_top' THEN OLD.trx_quantity ELSE 0 END,
         box_pin_quantity = box_pin_quantity 
-            - CASE WHEN OLD.type = 'box_pin' THEN OLD.trx_quantity ELSE 0 END,
+            - CASE WHEN dc.type = 'box_pin' THEN OLD.trx_quantity ELSE 0 END,
         two_way_pin_quantity = two_way_pin_quantity 
-            - CASE WHEN OLD.type = 'two_way_pin' THEN OLD.trx_quantity ELSE 0 END
-
-    WHERE uuid = OLD.stock_uuid;
+            - CASE WHEN dc.type = 'two_way_pin' THEN OLD.trx_quantity ELSE 0 END
+    FROM slider.die_casting dc
+    WHERE stock.uuid = NEW.stock_uuid AND dc.uuid = NEW.die_casting_uuid;
 
 
 RETURN OLD;
@@ -79,31 +79,31 @@ BEGIN
     UPDATE slider.stock
     SET
         body_quantity = body_quantity 
-            + CASE WHEN NEW.type = 'body' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN OLD.type = 'body' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'body' THEN NEW.trx_quantity ELSE 0 END 
+            - CASE WHEN dc.type = 'body' THEN OLD.trx_quantity ELSE 0 END,
         puller_quantity = puller_quantity 
-            + CASE WHEN NEW.type = 'puller' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN OLD.type = 'puller' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'puller' THEN NEW.trx_quantity ELSE 0 END 
+            - CASE WHEN dc.type = 'puller' THEN OLD.trx_quantity ELSE 0 END,
         cap_quantity = cap_quantity 
-            + CASE WHEN NEW.type = 'cap' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN OLD.type = 'cap' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'cap' THEN NEW.trx_quantity ELSE 0 END 
+            - CASE WHEN dc.type = 'cap' THEN OLD.trx_quantity ELSE 0 END,
         link_quantity = link_quantity 
-            + CASE WHEN NEW.type = 'link' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN OLD.type = 'link' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'link' THEN NEW.trx_quantity ELSE 0 END 
+            - CASE WHEN dc.type = 'link' THEN OLD.trx_quantity ELSE 0 END,
         h_bottom_quantity = h_bottom_quantity 
-            + CASE WHEN NEW.type = 'h_bottom' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN OLD.type = 'h_bottom' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'h_bottom' THEN NEW.trx_quantity ELSE 0 END 
+            - CASE WHEN dc.type = 'h_bottom' THEN OLD.trx_quantity ELSE 0 END,
         u_top_quantity = u_top_quantity 
-            + CASE WHEN NEW.type = 'u_top' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN OLD.type = 'u_top' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'u_top' THEN NEW.trx_quantity ELSE 0 END 
+            - CASE WHEN dc.type = 'u_top' THEN OLD.trx_quantity ELSE 0 END,
         box_pin_quantity = box_pin_quantity 
-            + CASE WHEN NEW.type = 'box_pin' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN OLD.type = 'box_pin' THEN OLD.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'box_pin' THEN NEW.trx_quantity ELSE 0 END 
+            - CASE WHEN dc.type = 'box_pin' THEN OLD.trx_quantity ELSE 0 END,
         two_way_pin_quantity = two_way_pin_quantity 
-            + CASE WHEN NEW.type = 'two_way_pin' THEN NEW.trx_quantity ELSE 0 END 
-            - CASE WHEN OLD.type = 'two_way_pin' THEN OLD.trx_quantity ELSE 0 END
-
-    WHERE uuid = NEW.stock_uuid;
+            + CASE WHEN dc.type = 'two_way_pin' THEN NEW.trx_quantity ELSE 0 END 
+            - CASE WHEN dc.type = 'two_way_pin' THEN OLD.trx_quantity ELSE 0 END
+    FROM slider.die_casting dc
+    WHERE stock.uuid = NEW.stock_uuid AND dc.uuid = NEW.die_casting_uuid;
 
 RETURN NEW;
 END;

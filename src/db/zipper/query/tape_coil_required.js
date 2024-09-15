@@ -8,6 +8,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
+import { tape_coil_required } from '../schema.js';
 const endTypeProperties = alias(publicSchema.properties, 'endTypeProperties');
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
 const nylonStopperProperties = alias(
@@ -18,7 +19,6 @@ const zipperNumberProperties = alias(
 	publicSchema.properties,
 	'zipperNumberProperties'
 );
-import { tape_coil_required } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -194,11 +194,16 @@ export async function select(req, res, next) {
 		.where(eq(tape_coil_required.uuid, req.params.uuid))
 		.orderBy(desc(tape_coil_required.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'tape_coil_required detail',
-	};
+	try {
+		const data = await tapeCoilRequiredPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil_required detail',
+		};
 
-	handleResponse({ promise: tapeCoilRequiredPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
