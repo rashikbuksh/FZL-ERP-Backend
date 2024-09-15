@@ -294,7 +294,8 @@ export async function selectOrderDescription(req, res, next) {
 					totals_of_oe.total_size,
 					totals_of_oe.total_quantity,
 					tcr.top,
-					tcr.bottom
+					tcr.bottom,
+					tape_coil.dyed_per_kg_meter
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN 
@@ -305,6 +306,7 @@ export async function selectOrderDescription(req, res, next) {
 				        group by oe.order_description_uuid
 					) AS totals_of_oe ON totals_of_oe.order_description_uuid = vodf.order_description_uuid 
 				LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid AND vodf.zipper_number = tcr.zipper_number_uuid AND vodf.end_type = tcr.end_type_uuid
+				LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != ''
 				`;
