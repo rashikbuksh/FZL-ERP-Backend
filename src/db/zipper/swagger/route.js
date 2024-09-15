@@ -2212,7 +2212,6 @@ export const pathZipperTapeCoilRequired = {
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
 			requestBody: SE.requestBody_schema_ref('zipper/tape_coil_required'),
 			responses: {
 				200: SE.response_schema_ref(200, 'zipper/tape_coil_required'),

@@ -417,8 +417,8 @@ export const def_zipper_tape_coil_required = SED({
 		'zipper_number_uuid',
 		'top',
 		'bottom',
-		'raw_per_kg_meter',
-		'dyed_per_kg_meter',
+		'raw_mtr_per_kg',
+		'dyed_mtr_per_kg',
 		'created_by',
 		'created_at',
 	],
@@ -430,8 +430,8 @@ export const def_zipper_tape_coil_required = SED({
 		zipper_number_uuid: SE.uuid(),
 		top: SE.number('100.0'),
 		bottom: SE.number('100.0'),
-		raw_per_kg_meter: SE.number('100.0'),
-		dyed_per_kg_meter: SE.number('100.0'),
+		raw_mtr_per_kg: SE.number('100.0'),
+		dyed_mtr_per_kg: SE.number('100.0'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
@@ -572,6 +572,7 @@ export const defZipper = {
 		def_zipper_material_trx_against_order_description,
 	tape_coil_to_dyeing: def_zipper_tape_coil_to_dyeing,
 	batch_production: def_zipper_batch_production,
+	tape_coil_required: def_zipper_tape_coil_required,
 };
 
 // * Zipper Tag * //
