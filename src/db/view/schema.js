@@ -149,7 +149,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_info.factory_priority,
     order_description.garments_remarks,
     stock.uuid as stock_uuid,
-    stock.order_quantity as stock_order_quantity
+    stock.order_quantity as stock_order_quantity,
+    order_description.tape_coil_uuid
    FROM zipper.order_info
      LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
      LEFT JOIN marketing ON marketing.uuid = order_info.marketing_uuid
