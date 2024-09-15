@@ -4,8 +4,8 @@ BEGIN
 
     UPDATE zipper.tape_coil
     SET
-        quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity_in_coil - NEW.trx_quantity ELSE quantity_in_coil END,
-        quantity = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity ELSE quantity - NEW.trx_quantity END
+        quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon' THEN quantity_in_coil - NEW.trx_quantity ELSE quantity_in_coil END,
+        quantity = CASE WHEN lower(properties.name) = 'nylon' THEN quantity ELSE quantity - NEW.trx_quantity END
     FROM public.properties
     WHERE tape_coil.uuid = NEW.tape_coil_uuid AND properties.uuid = tape_coil.item_uuid;
     
@@ -22,8 +22,8 @@ CREATE OR REPLACE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_de
 BEGIN
     UPDATE zipper.tape_coil
         SET
-            quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity_in_coil + OLD.trx_quantity ELSE quantity_in_coil END,
-            quantity = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity ELSE quantity + OLD.trx_quantity END
+            quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon' THEN quantity_in_coil + OLD.trx_quantity ELSE quantity_in_coil END,
+            quantity = CASE WHEN lower(properties.name) = 'nylon' THEN quantity ELSE quantity + OLD.trx_quantity END
         FROM public.properties
         WHERE tape_coil.uuid = OLD.tape_coil_uuid AND properties.uuid = tape_coil.item_uuid;
 
@@ -40,8 +40,8 @@ CREATE OR REPLACE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_up
 BEGIN
     UPDATE zipper.tape_coil
     SET
-        quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity_in_coil + OLD.trx_quantity - NEW.trx_quantity ELSE quantity_in_coil END,
-        quantity = CASE WHEN lower(properties.name) = 'nylon metallic' OR lower(properties.name) = 'nylon plastic' THEN quantity ELSE quantity + OLD.trx_quantity - NEW.trx_quantity END
+        quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon' THEN quantity_in_coil + OLD.trx_quantity - NEW.trx_quantity ELSE quantity_in_coil END,
+        quantity = CASE WHEN lower(properties.name) = 'nylon' THEN quantity ELSE quantity + OLD.trx_quantity - NEW.trx_quantity END
     FROM public.properties
     WHERE tape_coil.uuid = NEW.tape_coil_uuid AND properties.uuid = tape_coil.item_uuid;
 

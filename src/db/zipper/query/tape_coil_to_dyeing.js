@@ -11,18 +11,43 @@ import { tape_coil_to_dyeing } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	// check if tape_coil_uuid exists in order_description table
+	const query = sql`
+		SELECT
+			tape_coil_uuid, order_number, item_description
+		FROM
+			zipper.v_order_details_full vodf
+		WHERE
+			vodf.order_description_uuid = ${req.body.order_description_uuid}
+	`;
+
 	const resultPromise = db
 		.insert(tape_coil_to_dyeing)
 		.values(req.body)
-		.returning({ insertedId: tape_coil_to_dyeing.uuid });
+		.returning({ insertedId: tape_coil_to_dyeing.tape_coil_uuid });
 
 	try {
 		const data = await resultPromise;
 
+		const tapeCoilUuid = await db.execute(query);
+
+		if (tapeCoilUuid?.rows[0]?.tape_coil_uuid == null) {
+			// update the tape_coil_uuid in order_description table
+			const updateQuery = sql`
+				UPDATE
+					zipper.order_description
+				SET
+					tape_coil_uuid = ${data[0].insertedId}
+				WHERE
+					uuid = ${req.body.order_description_uuid}
+			`;
+			await db.execute(updateQuery);
+		}
+
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedId} inserted`,
+			message: `${tapeCoilUuid.rows[0].order_number} - ${tapeCoilUuid.rows[0].item_description} inserted`,
 		};
 
 		return await res.status(201).json({ toast, data });

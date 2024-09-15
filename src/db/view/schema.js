@@ -43,7 +43,6 @@ export const OrderDetailsView = `
   `;
 
 export const OrderDetailsFullView = `
-
 CREATE OR REPLACE VIEW zipper.v_order_details_full
  AS
  SELECT 
@@ -150,7 +149,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.garments_remarks,
     stock.uuid as stock_uuid,
     stock.order_quantity as stock_order_quantity,
-    order_description.tape_coil_uuid
+    order_description.tape_coil_uuid,
+    tc.name as tape_name
    FROM zipper.order_info
      LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
      LEFT JOIN marketing ON marketing.uuid = order_info.marketing_uuid
@@ -178,7 +178,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_end_user ON op_end_user.uuid = order_description.end_user
      LEFT JOIN properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
      LEFT JOIN properties op_puller_link ON op_puller_link.uuid = order_description.puller_link
-     LEFT JOIN slider.stock ON stock.order_description_uuid = order_description.uuid;
+     LEFT JOIN slider.stock ON stock.order_description_uuid = order_description.uuid
+     LEFT JOIN zipper.tape_coil tc ON tc.uuid = order_description.tape_coil_uuid;
 	`; // required order_description changes
 
 export const OrderPlanningView = `

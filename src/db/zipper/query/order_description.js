@@ -9,7 +9,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import { order_description, order_info } from '../schema.js';
+import { order_description, order_info, tape_coil } from '../schema.js';
 
 // public.properties
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
@@ -356,8 +356,13 @@ export async function selectAll(req, res, next) {
 			created_by: order_description.created_by,
 			created_by_name: hrSchema.users.name,
 			garments_remarks: order_description.garments_remarks,
+			tape_coil_uuid: order_description.tape_coil_uuid,
+			tape_name: tape_coil.name,
 		})
 		.from(order_description)
+		.where(
+			eq(order_description.order_info_uuid, req.params.order_info_uuid)
+		)
 		.leftJoin(
 			order_info,
 			eq(order_description.order_info_uuid, order_info.uuid)
@@ -447,6 +452,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(order_description.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			tape_coil,
+			eq(order_description.tape_coil_uuid, tape_coil.uuid)
 		)
 		.orderBy(desc(order_description.created_at));
 
@@ -545,6 +554,8 @@ export async function select(req, res, next) {
 			created_by: order_description.created_by,
 			created_by_name: hrSchema.users.name,
 			garments_remarks: order_description.garments_remarks,
+			tape_coil_uuid: order_description.tape_coil_uuid,
+			tape_name: tape_coil.name,
 		})
 		.from(order_description)
 		.where(
@@ -639,6 +650,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(order_description.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			tape_coil,
+			eq(order_description.tape_coil_uuid, tape_coil.uuid)
 		)
 		.where(eq(order_description.uuid, req.params.uuid));
 
