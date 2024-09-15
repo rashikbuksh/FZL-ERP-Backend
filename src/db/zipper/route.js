@@ -298,7 +298,6 @@ zipperRouter.delete(
 zipperRouter.get('/tape-coil-required', tapeCoilRequiredOperations.selectAll);
 zipperRouter.get(
 	'/tape-coil-required/:uuid',
-	// validateUuidParam(),
 	tapeCoilRequiredOperations.select
 );
 zipperRouter.post('/tape-coil-required', tapeCoilRequiredOperations.insert);
@@ -308,7 +307,6 @@ zipperRouter.put(
 );
 zipperRouter.delete(
 	'/tape-coil-required/:uuid',
-	// validateUuidParam(),
 	tapeCoilRequiredOperations.remove
 );
 
