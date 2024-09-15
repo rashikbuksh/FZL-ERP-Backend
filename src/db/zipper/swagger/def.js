@@ -1,4 +1,5 @@
 import SE, { SED } from '../../../util/swagger_example.js';
+import zipper from '../schema.js';
 
 // * Zipper Order Info * //
 export const def_zipper_order_info = SED({
@@ -406,6 +407,38 @@ export const def_zipper_tape_coil_production = SED({
 	},
 	xml: 'Zipper/Tape-Coil-Production',
 });
+// * Zipper Tape Coil Required * //
+export const def_zipper_tape_coil_required = SED({
+	required: [
+		'uuid',
+		'end_type_uuid',
+		'item_uuid',
+		'nylon_stopper_uuid',
+		'zipper_number_uuid',
+		'top',
+		'bottom',
+		'raw_per_kg_meter',
+		'dyed_per_kg_meter',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		end_type_uuid: SE.uuid(),
+		item_uuid: SE.uuid(),
+		nylon_stopper_uuid: SE.uuid(),
+		zipper_number_uuid: SE.uuid(),
+		top: SE.number('100.0'),
+		bottom: SE.number('100.0'),
+		raw_per_kg_meter: SE.number('100.0'),
+		dyed_per_kg_meter: SE.number('100.0'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
+	},
+	xml: 'Zipper/Tape-Coil-Required',
+});
 
 // * Zipper Planning * //
 export const def_zipper_planning = SED({
@@ -598,6 +631,10 @@ export const tagZipper = [
 	{
 		name: 'zipper.tape_coil_production',
 		description: 'Zipper Tape Coil Production',
+	},
+	{
+		name: 'zipper.tape_coil_required',
+		description: 'Zipper Tape Coil Required',
 	},
 	{
 		name: 'zipper.planning',

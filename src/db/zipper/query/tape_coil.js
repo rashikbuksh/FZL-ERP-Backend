@@ -8,7 +8,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import zipper, { tape_coil } from '../schema.js';
+import { tape_coil } from '../schema.js';
 
 const item_properties = alias(publicSchema.properties, 'item_properties');
 const zipper_number_properties = alias(
