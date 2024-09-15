@@ -391,11 +391,24 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 		const query = sql`
 			SELECT
 				vodf.order_description_uuid AS value,
-				CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
+				CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label,
+				totals_of_oe.total_size,
+				totals_of_oe.total_quantity,
+				tcr.top,
+				tcr.bottom,
+				vodf.tape_received
 			FROM
 				zipper.v_order_details_full vodf
+			LEFT JOIN (
+				SELECT oe.order_description_uuid, 
+					SUM(oe.size::numeric * oe.quantity::numeric) as total_size, 
+					SUM(oe.quantity::numeric) as total_quantity
+				FROM zipper.order_entry oe
+				GROUP BY oe.order_description_uuid
+			) totals_of_oe ON vodf.order_description_uuid = totals_of_oe.order_description_uuid
+			LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid AND vodf.zipper_number = tcr.zipper_number_uuid AND vodf.end_type = tcr.end_type_uuid
 			WHERE
-				vodf.tape_coil_uuid = ${coil_uuid} OR (vodf.item = ${item_uuid} AND vodf.zipper_number = ${zipper_number_uuid} AND vodf.tape_coil_uuid IS NULL)
+				(vodf.tape_coil_uuid = ${coil_uuid} OR (vodf.item = ${item_uuid} AND vodf.zipper_number = ${zipper_number_uuid} AND vodf.tape_coil_uuid IS NULL)) AND vodf.order_description_uuid IS NOT NULL
 		`;
 
 		const orderEntryPromise = db.execute(query);
