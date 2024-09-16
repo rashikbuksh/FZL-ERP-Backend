@@ -1035,6 +1035,14 @@ export const pathLabDipRecipe = {
 									type: 'string',
 									example: 'igD0v9DIJQhJeet',
 								},
+								approved: {
+									type: 'number',
+									example: 0,
+								},
+								status: {
+									type: 'number',
+									example: 0,
+								},
 							},
 						},
 					},
