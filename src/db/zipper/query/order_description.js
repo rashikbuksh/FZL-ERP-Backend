@@ -20,6 +20,10 @@ const pullerTypeProperties = alias(
 	publicSchema.properties,
 	'pullerTypeProperties'
 );
+const tapeColorProperties = alias(
+	publicSchema.properties,
+	'tapeColorProperties'
+);
 const teethColorProperties = alias(
 	publicSchema.properties,
 	'teethColorProperties'
@@ -78,6 +82,7 @@ export async function insert(req, res, next) {
 		end_type,
 		lock_type,
 		puller_type,
+		tape_color,
 		teeth_color,
 		puller_color,
 		special_requirement,
@@ -117,6 +122,7 @@ export async function insert(req, res, next) {
 			end_type,
 			lock_type,
 			puller_type,
+			tape_color,
 			teeth_color,
 			puller_color,
 			special_requirement,
@@ -302,6 +308,9 @@ export async function selectAll(req, res, next) {
 			puller_type: order_description.puller_type,
 			puller_type_name: pullerTypeProperties.name,
 			puller_type_short_name: pullerTypeProperties.short_name,
+			tape_color: order_description.teeth_color,
+			tape_color_name: tapeColorProperties.name,
+			tape_color_short_name: tapeColorProperties.short_name,
 			teeth_color: order_description.teeth_color,
 			teeth_color_name: teethColorProperties.name,
 			teeth_color_short_name: teethColorProperties.short_name,
@@ -390,6 +399,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			pullerTypeProperties,
 			eq(order_description.puller_type, pullerTypeProperties.uuid)
+		)
+		.leftJoin(
+			tapeColorProperties,
+			eq(order_description.tape_color, tapeColorProperties.uuid)
 		)
 		.leftJoin(
 			teethColorProperties,
@@ -500,6 +513,9 @@ export async function select(req, res, next) {
 			puller_type: order_description.puller_type,
 			puller_type_name: pullerTypeProperties.name,
 			puller_type_short_name: pullerTypeProperties.short_name,
+			tape_color: order_description.teeth_color,
+			tape_color_name: tapeColorProperties.name,
+			tape_color_short_name: tapeColorProperties.short_name,
 			teeth_color: order_description.teeth_color,
 			teeth_color_name: teethColorProperties.name,
 			teeth_color_short_name: teethColorProperties.short_name,
@@ -588,6 +604,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			pullerTypeProperties,
 			eq(order_description.puller_type, pullerTypeProperties.uuid)
+		)
+		.leftJoin(
+			tapeColorProperties,
+			eq(order_description.tape_color, tapeColorProperties.uuid)
 		)
 		.leftJoin(
 			teethColorProperties,

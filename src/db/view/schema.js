@@ -93,6 +93,9 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.lock_type,
     op_lock.name AS lock_type_name,
     op_lock.short_name AS lock_type_short_name,
+    order_description.tape_color,
+    op_tape_color.name AS tape_color_name,
+    op_tape_color.short_name AS tape_color_short_name,
     order_description.teeth_color,
     op_teeth_color.name AS teeth_color_name,
     op_teeth_color.short_name AS teeth_color_short_name,
@@ -165,6 +168,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_end ON op_end.uuid = order_description.end_type
      LEFT JOIN properties op_puller ON op_puller.uuid = order_description.puller_type
      LEFT JOIN properties op_lock ON op_lock.uuid = order_description.lock_type
+     LEFT JOIN properties op_tape_color ON op_tape_color.uuid = order_description.tape_color
      LEFT JOIN properties op_teeth_color ON op_teeth_color.uuid = order_description.teeth_color
      LEFT JOIN properties op_puller_color ON op_puller_color.uuid = order_description.puller_color
      LEFT JOIN properties op_hand ON op_hand.uuid = order_description.hand
