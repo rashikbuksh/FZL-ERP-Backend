@@ -168,8 +168,8 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			COALESCE(be.quantity,0) - COALESCE(bp_given.given_production_quantity,0) as balance_quantity,
 			tcr.top,
 			tcr.bottom,
-			tcr.raw_mtr_per_kg,
-			tcr.dyed_mtr_per_kg
+			tc.raw_per_kg_meter as raw_mtr_per_kg,
+			tc.dyed_per_kg_meter as dyed_mtr_per_kg
 		FROM
 			zipper.batch_entry be
 		LEFT JOIN
@@ -185,6 +185,9 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
         AND vodf.nylon_stopper = tcr.nylon_stopper_uuid 
         AND vodf.zipper_number = tcr.zipper_number_uuid 
         AND vodf.end_type = tcr.end_type_uuid 
+		LEFT JOIN
+			zipper.tape_coil tc ON  vodf.item = tc.item_uuid 
+		AND vodf.zipper_number = tc.zipper_number_uuid 
 		LEFT JOIN
 			(
 				SELECT
@@ -238,8 +241,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			coalesce(coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0),0)  as balance_quantity,
 			tcr.top,
 			tcr.bottom,
-			tcr.raw_mtr_per_kg,
-			tcr.dyed_mtr_per_kg
+			tc.raw_per_kg_meter as raw_mtr_per_kg,
+			tc.dyed_per_kg_meter as dyed_mtr_per_kg
 		FROM
 			zipper.sfg sfg
 		LEFT JOIN 
@@ -253,6 +256,9 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
         AND vodf.nylon_stopper = tcr.nylon_stopper_uuid 
         AND vodf.zipper_number = tcr.zipper_number_uuid 
         AND vodf.end_type = tcr.end_type_uuid 
+		LEFT JOIN
+			zipper.tape_coil tc ON  vodf.item = tc.item_uuid 
+		AND vodf.zipper_number = tc.zipper_number_uuid 
 		LEFT JOIN
 			(
 				SELECT
