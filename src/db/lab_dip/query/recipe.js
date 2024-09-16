@@ -230,7 +230,11 @@ export async function updateRecipeByLabDipInfoUuid(req, res, next) {
 
 	const recipePromise = db
 		.update(recipe)
-		.set({ lab_dip_info_uuid: lab_dip_info_uuid })
+		.set({
+			lab_dip_info_uuid: lab_dip_info_uuid,
+			approved: approved,
+			status: status,
+		})
 		.where(eq(recipe.uuid, recipe_uuid))
 		.returning({
 			updatedName: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
