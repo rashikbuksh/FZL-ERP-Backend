@@ -13,7 +13,9 @@ export const department = hr.table('department', {
 
 export const designation = hr.table('designation', {
 	uuid: uuid_primary,
-	department_uuid: defaultUUID('department_uuid'),
+	department_uuid: defaultUUID('department_uuid').references(
+		() => department.uuid
+	),
 	designation: text('designation').notNull(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

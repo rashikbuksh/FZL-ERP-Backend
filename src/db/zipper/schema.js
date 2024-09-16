@@ -313,7 +313,7 @@ export const batch = zipper.table('batch', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
 	batch_status: batchStatusEnum('batch_status').default('pending'),
-	created_by: defaultUUID('created_by'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -321,8 +321,8 @@ export const batch = zipper.table('batch', {
 
 export const batch_entry = zipper.table('batch_entry', {
 	uuid: uuid_primary,
-	batch_uuid: defaultUUID('batch_uuid'),
-	sfg_uuid: defaultUUID('sfg_uuid'),
+	batch_uuid: defaultUUID('batch_uuid').references(() => batch.uuid),
+	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,

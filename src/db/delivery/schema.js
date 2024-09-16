@@ -1,5 +1,4 @@
-import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
-import e from 'express';
+import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
@@ -10,7 +9,7 @@ export const packing_list = delivery.table('packing_list', {
 	uuid: uuid_primary,
 	carton_size: text('carton_size').notNull(),
 	carton_weight: text('carton_weight').notNull(),
-	created_by: defaultUUID('created_by'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
