@@ -215,6 +215,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			updated_at: order_entry.updated_at,
 			teeth_molding_stock: sfg.teeth_molding_stock,
 			teeth_molding_prod: sfg.teeth_molding_prod,
+			dying_and_iron_prod: sfg.dying_and_iron_prod,
 			total_teeth_molding: sql`SUM(
 				CASE WHEN sfg_production.section = 'teeth_molding' THEN sfg_production.production_quantity ELSE 0 END
 				)`,
