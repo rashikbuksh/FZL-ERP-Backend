@@ -311,10 +311,30 @@ export async function selectStockByFromSection(req, res, next) {
 		CAST(stock.h_bottom_quantity AS DOUBLE PRECISION),
 		CAST(stock.box_pin_quantity AS DOUBLE PRECISION),
 		CAST(stock.two_way_pin_quantity AS DOUBLE PRECISION),
+		CAST(
+			LEAST(
+				CAST(stock.body_quantity AS DOUBLE PRECISION),
+				CAST(stock.cap_quantity AS DOUBLE PRECISION),
+				CAST(stock.puller_quantity AS DOUBLE PRECISION),
+				CAST(stock.link_quantity AS DOUBLE PRECISION),
+				CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
+				CAST(stock.box_pin_quantity AS DOUBLE PRECISION)
+			) 
+		AS DOUBLE PRECISION) AS open_end_min_quantity,
+		CAST(
+			LEAST(
+				CAST(stock.body_quantity AS DOUBLE PRECISION),
+				CAST(stock.cap_quantity AS DOUBLE PRECISION),
+				CAST(stock.puller_quantity AS DOUBLE PRECISION),
+				CAST(stock.link_quantity AS DOUBLE PRECISION),
+				CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
+				CAST(stock.h_bottom_quantity AS DOUBLE PRECISION)
+			) 
+		AS DOUBLE PRECISION)AS close_end_min_quantity,
 		stock.created_at,
 		stock.updated_at,
 		stock.remarks,
-		sliderTransactionGiven.trx_quantity as total_trx_quantity
+		slider_transaction_given.trx_quantity as total_trx_quantity
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -336,7 +356,7 @@ export async function selectStockByFromSection(req, res, next) {
             transaction.from_section = ${from_section}
         GROUP BY
             stock.uuid
-    ) AS sliderTransactionGiven ON stock.uuid = sliderTransactionGiven.stock_uuid;`;
+    ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid;`;
 
 	try {
 		const data = await db.execute(query);
