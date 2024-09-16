@@ -698,7 +698,6 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 		zipper.tape_coil
 	ON
 		v_order_details_full.tape_coil_uuid = tape_coil.uuid
-
     WHERE 
         v_order_details_full.order_description_uuid = ${order_description_uuid}`;
 

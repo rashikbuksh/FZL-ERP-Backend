@@ -937,7 +937,7 @@ export async function selectDyesCategory(req, res, next) {
 	const dyesCategoryPromise = db
 		.select({
 			value: threadSchema.dyes_category.uuid,
-			label: threadSchema.dyes_category.name,
+			label: sql`concat(dyes_category.name, ' - ', dyes_category.id, ' - ', dyes_category.bleaching)`,
 		})
 		.from(threadSchema.dyes_category);
 
