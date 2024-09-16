@@ -4,7 +4,7 @@ export const OrderDetailsView = `
       order_info.uuid AS order_info_uuid,
       order_info.reference_order_info_uuid,
       concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
-      concat(op_item.short_name,'-',op_zipper.short_name,'-',op_end.short_name,'-',op_puller.short_name) AS item_description,
+      concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
       order_description.uuid as order_description_uuid,
       order_info.buyer_uuid,
       buyer.name AS buyer_name,
@@ -39,7 +39,8 @@ export const OrderDetailsView = `
       LEFT JOIN public.properties op_item ON op_item.uuid = order_description.item
         LEFT JOIN public.properties op_zipper ON op_zipper.uuid = order_description.zipper_number
         LEFT JOIN public.properties op_end ON op_end.uuid = order_description.end_type
-        LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type;
+        LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type
+        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = order_description.nylon_stopper;
   `;
 
 export const OrderDetailsFullView = `
@@ -74,7 +75,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_info.status AS order_status,
     order_info.created_at,
     order_info.updated_at,
-    concat(op_item.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
+    concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
     order_description.item,
     op_item.name AS item_name,
     op_item.short_name AS item_short_name,
@@ -93,6 +94,9 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.lock_type,
     op_lock.name AS lock_type_name,
     op_lock.short_name AS lock_type_short_name,
+    order_description.tape_color,
+    op_tape_color.name AS tape_color_name,
+    op_tape_color.short_name AS tape_color_short_name,
     order_description.teeth_color,
     op_teeth_color.name AS teeth_color_name,
     op_teeth_color.short_name AS teeth_color_short_name,
@@ -165,6 +169,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_end ON op_end.uuid = order_description.end_type
      LEFT JOIN properties op_puller ON op_puller.uuid = order_description.puller_type
      LEFT JOIN properties op_lock ON op_lock.uuid = order_description.lock_type
+     LEFT JOIN properties op_tape_color ON op_tape_color.uuid = order_description.tape_color
      LEFT JOIN properties op_teeth_color ON op_teeth_color.uuid = order_description.teeth_color
      LEFT JOIN properties op_puller_color ON op_puller_color.uuid = order_description.puller_color
      LEFT JOIN properties op_hand ON op_hand.uuid = order_description.hand

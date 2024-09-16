@@ -723,6 +723,8 @@ export async function selectLabDipRecipe(req, res, next) {
 		.select({
 			value: labDipSchema.recipe.uuid,
 			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
+			approved: labDipSchema.recipe.approved,
+			status: labDipSchema.recipe.status,
 		})
 		.from(labDipSchema.recipe);
 

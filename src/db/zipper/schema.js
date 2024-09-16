@@ -98,6 +98,9 @@ export const order_description = zipper.table('order_description', {
 	puller_type: defaultUUID('puller_type').references(
 		() => publicSchema.properties.uuid
 	),
+	tape_color: defaultUUID('tape_color').references(
+		() => publicSchema.properties.uuid
+	),
 	teeth_color: defaultUUID('teeth_color').references(
 		() => publicSchema.properties.uuid
 	),
