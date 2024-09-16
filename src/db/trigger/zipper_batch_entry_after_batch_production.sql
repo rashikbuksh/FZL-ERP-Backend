@@ -2,7 +2,7 @@ CREATE OR REPLACE FUNCTION zipper_batch_entry_after_batch_production_insert() RE
 BEGIN
   UPDATE zipper.batch_entry
     SET
-        production_quantity = production_quantity + NEW.production_quantity
+        production_quantity = production_quantity + NEW.production_quantity,
         production_quantity_in_kg = production_quantity_in_kg + NEW.production_quantity_in_kg
     WHERE
         uuid = NEW.batch_entry_uuid;
@@ -13,7 +13,7 @@ CREATE OR REPLACE FUNCTION zipper_batch_entry_after_batch_production_update() RE
 BEGIN
   UPDATE zipper.batch_entry
     SET
-        production_quantity = production_quantity + NEW.production_quantity - OLD.production_quantity
+        production_quantity = production_quantity + NEW.production_quantity - OLD.production_quantity,
         production_quantity_in_kg = production_quantity_in_kg + NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
     WHERE
         uuid = NEW.batch_entry_uuid;
@@ -25,7 +25,7 @@ CREATE OR REPLACE FUNCTION zipper_batch_entry_after_batch_production_delete() RE
 BEGIN
   UPDATE zipper.batch_entry
     SET
-        production_quantity = production_quantity - OLD.production_quantity
+        production_quantity = production_quantity - OLD.production_quantity,
         production_quantity_in_kg = production_quantity_in_kg - OLD.production_quantity_in_kg
     WHERE
         uuid = OLD.batch_entry_uuid;
