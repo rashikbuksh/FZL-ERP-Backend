@@ -18,6 +18,9 @@ BEGIN
         production_quantity_in_kg = production_quantity_in_kg + NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
     WHERE
         uuid = NEW.batch_entry_uuid;
+
+RETURN NEW;
+      
 END;
 
 $$ LANGUAGE plpgsql;
@@ -57,6 +60,8 @@ BEGIN
         dying_and_iron_prod = dying_and_iron_prod + NEW.production_quantity_in_kg
     WHERE
         uuid = NEW.sfg_uuid;
+    
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -67,7 +72,11 @@ BEGIN
         dying_and_iron_prod = dying_and_iron_prod + NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
     WHERE
         uuid = NEW.sfg_uuid;
+
+    RETURN NEW;	
 END;
+
+
 
 $$ LANGUAGE plpgsql;
 
@@ -79,6 +88,8 @@ BEGIN
         dying_and_iron_prod = dying_and_iron_prod - OLD.production_quantity_in_kg
     WHERE
         uuid = OLD.sfg_uuid;
+
+    RETURN OLD;
 END;
 
 $$ LANGUAGE plpgsql;
