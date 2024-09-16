@@ -134,8 +134,27 @@ export async function selectAll(req, res, next) {
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
-			LEAST(stock.body_quantity, stock.puller_quantity, stock.cap_quantity, stock.link_quantity) + production.production_quantity as max_sa_quantity,
-			stock.coloring_stock + production.production_quantity as max_coloring_quantity
+			stock.coloring_stock + production.production_quantity as max_coloring_quantity,
+			CAST(
+				LEAST(
+					CAST(stock.body_quantity AS DOUBLE PRECISION),
+					CAST(stock.cap_quantity AS DOUBLE PRECISION),
+					CAST(stock.puller_quantity AS DOUBLE PRECISION),
+					CAST(stock.link_quantity AS DOUBLE PRECISION),
+					CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
+					CAST(stock.box_pin_quantity AS DOUBLE PRECISION)
+				) 
+			AS DOUBLE PRECISION) + production.production_quantity AS open_end_max_sa_quantity,
+			CAST(
+			LEAST(
+				CAST(stock.body_quantity AS DOUBLE PRECISION),
+				CAST(stock.cap_quantity AS DOUBLE PRECISION),
+				CAST(stock.puller_quantity AS DOUBLE PRECISION),
+				CAST(stock.link_quantity AS DOUBLE PRECISION),
+				CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
+				CAST(stock.h_bottom_quantity AS DOUBLE PRECISION)
+			) 
+			AS DOUBLE PRECISION) + production.production_quantity AS close_end_max_sa_quantity
 		FROM
 			slider.production
 		LEFT JOIN
@@ -221,8 +240,27 @@ export async function select(req, res, next) {
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
-			LEAST(stock.body_quantity, stock.puller_quantity, stock.cap_quantity, stock.link_quantity) + production.production_quantity as max_sa_quantity,
-			stock.coloring_stock + production.production_quantity as max_coloring_quantity
+			stock.coloring_stock + production.production_quantity as max_coloring_quantity,
+			CAST(
+				LEAST(
+					CAST(stock.body_quantity AS DOUBLE PRECISION),
+					CAST(stock.cap_quantity AS DOUBLE PRECISION),
+					CAST(stock.puller_quantity AS DOUBLE PRECISION),
+					CAST(stock.link_quantity AS DOUBLE PRECISION),
+					CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
+					CAST(stock.box_pin_quantity AS DOUBLE PRECISION)
+				) 
+			AS DOUBLE PRECISION) + production.production_quantity AS open_end_max_sa_quantity,
+			CAST(
+			LEAST(
+				CAST(stock.body_quantity AS DOUBLE PRECISION),
+				CAST(stock.cap_quantity AS DOUBLE PRECISION),
+				CAST(stock.puller_quantity AS DOUBLE PRECISION),
+				CAST(stock.link_quantity AS DOUBLE PRECISION),
+				CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
+				CAST(stock.h_bottom_quantity AS DOUBLE PRECISION)
+			) 
+			AS DOUBLE PRECISION) + production.production_quantity AS close_end_max_sa_quantity
 		FROM
 			slider.production
 		LEFT JOIN
@@ -309,8 +347,27 @@ export async function selectProductionBySection(req, res, next) {
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
-			LEAST(stock.body_quantity, stock.puller_quantity, stock.cap_quantity, stock.link_quantity) + production.production_quantity as max_sa_quantity,
-			stock.coloring_stock + production.production_quantity as max_coloring_quantity
+			stock.coloring_stock + production.production_quantity as max_coloring_quantity,
+			CAST(
+				LEAST(
+					CAST(stock.body_quantity AS DOUBLE PRECISION),
+					CAST(stock.cap_quantity AS DOUBLE PRECISION),
+					CAST(stock.puller_quantity AS DOUBLE PRECISION),
+					CAST(stock.link_quantity AS DOUBLE PRECISION),
+					CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
+					CAST(stock.box_pin_quantity AS DOUBLE PRECISION)
+				) 
+			AS DOUBLE PRECISION) + production.production_quantity AS open_end_max_sa_quantity,
+			CAST(
+			LEAST(
+				CAST(stock.body_quantity AS DOUBLE PRECISION),
+				CAST(stock.cap_quantity AS DOUBLE PRECISION),
+				CAST(stock.puller_quantity AS DOUBLE PRECISION),
+				CAST(stock.link_quantity AS DOUBLE PRECISION),
+				CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
+				CAST(stock.h_bottom_quantity AS DOUBLE PRECISION)
+			) 
+			AS DOUBLE PRECISION) + production.production_quantity AS close_end_max_sa_quantity
 		FROM
 			slider.production
 		LEFT JOIN

@@ -186,7 +186,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
         AND vodf.zipper_number = tcr.zipper_number_uuid 
         AND vodf.end_type = tcr.end_type_uuid 
 		LEFT JOIN
-			zipper.tape_coil tc ON  vodf.item = tc.item_uuid 
+			zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid 
 		AND vodf.zipper_number = tc.zipper_number_uuid 
 		LEFT JOIN
 			(
@@ -257,7 +257,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
         AND vodf.zipper_number = tcr.zipper_number_uuid 
         AND vodf.end_type = tcr.end_type_uuid 
 		LEFT JOIN
-			zipper.tape_coil tc ON  vodf.item = tc.item_uuid 
+			zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid 
 		AND vodf.zipper_number = tc.zipper_number_uuid 
 		LEFT JOIN
 			(
