@@ -1,4 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
+import { body } from 'express-validator';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -225,8 +226,11 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 export async function updateRecipeByLabDipInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { lab_dip_info_uuid, approved, status } = req.body[0];
+	const { lab_dip_info_uuid, approved, status } = req.body;
+
 	const { recipe_uuid } = req.params;
+
+	console.log(recipe_uuid);
 
 	const recipePromise = db
 		.update(recipe)
