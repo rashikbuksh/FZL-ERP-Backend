@@ -7,7 +7,17 @@ BEGIN
         production_quantity_in_kg = production_quantity_in_kg + NEW.production_quantity_in_kg
     WHERE
         uuid = NEW.batch_entry_uuid;
+
+ UPDATE zipper.sfg
+    SET
+        dying_and_iron_prod = dying_and_iron_prod + NEW.production_quantity_in_kg
+        FROM zipper.batch_entry
+    WHERE
+        uuid = batch_entry.sfg_uuid AND batch_entry.uuid = NEW.batch_entry_uuid;
+RETURN NEW;
+
 END;
+
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper_batch_entry_after_batch_production_update() RETURNS TRIGGER AS $$
@@ -18,6 +28,14 @@ BEGIN
         production_quantity_in_kg = production_quantity_in_kg + NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
     WHERE
         uuid = NEW.batch_entry_uuid;
+
+  UPDATE zipper.sfg
+    SET
+        dying_and_iron_prod = dying_and_iron_prod + NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
+        FROM zipper.batch_entry
+    WHERE
+        uuid = batch_entry.sfg_uuid AND batch_entry.uuid = NEW.batch_entry_uuid;
+    RETURN NEW;
 
 RETURN NEW;
       
@@ -33,6 +51,14 @@ BEGIN
         production_quantity_in_kg = production_quantity_in_kg - OLD.production_quantity_in_kg
     WHERE
         uuid = OLD.batch_entry_uuid;
+    
+    UPDATE zipper.sfg
+    SET
+        dying_and_iron_prod = dying_and_iron_prod - OLD.production_quantity_in_kg
+        FROM zipper.batch_entry
+    WHERE
+        uuid = batch_entry.sfg_uuid AND batch_entry.uuid = OLD.batch_entry_uuid;
+    RETURN OLD;
 END;
 
 $$ LANGUAGE plpgsql;
@@ -52,60 +78,4 @@ AFTER DELETE ON zipper.batch_production
 FOR EACH ROW
 EXECUTE FUNCTION zipper_batch_entry_after_batch_production_delete();
 
--- .........inserted in DATABASE.............
-CREATE OR REPLACE FUNCTION zipper_sfg_after_batch_entry_insert() RETURNS TRIGGER AS $$
-BEGIN
-  UPDATE zipper.sfg
-    SET
-        dying_and_iron_prod = dying_and_iron_prod + NEW.production_quantity_in_kg
-    WHERE
-        uuid = NEW.sfg_uuid;
-    
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION zipper_sfg_after_batch_entry_update() RETURNS TRIGGER AS $$
-BEGIN
-  UPDATE zipper.sfg
-    SET
-        dying_and_iron_prod = dying_and_iron_prod + NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
-    WHERE
-        uuid = NEW.sfg_uuid;
-
-    RETURN NEW;	
-END;
-
-
-
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION zipper_sfg_after_batch_entry_delete() RETURNS TRIGGER AS $$
-
-BEGIN
-  UPDATE zipper.sfg
-    SET
-        dying_and_iron_prod = dying_and_iron_prod - OLD.production_quantity_in_kg
-    WHERE
-        uuid = OLD.sfg_uuid;
-
-    RETURN OLD;
-END;
-
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE TRIGGER zipper_sfg_after_batch_entry_insert
-AFTER INSERT ON zipper.batch_entry
-FOR EACH ROW
-EXECUTE FUNCTION zipper_sfg_after_batch_entry_insert();
-
-CREATE OR REPLACE TRIGGER zipper_sfg_after_batch_entry_update
-AFTER UPDATE ON zipper.batch_entry
-FOR EACH ROW
-EXECUTE FUNCTION zipper_sfg_after_batch_entry_update();
-
-CREATE OR REPLACE TRIGGER zipper_sfg_after_batch_entry_delete
-AFTER DELETE ON zipper.batch_entry
-FOR EACH ROW
-EXECUTE FUNCTION zipper_sfg_after_batch_entry_delete();
 
