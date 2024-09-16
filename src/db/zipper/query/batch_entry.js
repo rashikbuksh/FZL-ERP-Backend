@@ -165,7 +165,11 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			vod.item_description,
 			bp_given.given_production_quantity,
 			bp_given.given_production_quantity_in_kg,
-			COALESCE(be.quantity,0) - COALESCE(bp_given.given_production_quantity,0) as balance_quantity
+			COALESCE(be.quantity,0) - COALESCE(bp_given.given_production_quantity,0) as balance_quantity,
+			tcr.top,
+			tcr.bottom,
+			tcr.raw_mtr_per_kg,
+			tcr.dyed_mtr_per_kg
 		FROM
 			zipper.batch_entry be
 		LEFT JOIN
@@ -176,6 +180,11 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
 			zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+		LEFT JOIN 
+			zipper.tape_coil_required tcr ON oe.order_description_uuid = v_order_details_full.order_description_uuid AND v_order_details_full.item = tcr.item_uuid 
+        AND v_order_details_full.nylon_stopper = tcr.nylon_stopper_uuid 
+        AND v_order_details_full.zipper_number = tcr.zipper_number_uuid 
+        AND v_order_details_full.end_type = tcr.end_type_uuid 
 		LEFT JOIN
 			(
 				SELECT
@@ -226,7 +235,11 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			be_given.given_quantity,
 			be_given.given_production_quantity,
 			be_given.given_production_quantity_in_kg,
-			coalesce(be_given.given_quantity,0) as balance_quantity
+			coalesce(be_given.given_quantity,0) as balance_quantity,
+			tcr.top,
+			tcr.bottom,
+			tcr.raw_mtr_per_kg,
+			tcr.dyed_mtr_per_kg
 		FROM
 			zipper.sfg sfg
 		LEFT JOIN 
@@ -235,6 +248,12 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
 			zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+		
+		LEFT JOIN
+			zipper.tape_coil_required tcr ON oe.order_description_uuid = v_order_details_full.order_description_uuid AND v_order_details_full.item = tcr.item_uuid 
+        AND v_order_details_full.nylon_stopper = tcr.nylon_stopper_uuid 
+        AND v_order_details_full.zipper_number = tcr.zipper_number_uuid 
+        AND v_order_details_full.end_type = tcr.end_type_uuid 
 		LEFT JOIN
 			(
 				SELECT
