@@ -1,3 +1,4 @@
+-- .........inserted in DATABASE.............
 CREATE OR REPLACE FUNCTION zipper_batch_entry_after_batch_production_insert() RETURNS TRIGGER AS $$
 BEGIN
   UPDATE zipper.batch_entry
@@ -48,7 +49,7 @@ AFTER DELETE ON zipper.batch_production
 FOR EACH ROW
 EXECUTE FUNCTION zipper_batch_entry_after_batch_production_delete();
 
-
+-- .........inserted in DATABASE.............
 CREATE OR REPLACE FUNCTION zipper_sfg_after_batch_entry_insert() RETURNS TRIGGER AS $$
 BEGIN
   UPDATE zipper.sfg
