@@ -235,7 +235,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			be_given.given_quantity,
 			be_given.given_production_quantity,
 			be_given.given_production_quantity_in_kg,
-			coalesce(be_given.given_quantity,0) as balance_quantity,
+			coalesce(coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0),0)  as balance_quantity,
 			tcr.top,
 			tcr.bottom,
 			tcr.raw_mtr_per_kg,
@@ -268,8 +268,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 					sfg.uuid
 			) AS be_given ON sfg.uuid = be_given.sfg_uuid
 		WHERE
-			sfg.recipe_uuid IS NOT NULL
-	`;
+			sfg.recipe_uuid IS NOT NULL AND coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0) > 0`;
 
 	const batchEntryPromise = db.execute(query);
 

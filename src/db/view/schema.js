@@ -4,7 +4,7 @@ export const OrderDetailsView = `
       order_info.uuid AS order_info_uuid,
       order_info.reference_order_info_uuid,
       concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
-      concat(op_item.short_name,'-',op_zipper.short_name,'-',op_end.short_name,'-',op_puller.short_name) AS item_description,
+      concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
       order_description.uuid as order_description_uuid,
       order_info.buyer_uuid,
       buyer.name AS buyer_name,
@@ -39,7 +39,8 @@ export const OrderDetailsView = `
       LEFT JOIN public.properties op_item ON op_item.uuid = order_description.item
         LEFT JOIN public.properties op_zipper ON op_zipper.uuid = order_description.zipper_number
         LEFT JOIN public.properties op_end ON op_end.uuid = order_description.end_type
-        LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type;
+        LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type
+        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = order_description.nylon_stopper;
   `;
 
 export const OrderDetailsFullView = `
@@ -74,7 +75,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_info.status AS order_status,
     order_info.created_at,
     order_info.updated_at,
-    concat(op_item.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
+    concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
     order_description.item,
     op_item.name AS item_name,
     op_item.short_name AS item_short_name,
