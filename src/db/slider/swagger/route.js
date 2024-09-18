@@ -616,6 +616,7 @@ export const pathSliderAssemblyStock = {
 				SE.parameter_params(
 					'assembly_stock_uuid',
 					'uuid',
+					'uuid',
 					'igD0v9DIJQhJeet'
 				),
 			],
@@ -636,6 +637,7 @@ export const pathSliderAssemblyStock = {
 				SE.parameter_params(
 					'assembly_stock_uuid',
 					'uuid',
+					'uuid',
 					'igD0v9DIJQhJeet'
 				),
 			],
@@ -655,6 +657,7 @@ export const pathSliderAssemblyStock = {
 			parameters: [
 				SE.parameter_params(
 					'assembly_stock_uuid',
+					'uuid',
 					'uuid',
 					'igD0v9DIJQhJeet'
 				),
