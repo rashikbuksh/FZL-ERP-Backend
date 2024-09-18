@@ -171,8 +171,7 @@ export async function select(req, res, next) {
 			DieCastingLink,
 			eq(assembly_stock.die_casting_link_uuid, DieCastingLink.uuid)
 		)
-		.where(eq(assembly_stock.uuid, req.params.uuid))
-		.returning({ selectedId: assembly_stock.uuid });
+		.where(eq(assembly_stock.uuid, req.params.uuid));
 
 	try {
 		const data = await assemblyStockPromise;
