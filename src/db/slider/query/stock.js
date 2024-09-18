@@ -312,23 +312,20 @@ export async function selectStockByFromSection(req, res, next) {
 		CAST(stock.box_pin_quantity AS DOUBLE PRECISION),
 		CAST(stock.two_way_pin_quantity AS DOUBLE PRECISION),
 		CAST(
-				CASE 
-					WHEN with_link = 1
-						THEN
-							LEAST(
-								CAST(stock.body_quantity AS DOUBLE PRECISION),
-								CAST(stock.cap_quantity AS DOUBLE PRECISION),
-								CAST(stock.puller_quantity AS DOUBLE PRECISION),
-								CAST(stock.link_quantity AS DOUBLE PRECISION)
-							) 
-						ELSE 
-							LEAST(
-								CAST(stock.body_quantity AS DOUBLE PRECISION),
-								CAST(stock.cap_quantity AS DOUBLE PRECISION),
-								CAST(stock.puller_quantity AS DOUBLE PRECISION)
-							) 
-						END
-			AS DOUBLE PRECISION) + production.production_quantity AS max_sa_quantity,
+			LEAST(
+					CAST(stock.body_quantity AS DOUBLE PRECISION),
+					CAST(stock.cap_quantity AS DOUBLE PRECISION),
+					CAST(stock.puller_quantity AS DOUBLE PRECISION),
+					CAST(stock.link_quantity AS DOUBLE PRECISION)
+			) 
+		AS DOUBLE PRECISION) AS max_sa_quantity_with_link,
+		CAST(
+			LEAST(
+					CAST(stock.body_quantity AS DOUBLE PRECISION),
+					CAST(stock.cap_quantity AS DOUBLE PRECISION),
+					CAST(stock.puller_quantity AS DOUBLE PRECISION)
+			) 
+		AS DOUBLE PRECISION) AS max_sa_quantity_without_link,
 		stock.created_at,
 		stock.updated_at,
 		stock.remarks,
@@ -354,7 +351,20 @@ export async function selectStockByFromSection(req, res, next) {
             transaction.from_section = ${from_section}
         GROUP BY
             stock.uuid
-    ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid;`;
+    ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
+	 LEFT JOIN (
+	 	SELECT 
+			DISTINCT stock.uuid AS stock_uuid,
+			SUM(production.production_quantity),
+			production.with_link
+			FROM 
+				slider.production
+			LEFT JOIN
+				slider.stock ON production.stock_uuid = stock.uuid
+			WHERE
+				production.section = ${from_section}
+			GROUP BY stock.uuid,production.with_link,production.production_quantity
+	 ) AS slider_production_done ON stock.uuid = slider_production_done.stock_uuid;`;
 
 	try {
 		const data = await db.execute(query);
