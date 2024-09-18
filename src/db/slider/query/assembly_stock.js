@@ -94,6 +94,7 @@ export async function selectAll(req, res, next) {
 			created_by_name: hrSchema.users.name,
 			created_at: assembly_stock.created_at,
 			updated_at: assembly_stock.updated_at,
+			remarks: assembly_stock.remarks,
 		})
 		.from(assembly_stock)
 		.leftJoin(
@@ -147,6 +148,7 @@ export async function select(req, res, next) {
 			created_by_name: hrSchema.users.name,
 			created_at: assembly_stock.created_at,
 			updated_at: assembly_stock.updated_at,
+			remarks: assembly_stock.remarks,
 		})
 		.from(assembly_stock)
 		.leftJoin(
