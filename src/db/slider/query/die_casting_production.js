@@ -80,8 +80,9 @@ export async function selectAll(req, res, next) {
 			dcp.uuid,
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
-			dcp.order_info_uuid,
-			CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')),
+			dcp.order_description_uuid,
+			vod.order_number,
+			vod.item_description,
 			dcp.mc_no,
 			dcp.cavity_goods,
 			dcp.cavity_defect,
@@ -89,7 +90,6 @@ export async function selectAll(req, res, next) {
 			dcp.cavity_goods * dcp.push AS production_quantity,
 			dcp.weight,
 			(dcp.cavity_goods * dcp.push) / dcp.weight AS pcs_per_kg,
-			dcp.order_info_uuid,
 			dcp.created_by,
 			users.name AS created_by_name,
 			dcp.created_at,
@@ -102,7 +102,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN
-			zipper.order_info ON order_info.uuid = dcp.order_info_uuid
+			zipper.v_order_details vod ON vod.order_description_uuid = dcp.order_description_uuid
 		ORDER BY
 			dcp.created_at DESC
 		`;
@@ -131,8 +131,9 @@ export async function select(req, res, next) {
 			dcp.uuid,
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
-			dcp.order_info_uuid,
-			CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')),
+			dcp.order_description_uuid,
+			vod.order_number,
+			vod.item_description,
 			dcp.mc_no,
 			dcp.cavity_goods,
 			dcp.cavity_defect,
@@ -140,7 +141,6 @@ export async function select(req, res, next) {
 			dcp.cavity_goods * dcp.push AS production_quantity,
 			dcp.weight,
 			(dcp.cavity_goods * dcp.push) / dcp.weight AS pcs_per_kg,
-			dcp.order_info_uuid,
 			dcp.created_by,
 			users.name AS created_by_name,
 			dcp.created_at,
@@ -153,7 +153,7 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN
-			zipper.order_info ON order_info.uuid = dcp.order_info_uuid
+			zipper.v_order_details vod ON vod.order_description_uuid = dcp.order_description_uuid
 		WHERE dcp.uuid = ${req.params.uuid}
 		`;
 
