@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as buyerOperations from './query/buyer.js';
 import * as factoryOperations from './query/factory.js';
+import * as machineOperations from './query/machine.js';
 import * as marketingOperations from './query/marketing.js';
 import * as merchandiserOperations from './query/merchandiser.js';
 import * as partyOperations from './query/party.js';

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as machineOperations from '../public/query/machine.js/index.js';
+import * as machineOperations from '../public/query/machine.js';
 import * as batchOperations from './query/batch.js';
 import * as batch_entryOperations from './query/batch_entry.js';
 import * as count_lengthOperations from './query/count_length.js';
