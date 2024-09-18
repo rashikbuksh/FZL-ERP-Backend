@@ -155,6 +155,7 @@ export const die_casting_transaction = slider.table('die_casting_transaction', {
 	stock_uuid: defaultUUID('stock_uuid')
 		.references(() => stock.uuid)
 		.default(null),
+	section: text('section').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
@@ -201,6 +202,7 @@ export const trx_against_stock = slider.table('trx_against_stock', {
 	die_casting_uuid: defaultUUID('die_casting_uuid').references(
 		() => die_casting.uuid
 	),
+	section: text('section').notNull(),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
