@@ -138,7 +138,7 @@ export async function selectAll(req, res, next) {
 			production.with_link,
 			CAST(
 				CASE 
-					WHEN with_link = 1
+					WHEN production.with_link = 1
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),
@@ -243,7 +243,7 @@ export async function select(req, res, next) {
 			production.with_link,
 			CAST(
 				CASE 
-					WHEN with_link = 1
+					WHEN production.with_link = 1
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),
