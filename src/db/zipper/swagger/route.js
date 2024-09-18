@@ -20,6 +20,7 @@ const order_info_extra_schema = SE.response_schema(200, {
 	is_sample: SE.number(0),
 	is_bill: SE.number(0),
 	is_cash: SE.number(0),
+	conversion_rate: SE.number(0),
 	marketing_priority: SE.string('Urgent'),
 	factory_priority: SE.string('FIFO'),
 	status: SE.number(0),
@@ -180,6 +181,9 @@ const order_description_fields = {
 	teeth_color: SE.uuid(),
 	teeth_color_name: SE.string('Black'),
 	teeth_color_short_name: SE.string('B'),
+	teeth_type: SE.uuid(),
+	teeth_type_name: SE.string('Standard'),
+	teeth_type_short_name: SE.string('S'),
 	puller_color: SE.uuid(),
 	puller_color_name: SE.string('Black'),
 	puller_color_short_name: SE.string('B'),
@@ -245,6 +249,7 @@ const order_description_merge_schema_fields = {
 	lock_type: SE.uuid(),
 	puller_type: SE.uuid(),
 	teeth_color: SE.uuid(),
+	teeth_type: SE.uuid(),
 	puller_color: SE.uuid(),
 	special_requirement: SE.string(
 		'{"values":"{\\"values\\":[\\"v3c2emB4mU1LV6j\\"]}"}'
@@ -332,6 +337,7 @@ export const pathZipperOrderDescription = {
 				puller_type: SE.uuid(),
 				teeth_color: SE.uuid(),
 				puller_color: SE.uuid(),
+				teeth_type: SE.uuid(),
 				special_requirement: SE.string(
 					'{"values":"{\\"values\\":[\\"v3c2emB4mU1LV6j\\"]}"}'
 				),

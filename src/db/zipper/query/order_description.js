@@ -28,6 +28,10 @@ const teethColorProperties = alias(
 	publicSchema.properties,
 	'teethColorProperties'
 );
+const teethTypeProperties = alias(
+	publicSchema.properties,
+	'teethTypeProperties'
+);
 const pullerColorProperties = alias(
 	publicSchema.properties,
 	'pullerColorProperties'
@@ -84,6 +88,7 @@ export async function insert(req, res, next) {
 		puller_type,
 		tape_color,
 		teeth_color,
+		teeth_type,
 		puller_color,
 		special_requirement,
 		hand,
@@ -124,6 +129,7 @@ export async function insert(req, res, next) {
 			puller_type,
 			tape_color,
 			teeth_color,
+			teeth_type,
 			puller_color,
 			special_requirement,
 			hand,
@@ -179,6 +185,7 @@ export async function update(req, res, next) {
 		puller_type,
 		tape_color,
 		teeth_color,
+		teeth_type,
 		puller_color,
 		special_requirement,
 		hand,
@@ -219,6 +226,7 @@ export async function update(req, res, next) {
 			puller_type,
 			tape_color,
 			teeth_color,
+			teeth_type,
 			puller_color,
 			special_requirement,
 			hand,
@@ -316,6 +324,9 @@ export async function selectAll(req, res, next) {
 			teeth_color: order_description.teeth_color,
 			teeth_color_name: teethColorProperties.name,
 			teeth_color_short_name: teethColorProperties.short_name,
+			teeth_type: order_description.teeth_type,
+			teeth_type_name: teethTypeProperties.name,
+			teeth_type_short_name: teethTypeProperties.short_name,
 			puller_color: order_description.puller_color,
 			puller_color_name: pullerColorProperties.name,
 			puller_color_short_name: pullerColorProperties.short_name,
@@ -521,6 +532,9 @@ export async function select(req, res, next) {
 			teeth_color: order_description.teeth_color,
 			teeth_color_name: teethColorProperties.name,
 			teeth_color_short_name: teethColorProperties.short_name,
+			teeth_type: order_description.teeth_type,
+			teeth_type_name: teethTypeProperties.name,
+			teeth_type_short_name: teethTypeProperties.short_name,
 			puller_color: order_description.puller_color,
 			puller_color_name: pullerColorProperties.name,
 			puller_color_short_name: pullerColorProperties.short_name,

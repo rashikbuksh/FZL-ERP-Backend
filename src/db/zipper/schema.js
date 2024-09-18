@@ -63,6 +63,7 @@ export const order_info = zipper.table('order_info', {
 	is_sample: integer('is_sample').default(0),
 	is_bill: integer('is_bill').default(0),
 	is_cash: integer('is_cash').default(0),
+	conversion_rate: PG_DECIMAL('conversion_rate').default(0.0),
 	marketing_priority: text('marketing_priority').default(null),
 	factory_priority: text('factory_priority').default(null),
 	status: integer('status').notNull().default(0),
@@ -102,6 +103,9 @@ export const order_description = zipper.table('order_description', {
 		() => publicSchema.properties.uuid
 	),
 	teeth_color: defaultUUID('teeth_color').references(
+		() => publicSchema.properties.uuid
+	),
+	teeth_type: defaultUUID('teeth_type').references(
 		() => publicSchema.properties.uuid
 	),
 	puller_color: defaultUUID('puller_color').references(
