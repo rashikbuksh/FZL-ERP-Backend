@@ -9,6 +9,7 @@ export const defThreadCountLength = {
 		'sst',
 		'min_weight',
 		'max_weight',
+		'price',
 		'created_by',
 		'created_at',
 	],
@@ -35,6 +36,10 @@ export const defThreadCountLength = {
 			example: 10.0,
 		},
 		max_weight: {
+			type: 'number',
+			example: 10.0,
+		},
+		price: {
 			type: 'number',
 			example: 10.0,
 		},
