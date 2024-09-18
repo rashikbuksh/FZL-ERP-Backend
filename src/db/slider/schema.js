@@ -223,6 +223,7 @@ export const production = slider.table('production', {
 		scale: 4,
 	}).notNull(),
 	section: text('section'),
+	with_link: integer('with_link').default(1),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
