@@ -6,8 +6,9 @@ export const defThreadCountLength = {
 		'uuid',
 		'count',
 		'length',
-		'weight',
 		'sst',
+		'min_weight',
+		'max_weight',
 		'created_by',
 		'created_at',
 	],
@@ -18,20 +19,24 @@ export const defThreadCountLength = {
 			example: 'igD0v9DIJQhJeet',
 		},
 		count: {
-			type: 'number',
+			type: 'string',
 			example: 10.0,
 		},
 		length: {
 			type: 'number',
 			example: 10.0,
 		},
-		weight: {
-			type: 'number',
-			example: 10.0,
-		},
 		sst: {
 			type: 'string',
 			example: 'SST',
+		},
+		min_weight: {
+			type: 'number',
+			example: 10.0,
+		},
+		max_weight: {
+			type: 'number',
+			example: 10.0,
 		},
 		created_by: {
 			type: 'string',

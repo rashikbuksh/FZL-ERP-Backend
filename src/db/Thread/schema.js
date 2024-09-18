@@ -27,10 +27,11 @@ export const count_length = thread.table(
 	'count_length',
 	{
 		uuid: defaultUUID('uuid'),
-		count: numeric('count').notNull(),
-		length: text('length').notNull(),
-		weight: PG_DECIMAL('weight').notNull(),
+		count: text('count').notNull(),
+		length: numeric('length').notNull(),
 		sst: text('sst').notNull(),
+		min_weight: PG_DECIMAL('min_weight').notNull(),
+		max_weight: PG_DECIMAL('max_weight').notNull(),
 		created_by: defaultUUID('created_by')
 			.notNull()
 			.references(() => hrSchema.users.uuid),
