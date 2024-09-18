@@ -346,7 +346,7 @@ export async function selectProductionBySection(req, res, next) {
 			stock.coloring_stock + production.production_quantity as max_coloring_quantity,
 			CAST(
 				CASE 
-					WHEN with_link = 1
+					WHEN production.with_link = 1
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),
