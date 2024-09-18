@@ -20,6 +20,7 @@ const order_info_extra_schema = SE.response_schema(200, {
 	is_sample: SE.number(0),
 	is_bill: SE.number(0),
 	is_cash: SE.number(0),
+	conversion_rate: SE.number(0),
 	marketing_priority: SE.string('Urgent'),
 	factory_priority: SE.string('FIFO'),
 	status: SE.number(0),
