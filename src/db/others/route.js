@@ -102,6 +102,10 @@ otherRouter.get(
 	'/slider/stock-with-order-description/value/label',
 	otherOperations.selectSliderStockWithOrderDescription
 );
+otherRouter.get(
+	'/slider/die-casting/by-type/:type',
+	otherOperations.selectDieCastingUsingType
+);
 
 // * Thread
 
@@ -1158,6 +1162,31 @@ const pathThread = {
 										type: 'string',
 										example: 'category 1',
 									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/slider/die-casting/by-type/{type}': {
+		get: {
+			tags: ['others'],
+			summary: 'get all die casting',
+			description: 'All die casting',
+			operationId: 'getAllDieCasting',
+			parameters: [SE.parameter_params('type', 'type', 'string', 'body')],
+			responses: {
+				200: {
+					description: 'Returns a all die casting.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('Die Casting 1'),
 								},
 							},
 						},

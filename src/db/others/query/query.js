@@ -880,6 +880,37 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
 	}
 }
 
+// die casting using type
+
+export async function selectDieCastingUsingType(req, res, next) {
+	const { type } = req.params;
+
+	const query = sql`
+	SELECT
+		die_casting.uuid AS value,
+		die_casting.name as label
+	FROM
+		slider.die_casting
+	WHERE
+		die_casting.type = ${type};`;
+
+	const namePromise = db.execute(query);
+
+	try {
+		const data = await namePromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Name list from Die Casting',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 // * Thread *//
 
 // Count Length

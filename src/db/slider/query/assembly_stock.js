@@ -1,4 +1,5 @@
 import { desc, eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
 	handleResponse,
@@ -6,7 +7,12 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { assembly_stock } from '../schema.js';
+import { assembly_stock, die_casting } from '../schema.js';
+
+const DieCastingBody = alias(die_casting, 'DieCastingBody');
+const DieCastingPuller = alias(die_casting, 'DieCastingPuller');
+const DieCastingCap = alias(die_casting, 'DieCastingCap');
+const DieCastingLink = alias(die_casting, 'DieCastingLink');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -76,9 +82,13 @@ export async function selectAll(req, res, next) {
 			uuid: assembly_stock.uuid,
 			name: assembly_stock.name,
 			die_casting_body_uuid: assembly_stock.die_casting_body_uuid,
+			die_casting_body_name: DieCastingBody.name,
 			die_casting_puller_uuid: assembly_stock.die_casting_puller_uuid,
+			die_casting_puller_name: DieCastingPuller.name,
 			die_casting_cap_uuid: assembly_stock.die_casting_cap_uuid,
+			die_casting_cap_name: DieCastingCap.name,
 			die_casting_link_uuid: assembly_stock.die_casting_link_uuid,
+			die_casting_link_name: DieCastingLink.name,
 			quantity: assembly_stock.quantity,
 			created_by: assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,
