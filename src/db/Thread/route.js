@@ -1,21 +1,14 @@
 import { Router } from 'express';
+import * as machineOperations from '../public/query/machine.js/index.js';
 import * as batchOperations from './query/batch.js';
 import * as batch_entryOperations from './query/batch_entry.js';
 import * as count_lengthOperations from './query/count_length.js';
 import * as dyes_categoryOperations from './query/dyes_category.js';
-import * as machineOperations from './query/machine.js';
 import * as order_entryOperations from './query/order_entry.js';
 import * as order_infoOperations from './query/order_info.js';
 import * as programsOperations from './query/programs.js';
 
 const threadRouter = Router();
-
-// machine routes
-threadRouter.get('/machine', machineOperations.selectAll);
-threadRouter.get('/machine/:uuid', machineOperations.select);
-threadRouter.post('/machine', machineOperations.insert);
-threadRouter.put('/machine/:uuid', machineOperations.update);
-threadRouter.delete('/machine/:uuid', machineOperations.remove);
 
 // count_length routes
 threadRouter.get('/count-length', count_lengthOperations.selectAll);

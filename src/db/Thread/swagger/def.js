@@ -1,50 +1,5 @@
 import SE, { SED } from '../../../util/swagger_example.js';
 
-export const defThreadMachine = {
-	type: 'object',
-	required: ['uuid', 'name', 'capacity', 'created_by', 'created_at'],
-
-	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'Machine Name',
-		},
-		capacity: {
-			type: 'number',
-			example: 10.0,
-		},
-		water_capacity: {
-			type: 'number',
-			example: 10.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
-	},
-	xml: {
-		name: 'Thread/Machine',
-	},
-};
-
 export const defThreadCountLength = {
 	type: 'object',
 	required: [
@@ -586,7 +541,6 @@ export const defThreadPrograms = {
 // * Marge All
 
 export const defThread = {
-	machine: defThreadMachine,
 	count_length: defThreadCountLength,
 	order_info: defThreadOrderInfo,
 	order_entry: defThreadOrderEntry,
@@ -598,10 +552,6 @@ export const defThread = {
 
 // * Tag
 export const tagThread = [
-	{
-		name: 'thread.machine',
-		description: 'Thread Machine',
-	},
 	{
 		name: 'thread.count_length',
 		description: 'Thread Count Length',

@@ -107,7 +107,7 @@ export function selectAll(req, res, next) {
 	});
 }
 
-export function select(req, res, next) {
+export async function select(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const policyAndNoticePromise = db
@@ -128,21 +128,21 @@ export function select(req, res, next) {
 		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid))
 		.where(eq(policy_and_notice.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Privacy and Notice',
-	};
+	try {
+		const data = await policyAndNoticePromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Privacy and Notice',
+		};
 
-	handleResponse({
-		promise: policyAndNoticePromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
-export function selectPolicy(req, res, next) {
+export async function selectPolicy(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const policyPromise = db
@@ -161,21 +161,21 @@ export function selectPolicy(req, res, next) {
 		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid))
 		.where(eq(policy_and_notice.type, 'policy'));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Policy',
-	};
+	try {
+		const data = await policyPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Privacy and Notice',
+		};
 
-	handleResponse({
-		promise: policyPromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
-export function selectNotice(req, res, next) {
+export async function selectNotice(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const noticePromise = db
@@ -194,16 +194,16 @@ export function selectNotice(req, res, next) {
 		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid))
 		.where(eq(policy_and_notice.type, 'notice'));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Notice',
-	};
+	try {
+		const data = await noticePromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Privacy and Notice',
+		};
 
-	handleResponse({
-		promise: noticePromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

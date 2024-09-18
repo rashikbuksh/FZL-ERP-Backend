@@ -13,6 +13,7 @@ import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
 import * as materialSchema from '../material/schema.js';
 import * as publicSchema from '../public/schema.js';
+import * as publicSchema from '../public/schema.js';
 import { material } from '../schema.js';
 import {
 	DateTime,
@@ -22,19 +23,6 @@ import {
 } from '../variables.js';
 
 export const thread = pgSchema('thread');
-
-export const machine = thread.table('machine', {
-	uuid: uuid_primary,
-	name: text('name').notNull(),
-	capacity: PG_DECIMAL('capacity').notNull(),
-	water_capacity: PG_DECIMAL('water_capacity').default(0),
-	created_by: defaultUUID('created_by')
-		.notNull()
-		.references(() => hrSchema.users.uuid),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});
 
 export const count_length = thread.table(
 	'count_length',
@@ -137,7 +125,9 @@ export const batch = thread.table('batch', {
 	id: integer('id')
 		.default(sql`nextval('thread.thread_batch_sequence')`)
 		.notNull(),
-	machine_uuid: defaultUUID('machine_uuid').references(() => machine.uuid),
+	machine_uuid: defaultUUID('machine_uuid').references(
+		() => publicSchema.machine.uuid
+	),
 	lab_created_by: defaultUUID('lab_created_by').references(
 		() => hrSchema.users.uuid
 	),

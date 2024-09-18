@@ -7,7 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { machine } from '../schema.js';
+import { machine } from '../../Thread/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -82,7 +82,14 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: machine.uuid,
 			name: machine.name,
-			capacity: machine.capacity,
+			is_vislon: machine.is_vislon,
+			is_nylon: machine.is_nylon,
+			is_metal: machine.is_metal,
+			is_sewing_thread: machine.is_sewing_thread,
+			is_bulk: machine.is_bulk,
+			is_sample: machine.is_sample,
+			max_capacity: machine.max_capacity,
+			min_capacity: machine.min_capacity,
 			water_capacity: machine.water_capacity,
 			created_by: machine.created_by,
 			created_by_name: hrSchema.users.name,
@@ -90,7 +97,6 @@ export async function selectAll(req, res, next) {
 			updated_at: machine.updated_at,
 			remarks: machine.remarks,
 		})
-
 		.from(machine)
 		.leftJoin(hrSchema.users, eq(machine.created_by, hrSchema.users.uuid));
 
@@ -108,7 +114,14 @@ export async function select(req, res, next) {
 		.select({
 			uuid: machine.uuid,
 			name: machine.name,
-			capacity: machine.capacity,
+			is_vislon: machine.is_vislon,
+			is_nylon: machine.is_nylon,
+			is_metal: machine.is_metal,
+			is_sewing_thread: machine.is_sewing_thread,
+			is_bulk: machine.is_bulk,
+			is_sample: machine.is_sample,
+			max_capacity: machine.max_capacity,
+			min_capacity: machine.min_capacity,
 			water_capacity: machine.water_capacity,
 			created_by: machine.created_by,
 			created_by_name: hrSchema.users.name,

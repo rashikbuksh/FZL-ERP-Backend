@@ -1122,6 +1122,136 @@ const pathPublicSection = {
 	},
 };
 
+export const publicMachine = {
+	'/public/machine': {
+		get: {
+			summary: 'Get all sections',
+			tags: ['public.machine'],
+			operationId: 'getSections',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/public/machine',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			summary: 'Create a machine',
+			tags: ['public.machine'],
+			operationId: 'createSection',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public/machine',
+						},
+					},
+				},
+			},
+			responses: {
+				201: {
+					description: 'Created',
+				},
+			},
+		},
+	},
+	'/public/machine/{uuid}': {
+		get: {
+			summary: 'Get a machine',
+			tags: ['public.machine'],
+			operationId: 'getSection',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					description: 'uuid of the machine',
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/public/machine',
+							},
+						},
+					},
+				},
+			},
+		},
+		put: {
+			summary: 'Update a machine',
+			tags: ['public.machine'],
+			operationId: 'updatemachine',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					description: 'uuid of the section',
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public/machine',
+						},
+					},
+				},
+			},
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+		delete: {
+			summary: 'Delete a machine',
+			tags: ['public.machine'],
+			operationId: 'deleteSection',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					description: 'uuid of the machine',
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
+};
+
 export const pathPublic = {
 	...pathPublicBuyer,
 	...pathPublicFactory,
@@ -1130,4 +1260,5 @@ export const pathPublic = {
 	...pathPublicParty,
 	...pathPublicProperties,
 	...pathPublicSection,
+	...publicMachine,
 };

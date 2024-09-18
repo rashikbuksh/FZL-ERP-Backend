@@ -1,5 +1,10 @@
-import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
+import { integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import {
+	DateTime,
+	defaultUUID,
+	PG_DECIMAL,
+	uuid_primary,
+} from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
 
@@ -73,6 +78,26 @@ export const properties = pgTable('properties', {
 	name: text('name').notNull(),
 	short_name: text('short_name').notNull(),
 	created_by: defaultUUID('created_by'),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const machine = pgTable('machine', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	is_vislon: integer('is_vislon').default(0),
+	is_metal: integer('is_metal').default(0),
+	is_nylon: integer('is_nylon').default(0),
+	is_sewing_thread: integer('is_sewing_thread').default(0),
+	is_bulk: integer('is_bulk').default(0),
+	is_sample: integer('is_sample').default(0),
+	min_capacity: PG_DECIMAL('min_capacity').notNull(),
+	max_capacity: PG_DECIMAL('max_capacity').notNull(),
+	water_capacity: PG_DECIMAL('water_capacity').default(0),
+	created_by: defaultUUID('created_by')
+		.notNull()
+		.references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

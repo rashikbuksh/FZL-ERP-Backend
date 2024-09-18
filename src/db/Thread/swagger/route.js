@@ -1,92 +1,6 @@
 // * Thread Machine * //
 import SE from '../../../util/swagger_example.js';
 
-export const pathThreadMachine = {
-	'/thread/machine': {
-		get: {
-			tags: ['thread.machine'],
-			summary: 'Get all Thread Machine',
-			description: 'Get all Thread Machine',
-			responses: {
-				200: SE.response_schema(200, {
-					uuid: SE.uuid(),
-					name: SE.string('Machine Name'),
-					capacity: SE.number(10.0),
-					water_capacity: SE.number(10.0),
-					created_by: SE.uuid(),
-					created_by_name: SE.string('John Doe'),
-					created_at: SE.date_time(),
-					updated_at: SE.date_time(),
-					remarks: SE.string('Remarks'),
-				}),
-			},
-		},
-
-		post: {
-			tags: ['thread.machine'],
-			summary: 'Create Thread Machine',
-			description: 'Create Thread Machine',
-			requestBody: SE.requestBody_schema_ref('thread/machine'),
-			responses: {
-				201: SE.response_schema_ref(201, 'thread/machine'),
-			},
-		},
-	},
-	'/thread/machine/{uuid}': {
-		get: {
-			tags: ['thread.machine'],
-			summary: 'Get Thread Machine',
-			description: 'Get Thread Machine',
-			parameters: [
-				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
-			],
-			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							properties: {
-								uuid: SE.uuid(),
-								name: SE.string('Machine Name'),
-								capacity: SE.number(10.0),
-								water_capacity: SE.number(10.0),
-								created_by: SE.uuid(),
-								created_by_name: SE.string('John Doe'),
-								created_at: SE.date_time(),
-								updated_at: SE.date_time(),
-								remarks: SE.string('Remarks'),
-							},
-						},
-					},
-				},
-			},
-		},
-		put: {
-			tags: ['thread.machine'],
-			summary: 'Update Thread Machine',
-			description: 'Update Thread Machine',
-			parameters: [
-				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
-			],
-			requestBody: SE.requestBody_schema_ref('thread/machine'),
-			responses: {
-				201: SE.response_schema_ref(201, 'thread/machine'),
-			},
-		},
-		delete: {
-			tags: ['thread.machine'],
-			summary: 'Delete Thread Machine',
-			description: 'Delete Thread Machine',
-			parameters: [
-				SE.parameter_params('uuid', 'uuid', 'uuid', 'igD0v9DIJQhJeet'),
-			],
-			responses: {
-				200: SE.response(200),
-			},
-		},
-	},
-};
-
 // * Thread Count Length * //
 
 export const pathThreadCountLength = {
@@ -827,7 +741,6 @@ export const pathThreadPrograms = {
 // * Thread * //
 
 export const pathThread = {
-	...pathThreadMachine,
 	...pathThreadCountLength,
 	...pathThreadOrderInfo,
 	...pathThreadOrderEntry,

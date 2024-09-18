@@ -95,6 +95,86 @@ export const defPublicProperties = SED({
 	xml: 'Public/Properties',
 });
 
+export const defThreadMachine = {
+	type: 'object',
+	required: [
+		'uuid',
+		'name',
+		'max_capacity',
+		'min_capacity',
+		'created_by',
+		'created_at',
+	],
+
+	properties: {
+		uuid: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		name: {
+			type: 'string',
+			example: 'Machine Name',
+		},
+		is_nylon: {
+			type: 'number',
+			example: 1,
+		},
+		is_metal: {
+			type: 'number',
+			example: 1,
+		},
+		is_vislon: {
+			type: 'number',
+			example: 1,
+		},
+		is_sewing_thread: {
+			type: 'number',
+			example: 1,
+		},
+		is_bulk: {
+			type: 'number',
+			example: 1,
+		},
+		is_sample: {
+			type: 'number',
+			example: 1,
+		},
+		max_capacity: {
+			type: 'number',
+			example: 10.0,
+		},
+		min_capacity: {
+			type: 'number',
+			example: 10.0,
+		},
+		water_capacity: {
+			type: 'number',
+			example: 10.0,
+		},
+		created_by: {
+			type: 'string',
+			example: 'igD0v9DIJQhJeet',
+		},
+		created_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		updated_at: {
+			type: 'string',
+			format: 'date-time',
+			example: '2024-01-01 00:00:00',
+		},
+		remarks: {
+			type: 'string',
+			example: 'Remarks',
+		},
+	},
+	xml: {
+		name: 'Thread/Machine',
+	},
+};
+
 // * Marge All
 export const defPublic = {
 	buyer: defPublicBuyer,
@@ -109,45 +189,35 @@ export const defPublic = {
 // * Tag
 export const tagPublic = [
 	{
-		'public.buyer': {
-			name: 'buyer',
-			description: 'buyer',
-		},
+		name: 'public.buyer',
+		description: 'buyer',
 	},
 	{
-		'public.party': {
-			name: 'party',
-			description: 'party',
-		},
+		name: 'public.party',
+		description: 'party',
 	},
 	{
-		'public.marketing': {
-			name: 'marketing',
-			description: 'marketing',
-		},
+		name: 'public.marketing',
+		description: 'marketing',
 	},
 	{
-		'public.merchandiser': {
-			name: 'merchandiser',
-			description: 'merchandiser',
-		},
+		name: 'public.merchandiser',
+		description: 'merchandiser',
 	},
 	{
-		'public.factory': {
-			name: 'factory',
-			description: 'factory',
-		},
+		name: 'public.factory',
+		description: 'factory',
 	},
 	{
-		'public.section': {
-			name: 'section',
-			description: 'section',
-		},
+		name: 'public.section',
+		description: 'section',
 	},
 	{
-		'public.properties': {
-			name: 'properties',
-			description: 'properties',
-		},
+		name: 'public.properties',
+		description: 'properties',
+	},
+	{
+		name: 'public.machine',
+		description: 'Thread Machine',
 	},
 ];

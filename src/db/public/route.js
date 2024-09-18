@@ -106,4 +106,11 @@ publicRouter.delete(
 	sectionOperations.remove
 );
 
+// machine routes
+publicRouter.get('/machine', machineOperations.selectAll);
+publicRouter.get('/machine/:uuid', machineOperations.select);
+publicRouter.post('/machine', machineOperations.insert);
+publicRouter.put('/machine/:uuid', machineOperations.update);
+publicRouter.delete('/machine/:uuid', machineOperations.remove);
+
 export { publicRouter };
