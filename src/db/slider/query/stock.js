@@ -351,20 +351,7 @@ export async function selectStockByFromSection(req, res, next) {
             transaction.from_section = ${from_section}
         GROUP BY
             stock.uuid
-    ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
-	 LEFT JOIN (
-	 	SELECT 
-			DISTINCT stock.uuid AS stock_uuid,
-			SUM(production.production_quantity),
-			production.with_link
-			FROM 
-				slider.production
-			LEFT JOIN
-				slider.stock ON production.stock_uuid = stock.uuid
-			WHERE
-				production.section = ${from_section}
-			GROUP BY stock.uuid,production.with_link,production.production_quantity
-	 ) AS slider_production_done ON stock.uuid = slider_production_done.stock_uuid;`;
+    ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid;`;
 
 	try {
 		const data = await db.execute(query);
