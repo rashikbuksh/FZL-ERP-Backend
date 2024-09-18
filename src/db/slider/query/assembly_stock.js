@@ -100,6 +100,23 @@ export async function selectAll(req, res, next) {
 			hrSchema.users,
 			eq(assembly_stock.created_by, hrSchema.users.uuid)
 		)
+		.leftJoin(
+			DieCastingBody,
+			eq(assembly_stock.die_casting_body_uuid, DieCastingBody.uuid)
+		)
+		.leftJoin(
+			DieCastingPuller,
+			eq(assembly_stock.die_casting_puller_uuid, DieCastingPuller.uuid)
+		)
+		.leftJoin(
+			DieCastingCap,
+			eq(assembly_stock.die_casting_cap_uuid, DieCastingCap.uuid)
+		)
+		.leftJoin(
+			DieCastingLink,
+			eq(assembly_stock.die_casting_link_uuid, DieCastingLink.uuid)
+		)
+
 		.orderBy(desc(assembly_stock.created_at));
 
 	try {
@@ -135,6 +152,22 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(assembly_stock.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			DieCastingBody,
+			eq(assembly_stock.die_casting_body_uuid, DieCastingBody.uuid)
+		)
+		.leftJoin(
+			DieCastingPuller,
+			eq(assembly_stock.die_casting_puller_uuid, DieCastingPuller.uuid)
+		)
+		.leftJoin(
+			DieCastingCap,
+			eq(assembly_stock.die_casting_cap_uuid, DieCastingCap.uuid)
+		)
+		.leftJoin(
+			DieCastingLink,
+			eq(assembly_stock.die_casting_link_uuid, DieCastingLink.uuid)
 		)
 		.where(eq(assembly_stock.uuid, req.params.uuid))
 		.returning({ selectedId: assembly_stock.uuid });
