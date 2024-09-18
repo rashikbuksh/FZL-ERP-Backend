@@ -27,6 +27,27 @@ const pullerTypeProperties = alias(
 );
 
 //* public
+export async function selectMachine(req, res, next) {
+	const machinePromise = db
+		.select({
+			value: publicSchema.machine.uuid,
+			label: publicSchema.machine.name,
+		})
+		.from(publicSchema.machine);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Machine list',
+	};
+	handleResponse({
+		promise: machinePromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
 export async function selectParty(req, res, next) {
 	const partyPromise = db
 		.select({
@@ -906,28 +927,6 @@ export async function selectBatchId(req, res, next) {
 
 	handleResponse({
 		promise: batchIdPromise,
-		res,
-		next,
-		...toast,
-	});
-}
-
-//  Machine
-export async function selectMachine(req, res, next) {
-	const machinePromise = db
-		.select({
-			value: threadSchema.machine.uuid,
-			label: threadSchema.machine.name,
-		})
-		.from(threadSchema.machine);
-
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Machine list',
-	};
-	handleResponse({
-		promise: machinePromise,
 		res,
 		next,
 		...toast,

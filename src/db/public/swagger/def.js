@@ -95,7 +95,7 @@ export const defPublicProperties = SED({
 	xml: 'Public/Properties',
 });
 
-export const defThreadMachine = {
+export const defMachine = {
 	type: 'object',
 	required: [
 		'uuid',
@@ -171,7 +171,7 @@ export const defThreadMachine = {
 		},
 	},
 	xml: {
-		name: 'Thread/Machine',
+		name: 'Public/Machine',
 	},
 };
 
@@ -184,6 +184,7 @@ export const defPublic = {
 	factory: defPublicFactory,
 	section: defPublicSection,
 	properties: defPublicProperties,
+	machine: defMachine,
 };
 
 // * Tag
@@ -218,6 +219,6 @@ export const tagPublic = [
 	},
 	{
 		name: 'public.machine',
-		description: 'Thread Machine',
+		description: 'Machine',
 	},
 ];

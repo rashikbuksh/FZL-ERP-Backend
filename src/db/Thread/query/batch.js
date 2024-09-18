@@ -8,7 +8,8 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { batch, machine } from '../schema.js';
+import * as publicSchema from '../../public/schema.js';
+import { batch } from '../schema.js';
 
 const labCreated = alias(hrSchema.users, 'labCreated');
 const yarnIssueCreated = alias(hrSchema.users, 'yarnIssueCreated');
@@ -102,7 +103,7 @@ export async function selectAll(req, res, next) {
 			id: batch.id,
 			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			machine_uuid: batch.machine_uuid,
-			machine_name: machine.name,
+			machine_name: publicSchema.machine.name,
 			lab_created_by: batch.lab_created_by,
 			lab_created_by_name: labCreated.name,
 			lab_created_at: batch.lab_created_at,
@@ -144,7 +145,10 @@ export async function selectAll(req, res, next) {
 		})
 		.from(batch)
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
-		.leftJoin(machine, eq(batch.machine_uuid, machine.uuid))
+		.leftJoin(
+			publicSchema.machine,
+			eq(batch.machine_uuid, publicSchema.machine.uuid)
+		)
 		.leftJoin(labCreated, eq(batch.lab_created_by, labCreated.uuid))
 		.leftJoin(
 			yarnIssueCreated,
