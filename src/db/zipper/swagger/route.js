@@ -2078,11 +2078,11 @@ export const pathZipperTapeCoilProduction = {
 };
 
 // * Zipper Tape To Coil * //
-export const pathZipperTapeToCoil = {
-	'/zipper/tape-to-coil': {
+export const pathZipperTapeTrx = {
+	'/zipper/tape-trx': {
 		get: {
-			tags: ['zipper.tape_to_coil'],
-			summary: 'Get all Tape To Coil',
+			tags: ['zipper.tape_trx'],
+			summary: 'Get all Tape Trx',
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -2104,29 +2104,29 @@ export const pathZipperTapeToCoil = {
 			},
 		},
 		post: {
-			tags: ['zipper.tape_to_coil'],
-			summary: 'create a tape to coil',
+			tags: ['zipper.tape_trx'],
+			summary: 'create a tape trx',
 			description: '',
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: SE.requestBody_schema_ref('zipper/tape_to_coil'),
+			requestBody: SE.requestBody_schema_ref('zipper/tape_trx'),
 			responses: {
-				200: SE.response_schema_ref(200, 'zipper/tape_to_coil'),
+				200: SE.response_schema_ref(200, 'zipper/tape_trx'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 	},
-	'/zipper/tape-to-coil/{uuid}': {
+	'/zipper/tape-trx/{uuid}': {
 		get: {
-			tags: ['zipper.tape_to_coil'],
-			summary: 'Gets a Tape To Coil',
+			tags: ['zipper.tape_trx'],
+			summary: 'Gets a Tape Trx',
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_params('tape to coil to get', 'uuid')],
+			parameters: [SE.parameter_params('tape trx to get', 'uuid')],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -2148,28 +2148,28 @@ export const pathZipperTapeToCoil = {
 			},
 		},
 		put: {
-			tags: ['zipper.tape_to_coil'],
-			summary: 'Update an existing tape to coil',
+			tags: ['zipper.tape_trx'],
+			summary: 'Update an existing tape trx',
 			description: '',
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [SE.parameter_params('tape to coil to update', 'uuid')],
-			requestBody: SE.requestBody_schema_ref('zipper/tape_to_coil'),
+			parameters: [SE.parameter_params('tape trx to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('zipper/tape_trx'),
 			responses: {
-				200: SE.response_schema_ref(200, 'zipper/tape_to_coil'),
+				200: SE.response_schema_ref(200, 'zipper/tape_trx'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 		delete: {
-			tags: ['zipper.tape_to_coil'],
-			summary: 'Deletes a tape to coil',
+			tags: ['zipper.tape_trx'],
+			summary: 'Deletes a tape trx',
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_params('tape to coil to delete', 'uuid')],
+			parameters: [SE.parameter_params('tape trx to delete', 'uuid')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -3095,7 +3095,7 @@ export const pathZipper = {
 	...pathZipperDyingBatchEntry,
 	...pathZipperTapeCoil,
 	...pathZipperTapeCoilProduction,
-	...pathZipperTapeToCoil,
+	...pathZipperTapeTrx,
 	...pathZipperTapeCoilRequired,
 	...pathZipperPlanning,
 	...pathZipperPlanningEntry,

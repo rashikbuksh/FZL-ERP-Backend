@@ -1,5 +1,5 @@
 
-CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_to_coil_insert() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_trx_insert() RETURNS TRIGGER AS $$
 BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
@@ -16,7 +16,7 @@ RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_to_coil_delete() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_trx_delete() RETURNS TRIGGER AS $$
 BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
@@ -33,7 +33,7 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_to_coil_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_trx_update() RETURNS TRIGGER AS $$
 BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
@@ -51,20 +51,20 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tape_coil_after_tape_to_coil_insert
-AFTER INSERT ON zipper.tape_to_coil
+CREATE TRIGGER tape_coil_after_tape_trx_insert
+AFTER INSERT ON zipper.tape_trx
 FOR EACH ROW
-EXECUTE FUNCTION zipper.tape_coil_after_tape_to_coil_insert();
+EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_insert();
 
-CREATE TRIGGER tape_coil_after_tape_to_coil_delete
-AFTER DELETE ON zipper.tape_to_coil
+CREATE TRIGGER tape_coil_after_tape_trx_delete
+AFTER DELETE ON zipper.tape_trx
 FOR EACH ROW
-EXECUTE FUNCTION zipper.tape_coil_after_tape_to_coil_delete();
+EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_delete();
 
-CREATE TRIGGER tape_coil_after_tape_to_coil_update
-AFTER UPDATE ON zipper.tape_to_coil
+CREATE TRIGGER tape_coil_after_tape_trx_update
+AFTER UPDATE ON zipper.tape_trx
 FOR EACH ROW
-EXECUTE FUNCTION zipper.tape_coil_after_tape_to_coil_update();
+EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_update();
 
 
 CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_coil_production() RETURNS TRIGGER AS $$

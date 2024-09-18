@@ -425,7 +425,7 @@ export const tape_coil = zipper.table('tape_coil', {
 	remarks: text('remarks').default(null),
 });
 
-export const tape_to_coil = zipper.table('tape_to_coil', {
+export const tape_trx = zipper.table('tape_trx', {
 	uuid: uuid_primary,
 	tape_coil_uuid: defaultUUID('tape_coil_uuid').references(
 		() => tape_coil.uuid
