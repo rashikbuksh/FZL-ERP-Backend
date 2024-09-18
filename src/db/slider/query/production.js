@@ -135,6 +135,7 @@ export async function selectAll(req, res, next) {
 			stock.coloring_stock,
 			stock.coloring_prod,
 			stock.coloring_stock + production.production_quantity as max_coloring_quantity,
+			production.with_link,
 			CAST(
 				CASE 
 					WHEN with_link = 1
@@ -239,6 +240,7 @@ export async function select(req, res, next) {
 			stock.coloring_stock,
 			stock.coloring_prod,
 			stock.coloring_stock + production.production_quantity as max_coloring_quantity,
+			production.with_link,
 			CAST(
 				CASE 
 					WHEN with_link = 1
@@ -344,6 +346,7 @@ export async function selectProductionBySection(req, res, next) {
 			stock.coloring_stock,
 			stock.coloring_prod,
 			stock.coloring_stock + production.production_quantity as max_coloring_quantity,
+			production.with_link,
 			CAST(
 				CASE 
 					WHEN with_link = 1

@@ -10,8 +10,7 @@ BEGIN
                 cap_quantity = cap_quantity - NEW.production_quantity,
                 puller_quantity = puller_quantity - NEW.production_quantity,
                 link_quantity = link_quantity - CASE WHEN NEW.with_link = 1 THEN NEW.production_quantity ELSE 0 END
-            FROM zipper.v_order_details_full vodf
-            WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = NEW.stock_uuid;
+            WHERE stock.uuid = NEW.stock_uuid;
     END IF;
 
 -- Update slider.stock table for 'coloring' section
@@ -21,9 +20,13 @@ BEGIN
         UPDATE slider.stock
             SET
                 coloring_stock = coloring_stock - NEW.production_quantity,
+                link_quantity = link_quantity - NEW.production_quantity,
+                box_pin_quantity = box_pin_quantity - CASE WHEN lower(vodf.end_type_name) = 'open end' THEN NEW.production_quantity ELSE 0 END,
+                h_bottom_quantity = h_bottom_quantity - CASE WHEN lower(vodf.end_type_name) = 'close end' THEN NEW.production_quantity ELSE 0 END,
+                u_top_quantity = u_top_quantity - (2 * NEW.production_quantity),
                 coloring_prod = coloring_prod + NEW.production_quantity
-
-            WHERE uuid = NEW.stock_uuid;
+            FROM zipper.v_order_details_full vodf
+        WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = NEW.stock_uuid;
     END IF;
 
     RETURN NEW;
@@ -42,8 +45,7 @@ BEGIN
             cap_quantity = cap_quantity - NEW.production_quantity + OLD.production_quantity,
             puller_quantity = puller_quantity - NEW.production_quantity + OLD.production_quantity,
             link_quantity = link_quantity - CASE WHEN NEW.with_link = 1 THEN NEW.production_quantity ELSE 0 END + CASE WHEN OLD.with_link = 1 THEN OLD.production_quantity ELSE 0 END
-        FROM zipper.v_order_details_full vodf
-        WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = NEW.stock_uuid;
+        WHERE stock.uuid = NEW.stock_uuid;
     END IF;
 
     -- Update slider.stock table for 'coloring' section
@@ -51,8 +53,13 @@ BEGIN
         UPDATE slider.stock
         SET
             coloring_stock = coloring_stock - NEW.production_quantity + OLD.production_quantity,
+            link_quantity = link_quantity - NEW.production_quantity + OLD.production_quantity,
+            box_pin_quantity = box_pin_quantity - CASE WHEN lower(vodf.end_type_name) = 'open end' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END,
+            h_bottom_quantity = h_bottom_quantity - CASE WHEN lower(vodf.end_type_name) = 'close end' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END,
+            u_top_quantity = u_top_quantity - (2 * (NEW.production_quantity - OLD.production_quantity)),
             coloring_prod = coloring_prod + NEW.production_quantity - OLD.production_quantity
-        WHERE uuid = NEW.stock_uuid;
+            FROM zipper.v_order_details_full vodf
+        WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = NEW.stock_uuid;
     END IF;
 
     RETURN NEW;
@@ -80,8 +87,13 @@ BEGIN
         UPDATE slider.stock
         SET
             coloring_stock = coloring_stock + OLD.production_quantity,
+            link_quantity = link_quantity + OLD.production_quantity,
+            box_pin_quantity = box_pin_quantity + CASE WHEN lower(vodf.end_type_name) = 'open end' THEN OLD.production_quantity ELSE 0 END,
+            h_bottom_quantity = h_bottom_quantity + CASE WHEN lower(vodf.end_type_name) = 'close end' THEN OLD.production_quantity ELSE 0 END,
+            u_top_quantity = u_top_quantity + (2 * OLD.production_quantity),
             coloring_prod = coloring_prod - OLD.production_quantity
-        WHERE uuid = OLD.stock_uuid;
+        FROM zipper.v_order_details_full vodf
+        WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = OLD.stock_uuid;
     END IF;
 
     RETURN OLD;
