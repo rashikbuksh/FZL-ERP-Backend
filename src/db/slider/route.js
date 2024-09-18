@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import * as assemblyStockOperations from './query/assembly_stock.js';
 import * as coloringTransactionOperations from './query/coloring_transaction.js';
 import * as dieCastingOperations from './query/die_casting.js';
 import * as dieCastingProductionOperations from './query/die_casting_production.js';
@@ -7,6 +8,7 @@ import * as productionOperations from './query/production.js';
 import * as stockOperations from './query/stock.js';
 import * as transactionOperations from './query/transaction.js';
 import * as trxAgainstStockOperations from './query/trx_against_stock.js';
+import slider from './schema.js';
 
 const sliderRouter = Router();
 
@@ -33,6 +35,14 @@ sliderRouter.delete(
 
 	dieCastingOperations.remove
 );
+
+// --------------------- Assembly Stock ---------------------
+
+sliderRouter.get('/assembly-stock', assemblyStockOperations.selectAll);
+sliderRouter.get('/assembly-stock/:uuid', assemblyStockOperations.select);
+sliderRouter.post('/assembly-stock', assemblyStockOperations.insert);
+sliderRouter.put('/assembly-stock/:uuid', assemblyStockOperations.update);
+sliderRouter.delete('/assembly-stock/:uuid', assemblyStockOperations.remove);
 
 // --------------------- DIE CASTING PRODUCTION ROUTES ---------------------
 

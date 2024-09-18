@@ -1,7 +1,12 @@
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
+import {
+	DateTime,
+	defaultUUID,
+	PG_DECIMAL,
+	uuid_primary,
+} from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const slider = pgSchema('slider');
@@ -123,6 +128,21 @@ export const die_casting = slider.table('die_casting', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+});
+
+export const assembly_stock = slider.table('assembly_stock', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	die_casting_body_uuid: defaultUUID('die_casting_body_uuid'),
+	die_casting_puller_uuid: defaultUUID('die_casting_puller_uuid'),
+	die_casting_cap_uuid: defaultUUID('die_casting_cap_uuid'),
+	die_casting_link_uuid: defaultUUID('die_casting_link_uuid'),
+	quantity: PG_DECIMAL('quantity').default(0),
+	production_quantity: PG_DECIMAL('production_quantity').default(0),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
 });
 
 export const die_casting_production = slider.table('die_casting_production', {

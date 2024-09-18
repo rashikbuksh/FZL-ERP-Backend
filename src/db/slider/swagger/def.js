@@ -72,6 +72,33 @@ export const defDieCasting = SED({
 	},
 	xml: 'Slider/DieCasting',
 });
+
+export const defAssemblyStock = SED({
+	required: [
+		'uuid',
+		'name',
+		'die_casting_body_uuid',
+		'die_casting_puller_uuid',
+		'die_casting_cap_uuid',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		name: SE.string('die_casting 1'),
+		die_casting_body_uuid: SE.uuid(),
+		die_casting_puller_uuid: SE.uuid(),
+		die_casting_cap_uuid: SE.uuid(),
+		die_casting_link_uuid: SE.uuid(),
+		quantity: SE.uuid(),
+		production_quantity: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Slider/AssemblyStock',
+});
+
 export const defDieCastingProduction = SED({
 	required: [
 		'uuid',
@@ -232,6 +259,10 @@ export const tagSlider = [
 	{
 		name: 'slider.die_casting',
 		description: 'Die Casting',
+	},
+	{
+		name: 'slider.assembly_stock',
+		description: 'Assembly Stock',
 	},
 	{
 		name: 'slider.die_casting_production',

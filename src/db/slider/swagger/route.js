@@ -1,3 +1,4 @@
+import { response } from 'express';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Slider Stock * //
@@ -574,6 +575,93 @@ export const pathSliderDieCasting = {
 				404: {
 					description: 'Die casting not found',
 				},
+			},
+		},
+	},
+};
+
+// * Slider Die Casting Assembly Stock * //
+export const pathSliderAssemblyStock = {
+	'/slider/assembly-stock': {
+		get: {
+			tags: ['slider.assembly_stock'],
+			summary: 'Get all assembly stock',
+			responses: {
+				200: SE.response_schema_ref('slider/assembly_stock'),
+			},
+		},
+		post: {
+			tags: ['slider.assembly_stock'],
+			summary: 'create a assembly stock',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref('slider/assembly_stock'),
+			response: {
+				200: SE.response_schema_ref('slider/assembly_stock'),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/slider/assembly-stock/{uuid}': {
+		get: {
+			tags: ['slider.assembly_stock'],
+			summary: 'Gets a assembly stock',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_path(
+					'assembly_stock_uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref('slider/assembly_stock'),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['slider.assembly_stock'],
+			summary: 'Update an existing assembly stock',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_path(
+					'assembly_stock_uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
+			],
+			requestBody: SE.requestBody_schema_ref('slider/assembly_stock'),
+			responses: {
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['slider.assembly_stock'],
+			summary: 'Deletes a assembly stock',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_path(
+					'assembly_stock_uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
+			],
+			responses: {
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1762,6 +1850,7 @@ const pathSliderProduction = {
 export const pathSlider = {
 	...pathSliderStock,
 	...pathSliderDieCasting,
+	...pathSliderAssemblyStock,
 	...pathSliderDieCastingProduction,
 	...pathSliderDieCastingTransaction,
 	...pathSliderTransaction,
