@@ -613,7 +613,7 @@ export const pathSliderAssemblyStock = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_path(
+				SE.parameter_params(
 					'assembly_stock_uuid',
 					'uuid',
 					'igD0v9DIJQhJeet'
@@ -633,7 +633,7 @@ export const pathSliderAssemblyStock = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_path(
+				SE.parameter_params(
 					'assembly_stock_uuid',
 					'uuid',
 					'igD0v9DIJQhJeet'
@@ -653,7 +653,7 @@ export const pathSliderAssemblyStock = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_path(
+				SE.parameter_params(
 					'assembly_stock_uuid',
 					'uuid',
 					'igD0v9DIJQhJeet'
