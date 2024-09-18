@@ -397,11 +397,17 @@ export const tape_coil = zipper.table('tape_coil', {
 	name: text('name').notNull(),
 	is_import: text('is_import').default(null),
 	is_reverse: text('is_reverse').default(null),
-	top: PG_DECIMAL('top').default(0.0),
-	bottom: PG_DECIMAL('bottom').default(0.0),
 	raw_per_kg_meter: PG_DECIMAL('raw_per_kg_meter').default(0.0),
 	dyed_per_kg_meter: PG_DECIMAL('dyed_per_kg_meter').default(0.0),
 	quantity: decimal('quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	trx_quantity_in_dying: decimal('trx_quantity_in_dying', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	stock_quantity: decimal('stock_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
@@ -424,6 +430,7 @@ export const tape_to_coil = zipper.table('tape_to_coil', {
 	tape_coil_uuid: defaultUUID('tape_coil_uuid').references(
 		() => tape_coil.uuid
 	),
+	to_section: text('to_section').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
@@ -490,9 +497,6 @@ export const tape_coil_required = zipper.table('tape_coil_required', {
 	),
 	top: PG_DECIMAL('top').notNull(),
 	bottom: PG_DECIMAL('bottom').notNull(),
-	raw_mtr_per_kg: PG_DECIMAL('raw_mtr_per_kg').default(0.0),
-	dyed_mtr_per_kg: PG_DECIMAL('dyed_mtr_per_kg').default(0.0),
-
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
