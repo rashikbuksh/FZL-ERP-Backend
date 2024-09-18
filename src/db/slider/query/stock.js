@@ -312,25 +312,23 @@ export async function selectStockByFromSection(req, res, next) {
 		CAST(stock.box_pin_quantity AS DOUBLE PRECISION),
 		CAST(stock.two_way_pin_quantity AS DOUBLE PRECISION),
 		CAST(
-			LEAST(
-				CAST(stock.body_quantity AS DOUBLE PRECISION),
-				CAST(stock.cap_quantity AS DOUBLE PRECISION),
-				CAST(stock.puller_quantity AS DOUBLE PRECISION),
-				CAST(stock.link_quantity AS DOUBLE PRECISION),
-				CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
-				CAST(stock.box_pin_quantity AS DOUBLE PRECISION)
-			) 
-		AS DOUBLE PRECISION) AS open_end_min_quantity,
-		CAST(
-			LEAST(
-				CAST(stock.body_quantity AS DOUBLE PRECISION),
-				CAST(stock.cap_quantity AS DOUBLE PRECISION),
-				CAST(stock.puller_quantity AS DOUBLE PRECISION),
-				CAST(stock.link_quantity AS DOUBLE PRECISION),
-				CAST(stock.u_top_quantity AS DOUBLE PRECISION)/2,
-				CAST(stock.h_bottom_quantity AS DOUBLE PRECISION)
-			) 
-		AS DOUBLE PRECISION)AS close_end_min_quantity,
+				CASE 
+					WHEN with_link = 1
+						THEN
+							LEAST(
+								CAST(stock.body_quantity AS DOUBLE PRECISION),
+								CAST(stock.cap_quantity AS DOUBLE PRECISION),
+								CAST(stock.puller_quantity AS DOUBLE PRECISION),
+								CAST(stock.link_quantity AS DOUBLE PRECISION)
+							) 
+						ELSE 
+							LEAST(
+								CAST(stock.body_quantity AS DOUBLE PRECISION),
+								CAST(stock.cap_quantity AS DOUBLE PRECISION),
+								CAST(stock.puller_quantity AS DOUBLE PRECISION)
+							) 
+						END
+			AS DOUBLE PRECISION) + production.production_quantity AS max_sa_quantity,
 		stock.created_at,
 		stock.updated_at,
 		stock.remarks,
