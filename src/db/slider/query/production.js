@@ -349,7 +349,7 @@ export async function selectProductionBySection(req, res, next) {
 			production.with_link,
 			CAST(
 				CASE 
-					WHEN with_link = 1
+					WHEN production.with_link = 1
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),
