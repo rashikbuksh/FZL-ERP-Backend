@@ -367,7 +367,7 @@ export const def_zipper_tape_coil = SED({
 });
 
 // * Zipper Tape To Coil * //
-export const def_zipper_tape_to_coil = SED({
+export const def_zipper_tape_trx = SED({
 	required: [
 		'uuid',
 		'tape_coil_uuid',
@@ -386,7 +386,7 @@ export const def_zipper_tape_to_coil = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('Remarks'),
 	},
-	xml: 'Zipper/Tape-To-Coil',
+	xml: 'Zipper/Tape-Trx',
 });
 
 // * Zipper Tape Coil Production * //
@@ -570,7 +570,7 @@ export const defZipper = {
 	dying_batch: def_zipper_dying_batch,
 	dying_batch_entry: def_zipper_dying_batch_entry,
 	tape_coil: def_zipper_tape_coil,
-	tape_to_coil: def_zipper_tape_to_coil,
+	tape_trx: def_zipper_tape_trx,
 	tape_coil_production: def_zipper_tape_coil_production,
 	planning: def_zipper_planning,
 	planning_entry: def_zipper_planning_entry,
@@ -632,8 +632,8 @@ export const tagZipper = [
 		description: 'Zipper Tape Coil',
 	},
 	{
-		name: 'zipper.tape_to_coil',
-		description: 'Zipper Tape To Coil',
+		name: 'zipper.tape_trx',
+		description: 'Zipper Tape Trx',
 	},
 	{
 		name: 'zipper.tape_coil_production',

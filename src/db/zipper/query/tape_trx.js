@@ -8,7 +8,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import { tape_coil, tape_to_coil } from '../schema.js';
+import { tape_coil, tape_trx } from '../schema.js';
 
 const item_properties = alias(publicSchema.properties, 'item_properties');
 const zipper_number_properties = alias(
@@ -20,9 +20,9 @@ export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const tapeToCoilPromise = db
-		.insert(tape_to_coil)
+		.insert(tape_trx)
 		.values(req.body)
-		.returning({ insertedId: tape_to_coil.uuid });
+		.returning({ insertedId: tape_trx.uuid });
 
 	try {
 		const data = await tapeToCoilPromise;
@@ -41,10 +41,10 @@ export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const tapeToCoilPromise = db
-		.update(tape_to_coil)
+		.update(tape_trx)
 		.set(req.body)
-		.where(eq(tape_to_coil.uuid, req.params.uuid))
-		.returning({ updatedId: tape_to_coil.uuid });
+		.where(eq(tape_trx.uuid, req.params.uuid))
+		.returning({ updatedId: tape_trx.uuid });
 
 	try {
 		const data = await tapeToCoilPromise;
@@ -63,9 +63,9 @@ export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const tapeToCoilPromise = db
-		.delete(tape_to_coil)
-		.where(eq(tape_to_coil.uuid, req.params.uuid))
-		.returning({ deletedId: tape_to_coil.uuid });
+		.delete(tape_trx)
+		.where(eq(tape_trx.uuid, req.params.uuid))
+		.returning({ deletedId: tape_trx.uuid });
 	try {
 		const data = await tapeToCoilPromise;
 		const toast = {
@@ -82,8 +82,8 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
-			uuid: tape_to_coil.uuid,
-			tape_coil_uuid: tape_to_coil.tape_coil_uuid,
+			uuid: tape_trx.uuid,
+			tape_coil_uuid: tape_trx.tape_coil_uuid,
 			name: tape_coil.name,
 			item_uuid: tape_coil.item_uuid,
 			item_name: item_properties.name,
@@ -93,20 +93,17 @@ export async function selectAll(req, res, next) {
 			quantity: tape_coil.quantity,
 			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
 			quantity_in_coil: tape_coil.quantity_in_coil,
-			to_section: tape_to_coil.to_section,
-			trx_quantity: tape_to_coil.trx_quantity,
-			created_by: tape_to_coil.created_by,
+			to_section: tape_trx.to_section,
+			trx_quantity: tape_trx.trx_quantity,
+			created_by: tape_trx.created_by,
 			created_by_name: hrSchema.users.name,
-			created_at: tape_to_coil.created_at,
-			updated_at: tape_to_coil.updated_at,
-			remarks: tape_to_coil.remarks,
+			created_at: tape_trx.created_at,
+			updated_at: tape_trx.updated_at,
+			remarks: tape_trx.remarks,
 		})
-		.from(tape_to_coil)
-		.leftJoin(tape_coil, eq(tape_to_coil.tape_coil_uuid, tape_coil.uuid))
-		.leftJoin(
-			hrSchema.users,
-			eq(tape_to_coil.created_by, hrSchema.users.uuid)
-		)
+		.from(tape_trx)
+		.leftJoin(tape_coil, eq(tape_trx.tape_coil_uuid, tape_coil.uuid))
+		.leftJoin(hrSchema.users, eq(tape_trx.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			item_properties,
 			eq(tape_coil.item_uuid, item_properties.uuid)
@@ -115,11 +112,11 @@ export async function selectAll(req, res, next) {
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
-		.orderBy(desc(tape_to_coil.created_at));
+		.orderBy(desc(tape_trx.created_at));
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		message: 'tape_to_coil list',
+		message: 'tape_trx list',
 	};
 	handleResponse({ promise: resultPromise, res, next, ...toast });
 }
@@ -129,8 +126,8 @@ export async function select(req, res, next) {
 
 	const tapeToCoilPromise = db
 		.select({
-			uuid: tape_to_coil.uuid,
-			tape_coil_uuid: tape_to_coil.tape_coil_uuid,
+			uuid: tape_trx.uuid,
+			tape_coil_uuid: tape_trx.tape_coil_uuid,
 			name: tape_coil.name,
 			item_uuid: tape_coil.item_uuid,
 			item_name: item_properties.name,
@@ -140,20 +137,17 @@ export async function select(req, res, next) {
 			quantity: tape_coil.quantity,
 			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
 			quantity_in_coil: tape_coil.quantity_in_coil,
-			to_section: tape_to_coil.to_section,
-			trx_quantity: tape_to_coil.trx_quantity,
-			created_by: tape_to_coil.created_by,
+			to_section: tape_trx.to_section,
+			trx_quantity: tape_trx.trx_quantity,
+			created_by: tape_trx.created_by,
 			created_by_name: hrSchema.users.name,
-			created_at: tape_to_coil.created_at,
-			updated_at: tape_to_coil.updated_at,
-			remarks: tape_to_coil.remarks,
+			created_at: tape_trx.created_at,
+			updated_at: tape_trx.updated_at,
+			remarks: tape_trx.remarks,
 		})
-		.from(tape_to_coil)
-		.leftJoin(tape_coil, eq(tape_to_coil.tape_coil_uuid, tape_coil.uuid))
-		.leftJoin(
-			hrSchema.users,
-			eq(tape_to_coil.created_by, hrSchema.users.uuid)
-		)
+		.from(tape_trx)
+		.leftJoin(tape_coil, eq(tape_trx.tape_coil_uuid, tape_coil.uuid))
+		.leftJoin(hrSchema.users, eq(tape_trx.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			item_properties,
 			eq(tape_coil.item_uuid, item_properties.uuid)
@@ -162,14 +156,14 @@ export async function select(req, res, next) {
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
-		.where(eq(tape_to_coil.uuid, req.params.uuid));
+		.where(eq(tape_trx.uuid, req.params.uuid));
 
 	try {
 		const data = await tapeToCoilPromise;
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'tape_to_coil',
+			message: 'tape_trx',
 		};
 		return await res.status(200).json({ toast, data: data[0] });
 	} catch (error) {
