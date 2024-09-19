@@ -273,7 +273,7 @@ export async function selectPiDetailsByPiUuid(req, res, next) {
 
 		const response = {
 			...pi_cash?.data?.data,
-			pi_entry: pi_cash_entry?.data?.data || [],
+			pi_cash_entry: pi_cash_entry?.data?.data || [],
 		};
 
 		const toast = {
@@ -374,6 +374,15 @@ export async function updatePiPutLcByPiUuid(req, res, next) {
 
 	try {
 		const data = await piPromise;
+		if (data.length === 0) {
+			const toast = {
+				status: 404,
+				type: 'update',
+				message: `No record found to update`,
+			};
+			return res.status(404).json({ toast, data });
+		}
+
 		const toast = {
 			status: 201,
 			type: 'update',
@@ -401,6 +410,14 @@ export async function updatePiToNullByPiUuid(req, res, next) {
 
 	try {
 		const data = await piPromise;
+		if (data.length === 0) {
+			const toast = {
+				status: 404,
+				type: 'update',
+				message: `No record found to update`,
+			};
+			return res.status(404).json({ toast, data });
+		}
 		const toast = {
 			status: 201,
 			type: 'update',

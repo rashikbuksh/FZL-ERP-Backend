@@ -135,7 +135,6 @@ export async function select(req, res, next) {
 export async function selectPiEntryByPiUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	console.log('req.params.pi_uuid', req.params);
 
 	try {
 		const query = sql`
