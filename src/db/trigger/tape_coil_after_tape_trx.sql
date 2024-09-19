@@ -3,7 +3,7 @@ BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
     SET
-       trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dying' THEN NEW.trx_quantity ELSE 0 END,
+       trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' THEN NEW.trx_quantity ELSE 0 END,
        trx_quantity_in_coil = trx_quantity_in_coil + CASE WHEN NEW.to_section = 'coil' THEN NEW.trx_quantity ELSE 0 END,
        quantity = quantity - NEW.trx_quantity
     WHERE uuid = NEW.tape_coil_uuid;
@@ -16,7 +16,7 @@ BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
     SET
-       trx_quantity_in_dying = trx_quantity_in_dying - CASE WHEN OLD.to_section = 'dying' THEN OLD.trx_quantity ELSE 0 END,
+       trx_quantity_in_dying = trx_quantity_in_dying - CASE WHEN OLD.to_section = 'dyeing' THEN OLD.trx_quantity ELSE 0 END,
        trx_quantity_in_coil = trx_quantity_in_coil - CASE WHEN OLD.to_section = 'coil' THEN OLD.trx_quantity ELSE 0 END,
        quantity = quantity +  OLD.trx_quantity
        
@@ -31,7 +31,7 @@ BEGIN
     --Update zipper.tape_coil table
     UPDATE zipper.tape_coil 
     SET
-       trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dying' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.to_section = 'dying' THEN OLD.trx_quantity ELSE 0 END,
+       trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.to_section = 'dying' THEN OLD.trx_quantity ELSE 0 END,
        trx_quantity_in_coil = trx_quantity_in_coil + CASE WHEN NEW.to_section = 'coil' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.to_section = 'coil' THEN OLD.trx_quantity ELSE 0 END,
        quantity = quantity - NEW.trx_quantity + OLD.trx_quantity
     WHERE uuid = NEW.tape_coil_uuid;
@@ -41,17 +41,17 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tape_coil_after_tape_trx_after_insert
+CREATE OR REPLACE TRIGGER tape_coil_after_tape_trx_after_insert
 AFTER INSERT ON zipper.tape_trx
 FOR EACH ROW
 EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_insert();
 
-CREATE TRIGGER tape_coil_after_tape_trx_after_delete
+CREATE OR REPLACE TRIGGER tape_coil_after_tape_trx_after_delete
 AFTER DELETE ON zipper.tape_trx
 FOR EACH ROW
 EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_delete();
 
-CREATE TRIGGER tape_coil_after_tape_trx_after_update
+CREATE OR REPLACE TRIGGER tape_coil_after_tape_trx_after_update
 AFTER UPDATE ON zipper.tape_trx
 FOR EACH ROW
 EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_update();
