@@ -129,7 +129,7 @@ export async function selectAll(req, res, next) {
 			stock.coloring_prod,
 			stock.trx_to_finishing,
 			transaction.assembly_stock_uuid,
-			assembly_stock.name as assembly_stock_name
+			assembly_stock.name as assembly_stock_name,
 			assembly_stock.quantity as assembly_stock_quantity
 		FROM
 			slider.transaction
@@ -221,7 +221,7 @@ export async function select(req, res, next) {
 			stock.coloring_prod,
 			stock.trx_to_finishing,
 			transaction.assembly_stock_uuid,
-			assembly_stock.name as assembly_stock_name
+			assembly_stock.name as assembly_stock_name,
 			assembly_stock.quantity as assembly_stock_quantity
 		FROM
 			slider.transaction
