@@ -44,7 +44,7 @@ commercialRouter.get(
 	piCashOperations.selectPiDetailsByPiUuid
 );
 commercialRouter.put(
-	'/pi-cash-lc-uuid/:pi_uuid',
+	'/pi-cash-lc-uuid/:pi_cash_uuid',
 	piCashOperations.updatePiPutLcByPiUuid
 );
 commercialRouter.get('/pi-cash-lc/:lc_uuid', piCashOperations.selectPiByLcUuid);
