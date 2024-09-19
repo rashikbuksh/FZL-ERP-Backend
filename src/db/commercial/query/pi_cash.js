@@ -299,7 +299,6 @@ export async function selectPiUuidByPiId(req, res, next) {
 		})
 		.from(pi_cash)
 		.where(eq(pi_cash.id, sql`split_part(${pi_cash_id}, '-', 2)::int`));
-
 	try {
 		const data = await piPromise;
 		const toast = {
@@ -332,7 +331,7 @@ export async function selectPiDetailsByPiId(req, res, next) {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/${piCashUuid.data.uuid}`)
+				.get(`${endpoint}/${piCashUuid.data.data[0].uuid}`)
 				.then((response) => response);
 
 		const [pi_cash, pi_cash_entry] = await Promise.all([
