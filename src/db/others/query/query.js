@@ -464,6 +464,7 @@ export async function selectOrderNumberForPi(req, res, next) {
 					zipper.v_order_details vod
 					LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
 				WHERE 
+					vod.is_cash = 0 AND
 					vod.marketing_uuid = ${req.params.marketing_uuid} AND
 					oi.party_uuid = ${req.params.party_uuid} 
 				ORDER BY
