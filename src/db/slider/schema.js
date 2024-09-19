@@ -154,6 +154,7 @@ export const die_casting_to_assembly_stock = slider.table(
 		),
 		production_quantity: PG_DECIMAL('production_quantity').default(0),
 		wastage: PG_DECIMAL('wastage').default(0),
+		with_link: integer('with_link').default(1),
 		created_by: defaultUUID('created_by').references(
 			() => hrSchema.users.uuid
 		),
