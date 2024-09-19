@@ -76,7 +76,7 @@ commercialRouter.delete(
 	piCashEntryOperations.remove
 );
 commercialRouter.use(
-	'/pi-cash-entry/by/:pi_uuid',
+	'/pi-cash-entry/by/:pi_cash_uuid',
 	piCashEntryOperations.selectPiEntryByPiUuid
 );
 commercialRouter.get(

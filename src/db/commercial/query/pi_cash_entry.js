@@ -135,6 +135,8 @@ export async function select(req, res, next) {
 export async function selectPiEntryByPiUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	console.log('req.params.pi_uuid', req.params);
+
 	try {
 		const query = sql`
 				SELECT
@@ -170,7 +172,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					vodf.item_description ASC,
 					oe.style ASC,
 					oe.color ASC,
-					oe.size ASC`;
+					oe.size ASC `;
 
 		const pi_entryPromise = db.execute(query);
 
