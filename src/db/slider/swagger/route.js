@@ -8,37 +8,27 @@ export const pathSliderStock = {
 			tags: ['slider.stock'],
 			summary: 'Get all stock',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									order_description_uuid: SE.uuid(),
-									order_quantity: SE.number(1),
-									body_quantity: SE.number(1),
-									cap_quantity: SE.number(1),
-									puller_quantity: SE.number(1),
-									link_quantity: SE.number(1),
-									sa_prod: SE.number(1),
-									coloring_stock: SE.number(1),
-									coloring_prod: SE.number(1),
-									finishing_stock: SE.number(1),
-									trx_to_finishing: SE.number(1),
-									u_top_quantity: SE.number(1),
-									h_bottom_quantity: SE.number(1),
-									box_pin_quantity: SE.number(1),
-									two_way_pin_quantity: SE.number(1),
-									created_at: SE.date_time(),
-									updated_at: SE.date_time(),
-									remarks: SE.string('remarks'),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					order_quantity: SE.number(1),
+					body_quantity: SE.number(1),
+					cap_quantity: SE.number(1),
+					puller_quantity: SE.number(1),
+					link_quantity: SE.number(1),
+					sa_prod: SE.number(1),
+					coloring_stock: SE.number(1),
+					coloring_prod: SE.number(1),
+					finishing_stock: SE.number(1),
+					trx_to_finishing: SE.number(1),
+					u_top_quantity: SE.number(1),
+					h_bottom_quantity: SE.number(1),
+					box_pin_quantity: SE.number(1),
+					two_way_pin_quantity: SE.number(1),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
 			},
 		},
 		post: {
@@ -80,52 +70,37 @@ export const pathSliderStock = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'stock to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params(
+					'get using uuid',
+					'uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
 			],
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									order_description_uuid: SE.uuid(),
-									order_quantity: SE.number(1),
-									body_quantity: SE.number(1),
-									cap_quantity: SE.number(1),
-									puller_quantity: SE.number(1),
-									link_quantity: SE.number(1),
-									sa_prod: SE.number(1),
-									coloring_stock: SE.number(1),
-									coloring_prod: SE.number(1),
-									finishing_stock: SE.number(1),
-									trx_to_finishing: SE.number(1),
-									u_top_quantity: SE.number(1),
-									h_bottom_quantity: SE.number(1),
-									box_pin_quantity: SE.number(1),
-									two_way_pin_quantity: SE.number(1),
-									created_at: SE.date_time(),
-									updated_at: SE.date_time(),
-									remarks: SE.string('remarks'),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					order_quantity: SE.number(1),
+					body_quantity: SE.number(1),
+					cap_quantity: SE.number(1),
+					puller_quantity: SE.number(1),
+					link_quantity: SE.number(1),
+					sa_prod: SE.number(1),
+					coloring_stock: SE.number(1),
+					coloring_prod: SE.number(1),
+					finishing_stock: SE.number(1),
+					trx_to_finishing: SE.number(1),
+					u_top_quantity: SE.number(1),
+					h_bottom_quantity: SE.number(1),
+					box_pin_quantity: SE.number(1),
+					two_way_pin_quantity: SE.number(1),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
 				400: SE.response(400),
-				404: {
-					description: 'Stock not found',
-				},
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -136,15 +111,12 @@ export const pathSliderStock = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Stock to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params(
+					'get using uuid',
+					'uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
 			],
 			requestBody: {
 				content: {
@@ -155,12 +127,9 @@ export const pathSliderStock = {
 					},
 				},
 			},
-
 			responses: {
 				400: SE.response(400),
-				404: {
-					description: 'Stock not found',
-				},
+				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
@@ -171,21 +140,17 @@ export const pathSliderStock = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Stock to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params(
+					'get using uuid',
+					'uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
 			],
 			responses: {
+				200: SE.response(200),
 				400: SE.response(400),
-				404: {
-					description: 'Stock not found',
-				},
+				404: SE.response(404),
 			},
 		},
 	},
@@ -674,6 +639,113 @@ export const pathSliderAssemblyStock = {
 			parameters: [
 				SE.parameter_params(
 					'assembly_stock_uuid',
+					'uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
+			],
+			responses: {
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
+export const pathSliderDieCastingToAssemblyStock = {
+	'/slider/die-casting-to-assembly-stock': {
+		get: {
+			tags: ['slider.die_casting_to_assembly_stock'],
+			summary: 'Get all die casting to assembly stock',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					assembly_stock_uuid: SE.uuid(),
+					assembly_stock_name: SE.string('assembly stock name'),
+					quantity: SE.number(1),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['slider.die_casting_to_assembly_stock'],
+			summary: 'create a die casting to assembly stock',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref(
+				'slider/die_casting_to_assembly_stock'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					'slider/die_casting_to_assembly_stock'
+				),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/slider/die-casting-to-assembly-stock/{uuid}': {
+		get: {
+			tags: ['slider.die_casting_to_assembly_stock'],
+			summary: 'Gets a die casting to assembly stock',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'die_casting_to_assembly_stock_uuid',
+					'uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(
+					'slider/die_casting_to_assembly_stock'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['slider.die_casting_to_assembly_stock'],
+			summary: 'Update an existing die casting to assembly stock',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'die_casting_to_assembly_stock_uuid',
+					'uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
+			],
+			requestBody: SE.requestBody_schema_ref(
+				'slider/die_casting_to_assembly_stock'
+			),
+			responses: {
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['slider.die_casting_to_assembly_stock'],
+			summary: 'Deletes a die casting to assembly stock',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'die_casting_to_assembly_stock_uuid',
 					'uuid',
 					'uuid',
 					'igD0v9DIJQhJeet'
@@ -1871,6 +1943,7 @@ export const pathSlider = {
 	...pathSliderStock,
 	...pathSliderDieCasting,
 	...pathSliderAssemblyStock,
+	...pathSliderDieCastingToAssemblyStock,
 	...pathSliderDieCastingProduction,
 	...pathSliderDieCastingTransaction,
 	...pathSliderTransaction,

@@ -117,7 +117,6 @@ export async function selectAll(req, res, next) {
 			DieCastingLink,
 			eq(assembly_stock.die_casting_link_uuid, DieCastingLink.uuid)
 		)
-
 		.orderBy(desc(assembly_stock.created_at));
 
 	try {

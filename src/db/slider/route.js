@@ -3,6 +3,7 @@ import * as assemblyStockOperations from './query/assembly_stock.js';
 import * as coloringTransactionOperations from './query/coloring_transaction.js';
 import * as dieCastingOperations from './query/die_casting.js';
 import * as dieCastingProductionOperations from './query/die_casting_production.js';
+import * as dieCastingToAssemblyStockOperations from './query/die_casting_to_assembly_stock.js';
 import * as dieCastingTransactionOperations from './query/die_casting_transaction.js';
 import * as productionOperations from './query/production.js';
 import * as stockOperations from './query/stock.js';
@@ -43,6 +44,29 @@ sliderRouter.get('/assembly-stock/:uuid', assemblyStockOperations.select);
 sliderRouter.post('/assembly-stock', assemblyStockOperations.insert);
 sliderRouter.put('/assembly-stock/:uuid', assemblyStockOperations.update);
 sliderRouter.delete('/assembly-stock/:uuid', assemblyStockOperations.remove);
+
+// --------------------- Die Casting to Assembly Stock ---------------------
+
+sliderRouter.get(
+	'/die-casting-to-assembly-stock',
+	dieCastingToAssemblyStockOperations.selectAll
+);
+sliderRouter.get(
+	'/die-casting-to-assembly-stock/:uuid',
+	dieCastingToAssemblyStockOperations.select
+);
+sliderRouter.post(
+	'/die-casting-to-assembly-stock',
+	dieCastingToAssemblyStockOperations.insert
+);
+sliderRouter.put(
+	'/die-casting-to-assembly-stock/:uuid',
+	dieCastingToAssemblyStockOperations.update
+);
+sliderRouter.delete(
+	'/die-casting-to-assembly-stock/:uuid',
+	dieCastingToAssemblyStockOperations.remove
+);
 
 // --------------------- DIE CASTING PRODUCTION ROUTES ---------------------
 

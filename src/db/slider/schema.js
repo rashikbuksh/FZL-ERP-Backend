@@ -145,6 +145,24 @@ export const assembly_stock = slider.table('assembly_stock', {
 	remarks: text('remarks').default(null),
 });
 
+export const die_casting_to_assembly_stock = slider.table(
+	'die_casting_to_assembly_stock',
+	{
+		uuid: uuid_primary,
+		assembly_stock_uuid: defaultUUID('assembly_stock_uuid').references(
+			() => assembly_stock.uuid
+		),
+		production_quantity: PG_DECIMAL('production_quantity').default(0),
+		wastage: PG_DECIMAL('wastage').default(0),
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		remarks: text('remarks').default(null),
+	}
+);
+
 export const die_casting_production = slider.table('die_casting_production', {
 	uuid: uuid_primary,
 	die_casting_uuid: defaultUUID('die_casting_uuid').references(
