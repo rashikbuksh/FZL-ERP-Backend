@@ -97,8 +97,8 @@ export async function selectAll(req, res, next) {
 			die_casting_link_name: diecastinglink.name,
 			production_quantity:
 				die_casting_to_assembly_stock.production_quantity,
-			max_production_quantity_with_link: sql`diecastingbody.quantity_in_sa + diecastingpuller.quantity_in_sa + diecastingcap.quantity_in_sa + diecastinglink.quantity_in_sa + die_casting_to_assembly_stock.production_quantity`,
-			max_production_quantity_without_link: sql`diecastingbody.quantity_in_sa + diecastingpuller.quantity_in_sa + diecastingcap.quantity_in_sa + die_casting_to_assembly_stock.production_quantity`,
+			max_production_quantity_with_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`,
+			max_production_quantity_without_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`,
 			with_link: die_casting_to_assembly_stock.with_link,
 			created_by: die_casting_to_assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,
@@ -167,8 +167,8 @@ export async function select(req, res, next) {
 			die_casting_link_name: diecastinglink.name,
 			production_quantity:
 				die_casting_to_assembly_stock.production_quantity,
-			max_production_quantity_with_link: sql`diecastingbody.quantity_in_sa + diecastingpuller.quantity_in_sa + diecastingcap.quantity_in_sa + diecastinglink.quantity_in_sa + die_casting_to_assembly_stock.production_quantity`,
-			max_production_quantity_without_link: sql`diecastingbody.quantity_in_sa + diecastingpuller.quantity_in_sa + diecastingcap.quantity_in_sa + die_casting_to_assembly_stock.production_quantity`,
+			max_production_quantity_with_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`,
+			max_production_quantity_without_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`,
 			with_link: die_casting_to_assembly_stock.with_link,
 			created_by: die_casting_to_assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,
