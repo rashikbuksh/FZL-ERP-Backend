@@ -130,7 +130,8 @@ export async function selectAll(req, res, next) {
 			stock.trx_to_finishing,
 			transaction.assembly_stock_uuid,
 			assembly_stock.name as assembly_stock_name,
-			assembly_stock.quantity as assembly_stock_quantity
+			assembly_stock.quantity as assembly_stock_quantity,
+			assembly_stock.quantity + transaction.trx_quantity as max_assembly_stock_quantity
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -222,7 +223,8 @@ export async function select(req, res, next) {
 			stock.trx_to_finishing,
 			transaction.assembly_stock_uuid,
 			assembly_stock.name as assembly_stock_name,
-			assembly_stock.quantity as assembly_stock_quantity
+			assembly_stock.quantity as assembly_stock_quantity,
+			assembly_stock.quantity + transaction.trx_quantity as max_assembly_stock_quantity
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -314,7 +316,8 @@ export async function selectTransactionByFromSection(req, res, next) {
 			(stock.trx_to_finishing + transaction.trx_quantity) as max_trx_to_finishing_quantity,
 			transaction.assembly_stock_uuid,
 			assembly_stock.name as assembly_stock_name,
-			assembly_stock.quantity as assembly_stock_quantity
+			assembly_stock.quantity as assembly_stock_quantity,
+			assembly_stock.quantity + transaction.trx_quantity as max_assembly_stock_quantity
 		FROM
 			slider.transaction
 		LEFT JOIN
