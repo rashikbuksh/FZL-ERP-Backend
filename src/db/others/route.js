@@ -721,6 +721,7 @@ const pathZipper = {
 					'party_uuid',
 					'2ggcphnwHGzEUGy'
 				),
+				SE.parameter_query('is_cash', 'is_cash', [true, false]),
 			],
 			responses: {
 				200: {
