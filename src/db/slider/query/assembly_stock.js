@@ -93,53 +93,56 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const assemblyStockPromise = db
-		.select({
-			uuid: assembly_stock.uuid,
-			name: assembly_stock.name,
-			die_casting_body_uuid: assembly_stock.die_casting_body_uuid,
-			die_casting_body_name: diecastingbody.name,
-			die_casting_body_quantity: diecastingbody.quantity_in_sa,
-			die_casting_puller_uuid: assembly_stock.die_casting_puller_uuid,
-			die_casting_puller_name: diecastingpuller.name,
-			die_casting_puller_quantity: diecastingpuller.quantity_in_sa,
-			die_casting_cap_uuid: assembly_stock.die_casting_cap_uuid,
-			die_casting_cap_name: diecastingcap.name,
-			die_casting_cap_quantity: diecastingcap.quantity_in_sa,
-			die_casting_link_uuid: assembly_stock.die_casting_link_uuid,
-			die_casting_link_name: diecastinglink.name,
-			die_casting_link_quantity: diecastinglink.quantity_in_sa,
-			min_quantity_with_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa)`,
-			min_quantity_no_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa)`,
-			quantity: assembly_stock.quantity,
-			created_by: assembly_stock.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: assembly_stock.created_at,
-			updated_at: assembly_stock.updated_at,
-			remarks: assembly_stock.remarks,
-		})
-		.from(assembly_stock)
-		.leftJoin(
-			hrSchema.users,
-			eq(assembly_stock.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			diecastingbody,
-			eq(assembly_stock.die_casting_body_uuid, diecastingbody.uuid)
-		)
-		.leftJoin(
-			diecastingpuller,
-			eq(assembly_stock.die_casting_puller_uuid, diecastingpuller.uuid)
-		)
-		.leftJoin(
-			diecastingcap,
-			eq(assembly_stock.die_casting_cap_uuid, diecastingcap.uuid)
-		)
-		.leftJoin(
-			diecastinglink,
-			eq(assembly_stock.die_casting_link_uuid, diecastinglink.uuid)
-		)
-		.orderBy(desc(assembly_stock.created_at));
+	const query = sql`
+		SELECT 
+			assembly_stock.uuid,
+			assembly_stock.name,
+			assembly_stock.die_casting_body_uuid,
+			diecastingbody.name AS die_casting_body_name,
+			diecastingbody.quantity_in_sa AS die_casting_body_quantity,
+			assembly_stock.die_casting_puller_uuid,
+			diecastingpuller.name AS die_casting_puller_name,
+			diecastingpuller.quantity_in_sa AS die_casting_puller_quantity,
+			assembly_stock.die_casting_cap_uuid,
+			diecastingcap.name AS die_casting_cap_name,
+			diecastingcap.quantity_in_sa AS die_casting_cap_quantity,
+			assembly_stock.die_casting_link_uuid,
+			diecastinglink.name AS die_casting_link_name,
+			diecastinglink.quantity_in_sa AS die_casting_link_quantity,
+			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) AS min_quantity_with_link,
+			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) AS min_quantity_no_link,
+			assembly_stock.quantity,
+			assembly_stock.created_by,
+			users.name AS created_by_name,
+			assembly_stock.created_at,
+			assembly_stock.updated_at,
+			assembly_stock.remarks,
+			transaction_total_trx.total_transaction_quantity
+		FROM 
+			slider.assembly_stock
+		LEFT JOIN 
+			hr.users ON assembly_stock.created_by = users.uuid
+		LEFT JOIN 
+			slider.die_casting diecastingbody ON assembly_stock.die_casting_body_uuid = diecastingbody.uuid
+		LEFT JOIN 
+			slider.die_casting diecastingpuller ON assembly_stock.die_casting_puller_uuid = diecastingpuller.uuid
+		LEFT JOIN 
+			slider.die_casting diecastingcap ON assembly_stock.die_casting_cap_uuid = diecastingcap.uuid
+		LEFT JOIN 
+			slider.die_casting diecastinglink ON assembly_stock.die_casting_link_uuid = diecastinglink.uuid
+		LEFT JOIN (
+			SELECT
+				assembly_stock.uuid AS assembly_stock_uuid,
+				SUM(trx_quantity) AS total_transaction_quantity
+			FROM slider.transaction
+			JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
+			GROUP BY assembly_stock.uuid
+		) AS transaction_total_trx ON assembly_stock.uuid = transaction_total_trx.assembly_stock_uuid
+		ORDER BY 
+			assembly_stock.created_at DESC;
+	`;
+
+	const assemblyStockPromise = db.execute(query);
 
 	try {
 		const data = await assemblyStockPromise;
@@ -149,66 +152,67 @@ export async function selectAll(req, res, next) {
 			type: 'select',
 			message: `assembly_stock list`,
 		};
-		return await res.status(200).json({ toast, data });
+		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
 }
 
 export async function select(req, res, next) {
-	const assemblyStockPromise = db
-		.select({
-			uuid: assembly_stock.uuid,
-			name: assembly_stock.name,
-			die_casting_body_uuid: assembly_stock.die_casting_body_uuid,
-			die_casting_body_name: diecastingbody.name,
-			die_casting_body_quantity: diecastingbody.quantity_in_sa,
-			die_casting_puller_uuid: assembly_stock.die_casting_puller_uuid,
-			die_casting_puller_name: diecastingpuller.name,
-			die_casting_puller_quantity: diecastingpuller.quantity_in_sa,
-			die_casting_cap_uuid: assembly_stock.die_casting_cap_uuid,
-			die_casting_cap_name: diecastingcap.name,
-			die_casting_cap_quantity: diecastingcap.quantity_in_sa,
-			die_casting_link_uuid: assembly_stock.die_casting_link_uuid,
-			die_casting_link_name: diecastinglink.name,
-			die_casting_link_quantity: diecastinglink.quantity_in_sa,
-			min_quantity_with_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa)`,
-			min_quantity_no_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa)`,
-			total_transaction_quantity:
-				transaction_total_trx.total_transaction_quantity,
-			quantity: assembly_stock.quantity,
-			created_by: assembly_stock.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: assembly_stock.created_at,
-			updated_at: assembly_stock.updated_at,
-			remarks: assembly_stock.remarks,
-		})
-		.from(assembly_stock)
-		.leftJoin(
-			hrSchema.users,
-			eq(assembly_stock.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			diecastingbody,
-			eq(assembly_stock.die_casting_body_uuid, diecastingbody.uuid)
-		)
-		.leftJoin(
-			diecastingpuller,
-			eq(assembly_stock.die_casting_puller_uuid, diecastingpuller.uuid)
-		)
-		.leftJoin(
-			diecastingcap,
-			eq(assembly_stock.die_casting_cap_uuid, diecastingcap.uuid)
-		)
-		.leftJoin(
-			diecastinglink,
-			eq(assembly_stock.die_casting_link_uuid, diecastinglink.uuid)
-		)
-		.leftJoin(
-			transaction_total_trx,
-			eq(assembly_stock.uuid, transaction_total_trx.assembly_stock_uuid)
-		)
-		.where(eq(assembly_stock.uuid, req.params.uuid));
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT 
+			assembly_stock.uuid,
+			assembly_stock.name,
+			assembly_stock.die_casting_body_uuid,
+			diecastingbody.name AS die_casting_body_name,
+			diecastingbody.quantity_in_sa AS die_casting_body_quantity,
+			assembly_stock.die_casting_puller_uuid,
+			diecastingpuller.name AS die_casting_puller_name,
+			diecastingpuller.quantity_in_sa AS die_casting_puller_quantity,
+			assembly_stock.die_casting_cap_uuid,
+			diecastingcap.name AS die_casting_cap_name,
+			diecastingcap.quantity_in_sa AS die_casting_cap_quantity,
+			assembly_stock.die_casting_link_uuid,
+			diecastinglink.name AS die_casting_link_name,
+			diecastinglink.quantity_in_sa AS die_casting_link_quantity,
+			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) AS min_quantity_with_link,
+			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) AS min_quantity_no_link,
+			assembly_stock.quantity,
+			assembly_stock.created_by,
+			users.name AS created_by_name,
+			assembly_stock.created_at,
+			assembly_stock.updated_at,
+			assembly_stock.remarks,
+			transaction_total_trx.total_transaction_quantity
+		FROM 
+			slider.assembly_stock
+		LEFT JOIN 
+			hr.users ON assembly_stock.created_by = users.uuid
+		LEFT JOIN 
+			slider.die_casting diecastingbody ON assembly_stock.die_casting_body_uuid = diecastingbody.uuid
+		LEFT JOIN 
+			slider.die_casting diecastingpuller ON assembly_stock.die_casting_puller_uuid = diecastingpuller.uuid
+		LEFT JOIN 
+			slider.die_casting diecastingcap ON assembly_stock.die_casting_cap_uuid = diecastingcap.uuid
+		LEFT JOIN 
+			slider.die_casting diecastinglink ON assembly_stock.die_casting_link_uuid = diecastinglink.uuid
+		LEFT JOIN (
+			SELECT
+				assembly_stock.uuid AS assembly_stock_uuid,
+				SUM(trx_quantity) AS total_transaction_quantity
+			FROM slider.transaction
+			JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
+			GROUP BY assembly_stock.uuid
+		) AS transaction_total_trx ON assembly_stock.uuid = transaction_total_trx.assembly_stock_uuid
+		WHERE 
+			assembly_stock.uuid = ${req.params.uuid}
+		ORDER BY 
+			assembly_stock.created_at DESC;
+	`;
+
+	const assemblyStockPromise = db.execute(query);
 
 	try {
 		const data = await assemblyStockPromise;
@@ -218,7 +222,7 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: `assembly_stock`,
 		};
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
