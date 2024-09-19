@@ -1,3 +1,4 @@
+import { is } from 'drizzle-orm';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Commercial Bank * //
@@ -368,10 +369,10 @@ export const pathCommercialLc = {
 
 // * Commercial Pi* //
 
-export const pathCommercialPi = {
-	'/commercial/pi': {
+export const pathCommercialPiCash = {
+	'/commercial/pi-cash': {
 		get: {
-			tags: ['commercial.pi'],
+			tags: ['commercial.pi_cash'],
 			summary: 'Get all pis',
 			description: 'All pis',
 			responses: {
@@ -401,62 +402,65 @@ export const pathCommercialPi = {
 					created_at: SE.date_time(),
 					update_at: SE.date_time(),
 					remarks: SE.string('remarks'),
+					is_pi: SE.integer(0),
+					conversion_rate: SE.number(1000.0),
+					receive_amount: SE.number(1000.0),
 				}),
 			},
 		},
 		post: {
-			tags: ['commercial.pi'],
-			summary: 'Create a pi',
-			description: 'Create a pi',
+			tags: ['commercial.pi_cash'],
+			summary: 'Create a pi cash',
+			description: 'Create a pi cash',
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: SE.requestBody_schema_ref('commercial/pi'),
+			requestBody: SE.requestBody_schema_ref('commercial/pi_cash'),
 			responses: {
-				200: SE.response_schema_ref(200, 'commercial/pi'),
+				200: SE.response_schema_ref(200, 'commercial/pi_cash'),
 				405: SE.response(405),
 			},
 		},
 	},
 
-	'/commercial/pi/{uuid}': {
+	'/commercial/pi-cash/{uuid}': {
 		get: {
-			tags: ['commercial.pi'],
+			tags: ['commercial.pi_cash'],
 			summary: 'Get a pi',
-			description: ' Get a pi by uuid',
+			description: ' Get a pi cash by uuid',
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params('Get data using uuid', 'uuid', 'uuid'),
 			],
 			responses: {
-				200: SE.response_schema_ref(200, 'commercial/pi'),
+				200: SE.response_schema_ref(200, 'commercial/pi_cash'),
 				400: SE.response(400),
 				404: SE.response(404),
 			},
 		},
 		put: {
-			tags: ['commercial.pi'],
-			summary: 'Update a pi',
-			description: 'Update a pi by uuid',
+			tags: ['commercial.pi_cash'],
+			summary: 'Update a pi cash',
+			description: 'Update a pi cash by uuid',
 			//operationId: "updatePet",
 			consume: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params('Update data using uuid', 'uuid', 'uuid'),
 			],
-			requestBody: SE.requestBody_schema_ref('commercial/pi'),
+			requestBody: SE.requestBody_schema_ref('commercial/pi_cash'),
 			responses: {
-				200: SE.response_schema_ref(200, 'commercial/pi'),
+				200: SE.response_schema_ref(200, 'commercial/pi_cash'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 		delete: {
-			tags: ['commercial.pi'],
-			summary: 'Delete a pi',
-			description: 'Delete a pi by uuid',
+			tags: ['commercial.pi_cash'],
+			summary: 'Delete a pi cash',
+			description: 'Delete a pi cash by uuid',
 			//operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
@@ -469,11 +473,11 @@ export const pathCommercialPi = {
 			},
 		},
 	},
-	'/commercial/pi/details/{pi_uuid}': {
+	'/commercial/pi-cash/details/{pi_cash_uuid}': {
 		get: {
-			tags: ['commercial.pi'],
-			summary: 'Get a pi details by pi_uuid',
-			description: ' Get a pi details by pi_uuid',
+			tags: ['commercial.pi_cash'],
+			summary: 'Get a pi details by pi_cash_uuid',
+			description: ' Get a pi cash details by pi_cash_uuid',
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
@@ -506,11 +510,14 @@ export const pathCommercialPi = {
 					created_at: SE.date_time(),
 					update_at: SE.date_time(),
 					remarks: SE.string('remarks'),
+					is_pi: SE.integer(0),
+					conversion_rate: SE.number(1000.0),
+					receive_amount: SE.number(1000.0),
 					pi_entry: SE.sub_response_schema({
 						uuid: SE.uuid(),
-						pi_uuid: SE.uuid(),
-						pi_number: SE.string('PI24-0001'),
-						pi_date: SE.date_time(),
+						pi_cash_uuid: SE.uuid(),
+						pi_cash_number: SE.string('PI24-0001'),
+						pi_cash_date: SE.date_time(),
 						amount: SE.number(123456),
 						created_by: SE.uuid(),
 						created_by_name: SE.string('John Doe'),
@@ -524,42 +531,42 @@ export const pathCommercialPi = {
 			},
 		},
 	},
-	'/commercial/pi-lc-uuid/{pi_uuid}': {
+	'/commercial/pi-cash-lc-uuid/{pi_uuid}': {
 		put: {
-			tags: ['commercial.pi'],
-			summary: 'Update a pi put lc',
-			description: 'Update a pi put lc by pi_uuid',
+			tags: ['commercial.pi_cash'],
+			summary: 'Update a pi cash put lc',
+			description: 'Update a pi cash put lc by pi_uuid',
 			//operationId: "updatePet",
 			consume: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params(
 					'Update data using uuid',
-					'pi_uuid',
+					'pi_cash_uuid',
 					'uuid'
 				),
 			],
-			requestBody: SE.requestBody_schema_ref('commercial/pi'),
+			requestBody: SE.requestBody_schema_ref('commercial/pi_cash'),
 			responses: {
-				200: SE.response_schema_ref(200, 'commercial/pi'),
+				200: SE.response_schema_ref(200, 'commercial/pi_cash'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 	},
-	'/commercial/pi-lc-null/{pi_uuid}': {
+	'/commercial/pi-cash-lc-null/{pi_cash_uuid}': {
 		put: {
-			tags: ['commercial.pi'],
-			summary: 'Update a pi put lc to null',
-			description: 'Update a pi put lc to null by pi_uuid',
+			tags: ['commercial.pi_cash'],
+			summary: 'Update a pi cash put lc to null',
+			description: 'Update a pi cash put lc to null by pi_uuid',
 			//operationId: "updatePet",
 			consume: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params(
 					'Update data using uuid',
-					'pi_uuid',
+					'pi_cash_uuid',
 					'uuid'
 				),
 			],
@@ -571,11 +578,11 @@ export const pathCommercialPi = {
 			},
 		},
 	},
-	'/commercial/pi-lc/{lc_uuid}': {
+	'/commercial/pi-cash-lc/{lc_uuid}': {
 		get: {
-			tags: ['commercial.pi'],
+			tags: ['commercial.pi_cash'],
 			summary: 'Get a pi by lc_uuid',
-			description: ' Get a pi by lc_uuid',
+			description: ' Get a pi cash by lc_uuid',
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
@@ -608,23 +615,26 @@ export const pathCommercialPi = {
 					created_at: SE.date_time(),
 					update_at: SE.date_time(),
 					remarks: SE.string('remarks'),
+					is_pi: SE.integer(0),
+					conversion_rate: SE.number(1000.0),
+					receive_amount: SE.number(1000.0),
 				}),
 				400: SE.response(400),
 				404: SE.response(404),
 			},
 		},
 	},
-	'/commercial/pi-uuid/{pi_id}': {
+	'/commercial/pi-cash-uuid/{pi_cash_id}': {
 		get: {
 			tags: ['commercial.pi'],
-			summary: 'Get a pi by pi_id',
-			description: ' Get a pi by pi_id',
+			summary: 'Get a pi cash by pi_cash_id',
+			description: ' Get a pi cash by pi_cash_id',
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params(
 					'Pi to get',
-					'pi_id',
+					'pi_cash_id',
 					'string',
 					'PI24-0001'
 				),
@@ -636,17 +646,17 @@ export const pathCommercialPi = {
 			},
 		},
 	},
-	'/commercial/pi/details/by/pi-id/{pi_id}': {
+	'/commercial/pi-cash/details/by/pi-cash-id/{pi_cash_id}': {
 		get: {
-			tags: ['commercial.pi'],
-			summary: 'Get a pi details by pi_id',
-			description: ' Get a pi details by pi_id',
+			tags: ['commercial.pi_cash'],
+			summary: 'Get a pi cash details by pi_cash_id',
+			description: ' Get a pi cash details by pi_cash_id',
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params(
 					'Pi to get',
-					'pi_id',
+					'pi_cash_id',
 					'string',
 					'PI24-0001'
 				),
@@ -678,6 +688,9 @@ export const pathCommercialPi = {
 					created_at: SE.date_time(),
 					update_at: SE.date_time(),
 					remarks: SE.string('remarks'),
+					is_pi: SE.integer(0),
+					conversion_rate: SE.number(1000.0),
+					receive_amount: SE.number(1000.0),
 				}),
 			},
 		},
@@ -686,68 +699,68 @@ export const pathCommercialPi = {
 
 // * Commercial Pi_Entry* //
 
-export const pathCommercialPiEntry = {
-	'/commercial/pi-entry': {
+export const pathCommercialPiCashEntry = {
+	'/commercial/pi-cash-entry': {
 		get: {
-			tags: ['commercial.pi_entry'],
-			summary: 'Get all pi_entries',
-			description: 'All pi_entries',
+			tags: ['commercial.pi_cash_entry'],
+			summary: 'Get all pi_cash_entries',
+			description: 'All pi_cash_entries',
 			responses: {
-				200: SE.response_schema_ref(200, 'commercial/pi_entry'),
+				200: SE.response_schema_ref(200, 'commercial/pi_cash_entry'),
 			},
 		},
 		post: {
-			tags: ['commercial.pi_entry'],
-			summary: 'Create a pi_entry',
-			description: 'Create a pi_entry',
+			tags: ['commercial.pi_cash_entry'],
+			summary: 'Create a pi_cash_entry',
+			description: 'Create a pi_cash_entry',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: SE.requestBody_schema_ref('commercial/pi_entry'),
+			requestBody: SE.requestBody_schema_ref('commercial/pi_cash_entry'),
 			responses: {
-				200: SE.response_schema_ref(200, 'commercial/pi_entry'),
+				200: SE.response_schema_ref(200, 'commercial/pi_cash_entry'),
 				405: SE.response(405),
 			},
 		},
 	},
 
-	'/commercial/pi-entry/{uuid}': {
+	'/commercial/pi-cash-entry/{uuid}': {
 		get: {
-			tags: ['commercial.pi_entry'],
-			summary: 'Get a pi_entry',
-			description: ' Get a pi_entry by uuid',
+			tags: ['commercial.pi_cash_entry'],
+			summary: 'Get a pi_cash_entry',
+			description: ' Get a pi_cash_entry by uuid',
 			//operationId: "getPiEntryByUuid",
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params('Get data using uuid', 'uuid', 'uuid'),
 			],
 			responses: {
-				200: SE.response_schema_ref(200, 'commercial/pi_entry'),
+				200: SE.response_schema_ref(200, 'commercial/pi_cash_entry'),
 				400: SE.response(400),
 				404: SE.response(404),
 			},
 		},
 		put: {
-			tags: ['commercial.pi_entry'],
-			summary: 'Update a pi_entry',
-			description: 'Update a pi_entry by uuid',
+			tags: ['commercial.pi_cash_entry'],
+			summary: 'Update a pi_cash_entry',
+			description: 'Update a pi_cash_entry by uuid',
 			//operationId: "updatePiEntryByUuid",
 			consume: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params('Update data using uuid', 'uuid', 'uuid'),
 			],
-			requestBody: SE.requestBody_schema_ref('commercial/pi_entry'),
+			requestBody: SE.requestBody_schema_ref('commercial/pi_cash_entry'),
 			responses: {
-				200: SE.response_schema_ref(200, 'commercial/pi_entry'),
+				200: SE.response_schema_ref(200, 'commercial/pi_cash_entry'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 		delete: {
-			tags: ['commercial.pi_entry'],
-			summary: 'Delete a pi_entry',
-			description: 'Delete a pi_entry by uuid',
+			tags: ['commercial.pi_cash_entry'],
+			summary: 'Delete a pi_cash_entry',
+			description: 'Delete a pi_cash_entry by uuid',
 			//operationId: "deletePiEntryByUuid",
 			produces: ['application/json'],
 			parameters: [
@@ -760,11 +773,11 @@ export const pathCommercialPiEntry = {
 			},
 		},
 	},
-	'/commercial/pi-entry/by/{pi_uuid}': {
+	'/commercial/pi-cash-entry/by/{pi_cash_uuid}': {
 		get: {
-			tags: ['commercial.pi_entry'],
-			summary: 'Get a pi_entry by pi_uuid',
-			description: ' Get a pi_entry by pi_uuid',
+			tags: ['commercial.pi_cash_entry'],
+			summary: 'Get a pi_cash_entry by pi_cash_uuid',
+			description: ' Get a pi_cash_entry by pi_cash_uuid',
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
@@ -773,7 +786,7 @@ export const pathCommercialPiEntry = {
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
-					pi_uuid: SE.uuid(),
+					pi_cash_uuid: SE.uuid(),
 					pi_number: SE.number(123456),
 					pi_date: SE.date_time(),
 					amount: SE.number(12.3456),
@@ -788,11 +801,11 @@ export const pathCommercialPiEntry = {
 			},
 		},
 	},
-	'/commercial/pi-entry/details/by/{order_info_uuid}': {
+	'/commercial/pi-cash-entry/details/by/{order_info_uuid}': {
 		get: {
-			tags: ['commercial.pi_entry'],
-			summary: 'Get a pi_entry by order_info_uuid',
-			description: ' Get a pi_entry by order_info_uuid',
+			tags: ['commercial.pi_cash_entry'],
+			summary: 'Get a pi_cash_entry by order_info_uuid',
+			description: ' Get a pi_cash_entry by order_info_uuid',
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
@@ -828,12 +841,12 @@ export const pathCommercialPiEntry = {
 			},
 		},
 	},
-	'/commercial/pi/details/by/order-info-ids/{order_info_uuids}/{party_uuid}/{marketing_uuid}':
+	'/commercial/pi-cash/details/by/order-info-ids/{order_info_uuids}/{party_uuid}/{marketing_uuid}':
 		{
 			get: {
-				tags: ['commercial.pi_entry'],
-				summary: 'Get a pi_entry by order_info_uuids',
-				description: ' Get a pi_entry by order_info_uuids',
+				tags: ['commercial.pi_cash_entry'],
+				summary: 'Get a pi_cash_entry by order_info_uuids',
+				description: ' Get a pi_cash_entry by order_info_uuids',
 				//operationId: "getPet",
 				produces: ['application/json'],
 				parameters: [
@@ -880,6 +893,6 @@ export const pathCommercialPiEntry = {
 export const pathCommercial = {
 	...pathCommercialBank,
 	...pathCommercialLc,
-	...pathCommercialPi,
-	...pathCommercialPiEntry,
+	...pathCommercialPiCash,
+	...pathCommercialPiCashEntry,
 };

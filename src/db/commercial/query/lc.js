@@ -8,7 +8,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import { lc, pi } from '../schema.js';
+import { lc, pi_cash } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -80,17 +80,17 @@ export async function selectAll(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-			concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0')
+			concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
 			)) as pi_ids,
 			party.name AS party_name,
 			(	
 				SELECT 
-					SUM(coalesce(pi.payment,0) * coalesce(order_entry.party_price,0))
-				FROM commercial.pi 
-					LEFT JOIN commercial.pi_entry ON pi.uuid = pi_entry.pi_uuid 
-					LEFT JOIN zipper.sfg ON pi_entry.sfg_uuid = sfg.uuid
+					SUM(coalesce(pi_cash.payment,0) * coalesce(order_entry.party_price,0))
+				FROM commercial.pi_cash 
+					LEFT JOIN commercial.pi_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
-				WHERE pi.lc_uuid = lc.uuid
+				WHERE pi_cash.lc_uuid = lc.uuid
 			) AS total_value,
 			concat(
 			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
@@ -129,7 +129,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			public.party ON lc.party_uuid = party.uuid
 		LEFT JOIN
-			commercial.pi ON lc.uuid = pi.lc_uuid
+			commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
 		GROUP BY lc.uuid, party.name, users.name
 		ORDER BY lc.created_at DESC
 		`;
@@ -158,17 +158,17 @@ export async function select(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-			concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0')
-			)) as pi_ids,
+			concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
+			)) as pi_cash_ids,
 			party.name AS party_name,
 			(	
 				SELECT 
-					SUM(coalesce(pi.payment,0)  * coalesce(order_entry.party_price,0))
-				FROM commercial.pi 
-					LEFT JOIN commercial.pi_entry ON pi.uuid = pi_entry.pi_uuid 
-					LEFT JOIN zipper.sfg ON pi_entry.sfg_uuid = sfg.uuid
+					SUM(coalesce(pi_cash.payment,0)  * coalesce(order_entry.party_price,0))
+				FROM commercial.pi_cash 
+					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
-				WHERE pi.lc_uuid = lc.uuid
+				WHERE pi_cash.lc_uuid = lc.uuid
 			) AS total_value,
 			concat(
 			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
@@ -207,7 +207,7 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			public.party ON lc.party_uuid = party.uuid
 		LEFT JOIN
-			commercial.pi ON lc.uuid = pi.lc_uuid
+			commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
 		WHERE lc.uuid = ${req.params.uuid}
 		GROUP BY lc.uuid, party.name, users.name`;
 
@@ -237,14 +237,14 @@ export async function selectLcPiByLcUuid(req, res, next) {
 		const fetchData = async (endpoint) =>
 			await api.get(`/commercial/${endpoint}/${lc_uuid}`);
 
-		const [lc, pi] = await Promise.all([
+		const [lc, pi_cash] = await Promise.all([
 			fetchData('lc'),
-			fetchData('pi-lc'),
+			fetchData('pi-cash-lc'),
 		]);
 
 		const response = {
 			...lc?.data?.data,
-			pi: pi?.data?.data || [],
+			pi: pi_cash?.data?.data || [],
 		};
 
 		const toast = {
@@ -267,17 +267,17 @@ export async function selectLcByLcNumber(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-			concat('PI', to_char(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0')
-			)) as pi_ids,
+			concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
+			)) as pi_cash_ids,
 			party.name AS party_name,
 			(	
 				SELECT 
-					SUM(coalesce(pi.payment,0)  * coalesce(order_entry.party_price,0))
-				FROM commercial.pi 
-					LEFT JOIN commercial.pi_entry ON pi.uuid = pi_entry.pi_uuid 
-					LEFT JOIN zipper.sfg ON pi_entry.sfg_uuid = sfg.uuid
+					SUM(coalesce(pi_cash.payment,0)  * coalesce(order_entry.party_price,0))
+				FROM commercial.pi_cash 
+					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
-				WHERE pi.lc_uuid = lc.uuid
+				WHERE pi_cash.lc_uuid = lc.uuid
 			) AS total_value,
 			concat(
 			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
@@ -316,7 +316,7 @@ export async function selectLcByLcNumber(req, res, next) {
 		LEFT JOIN
 			public.party ON lc.party_uuid = party.uuid
 		LEFT JOIN
-			commercial.pi ON lc.uuid = pi.lc_uuid
+			commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
 		WHERE lc.lc_number = ${req.params.lc_number}
 		GROUP BY lc.uuid, party.name, users.name`;
 

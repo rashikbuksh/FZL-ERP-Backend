@@ -69,7 +69,7 @@ export const order_info_sequence = commercial.sequence('pi_sequence', {
 	increment: 1,
 });
 
-export const pi = commercial.table('pi', {
+export const pi_cash = commercial.table('pi_cash', {
 	uuid: uuid_primary,
 	id: integer('id')
 		.default(sql`nextval('commercial.pi_sequence')`)
@@ -90,20 +90,31 @@ export const pi = commercial.table('pi', {
 	factory_uuid: defaultUUID('factory_uuid').references(
 		() => publicSchema.factory.uuid
 	),
-	bank_uuid: defaultUUID('bank_uuid').references(() => bank.uuid),
-	validity: integer('validity').notNull(),
-	payment: integer('payment').notNull(),
+	bank_uuid: defaultUUID('bank_uuid')
+		.default(null)
+		.references(() => bank.uuid),
+	validity: integer('validity').default(0),
+	payment: integer('payment').default(0),
+	is_pi: integer('is_pi').default(0),
+	conversion_rate: decimal('conversion_rate', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	receive_amount: decimal('receive_amount', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
-export const pi_entry = commercial.table('pi_entry', {
+export const pi_cash_entry = commercial.table('pi_cash_entry', {
 	uuid: uuid_primary,
-	pi_uuid: defaultUUID('pi_uuid').references(() => pi.uuid),
+	pi_cash_uuid: defaultUUID('pi_cash_uuid').references(() => pi_cash.uuid),
 	sfg_uuid: defaultUUID('sfg_uuid').references(() => zipperSchema.sfg.uuid),
-	pi_quantity: decimal('pi_quantity', {
+	pi_cash_quantity: decimal('pi_cash_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
