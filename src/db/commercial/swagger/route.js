@@ -531,7 +531,7 @@ export const pathCommercialPiCash = {
 			},
 		},
 	},
-	'/commercial/pi-cash-lc-uuid/{pi_uuid}': {
+	'/commercial/pi-cash-lc-uuid/{pi_cash_uuid}': {
 		put: {
 			tags: ['commercial.pi_cash'],
 			summary: 'Update a pi cash put lc',
