@@ -133,7 +133,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN (
 			SELECT
 				assembly_stock.uuid AS assembly_stock_uuid,
-				SUM(trx_quantity) AS total_transaction_quantity
+				SUM(trx_quantity::numeric) AS total_transaction_quantity
 			FROM slider.transaction
 			JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
 			GROUP BY assembly_stock.uuid
