@@ -71,12 +71,12 @@ BEGIN
     THEN
         UPDATE slider.stock
         SET
-            coloring_stock = coloring_stock + CASE WHEN OLD.to_section = 'assembly_stock_to_coloring_stock' THEN OLD.trx_quantity ELSE 0 END
+            coloring_stock = coloring_stock - CASE WHEN OLD.to_section = 'assembly_stock_to_coloring_stock' THEN OLD.trx_quantity ELSE 0 END
         WHERE uuid = OLD.stock_uuid;
 
         UPDATE slider.assembly_stock
         SET
-            quantity = quantity - CASE WHEN OLD.from_section = 'assembly_stock' THEN OLD.trx_quantity ELSE 0 END
+            quantity = quantity + CASE WHEN OLD.from_section = 'assembly_stock' THEN OLD.trx_quantity ELSE 0 END
         WHERE uuid = OLD.assembly_stock_uuid;
     END IF;
 

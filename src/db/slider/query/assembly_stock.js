@@ -7,12 +7,28 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { assembly_stock, die_casting } from '../schema.js';
+import {
+	assembly_stock,
+	die_casting,
+	die_casting_to_assembly_stock,
+} from '../schema.js';
 
 const diecastingbody = alias(die_casting, 'diecastingbody');
 const diecastingpuller = alias(die_casting, 'diecastingpuller');
 const diecastingcap = alias(die_casting, 'diecastingcap');
 const diecastinglink = alias(die_casting, 'diecastinglink');
+
+const transaction_total_trx = alias(
+	sql`
+		SELECT
+			assembly_stock.uuid AS assembly_stock_uuid,
+			SUM(trx_quantity) AS total_transaction_quantity
+		FROM slider.transaction
+		JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
+		GROUP BY assembly_stock.uuid
+	`,
+	'transaction_total_trx'
+);
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -158,6 +174,8 @@ export async function select(req, res, next) {
 			die_casting_link_quantity: diecastinglink.quantity_in_sa,
 			min_quantity_with_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa)`,
 			min_quantity_no_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa)`,
+			total_transaction_quantity:
+				transaction_total_trx.total_transaction_quantity,
 			quantity: assembly_stock.quantity,
 			created_by: assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,
@@ -185,6 +203,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			diecastinglink,
 			eq(assembly_stock.die_casting_link_uuid, diecastinglink.uuid)
+		)
+		.leftJoin(
+			transaction_total_trx,
+			eq(assembly_stock.uuid, transaction_total_trx.assembly_stock_uuid)
 		)
 		.where(eq(assembly_stock.uuid, req.params.uuid));
 
