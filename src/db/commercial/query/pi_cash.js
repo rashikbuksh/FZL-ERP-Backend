@@ -308,7 +308,7 @@ export async function selectPiUuidByPiId(req, res, next) {
 			message: 'Pi uuid',
 		};
 
-		res.status(200).json({ toast, data: data[0] });
+		res.status(200).json({ toast, data: data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -332,7 +332,7 @@ export async function selectPiDetailsByPiId(req, res, next) {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/${piCashUuid.data.data.uuid}`)
+				.get(`${endpoint}/${piCashUuid.data.uuid}`)
 				.then((response) => response);
 
 		const [pi_cash, pi_cash_entry] = await Promise.all([

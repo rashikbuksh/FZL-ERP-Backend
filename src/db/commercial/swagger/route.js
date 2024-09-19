@@ -626,7 +626,7 @@ export const pathCommercialPiCash = {
 	},
 	'/commercial/pi-cash-uuid/{pi_cash_id}': {
 		get: {
-			tags: ['commercial.pi'],
+			tags: ['commercial.pi_cash'],
 			summary: 'Get a pi cash by pi_cash_id',
 			description: ' Get a pi cash by pi_cash_id',
 			//operationId: "getPet",
