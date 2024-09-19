@@ -456,20 +456,41 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 }
 
 export async function selectOrderNumberForPi(req, res, next) {
-	const query = sql`
-				SELECT
-					DISTINCT vod.order_info_uuid AS value,
-					vod.order_number AS label
-				FROM
-					zipper.v_order_details vod
-					LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
-				WHERE 
-					vod.is_cash = 0 AND
-					vod.marketing_uuid = ${req.params.marketing_uuid} AND
-					oi.party_uuid = ${req.params.party_uuid} 
-				ORDER BY
-					vod.order_number ASC
-				`;
+	const is_cash = req.query.is_cash === 'true';
+	let query;
+
+	if (is_cash) {
+		query = sql`
+	SELECT
+		DISTINCT vod.order_info_uuid AS value,
+		vod.order_number AS label
+	FROM
+		zipper.v_order_details vod
+		LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
+	WHERE
+		vod.is_cash = 1 AND
+		vod.marketing_uuid = ${req.params.marketing_uuid} AND
+		oi.party_uuid = ${req.params.party_uuid}
+	ORDER BY
+		vod.order_number ASC
+`;
+	} else {
+		query = sql`
+	SELECT
+
+		DISTINCT vod.order_info_uuid AS value,
+		vod.order_number AS label
+	FROM
+		zipper.v_order_details vod
+		LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
+	WHERE
+		vod.is_cash = 0 AND
+		vod.marketing_uuid = ${req.params.marketing_uuid} AND
+		oi.party_uuid = ${req.params.party_uuid}
+	ORDER BY
+		vod.order_number ASC
+`;
+	}
 
 	const orderNumberPromise = db.execute(query);
 
