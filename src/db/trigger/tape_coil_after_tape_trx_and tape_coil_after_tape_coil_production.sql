@@ -1,70 +1,70 @@
 
-CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_trx_insert() RETURNS TRIGGER AS $$
-BEGIN
-    --Update zipper.tape_coil table
-    UPDATE zipper.tape_coil 
-    SET
+-- CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_trx_insert() RETURNS TRIGGER AS $$
+-- BEGIN
+--     --Update zipper.tape_coil table
+--     UPDATE zipper.tape_coil 
+--     SET
 
-        quantity = quantity  
-        - NEW.trx_quantity,
+--         quantity = quantity  
+--         - NEW.trx_quantity,
 
-        trx_quantity_in_coil = trx_quantity_in_coil 
-        + NEW.trx_quantity
+--         trx_quantity_in_coil = trx_quantity_in_coil 
+--         + NEW.trx_quantity
 
-    WHERE tape_coil.uuid = NEW.tape_coil_uuid;
-RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+--     WHERE tape_coil.uuid = NEW.tape_coil_uuid;
+-- RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_trx_delete() RETURNS TRIGGER AS $$
-BEGIN
-    --Update zipper.tape_coil table
-    UPDATE zipper.tape_coil 
-    SET
-        quantity = quantity + OLD.trx_quantity,
+-- CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_trx_delete() RETURNS TRIGGER AS $$
+-- BEGIN
+--     --Update zipper.tape_coil table
+--     UPDATE zipper.tape_coil 
+--     SET
+--         quantity = quantity + OLD.trx_quantity,
 
-        trx_quantity_in_coil = trx_quantity_in_coil 
-        - OLD.trx_quantity
+--         trx_quantity_in_coil = trx_quantity_in_coil 
+--         - OLD.trx_quantity
 
-    WHERE tape_coil.uuid = OLD.tape_coil_uuid;
+--     WHERE tape_coil.uuid = OLD.tape_coil_uuid;
 
-RETURN OLD;
-END;
+-- RETURN OLD;
+-- END;
 
-$$ LANGUAGE plpgsql;
+-- $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_trx_update() RETURNS TRIGGER AS $$
-BEGIN
-    --Update zipper.tape_coil table
-    UPDATE zipper.tape_coil 
-    SET
-        quantity = quantity - NEW.trx_quantity + OLD.trx_quantity,
+-- CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_trx_update() RETURNS TRIGGER AS $$
+-- BEGIN
+--     --Update zipper.tape_coil table
+--     UPDATE zipper.tape_coil 
+--     SET
+--         quantity = quantity - NEW.trx_quantity + OLD.trx_quantity,
 
-        trx_quantity_in_coil = trx_quantity_in_coil 
-            + NEW.trx_quantity
-            - OLD.trx_quantity
+--         trx_quantity_in_coil = trx_quantity_in_coil 
+--             + NEW.trx_quantity
+--             - OLD.trx_quantity
 
-    WHERE tape_coil.uuid = NEW.tape_coil_uuid;
+--     WHERE tape_coil.uuid = NEW.tape_coil_uuid;
 
-RETURN NEW;
-END;
+-- RETURN NEW;
+-- END;
 
-$$ LANGUAGE plpgsql;
+-- $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tape_coil_after_tape_trx_insert
-AFTER INSERT ON zipper.tape_trx
-FOR EACH ROW
-EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_insert();
+-- CREATE TRIGGER tape_coil_after_tape_trx_insert
+-- AFTER INSERT ON zipper.tape_trx
+-- FOR EACH ROW
+-- EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_insert();
 
-CREATE TRIGGER tape_coil_after_tape_trx_delete
-AFTER DELETE ON zipper.tape_trx
-FOR EACH ROW
-EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_delete();
+-- CREATE TRIGGER tape_coil_after_tape_trx_delete
+-- AFTER DELETE ON zipper.tape_trx
+-- FOR EACH ROW
+-- EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_delete();
 
-CREATE TRIGGER tape_coil_after_tape_trx_update
-AFTER UPDATE ON zipper.tape_trx
-FOR EACH ROW
-EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_update();
+-- CREATE TRIGGER tape_coil_after_tape_trx_update
+-- AFTER UPDATE ON zipper.tape_trx
+-- FOR EACH ROW
+-- EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_update();
 
 
 CREATE OR REPLACE FUNCTION zipper.tape_coil_after_tape_coil_production() RETURNS TRIGGER AS $$

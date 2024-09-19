@@ -1,5 +1,6 @@
 import SE, { SED } from '../../../util/swagger_example.js';
 
+
 //* ./schema.js#bank
 
 export const defCommercialBank = SED({
@@ -67,7 +68,7 @@ export const defCommercialLc = SED({
 	xml: 'Commercial/Lc',
 });
 
-export const defCommercialPi = SED({
+export const defCommercialPiCash = SED({
 	type: 'object',
 	required: [
 		'uuid',
@@ -82,6 +83,9 @@ export const defCommercialPi = SED({
 		'payment',
 		'created_by',
 		'created_at',
+		'is_pi',
+		'conversion_rate',
+		'receive_amount',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -99,31 +103,34 @@ export const defCommercialPi = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		is_pi: SE.integer(0),
+		conversion_rate: SE.number(1000.0),
+		receive_amount: SE.number(1000.0),
 	},
-	xml: 'Commercial/Pi',
+	xml: 'Commercial/PiCash',
 });
 
-export const defCommercialPiEntry = SED({
+export const defCommercialPiCashEntry = SED({
 	// type: 'object',
 	required: ['uuid', 'pi_uuid', 'sfg_uuid', 'pi_quantity', 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
-		pi_uuid: SE.uuid(),
+		pi_cash_uuid: SE.uuid(),
 		sfg_uuid: SE.uuid(),
-		pi_quantity: SE.number(1000.0),
+		pi_cash_quantity: SE.number(1000.0),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Commercial/PiEntry',
+	xml: 'Commercial/PiCashEntry',
 });
 
 // * Marge All
 export const defCommercial = {
 	bank: defCommercialBank,
 	lc: defCommercialLc,
-	pi: defCommercialPi,
-	pi_entry: defCommercialPiEntry,
+	pi_cash: defCommercialPiCash,
+	pi_cash_entry: defCommercialPiCashEntry,
 };
 
 // * Tag
@@ -145,7 +152,7 @@ export const tagCommercial = [
 		},
 	},
 	{
-		name: 'commercial.pi',
+		name: 'commercial.pi_cash',
 		description: 'Operations about commercial pi',
 		externalDocs: {
 			description: 'Find out more',
@@ -153,7 +160,7 @@ export const tagCommercial = [
 		},
 	},
 	{
-		name: 'commercial.pi_entry',
+		name: 'commercial.pi_cash_entry',
 		description: 'Operations about commercial pi_entry',
 		externalDocs: {
 			description: 'Find out more',

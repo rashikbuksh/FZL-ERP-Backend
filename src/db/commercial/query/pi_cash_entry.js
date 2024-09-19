@@ -7,15 +7,15 @@ import {
 } from '../../../util/index.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { pi_entry } from '../schema.js';
+import { pi_cash_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const pi_entryPromise = db
-		.insert(pi_entry)
+		.insert(pi_cash_entry)
 		.values(req.body)
-		.returning({ insertId: pi_entry.uuid });
+		.returning({ insertId: pi_cash_entry.uuid });
 	try {
 		const data = await pi_entryPromise;
 		const toast = {
@@ -34,10 +34,10 @@ export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const piEntryPromise = db
-		.update(pi_entry)
+		.update(pi_cash_entry)
 		.set(req.body)
-		.where(eq(pi_entry.uuid, req.params.uuid))
-		.returning({ updatedId: pi_entry.uuid });
+		.where(eq(pi_cash_entry.uuid, req.params.uuid))
+		.returning({ updatedId: pi_cash_entry.uuid });
 
 	try {
 		const data = await piEntryPromise;
@@ -57,9 +57,9 @@ export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const piEntryPromise = db
-		.delete(pi_entry)
-		.where(eq(pi_entry.uuid, req.params.uuid))
-		.returning({ deletedId: pi_entry.uuid });
+		.delete(pi_cash_entry)
+		.where(eq(pi_cash_entry.uuid, req.params.uuid))
+		.returning({ deletedId: pi_cash_entry.uuid });
 
 	try {
 		const data = await piEntryPromise;
@@ -78,21 +78,21 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
-			uuid: pi_entry.uuid,
-			pi_uuid: pi_entry.pi_uuid,
-			sfg_uuid: pi_entry.sfg_uuid,
-			pi_quantity: pi_entry.pi_quantity,
-			created_at: pi_entry.created_at,
-			updated_at: pi_entry.updated_at,
-			remarks: pi_entry.remarks,
+			uuid: pi_cash_entry.uuid,
+			pi_cash_uuid: pi_cash_entry.pi_cash_uuid,
+			sfg_uuid: pi_cash_entry.sfg_uuid,
+			pi_cash_quantity: pi_cash_entry.pi_cash_quantity,
+			created_at: pi_cash_entry.created_at,
+			updated_at: pi_cash_entry.updated_at,
+			remarks: pi_cash_entry.remarks,
 		})
-		.from(pi_entry)
-		.orderBy(desc(pi_entry.created_at));
+		.from(pi_cash_entry)
+		.orderBy(desc(pi_cash_entry.created_at));
 
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		message: 'pi_entry list',
+		message: 'pi_cash_entry list',
 	};
 	handleResponse({
 		promise: resultPromise,
@@ -107,23 +107,23 @@ export async function select(req, res, next) {
 
 	const pi_entryPromise = db
 		.select({
-			uuid: pi_entry.uuid,
-			pi_uuid: pi_entry.pi_uuid,
-			sfg_uuid: pi_entry.sfg_uuid,
-			pi_quantity: pi_entry.pi_quantity,
-			created_at: pi_entry.created_at,
-			updated_at: pi_entry.updated_at,
-			remarks: pi_entry.remarks,
+			uuid: pi_cash_entry.uuid,
+			pi_cash_uuid: pi_cash_entry.pi_cash_uuid,
+			sfg_uuid: pi_cash_entry.sfg_uuid,
+			pi_cash_quantity: pi_cash_entry.pi_cash_quantity,
+			created_at: pi_cash_entry.created_at,
+			updated_at: pi_cash_entry.updated_at,
+			remarks: pi_cash_entry.remarks,
 		})
-		.from(pi_entry)
-		.where(eq(pi_entry.uuid, req.params.uuid));
+		.from(pi_cash_entry)
+		.where(eq(pi_cash_entry.uuid, req.params.uuid));
 
 	try {
 		const data = await pi_entryPromise;
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'pi_entry',
+			message: 'pi_cash_entry',
 		};
 
 		return res.status(200).json({ toast, data: data[0] });
@@ -149,11 +149,11 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 	                oe.quantity as quantity,
 	                vodf.item_description as item_description,
 	                oe.size as size,
-	                pe.pi_quantity as pi_quantity,
+	                pe.pi_cash_quantity as pi_cash_quantity,
 	                oe.quantity as max_quantity,
 	                oe.party_price as unit_price,
 					sfg.pi as given_pi_quantity,
-	                (pe.pi_quantity * oe.party_price) as value,
+	                (pe.pi_cash_quantity * oe.party_price) as value,
 	                (oe.quantity - sfg.pi) as balance_quantity,
 	                pe.created_at as created_at,
 	                pe.updated_at as updated_at,
@@ -162,9 +162,9 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					zipper.sfg sfg
 	                LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 	                LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-					LEFT JOIN commercial.pi_entry pe ON pe.sfg_uuid = sfg.uuid
+					LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
 				WHERE 
-					pe.pi_uuid = ${req.params.pi_uuid}
+					pe.pi_cash_uuid = ${req.params.pi_cash_uuid}
 				ORDER BY
 	                vodf.order_number ASC,
 					vodf.item_description ASC,
@@ -178,7 +178,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'pi_entry By Pi Uuid',
+			message: 'pi_cash_entry By Pi Cash Uuid',
 		};
 
 		return res.status(200).json({ toast, data: data?.rows });
@@ -210,7 +210,7 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             zipper.sfg sfg
             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
             LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
-			LEFT JOIN commercial.pi_entry pe ON pe.sfg_uuid = sfg.uuid
+			LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
         WHERE
             vod.order_info_uuid = ${req.params.order_info_uuid}
         ORDER BY 
@@ -228,7 +228,7 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'pi_entry By Order Info Uuid',
+			message: 'pi_cash_entry By Order Info Uuid',
 		};
 
 		return res.status(200).json({ toast, data: data?.rows });
@@ -252,7 +252,7 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			.map((String) => [String]);
 
 		const fetchData = async (endpoint) =>
-			await api.get(`/commercial/pi-entry/details/by/${endpoint}`);
+			await api.get(`/commercial/pi-cash-entry/details/by/${endpoint}`);
 
 		const results = await Promise.all(
 			order_info_uuids.flat().map((uuid) => fetchData(uuid))
@@ -264,7 +264,7 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			party_uuid,
 			marketing_uuid,
 			order_info_uuids,
-			pi_entry: results?.reduce((acc, result) => {
+			pi_cash_entry: results?.reduce((acc, result) => {
 				return [...acc, ...result?.data?.data];
 			}, []),
 		};
