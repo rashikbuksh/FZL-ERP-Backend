@@ -513,7 +513,7 @@ export const pathCommercialPiCash = {
 					is_pi: SE.integer(0),
 					conversion_rate: SE.number(1000.0),
 					receive_amount: SE.number(1000.0),
-					pi_entry: SE.sub_response_schema({
+					pi_cash_entry: SE.sub_response_schema({
 						uuid: SE.uuid(),
 						pi_cash_uuid: SE.uuid(),
 						pi_cash_number: SE.string('PI24-0001'),
