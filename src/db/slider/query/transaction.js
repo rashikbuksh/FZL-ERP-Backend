@@ -127,7 +127,10 @@ export async function selectAll(req, res, next) {
 			stock.sa_prod,
 			stock.coloring_stock,
 			stock.coloring_prod,
-			stock.trx_to_finishing
+			stock.trx_to_finishing,
+			transaction.assembly_stock_uuid,
+			assembly_stock.name as assembly_stock_name
+			assembly_stock.quantity as assembly_stock_quantity
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -136,6 +139,7 @@ export async function selectAll(req, res, next) {
 			hr.users ON transaction.created_by = users.uuid
 		LEFT JOIN 
 			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
     ORDER BY transaction.created_at DESC
 	`;
 
@@ -214,7 +218,11 @@ export async function select(req, res, next) {
 			vodf.order_number,
 			stock.sa_prod,
 			stock.coloring_stock,
-			stock.coloring_prod
+			stock.coloring_prod,
+			stock.trx_to_finishing,
+			transaction.assembly_stock_uuid,
+			assembly_stock.name as assembly_stock_name
+			assembly_stock.quantity as assembly_stock_quantity
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -223,6 +231,7 @@ export async function select(req, res, next) {
 			hr.users ON transaction.created_by = users.uuid
 		LEFT JOIN 
 			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
 		WHERE
 			transaction.uuid = ${req.params.uuid}
 	`;
@@ -302,7 +311,10 @@ export async function selectTransactionByFromSection(req, res, next) {
 			st_given.trx_quantity as total_trx_quantity,
 			(stock.sa_prod + transaction.trx_quantity) as max_sa_quantity,
 			(stock.coloring_prod + transaction.trx_quantity) as max_coloring_quantity,
-			(stock.trx_to_finishing + transaction.trx_quantity) as max_trx_to_finishing_quantity
+			(stock.trx_to_finishing + transaction.trx_quantity) as max_trx_to_finishing_quantity,
+			transaction.assembly_stock_uuid,
+			assembly_stock.name as assembly_stock_name,
+			assembly_stock.quantity as assembly_stock_quantity
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -319,6 +331,7 @@ export async function selectTransactionByFromSection(req, res, next) {
 				WHERE transaction.from_section = ${from_section}
 				GROUP BY stock.uuid
 			) as st_given ON transaction.stock_uuid = st_given.uuid
+		LEFT JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
 		WHERE 
 			transaction.from_section = ${from_section}
 	`;
