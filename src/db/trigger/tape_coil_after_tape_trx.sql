@@ -7,7 +7,7 @@ BEGIN
        trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' THEN NEW.trx_quantity ELSE 0 END,
        trx_quantity_in_coil = trx_quantity_in_coil + CASE WHEN NEW.to_section = 'coil' THEN NEW.trx_quantity ELSE 0 END,
        quantity = quantity - NEW.trx_quantity,
-       trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
+    --    trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
        quantity_in_coil = quantity_in_coil - CASE WHEN NEW.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END
 
     WHERE uuid = NEW.tape_coil_uuid;
@@ -23,7 +23,8 @@ BEGIN
        trx_quantity_in_dying = trx_quantity_in_dying - CASE WHEN OLD.to_section = 'dyeing' THEN OLD.trx_quantity ELSE 0 END,
        trx_quantity_in_coil = trx_quantity_in_coil - CASE WHEN OLD.to_section = 'coil' THEN OLD.trx_quantity ELSE 0 END,
        quantity = quantity +  OLD.trx_quantity,
-         trx_quantity_in_dying = trx_quantity_in_dying - CASE WHEN OLD.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN OLD.trx_quantity ELSE 0 END,
+
+        --  trx_quantity_in_dying = trx_quantity_in_dying - CASE WHEN OLD.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN OLD.trx_quantity ELSE 0 END,
 
          quantity_in_coil = quantity_in_coil + CASE WHEN OLD.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN OLD.trx_quantity ELSE 0 END
        
@@ -41,7 +42,10 @@ BEGIN
        trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.to_section = 'dyeing' THEN OLD.trx_quantity ELSE 0 END,
        trx_quantity_in_coil = trx_quantity_in_coil + CASE WHEN NEW.to_section = 'coil' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.to_section = 'coil' THEN OLD.trx_quantity ELSE 0 END,
        quantity = quantity - NEW.trx_quantity + OLD.trx_quantity,
-         trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN OLD.trx_quantity ELSE 0 END
+
+        --  trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN OLD.trx_quantity ELSE 0 END,
+
+         quantity_in_coil = quantity_in_coil - CASE WHEN NEW.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END + CASE WHEN OLD.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN OLD.trx_quantity ELSE 0 END
     WHERE uuid = NEW.tape_coil_uuid;
 
 RETURN NEW;
