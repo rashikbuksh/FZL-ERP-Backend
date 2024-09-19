@@ -33,9 +33,8 @@ BEGIN
     SET
        trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dying' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.to_section = 'dying' THEN OLD.trx_quantity ELSE 0 END,
        trx_quantity_in_coil = trx_quantity_in_coil + CASE WHEN NEW.to_section = 'coil' THEN NEW.trx_quantity ELSE 0 END - CASE WHEN OLD.to_section = 'coil' THEN OLD.trx_quantity ELSE 0 END,
-       quantity = quantity - NEW.trx_quantity + CASE WHEN OLD.to_section = 'dying' THEN OLD.trx_quantity ELSE 0 END
+       quantity = quantity - NEW.trx_quantity + OLD.trx_quantity
     WHERE uuid = NEW.tape_coil_uuid;
-
 
 RETURN NEW;
 END;
