@@ -8,8 +8,8 @@ import {
 
 import * as bankOperations from './query/bank.js';
 import * as lcOperations from './query/lc.js';
-import * as piOperations from './query/pi.js';
-import * as piEntryOperations from './query/pi_entry.js';
+import * as piCashOperations from './query/pi_cash.js';
+import * as piCashEntryOperations from './query/pi_cash_entry.js';
 import commercial from './schema.js';
 
 const commercialRouter = Router();
@@ -33,56 +33,59 @@ commercialRouter.get(
 	lcOperations.selectLcByLcNumber
 );
 
-// pi routes
-commercialRouter.get('/pi', piOperations.selectAll);
-commercialRouter.get('/pi/:uuid', piOperations.select);
-commercialRouter.post('/pi', piOperations.insert);
-commercialRouter.put('/pi/:uuid', piOperations.update);
-commercialRouter.delete('/pi/:uuid', piOperations.remove);
+// pi_cash routes
+commercialRouter.get('/pi-cash', piCashOperations.selectAll);
+commercialRouter.get('/pi-cash/:uuid', piCashOperations.select);
+commercialRouter.post('/pi-cash', piCashOperations.insert);
+commercialRouter.put('/pi-cash/:uuid', piCashOperations.update);
+commercialRouter.delete('/pi-cash/:uuid', piCashOperations.remove);
 commercialRouter.get(
-	'/pi/details/:pi_uuid',
-	piOperations.selectPiDetailsByPiUuid
+	'/pi-cash/details/:pi_cash_uuid',
+	piCashOperations.selectPiDetailsByPiUuid
 );
 commercialRouter.put(
-	'/pi-lc-uuid/:pi_uuid',
-	piOperations.updatePiPutLcByPiUuid
+	'/pi-cash-lc-uuid/:pi_uuid',
+	piCashOperations.updatePiPutLcByPiUuid
 );
-commercialRouter.get('/pi-lc/:lc_uuid', piOperations.selectPiByLcUuid);
+commercialRouter.get('/pi-cash-lc/:lc_uuid', piCashOperations.selectPiByLcUuid);
 commercialRouter.put(
-	'/pi-lc-null/:pi_uuid',
-	piOperations.updatePiToNullByPiUuid
+	'/pi-cash-lc-null/:pi_cash_uuid',
+	piCashOperations.updatePiToNullByPiUuid
 );
-commercialRouter.get('/pi-uuid/:pi_id', piOperations.selectPiUuidByPiId);
 commercialRouter.get(
-	'/pi/details/by/pi-id/:pi_id',
-	piOperations.selectPiDetailsByPiId
+	'/pi-cash-uuid/:pi_cash_id',
+	piCashOperations.selectPiUuidByPiId
+);
+commercialRouter.get(
+	'/pi-cash/details/by/pi-cash-id/:pi_cash_id',
+	piCashOperations.selectPiDetailsByPiId
 );
 
-// pi_entry routes
-commercialRouter.get('/pi-entry', piEntryOperations.selectAll);
+// pi_cash_entry routes
+commercialRouter.get('/pi-cash-entry', piCashEntryOperations.selectAll);
 commercialRouter.get(
-	'/pi-entry/:uuid',
+	'/pi-cash-entry/:uuid',
 
-	piEntryOperations.select
+	piCashEntryOperations.select
 );
-commercialRouter.post('/pi-entry', piEntryOperations.insert);
-commercialRouter.put('/pi-entry/:uuid', piEntryOperations.update);
+commercialRouter.post('/pi-cash-entry', piCashEntryOperations.insert);
+commercialRouter.put('/pi-cash-entry/:uuid', piCashEntryOperations.update);
 commercialRouter.delete(
-	'/pi-entry/:uuid',
+	'/pi-cash-entry/:uuid',
 
-	piEntryOperations.remove
+	piCashEntryOperations.remove
 );
 commercialRouter.use(
-	'/pi-entry/by/:pi_uuid',
-	piEntryOperations.selectPiEntryByPiUuid
+	'/pi-cash-entry/by/:pi_uuid',
+	piCashEntryOperations.selectPiEntryByPiUuid
 );
 commercialRouter.get(
-	'/pi-entry/details/by/:order_info_uuid',
-	piEntryOperations.selectPiEntryByOrderInfoUuid
+	'/pi-cash-entry/details/by/:order_info_uuid',
+	piCashEntryOperations.selectPiEntryByOrderInfoUuid
 );
 commercialRouter.get(
-	'/pi/details/by/order-info-ids/:order_info_uuids/:party_uuid/:marketing_uuid',
-	piEntryOperations.selectPiEntryByPiDetailsByOrderInfoUuids
+	'/pi-cash/details/by/order-info-ids/:order_info_uuids/:party_uuid/:marketing_uuid',
+	piCashEntryOperations.selectPiEntryByPiDetailsByOrderInfoUuids
 );
 
 export { commercialRouter };
