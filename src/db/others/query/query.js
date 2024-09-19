@@ -888,7 +888,7 @@ export async function selectDieCastingUsingType(req, res, next) {
 	const query = sql`
 	SELECT
 		die_casting.uuid AS value,
-		die_casting.name as label
+		die_casting.name AS label
 	FROM
 		slider.die_casting
 	WHERE

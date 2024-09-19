@@ -99,6 +99,27 @@ export const defAssemblyStock = SED({
 	xml: 'Slider/AssemblyStock',
 });
 
+export const defDieCastingToAssemblyStock = SED({
+	required: [
+		'uuid',
+		'assembly_stock_uuid',
+		'production_quantity',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		assembly_stock_uuid: SE.uuid(),
+		production_quantity: SE.number(0.0),
+		wastage: SE.number(0.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Slider/DieCastingToAssemblyStock',
+});
+
 export const defDieCastingProduction = SED({
 	required: [
 		'uuid',
@@ -243,6 +264,8 @@ export const defSlider = {
 	die_casting: defDieCasting,
 	die_casting_production: defDieCastingProduction,
 	die_casting_transaction: defDieCastingTransaction,
+	assembly_stock: defAssemblyStock,
+	die_casting_to_assembly_stock: defDieCastingToAssemblyStock,
 	stock: defStock,
 	transaction: defTransaction,
 	coloring_transaction: defColoringTransaction,
@@ -263,6 +286,10 @@ export const tagSlider = [
 	{
 		name: 'slider.assembly_stock',
 		description: 'Assembly Stock',
+	},
+	{
+		name: 'slider.die_casting_to_assembly_stock',
+		description: 'Die Casting To Assembly Stock',
 	},
 	{
 		name: 'slider.die_casting_production',

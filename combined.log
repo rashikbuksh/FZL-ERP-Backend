@@ -1257,8 +1257,7 @@
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
-<<<<<<< HEAD
-=======
+
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
@@ -1463,13 +1462,12 @@
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
->>>>>>> 8f060813ffe5708fe5bbab532ad481bb3a44f86e
+
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
-<<<<<<< HEAD
-=======
+
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
@@ -1477,14 +1475,11 @@
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
->>>>>>> 8f060813ffe5708fe5bbab532ad481bb3a44f86e
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
-<<<<<<< HEAD
-=======
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"280","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"238","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
@@ -1547,7 +1542,6 @@
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mcolumn vodf.item_uuid does not exist\u001b[39m","data":{"length":113,"name":"error","severity":"ERROR","code":"42703","position":"202","file":"parse_relation.c","line":"3727","routine":"errorMissingColumn"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mMaximum call stack size exceeded\u001b[39m","data":{}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"itemproperties\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"152","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
->>>>>>> 8f060813ffe5708fe5bbab532ad481bb3a44f86e
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mCannot read properties of undefined (reading 'updatedId')\u001b[39m","data":{}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mcolumn vodf.item_uuid does not exist\u001b[39m","data":{"length":113,"name":"error","severity":"ERROR","code":"42703","position":"237","file":"parse_relation.c","line":"3727","routine":"errorMissingColumn"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mcolumn vodf.item_uuid does not exist\u001b[39m","data":{"length":113,"name":"error","severity":"ERROR","code":"42703","position":"237","file":"parse_relation.c","line":"3727","routine":"errorMissingColumn"}}
@@ -1910,3 +1904,4 @@
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31msyntax error at or near \"ORDER\"\u001b[39m","data":{"length":96,"name":"error","severity":"ERROR","code":"42601","position":"1326","file":"scan.l","line":"1245","routine":"scanner_yyerror"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31msyntax error at or near \"ORDER\"\u001b[39m","data":{"length":96,"name":"error","severity":"ERROR","code":"42601","position":"1326","file":"scan.l","line":"1245","routine":"scanner_yyerror"}}
 {"level":"\u001b[31merror\u001b[39m","message":"\u001b[31msyntax error at or near \"ORDER\"\u001b[39m","data":{"length":96,"name":"error","severity":"ERROR","code":"42601","position":"1326","file":"scan.l","line":"1245","routine":"scanner_yyerror"}}
+{"level":"\u001b[31merror\u001b[39m","message":"\u001b[31mmissing FROM-clause entry for table \"diecastingbody\"\u001b[39m","data":{"length":126,"name":"error","severity":"ERROR","code":"42P01","position":"107","file":"parse_relation.c","line":"3661","routine":"errorMissingRTE"}}
