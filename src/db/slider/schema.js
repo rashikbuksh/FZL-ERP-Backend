@@ -138,7 +138,6 @@ export const assembly_stock = slider.table('assembly_stock', {
 	die_casting_cap_uuid: defaultUUID('die_casting_cap_uuid'),
 	die_casting_link_uuid: defaultUUID('die_casting_link_uuid'),
 	quantity: PG_DECIMAL('quantity').default(0),
-	production_quantity: PG_DECIMAL('production_quantity').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -208,6 +207,9 @@ export const die_casting_transaction = slider.table('die_casting_transaction', {
 export const transaction = slider.table('transaction', {
 	uuid: uuid_primary,
 	stock_uuid: defaultUUID('stock_uuid').references(() => stock.uuid),
+	assembly_stock_uuid: defaultUUID('assembly_stock_uuid')
+		.references(() => assembly_stock.uuid)
+		.default(null),
 	from_section: text('from_section').notNull(),
 	to_section: text('to_section').notNull(),
 	trx_quantity: decimal('trx_quantity', {
