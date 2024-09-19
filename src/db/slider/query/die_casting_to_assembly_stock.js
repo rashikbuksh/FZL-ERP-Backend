@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -7,7 +7,16 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { assembly_stock, die_casting_to_assembly_stock } from '../schema.js';
+import {
+	assembly_stock,
+	die_casting,
+	die_casting_to_assembly_stock,
+} from '../schema.js';
+
+const diecastingbody = alias(die_casting, 'diecastingbody');
+const diecastingpuller = alias(die_casting, 'diecastingpuller');
+const diecastingcap = alias(die_casting, 'diecastingcap');
+const diecastinglink = alias(die_casting, 'diecastinglink');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -78,8 +87,19 @@ export async function selectAll(req, res, next) {
 			assembly_stock_uuid:
 				die_casting_to_assembly_stock.assembly_stock_uuid,
 			assembly_stock_name: assembly_stock.name,
+			die_casting_body_uuid: assembly_stock.die_casting_body_uuid,
+			die_casting_body_name: diecastingbody.name,
+			die_casting_puller_uuid: assembly_stock.die_casting_puller_uuid,
+			die_casting_puller_name: diecastingpuller.name,
+			die_casting_cap_uuid: assembly_stock.die_casting_cap_uuid,
+			die_casting_cap_name: diecastingcap.name,
+			die_casting_link_uuid: assembly_stock.die_casting_link_uuid,
+			die_casting_link_name: diecastinglink.name,
 			production_quantity:
 				die_casting_to_assembly_stock.production_quantity,
+			max_production_quantity_with_link: sql`diecastingbody.quantity_in_sa + diecastingpuller.quantity_in_sa + diecastingcap.quantity_in_sa + diecastinglink.quantity_in_sa + die_casting_to_assembly_stock.production_quantity`,
+			max_production_quantity_without_link: sql`diecastingbody.quantity_in_sa + diecastingpuller.quantity_in_sa + diecastingcap.quantity_in_sa + die_casting_to_assembly_stock.production_quantity`,
+			with_link: die_casting_to_assembly_stock.with_link,
 			created_by: die_casting_to_assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: die_casting_to_assembly_stock.created_at,
@@ -97,6 +117,22 @@ export async function selectAll(req, res, next) {
 				die_casting_to_assembly_stock.assembly_stock_uuid,
 				assembly_stock.uuid
 			)
+		)
+		.leftJoin(
+			diecastingbody,
+			eq(assembly_stock.die_casting_body_uuid, diecastingbody.uuid)
+		)
+		.leftJoin(
+			diecastingpuller,
+			eq(assembly_stock.die_casting_puller_uuid, diecastingpuller.uuid)
+		)
+		.leftJoin(
+			diecastingcap,
+			eq(assembly_stock.die_casting_cap_uuid, diecastingcap.uuid)
+		)
+		.leftJoin(
+			diecastinglink,
+			eq(assembly_stock.die_casting_link_uuid, diecastinglink.uuid)
 		)
 		.orderBy(desc(die_casting_to_assembly_stock.created_at));
 
@@ -121,8 +157,19 @@ export async function select(req, res, next) {
 			assembly_stock_uuid:
 				die_casting_to_assembly_stock.assembly_stock_uuid,
 			assembly_stock_name: assembly_stock.name,
+			die_casting_body_uuid: assembly_stock.die_casting_body_uuid,
+			die_casting_body_name: diecastingbody.name,
+			die_casting_puller_uuid: assembly_stock.die_casting_puller_uuid,
+			die_casting_puller_name: diecastingpuller.name,
+			die_casting_cap_uuid: assembly_stock.die_casting_cap_uuid,
+			die_casting_cap_name: diecastingcap.name,
+			die_casting_link_uuid: assembly_stock.die_casting_link_uuid,
+			die_casting_link_name: diecastinglink.name,
 			production_quantity:
 				die_casting_to_assembly_stock.production_quantity,
+			max_production_quantity_with_link: sql`diecastingbody.quantity_in_sa + diecastingpuller.quantity_in_sa + diecastingcap.quantity_in_sa + diecastinglink.quantity_in_sa + die_casting_to_assembly_stock.production_quantity`,
+			max_production_quantity_without_link: sql`diecastingbody.quantity_in_sa + diecastingpuller.quantity_in_sa + diecastingcap.quantity_in_sa + die_casting_to_assembly_stock.production_quantity`,
+			with_link: die_casting_to_assembly_stock.with_link,
 			created_by: die_casting_to_assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: die_casting_to_assembly_stock.created_at,
@@ -140,6 +187,22 @@ export async function select(req, res, next) {
 				die_casting_to_assembly_stock.assembly_stock_uuid,
 				assembly_stock.uuid
 			)
+		)
+		.leftJoin(
+			diecastingbody,
+			eq(assembly_stock.die_casting_body_uuid, diecastingbody.uuid)
+		)
+		.leftJoin(
+			diecastingpuller,
+			eq(assembly_stock.die_casting_puller_uuid, diecastingpuller.uuid)
+		)
+		.leftJoin(
+			diecastingcap,
+			eq(assembly_stock.die_casting_cap_uuid, diecastingcap.uuid)
+		)
+		.leftJoin(
+			diecastinglink,
+			eq(assembly_stock.die_casting_link_uuid, diecastinglink.uuid)
 		)
 		.where(eq(die_casting_to_assembly_stock.uuid, req.params.uuid));
 
