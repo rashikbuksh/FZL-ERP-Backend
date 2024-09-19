@@ -41,17 +41,17 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tape_coil_after_tape_trx_after_insert
+CREATE OR REPLACE TRIGGER tape_coil_after_tape_trx_after_insert
 AFTER INSERT ON zipper.tape_trx
 FOR EACH ROW
 EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_insert();
 
-CREATE TRIGGER tape_coil_after_tape_trx_after_delete
+CREATE OR REPLACE TRIGGER tape_coil_after_tape_trx_after_delete
 AFTER DELETE ON zipper.tape_trx
 FOR EACH ROW
 EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_delete();
 
-CREATE TRIGGER tape_coil_after_tape_trx_after_update
+CREATE OR REPLACE TRIGGER tape_coil_after_tape_trx_after_update
 AFTER UPDATE ON zipper.tape_trx
 FOR EACH ROW
 EXECUTE FUNCTION zipper.tape_coil_after_tape_trx_update();
