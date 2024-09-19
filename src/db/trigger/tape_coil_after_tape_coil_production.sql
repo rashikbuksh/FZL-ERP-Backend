@@ -77,9 +77,9 @@ BEGIN
 
         trx_quantity_in_coil = trx_quantity_in_coil 
         - CASE WHEN NEW.section = 'coil' THEN NEW.production_quantity + NEW.wastage ELSE 0 END,
-
-        quantity_in_coil = quantity_in_coil 
         + CASE WHEN NEW.section = 'coil' THEN NEW.production_quantity ELSE 0 END
+
+        stock_quantity = stock_quantity + CASE WHEN NEW.section = 'stock' THEN NEW.production_quantity ELSE 0 END
 
     WHERE uuid = NEW.tape_coil_uuid;
 
@@ -102,6 +102,8 @@ BEGIN
         quantity_in_coil = quantity_in_coil 
         - CASE WHEN OLD.section = 'coil' THEN OLD.production_quantity ELSE 0 END
 
+        stock_quantity = stock_quantity - CASE WHEN OLD.section = 'stock' THEN OLD.production_quantity ELSE 0 END
+
     WHERE uuid = OLD.tape_coil_uuid;
 
 RETURN OLD;
@@ -123,6 +125,8 @@ BEGIN
         + CASE WHEN OLD.section = 'coil' THEN OLD.production_quantity + OLD.wastage ELSE 0 END,
 
         quantity_in_coil = quantity_in_coil + CASE WHEN NEW.section = 'coil' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END
+
+        stock_quantity = stock_quantity + CASE WHEN NEW.section = 'stock' THEN NEW.production_quantity ELSE 0 END
         
     WHERE uuid = NEW.tape_coil_uuid;
 
