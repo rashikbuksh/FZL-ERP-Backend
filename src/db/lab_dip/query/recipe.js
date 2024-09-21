@@ -230,8 +230,6 @@ export async function updateRecipeByLabDipInfoUuid(req, res, next) {
 
 	const { recipe_uuid } = req.params;
 
-	console.log(recipe_uuid);
-
 	const recipePromise = db
 		.update(recipe)
 		.set({

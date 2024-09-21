@@ -333,13 +333,17 @@ export async function selectOrderDescription(req, res, next) {
 				`;
 
 	if (item == 'nylon') {
-		query.append(sql` HAVING LOWER(vodf.item_name) = 'nylon'`);
+		query.append(
+			sql` AND LOWER(vodf.item_name) = 'nylon plastic' AND LOWER(vodf.item_name) = 'nylon metallic'`
+		);
 	} else if (item == 'without-nylon') {
-		query.append(sql` HAVING LOWER(vodf.item_name) != 'nylon'`);
+		query.append(
+			sql` AND LOWER(vodf.item_name) != 'nylon plastic' AND LOWER(vodf.item_name) != 'nylon metallic'`
+		);
 	}
 
 	if (tape_received == 'true') {
-		query.append(sql` HAVING vodf.tape_received > 0`);
+		query.append(sql` AND vodf.tape_received > 0`);
 	}
 
 	const orderEntryPromise = db.execute(query);

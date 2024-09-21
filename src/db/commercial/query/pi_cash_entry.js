@@ -278,7 +278,6 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 
 		res.status(200).json({ toast, data: response });
 	} catch (error) {
-		console.log(error?.response);
 		return res.status(500).json(error);
 	}
 }

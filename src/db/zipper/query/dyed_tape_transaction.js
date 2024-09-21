@@ -150,8 +150,7 @@ export async function select(req, res, next) {
 }
 
 export async function selectDyedTapeTransactionBySection(req, res, next) {
-	const { section } = req.query;
-
+	if (!(await validateRequest(req, next))) return;
 	const query = sql`
 		SELECT
 			dtt.uuid AS uuid,
@@ -171,10 +170,6 @@ export async function selectDyedTapeTransactionBySection(req, res, next) {
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
 		WHERE dtt.section = ${req.params.section}
 	`;
-
-	if (section) {
-		query.append(sql` AND dtt.section = ${section}`);
-	}
 
 	const resultPromise = db.execute(query);
 

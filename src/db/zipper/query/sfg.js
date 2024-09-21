@@ -274,7 +274,8 @@ export async function selectSfgBySection(req, res, next) {
 			COALESCE(od.nylon_plastic_finishing,0) as nylon_plastic_finishing,
 			COALESCE(od.vislon_teeth_molding,0) as vislon_teeth_molding,
 			COALESCE(od.metal_teeth_molding,0) as metal_teeth_molding,
-			COALESCE(od.nylon_metallic_finishing,0) as nylon_metallic_finishing
+			COALESCE(od.nylon_metallic_finishing,0) as nylon_metallic_finishing,
+			COALESCE(od.slider_finishing_stock,0) as slider_finishing_stock
 		FROM
 			zipper.sfg sfg
 			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
@@ -284,26 +285,24 @@ export async function selectSfgBySection(req, res, next) {
 			LEFT JOIN public.properties op_item ON od.item = op_item.uuid
 			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
 			LEFT JOIN slider.stock ss ON od.uuid = ss.order_description_uuid
+			WHERE
+				sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != ''
+				${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
+			ORDER BY oe.created_at, sfg.uuid DESC
 		`;
-	// WHERE
-	// sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != '' // * for development purpose
 
-	if (item_name) {
-		query.append(
-			sql` WHERE lower(op_item.name) = lower(${item_name}) 
-					AND CASE 
-						WHEN lower(${item_name}) = 'vislon' 
-							THEN od.vislon_teeth_molding > 0
-						WHEN lower(${item_name}) = 'metal'
-							THEN od.metal_teeth_molding > 0
-						WHEN lower(${item_name}) = 'nylon plastic'
-							THEN od.nylon_plastic_finishing > 0
-						WHEN lower(${item_name}) = 'nylon metallic'
-							THEN od.nylon_metallic_finishing > 0 
-						ELSE false 
-					END`
-		);
-	}
+	// * for the below query, SFG was disappearing from the list
+	// AND CASE
+	// 					WHEN lower(${item_name}) = 'vislon'
+	// 						THEN od.vislon_teeth_molding > 0 OR sfg.teeth_molding_prod > 0
+	// 					WHEN lower(${item_name}) = 'metal'
+	// 						THEN od.metal_teeth_molding > 0 OR sfg.teeth_molding_prod > 0
+	// 					WHEN lower(${item_name}) = 'nylon plastic'
+	// 						THEN od.nylon_plastic_finishing > 0 OR sfg.finishing_prod > 0
+	// 					WHEN lower(${item_name}) = 'nylon metallic'
+	// 						THEN od.nylon_metallic_finishing > 0 OR sfg.finishing_prod > 0
+	// 					ELSE false
+	// 				END
 
 	const sfgPromise = db.execute(query);
 

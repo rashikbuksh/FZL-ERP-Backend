@@ -16,14 +16,13 @@ export async function insert(req, res, next) {
 		.values(req.body)
 		.returning({
 			insertedId: sfg_production.sfg_uuid,
-			insertedSection: sfg_production.section,
 		});
 	try {
 		const data = await sfgProductionPromise;
 
 		const orderDescription = sql`
 			SELECT
-				concat(vodf.order_number, ' - ', vodf.item_description) as insertedId
+				concat(vodf.order_number, ' - ', vodf.item_description) as inserted_id
 			FROM
 				zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -34,12 +33,10 @@ export async function insert(req, res, next) {
 
 		const order_details = await db.execute(orderDescription);
 
-		console.log(order_details);
-
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedSection} production inserted`,
+			message: `${order_details.rows[0].inserted_id} production inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -54,14 +51,29 @@ export async function update(req, res, next) {
 		.update(sfg_production)
 		.set(req.body)
 		.where(eq(sfg_production.uuid, req.params.uuid))
-		.returning({ updatedSection: sfg_production.section });
+		.returning({
+			updatedId: sfg_production.sfg_uuid,
+		});
 
 	try {
 		const data = await sfgProductionPromise;
+		const orderDescription = sql`
+			SELECT
+				concat(vodf.order_number, ' - ', vodf.item_description) as updated_id
+			FROM
+				zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+			WHERE
+				sfg.uuid = ${data[0].updatedId}
+			`;
+
+		const order_details = await db.execute(orderDescription);
+
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedSection} updated`,
+			message: `${order_details.rows[0].updated_id} updated`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -75,13 +87,29 @@ export async function remove(req, res, next) {
 	const sfgProductionPromise = db
 		.delete(sfg_production)
 		.where(eq(sfg_production.uuid, req.params.uuid))
-		.returning({ deletedSection: sfg_production.section });
+		.returning({
+			deletedId: sfg_production.sfg_uuid,
+		});
+
 	try {
 		const data = await sfgProductionPromise;
+		const orderDescription = sql`
+			SELECT
+				concat(vodf.order_number, ' - ', vodf.item_description) as deleted_id
+			FROM
+				zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+			WHERE
+				sfg.uuid = ${data[0].deletedId}
+			`;
+
+		const order_details = await db.execute(orderDescription);
+
 		const toast = {
 			status: 201,
 			type: 'delete',
-			message: `${data[0].deletedSection} deleted`,
+			message: `${order_details.rows[0].deleted_id} deleted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {

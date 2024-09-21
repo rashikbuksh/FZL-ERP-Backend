@@ -6,9 +6,9 @@ BEGIN
     SET
        trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' THEN NEW.trx_quantity ELSE 0 END,
        trx_quantity_in_coil = trx_quantity_in_coil + CASE WHEN NEW.to_section = 'coil' THEN NEW.trx_quantity ELSE 0 END,
-       quantity = quantity - NEW.trx_quantity,
-    --    trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
-       quantity_in_coil = quantity_in_coil - CASE WHEN NEW.to_section = 'dyeing' AND (SELECT name FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
+       quantity = quantity - CASE WHEN NEW.to_section = 'dyeing' THEN NEW.trx_quantity ELSE 0 END,
+       trx_quantity_in_dying = trx_quantity_in_dying + CASE WHEN NEW.to_section = 'coil_dyeing' AND (SELECT lower(name) FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
+       quantity_in_coil = quantity_in_coil - CASE WHEN NEW.to_section = 'coil_dyeing' AND (SELECT lower(name) FROM public.properties where zipper.tape_coil.item_uuid = public.properties.uuid) = 'nylon' THEN NEW.trx_quantity ELSE 0 END,
 
        stock_quantity = stock_quantity + CASE WHEN NEW.to_section = 'stock' THEN NEW.trx_quantity ELSE 0 END,
        trx_quantity_in_dying = trx_quantity_in_dying - CASE WHEN NEW.to_section = 'stock' THEN NEW.trx_quantity ELSE 0 END
