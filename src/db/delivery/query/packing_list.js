@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -201,12 +201,15 @@ export async function selectAllOrderForPackingList(req, res, next) {
 
 	try {
 		const data = await db.execute(query);
+
+		const packingListData = { packing_list_entry: data?.rows };
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: `Order list for packing list`,
 		};
-		return await res.status(201).json({ toast, data: data?.rows });
+		return await res.status(201).json({ toast, data: packingListData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
