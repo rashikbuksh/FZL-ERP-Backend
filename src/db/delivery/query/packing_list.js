@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, is, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -143,6 +143,7 @@ export async function selectPackingListDetailsByPackingListUuid(
 	if (!(await validateRequest(req, next))) return;
 
 	const { packing_list_uuid } = req.params;
+	const { is_update, order_info_uuid } = req.query;
 
 	try {
 		const api = await createApi(req);
@@ -156,10 +157,58 @@ export async function selectPackingListDetailsByPackingListUuid(
 			fetchData('/delivery/packing-list-entry/by'),
 		]);
 
+		let query;
+
+		if (is_update) {
+			query = sql`
+        SELECT 
+            ple.uuid,
+            ple.packing_list_uuid,
+            ple.sfg_uuid,
+            ple.quantity,
+            ple.created_at,
+            ple.updated_at,
+            ple.remarks,
+			vodf.order_info_uuid as order_info_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			vodf.order_description_uuid,
+			oe.style,
+			oe.color,
+			oe.size,
+			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
+			oe.quantity as order_quantity,
+			sfg.uuid as sfg_uuid,
+			sfg.warehouse as warehouse,
+			sfg.delivered as delivered,
+			(oe.quantity - sfg.delivered) as balance_quantity,
+			false as is_checked
+		FROM
+			zipper.v_order_details_full vodf
+		LEFT JOIN
+			zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+		LEFT JOIN
+			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+		LEFT JOIN delivery.packing_list_entry ple ON ple.sfg_uuid = sfg.uuid
+        WHERE 
+            vodf.order_info_uuid = ${order_info_uuid} AND ple.uuid IS NULL
+        ORDER BY
+            ple.created_at, ple.uuid DESC
+    `;
+		}
+		const query_data = await db.execute(query);
+
 		const response = {
 			...packing_list?.data?.data,
 			packing_list_entry: packing_list_entry?.data?.data || [],
 		};
+		// if is_update true then add the query_data to the existing packing_list_entry
+		if (is_update) {
+			response.packing_list_entry = [
+				...response.packing_list_entry,
+				...query_data?.rows,
+			];
+		}
 
 		const toast = {
 			status: 200,
@@ -175,6 +224,7 @@ export async function selectPackingListDetailsByPackingListUuid(
 }
 
 export async function selectAllOrderForPackingList(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
 	const query = sql`
 		SELECT 
 			vodf.order_info_uuid as order_info_uuid,
@@ -197,7 +247,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN
 			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 		WHERE
-			(oe.quantity - sfg.delivered) > 0
+			(oe.quantity - sfg.delivered) > 0 AND vodf.order_info_uuid = ${req.params.order_info_uuid}
 		ORDER BY
 			oe.created_at, oe.uuid DESC
 		`;
