@@ -329,7 +329,8 @@ export async function selectStockByFromSection(req, res, next) {
 		stock.created_at,
 		stock.updated_at,
 		stock.remarks,
-		slider_transaction_given.trx_quantity as total_trx_quantity
+		slider_transaction_given.trx_quantity as total_trx_quantity,
+		slider_transaction_given.trx_weight as trx_weight
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -343,6 +344,7 @@ export async function selectStockByFromSection(req, res, next) {
         SELECT
             stock.uuid AS stock_uuid,
             SUM(transaction.trx_quantity) AS trx_quantity
+			SUM(transaction.weight) AS trx_weight
         FROM
             slider.transaction
         LEFT JOIN
