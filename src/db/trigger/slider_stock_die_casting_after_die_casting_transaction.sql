@@ -3,15 +3,16 @@ BEGIN
     --update slider.stock table
     UPDATE slider.die_casting
     SET
-        quantity = quantity - NEW.trx_quantity
+        quantity = quantity - NEW.trx_quantity,
+        weight = weight - NEW.weight
     WHERE uuid = NEW.die_casting_uuid;
 
     UPDATE slider.stock
     SET
         body_quantity = body_quantity 
-            + CASE WHEN type = 'body' THEN NEW.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'body' THEN NEW.trx_quantity ELSE 0 END,
         puller_quantity = puller_quantity 
-            + CASE WHEN type = 'puller' THEN NEW.trx_quantity ELSE 0 END,
+            + CASE WHEN dc.type = 'puller' THEN NEW.trx_quantity ELSE 0 END,
         cap_quantity = cap_quantity 
             + CASE WHEN dc.type = 'cap' THEN NEW.trx_quantity ELSE 0 END,
         link_quantity = link_quantity 
@@ -36,16 +37,17 @@ CREATE OR REPLACE FUNCTION slider.slider_stock_after_die_casting_transaction_del
 BEGIN
  UPDATE slider.die_casting
     SET
-        quantity = quantity + OLD.trx_quantity
+        quantity = quantity + OLD.trx_quantity,
+        weight = weight + OLD.weight
     WHERE uuid = OLD.die_casting_uuid;
 
     --update slider.stock table
     UPDATE slider.stock
     SET
         body_quantity = body_quantity 
-            - CASE WHEN type = 'body' THEN OLD.trx_quantity ELSE 0 END,
+            - CASE WHEN dc.type = 'body' THEN OLD.trx_quantity ELSE 0 END,
         puller_quantity = puller_quantity 
-            - CASE WHEN type = 'puller' THEN OLD.trx_quantity ELSE 0 END,
+            - CASE WHEN dc.type = 'puller' THEN OLD.trx_quantity ELSE 0 END,
         cap_quantity = cap_quantity 
             - CASE WHEN dc.type = 'cap' THEN OLD.trx_quantity ELSE 0 END,
         link_quantity = link_quantity 
@@ -72,8 +74,8 @@ BEGIN
     --update slider.stock table
     UPDATE slider.die_casting
     SET
-        quantity = quantity - NEW.trx_quantity + OLD.trx_quantity
-
+        quantity = quantity - NEW.trx_quantity + OLD.trx_quantity,
+        weight = weight - NEW.weight + OLD.weight
     WHERE uuid = NEW.die_casting_uuid;
 
     UPDATE slider.stock
@@ -111,17 +113,17 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE TRIGGER slider_stock_after_die_casting_transaction_insert
+CREATE OR REPLACE TRIGGER slider_stock_after_die_casting_transaction_insert
 AFTER INSERT ON slider.die_casting_transaction
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_die_casting_transaction_insert();
 
-CREATE TRIGGER slider_stock_after_die_casting_transaction_delete
+CREATE OR REPLACE TRIGGER slider_stock_after_die_casting_transaction_delete
 AFTER DELETE ON slider.die_casting_transaction
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_die_casting_transaction_delete();
 
-CREATE TRIGGER slider_stock_after_die_casting_transaction_update
+CREATE OR REPLACE TRIGGER slider_stock_after_die_casting_transaction_update
 AFTER UPDATE ON slider.die_casting_transaction
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_die_casting_transaction_update();

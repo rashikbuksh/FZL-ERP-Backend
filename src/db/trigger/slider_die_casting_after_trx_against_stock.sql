@@ -6,7 +6,8 @@ BEGIN
     UPDATE slider.die_casting
         SET 
         quantity_in_sa = quantity_in_sa + NEW.quantity,
-        quantity = quantity - NEW.quantity
+        quantity = quantity - NEW.quantity,
+        weight = weight - NEW.weight
         WHERE uuid = NEW.die_casting_uuid;
 
     RETURN NEW;
@@ -20,7 +21,8 @@ BEGIN
     UPDATE slider.die_casting
         SET 
         quantity_in_sa = quantity_in_sa - OLD.quantity,
-        quantity = quantity + OLD.quantity
+        quantity = quantity + OLD.quantity,
+        weight = weight + OLD.weight
         WHERE uuid = OLD.die_casting_uuid;
     RETURN OLD;
     END;
@@ -34,24 +36,25 @@ BEGIN
         SET 
 
         quantity_in_sa = quantity_in_sa + NEW.quantity - OLD.quantity,
-        quantity = quantity - NEW.quantity + OLD.quantity
+        quantity = quantity - NEW.quantity + OLD.quantity,
+        weight = weight - NEW.weight + OLD.weight
         WHERE uuid = NEW.die_casting_uuid;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER slider_die_casting_after_trx_against_stock_insert
+CREATE OR REPLACE TRIGGER slider_die_casting_after_trx_against_stock_insert
 AFTER INSERT ON slider.trx_against_stock
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_die_casting_after_trx_against_stock_insert();
 
-CREATE TRIGGER slider_die_casting_after_trx_against_stock_delete
+CREATE OR REPLACE TRIGGER slider_die_casting_after_trx_against_stock_delete
 AFTER DELETE ON slider.trx_against_stock
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_die_casting_after_trx_against_stock_delete();
 
-CREATE TRIGGER slider_die_casting_after_trx_against_stock_update
+CREATE OR REPLACE TRIGGER slider_die_casting_after_trx_against_stock_update
 AFTER UPDATE ON slider.trx_against_stock
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_die_casting_after_trx_against_stock_update();
