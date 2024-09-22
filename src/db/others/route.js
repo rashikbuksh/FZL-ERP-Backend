@@ -1,6 +1,5 @@
 import { Router } from 'express';
 
-import { format } from 'morgan';
 import SE, { SED } from '../../util/swagger_example.js';
 import * as otherOperations from './query/query.js';
 
@@ -149,6 +148,14 @@ const pathPublic = {
 									label: {
 										type: 'string',
 										example: 'machine 1',
+									},
+									max_capacity: {
+										type: 'number',
+										example: 10,
+									},
+									min_capacity: {
+										type: 'number',
+										example: 10,
 									},
 								},
 							},
