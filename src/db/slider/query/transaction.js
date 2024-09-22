@@ -265,6 +265,7 @@ export async function selectTransactionByFromSection(req, res, next) {
 			transaction.from_section,
 			transaction.to_section,
 			transaction.trx_quantity,
+			transaction.weight,
 			transaction.created_by,
 			users.name as created_by_name,
 			transaction.created_at,
