@@ -1,15 +1,12 @@
-import { request, response, Router } from 'express';
-import { properties } from '../public/schema.js';
+import { Router } from 'express';
 import * as challanOperations from './query/challan.js';
 import * as challanEntryOperations from './query/challan_entry.js';
 import * as packingListOperations from './query/packing_list.js';
 import * as packingListEntryOperations from './query/packing_list_entry.js';
-import { packing_list } from './schema.js';
 
 const deliveryRouter = Router();
 
 // packing_list routes
-
 
 deliveryRouter.get('/packing-list', packingListOperations.selectAll);
 deliveryRouter.get(
@@ -28,10 +25,12 @@ deliveryRouter.get(
 	'/packing-list/details/:packing_list_uuid',
 	packingListOperations.selectPackingListDetailsByPackingListUuid
 );
+deliveryRouter.get(
+	'/order-for-packing-list',
+	packingListOperations.selectAllOrderForPackingList
+);
 
 // packing_list_entry routes
-
-
 deliveryRouter.get('/packing-list-entry', packingListEntryOperations.selectAll);
 deliveryRouter.get(
 	'/packing-list-entry/:uuid',
@@ -54,7 +53,6 @@ deliveryRouter.get(
 );
 
 // challan routes
-
 
 deliveryRouter.get('/challan', challanOperations.selectAll);
 deliveryRouter.get(
@@ -93,6 +91,5 @@ deliveryRouter.get(
 	'/challan-entry/by/:challan_uuid',
 	challanEntryOperations.selectChallanEntryByChallanUuid
 );
-
 
 export { deliveryRouter };

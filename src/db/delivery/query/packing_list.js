@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -171,5 +171,46 @@ export async function selectPackingListDetailsByPackingListUuid(
 	} catch (error) {
 		console.error(error);
 		handleError({ error, res });
+	}
+}
+
+export async function selectAllOrderForPackingList(req, res, next) {
+	const query = sql`
+		SELECT 
+			vodf.order_info_uuid as order_info_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			vodf.order_description_uuid,
+			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
+			oe.quantity as order_quantity,
+			sfg.uuid as sfg_uuid,
+			sfg.warehouse as warehouse,
+			sfg.delivered as delivered,
+			(oe.quantity - sfg.delivered) as balance_quantity
+		FROM
+			zipper.v_order_details_full vodf
+		LEFT JOIN
+			zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+		LEFT JOIN
+			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+		WHERE
+			(oe.quantity - sfg.delivered) > 0
+		ORDER BY
+			oe.created_at, oe.uuid DESC
+		`;
+
+	try {
+		const data = await db.execute(query);
+
+		const packingListData = { packing_list_entry: data?.rows };
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `Order list for packing list`,
+		};
+		return await res.status(201).json({ toast, data: packingListData });
+	} catch (error) {
+		await handleError({ error, res });
 	}
 }
