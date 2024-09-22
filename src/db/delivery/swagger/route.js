@@ -1,5 +1,7 @@
 // * Delivery PackingList * //
 
+import SE from '../../../util/swagger_example.js';
+
 export const pathDeliveryPackingList = {
 	'/delivery/packing-list': {
 		get: {
@@ -286,6 +288,59 @@ export const pathDeliveryPackingList = {
 				},
 				404: {
 					description: 'Packing list not found',
+				},
+			},
+		},
+	},
+	'/delivery/order-for-packing-list': {
+		get: {
+			tags: ['delivery.packing-list'],
+			summary: 'Get all orders for packing list',
+			description: 'Get all orders for packing list',
+			// operationId: "getAllOrdersForPackingList",
+			responses: {
+				200: {
+					description: 'Return list of orders for packing list',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									item_description: {
+										type: 'string',
+										example: 'NP-3-AL-SP',
+									},
+									order_description_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									style_color_size: {
+										type: 'string',
+										example: 'Style -1 / Black / 20',
+									},
+									order_quantity: {
+										type: 'number',
+										example: 100,
+									},
+									sfg_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									warehouse: SE.number(10),
+									delivered: SE.number(10),
+									balance_quantity: SE.number(10),
+								},
+							},
+						},
+					},
 				},
 			},
 		},
