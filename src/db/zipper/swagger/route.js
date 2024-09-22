@@ -2,6 +2,7 @@ import { raw } from 'express';
 import SE from '../../../util/swagger_example.js';
 import zipper from '../schema.js';
 import { param } from 'express-validator';
+import { machine } from '@/db/public/schema.js';
 
 const order_info_extra_schema = SE.response_schema(200, {
 	uuid: SE.uuid(),
@@ -1364,6 +1365,9 @@ export const pathZipperBatch = {
 					uuid: SE.uuid(),
 					batch_id: SE.string('Z24-0010'),
 					batch_status: SE.string('Pending'),
+					machine_uuid: SE.uuid(),
+					machine_name: SE.string('Machine 1'),
+					slot: SE.number(1),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1404,6 +1408,9 @@ export const pathZipperBatch = {
 					uuid: SE.uuid(),
 					batch_id: SE.string('Z24-0010'),
 					batch_status: SE.string('Pending'),
+					machine_uuid: SE.uuid(),
+					machine_name: SE.string('Machine 1'),
+					slot: SE.number(1),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1444,6 +1451,9 @@ export const pathZipperBatch = {
 					uuid: SE.uuid(),
 					batch_id: SE.string('Z24-0010'),
 					batch_status: SE.string('Pending'),
+					machine_uuid: SE.uuid(),
+					machine_name: SE.string('Machine 1'),
+					slot: SE.number(1),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),

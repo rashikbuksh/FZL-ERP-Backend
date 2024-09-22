@@ -448,6 +448,7 @@ export const pathThreadBatch = {
 					id: SE.number(10),
 					machine_uuid: SE.uuid(),
 					machine_name: SE.string('Machine Name'),
+					slot: SE.number(10),
 					lab_created_by: SE.uuid(),
 					lab_created_by_name: SE.string('John Doe'),
 					lab_created_at: SE.date_time(),

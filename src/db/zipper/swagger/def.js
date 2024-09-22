@@ -1,5 +1,4 @@
 import SE, { SED } from '../../../util/swagger_example.js';
-import zipper from '../schema.js';
 
 // * Zipper Order Info * //
 export const def_zipper_order_info = SED({
@@ -252,6 +251,8 @@ export const def_zipper_batch = SED({
 	required: ['uuid', 'created_by', 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
+		machine_uuid: SE.uuid(),
+		slot: SE.number(),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
