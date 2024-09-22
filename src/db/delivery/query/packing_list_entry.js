@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -72,25 +72,93 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select()
-		.from(packing_list_entry)
-		.orderBy(desc(packing_list_entry.created_at));
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Packing_list_entry list',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	const query = sql`
+		SELECT 
+			ple.uuid,
+			ple.packing_list_uuid,
+			ple.sfg_uuid,
+			ple.quantity,
+			ple.created_at,
+			ple.updated_at,
+			ple.remarks,
+			vodf.order_info_uuid as order_info_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			vodf.order_description_uuid,
+			oe.style,
+			oe.color,
+			oe.size,
+			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
+			oe.quantity as order_quantity,
+			sfg.uuid as sfg_uuid,
+			sfg.warehouse as warehouse,
+			sfg.delivered as delivered,
+			(oe.quantity - sfg.delivered) as balance_quantity
+		FROM 
+			delivery.packing_list_entry ple
+		LEFT JOIN 
+			zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+		LEFT JOIN
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		ORDER BY
+			ple.created_at, ple.uuid DESC
+	`;
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'packing list entry',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const packing_list_entryPromise = db
-		.select()
-		.from(packing_list_entry)
-		.where(eq(packing_list_entry.uuid, req.params.uuid));
+	const query = sql`
+		SELECT 
+			ple.uuid,
+			ple.packing_list_uuid,
+			ple.sfg_uuid,
+			ple.quantity,
+			ple.created_at,
+			ple.updated_at,
+			ple.remarks,
+			vodf.order_info_uuid as order_info_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			vodf.order_description_uuid,
+			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
+			oe.quantity as order_quantity,
+			sfg.uuid as sfg_uuid,
+			sfg.warehouse as warehouse,
+			sfg.delivered as delivered,
+			(oe.quantity - sfg.delivered) as balance_quantity
+		FROM 
+			delivery.packing_list_entry ple
+		LEFT JOIN 
+			zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+		LEFT JOIN
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		WHERE 
+			ple.uuid = ${req.params.uuid}
+		ORDER BY
+			ple.created_at, ple.uuid DESC
+	`;
+
+	const packing_list_entryPromise = db.execute(query);
 
 	try {
 		const data = await packing_list_entryPromise;
@@ -99,7 +167,7 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: 'Packing_list_entry',
 		};
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -108,20 +176,50 @@ export async function select(req, res, next) {
 export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const packing_list_entryPromise = db
-		.select()
-		.from(packing_list_entry)
-		.where(
-			eq(
-				packing_list_entry.packing_list_uuid,
-				req.params.packing_list_uuid
-			)
-		);
+	const query = sql`
+		SELECT 
+			ple.uuid,
+			ple.packing_list_uuid,
+			ple.sfg_uuid,
+			ple.quantity,
+			ple.created_at,
+			ple.updated_at,
+			ple.remarks,
+			vodf.order_info_uuid as order_info_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			vodf.order_description_uuid,
+			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
+			oe.quantity as order_quantity,
+			sfg.uuid as sfg_uuid,
+			sfg.warehouse as warehouse,
+			sfg.delivered as delivered,
+			(oe.quantity - sfg.delivered) as balance_quantity
+		FROM 
+			delivery.packing_list_entry ple
+		LEFT JOIN 
+			zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+		LEFT JOIN
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		WHERE 
+			ple.uuid = ${req.params.packing_list_uuid}
+		ORDER BY
+			ple.created_at, ple.uuid DESC
+	`;
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Packing_list_entry',
-	};
-	handleResponse({ promise: packing_list_entryPromise, res, next, ...toast });
+	const packing_list_entryPromise = db.execute(query);
+
+	try {
+		const data = await packing_list_entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Packing_list_entry',
+		};
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

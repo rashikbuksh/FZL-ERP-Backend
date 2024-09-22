@@ -158,13 +158,13 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 		const response = {
 			...packing_list?.data?.data,
-			challan_entry: packing_list_entry?.data?.data || [],
+			packing_list_entry: packing_list_entry?.data?.data || [],
 		};
 
 		const toast = {
 			status: 200,
 			type: 'select',
-			msg: 'Challan Details Full',
+			msg: 'packing list Details Full',
 		};
 
 		res.status(200).json({ toast, data: response });
@@ -181,6 +181,9 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			vodf.order_number,
 			vodf.item_description,
 			vodf.order_description_uuid,
+			oe.style,
+			oe.color,
+			oe.size,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			oe.quantity as order_quantity,
 			sfg.uuid as sfg_uuid,
@@ -209,7 +212,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			type: 'select',
 			message: `Order list for packing list`,
 		};
-		return await res.status(201).json({ toast, data: packingListData });
+		return await res.status(200).json({ toast, data: packingListData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
