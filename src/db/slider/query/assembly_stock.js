@@ -1,34 +1,7 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import {
-	assembly_stock,
-	die_casting,
-	die_casting_to_assembly_stock,
-} from '../schema.js';
-
-const diecastingbody = alias(die_casting, 'diecastingbody');
-const diecastingpuller = alias(die_casting, 'diecastingpuller');
-const diecastingcap = alias(die_casting, 'diecastingcap');
-const diecastinglink = alias(die_casting, 'diecastinglink');
-
-const transaction_total_trx = alias(
-	sql`
-		SELECT
-			assembly_stock.uuid AS assembly_stock_uuid,
-			SUM(trx_quantity) AS total_transaction_quantity
-		FROM slider.transaction
-		JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
-		GROUP BY assembly_stock.uuid
-	`,
-	'transaction_total_trx'
-);
+import { assembly_stock } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -112,6 +85,7 @@ export async function selectAll(req, res, next) {
 			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) AS min_quantity_with_link,
 			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) AS min_quantity_no_link,
 			assembly_stock.quantity,
+			assembly_stock.weight,
 			assembly_stock.created_by,
 			users.name AS created_by_name,
 			assembly_stock.created_at,
@@ -180,6 +154,7 @@ export async function select(req, res, next) {
 			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) AS min_quantity_with_link,
 			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) AS min_quantity_no_link,
 			assembly_stock.quantity,
+			assembly_stock.weight,
 			assembly_stock.created_by,
 			users.name AS created_by_name,
 			assembly_stock.created_at,
