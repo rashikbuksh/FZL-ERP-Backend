@@ -351,18 +351,12 @@ export const pathSliderDieCasting = {
 					schema: {
 						type: 'object',
 						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
+							uuid: SE.uuid(),
 							name: {
 								type: 'string',
 								example: 'die_casting 1',
 							},
-							item: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
+							item: SE.uuid(),
 							item_name: {
 								type: 'string',
 								example: 'item name',
@@ -371,10 +365,7 @@ export const pathSliderDieCasting = {
 								type: 'string',
 								example: 'item short name',
 							},
-							zipper_number: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
+							zipper_number: SE.uuid(),
 							zipper_name: {
 								type: 'string',
 								example: 'zipper name',
@@ -383,10 +374,7 @@ export const pathSliderDieCasting = {
 								type: 'string',
 								example: 'zipper short name',
 							},
-							end_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
+							end_type: SE.uuid(),
 							end_type_name: {
 								type: 'string',
 								example: 'end type name',
@@ -395,10 +383,7 @@ export const pathSliderDieCasting = {
 								type: 'string',
 								example: 'end type short name',
 							},
-							puller_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
+							puller_type: SE.uuid(),
 							puller_type_name: {
 								type: 'string',
 								example: 'puller type name',
@@ -408,10 +393,7 @@ export const pathSliderDieCasting = {
 								example: 'puller type short name',
 							},
 
-							logo_type: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
+							logo_type: SE.uuid(),
 							logo_type_name: {
 								type: 'string',
 								example: 'logo type name',
@@ -420,10 +402,7 @@ export const pathSliderDieCasting = {
 								type: 'string',
 								example: 'logo type short name',
 							},
-							slider_body_shape: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
+							slider_body_shape: SE.uuid(),
 							slider_body_shape_name: {
 								type: 'string',
 								example: 'body shape name',
@@ -432,10 +411,7 @@ export const pathSliderDieCasting = {
 								type: 'string',
 								example: 'body shape short name',
 							},
-							puller_link: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
+							puller_link: SE.uuid(),
 							puller_link_name: {
 								type: 'string',
 								example: 'puller link name',
@@ -444,37 +420,14 @@ export const pathSliderDieCasting = {
 								type: 'string',
 								example: 'puller link short name',
 							},
-							quantity: {
-								type: 'number',
-								example: 0.0,
-							},
-							weight: {
-								type: 'number',
-								example: 0.0,
-							},
-							pcs_per_kg: {
-								type: 'number',
-								example: 0.0,
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'remarks',
-							},
+							quantity: SE.number(1),
+							weight: SE.number(1),
+							pcs_per_kg: SE.number(1),
+							created_at: SE.date_time(),
+							updated_at: SE.date_time(),
+							remarks: SE.string('remarks'),
 							type: SE.string('body'),
-							quantity_in_sa: {
-								type: 'number',
-								example: 0.0,
-							},
+							quantity_in_sa: SE.number(1),
 						},
 					},
 				},
@@ -564,6 +517,7 @@ export const pathSliderAssemblyStock = {
 					die_casting_link_uuid: SE.uuid(),
 					die_casting_link_name: SE.string('link name'),
 					quantity: SE.number(1),
+					weight: SE.number(1),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -663,6 +617,7 @@ export const pathSliderDieCastingToAssemblyStock = {
 					assembly_stock_uuid: SE.uuid(),
 					assembly_stock_name: SE.string('assembly stock name'),
 					quantity: SE.number(1),
+					weight: SE.number(1),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -766,56 +721,25 @@ export const pathSliderDieCastingProduction = {
 			tags: ['slider.die_casting_production'],
 			summary: 'Get all die casting production',
 			responses: {
-				200: {
-					description: 'Success',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									die_casting_uuid: SE.uuid(),
-									die_casting_name: {
-										type: 'string',
-										example: 'die casting name',
-									},
-									order_info_uuid: SE.uuid(),
-									order_number: {
-										type: 'string',
-										example: 'order number',
-									},
-									mc_no: {
-										type: 'number',
-										example: 0,
-									},
-									cavity_goods: {
-										type: 'number',
-										example: 0,
-									},
-									cavity_defect: {
-										type: 'number',
-										example: 0,
-									},
-									push: {
-										type: 'number',
-										example: 0,
-									},
-									production_quantity: {
-										type: 'number',
-										example: 0,
-									},
-									weight: SE.number(1),
-									pcs_per_kg: SE.number(1),
-									created_by: SE.uuid(),
-									created_by_name: SE.string('John Doe'),
-									created_at: SE.date_time(),
-									updated_at: SE.date_time(),
-									remarks: SE.string('remarks'),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					die_casting_uuid: SE.uuid(),
+					die_casting_name: SE.string('die casting name'),
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0001'),
+					mc_no: SE.number(1),
+					cavity_goods: SE.number(1),
+					cavity_defect: SE.number(1),
+					push: SE.number(1),
+					production_quantity: SE.number(1),
+					weight: SE.number(1),
+					pcs_per_kg: SE.number(1),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
 			},
 		},
 		post: {
@@ -869,88 +793,27 @@ export const pathSliderDieCastingProduction = {
 				},
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							die_casting_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							die_casting_name: {
-								type: 'string',
-								example: 'die casting name',
-							},
-							order_info_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							order_number: {
-								type: 'string',
-								example: 'order number',
-							},
-							mc_no: {
-								type: 'number',
-								example: 0,
-							},
-							cavity_goods: {
-								type: 'number',
-								example: 0,
-							},
-							cavity_defect: {
-								type: 'number',
-								example: 0,
-							},
-							push: {
-								type: 'number',
-								example: 0,
-							},
-							production_quantity: {
-								type: 'number',
-								example: 0,
-							},
-							weight: {
-								type: 'number',
-								example: 0.0,
-							},
-							pcs_per_kg: {
-								type: 'number',
-								example: 0.0,
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'John Doe',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'remarks',
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					die_casting_uuid: SE.uuid(),
+					die_casting_name: SE.string('die casting name'),
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0001'),
+					mc_no: SE.number(1),
+					cavity_goods: SE.number(1),
+					cavity_defect: SE.number(1),
+					push: SE.number(1),
+					production_quantity: SE.number(1),
+					weight: SE.number(1),
+					pcs_per_kg: SE.number(1),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
 				400: SE.response(400),
-				404: {
-					description: 'Die casting production not found',
-				},
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -961,31 +824,38 @@ export const pathSliderDieCastingProduction = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Die casting production to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params(
+					'die_casting_production_uuid',
+					'uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/slider/die_casting_production',
-						},
-					},
-				},
-			},
-
+			requestBody: SE.requestBody_schema_ref(
+				'slider/die_casting_production'
+			),
 			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					die_casting_uuid: SE.uuid(),
+					die_casting_name: SE.string('die casting name'),
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0001'),
+					mc_no: SE.number(1),
+					cavity_goods: SE.number(1),
+					cavity_defect: SE.number(1),
+					push: SE.number(1),
+					production_quantity: SE.number(1),
+					weight: SE.number(1),
+					pcs_per_kg: SE.number(1),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
 				400: SE.response(400),
-				404: {
-					description: 'Die casting production not found',
-				},
+				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
@@ -996,21 +866,17 @@ export const pathSliderDieCastingProduction = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Die casting production to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
+				SE.parameter_params(
+					'die_casting_production_uuid',
+					'uuid',
+					'uuid',
+					'igD0v9DIJQhJeet'
+				),
 			],
 			responses: {
+				200: SE.response(200),
 				400: SE.response(400),
-				404: {
-					description: 'Die casting production not found',
-				},
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1051,7 +917,7 @@ export const pathSliderDieCastingTransaction = {
 					puller_link_name: SE.string('Standard'),
 					puller_link_short_name: SE.string('SP'),
 					trx_quantity: SE.number(1),
-					type: SE.string('body'),
+					weight: SE.number(1),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1119,7 +985,7 @@ export const pathSliderDieCastingTransaction = {
 					puller_link_name: SE.string('Standard'),
 					puller_link_short_name: SE.string('SP'),
 					trx_quantity: SE.number(1),
-					type: SE.string('body'),
+					weight: SE.number(1),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1271,6 +1137,7 @@ const pathSliderTransaction = {
 					to_section: SE.string('to_section'),
 					trx_quantity: SE.number(100),
 					trx_quantity_in_kg: SE.number(100),
+					weight: SE.number(100),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1365,6 +1232,7 @@ const pathSliderTransaction = {
 					to_section: SE.string('to_section'),
 					trx_quantity: SE.number(100),
 					trx_quantity_in_kg: SE.number(100),
+					weight: SE.number(100),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1476,6 +1344,7 @@ const pathSliderTransaction = {
 					to_section: SE.string('to_section'),
 					trx_quantity: SE.number(100),
 					trx_quantity_in_kg: SE.number(100),
+					weight: SE.number(100),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1554,6 +1423,7 @@ const pathSliderColoringTransaction = {
 					stock_uuid: SE.uuid(),
 					order_info_uuid: SE.uuid(),
 					trx_quantity: SE.number(1),
+					weight: SE.number(100),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1668,6 +1538,7 @@ const pathTrxAgainstStock = {
 					puller_link_name: SE.string('puller_link_name'),
 					puller_link_short_name: SE.string('puller_link_short_name'),
 					quantity: SE.number(1),
+					weight: SE.number(100),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1729,6 +1600,7 @@ const pathTrxAgainstStock = {
 					puller_link_name: SE.string('puller_link_name'),
 					puller_link_short_name: SE.string('puller_link_short_name'),
 					quantity: SE.number(1),
+					weight: SE.number(100),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -1789,6 +1661,7 @@ const pathSliderProduction = {
 					uuid: SE.uuid(),
 					stock_uuid: SE.uuid(),
 					production_quantity: SE.number(100),
+					weight: SE.number(100),
 					wastage: SE.number(1),
 					section: SE.string('sa_prod'),
 					created_by: SE.uuid(),
@@ -1872,6 +1745,7 @@ const pathSliderProduction = {
 					uuid: SE.uuid(),
 					stock_uuid: SE.uuid(),
 					production_quantity: SE.number(100),
+					weight: SE.number(100),
 					wastage: SE.number(1),
 					section: SE.string('sa_prod'),
 					created_by: SE.uuid(),

@@ -138,6 +138,7 @@ export const assembly_stock = slider.table('assembly_stock', {
 	die_casting_cap_uuid: defaultUUID('die_casting_cap_uuid'),
 	die_casting_link_uuid: defaultUUID('die_casting_link_uuid'),
 	quantity: PG_DECIMAL('quantity').default(0),
+	weight: PG_DECIMAL('weight').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -152,6 +153,7 @@ export const die_casting_to_assembly_stock = slider.table(
 			() => assembly_stock.uuid
 		),
 		production_quantity: PG_DECIMAL('production_quantity').default(0),
+		weight: PG_DECIMAL('weight').default(0),
 		wastage: PG_DECIMAL('wastage').default(0),
 		with_link: integer('with_link').default(1),
 		created_by: defaultUUID('created_by').references(
@@ -172,10 +174,7 @@ export const die_casting_production = slider.table('die_casting_production', {
 	cavity_goods: integer('cavity_goods').notNull(),
 	cavity_defect: integer('cavity_defect').notNull(),
 	push: integer('push').notNull(),
-	weight: decimal('weight', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
+	weight: PG_DECIMAL('weight').notNull(),
 	order_description_uuid: defaultUUID('order_description_uuid')
 		.default(null)
 		.references(() => zipperSchema.order_description.uuid),
@@ -193,11 +192,11 @@ export const die_casting_transaction = slider.table('die_casting_transaction', {
 	stock_uuid: defaultUUID('stock_uuid')
 		.references(() => stock.uuid)
 		.default(null),
-	section: text('section').notNull(),
 	trx_quantity: decimal('trx_quantity', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	weight: PG_DECIMAL('weight').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -216,6 +215,7 @@ export const transaction = slider.table('transaction', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	weight: PG_DECIMAL('weight').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -232,6 +232,7 @@ export const coloring_transaction = slider.table('coloring_transaction', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	weight: PG_DECIMAL('weight').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -243,11 +244,8 @@ export const trx_against_stock = slider.table('trx_against_stock', {
 	die_casting_uuid: defaultUUID('die_casting_uuid').references(
 		() => die_casting.uuid
 	),
-	section: text('section').notNull(),
-	quantity: decimal('quantity', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	weight: PG_DECIMAL('weight').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -257,14 +255,9 @@ export const trx_against_stock = slider.table('trx_against_stock', {
 export const production = slider.table('production', {
 	uuid: uuid_primary,
 	stock_uuid: defaultUUID('stock_uuid').references(() => stock.uuid),
-	production_quantity: decimal('production_quantity', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
-	wastage: decimal('wastage', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
+	production_quantity: PG_DECIMAL('production_quantity').notNull(),
+	weight: PG_DECIMAL('weight').default(0),
+	wastage: PG_DECIMAL('wastage').notNull(),
 	section: text('section'),
 	with_link: integer('with_link').default(1),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

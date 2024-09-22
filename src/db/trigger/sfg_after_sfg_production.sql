@@ -1,4 +1,4 @@
-
+-- //* Inserted
 -- Function for INSERT trigger
 CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_production_insert_function() 
 RETURNS TRIGGER AS $$
