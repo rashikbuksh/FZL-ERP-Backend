@@ -83,6 +83,32 @@ export async function selectAll(req, res, next) {
 			dcp.order_description_uuid,
 			vod.order_number,
 			vod.item_description,
+			od.item as item_uuid,
+			item_properties.name as item_name,
+			od.zipper_number as zipper_uuid,
+			zipper_properties.name as zipper_name,
+			od.end_type as end_type_uuid,
+			end_type_properties.name as end_type_name,
+			od.lock_type as lock_type_uuid,
+			lock_type_properties.name as lock_type_name,
+			od.puller_type as puller_type_uuid,
+			puller_type_properties.name as puller_type_name,
+			od.puller_color as puller_color_uuid,
+			puller_color_properties.name as puller_color_name,
+			od.puller_link as puller_link_uuid,
+			puller_link_properties.name as puller_link_name,
+			od.slider as slider_uuid,
+			slider_properties.name as slider_name,
+			od.slider_body_shape as slider_body_shape_uuid,
+			slider_body_shape_properties.name as slider_body_shape_name,
+			od.slider_link as slider_link_uuid,
+			slider_link_properties.name as slider_link_name,
+			od.coloring_type as coloring_type_uuid,
+			coloring_type_properties.name as coloring_type_name,
+			od.logo_type as logo_type_uuid,
+			logo_type_properties.name as logo_type_name,
+			od.is_logo_body as body_is_logo,
+			od.is_logo_puller as puller_is_logo,
 			dcp.mc_no,
 			dcp.cavity_goods,
 			dcp.cavity_defect,
@@ -103,9 +129,34 @@ export async function selectAll(req, res, next) {
 			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN
 			zipper.v_order_details vod ON vod.order_description_uuid = dcp.order_description_uuid
+		LEFT JOIN
+    		zipper.order_description od ON od.uuid = dcp.order_description_uuid
+		LEFT JOIN
+			public.properties item_properties ON item_properties.uuid = od.item
+		LEFT JOIN
+			public.properties zipper_properties ON zipper_properties.uuid = od.zipper_number
+		LEFT JOIN
+			public.properties end_type_properties ON end_type_properties.uuid = od.end_type
+		LEFT JOIN
+			public.properties lock_type_properties ON lock_type_properties.uuid = od.lock_type
+		LEFT JOIN
+			public.properties puller_type_properties ON puller_type_properties.uuid = od.puller_type
+		LEFT JOIN
+			public.properties puller_color_properties ON puller_color_properties.uuid = od.puller_color
+		LEFT JOIN
+			public.properties puller_link_properties ON puller_link_properties.uuid = od.puller_link
+		LEFT JOIN
+			public.properties slider_properties ON slider_properties.uuid = od.slider
+		LEFT JOIN
+			public.properties slider_body_shape_properties ON slider_body_shape_properties.uuid = od.slider_body_shape
+		LEFT JOIN
+			public.properties slider_link_properties ON slider_link_properties.uuid = od.slider_link
+		LEFT JOIN
+			public.properties coloring_type_properties ON coloring_type_properties.uuid = od.coloring_type
+		LEFT JOIN
+			public.properties logo_type_properties ON logo_type_properties.uuid = od.logo_type
 		ORDER BY
-			dcp.created_at DESC
-		`;
+			dcp.created_at DESC`;
 
 	const dcpPromise = db.execute(query);
 
