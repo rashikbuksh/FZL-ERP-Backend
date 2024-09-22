@@ -343,7 +343,7 @@ export async function selectStockByFromSection(req, res, next) {
     (
         SELECT
             stock.uuid AS stock_uuid,
-            SUM(transaction.trx_quantity) AS trx_quantity
+            SUM(transaction.trx_quantity) AS trx_quantity,
 			SUM(transaction.weight) AS trx_weight
         FROM
             slider.transaction
