@@ -1,8 +1,4 @@
-import { raw } from 'express';
 import SE from '../../../util/swagger_example.js';
-import zipper from '../schema.js';
-import { param } from 'express-validator';
-import { machine } from '@/db/public/schema.js';
 
 const order_info_extra_schema = SE.response_schema(200, {
 	uuid: SE.uuid(),
