@@ -211,7 +211,9 @@ export async function selectBySection(req, res, next) {
 		.where(
 			section.toLowerCase() === 'tape'
 				? sql`LOWER(${item_properties.name}) != 'nylon' OR (LOWER(${item_properties.name}) = 'nylon' AND LOWER(${tape_trx.to_section}) = 'coil')`
-				: sql`true`
+				: section.toLowerCase() === 'coil'
+					? sql`(LOWER(${item_properties.name}) = 'nylon' AND LOWER(${tape_trx.to_section}) != 'coil')`
+					: sql`true`
 		);
 	try {
 		const data = await tapeToCoilPromise;

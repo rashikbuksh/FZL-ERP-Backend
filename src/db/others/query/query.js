@@ -1,4 +1,4 @@
-import { eq, sql, sum } from 'drizzle-orm';
+import { eq, min, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -32,6 +32,8 @@ export async function selectMachine(req, res, next) {
 		.select({
 			value: publicSchema.machine.uuid,
 			label: publicSchema.machine.name,
+			max_capacity: publicSchema.machine.max_capacity,
+			min_capacity: publicSchema.machine.min_capacity,
 		})
 		.from(publicSchema.machine);
 
