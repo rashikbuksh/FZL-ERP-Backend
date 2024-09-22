@@ -159,7 +159,7 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 		let query;
 
-		if (is_update) {
+		if (is_update == 'true') {
 			query = sql`
         SELECT 
             ple.uuid,
@@ -196,14 +196,14 @@ export async function selectPackingListDetailsByPackingListUuid(
             ple.created_at, ple.uuid DESC
     `;
 		}
-		const query_data = await db.execute(query);
+		const query_data = is_update == 'true' ? await db.execute(query) : null;
 
 		const response = {
 			...packing_list?.data?.data,
 			packing_list_entry: packing_list_entry?.data?.data || [],
 		};
 		// if is_update true then add the query_data to the existing packing_list_entry
-		if (is_update) {
+		if (is_update == 'true') {
 			response.packing_list_entry = [
 				...response.packing_list_entry,
 				...query_data?.rows,
