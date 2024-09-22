@@ -114,9 +114,9 @@ export async function selectAll(req, res, next) {
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.where(
-			item_name.toLowerCase() === 'nylon'
+			item_name && item_name.toLowerCase() === 'nylon'
 				? eq(sql`LOWER(${item_properties.name})`, 'nylon')
-				: item_name === ''
+				: !item_name || item_name === ''
 					? sql`true`
 					: sql`LOWER(${item_properties.name}) != 'nylon'`
 		)
