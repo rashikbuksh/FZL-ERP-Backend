@@ -422,6 +422,10 @@ export async function selectAll(req, res, next) {
 			eq(order_description.teeth_color, teethColorProperties.uuid)
 		)
 		.leftJoin(
+			teethTypeProperties,
+			eq(order_description.teeth_type, teethTypeProperties.uuid)
+		)
+		.leftJoin(
 			pullerColorProperties,
 			eq(order_description.puller_color, pullerColorProperties.uuid)
 		)
@@ -628,6 +632,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			teethColorProperties,
 			eq(order_description.teeth_color, teethColorProperties.uuid)
+		)
+		.leftJoin(
+			teethTypeProperties,
+			eq(order_description.teeth_type, teethTypeProperties.uuid)
 		)
 		.leftJoin(
 			pullerColorProperties,
