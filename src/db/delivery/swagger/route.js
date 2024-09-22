@@ -298,7 +298,7 @@ export const pathDeliveryPackingList = {
 			},
 		},
 	},
-	'/delivery/order-for-packing-list': {
+	'/delivery/order-for-packing-list/{order_info_uuid}': {
 		get: {
 			tags: ['delivery.packing-list'],
 			summary: 'Get all orders for packing list',
