@@ -6,6 +6,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
+import * as publicSchema from '../../public/schema.js';
 import db from '../../index.js';
 import { batch } from '../schema.js';
 
@@ -87,6 +88,9 @@ export async function selectAll(req, res, next) {
 			id: batch.id,
 			batch_id: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			batch_status: batch.batch_status,
+			machine_uuid: batch.machine_uuid,
+			machine_name: publicSchema.machine.name,
+			slot: batch.slot,
 			created_by: batch.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch.created_at,
@@ -118,6 +122,9 @@ export async function select(req, res, next) {
 			id: batch.id,
 			batch_id: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			batch_status: batch.batch_status,
+			machine_uuid: batch.machine_uuid,
+			machine_name: publicSchema.machine.name,
+			slot: batch.slot,
 			created_by: batch.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch.created_at,

@@ -320,6 +320,10 @@ export const batch = zipper.table('batch', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
 	batch_status: batchStatusEnum('batch_status').default('pending'),
+	machine_uuid: defaultUUID('machine_uuid').references(
+		() => publicSchema.machine.uuid
+	),
+	slot: integer('slot').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

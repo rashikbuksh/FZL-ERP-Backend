@@ -129,6 +129,7 @@ export const batch = thread.table('batch', {
 	machine_uuid: defaultUUID('machine_uuid').references(
 		() => publicSchema.machine.uuid
 	),
+	slot: integer('slot').default(0),
 	lab_created_by: defaultUUID('lab_created_by').references(
 		() => hrSchema.users.uuid
 	),
