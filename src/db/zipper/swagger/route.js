@@ -2184,6 +2184,34 @@ export const pathZipperTapeTrx = {
 			},
 		},
 	},
+	'/zipper/tape-trx/by/{section}': {
+		get: {
+			tags: ['zipper.tape_trx'],
+			summary: 'Get all Tape Trx by Section',
+			parameters: [
+				SE.parameter_params('tape trx to get', 'section', 'string'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					tape_coil_uuid: SE.uuid(),
+					type: SE.string('nylon'),
+					zipper_number: SE.number(3),
+					type_of_zipper: SE.string('nylon 3'),
+					to_section: SE.string('zipper'),
+					trx_quantity: SE.number(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 // * Zipper Tape Coil Required * //

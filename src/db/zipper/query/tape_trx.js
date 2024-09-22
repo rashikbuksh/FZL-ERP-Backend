@@ -80,7 +80,6 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const item_name = req.query.item_name;
 	const resultPromise = db
 		.select({
 			uuid: tape_trx.uuid,
@@ -112,13 +111,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
-		)
-		.where(
-			item_name && item_name.toLowerCase() === 'nylon'
-				? eq(sql`LOWER(${item_properties.name})`, 'nylon')
-				: !item_name || item_name === ''
-					? sql`true`
-					: sql`LOWER(${item_properties.name}) != 'nylon'`
 		)
 		.orderBy(desc(tape_trx.created_at));
 	const toast = {
@@ -174,6 +166,61 @@ export async function select(req, res, next) {
 			message: 'tape_trx',
 		};
 		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectBySection(req, res, next) {
+	const { section } = req.params;
+
+	if (!(await validateRequest(req, next))) return;
+
+	const tapeToCoilPromise = db
+		.select({
+			uuid: tape_trx.uuid,
+			tape_coil_uuid: tape_trx.tape_coil_uuid,
+			name: tape_coil.name,
+			item_uuid: tape_coil.item_uuid,
+			item_name: item_properties.name,
+			zipper_number_uuid: tape_coil.zipper_number_uuid,
+			zipper_number_name: zipper_number_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
+			quantity: tape_coil.quantity,
+			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
+			quantity_in_coil: tape_coil.quantity_in_coil,
+			to_section: tape_trx.to_section,
+			trx_quantity: tape_trx.trx_quantity,
+			created_by: tape_trx.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: tape_trx.created_at,
+			updated_at: tape_trx.updated_at,
+			remarks: tape_trx.remarks,
+		})
+		.from(tape_trx)
+		.leftJoin(tape_coil, eq(tape_trx.tape_coil_uuid, tape_coil.uuid))
+		.leftJoin(hrSchema.users, eq(tape_trx.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			item_properties,
+			eq(tape_coil.item_uuid, item_properties.uuid)
+		)
+		.leftJoin(
+			zipper_number_properties,
+			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
+		)
+		.where(
+			section.toLowerCase() === 'tape'
+				? sql`LOWER(${item_properties.name}) != 'nylon' OR (LOWER(${item_properties.name}) = 'nylon' AND LOWER(${tape_trx.to_section}) = 'coil')`
+				: sql`true`
+		);
+	try {
+		const data = await tapeToCoilPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_trx',
+		};
+		return await res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

@@ -292,6 +292,11 @@ zipperRouter.delete(
 	// validateUuidParam(),
 	tapeTrxOperations.remove
 );
+zipperRouter.get(
+	'/tape-trx/by/:section',
+	// validateUuidParam(),
+	tapeTrxOperations.selectBySection
+);
 
 // --------------------- TAPE COIL REQUIRED ROUTES ---------------------
 
