@@ -99,6 +99,10 @@ export async function selectAll(req, res, next) {
 		})
 		.from(batch)
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			publicSchema.machine,
+			eq(batch.machine_uuid, publicSchema.machine.uuid)
+		)
 		.orderBy(desc(batch.created_at));
 	const toast = {
 		status: 200,
@@ -133,6 +137,10 @@ export async function select(req, res, next) {
 		})
 		.from(batch)
 		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			publicSchema.machine,
+			eq(batch.machine_uuid, publicSchema.machine.uuid)
+		)
 		.where(eq(batch.uuid, req.params.uuid));
 
 	try {
