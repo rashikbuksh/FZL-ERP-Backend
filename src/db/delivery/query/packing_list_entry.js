@@ -153,7 +153,7 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		WHERE 
-			ple.uuid = ${req.params.uuid}
+			ple.packing_list_uuid = ${req.params.uuid}
 		ORDER BY
 			ple.created_at, ple.uuid DESC
 	`;
