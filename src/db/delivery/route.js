@@ -26,7 +26,7 @@ deliveryRouter.get(
 	packingListOperations.selectPackingListDetailsByPackingListUuid
 );
 deliveryRouter.get(
-	'/order-for-packing-list',
+	'/order-for-packing-list/:order_info_uuid',
 	packingListOperations.selectAllOrderForPackingList
 );
 

@@ -200,7 +200,7 @@ export const pathDeliveryPackingList = {
 					format: 'uuid',
 					example: 'igD0v9DIJQhJeet',
 				},
-				SE.parameter_query('is_update', 'is_update', ['true', 'false']),
+				SE.parameter_query('is_update', 'is_update', [true, false]),
 				SE.parameter_query(
 					'order_info_uuid',
 					'order_info_uuid',
@@ -298,7 +298,7 @@ export const pathDeliveryPackingList = {
 			},
 		},
 	},
-	'/delivery/order-for-packing-list': {
+	'/delivery/order-for-packing-list/{order_info_uuid}': {
 		get: {
 			tags: ['delivery.packing-list'],
 			summary: 'Get all orders for packing list',

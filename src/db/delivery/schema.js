@@ -9,6 +9,9 @@ export const packing_list = delivery.table('packing_list', {
 	uuid: uuid_primary,
 	carton_size: text('carton_size').notNull(),
 	carton_weight: text('carton_weight').notNull(),
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => zipperSchema.order_info.uuid
+	),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
