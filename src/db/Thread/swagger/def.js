@@ -262,6 +262,7 @@ export const defThreadBatch = {
 	required: [
 		'uuid',
 		'machine_uuid',
+		'slot',
 		'lab_created_by',
 		'lab_created_at',
 		'dyeing_operator',
@@ -291,6 +292,7 @@ export const defThreadBatch = {
 		uuid: SE.uuid(),
 		id: SE.integer(1),
 		machine_uuid: SE.uuid(),
+		slot: SE.integer(1),
 		lab_created_by: SE.uuid(),
 		lab_created_at: SE.date_time(),
 		lab_updated_at: SE.date_time(),

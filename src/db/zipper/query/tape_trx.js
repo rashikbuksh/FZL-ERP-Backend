@@ -80,6 +80,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const item_name = req.query.item_name;
 	const resultPromise = db
 		.select({
 			uuid: tape_trx.uuid,
@@ -112,6 +113,7 @@ export async function selectAll(req, res, next) {
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
+		.where(item_name ? eq(item_properties.name, item_name) : sql`true`)
 		.orderBy(desc(tape_trx.created_at));
 	const toast = {
 		status: 200,
