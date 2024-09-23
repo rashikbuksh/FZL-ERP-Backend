@@ -26,6 +26,8 @@ export const defLabDipRecipe = SED({
 		approved: SE.integer(0),
 		created_by: SE.uuid(),
 		status: SE.integer(0),
+		sub_streat: SE.string('Sub Streat 1'),
+		bleaching: SE.string('bleach'),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
