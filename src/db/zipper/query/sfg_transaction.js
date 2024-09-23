@@ -230,9 +230,7 @@ export async function selectByTrxFrom(req, res, next) {
 			coalesce(sfg.coloring_prod::numeric,0) as coloring_prod,
 			coalesce(sfg.warehouse::numeric,0) as warehouse,
 			coalesce(sfg.delivered::numeric,0) as delivered,
-			coalesce(sfg.pi::numeric,0) as pi,
-			sfg.${req.params.trx_from} + coalesce(sfg_transaction.trx_quantity_in_kg::numeric,0) as total_trx_quantity_in_kg,
-			sfg.${req.params.trx_from} + coalesce(sfg_transaction.trx_quantity::numeric,0) as total_trx_quantity
+			coalesce(sfg.pi::numeric,0) as pi
 		FROM
 			zipper.sfg_transaction
 		LEFT JOIN
