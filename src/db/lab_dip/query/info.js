@@ -78,7 +78,12 @@ export async function insert(req, res, next) {
 			.returning({ insertedName: info.name });
 
 		const data = await infoPromise;
-		return res.status(201).json({ data });
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedName} inserted`,
+		};
+		return res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -133,7 +138,12 @@ export async function update(req, res, next) {
 			.returning({ updatedName: info.name });
 
 		const data = await infoPromise;
-		return res.status(200).json({ data });
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
+		return res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
