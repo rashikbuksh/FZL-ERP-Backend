@@ -1,5 +1,4 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import { body } from 'express-validator';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -9,7 +8,12 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
+import * as threadSchema from '../../thread/schema.js';
 import { info, recipe } from '../schema.js';
+
+import { alias } from 'drizzle-orm/pg-core';
+
+const thread = alias(threadSchema.order_info, 'thread');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -90,7 +94,14 @@ export async function selectAll(req, res, next) {
 			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			order_info_uuid: info.order_info_uuid,
-			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			thread_order_info_uuid: info.thread_order_info_uuid,
+			order_number: sql`
+                CASE 
+                    WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.order_info.created_at, 'YY'), '-', LPAD(zipper.order_info.id::text, 4, '0'))
+                    WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+                    ELSE NULL
+                END
+            `,
 			name: recipe.name,
 			approved: recipe.approved,
 			created_by: recipe.created_by,
@@ -109,6 +120,7 @@ export async function selectAll(req, res, next) {
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
+		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
 		.orderBy(desc(recipe.created_at));
 
 	const toast = {
@@ -130,7 +142,14 @@ export async function select(req, res, next) {
 			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			order_info_uuid: info.order_info_uuid,
-			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			thread_order_info_uuid: info.thread_order_info_uuid,
+			order_number: sql`
+                CASE 
+                    WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.order_info.created_at, 'YY'), '-', LPAD(zipper.order_info.id::text, 4, '0'))
+                    WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+                    ELSE NULL
+                END
+            `,
 			name: recipe.name,
 			approved: recipe.approved,
 			created_by: recipe.created_by,
@@ -149,6 +168,7 @@ export async function select(req, res, next) {
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
+		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
 		.where(eq(recipe.uuid, req.params.uuid));
 
 	try {
