@@ -7,6 +7,7 @@ export const defLabDipInfo = SED({
 		id: SE.integer(1),
 		name: SE.string('Lab Dip 1'),
 		order_info_uuid: SE.uuid(),
+		thread_order_info_uuid: SE.uuid(),
 		lab_status: SE.integer(0),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),

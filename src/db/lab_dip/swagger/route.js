@@ -34,6 +34,10 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									thread_order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
 									order_number: {
 										type: 'string',
 										example: 'Z24-0001',
@@ -185,6 +189,10 @@ export const pathLabDipInfo = {
 										example: 'Lab Dip 1',
 									},
 									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									thread_order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
@@ -373,6 +381,10 @@ export const pathLabDipInfo = {
 										example: 'Lab Dip 1',
 									},
 									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									thread_order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},

@@ -9,50 +9,131 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
+import * as threadSchema from '../../Thread/schema.js';
 import { info } from '../schema.js';
+
+// export async function insert(req, res, next) {
+// 	if (!(await validateRequest(req, next))) return;
+
+// 	const { order_info_uuid } = req.body;
+
+// 	const infoPromise = db
+// 		.insert(info)
+// 		.values(req.body)
+// 		.returning({ insertedName: info.name });
+
+// 	try {
+// 		const data = await infoPromise;
+
+// 		const toast = {
+// 			status: 201,
+// 			type: 'insert',
+// 			message: `${data[0].insertedName} inserted`,
+// 		};
+
+// 		return await res.status(201).json({ toast, data });
+// 	} catch (error) {
+// 		await handleError({ error, res });
+// 	}
+// }
+
+const isZipperOrderInfo = async (order_info_uuid) => {
+	const zipperOrderInfo = await db
+		.select(zipperSchema.order_info)
+		.from(zipperSchema.order_info)
+		.where(eq(zipperSchema.order_info.uuid, order_info_uuid));
+
+	return zipperOrderInfo?.length > 0;
+};
+const isThreadOrderInfo = async (order_info_uuid) => {
+	const threadOrderInfo = await db
+		.select(threadSchema.order_info)
+		.from(threadSchema.order_info)
+		.where(eq(threadSchema.order_info.uuid, order_info_uuid));
+
+	return threadOrderInfo?.length > 0;
+};
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const infoPromise = db
-		.insert(info)
-		.values(req.body)
-		.returning({ insertedName: info.name });
+	const { order_info_uuid } = req.body;
+
+	let insertData = { ...req.body };
+	insertData.order_info_uuid = null;
+	insertData.thread_order_info_uuid = null;
 
 	try {
+		if (await isZipperOrderInfo(order_info_uuid)) {
+			insertData.order_info_uuid = order_info_uuid;
+		} else if (await isThreadOrderInfo(order_info_uuid)) {
+			insertData.thread_order_info_uuid = order_info_uuid;
+		} else {
+			return res.status(400).json({ error: 'Invalid order_info_uuid' });
+		}
+
+		const infoPromise = db
+			.insert(info)
+			.values(insertData)
+			.returning({ insertedName: info.name });
+
 		const data = await infoPromise;
-
-		const toast = {
-			status: 201,
-			type: 'insert',
-			message: `${data[0].insertedName} inserted`,
-		};
-
-		return await res.status(201).json({ toast, data });
+		return res.status(201).json({ data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
 }
 
+// export async function update(req, res, next) {
+// 	if (!(await validateRequest(req, next))) return;
+
+// 	const infoPromise = db
+// 		.update(info)
+// 		.set(req.body)
+// 		.where(eq(info.uuid, req.params.uuid))
+// 		.returning({ updatedName: info.name });
+
+// 	try {
+// 		const data = await infoPromise;
+
+// 		const toast = {
+// 			status: 201,
+// 			type: 'update',
+// 			message: `${data[0].updatedName} updated`,
+// 		};
+
+// 		return await res.status(201).json({ toast, data });
+// 	} catch (error) {
+// 		await handleError({ error, res });
+// 	}
+// }
+
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const infoPromise = db
-		.update(info)
-		.set(req.body)
-		.where(eq(info.uuid, req.params.uuid))
-		.returning({ updatedName: info.name });
+	const { order_info_uuid } = req.body;
+
+	let updateData = { ...req.body };
+	updateData.order_info_uuid = null;
+	updateData.thread_order_info_uuid = null;
 
 	try {
+		if (await isZipperOrderInfo(order_info_uuid)) {
+			updateData.order_info_uuid = order_info_uuid;
+		} else if (await isThreadOrderInfo(order_info_uuid)) {
+			updateData.thread_order_info_uuid = order_info_uuid;
+		} else {
+			return res.status(400).json({ error: 'Invalid order_info_uuid' });
+		}
+
+		const infoPromise = db
+			.update(info)
+			.set(updateData)
+			.where(eq(info.uuid, req.params.uuid))
+			.returning({ updatedName: info.name });
+
 		const data = await infoPromise;
-
-		const toast = {
-			status: 201,
-			type: 'update',
-			message: `${data[0].updatedName} updated`,
-		};
-
-		return await res.status(201).json({ toast, data });
+		return res.status(200).json({ data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -89,6 +170,7 @@ export async function selectAll(req, res, next) {
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
 			order_info_uuid: info.order_info_uuid,
+			thread_order_info_uuid: info.thread_order_info_uuid,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,
 			buyer_name: publicSchema.buyer.name,
@@ -159,6 +241,7 @@ export async function select(req, res, next) {
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
 			order_info_uuid: info.order_info_uuid,
+			thread_order_info_uuid: info.thread_order_info_uuid,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,
 			buyer_name: publicSchema.buyer.name,
