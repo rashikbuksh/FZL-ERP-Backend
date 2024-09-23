@@ -258,7 +258,7 @@ export async function selectSfgBySection(req, res, next) {
 			sfg.delivered as delivered,
 			sfg.pi as pi,
 			sfg.remarks as remarks,
-			(oe.quantity - COALESCE(sfg.delivered, 0)) as balance_quantity,
+			(oe.quantity - COALESCE(sfg.finishing_prod, 0)) as balance_quantity,
 			COALESCE((
 				SELECT 
 					CASE 
