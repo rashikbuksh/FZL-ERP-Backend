@@ -1,29 +1,31 @@
 import cors from 'cors';
 
 const whitelist = [
-	// FZL H/O
+	//* FZL H/O
 	'http://103.147.163.46:3005',
 	'http://103.147.163.46:4010',
 	'http://103.147.163.46:3000',
 	'http://103.147.163.46:4015',
 	'http://103.147.163.46:4016',
-	// Development
+
+	//* Development
 	'http://localhost:3005',
 	'http://localhost:4010',
 	'http://localhost:3000',
 	'http://localhost:4015',
 	'http://localhost:4016',
-	// Office Server PC
+
+	//* Office Server PC
 	'http://192.168.10.154:3005',
 	'http://192.168.10.154:4010',
 	'http://192.168.10.154:3000',
 	'http://192.168.10.154:4015',
 	'http://192.168.10.154:4016',
 
-	// RBR LAPTOP
+	//* RBR LAPTOP
 	'http://192.168.10.78:4010',
 
-	// RBR Home
+	//* RBR Home
 	'http://192.168.1.108:4175',
 ];
 
