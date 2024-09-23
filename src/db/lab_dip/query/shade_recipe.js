@@ -162,9 +162,22 @@ export async function selectShadeRecipeDetailsByShadeRecipeUuid(
 			fetchData('/lab-dip/shade-recipe-entry/by'),
 		]);
 
+		// const { bleaching } = shade_recipe?.data?.data;
+		// const sum = shade_recipe_entry?.data?.data.reduce(
+		// 	(acc, { quantity }) => acc + quantity,
+		// 	0
+		// );
+
+		// if (sum > 1.5 && bleaching === 'non-bleach') {
+
+		// 	const resultPromise = db
+		// 		.
+		// }
+
 		const response = {
 			...shade_recipe?.data?.data,
 			shade_recipe_entry: shade_recipe_entry?.data?.data || [],
+
 		};
 
 		const toast = {
