@@ -220,7 +220,7 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 export async function selectSfgBySection(req, res, next) {
 	const { section } = req.params;
 
-	const { item_name } = req.query;
+	const { item_name, nylon_stopper } = req.query;
 
 	const query = sql`
 		SELECT
@@ -288,6 +288,7 @@ export async function selectSfgBySection(req, res, next) {
 			WHERE
 				sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != ''
 				${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
+				${nylon_stopper ? sql`AND od.nylon_plastic_finishing = ${nylon_stopper}` : sql``}
 			ORDER BY oe.created_at, sfg.uuid DESC
 		`;
 

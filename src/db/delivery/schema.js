@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
@@ -5,7 +6,16 @@ import * as zipperSchema from '../zipper/schema.js';
 
 const delivery = pgSchema('delivery');
 
+export const packing_list_sequence = delivery.sequence(
+	'packing_list_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
+
 export const packing_list = delivery.table('packing_list', {
+	id: integer('id').default(sql`nextval('delivery.packing_list_sequence')`),
 	uuid: uuid_primary,
 	carton_size: text('carton_size').notNull(),
 	carton_weight: text('carton_weight').notNull(),
