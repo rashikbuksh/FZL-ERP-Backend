@@ -11,6 +11,9 @@ import * as publicSchema from '../../public/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import * as threadSchema from '../../thread/schema.js';
 import { info } from '../schema.js';
+import { alias } from 'drizzle-orm/pg-core';
+
+const thread = alias(threadSchema.order_info, 'thread');
 
 // export async function insert(req, res, next) {
 // 	if (!(await validateRequest(req, next))) return;
@@ -181,7 +184,13 @@ export async function selectAll(req, res, next) {
 			name: info.name,
 			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
-			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			order_number: sql`
+                CASE 
+                    WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.order_info.created_at, 'YY'), '-', LPAD(zipper.order_info.id::text, 4, '0'))
+                    WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+                    ELSE NULL
+                END
+            `,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,
 			buyer_name: publicSchema.buyer.name,
 			party_uuid: zipperSchema.order_info.party_uuid,
@@ -204,6 +213,7 @@ export async function selectAll(req, res, next) {
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
+		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			publicSchema.buyer,
@@ -252,7 +262,13 @@ export async function select(req, res, next) {
 			name: info.name,
 			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
-			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			order_number: sql`
+                CASE 
+                    WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.order_info.created_at, 'YY'), '-', LPAD(zipper.order_info.id::text, 4, '0'))
+                    WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+                    ELSE NULL
+                END
+            `,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,
 			buyer_name: publicSchema.buyer.name,
 			party_uuid: zipperSchema.order_info.party_uuid,
@@ -275,6 +291,7 @@ export async function select(req, res, next) {
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
+		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			publicSchema.buyer,
