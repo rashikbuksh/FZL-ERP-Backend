@@ -9,14 +9,51 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
+import * as threadSchema from '../../Thread/schema.js';
 import { info } from '../schema.js';
 
+// export async function insert(req, res, next) {
+// 	if (!(await validateRequest(req, next))) return;
+
+// 	const { order_info_uuid } = req.body;
+
+// 	const infoPromise = db
+// 		.insert(info)
+// 		.values(req.body)
+// 		.returning({ insertedName: info.name });
+
+// 	try {
+// 		const data = await infoPromise;
+
+// 		const toast = {
+// 			status: 201,
+// 			type: 'insert',
+// 			message: `${data[0].insertedName} inserted`,
+// 		};
+
+// 		return await res.status(201).json({ toast, data });
+// 	} catch (error) {
+// 		await handleError({ error, res });
+// 	}
+// }
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { order_info_uuid } = req.body;
+
+	let insertData = { ...req.body };
+
+	if (order_info_uuid === zipperSchema.order_info.uuid) {
+		insertData.zipper_order_info_uuid = order_info_uuid;
+		insertData.thread_order_info_uuid = null;
+	} else if (order_info_uuid === threadSchema.order_info.uuid) {
+		insertData.thread_order_info_uuid = order_info_uuid;
+		insertData.zipper_order_info_uuid = null;
+	}
+
 	const infoPromise = db
 		.insert(info)
-		.values(req.body)
+		.values(insertData)
 		.returning({ insertedName: info.name });
 
 	try {
@@ -28,18 +65,54 @@ export async function insert(req, res, next) {
 			message: `${data[0].insertedName} inserted`,
 		};
 
-		return await res.status(201).json({ toast, data });
+		res.status(201).json(toast);
 	} catch (error) {
-		await handleError({ error, res });
+		next(error);
 	}
 }
+
+// export async function update(req, res, next) {
+// 	if (!(await validateRequest(req, next))) return;
+
+// 	const infoPromise = db
+// 		.update(info)
+// 		.set(req.body)
+// 		.where(eq(info.uuid, req.params.uuid))
+// 		.returning({ updatedName: info.name });
+
+// 	try {
+// 		const data = await infoPromise;
+
+// 		const toast = {
+// 			status: 201,
+// 			type: 'update',
+// 			message: `${data[0].updatedName} updated`,
+// 		};
+
+// 		return await res.status(201).json({ toast, data });
+// 	} catch (error) {
+// 		await handleError({ error, res });
+// 	}
+// }
 
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { order_info_uuid } = req.body;
+
+	let updateData = { ...req.body };
+
+	if (order_info_uuid === zipperSchema.order_info.uuid) {
+		updateData.zipper_order_info_uuid = order_info_uuid;
+		updateData.thread_order_info_uuid = null;
+	} else if (order_info_uuid === threadSchema.order_info.uuid) {
+		updateData.thread_order_info_uuid = order_info_uuid;
+		updateData.zipper_order_info_uuid = null;
+	}
+
 	const infoPromise = db
 		.update(info)
-		.set(req.body)
+		.set(updateData)
 		.where(eq(info.uuid, req.params.uuid))
 		.returning({ updatedName: info.name });
 
@@ -88,7 +161,8 @@ export async function selectAll(req, res, next) {
 			id: info.id,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
-			order_info_uuid: info.order_info_uuid,
+			zipper_order_info_uuid: info.zipper_order_info_uuid,
+			thread_order_info_uuid: info.thread_order_info_uuid,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,
 			buyer_name: publicSchema.buyer.name,
@@ -158,7 +232,8 @@ export async function select(req, res, next) {
 			id: info.id,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
-			order_info_uuid: info.order_info_uuid,
+			zipper_order_info_uuid: info.zipper_order_info_uuid,
+			thread_order_info_uuid: info.thread_order_info_uuid,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,
 			buyer_name: publicSchema.buyer.name,

@@ -30,7 +30,11 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'Lab Dip 1',
 									},
-									order_info_uuid: {
+									zipper_order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									thread_order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
@@ -184,7 +188,11 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'Lab Dip 1',
 									},
-									order_info_uuid: {
+									zipper_order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									thread_order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
@@ -372,7 +380,11 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'Lab Dip 1',
 									},
-									order_info_uuid: {
+									zipper_order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									thread_order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
