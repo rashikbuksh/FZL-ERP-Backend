@@ -9,7 +9,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import * as threadSchema from '../../Thread/schema.js';
+import * as threadSchema from '../../thread/schema.js';
 import { info } from '../schema.js';
 
 // export async function insert(req, res, next) {
