@@ -822,7 +822,7 @@ export async function selectLabDipRecipe(req, res, next) {
 	});
 }
 
-export async function selectLabDipRecipeName(req, res, next) {
+export async function selectLabDipShadeRecipe(req, res, next) {
 	const query = sql`
 	SELECT
 		recipe.uuid AS value,
