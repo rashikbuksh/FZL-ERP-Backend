@@ -105,7 +105,7 @@ const swaggerSpec = swaggerJSDoc({
 				bearerAuth: {
 					type: 'http',
 					description:
-						'JWT Authorization header using the Bearer scheme. \nPlease input without "Bearer " prefix',
+						'JWT Authorization header using the Bearer scheme. Please input without "Bearer " prefix',
 					name: 'Authorization',
 					in: 'header',
 					scheme: 'bearer',
