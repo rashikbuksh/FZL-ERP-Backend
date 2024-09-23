@@ -235,7 +235,7 @@ export async function selectPackingListDetailsByPackingListUuid(
 		const toast = {
 			status: 200,
 			type: 'select',
-			msg: 'packing list Details Full',
+			message: 'packing list Details Full',
 		};
 
 		res.status(200).json({ toast, data: response });

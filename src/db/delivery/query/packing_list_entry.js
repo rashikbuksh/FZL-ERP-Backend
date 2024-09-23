@@ -20,7 +20,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			msg: `${data[0].insertedId} inserted`,
+			message: `${data[0].insertedId} inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -42,7 +42,7 @@ export async function update(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'update',
-			msg: `${data[0].updatedId} updated`,
+			message: `${data[0].updatedId} updated`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -63,7 +63,7 @@ export async function remove(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'delete',
-			msg: `${data[0].deletedId} deleted`,
+			message: `${data[0].deletedId} deleted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
