@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as zipperSchema from '../../zipper/schema.js';
 import { packing_list, packing_list_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -79,6 +80,8 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: packing_list.uuid,
+			order_info_uuid: packing_list.order_info_uuid,
+			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
 			created_by: packing_list.created_by,
@@ -91,6 +94,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(packing_list.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			zipperSchema.order_info,
+			eq(packing_list.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.orderBy(desc(packing_list.created_at));
 	const toast = {
@@ -107,6 +114,8 @@ export async function select(req, res, next) {
 	const packing_listPromise = db
 		.select({
 			uuid: packing_list.uuid,
+			order_info_uuid: packing_list.order_info_uuid,
+			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
 			created_by: packing_list.created_by,
@@ -119,6 +128,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(packing_list.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			zipperSchema.order_info,
+			eq(packing_list.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.where(eq(packing_list.uuid, req.params.uuid));
 
@@ -143,7 +156,7 @@ export async function selectPackingListDetailsByPackingListUuid(
 	if (!(await validateRequest(req, next))) return;
 
 	const { packing_list_uuid } = req.params;
-	const { is_update, order_info_uuid } = req.query;
+	const { is_update } = req.query;
 
 	try {
 		const api = await createApi(req);
@@ -157,46 +170,47 @@ export async function selectPackingListDetailsByPackingListUuid(
 			fetchData('/delivery/packing-list-entry/by'),
 		]);
 
-		let query;
+		let query_data;
 
 		if (is_update == 'true') {
-			query = sql`
-        SELECT 
-            ple.uuid,
-            ple.packing_list_uuid,
-            ple.sfg_uuid,
-            ple.quantity,
-            ple.created_at,
-            ple.updated_at,
-            ple.remarks,
-			vodf.order_info_uuid as order_info_uuid,
-			vodf.order_number,
-			vodf.item_description,
-			vodf.order_description_uuid,
-			oe.style,
-			oe.color,
-			oe.size,
-			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-			oe.quantity as order_quantity,
-			sfg.uuid as sfg_uuid,
-			sfg.warehouse as warehouse,
-			sfg.delivered as delivered,
-			(oe.quantity - sfg.delivered) as balance_quantity,
-			false as is_checked
-		FROM
-			zipper.v_order_details_full vodf
-		LEFT JOIN
-			zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-		LEFT JOIN
-			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-		LEFT JOIN delivery.packing_list_entry ple ON ple.sfg_uuid = sfg.uuid
-        WHERE 
-            vodf.order_info_uuid = ${order_info_uuid} AND ple.uuid IS NULL
-        ORDER BY
-            ple.created_at, ple.uuid DESC
-    `;
+			const order_info_uuid = packing_list?.data?.data?.order_info_uuid;
+			const query = sql`
+				SELECT 
+					ple.uuid,
+					ple.packing_list_uuid,
+					ple.sfg_uuid,
+					ple.quantity,
+					ple.created_at,
+					ple.updated_at,
+					ple.remarks,
+					vodf.order_info_uuid as order_info_uuid,
+					vodf.order_number,
+					vodf.item_description,
+					vodf.order_description_uuid,
+					oe.style,
+					oe.color,
+					oe.size,
+					concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
+					oe.quantity as order_quantity,
+					sfg.uuid as sfg_uuid,
+					sfg.warehouse as warehouse,
+					sfg.delivered as delivered,
+					(oe.quantity - sfg.delivered) as balance_quantity,
+					false as is_checked
+				FROM
+					zipper.v_order_details_full vodf
+				LEFT JOIN
+					zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN
+					zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+				LEFT JOIN delivery.packing_list_entry ple ON ple.sfg_uuid = sfg.uuid
+				WHERE 
+					vodf.order_info_uuid = ${order_info_uuid} AND ple.uuid IS NULL
+				ORDER BY
+					ple.created_at, ple.uuid DESC
+			`;
+			query_data = await db.execute(query);
 		}
-		const query_data = is_update == 'true' ? await db.execute(query) : null;
 
 		const response = {
 			...packing_list?.data?.data,
