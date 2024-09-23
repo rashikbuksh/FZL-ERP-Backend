@@ -194,7 +194,7 @@ export async function select(req, res, next) {
 export async function selectBySection(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { item_name } = req.query;
+	const { item_name, nylon_stopper } = req.query;
 
 	const query = sql`
 		SELECT
@@ -246,12 +246,9 @@ export async function selectBySection(req, res, next) {
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		WHERE
-			sfg_production.section = ${req.params.section}
+			sfg_production.section = ${req.params.section} ${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
+			${nylon_stopper ? sql`AND lower(vodf.nylon_stopper_name) = lower(${nylon_stopper})` : sql``}
 	`;
-
-	if (item_name) {
-		query.append(sql` AND lower(vodf.item_name) = lower(${item_name})`);
-	}
 
 	const sfgProductionPromise = db.execute(query);
 
