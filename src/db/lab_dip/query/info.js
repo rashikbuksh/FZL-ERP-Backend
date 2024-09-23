@@ -42,11 +42,18 @@ export async function insert(req, res, next) {
 	const { order_info_uuid } = req.body;
 
 	let insertData = { ...req.body };
-
-	if (order_info_uuid === zipperSchema.order_info.uuid) {
+	const [zipperOrderInfo, threadOrderInfo] = await Promise.all([
+		db
+			.select(zipperSchema.order_info)
+			.where(eq(zipperSchema.order_info.uuid, order_info_uuid)),
+		db
+			.select(threadSchema.order_info)
+			.where(eq(threadSchema.order_info.uuid, order_info_uuid)),
+	]);
+	if (zipperOrderInfo.length > 0) {
 		insertData.order_info_uuid = order_info_uuid;
 		insertData.thread_order_info_uuid = null;
-	} else if (order_info_uuid === threadSchema.order_info.uuid) {
+	} else if (threadOrderInfo.length > 0) {
 		insertData.thread_order_info_uuid = order_info_uuid;
 		insertData.order_info_uuid = null;
 	}
@@ -102,10 +109,19 @@ export async function update(req, res, next) {
 
 	let updateData = { ...req.body };
 
-	if (order_info_uuid === zipperSchema.order_info.uuid) {
+	const [zipperOrderInfo, threadOrderInfo] = await Promise.all([
+		db
+			.select(zipperSchema.order_info)
+			.where(eq(zipperSchema.order_info.uuid, order_info_uuid)),
+		db
+			.select(threadSchema.order_info)
+			.where(eq(threadSchema.order_info.uuid, order_info_uuid)),
+	]);
+
+	if (zipperOrderInfo.length > 0) {
 		updateData.order_info_uuid = order_info_uuid;
 		updateData.thread_order_info_uuid = null;
-	} else if (order_info_uuid === threadSchema.order_info.uuid) {
+	} else if (threadOrderInfo.length > 0) {
 		updateData.thread_order_info_uuid = order_info_uuid;
 		updateData.order_info_uuid = null;
 	}
