@@ -247,6 +247,7 @@ export async function selectSfgBySection(req, res, next) {
 			od.nylon_metallic_finishing,
 			od.vislon_teeth_molding,
 			od.metal_teeth_molding,
+			od.slider_finishing_stock,
 			sfg.dying_and_iron_prod as dying_and_iron_prod,
 			sfg.teeth_molding_stock as teeth_molding_stock,
 			sfg.teeth_molding_prod as teeth_molding_prod,

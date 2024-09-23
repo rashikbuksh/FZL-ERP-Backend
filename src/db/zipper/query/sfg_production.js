@@ -234,7 +234,8 @@ export async function selectBySection(req, res, next) {
 			COALESCE(vodf.nylon_plastic_finishing,0) as nylon_plastic_finishing,
 			COALESCE(vodf.vislon_teeth_molding,0) as vislon_teeth_molding,
 			COALESCE(vodf.metal_teeth_molding,0) as metal_teeth_molding,
-			COALESCE(vodf.nylon_metallic_finishing,0) as nylon_metallic_finishing
+			COALESCE(vodf.nylon_metallic_finishing,0) as nylon_metallic_finishing,
+			COALESCE(vodf.slider_finishing_stock,0) as slider_finishing_stock
 		FROM
 			zipper.sfg_production
 		LEFT JOIN
@@ -246,7 +247,7 @@ export async function selectBySection(req, res, next) {
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		WHERE
-			sfg_production.section = ${req.params.section} ${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
+			sfg_production.section = ${req.params.section} ${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? sql`AND lower(vodf.nylon_stopper_name) = lower(${nylon_stopper})` : sql``}
 	`;
 
