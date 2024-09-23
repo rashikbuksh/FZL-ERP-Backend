@@ -36,6 +36,8 @@ export const recipe = lab_dip.table('recipe', {
 	approved: integer('approved').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	status: integer('status').default(0),
+	sub_streat: text('sub_streat').default(null),
+	bleaching: text('bleaching').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

@@ -96,6 +96,8 @@ export async function selectAll(req, res, next) {
 			created_by: recipe.created_by,
 			created_by_name: hrSchema.users.name,
 			status: recipe.status,
+			sub_streat: recipe.sub_streat,
+			bleaching: recipe.bleaching,
 			created_at: recipe.created_at,
 			updated_at: recipe.updated_at,
 			remarks: recipe.remarks,

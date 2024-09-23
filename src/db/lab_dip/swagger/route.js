@@ -540,6 +540,14 @@ export const pathLabDipRecipe = {
 										type: 'number',
 										example: 0,
 									},
+									sub_streat: {
+										type: 'string',
+										example: 'Sub Streat 1',
+									},
+									bleaching: {
+										type: 'string',
+										example: 'bleach',
+									},
 									created_at: {
 										type: 'string',
 										format: 'date-time',
@@ -665,6 +673,14 @@ export const pathLabDipRecipe = {
 									status: {
 										type: 'number',
 										example: 0,
+									},
+									sub_streat: {
+										type: 'string',
+										example: 'Sub Streat 1',
+									},
+									bleaching: {
+										type: 'string',
+										example: 'bleach',
 									},
 									created_at: {
 										type: 'string',
@@ -828,6 +844,14 @@ export const pathLabDipRecipe = {
 									status: {
 										type: 'number',
 										example: 0,
+									},
+									sub_streat: {
+										type: 'string',
+										example: 'Sub Streat 1',
+									},
+									bleaching: {
+										type: 'string',
+										example: 'bleach',
 									},
 									created_at: {
 										type: 'string',
