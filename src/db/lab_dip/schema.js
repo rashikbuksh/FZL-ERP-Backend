@@ -9,6 +9,7 @@ import {
 	uuid_primary,
 } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
+import * as threadSchema from '../Thread/schema.js';
 
 const lab_dip = pgSchema('lab_dip');
 
@@ -16,8 +17,11 @@ export const info = lab_dip.table('info', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
 	name: text('name').notNull(),
-	order_info_uuid: defaultUUID('order_info_uuid')
+	zipper_order_info_uuid: defaultUUID('order_info_uuid')
 		.references(() => zipperSchema.order_info.uuid)
+		.default(null),
+	thread_order_info_uuid: defaultUUID('thread_order_info_uuid')
+		.references(() => threadSchema.order_info.uuid)
 		.default(null),
 	lab_status: integer('lab_status').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
