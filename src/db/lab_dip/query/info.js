@@ -44,11 +44,11 @@ export async function insert(req, res, next) {
 	let insertData = { ...req.body };
 
 	if (order_info_uuid === zipperSchema.order_info.uuid) {
-		insertData.zipper_order_info_uuid = order_info_uuid;
+		insertData.order_info_uuid = order_info_uuid;
 		insertData.thread_order_info_uuid = null;
 	} else if (order_info_uuid === threadSchema.order_info.uuid) {
 		insertData.thread_order_info_uuid = order_info_uuid;
-		insertData.zipper_order_info_uuid = null;
+		insertData.order_info_uuid = null;
 	}
 
 	const infoPromise = db
@@ -103,11 +103,11 @@ export async function update(req, res, next) {
 	let updateData = { ...req.body };
 
 	if (order_info_uuid === zipperSchema.order_info.uuid) {
-		updateData.zipper_order_info_uuid = order_info_uuid;
+		updateData.order_info_uuid = order_info_uuid;
 		updateData.thread_order_info_uuid = null;
 	} else if (order_info_uuid === threadSchema.order_info.uuid) {
 		updateData.thread_order_info_uuid = order_info_uuid;
-		updateData.zipper_order_info_uuid = null;
+		updateData.order_info_uuid = null;
 	}
 
 	const infoPromise = db
@@ -161,7 +161,7 @@ export async function selectAll(req, res, next) {
 			id: info.id,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
-			zipper_order_info_uuid: info.zipper_order_info_uuid,
+			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,
@@ -232,7 +232,7 @@ export async function select(req, res, next) {
 			id: info.id,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
-			zipper_order_info_uuid: info.zipper_order_info_uuid,
+			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			buyer_uuid: zipperSchema.order_info.buyer_uuid,

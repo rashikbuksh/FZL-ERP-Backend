@@ -30,7 +30,7 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'Lab Dip 1',
 									},
-									zipper_order_info_uuid: {
+									order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
@@ -188,7 +188,7 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'Lab Dip 1',
 									},
-									zipper_order_info_uuid: {
+									order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
@@ -380,7 +380,7 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'Lab Dip 1',
 									},
-									zipper_order_info_uuid: {
+									order_info_uuid: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
