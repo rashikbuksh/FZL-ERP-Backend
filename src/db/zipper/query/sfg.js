@@ -291,19 +291,6 @@ export async function selectSfgBySection(req, res, next) {
 			ORDER BY oe.created_at, sfg.uuid DESC
 		`;
 
-	// * for the below query, SFG was disappearing from the list
-	// AND CASE
-	// 					WHEN lower(${item_name}) = 'vislon'
-	// 						THEN od.vislon_teeth_molding > 0 OR sfg.teeth_molding_prod > 0
-	// 					WHEN lower(${item_name}) = 'metal'
-	// 						THEN od.metal_teeth_molding > 0 OR sfg.teeth_molding_prod > 0
-	// 					WHEN lower(${item_name}) = 'nylon plastic'
-	// 						THEN od.nylon_plastic_finishing > 0 OR sfg.finishing_prod > 0
-	// 					WHEN lower(${item_name}) = 'nylon metallic'
-	// 						THEN od.nylon_metallic_finishing > 0 OR sfg.finishing_prod > 0
-	// 					ELSE false
-	// 				END
-
 	const sfgPromise = db.execute(query);
 
 	try {
