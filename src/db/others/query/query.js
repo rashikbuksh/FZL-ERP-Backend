@@ -14,8 +14,8 @@ import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
-import * as threadSchema from '../../Thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
+import * as threadSchema from '../../thread/schema.js';
 
 // * Aliases * //
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
