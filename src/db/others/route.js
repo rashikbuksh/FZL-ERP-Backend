@@ -87,8 +87,8 @@ otherRouter.get(
 
 // lab_dip
 otherRouter.get(
-	'/lab-dip/recipe-name/value/label',
-	otherOperations.selectLabDipRecipeName
+	'/lab-dip/shade-recipe/value/label',
+	otherOperations.selectLabDipShadeRecipe
 );
 otherRouter.get(
 	'/lab-dip/recipe/value/label',
@@ -1001,7 +1001,7 @@ const pathLabDip = {
 			},
 		},
 	},
-	'/other/lab-dip/recipe-name/value/label': {
+	'/other/lab-dip/shade-recipe/value/label': {
 		get: {
 			tags: ['others'],
 			summary: 'get all shade recipes',
