@@ -45,6 +45,14 @@ const isZipperOrderInfo = async (order_info_uuid) => {
 
 	return zipperOrderInfo?.length > 0;
 };
+const isThreadOrderInfo = async (order_info_uuid) => {
+	const threadOrderInfo = await db
+		.select(threadSchema.order_info)
+		.from(threadSchema.order_info)
+		.where(eq(threadSchema.order_info.uuid, order_info_uuid));
+
+	return threadOrderInfo?.length > 0;
+};
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -55,29 +63,24 @@ export async function insert(req, res, next) {
 	insertData.order_info_uuid = null;
 	insertData.thread_order_info_uuid = null;
 
-	if (isZipperOrderInfo(order_info_uuid)) {
-		insertData.order_info_uuid = order_info_uuid;
-	} else {
-		insertData.thread_order_info_uuid = order_info_uuid;
-	}
-
-	const infoPromise = db
-		.insert(info)
-		.values(insertData)
-		.returning({ insertedName: info.name });
-
 	try {
+		if (await isZipperOrderInfo(order_info_uuid)) {
+			insertData.order_info_uuid = order_info_uuid;
+		} else if (await isThreadOrderInfo(order_info_uuid)) {
+			insertData.thread_order_info_uuid = order_info_uuid;
+		} else {
+			return res.status(400).json({ error: 'Invalid order_info_uuid' });
+		}
+
+		const infoPromise = db
+			.insert(info)
+			.values(insertData)
+			.returning({ insertedName: info.name });
+
 		const data = await infoPromise;
-
-		const toast = {
-			status: 201,
-			type: 'insert',
-			message: `${data[0].insertedName} inserted`,
-		};
-
-		res.status(201).json(toast);
+		return res.status(201).json({ data });
 	} catch (error) {
-		next(error);
+		await handleError({ error, res });
 	}
 }
 
@@ -114,28 +117,23 @@ export async function update(req, res, next) {
 	updateData.order_info_uuid = null;
 	updateData.thread_order_info_uuid = null;
 
-	if (isZipperOrderInfo(order_info_uuid)) {
-		updateData.order_info_uuid = order_info_uuid;
-	} else {
-		updateData.thread_order_info_uuid = order_info_uuid;
-	}
-
-	const infoPromise = db
-		.update(info)
-		.set(updateData)
-		.where(eq(info.uuid, req.params.uuid))
-		.returning({ updatedName: info.name });
-
 	try {
+		if (await isZipperOrderInfo(order_info_uuid)) {
+			updateData.order_info_uuid = order_info_uuid;
+		} else if (await isThreadOrderInfo(order_info_uuid)) {
+			updateData.thread_order_info_uuid = order_info_uuid;
+		} else {
+			return res.status(400).json({ error: 'Invalid order_info_uuid' });
+		}
+
+		const infoPromise = db
+			.update(info)
+			.set(updateData)
+			.where(eq(info.uuid, req.params.uuid))
+			.returning({ updatedName: info.name });
+
 		const data = await infoPromise;
-
-		const toast = {
-			status: 201,
-			type: 'update',
-			message: `${data[0].updatedName} updated`,
-		};
-
-		return await res.status(201).json({ toast, data });
+		return res.status(200).json({ data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
