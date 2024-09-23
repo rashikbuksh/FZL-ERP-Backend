@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, gt, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -9,6 +9,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import * as threadSchema from '../../thread/schema.js';
+import * as materialSchema from '../../material/schema.js';
 import { info, recipe } from '../schema.js';
 
 import { alias } from 'drizzle-orm/pg-core';
@@ -201,15 +202,78 @@ export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
 			fetchData('/lab-dip/recipe-entry/by'),
 		]);
 
+		const sum = recipe_entry?.data?.data.reduce(
+			(acc, { quantity }) => acc + Number(quantity),
+			0
+		);
+		const { bleaching } = recipe?.data?.data;
+		console.log('sum', sum);
+		console.log('bleaching', bleaching);
+		let programsData = [];
+
+		const resultPromise = db
+			.select({
+				uuid: threadSchema.programs.uuid,
+				dyes_category_uuid: threadSchema.programs.dyes_category_uuid,
+				dyes_category_name: threadSchema.dyes_category.name,
+				material_uuid: threadSchema.programs.material_uuid,
+				material_name: materialSchema.info.name,
+				dyes_category_id: threadSchema.dyes_category.id,
+				bleaching: threadSchema.dyes_category.bleaching,
+				quantity: threadSchema.programs.quantity,
+				created_by: threadSchema.programs.created_by,
+				created_by_name: hrSchema.users.name,
+				created_at: threadSchema.programs.created_at,
+				updated_at: threadSchema.programs.updated_at,
+				remarks: threadSchema.programs.remarks,
+			})
+			.from(threadSchema.programs)
+			.leftJoin(
+				threadSchema.dyes_category,
+				eq(
+					threadSchema.programs.dyes_category_uuid,
+					threadSchema.dyes_category.uuid
+				)
+			)
+			.leftJoin(
+				materialSchema.info,
+				eq(
+					threadSchema.programs.material_uuid,
+					materialSchema.info.uuid
+				)
+			)
+			.leftJoin(
+				hrSchema.users,
+				eq(threadSchema.programs.created_by, hrSchema.users.uuid)
+			)
+			.where(eq(threadSchema.dyes_category.bleaching, bleaching));
+
+		if (sum > 1.5) {
+			resultPromise.where(
+				gt(threadSchema.dyes_category.upto_percentage, 1.5)
+			);
+		} else if (sum <= 1.5) {
+			resultPromise.where(
+				gt(1.5, threadSchema.dyes_category.upto_percentage)
+			);
+		} else {
+			resultPromise.where(
+				gt(threadSchema.dyes_category.upto_percentage, 0)
+			);
+		}
+		// console.log(bleaching);
+		programsData = await resultPromise;
+
 		const response = {
 			...recipe?.data?.data,
 			recipe_entry: recipe_entry?.data?.data || [],
+			programs: programsData || [],
 		};
 
 		const toast = {
 			status: 200,
 			type: 'select',
-			msg: 'Recipe Details Full',
+			message: 'Recipe Details Full',
 		};
 
 		res.status(200).json({ toast, data: response });
