@@ -822,23 +822,23 @@ export async function selectLabDipRecipe(req, res, next) {
 	});
 }
 
-export async function selectLabDipShadeRecipe(req, res, next) {
+export async function selectLabDipRecipeName(req, res, next) {
 	const query = sql`
 	SELECT
-		shade_recipe.uuid AS value,
-		shade_recipe.name AS label
+		recipe.uuid AS value,
+		recipe.name AS label
 	FROM
-		lab_dip.shade_recipe;`;
+		lab_dip.recipe;`;
 
-	const shadeRecipePromise = db.execute(query);
+	const RecipePromise = db.execute(query);
 
 	try {
-		const data = await shadeRecipePromise;
+		const data = await RecipePromise;
 
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			message: 'Shade Recipe list',
+			message: 'Recipe list',
 		};
 
 		res.status(200).json({ toast, data: data?.rows });

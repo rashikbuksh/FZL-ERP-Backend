@@ -87,12 +87,12 @@ otherRouter.get(
 
 // lab_dip
 otherRouter.get(
-	'/lab-dip/recipe/value/label',
-	otherOperations.selectLabDipRecipe
+	'/lab-dip/recipe-name/value/label',
+	otherOperations.selectLabDipRecipeName
 );
 otherRouter.get(
-	'/lab-dip/shade-recipe/value/label',
-	otherOperations.selectLabDipShadeRecipe
+	'/lab-dip/recipe/value/label',
+	otherOperations.selectLabDipRecipe
 );
 
 // * Slider * //
@@ -1001,7 +1001,7 @@ const pathLabDip = {
 			},
 		},
 	},
-	'/other/lab-dip/shade-recipe/value/label': {
+	'/other/lab-dip/recipe-name/value/label': {
 		get: {
 			tags: ['others'],
 			summary: 'get all shade recipes',
