@@ -258,7 +258,9 @@ export async function selectSfgBySection(req, res, next) {
 			sfg.delivered as delivered,
 			sfg.pi as pi,
 			sfg.remarks as remarks,
-			(oe.quantity - COALESCE(sfg.finishing_prod, 0)) as balance_quantity,
+			CASE WHEN sfg.finishing_prod != 0 
+			THEN (oe.quantity - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0)) 
+			ELSE (oe.quantity - COALESCE(sfg.warehouse, 0)) END as balance_quantity,
 			COALESCE((
 				SELECT 
 					CASE 

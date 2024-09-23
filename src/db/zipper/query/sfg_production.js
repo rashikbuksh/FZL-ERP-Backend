@@ -215,7 +215,9 @@ export async function selectBySection(req, res, next) {
 			sfg_production.created_at,
 			sfg_production.updated_at,
 			sfg_production.remarks,
-			(oe.quantity - COALESCE(sfg.finishing_prod, 0)) as balance_quantity,
+			CASE WHEN sfg.finishing_prod != 0 
+			THEN (oe.quantity - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0)) 
+			ELSE (oe.quantity - COALESCE(sfg.warehouse, 0)) END as balance_quantity,
 			COALESCE(sfg.dying_and_iron_prod,0) as dying_and_iron_prod,
 			COALESCE(sfg.teeth_molding_stock,0) as teeth_molding_stock,
 			COALESCE(sfg.teeth_molding_prod,0) as teeth_molding_prod,
