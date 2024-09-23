@@ -248,6 +248,38 @@ export function selectOrderInfo(req, res, next) {
 	});
 }
 
+export async function selectOrderZipperThread(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const query = sql`SELECT
+							oz.uuid AS value,
+							CONCAT('Z', to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label
+						FROM
+							zipper.order_info oz
+						UNION 
+						SELECT
+							ot.uuid AS value,
+							CONCAT('TO', to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
+						FROM
+							thread.order_info ot`;
+
+	const orderZipperThreadPromise = db.execute(query);
+
+	try {
+		const data = await orderZipperThreadPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Zipper Thread list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function selectOrderInfoToGetOrderDescription(req, res, next) {
 	if (!validateRequest(req, next)) return;
 

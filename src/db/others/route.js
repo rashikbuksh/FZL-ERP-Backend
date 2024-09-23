@@ -31,6 +31,10 @@ otherRouter.get(
 // zipper
 otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
 otherRouter.get(
+	'/order/zipper-thread/value/label',
+	otherOperations.selectOrderZipperThread
+);
+otherRouter.get(
 	'/order/order_description_uuid/by/:order_number',
 	otherOperations.selectOrderInfoToGetOrderDescription
 );
@@ -349,6 +353,30 @@ const pathPublic = {
 										type: 'string',
 										example: 'Z24-0001',
 									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/order/zipper-thread/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all order zipper thread',
+			description: 'All order zipper thread',
+			operationId: 'getAllOrderZipperThread',
+			responses: {
+				200: {
+					description: 'Returns a all order zipper thread.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: { type: 'string' },
+									label: { type: 'string' },
 								},
 							},
 						},
