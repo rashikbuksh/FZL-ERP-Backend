@@ -5,16 +5,12 @@ import { VerifyToken } from './middleware/auth.js';
 import route from './routes/index.js';
 import swaggerSpec from './swagger.js';
 import cors from './util/cors.js';
-import { morganMiddleware } from './middleware/logger.js';
 
 const server = express();
 
 server.use(cors);
 server.use(urlencoded({ extended: true }));
 server.use(json());
-
-//* Configure Morgan
-server.use(morganMiddleware);
 
 server.use(VerifyToken);
 server.use('/uploads', express.static('uploads'));

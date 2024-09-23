@@ -30,7 +30,7 @@ export async function handleResponse({
 
 		return res.status(status).json({ toast, data });
 	} catch (error) {
-		logger.error(new Error(error));
+		logger.error(error);
 		console.error(error);
 
 		if (error.severity === 'ERROR') {
