@@ -9,7 +9,7 @@ import {
 	uuid_primary,
 } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
-import * as threadSchema from '../Thread/schema.js';
+import * as threadSchema from '../thread/schema.js';
 
 const lab_dip = pgSchema('lab_dip');
 
