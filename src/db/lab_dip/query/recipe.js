@@ -1,4 +1,4 @@
-import { desc, eq, gt, sql } from 'drizzle-orm';
+import { desc, eq, gt, not, sql, and, lte, gte, lt, or } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -11,6 +11,8 @@ import * as zipperSchema from '../../zipper/schema.js';
 import * as threadSchema from '../../thread/schema.js';
 import * as materialSchema from '../../material/schema.js';
 import { info, recipe } from '../schema.js';
+
+import { programs, dyes_category } from '../../thread/schema.js';
 
 import { alias } from 'drizzle-orm/pg-core';
 
@@ -87,6 +89,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
 	const resultPromise = db
 		.select({
 			uuid: recipe.uuid,
@@ -134,6 +137,7 @@ export async function selectAll(req, res, next) {
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+	console.log('req.params.uuid', req.params.uuid);
 
 	const recipePromise = db
 		.select({
@@ -202,67 +206,70 @@ export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
 			fetchData('/lab-dip/recipe-entry/by'),
 		]);
 
+		const { bleaching } = recipe?.data?.data;
+
 		const sum = recipe_entry?.data?.data.reduce(
 			(acc, { quantity }) => acc + Number(quantity),
 			0
 		);
-		const { bleaching } = recipe?.data?.data;
-		console.log('sum', sum);
-		console.log('bleaching', bleaching);
 		let programsData = [];
 
-		const resultPromise = db
+		const dataPromise = db
 			.select({
-				uuid: threadSchema.programs.uuid,
-				dyes_category_uuid: threadSchema.programs.dyes_category_uuid,
-				dyes_category_name: threadSchema.dyes_category.name,
-				material_uuid: threadSchema.programs.material_uuid,
+				uuid: programs.uuid,
+				dyes_category_uuid: programs.dyes_category_uuid,
+				dyes_category_name: dyes_category.name,
+				material_uuid: programs.material_uuid,
 				material_name: materialSchema.info.name,
-				dyes_category_id: threadSchema.dyes_category.id,
-				bleaching: threadSchema.dyes_category.bleaching,
-				quantity: threadSchema.programs.quantity,
-				created_by: threadSchema.programs.created_by,
+				dyes_category_id: dyes_category.id,
+				bleaching_program: dyes_category.bleaching,
+				percentage: dyes_category.upto_percentage,
+				quantity: programs.quantity,
+				created_by: programs.created_by,
 				created_by_name: hrSchema.users.name,
-				created_at: threadSchema.programs.created_at,
-				updated_at: threadSchema.programs.updated_at,
-				remarks: threadSchema.programs.remarks,
+				created_at: programs.created_at,
+				updated_at: programs.updated_at,
+				remarks: programs.remarks,
 			})
-			.from(threadSchema.programs)
+			.from(programs)
 			.leftJoin(
-				threadSchema.dyes_category,
-				eq(
-					threadSchema.programs.dyes_category_uuid,
-					threadSchema.dyes_category.uuid
-				)
+				dyes_category,
+				eq(programs.dyes_category_uuid, dyes_category.uuid)
 			)
 			.leftJoin(
 				materialSchema.info,
-				eq(
-					threadSchema.programs.material_uuid,
-					materialSchema.info.uuid
-				)
+				eq(programs.material_uuid, materialSchema.info.uuid)
 			)
 			.leftJoin(
 				hrSchema.users,
-				eq(threadSchema.programs.created_by, hrSchema.users.uuid)
+				eq(programs.created_by, hrSchema.users.uuid)
 			)
-			.where(eq(threadSchema.dyes_category.bleaching, bleaching));
+			.where(
+				or(
+					and(
+						eq(bleaching, dyes_category.bleaching),
+						// gt(sum, 1.5),
+						gt(dyes_category.upto_percentage, 1.5)
+					),
+					and(
+						eq(bleaching, dyes_category.bleaching),
+						gt(sum, 0.5),
+						lte(sum, 1.5),
+						gt(dyes_category.upto_percentage, 0.5),
+						lte(dyes_category.upto_percentage, 1.5)
+					),
+					and(
+						eq(bleaching, dyes_category.bleaching),
+						gt(sum, 0),
+						lte(sum, 0.5),
+						gt(dyes_category.upto_percentage, 0),
+						lte(dyes_category.upto_percentage, 0.5)
+					)
+				)
+			);
 
-		if (sum > 1.5) {
-			resultPromise.where(
-				gt(threadSchema.dyes_category.upto_percentage, 1.5)
-			);
-		} else if (sum <= 1.5) {
-			resultPromise.where(
-				gt(1.5, threadSchema.dyes_category.upto_percentage)
-			);
-		} else {
-			resultPromise.where(
-				gt(threadSchema.dyes_category.upto_percentage, 0)
-			);
-		}
-		// console.log(bleaching);
-		programsData = await resultPromise;
+		console.log('sum', sum);
+		programsData = await dataPromise;
 
 		const response = {
 			...recipe?.data?.data,
