@@ -81,6 +81,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: packing_list.uuid,
 			order_info_uuid: packing_list.order_info_uuid,
+			packing_number: sql`CONCAT('PL, to_char(packing_list.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
@@ -115,6 +116,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: packing_list.uuid,
 			order_info_uuid: packing_list.order_info_uuid,
+			packing_number: sql`CONCAT('PL, to_char(packing_list.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
