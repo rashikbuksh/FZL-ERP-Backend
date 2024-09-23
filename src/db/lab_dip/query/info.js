@@ -36,26 +36,29 @@ import { info } from '../schema.js';
 // 		await handleError({ error, res });
 // 	}
 // }
+
+const isZipperOrderInfo = async (order_info_uuid) => {
+	const zipperOrderInfo = await db
+		.select(zipperSchema.order_info)
+		.from(zipperSchema.order_info)
+		.where(eq(zipperSchema.order_info.uuid, order_info_uuid));
+
+	return zipperOrderInfo?.length > 0;
+};
+
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { order_info_uuid } = req.body;
 
 	let insertData = { ...req.body };
-	const [zipperOrderInfo, threadOrderInfo] = await Promise.all([
-		db
-			.select(zipperSchema.order_info)
-			.where(eq(zipperSchema.order_info.uuid, order_info_uuid)),
-		db
-			.select(threadSchema.order_info)
-			.where(eq(threadSchema.order_info.uuid, order_info_uuid)),
-	]);
-	if (zipperOrderInfo.length > 0) {
+	insertData.order_info_uuid = null;
+	insertData.thread_order_info_uuid = null;
+
+	if (isZipperOrderInfo(order_info_uuid)) {
 		insertData.order_info_uuid = order_info_uuid;
-		insertData.thread_order_info_uuid = null;
-	} else if (threadOrderInfo.length > 0) {
+	} else {
 		insertData.thread_order_info_uuid = order_info_uuid;
-		insertData.order_info_uuid = null;
 	}
 
 	const infoPromise = db
@@ -108,22 +111,13 @@ export async function update(req, res, next) {
 	const { order_info_uuid } = req.body;
 
 	let updateData = { ...req.body };
+	updateData.order_info_uuid = null;
+	updateData.thread_order_info_uuid = null;
 
-	const [zipperOrderInfo, threadOrderInfo] = await Promise.all([
-		db
-			.select(zipperSchema.order_info)
-			.where(eq(zipperSchema.order_info.uuid, order_info_uuid)),
-		db
-			.select(threadSchema.order_info)
-			.where(eq(threadSchema.order_info.uuid, order_info_uuid)),
-	]);
-
-	if (zipperOrderInfo.length > 0) {
+	if (isZipperOrderInfo(order_info_uuid)) {
 		updateData.order_info_uuid = order_info_uuid;
-		updateData.thread_order_info_uuid = null;
-	} else if (threadOrderInfo.length > 0) {
+	} else {
 		updateData.thread_order_info_uuid = order_info_uuid;
-		updateData.order_info_uuid = null;
 	}
 
 	const infoPromise = db
