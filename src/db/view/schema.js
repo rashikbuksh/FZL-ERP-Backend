@@ -61,6 +61,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.vislon_teeth_molding,
     order_description.metal_teeth_molding,
     order_description.nylon_metallic_finishing,
+    order_description.slider_finishing_stock,
     order_info.marketing_uuid,
     marketing.name AS marketing_name,
     order_info.buyer_uuid,
