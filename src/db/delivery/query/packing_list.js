@@ -16,13 +16,15 @@ export async function insert(req, res, next) {
 	const packing_listPromise = db
 		.insert(packing_list)
 		.values(req.body)
-		.returning({ insertedId: packing_list.uuid });
+		.returning({
+			insertedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
+		});
 	try {
 		const data = await packing_listPromise;
 		const toast = {
 			status: 201,
-			type: 'create',
-			message: `${data[0].insertedId} created`,
+			type: 'insert',
+			message: `${data[0].insertedId} inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -38,7 +40,9 @@ export async function update(req, res, next) {
 		.update(packing_list)
 		.set(req.body)
 		.where(eq(packing_list.uuid, req.params.uuid))
-		.returning({ updatedId: packing_list.uuid });
+		.returning({
+			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await packing_listPromise;
@@ -60,7 +64,9 @@ export async function remove(req, res, next) {
 	const packing_listPromise = db
 		.delete(packing_list)
 		.where(eq(packing_list.uuid, req.params.uuid))
-		.returning({ deletedId: packing_list.uuid });
+		.returning({
+			deletedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await packing_listPromise;
@@ -81,7 +87,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: packing_list.uuid,
 			order_info_uuid: packing_list.order_info_uuid,
-			packing_number: sql`CONCAT('PL, to_char(packing_list.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			packing_number: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
@@ -116,7 +122,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: packing_list.uuid,
 			order_info_uuid: packing_list.order_info_uuid,
-			packing_number: sql`CONCAT('PL, to_char(packing_list.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			packing_number: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
