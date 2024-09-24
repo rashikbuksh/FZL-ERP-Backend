@@ -188,6 +188,8 @@ export async function selectPackingListDetailsByPackingListUuid(
 					ple.packing_list_uuid,
 					ple.sfg_uuid,
 					ple.quantity,
+					ple.short_quantity,
+					ple.reject_quantity,
 					ple.created_at,
 					ple.updated_at,
 					ple.remarks,

@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { int } from 'drizzle-orm/mysql-core/index.js';
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
@@ -38,13 +39,21 @@ export const packing_list_entry = delivery.table('packing_list_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	short_quantity: integer('short_quantity').default(0),
+	reject_quantity: integer('reject_quantity').default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
 
+export const challan_sequence = delivery.sequence('challan_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
 export const challan = delivery.table('challan', {
 	uuid: uuid_primary,
+	id: integer('id').default(sql`nextval('delivery.challan_sequence')`),
 	carton_quantity: integer('carton_quantity').notNull(),
 	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
 	receive_status: integer('receive_status').default(0),
@@ -60,10 +69,6 @@ export const challan_entry = delivery.table('challan_entry', {
 	packing_list_uuid: defaultUUID('packing_list_uuid').references(
 		() => packing_list.uuid
 	),
-	delivery_quantity: decimal('delivery_quantity', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

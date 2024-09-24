@@ -19,7 +19,9 @@ export async function insert(req, res, next) {
 	const challanPromise = db
 		.insert(challan)
 		.values(req.body)
-		.returning({ insertedId: challan.uuid });
+		.returning({
+			insertedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+		});
 	try {
 		const data = await challanPromise;
 		const toast = {
@@ -40,7 +42,9 @@ export async function update(req, res, next) {
 		.update(challan)
 		.set(req.body)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning({ updatedId: challan.uuid });
+		.returning({
+			updatedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await challanPromise;
@@ -61,7 +65,9 @@ export async function remove(req, res, next) {
 	const challanPromise = db
 		.delete(challan)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning({ deletedId: challan.uuid });
+		.returning({
+			deletedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await challanPromise;
@@ -80,6 +86,7 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: challan.uuid,
+			challan_number: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			carton_quantity: challan.carton_quantity,
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
@@ -110,6 +117,7 @@ export async function select(req, res, next) {
 	const challanPromise = db
 		.select({
 			uuid: challan.uuid,
+			challan_number: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			carton_quantity: challan.carton_quantity,
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
