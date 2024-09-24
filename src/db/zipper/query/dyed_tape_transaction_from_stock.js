@@ -1,4 +1,5 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -6,10 +7,20 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
+import * as publicSchema from '../../public/schema.js';
 
 import db from '../../index.js';
 
-import { dyed_tape_transaction_from_stock } from '../schema.js';
+import zipper, {
+	dyed_tape_transaction_from_stock,
+	tape_coil,
+} from '../schema.js';
+
+const item_properties = alias(publicSchema.properties, 'item_properties');
+const zipper_number_properties = alias(
+	publicSchema.properties,
+	'zipper_number_properties'
+);
 
 // export async function insert(req, res, next) {
 //     if (!(await validateRequest(req, next))) return;
@@ -112,6 +123,11 @@ export async function selectAll(req, res, next) {
 				dyed_tape_transaction_from_stock.order_description_uuid,
 			trx_quantity: dyed_tape_transaction_from_stock.trx_quantity,
 			tape_coil_uuid: dyed_tape_transaction_from_stock.tape_coil_uuid,
+			tape_coil_name: tape_coil.name,
+			item_uuid: tape_coil.item_uuid,
+			item_name: item_properties.name,
+			zipper_number_uuid: tape_coil.zipper_number_uuid,
+			zipper_number_name: zipper_number_properties.name,
 			created_by: dyed_tape_transaction_from_stock.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: dyed_tape_transaction_from_stock.created_at,
@@ -122,7 +138,20 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(dyed_tape_transaction_from_stock.created_by, hrSchema.users.uuid)
-		);
+		)
+		.leftJoin(
+			tape_coil,
+			eq(dyed_tape_transaction_from_stock.tape_coil_uuid, tape_coil.uuid)
+		)
+		.leftJoin(
+			item_properties,
+			eq(tape_coil.item_uuid, item_properties.uuid)
+		)
+		.leftJoin(
+			zipper_number_properties,
+			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
+		)
+		.orderBy(desc(dyed_tape_transaction_from_stock.created_at));
 
 	const toast = {
 		status: 201,
@@ -148,6 +177,11 @@ export async function select(req, res, next) {
 				dyed_tape_transaction_from_stock.order_description_uuid,
 			trx_quantity: dyed_tape_transaction_from_stock.trx_quantity,
 			tape_coil_uuid: dyed_tape_transaction_from_stock.tape_coil_uuid,
+			tape_coil_name: tape_coil.name,
+			item_uuid: tape_coil.item_uuid,
+			item_name: item_properties.name,
+			zipper_number_uuid: tape_coil.zipper_number_uuid,
+			zipper_number_name: zipper_number_properties.name,
 			created_by: dyed_tape_transaction_from_stock.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: dyed_tape_transaction_from_stock.created_at,
@@ -158,6 +192,18 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(dyed_tape_transaction_from_stock.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			tape_coil,
+			eq(dyed_tape_transaction_from_stock.tape_coil_uuid, tape_coil.uuid)
+		)
+		.leftJoin(
+			item_properties,
+			eq(tape_coil.item_uuid, item_properties.uuid)
+		)
+		.leftJoin(
+			zipper_number_properties,
+			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.where(eq(dyed_tape_transaction_from_stock.uuid, req.params.uuid));
 
