@@ -177,14 +177,13 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 			CONCAT('PL', TO_CHAR(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS packing_number,
 			challan_entry.created_at,
 			challan_entry.updated_at,
-			challan_entry.remarks,
 			ple.uuid as packing_list_entry_uuid,
 			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
 			ple.sfg_uuid,
 			ple.quantity,
 			ple.short_quantity,
 			ple.reject_quantity,
-			ple.remarks as packing_list_entry_remarks,
+			ple.remarks as remarks,
 			vodf.order_info_uuid as order_info_uuid,
 			vodf.order_number,
 			vodf.item_description,
@@ -200,12 +199,6 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 		LEFT JOIN 
 			delivery.challan ON challan_entry.challan_uuid = challan.uuid
 		LEFT JOIN 
-			zipper.v_order_details_full vodf ON challan.order_info_uuid = vodf.order_info_uuid
-		LEFT JOIN
-			zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-		LEFT JOIN 
-			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-		LEFT JOIN 
 			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
 		LEFT JOIN 
 			hr.users created_by_user ON challan.created_by = created_by_user.uuid
@@ -213,6 +206,12 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 			delivery.packing_list pl ON challan_entry.packing_list_uuid = pl.uuid
 		LEFT JOIN 
 			delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
+		LEFT JOIN 
+			zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+		LEFT JOIN
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.order_description_uuid
+		LEFT JOIN 
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description
 		WHERE 
 			challan_entry.challan_uuid = ${req.params.challan_uuid};
 	`;
