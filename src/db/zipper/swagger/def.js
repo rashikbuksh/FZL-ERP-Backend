@@ -161,6 +161,8 @@ export const def_zipper_sfg = SED({
 		warehouse: SE.number(),
 		delivered: SE.number(),
 		pi: SE.number(),
+		short_quantity: SE.number(),
+		reject_quantity: SE.number(),
 		remarks: SE.string(),
 	},
 	xml: 'Zipper/Sfg',

@@ -91,6 +91,8 @@ export async function selectAll(req, res, next) {
 			warehouse: sfg.warehouse,
 			delivered: sfg.delivered,
 			pi: sfg.pi,
+			short_quantity: sfg.short_quantity,
+			reject_quantity: sfg.reject_quantity,
 			remarks: sfg.remarks,
 		})
 		.from(sfg)
@@ -133,6 +135,8 @@ export async function select(req, res, next) {
 			warehouse: sfg.warehouse,
 			delivered: sfg.delivered,
 			pi: sfg.pi,
+			short_quantity: sfg.short_quantity,
+			reject_quantity: sfg.reject_quantity,
 			remarks: sfg.remarks,
 		})
 		.from(sfg)
@@ -258,6 +262,8 @@ export async function selectSfgBySection(req, res, next) {
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
 			sfg.pi as pi,
+			sfg.short_quantity,
+			sfg.reject_quantity,
 			sfg.remarks as remarks,
 			CASE WHEN sfg.finishing_prod != 0 
 			THEN (oe.quantity - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0)) 

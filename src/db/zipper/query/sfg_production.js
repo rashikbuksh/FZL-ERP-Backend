@@ -229,6 +229,8 @@ export async function selectBySection(req, res, next) {
 			COALESCE(sfg.warehouse,0) as warehouse,
 			COALESCE(sfg.delivered,0) as delivered,
 			COALESCE(sfg.pi,0) as pi,
+			COALESCE(sfg.short_quantity,0) as short_quantity,
+			COALESCE(sfg.reject_quantity,0) as reject_quantity,
 			COALESCE(vodf.tape_received,0) as tape_received,
 			COALESCE(vodf.tape_transferred,0) as tape_transferred,
 			COALESCE(vodf.nylon_plastic_finishing,0) as nylon_plastic_finishing,

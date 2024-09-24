@@ -250,6 +250,8 @@ export const sfg = zipper.table('sfg', {
 	})
 		.notNull()
 		.default(0.0),
+	short_quantity: integer('short_quantity').default(0),
+	reject_quantity: integer('reject_quantity').default(0),
 	remarks: text('remarks').default(null),
 });
 
