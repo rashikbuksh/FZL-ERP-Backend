@@ -133,6 +133,7 @@ export async function select(req, res, next) {
 			challan_number: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			order_info_uuid: challan.order_info_uuid,
 			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			packing_list_uuids: sql`array_agg(packing_list.uuid)`,
 			packing_numbers: sql`
 				array_agg(
 					concat('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))
@@ -165,8 +166,8 @@ export async function select(req, res, next) {
 		.groupBy(
 			challan.uuid,
 			challan.order_info_uuid,
-			order_info.created_at,
-			order_info.id,
+			zipperSchema.order_info.created_at,
+			zipperSchema.order_info.id,
 			assignToUser.name,
 			createdByUser.name
 		);
