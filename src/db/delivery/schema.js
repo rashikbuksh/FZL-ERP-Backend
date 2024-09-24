@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
+import { order_info } from '../thread/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
@@ -53,6 +54,9 @@ export const challan_sequence = delivery.sequence('challan_sequence', {
 export const challan = delivery.table('challan', {
 	uuid: uuid_primary,
 	id: integer('id').default(sql`nextval('delivery.challan_sequence')`),
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => order_info.uuid
+	),
 	carton_quantity: integer('carton_quantity').notNull(),
 	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
 	gate_pass: integer('gate_pass').default(0),

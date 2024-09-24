@@ -87,6 +87,8 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: challan.uuid,
 			challan_number: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			order_info_uuid: challan.order_info_uuid,
+			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			carton_quantity: challan.carton_quantity,
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
@@ -101,15 +103,24 @@ export async function selectAll(req, res, next) {
 		.from(challan)
 		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
 		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
+		.leftJoin(
+			zipperSchema.order_info,
+			eq(challan.order_info_uuid, zipperSchema.order_info.uuid)
+		)
 		.orderBy(desc(challan.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'challan list',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'challan',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -119,6 +130,8 @@ export async function select(req, res, next) {
 		.select({
 			uuid: challan.uuid,
 			challan_number: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			order_info_uuid: challan.order_info_uuid,
+			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			carton_quantity: challan.carton_quantity,
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
@@ -133,6 +146,10 @@ export async function select(req, res, next) {
 		.from(challan)
 		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
 		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
+		.leftJoin(
+			zipperSchema.order_info,
+			eq(challan.order_info_uuid, zipperSchema.order_info.uuid)
+		)
 		.where(eq(challan.uuid, req.params.uuid));
 
 	try {

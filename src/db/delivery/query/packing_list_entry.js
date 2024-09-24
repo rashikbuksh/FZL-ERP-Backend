@@ -96,7 +96,7 @@ export async function selectAll(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
-			(oe.quantity - sfg.delivered) as balance_quantity
+			(oe.quantity - sfg.warehouse) as balance_quantity
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN 
@@ -149,7 +149,7 @@ export async function select(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
-			(oe.quantity - sfg.delivered) as balance_quantity,
+			(oe.quantity - sfg.warehouse) as balance_quantity,
 			true as is_checked
 		FROM 
 			delivery.packing_list_entry ple
@@ -206,7 +206,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
-			(oe.quantity - sfg.delivered) as balance_quantity,
+			(oe.quantity - sfg.warehouse) as balance_quantity,
 			true as is_checked
 		FROM 
 			delivery.packing_list_entry ple
