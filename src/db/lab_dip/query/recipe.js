@@ -1,4 +1,4 @@
-import { desc, eq, gt, not, sql, and, lte, gte, lt, or } from 'drizzle-orm';
+import { and, desc, eq, gt, gte, lt, lte, not, or, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -7,12 +7,12 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as zipperSchema from '../../zipper/schema.js';
-import * as threadSchema from '../../thread/schema.js';
 import * as materialSchema from '../../material/schema.js';
+import * as threadSchema from '../../thread/schema.js';
+import * as zipperSchema from '../../zipper/schema.js';
 import { info, recipe } from '../schema.js';
 
-import { programs, dyes_category } from '../../thread/schema.js';
+import { dyes_category, programs } from '../../thread/schema.js';
 
 import { alias } from 'drizzle-orm/pg-core';
 
@@ -137,7 +137,6 @@ export async function selectAll(req, res, next) {
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	console.log('req.params.uuid', req.params.uuid);
 
 	const recipePromise = db
 		.select({
@@ -268,7 +267,6 @@ export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
 				)
 			);
 
-		console.log('sum', sum);
 		programsData = await dataPromise;
 
 		const response = {
