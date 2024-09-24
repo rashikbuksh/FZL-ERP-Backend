@@ -178,7 +178,6 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 			challan_entry.created_at,
 			challan_entry.updated_at,
 			ple.uuid as packing_list_entry_uuid,
-			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
 			ple.sfg_uuid,
 			ple.quantity,
 			ple.short_quantity,
