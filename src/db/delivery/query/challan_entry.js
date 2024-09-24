@@ -43,8 +43,6 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	console.log(req.body, 'req.body');
-
 	const challan_entryPromise = db
 		.update(challan_entry)
 		.set(req.body)
@@ -53,8 +51,6 @@ export async function update(req, res, next) {
 
 	try {
 		const data = await challan_entryPromise;
-
-		console.log(data);
 
 		const toast = {
 			status: 201,
@@ -267,23 +263,23 @@ export async function selectPackingListForChallan(req, res, next) {
 			sfg.delivered as delivered,
 			(oe.quantity - sfg.warehouse) as balance_quantity
 		FROM 
-			delivery.challan_entry
-		LEFT JOIN 
-			delivery.challan ON challan_entry.challan_uuid = challan.uuid
-		LEFT JOIN 
-			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
-		LEFT JOIN 
-			hr.users created_by_user ON challan.created_by = created_by_user.uuid
-		LEFT JOIN 
-			delivery.packing_list pl ON challan_entry.packing_list_uuid = pl.uuid
-		LEFT JOIN 
+			delivery.packing_list pl 
+		LEFT JOIN
 			delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
-		LEFT JOIN 
+		LEFT JOIN
 			zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 		LEFT JOIN
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-		LEFT JOIN 
+		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN
+			delivery.challan_entry challan_entry ON pl.uuid = challan_entry.packing_list_uuid
+		LEFT JOIN
+			delivery.challan ON challan_entry.challan_uuid = challan.uuid
+		LEFT JOIN
+			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
+		LEFT JOIN
+			hr.users created_by_user ON challan.created_by = created_by_user.uuid
 		WHERE 
 			ple.packing_list_uuid = ${req.params.packing_list_uuid} AND challan_entry.uuid IS NULL;
 	`;
