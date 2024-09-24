@@ -693,10 +693,10 @@ export async function selectLCByPartyUuid(req, res, next) {
 export async function selectPi(req, res, next) {
 	const query = sql`
 	SELECT
-		pi.uuid AS value,
-		CONCAT('PI', TO_CHAR(pi.created_at, 'YY'), '-', LPAD(pi.id::text, 4, '0')) AS label,
+		pi_cash.uuid AS value,
+		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
 		bank.name AS pi_bank,
-		SUM(pi_cash_entry.pi_quantity * zipper.order_entry.party_price) AS pi_value,
+		SUM(pi_cash_entry.pi_cash_quantity * zipper.order_entry.party_price) AS pi_value,
 		ARRAY_AGG(DISTINCT v_order_details.order_number) AS order_numbers,
 		v_order_details.marketing_name
 	FROM
@@ -704,13 +704,14 @@ export async function selectPi(req, res, next) {
 	LEFT JOIN
 		commercial.bank ON pi_cash.bank_uuid = bank.uuid
 	LEFT JOIN
-		commercial.pi_cash_entry ON pi_cash.uuid = commercial.pi_cash_entry.pi_uuid
+		commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
 	LEFT JOIN
-		zipper.sfg ON commercial.pi_cash_entry.sfg_uuid = sfg.uuid
+		zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 	LEFT JOIN
 		zipper.order_entry ON order_entry.uuid = sfg.order_entry_uuid
 	LEFT JOIN
 		zipper.v_order_details ON v_order_details.order_description_uuid = order_entry.order_description_uuid
+	WHERE pi_cash.is_pi = 1
 	GROUP BY
 		pi_cash.uuid,
 		bank.name,
