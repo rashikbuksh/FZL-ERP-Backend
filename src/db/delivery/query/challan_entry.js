@@ -50,6 +50,9 @@ export async function update(req, res, next) {
 
 	try {
 		const data = await challan_entryPromise;
+
+		console.log(data[0]);
+
 		const toast = {
 			status: 201,
 			type: 'update',

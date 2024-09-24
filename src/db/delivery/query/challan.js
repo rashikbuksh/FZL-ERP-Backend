@@ -22,6 +22,7 @@ export async function insert(req, res, next) {
 		.values(req.body)
 		.returning({
 			insertedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			updatedUuid: challan.uuid,
 		});
 	try {
 		const data = await challanPromise;
@@ -45,6 +46,7 @@ export async function update(req, res, next) {
 		.where(eq(challan.uuid, req.params.uuid))
 		.returning({
 			updatedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			updatedUuid: challan.uuid,
 		});
 
 	try {
