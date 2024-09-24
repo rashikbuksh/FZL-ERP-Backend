@@ -152,7 +152,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	LEFT JOIN
 		thread.count_length cl ON oe.count_length_uuid = cl.uuid
 	LEFT JOIN
-		lab_dip.recipe se ON oe.recipe_uuid = re.uuid
+		lab_dip.recipe re ON oe.recipe_uuid = re.uuid
 	LEFT JOIN 
 		thread.order_info ON oe.order_info_uuid = order_info.uuid
 	LEFT JOIN 
