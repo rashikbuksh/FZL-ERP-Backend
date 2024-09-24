@@ -214,16 +214,16 @@ export async function select(req, res, next) {
 		)
 		.where(eq(dyed_tape_transaction_from_stock.uuid, req.params.uuid));
 
-	const toast = {
-		status: 201,
-		type: 'select',
-		message: 'dyed_tape_transaction_from_stock',
-	};
+	try {
+		const data = await dyedTapeTransactionFromStockPromise;
+		const toast = {
+			status: 201,
+			type: 'select',
+			message: 'dyed_tape_transaction_from_stock list',
+		};
 
-	handleResponse({
-		promise: dyedTapeTransactionFromStockPromise,
-		res,
-		next,
-		...toast,
-	});
+		res.status(201).json({ toast, data: data[0] });
+	} catch (error) {
+		handleError({ error, res });
+	}
 }
