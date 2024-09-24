@@ -211,7 +211,7 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 		LEFT JOIN
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.order_description_uuid
 		LEFT JOIN 
-			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		WHERE 
 			challan_entry.challan_uuid = ${req.params.challan_uuid};
 	`;
