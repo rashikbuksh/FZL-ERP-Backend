@@ -1248,10 +1248,10 @@ const pathDelivery = {
 				description: 'All packing list by order info',
 				operationId: 'getAllPackingListByOrderInfo',
 				parameters: [
-					SE.parameter_query(
+					SE.parameter_params(
 						'order_info_uuid',
 						'order_info_uuid',
-						'2ggcphnwHGzEUGy'
+						'uuid'
 					),
 				],
 				responses: {
