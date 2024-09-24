@@ -1,4 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -227,6 +228,53 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			message: 'Packing_list_entry',
 		};
 		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectPackingListEntryByMultiPackingListUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+	try {
+		const { packing_list_uuids } = req.params;
+
+		const api = await createApi(req);
+
+		const fetchData = async (packing_list_uuid) =>
+			await api
+				.get(`/delivery/packing-list-entry/by/${packing_list_uuid}`)
+				.then((response) => response);
+
+		const packing_list_uuid = packing_list_uuids
+			.split(',')
+			.map(String)
+			.map((String) => [String])
+			.flat();
+
+		const packing_list_entryPromise = await Promise.all(
+			packing_list_uuid.map((uuid) => fetchData(uuid))
+		);
+
+		const response = {
+			packing_list_entry: packing_list_entryPromise?.reduce(
+				(acc, result) => {
+					return [...acc, ...result?.data?.data];
+				},
+				[]
+			),
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Packing_list_entry',
+		};
+
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}

@@ -51,6 +51,10 @@ deliveryRouter.get(
 	'/packing-list-entry/by/:packing_list_uuid',
 	packingListEntryOperations.selectPackingListEntryByPackingListUuid
 );
+deliveryRouter.get(
+	'/packing-list-entry/by/multi-packing-list-uuid/:packing_list_uuids',
+	packingListEntryOperations.selectPackingListEntryByMultiPackingListUuid
+);
 
 // challan routes
 
