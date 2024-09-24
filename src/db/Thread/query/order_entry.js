@@ -94,8 +94,8 @@ export async function selectAll(req, res, next) {
 			order_info_uuid: order_entry.order_info_uuid,
 			lab_reference: order_entry.lab_reference,
 			color: order_entry.color,
-			shade_recipe_uuid: order_entry.shade_recipe_uuid,
-			shade_recipe_name: labDipSchema.shade_recipe.name,
+			recipe_uuid: order_entry.recipe_uuid,
+			recipe_name: labDipSchema.recipe.name,
 			po: order_entry.po,
 			style: order_entry.style,
 			count_length_uuid: order_entry.count_length_uuid,
@@ -121,8 +121,8 @@ export async function selectAll(req, res, next) {
 			eq(order_entry.created_by, hrSchema.users.uuid)
 		)
 		.leftJoin(
-			labDipSchema.shade_recipe,
-			eq(order_entry.shade_recipe_uuid, labDipSchema.shade_recipe.uuid)
+			labDipSchema.recipe,
+			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		)
 		.leftJoin(
 			count_length,
@@ -146,8 +146,8 @@ export async function select(req, res, next) {
 			order_info_uuid: order_entry.order_info_uuid,
 			lab_reference: order_entry.lab_reference,
 			color: order_entry.color,
-			shade_recipe_uuid: order_entry.shade_recipe_uuid,
-			shade_recipe_name: labDipSchema.shade_recipe.name,
+			recipe_uuid: order_entry.recipe_uuid,
+			recipe_name: labDipSchema.recipe.name,
 			po: order_entry.po,
 			style: order_entry.style,
 			count_length_uuid: order_entry.count_length_uuid,
@@ -173,8 +173,8 @@ export async function select(req, res, next) {
 			eq(order_entry.created_by, hrSchema.users.uuid)
 		)
 		.leftJoin(
-			labDipSchema.shade_recipe,
-			eq(order_entry.shade_recipe_uuid, labDipSchema.shade_recipe.uuid)
+			labDipSchema.recipe,
+			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		)
 		.leftJoin(
 			count_length,
@@ -204,8 +204,8 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			order_info_uuid: order_entry.order_info_uuid,
 			lab_reference: order_entry.lab_reference,
 			color: order_entry.color,
-			shade_recipe_uuid: order_entry.shade_recipe_uuid,
-			shade_recipe_name: labDipSchema.shade_recipe.name,
+			recipe_uuid: order_entry.recipe_uuid,
+			recipe_name: labDipSchema.recipe.name,
 			po: order_entry.po,
 			style: order_entry.style,
 			count_length_uuid: order_entry.count_length_uuid,
@@ -231,8 +231,8 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			eq(order_entry.created_by, hrSchema.users.uuid)
 		)
 		.leftJoin(
-			labDipSchema.shade_recipe,
-			eq(order_entry.shade_recipe_uuid, labDipSchema.shade_recipe.uuid)
+			labDipSchema.recipe,
+			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		)
 		.leftJoin(
 			count_length,
