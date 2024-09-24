@@ -270,6 +270,8 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 export async function selectTapeCoilToDyeingForTape(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const item = req.query.item;
+
 	const query = sql`
 		SELECT
 			tape_coil_to_dyeing.uuid,
@@ -301,10 +303,11 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
-			lower(item_properties.name) != 'nylon metallic' OR lower(item_properties.name) != 'nylon plastic'
+		 'nylon' = ${item} ? lower(item_properties.name) = 'nylon' : lower(item_properties.name) != 'nylon'
 		ORDER BY
 			tape_coil_to_dyeing.created_at DESC
 	`;
+	// lower(item_properties.name) != 'nylon metallic' OR lower(item_properties.name) != 'nylon plastic'
 
 	const resultPromise = db.execute(query);
 
