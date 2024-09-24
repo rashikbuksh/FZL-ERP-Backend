@@ -403,11 +403,11 @@ export const tape_coil = zipper.table('tape_coil', {
 	is_reverse: text('is_reverse').default(null),
 	raw_per_kg_meter: PG_DECIMAL('raw_per_kg_meter').default(0.0),
 	dyed_per_kg_meter: PG_DECIMAL('dyed_per_kg_meter').default(0.0),
-	quantity: PG_DECIMAL('quantity').notNull(), // tape stock
-	trx_quantity_in_dying: PG_DECIMAL('trx_quantity_in_dying').notNull(), // for dyeing
-	stock_quantity: PG_DECIMAL('stock_quantity').notNull(), // after dyeing
-	trx_quantity_in_coil: PG_DECIMAL('trx_quantity_in_coil').notNull(), // for coil
-	quantity_in_coil: PG_DECIMAL('quantity_in_coil').notNull(), // after coiling
+	quantity: PG_DECIMAL('quantity').default(0.0), // tape stock
+	trx_quantity_in_dying: PG_DECIMAL('trx_quantity_in_dying').default(0.0), // for dyeing
+	stock_quantity: PG_DECIMAL('stock_quantity').default(0.0), // after dyeing
+	trx_quantity_in_coil: PG_DECIMAL('trx_quantity_in_coil').default(0.0), // for coil
+	quantity_in_coil: PG_DECIMAL('quantity_in_coil').default(0.0), // after coiling
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

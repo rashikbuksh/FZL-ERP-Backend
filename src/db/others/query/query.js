@@ -8,14 +8,15 @@ import {
 import db from '../../index.js';
 
 import * as commercialSchema from '../../commercial/schema.js';
+import * as deliverySchema from '../../delivery/schema.js';
 import * as hrSchema from '../../hr/schema.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
 import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
-import * as zipperSchema from '../../zipper/schema.js';
 import * as threadSchema from '../../thread/schema.js';
+import * as zipperSchema from '../../zipper/schema.js';
 
 // * Aliases * //
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
@@ -1044,4 +1045,35 @@ export async function selectDyesCategory(req, res, next) {
 		next,
 		...toast,
 	});
+}
+
+// * Delivery * //
+// packing list
+export async function selectPackingListByOrderInfoUuid(req, res, next) {
+	const { order_info_uuid } = req.params;
+
+	const query = sql`
+	SELECT
+		pl.uuid AS value,
+		concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS label
+	FROM
+		delivery.packing_list pl
+	WHERE
+		pl.order_info_uuid = ${order_info_uuid};`;
+
+	const packingListPromise = db.execute(query);
+
+	try {
+		const data = await packingListPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Packing List list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
