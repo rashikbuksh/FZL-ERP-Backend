@@ -463,7 +463,8 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				totals_of_oe.total_quantity,
 				tcr.top,
 				tcr.bottom,
-				vodf.tape_received
+				vodf.tape_received,
+				vodf.tape_transferred
 			FROM
 				zipper.v_order_details_full vodf
 			LEFT JOIN (
