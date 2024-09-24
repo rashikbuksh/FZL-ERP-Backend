@@ -116,7 +116,7 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { item } = req.query;
+	const item = req.query.item;
 
 	const dyedTapeTransactionFromStockPromise = db
 		.select({
