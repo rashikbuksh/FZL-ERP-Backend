@@ -48,7 +48,7 @@ export async function update(req, res, next) {
 		.update(challan_entry)
 		.set(req.body)
 		.where(eq(challan_entry.uuid, req.params.uuid))
-		.returning();
+		.returning({ updatedId: challan_entry.uuid });
 
 	try {
 		const data = await challan_entryPromise;
