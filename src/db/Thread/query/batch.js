@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, desc } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
@@ -175,7 +175,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			coningSupervisor,
 			eq(batch.coning_supervisor, coningSupervisor.uuid)
-		);
+		)
+		.orderBy(desc(batch.created_at));
 
 	const toast = {
 		status: 200,
