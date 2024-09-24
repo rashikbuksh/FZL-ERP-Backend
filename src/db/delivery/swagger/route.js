@@ -598,6 +598,72 @@ export const pathDeliveryPackingListEntry = {
 			},
 		},
 	},
+	'/delivery/packing-list-entry/by/multi-packing-list-uuid/{packing_list_uuids}':
+		{
+			get: {
+				tags: ['delivery.packing-list-entry'],
+				summary: 'Get a packing list entry by packing_list_uuid',
+				description: 'Get a packing list entry by packing_list_uuid',
+				// operationId: "getPackingListEntryByPackingListUuid",
+				produces: ['application/json'],
+				parameters: [
+					SE.parameter_params(
+						'packing_list_uuids',
+						'packing_list_uuids'
+					),
+				],
+				responses: {
+					200: {
+						description: 'Return packing list entry',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										uuid: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+										packing_list_uuid: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+										sfg_uuid: {
+											type: 'string',
+											example: 'igD0v9DIJQhJeet',
+										},
+										quantity: {
+											type: 'number',
+											example: 100,
+										},
+										created_at: {
+											type: 'string',
+											format: 'date-time',
+											example: '2024-01-01 00:00:00',
+										},
+										updated_at: {
+											type: 'string',
+											format: 'date-time',
+											example: '2024-01-01 00:00:00',
+										},
+										remarks: {
+											type: 'string',
+											example: 'Remarks',
+										},
+									},
+								},
+							},
+						},
+					},
+					400: {
+						description: 'Invalid UUID supplied',
+					},
+					404: {
+						description: 'Packing list entry not found',
+					},
+				},
+			},
+		},
 };
 
 // * Delivery Challan * //
