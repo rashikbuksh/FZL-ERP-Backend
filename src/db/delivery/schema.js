@@ -55,7 +55,7 @@ export const challan = delivery.table('challan', {
 	uuid: uuid_primary,
 	id: integer('id').default(sql`nextval('delivery.challan_sequence')`),
 	order_info_uuid: defaultUUID('order_info_uuid').references(
-		() => order_info.uuid
+		() => zipperSchema.order_info.uuid
 	),
 	carton_quantity: integer('carton_quantity').notNull(),
 	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
