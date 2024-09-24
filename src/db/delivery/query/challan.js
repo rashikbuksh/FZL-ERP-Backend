@@ -9,7 +9,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { challan } from '../schema.js';
+import { challan, challan_entry, packing_list } from '../schema.js';
 
 const assignToUser = alias(hrSchema.users, 'assignToUser');
 const createdByUser = alias(hrSchema.users, 'createdByUser');
@@ -133,6 +133,12 @@ export async function select(req, res, next) {
 			challan_number: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			order_info_uuid: challan.order_info_uuid,
 			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			packing_list_uuids: sql`array_agg(packing_list.uuid)`,
+			packing_numbers: sql`
+				array_agg(
+					concat('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))
+				)
+			`,
 			carton_quantity: challan.carton_quantity,
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
@@ -151,7 +157,20 @@ export async function select(req, res, next) {
 			zipperSchema.order_info,
 			eq(challan.order_info_uuid, zipperSchema.order_info.uuid)
 		)
-		.where(eq(challan.uuid, req.params.uuid));
+		.leftJoin(challan_entry, eq(challan.uuid, challan_entry.challan_uuid))
+		.leftJoin(
+			packing_list,
+			eq(challan_entry.packing_list_uuid, packing_list.uuid)
+		)
+		.where(eq(challan.uuid, req.params.uuid))
+		.groupBy(
+			challan.uuid,
+			challan.order_info_uuid,
+			zipperSchema.order_info.created_at,
+			zipperSchema.order_info.id,
+			assignToUser.name,
+			createdByUser.name
+		);
 
 	try {
 		const data = await challanPromise;

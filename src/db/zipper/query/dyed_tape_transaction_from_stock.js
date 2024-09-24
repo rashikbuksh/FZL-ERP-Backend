@@ -1,4 +1,4 @@
-import { desc, eq, or, ne } from 'drizzle-orm';
+import { desc, eq, ne, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
@@ -155,7 +155,9 @@ export async function selectAll(req, res, next) {
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.where(
-			or(eq(item_properties.name, item), ne(item_properties.name, item))
+			item == 'nylon'
+				? eq(sql`lower(item_properties.name)`, 'nylon')
+				: ne(sql`lower(item_properties.name)`, 'nylon')
 		)
 		.orderBy(desc(dyed_tape_transaction_from_stock.created_at));
 
