@@ -25,7 +25,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity + NEW.wastage 
+                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -44,7 +44,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity + NEW.wastage 
+                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -63,7 +63,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity + NEW.wastage 
+                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -82,7 +82,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity + NEW.wastage 
+                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -94,10 +94,14 @@ BEGIN
         teeth_molding_prod = teeth_molding_prod + 
             CASE 
                 WHEN NEW.section = 'teeth_molding' THEN 
-                    CASE
-                        WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity 
-                        ELSE NEW.production_quantity_in_kg 
-                    END 
+                    CASE WHEN lower(vodf.item_name) = 'metal' 
+                    THEN NEW.production_quantity 
+                    ELSE 
+                        CASE
+                            WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity 
+                            ELSE NEW.production_quantity_in_kg 
+                        END 
+                    END
                 ELSE 0
             END,
         finishing_stock = finishing_stock - 
@@ -138,17 +142,9 @@ BEGIN
                 WHEN NEW.section = 'coloring' THEN NEW.production_quantity
                 ELSE 0 
             END
-    WHERE sfg.uuid = NEW.sfg_uuid;
-
-    -- -- Update slider stock // * This is not required as we are updating slider stock in order_description trigger
-    -- UPDATE slider.stock
-    -- SET
-    --     coloring_prod = slider.stock.coloring_prod - 
-    --     CASE WHEN NEW.section = 'finishing' THEN NEW.production_quantity ELSE 0 END
-    -- FROM zipper.order_entry oe
-    -- LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
-    -- WHERE slider.stock.order_description_uuid = od_uuid
-    --     AND sfg.uuid = NEW.sfg_uuid;
+    FROM zipper.order_entry oe
+    LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+    WHERE sfg.uuid = NEW.sfg_uuid AND sfg.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
 
     RETURN NEW;
 END;
@@ -188,7 +184,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity + NEW.wastage) - (OLD.production_quantity + OLD.wastage)
+                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -207,7 +203,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity + NEW.wastage) - (OLD.production_quantity + OLD.wastage)
+                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -226,7 +222,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity + NEW.wastage) - (OLD.production_quantity + OLD.wastage)
+                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -245,7 +241,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity + NEW.wastage) - (OLD.production_quantity + OLD.wastage)
+                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -257,10 +253,14 @@ BEGIN
         teeth_molding_prod = teeth_molding_prod + 
             CASE 
                 WHEN NEW.section = 'teeth_molding' THEN 
-                    CASE
-                        WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity - OLD.production_quantity
-                        ELSE NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
-                    END 
+                    CASE WHEN lower(vodf.item_name) = 'metal' 
+                    THEN NEW.production_quantity - OLD.production_quantity 
+                    ELSE
+                        CASE
+                            WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity - OLD.production_quantity
+                            ELSE NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
+                        END 
+                    END
                 ELSE 0
             END,
         finishing_stock = finishing_stock - 
@@ -301,18 +301,9 @@ BEGIN
                 WHEN NEW.section = 'coloring' THEN NEW.production_quantity - OLD.production_quantity
                 ELSE 0 
             END
-    WHERE sfg.uuid = NEW.sfg_uuid;
-
-    -- -- New condition for updating slider stock
-    -- UPDATE slider.stock
-    -- SET
-    --     coloring_prod = slider.stock.coloring_prod - 
-    --     CASE WHEN NEW.section = 'finishing' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END
-    -- FROM zipper.order_entry oe
-    -- LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-    -- LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
-    -- WHERE slider.stock.order_description_uuid = vodf.order_description_uuid 
-    --     AND sfg.uuid = NEW.sfg_uuid;
+    FROM zipper.order_entry oe
+    LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+    WHERE sfg.uuid = NEW.sfg_uuid AND sfg.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
 
     RETURN NEW;
 END;
@@ -350,7 +341,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
-                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity + OLD.wastage 
+                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -369,7 +360,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
-                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity + OLD.wastage 
+                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -388,7 +379,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
-                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity + OLD.wastage 
+                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -407,7 +398,7 @@ BEGIN
                 END,
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
-                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity + OLD.wastage 
+                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity 
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
@@ -419,10 +410,14 @@ BEGIN
         teeth_molding_prod = teeth_molding_prod - 
             CASE 
                 WHEN OLD.section = 'teeth_molding' THEN 
-                    CASE
-                        WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity 
-                        ELSE OLD.production_quantity_in_kg 
-                    END 
+                    CASE WHEN lower(vodf.item_name) = 'metal' 
+                    THEN OLD.production_quantity 
+                    ELSE
+                        CASE
+                            WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity 
+                            ELSE OLD.production_quantity_in_kg 
+                        END 
+                    END
                 ELSE 0
             END,
         finishing_stock = finishing_stock + 
@@ -463,18 +458,9 @@ BEGIN
                 WHEN OLD.section = 'coloring' THEN OLD.production_quantity
                 ELSE 0 
             END
-    WHERE sfg.uuid = OLD.sfg_uuid;
-
-    -- -- New condition for updating slider stock
-    -- UPDATE slider.stock
-    -- SET
-    --     coloring_prod = slider.stock.coloring_prod + 
-    --     CASE WHEN OLD.section = 'finishing' THEN OLD.production_quantity ELSE 0 END
-    -- FROM zipper.order_entry oe
-    -- LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-    -- LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
-    -- WHERE slider.stock.order_description_uuid = vodf.order_description_uuid 
-    --     AND sfg.uuid = OLD.sfg_uuid;
+    FROM zipper.order_entry oe
+    LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+    WHERE sfg.uuid = OLD.sfg_uuid AND sfg.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
 
     RETURN OLD;
 END;
