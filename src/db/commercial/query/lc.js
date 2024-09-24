@@ -1,4 +1,4 @@
-import { eq, sql, desc } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -87,7 +87,7 @@ export async function selectAll(req, res, next) {
 				SELECT 
 					SUM(coalesce(pi_cash.payment,0) * coalesce(order_entry.party_price,0))
 				FROM commercial.pi_cash 
-					LEFT JOIN commercial.pi_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
 				WHERE pi_cash.lc_uuid = lc.uuid
