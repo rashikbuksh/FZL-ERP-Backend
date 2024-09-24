@@ -856,7 +856,7 @@ const pathZipper = {
 	// 	},
 	// },
 
-	'/other/order/order-description/value/label/{coil_uuid}': {
+	'/other/order/order-description/value/label/by/{coil_uuid}': {
 		get: {
 			tags: ['others'],
 			summary: 'get order description by coil uuid',
