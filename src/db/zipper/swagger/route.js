@@ -1,4 +1,5 @@
 import SE from '../../../util/swagger_example.js';
+import { tape_coil } from '../schema.js';
 
 const order_info_extra_schema = SE.response_schema(200, {
 	uuid: SE.uuid(),
@@ -1342,6 +1343,135 @@ export const pathZipperDyedTapeTransaction = {
 					updated_at: SE.date_time(),
 					remarks: SE.string('remarks'),
 				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+};
+
+// * Zipper Dyed Tape Transaction From Stock * //
+
+export const pathZipperDyedTapeTransactionFromStock = {
+	'/zipper/dyed-tape-transaction-from-stock': {
+		get: {
+			tags: ['zipper.dyed_tape_transaction_from_stock'],
+			summary: 'Get all Dyed Tape Transaction From Stock',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					trx_quantity: SE.number('10.0'),
+					tape_coil_uuid: SE.uuid(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		post: {
+			tags: ['zipper.dyed_tape_transaction_from_stock'],
+			summary: 'create a dyed tape transaction from stock',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/dyed_tape_transaction_from_stock'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/dyed_tape_transaction_from_stock'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/dyed-tape-transaction-from-stock/{uuid}': {
+		get: {
+			tags: ['zipper.dyed_tape_transaction_from_stock'],
+			summary: 'Gets a Dyed Tape Transaction From Stock',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Dyed Tape Transaction From Stock to get',
+					'uuid'
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					trx_quantity: SE.number('10.0'),
+					tape_coil_uuid: SE.uuid(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		put: {
+			tags: ['zipper.dyed_tape_transaction_from_stock'],
+			summary: 'Update an existing dyed tape transaction from stock',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'dyed tape transaction from stock to update',
+					'uuid'
+				),
+			],
+			requestBody: SE.requestBody({
+				order_description_uuid: SE.uuid(),
+				trx_quantity: SE.number('10.0'),
+				tape_coil_uuid: SE.uuid(),
+				created_by: SE.uuid(),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				remarks: SE.string('remarks'),
+			}),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/dyed_tape_transaction_from_stock'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['zipper.dyed_tape_transaction_from_stock'],
+			summary: 'Deletes a dyed tape transaction from stock',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'dyed tape transaction from stock to delete',
+					'uuid'
+				),
+			],
+			responses: {
+				200: SE.response(200),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
@@ -3137,4 +3267,5 @@ export const pathZipper = {
 	...pathZipperTapeCoilToDyeing,
 	...pathZipperBatchProduction,
 	...pathZipperDyedTapeTransaction,
+	...pathZipperDyedTapeTransactionFromStock,
 };
