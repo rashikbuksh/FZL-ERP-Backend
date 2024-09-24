@@ -93,8 +93,8 @@ export const order_entry = thread.table('order_entry', {
 	),
 	lab_reference: text('lab_reference').default(null),
 	color: text('color').notNull(),
-	shade_recipe_uuid: defaultUUID('shade_recipe_uuid').references(
-		() => labDipSchema.shade_recipe.uuid
+	recipe_uuid: defaultUUID('recipe_uuid').references(
+		() => labDipSchema.recipe.uuid
 	),
 	po: text('po'),
 	style: text('style'),
