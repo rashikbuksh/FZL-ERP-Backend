@@ -1,5 +1,4 @@
 import { sql } from 'drizzle-orm';
-import { int } from 'drizzle-orm/mysql-core/index.js';
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
