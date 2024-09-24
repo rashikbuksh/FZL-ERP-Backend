@@ -8,6 +8,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as zipperSchema from '../../zipper/schema.js';
 import { challan } from '../schema.js';
 
 const assignToUser = alias(hrSchema.users, 'assignToUser');

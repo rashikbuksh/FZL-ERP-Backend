@@ -1,5 +1,4 @@
-import { order_info } from '@/db/thread/schema.js';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -8,7 +7,6 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as zipperSchema from '../../zipper/schema.js';
 import {
 	challan,
 	challan_entry,
