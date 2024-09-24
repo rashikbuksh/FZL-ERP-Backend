@@ -139,6 +139,14 @@ export async function select(req, res, next) {
 		})
 		.from(programs)
 		.leftJoin(hrSchema.users, eq(programs.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			dyes_category,
+			eq(programs.dyes_category_uuid, dyes_category.uuid)
+		)
+		.leftJoin(
+			materialSchema.info,
+			eq(programs.material_uuid, materialSchema.info.uuid)
+		)
 		.where(eq(programs.uuid, req.params.uuid));
 
 	try {
