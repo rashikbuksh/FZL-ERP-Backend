@@ -253,18 +253,18 @@ export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
 					),
 					and(
 						eq(bleaching, dyes_category.bleaching),
-						gt(sum, 0.5),
+						gt(sum, 0), // 0.5
 						lte(sum, 1.5),
-						gt(dyes_category.upto_percentage, 0.5),
+						gt(dyes_category.upto_percentage, 0), // 0.5
 						lte(dyes_category.upto_percentage, 1.5)
-					),
-					and(
-						eq(bleaching, dyes_category.bleaching),
-						gt(sum, 0),
-						lte(sum, 0.5),
-						gt(dyes_category.upto_percentage, 0),
-						lte(dyes_category.upto_percentage, 0.5)
 					)
+					// and(
+					// 	eq(bleaching, dyes_category.bleaching),
+					// 	gt(sum, 0),
+					// 	lte(sum, 0.5),
+					// 	gt(dyes_category.upto_percentage, 0),
+					// 	lte(dyes_category.upto_percentage, 0.5)
+					// )
 				)
 			);
 
