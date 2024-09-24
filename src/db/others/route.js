@@ -130,6 +130,12 @@ otherRouter.get(
 	otherOperations.selectDyesCategory
 );
 
+// * Delivery * //
+otherRouter.get(
+	'/delivery/packing-list-by-order-info/value/label/:order_info_uuid',
+	otherOperations.selectPackingListByOrderInfoUuid
+);
+
 const pathPublic = {
 	'/other/machine/value/label': {
 		get: {
@@ -1233,6 +1239,42 @@ const pathThread = {
 	},
 };
 
+const pathDelivery = {
+	'/other/delivery/packing-list-by-order-info/value/label/{order_info_uuid}':
+		{
+			get: {
+				tags: ['others'],
+				summary: 'get all packing list by order info',
+				description: 'All packing list by order info',
+				operationId: 'getAllPackingListByOrderInfo',
+				parameters: [
+					SE.parameter_params(
+						'order_info_uuid',
+						'order_info_uuid',
+						'uuid'
+					),
+				],
+				responses: {
+					200: {
+						description:
+							'Returns a all packing list by order info.',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										value: SE.uuid(),
+										label: SE.string('PL24-0001'),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+};
+
 export const pathOthers = {
 	...pathPublic,
 	...pathPurchase,
@@ -1243,6 +1285,7 @@ export const pathOthers = {
 	...pathLabDip,
 	...pathSlider,
 	...pathThread,
+	...pathDelivery,
 };
 
 export const tagOthers = [
