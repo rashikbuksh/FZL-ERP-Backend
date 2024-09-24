@@ -5,7 +5,6 @@ import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
 import * as zipperSchema from '../zipper/schema.js';
-import { datetime } from 'drizzle-orm/mysql-core/index.js';
 
 const commercial = pgSchema('commercial');
 
