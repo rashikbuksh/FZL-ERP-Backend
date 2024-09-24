@@ -3,6 +3,7 @@ import * as challanOperations from './query/challan.js';
 import * as challanEntryOperations from './query/challan_entry.js';
 import * as packingListOperations from './query/packing_list.js';
 import * as packingListEntryOperations from './query/packing_list_entry.js';
+import delivery from './schema.js';
 
 const deliveryRouter = Router();
 
@@ -94,6 +95,14 @@ deliveryRouter.delete(
 deliveryRouter.get(
 	'/challan-entry/by/:challan_uuid',
 	challanEntryOperations.selectChallanEntryByChallanUuid
+);
+deliveryRouter.get(
+	'/challan-entry-for-packing-list/by/:packing_list_uuid',
+	challanEntryOperations.selectPackingListForChallan
+);
+deliveryRouter.get(
+	'/challan-entry-for-packing-list-multi/by/:packing_list_uuids',
+	challanEntryOperations.selectPackingListForChallanMulti
 );
 
 export { deliveryRouter };
