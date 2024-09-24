@@ -755,24 +755,38 @@ export async function selectDepartment(req, res, next) {
 }
 //* HR User *//
 export async function selectHrUser(req, res, next) {
+	const { designation } = req.query;
+
 	const userPromise = db
 		.select({
 			value: hrSchema.users.uuid,
 			label: hrSchema.users.name,
+			designation: hrSchema.designation.designation,
 		})
-		.from(hrSchema.users);
+		.from(hrSchema.users)
+		.leftJoin(
+			hrSchema.designation,
+			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
+		)
+		.where(
+			designation
+				? eq(sql`lower(designation.designation)`, designation)
+				: null
+		);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'User list',
-	};
-	handleResponse({
-		promise: userPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await userPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'User list',
+		};
+
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectDepartmentAndDesignation(req, res, next) {

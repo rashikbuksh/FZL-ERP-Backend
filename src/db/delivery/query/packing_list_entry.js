@@ -131,6 +131,7 @@ export async function select(req, res, next) {
 	const query = sql`
 		SELECT 
 			ple.uuid,
+			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
 			ple.quantity,
@@ -158,6 +159,8 @@ export async function select(req, res, next) {
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN
+			delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
 		WHERE 
 			ple.uuid = ${req.params.uuid}
 		ORDER BY
@@ -185,6 +188,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 	const query = sql`
 		SELECT 
 			ple.uuid,
+			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
 			ple.quantity,
@@ -212,6 +216,8 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN
+			delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
 		WHERE 
 			ple.packing_list_uuid = ${req.params.packing_list_uuid}
 		ORDER BY
