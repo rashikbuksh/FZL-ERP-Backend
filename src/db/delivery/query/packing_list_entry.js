@@ -255,8 +255,6 @@ export async function selectPackingListEntryByMultiPackingListUuid(
 			.map((String) => [String])
 			.flat();
 
-		console.log(packing_list_uuid);
-
 		const packing_list_entryPromise = await Promise.all(
 			packing_list_uuid.map((uuid) => fetchData(uuid))
 		);
@@ -264,8 +262,6 @@ export async function selectPackingListEntryByMultiPackingListUuid(
 		const response = {
 			packing_list_entry: packing_list_entryPromise?.reduce(
 				(acc, result) => {
-					console.log(result?.data);
-
 					return [...acc, ...result?.data?.data];
 				},
 				[]
