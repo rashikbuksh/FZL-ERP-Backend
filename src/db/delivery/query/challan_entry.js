@@ -42,16 +42,18 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	console.log(req.body, 'req.body');
+
 	const challan_entryPromise = db
 		.update(challan_entry)
 		.set(req.body)
 		.where(eq(challan_entry.uuid, req.params.uuid))
-		.returning({ updatedId: challan_entry.uuid });
+		.returning();
 
 	try {
 		const data = await challan_entryPromise;
 
-		console.log(data[0]);
+		console.log(data);
 
 		const toast = {
 			status: 201,
@@ -170,7 +172,7 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 
 	const query = sql`
 		SELECT 
-			challan_entry.uuid,
+			challan_entry.uuid as uuid,
 			challan_entry.challan_uuid,
 			challan.assign_to AS challan_assign_to,
 			assign_to_user.name AS challan_assign_to_name,
@@ -192,7 +194,6 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 			vodf.order_description_uuid,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			oe.quantity as order_quantity,
-			sfg.uuid as sfg_uuid,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
 			(oe.quantity - sfg.warehouse) as balance_quantity
