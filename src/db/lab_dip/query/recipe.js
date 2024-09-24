@@ -248,7 +248,7 @@ export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
 				or(
 					and(
 						eq(bleaching, dyes_category.bleaching),
-						// gt(sum, 1.5),
+						gt(sum, 1.5),
 						gt(dyes_category.upto_percentage, 1.5)
 					),
 					and(
