@@ -926,6 +926,12 @@ const pathHr = {
 			summary: 'get all HR users',
 			description: 'All HR users',
 			operationId: 'getAllHRUsers',
+			parameters: [
+				SE.parameter_query('designation', 'designation', [
+					'driver',
+					'executive',
+				]),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all HR users.',
@@ -950,22 +956,19 @@ const pathHr = {
 	'/other/department-designation/value/label': {
 		get: {
 			tags: ['others'],
-			summary: 'get all department and designation users',
-			description: 'All HR users',
-			operationId: 'getAllHRUsers',
+			summary: 'get all department and designation',
+			description: 'All Department and Designation',
+			operationId: 'getAllDepartment',
 			responses: {
 				200: {
-					description: 'Returns a all HR users.',
+					description: 'Returns a all Department and Designation.',
 					content: {
 						'application/json': {
 							schema: {
 								type: 'object',
 								properties: {
-									value: {
-										type: 'string',
-										example: '2ggcphnwHGzEUGy',
-									},
-									label: { type: 'string', example: 'admin' },
+									value: SE.uuid(),
+									label: SE.string('Admin'),
 								},
 							},
 						},
