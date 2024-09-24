@@ -232,7 +232,7 @@ export async function selectByTrxFrom(req, res, next) {
 			coalesce(sfg.delivered::numeric,0) as delivered,
 			coalesce(sfg.pi::numeric,0) as pi,
 			coalesce(sfg.short_quantity,0) as short_quantity,
-			coalesce(sfg.reject_quantity,0) as reject_quantity,
+			coalesce(sfg.reject_quantity,0) as reject_quantity
 		FROM
 			zipper.sfg_transaction
 		LEFT JOIN
