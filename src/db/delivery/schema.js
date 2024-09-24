@@ -23,6 +23,7 @@ export const packing_list = delivery.table('packing_list', {
 	order_info_uuid: defaultUUID('order_info_uuid').references(
 		() => zipperSchema.order_info.uuid
 	),
+	challan_uuid: defaultUUID('challan_uuid').references(() => challan.uuid),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
