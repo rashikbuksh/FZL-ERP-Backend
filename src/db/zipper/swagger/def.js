@@ -248,6 +248,30 @@ export const def_zipper_dyed_tape_transaction = SED({
 	xml: 'Zipper/Dyed-Tape-Transaction',
 });
 
+// * Dyed Tape Transaction From Stock * //
+
+export const def_zipper_dyed_tape_transaction_from_stock = SED({
+	required: [
+		'uuid',
+		'order_description_uuid',
+		'trx_quantity',
+		'tape_coil_uuid',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		order_description_uuid: SE.uuid(),
+		trx_quantity: SE.number('10.0'),
+		tape_coil_uuid: SE.uuid(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Zipper/Dyed-Tape-Transaction-From-Stock',
+});
+
 // * Zipper Batch * //
 export const def_zipper_batch = SED({
 	required: ['uuid', 'created_by', 'created_at'],
@@ -568,6 +592,8 @@ export const defZipper = {
 	sfg_production: def_zipper_sfg_production,
 	sfg_transaction: def_zipper_sfg_transaction,
 	dyed_tape_transaction: def_zipper_dyed_tape_transaction,
+	dyed_tape_transaction_from_stock:
+		def_zipper_dyed_tape_transaction_from_stock,
 	batch: def_zipper_batch,
 	batch_entry: def_zipper_batch_entry,
 	dying_batch: def_zipper_dying_batch,
@@ -613,6 +639,10 @@ export const tagZipper = [
 	{
 		name: 'zipper.dyed_tape_transaction',
 		description: 'Zipper Dyed Tape Transaction',
+	},
+	{
+		name: 'zipper.dyed_tape_transaction_from_stock',
+		description: 'Zipper Dyed Tape Transaction From Stock',
 	},
 	{
 		name: 'zipper.batch',

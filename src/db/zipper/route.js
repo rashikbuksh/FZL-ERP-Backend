@@ -19,6 +19,7 @@ import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
 import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as dyedTapeTransactionOperations from './query/dyed_tape_transaction.js';
+import * as dyedTapeTransactionFromStockOperations from './query/dyed_tape_transaction_from_stock.js';
 const zipperRouter = Router();
 
 // --------------------- ORDER INFO ROUTES ---------------------
@@ -160,6 +161,33 @@ zipperRouter.delete(
 zipperRouter.get(
 	'/dyed-tape-transaction/by/:section',
 	dyedTapeTransactionOperations.selectDyedTapeTransactionBySection
+);
+
+// --------------------- DYED TAPE TRANSACTION FROM STOCK ROUTES ---------------------
+
+zipperRouter.get(
+	'/dyed-tape-transaction-from-stock',
+	dyedTapeTransactionFromStockOperations.selectAll
+);
+
+zipperRouter.get(
+	'/dyed-tape-transaction-from-stock/:uuid',
+	dyedTapeTransactionFromStockOperations.select
+);
+
+zipperRouter.post(
+	'/dyed-tape-transaction-from-stock',
+	dyedTapeTransactionFromStockOperations.insert
+);
+
+zipperRouter.put(
+	'/dyed-tape-transaction-from-stock/:uuid',
+	dyedTapeTransactionFromStockOperations.update
+);
+
+zipperRouter.delete(
+	'/dyed-tape-transaction-from-stock/:uuid',
+	dyedTapeTransactionFromStockOperations.remove
 );
 
 // --------------------- BATCH ROUTES ---------------------
