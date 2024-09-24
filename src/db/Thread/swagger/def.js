@@ -157,7 +157,7 @@ export const defThreadOrderEntry = {
 		'order_info_uuid',
 		'lab_reference',
 		'color',
-		'shade_recipe_uuid',
+		'recipe_uuid',
 		'po',
 		'style',
 		'count_length_uuid',
@@ -188,7 +188,7 @@ export const defThreadOrderEntry = {
 			type: 'string',
 			example: 'Color',
 		},
-		shade_recipe_uuid: {
+		recipe_uuid: {
 			type: 'string',
 			example: 'igD0v9DIJQhJeet',
 		},

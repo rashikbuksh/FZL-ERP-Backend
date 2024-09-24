@@ -255,8 +255,8 @@ export async function selectThreadSwatch(req, res, next) {
 			order_entry_uuid: order_entry.uuid,
 			style: order_entry.style,
 			color: order_entry.color,
-			shade_recipe_uuid: order_entry.shade_recipe_uuid,
-			shade_recipe_name: labDipSchema.shade_recipe.name,
+			recipe_uuid: order_entry.recipe_uuid,
+			recipe_name: labDipSchema.recipe.name,
 			po: order_entry.po,
 			count_length_uuid: order_entry.count_length_uuid,
 			count: count_length.count,
@@ -274,8 +274,8 @@ export async function selectThreadSwatch(req, res, next) {
 			eq(order_entry.count_length_uuid, count_length.uuid)
 		)
 		.leftJoin(
-			labDipSchema.shade_recipe,
-			eq(order_entry.shade_recipe_uuid, labDipSchema.shade_recipe.uuid)
+			labDipSchema.recipe,
+			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		);
 
 	const toast = {

@@ -141,8 +141,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		oe.quantity as order_quantity,
 		oe.bleaching as bleaching,
 		CONCAT(cl.count, '/', cl.length) as count_length,
-		oe.shade_recipe_uuid as shade_recipe_uuid,
-		se.name as shade_recipe_name,
+		oe.recipe_uuid as recipe_uuid,
+		re.name as recipe_name,
 		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 		be_given.total_quantity as total_trx_quantity,
 		be.transfer_quantity as transfer_quantity,
@@ -152,7 +152,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	LEFT JOIN
 		thread.count_length cl ON oe.count_length_uuid = cl.uuid
 	LEFT JOIN
-		lab_dip.shade_recipe se ON oe.shade_recipe_uuid = se.uuid
+		lab_dip.recipe se ON oe.recipe_uuid = re.uuid
 	LEFT JOIN 
 		thread.order_info ON oe.order_info_uuid = order_info.uuid
 	LEFT JOIN 
@@ -168,7 +168,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	 LEFT JOIN 
 	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
 	WHERE
-	oe.shade_recipe_uuid IS NOT NULL
+	oe.recipe_uuid IS NOT NULL
 	`;
 
 	const batchEntryPromise = db.execute(query);
@@ -203,8 +203,8 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		oe.quantity as order_quantity,
 		oe.bleaching as bleaching,
 		CONCAT(cl.count, '/', cl.length) as count_length,
-		oe.shade_recipe_uuid as shade_recipe_uuid,
-		se.name as shade_recipe_name,
+		oe.recipe_uuid as recipe_uuid,
+		re.name as recipe_name,
 		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 		be.quantity as quantity,
 		be.coning_production_quantity,
@@ -223,7 +223,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 	LEFT JOIN
 		thread.count_length cl ON oe.count_length_uuid = cl.uuid
 	LEFT JOIN
-		lab_dip.shade_recipe se ON oe.shade_recipe_uuid = se.uuid
+		lab_dip.recipe re ON oe.recipe_uuid = re.uuid
 	LEFT JOIN 
 		thread.order_info ON oe.order_info_uuid = order_info.uuid
 	LEFT JOIN 
