@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, or, ne } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
@@ -116,6 +116,8 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { item } = req.query;
+
 	const dyedTapeTransactionFromStockPromise = db
 		.select({
 			uuid: dyed_tape_transaction_from_stock.uuid,
@@ -150,6 +152,9 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
+		)
+		.where(
+			or(eq(item_properties.name, item), ne(item_properties.name, item))
 		)
 		.orderBy(desc(dyed_tape_transaction_from_stock.created_at));
 
