@@ -178,7 +178,7 @@ export async function select(req, res, next) {
 			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
 			tape_coil.quantity as tape_prod,
 			CASE WHEN lower(item_properties.name) = 'nylon' THEN coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) 
-			ELSE coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
+			ELSE coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) END AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
