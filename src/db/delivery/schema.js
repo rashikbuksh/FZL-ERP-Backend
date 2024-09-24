@@ -55,6 +55,7 @@ export const challan = delivery.table('challan', {
 	id: integer('id').default(sql`nextval('delivery.challan_sequence')`),
 	carton_quantity: integer('carton_quantity').notNull(),
 	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
+	gate_pass: integer('gate_pass').default(0),
 	receive_status: integer('receive_status').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
