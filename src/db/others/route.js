@@ -624,6 +624,9 @@ const pathCommercial = {
 			summary: 'get all PIs',
 			description: 'All PIs',
 			operationId: 'getAllPIs',
+			parameters: [
+				SE.parameter_query('is_update', 'is_update', [true, false]),
+			],
 			responses: {
 				200: {
 					description: 'Returns all PIs.',

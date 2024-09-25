@@ -193,6 +193,47 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type;
 	`; // required order_description changes
 
+export const PackingListView = `
+CREATE OR REPLACE VIEW delivery.v_packing_list AS 
+    SELECT 
+        pl.id as packing_list_id,
+        pl.uuid as packing_list_uuid,
+        CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
+        pl.carton_size,
+        pl.carton_weight,
+        pl.order_info_uuid,
+        pl.challan_uuid,
+        pl.created_by as created_by_uuid,
+        users.name as created_by_name,
+        pl.created_at,
+        pl.updated_at,
+        pl.remarks,
+        ple.uuid as packing_list_entry_uuid,
+        ple.sfg_uuid,
+        ple.quantity,
+        ple.short_quantity,
+        ple.reject_quantity,
+        ple.created_at as entry_created_at,
+        ple.updated_at as entry_updated_at,
+        ple.remarks as entry_remarks,
+        oe.uuid as order_entry_uuid,
+        oe.style,
+        oe.color,
+        oe.size,
+        CONCAT(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
+        oe.quantity as order_quantity,
+        vodf.order_description_uuid,
+        vodf.order_number,
+        vodf.item_description
+    FROM 
+        delivery.packing_list pl
+        LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
+        LEFT JOIN hr.users ON users.uuid = pl.created_by
+        LEFT JOIN zipper.sfg ON sfg.uuid = ple.sfg_uuid
+        LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
+        LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+`;
+
 export const OrderPlanningView = `
 CREATE OR REPLACE VIEW zipper.v_order_planning AS
 SELECT 
