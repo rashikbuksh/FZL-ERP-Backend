@@ -41,8 +41,8 @@ import { pathPurchase } from './db/purchase/swagger/route.js';
 import { pathOthers, tagOthers } from './db/others/route.js';
 
 // Thread
-import { defThread, tagThread } from './db/thread/swagger/def.js';
-import { pathThread } from './db/thread/swagger/route.js';
+import { defThread, tagThread } from './db/Thread/swagger/def.js';
+import { pathThread } from './db/Thread/swagger/route.js';
 
 const tags = [
 	...tagHr,
