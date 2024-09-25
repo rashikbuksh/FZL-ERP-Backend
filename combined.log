@@ -2507,3 +2507,4 @@
 {"code":"42601","file":"scan.l","length":92,"level":"\u001b[31merror\u001b[39m","line":"1246","name":"error","position":"1168","routine":"scanner_yyerror","severity":"ERROR","timestamp":"2024-09-25 10:46:50 AM"}
 {"code":"42601","file":"scan.l","length":92,"level":"\u001b[31merror\u001b[39m","line":"1246","name":"error","position":"1168","routine":"scanner_yyerror","severity":"ERROR","timestamp":"2024-09-25 10:46:51 AM"}
 {"code":"42601","file":"scan.l","length":92,"level":"\u001b[31merror\u001b[39m","line":"1246","name":"error","position":"1168","routine":"scanner_yyerror","severity":"ERROR","timestamp":"2024-09-25 10:46:53 AM"}
+{"code":"42P01","file":"parse_relation.c","length":135,"level":"\u001b[31merror\u001b[39m","line":"1431","name":"error","position":"1204","routine":"parserOpenTable","severity":"ERROR","timestamp":"2024-09-25 11:11:18 AM"}
