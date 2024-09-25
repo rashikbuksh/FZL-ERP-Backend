@@ -118,103 +118,43 @@ export async function selectAll(req, res, next) {
 
 	const item = req.query.item;
 
-	const dyedTapeTransactionFromStockPromise = db
-		.select({
-			uuid: dyed_tape_transaction_from_stock.uuid,
-			order_description_uuid:
+	const query = sql`
+			SELECT 
+				dyed_tape_transaction_from_stock.uuid,
 				dyed_tape_transaction_from_stock.order_description_uuid,
-			trx_quantity: dyed_tape_transaction_from_stock.trx_quantity,
-			tape_coil_uuid: dyed_tape_transaction_from_stock.tape_coil_uuid,
-			tape_coil_name: tape_coil.name,
-			stock_quantity: tape_coil.stock_quantity,
-			item_uuid: tape_coil.item_uuid,
-			item_name: item_properties.name,
-			zipper_number_uuid: tape_coil.zipper_number_uuid,
-			zipper_number_name: zipper_number_properties.name,
-			created_by: dyed_tape_transaction_from_stock.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: dyed_tape_transaction_from_stock.created_at,
-			updated_at: dyed_tape_transaction_from_stock.updated_at,
-			remarks: dyed_tape_transaction_from_stock.remarks,
-		})
-		.from(dyed_tape_transaction_from_stock)
-		.leftJoin(
-			hrSchema.users,
-			eq(dyed_tape_transaction_from_stock.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			tape_coil,
-			eq(dyed_tape_transaction_from_stock.tape_coil_uuid, tape_coil.uuid)
-		)
-		.leftJoin(
-			item_properties,
-			eq(tape_coil.item_uuid, item_properties.uuid)
-		)
-		.leftJoin(
-			zipper_number_properties,
-			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
-		)
-		.where(
-			item == 'nylon'
-				? eq(sql`lower(item_properties.name)`, 'nylon')
-				: ne(sql`lower(item_properties.name)`, 'nylon')
-		)
-		.orderBy(desc(dyed_tape_transaction_from_stock.created_at));
+				dyed_tape_transaction_from_stock.trx_quantity,
+				dyed_tape_transaction_from_stock.tape_coil_uuid,
+				tape_coil.name AS tape_coil_name,
+				tape_coil.stock_quantity,
+				tape_coil.item_uuid,
+				item_properties.name AS item_name,
+				tape_coil.zipper_number_uuid,
+				zipper_number_properties.name AS zipper_number_name,
+				dyed_tape_transaction_from_stock.created_by,
+				users.name AS created_by_name,
+				dyed_tape_transaction_from_stock.created_at,
+				dyed_tape_transaction_from_stock.updated_at,
+				dyed_tape_transaction_from_stock.remarks
+			FROM 
+				zipper.dyed_tape_transaction_from_stock
+			LEFT JOIN 
+				hr.users ON dyed_tape_transaction_from_stock.created_by = users.uuid
+			LEFT JOIN 
+				zipper.tape_coil ON dyed_tape_transaction_from_stock.tape_coil_uuid = tape_coil.uuid
+			LEFT JOIN 
+				public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
+			LEFT JOIN 
+				public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
+			WHERE 
+				CASE 
+					WHEN ${item} = 'nylon' THEN LOWER(item_properties.name) = 'nylon'
+					ELSE LOWER(item_properties.name) <> 'nylon'
+				END
+			ORDER BY 
+				dyed_tape_transaction_from_stock.created_at DESC;
+	`;
 
-	const toast = {
-		status: 201,
-		type: 'select all',
-		message: 'dyed_tape_transaction_from_stock list',
-	};
-
-	handleResponse({
-		promise: dyedTapeTransactionFromStockPromise,
-		res,
-		next,
-		...toast,
-	});
-}
-
-export async function select(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
-
-	const dyedTapeTransactionFromStockPromise = db
-		.select({
-			uuid: dyed_tape_transaction_from_stock.uuid,
-			order_description_uuid:
-				dyed_tape_transaction_from_stock.order_description_uuid,
-			trx_quantity: dyed_tape_transaction_from_stock.trx_quantity,
-			tape_coil_uuid: dyed_tape_transaction_from_stock.tape_coil_uuid,
-			tape_coil_name: tape_coil.name,
-			stock_quantity: tape_coil.stock_quantity,
-			item_uuid: tape_coil.item_uuid,
-			item_name: item_properties.name,
-			zipper_number_uuid: tape_coil.zipper_number_uuid,
-			zipper_number_name: zipper_number_properties.name,
-			created_by: dyed_tape_transaction_from_stock.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: dyed_tape_transaction_from_stock.created_at,
-			updated_at: dyed_tape_transaction_from_stock.updated_at,
-			remarks: dyed_tape_transaction_from_stock.remarks,
-		})
-		.from(dyed_tape_transaction_from_stock)
-		.leftJoin(
-			hrSchema.users,
-			eq(dyed_tape_transaction_from_stock.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			tape_coil,
-			eq(dyed_tape_transaction_from_stock.tape_coil_uuid, tape_coil.uuid)
-		)
-		.leftJoin(
-			item_properties,
-			eq(tape_coil.item_uuid, item_properties.uuid)
-		)
-		.leftJoin(
-			zipper_number_properties,
-			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
-		)
-		.where(eq(dyed_tape_transaction_from_stock.uuid, req.params.uuid));
+	const dyedTapeTransactionFromStockPromise = db.execute(query);
 
 	try {
 		const data = await dyedTapeTransactionFromStockPromise;
@@ -224,7 +164,57 @@ export async function select(req, res, next) {
 			message: 'dyed_tape_transaction_from_stock list',
 		};
 
-		res.status(201).json({ toast, data: data[0] });
+		res.status(201).json({ toast, data: data.rows });
+	} catch (error) {
+		handleError({ error, res });
+	}
+}
+
+export async function select(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+			SELECT 
+				dyed_tape_transaction_from_stock.uuid,
+				dyed_tape_transaction_from_stock.order_description_uuid,
+				dyed_tape_transaction_from_stock.trx_quantity,
+				dyed_tape_transaction_from_stock.tape_coil_uuid,
+				tape_coil.name AS tape_coil_name,
+				tape_coil.stock_quantity,
+				tape_coil.item_uuid,
+				item_properties.name AS item_name,
+				tape_coil.zipper_number_uuid,
+				zipper_number_properties.name AS zipper_number_name,
+				dyed_tape_transaction_from_stock.created_by,
+				users.name AS created_by_name,
+				dyed_tape_transaction_from_stock.created_at,
+				dyed_tape_transaction_from_stock.updated_at,
+				dyed_tape_transaction_from_stock.remarks
+			FROM 
+				zipper.dyed_tape_transaction_from_stock
+			LEFT JOIN 
+				hr.users ON dyed_tape_transaction_from_stock.created_by = users.uuid
+			LEFT JOIN 
+				zipper.tape_coil ON dyed_tape_transaction_from_stock.tape_coil_uuid = tape_coil.uuid
+			LEFT JOIN 
+				public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
+			LEFT JOIN 
+				public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
+			WHERE 
+				dyed_tape_transaction_from_stock.uuid = ${req.params.uuid};
+	`;
+
+	const dyedTapeTransactionFromStockPromise = db.execute(query);
+
+	try {
+		const data = await dyedTapeTransactionFromStockPromise;
+		const toast = {
+			status: 201,
+			type: 'select',
+			message: 'dyed_tape_transaction_from_stock list',
+		};
+
+		res.status(201).json({ toast, data: data.rows[0] });
 	} catch (error) {
 		handleError({ error, res });
 	}

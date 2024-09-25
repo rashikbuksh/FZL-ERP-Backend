@@ -15,7 +15,7 @@ import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
-import * as threadSchema from '../../thread/schema.js';
+import * as threadSchema from '../../Thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 
 // * Aliases * //
@@ -1078,7 +1078,7 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	FROM
 		delivery.packing_list pl
 	WHERE
-		pl.order_info_uuid = ${order_info_uuid};`;
+		pl.order_info_uuid = ${order_info_uuid} AND pl.challan_uuid IS NULL;`;
 
 	const packingListPromise = db.execute(query);
 

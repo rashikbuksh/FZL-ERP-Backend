@@ -158,10 +158,10 @@ export const order_description = zipper.table('order_description', {
 	),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	garments_remarks: text('garments_remarks').default(null),
-	nylon_plastic_finishing: PG_DECIMAL('nylon_plastic_finishing').default(0),
-	nylon_metallic_finishing: PG_DECIMAL('nylon_metallic_finishing').default(0),
-	vislon_teeth_molding: PG_DECIMAL('vislon_teeth_molding').default(0),
-	metal_teeth_molding: PG_DECIMAL('metal_teeth_molding').default(0),
+	// nylon_plastic_finishing: PG_DECIMAL('nylon_plastic_finishing').default(0),
+	// nylon_metallic_finishing: PG_DECIMAL('nylon_metallic_finishing').default(0),
+	// vislon_teeth_molding: PG_DECIMAL('vislon_teeth_molding').default(0),
+	// metal_teeth_molding: PG_DECIMAL('metal_teeth_molding').default(0),
 	slider_finishing_stock: PG_DECIMAL('slider_finishing_stock').default(0),
 });
 

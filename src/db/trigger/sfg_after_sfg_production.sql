@@ -18,7 +18,7 @@ BEGIN
     IF lower(item_name) = 'metal' THEN
         UPDATE zipper.order_description od
         SET 
-            metal_teeth_molding = metal_teeth_molding - 
+            tape_transferred = tape_transferred - 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN NEW.production_quantity_in_kg + NEW.wastage 
                     ELSE 0
@@ -33,7 +33,7 @@ BEGIN
     ELSIF lower(item_name) = 'vislon' THEN
         UPDATE zipper.order_description od
         SET 
-            vislon_teeth_molding = vislon_teeth_molding - 
+            tape_transferred = tape_transferred - 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN 
                         CASE
@@ -52,7 +52,7 @@ BEGIN
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
         UPDATE zipper.order_description od
         SET 
-            nylon_plastic_finishing = nylon_plastic_finishing - 
+            tape_transferred = tape_transferred - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity_in_kg + NEW.wastage 
                     ELSE 
@@ -71,7 +71,7 @@ BEGIN
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
         UPDATE zipper.order_description od
         SET 
-            nylon_metallic_finishing = nylon_metallic_finishing - 
+            tape_transferred = tape_transferred - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity_in_kg + NEW.wastage 
                     ELSE 
@@ -177,7 +177,7 @@ BEGIN
     IF lower(item_name) = 'metal' THEN
         UPDATE zipper.order_description od
         SET 
-            metal_teeth_molding = metal_teeth_molding - 
+            tape_transferred = tape_transferred - 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
                     ELSE 0
@@ -192,7 +192,7 @@ BEGIN
     ELSIF lower(item_name) = 'vislon' THEN
         UPDATE zipper.order_description od
         SET 
-            vislon_teeth_molding = vislon_teeth_molding - 
+            tape_transferred = tape_transferred - 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN 
                         CASE
@@ -211,7 +211,7 @@ BEGIN
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
         UPDATE zipper.order_description od
         SET 
-            nylon_plastic_finishing = nylon_plastic_finishing - 
+            tape_transferred = tape_transferred - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
                     ELSE 
@@ -230,7 +230,7 @@ BEGIN
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
         UPDATE zipper.order_description od
         SET 
-            nylon_metallic_finishing = nylon_metallic_finishing - 
+            tape_transferred = tape_transferred - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
                     ELSE 
@@ -334,7 +334,7 @@ BEGIN
     IF lower(item_name) = 'metal' THEN
         UPDATE zipper.order_description od
         SET 
-            metal_teeth_molding = metal_teeth_molding + 
+            tape_transferred = tape_transferred + 
                 CASE 
                     WHEN OLD.section = 'teeth_molding' THEN OLD.production_quantity_in_kg + OLD.wastage 
                     ELSE 0
@@ -349,7 +349,7 @@ BEGIN
     ELSIF lower(item_name) = 'vislon' THEN
         UPDATE zipper.order_description od
         SET 
-            vislon_teeth_molding = vislon_teeth_molding + 
+            tape_transferred = tape_transferred + 
                 CASE 
                     WHEN OLD.section = 'teeth_molding' THEN 
                         CASE
@@ -368,7 +368,7 @@ BEGIN
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
         UPDATE zipper.order_description od
         SET 
-            nylon_plastic_finishing = nylon_plastic_finishing + 
+            tape_transferred = tape_transferred + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity_in_kg + OLD.wastage 
                     ELSE 
@@ -387,7 +387,7 @@ BEGIN
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
         UPDATE zipper.order_description od
         SET 
-            nylon_metallic_finishing = nylon_metallic_finishing + 
+            tape_transferred = tape_transferred + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity_in_kg + OLD.wastage 
                     ELSE 

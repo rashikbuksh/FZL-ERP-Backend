@@ -8,7 +8,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { packing_list, packing_list_entry } from '../schema.js';
+import { challan, packing_list, packing_list_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -89,6 +89,8 @@ export async function selectAll(req, res, next) {
 			order_info_uuid: packing_list.order_info_uuid,
 			packing_number: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			challan_uuid: packing_list.challan_uuid,
+			challan_number: sql`CONCAT('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
 			created_by: packing_list.created_by,
@@ -106,6 +108,7 @@ export async function selectAll(req, res, next) {
 			zipperSchema.order_info,
 			eq(packing_list.order_info_uuid, zipperSchema.order_info.uuid)
 		)
+		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
 		.orderBy(desc(packing_list.created_at));
 	const toast = {
 		status: 200,
@@ -124,6 +127,8 @@ export async function select(req, res, next) {
 			order_info_uuid: packing_list.order_info_uuid,
 			packing_number: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
 			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			challan_uuid: packing_list.challan_uuid,
+			challan_number: sql`CONCAT('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
 			created_by: packing_list.created_by,
@@ -141,6 +146,7 @@ export async function select(req, res, next) {
 			zipperSchema.order_info,
 			eq(packing_list.order_info_uuid, zipperSchema.order_info.uuid)
 		)
+		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
 		.where(eq(packing_list.uuid, req.params.uuid));
 
 	try {

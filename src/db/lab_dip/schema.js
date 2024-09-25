@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as materialSchema from '../material/schema.js';
+import * as threadSchema from '../Thread/schema.js';
 import {
 	DateTime,
 	defaultUUID,
@@ -9,7 +10,6 @@ import {
 	uuid_primary,
 } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
-import * as threadSchema from '../thread/schema.js';
 
 const lab_dip = pgSchema('lab_dip');
 
