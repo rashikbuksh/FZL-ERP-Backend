@@ -8,11 +8,11 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
-import * as threadSchema from '../../thread/schema.js';
+import * as threadSchema from '../../Thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import { info, recipe } from '../schema.js';
 
-import { dyes_category, programs } from '../../thread/schema.js';
+import { dyes_category, programs } from '../../Thread/schema.js';
 
 import { alias } from 'drizzle-orm/pg-core';
 

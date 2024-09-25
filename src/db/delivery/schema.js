@@ -1,7 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
-import { order_info } from '../thread/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 

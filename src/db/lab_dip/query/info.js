@@ -1,4 +1,5 @@
-import { eq, sql, desc } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -8,10 +9,9 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
+import * as threadSchema from '../../Thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import * as threadSchema from '../../thread/schema.js';
 import { info } from '../schema.js';
-import { alias } from 'drizzle-orm/pg-core';
 
 const thread = alias(threadSchema.order_info, 'thread');
 
