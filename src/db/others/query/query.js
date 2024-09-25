@@ -830,8 +830,7 @@ export async function selectDepartmentAndDesignation(req, res, next) {
 
 // * Lab Dip * //
 export async function selectLabDipRecipe(req, res, next) {
-	const { order_info_uuid } = req.params;
-	console.log('order_info_uuid', order_info_uuid);
+	const order_info_uuid = req.query.order_info_uuid;
 
 	const recipePromise = db
 		.select({
@@ -846,13 +845,9 @@ export async function selectLabDipRecipe(req, res, next) {
 			eq(labDipSchema.recipe.lab_dip_info_uuid, labDipSchema.info.uuid)
 		)
 		.where(
-			and(
-				eq(labDipSchema.info.order_info_uuid, order_info_uuid),
-				eq(
-					labDipSchema.recipe.lab_dip_info_uuid,
-					labDipSchema.info.uuid
-				)
-			)
+			order_info_uuid
+				? eq(labDipSchema.info.order_info_uuid, order_info_uuid)
+				: null
 		);
 
 	const toast = {
@@ -869,54 +864,32 @@ export async function selectLabDipRecipe(req, res, next) {
 }
 
 export async function selectLabDipShadeRecipe(req, res, next) {
-	const { thread_order_info_uuid } = req.params;
-	console.log('thread_order_info_uuid', thread_order_info_uuid);
-	// const query = sql`
-	// SELECT
-	// 	recipe.uuid AS value,
-	// 	recipe.name AS label
-	// FROM
-	// 	lab_dip.recipe
-	// LEFT JOIN
-	// 		lab_dip.info ON recipe.lab_dip_info_uuid = info.uuid
-	// WHERE
-	// 	lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.recipe.lab_dip_info_uuid = lab_dip.info.uuid`;
+	const thread_order_info_uuid = req.query.thread_order_info_uuid;
+	const query = sql`
+	SELECT
+		recipe.uuid AS value,
+		recipe.name AS label
+	FROM
+		lab_dip.recipe
+	WHERE
+	  ${thread_order_info_uuid ? sql`lab_dip.recipe.thread_order_info_uuid = ${thread_order_info_uuid}` : sql`1=1`}
+	`;
 
-	// const RecipePromise = db.execute(query);
-	const recipePromise = db
-		.select({
-			value: labDipSchema.recipe.uuid,
-			label: labDipSchema.recipe.name,
-		})
-		.from(labDipSchema.recipe)
-		.leftJoin(
-			labDipSchema.info,
-			eq(labDipSchema.recipe.lab_dip_info_uuid, labDipSchema.info.uuid)
-		)
-		.where(
-			and(
-				eq(
-					labDipSchema.info.thread_order_info_uuid,
-					thread_order_info_uuid
-				),
-				eq(
-					labDipSchema.recipe.lab_dip_info_uuid,
-					labDipSchema.info.uuid
-				)
-			)
-		);
+	const RecipePromise = db.execute(query);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Lab Dip Recipe list',
-	};
-	handleResponse({
-		promise: recipePromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await RecipePromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Lab Dip Recipe list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectLabDipInfo(req, res, next) {
