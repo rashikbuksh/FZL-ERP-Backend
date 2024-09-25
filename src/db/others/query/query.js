@@ -877,7 +877,7 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	LEFT JOIN
 		lab_dip.info ON recipe.lab_dip_info_uuid = lab_dip.info.uuid
 	WHERE
-	  ${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid}` && sql`lab_dip.recipe.approved = 1` : sql`1=1`}
+	  ${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.recipe.approved = 1 ` : sql`1=1`}
 	`;
 
 	const RecipePromise = db.execute(query);
