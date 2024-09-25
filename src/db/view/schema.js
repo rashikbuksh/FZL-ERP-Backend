@@ -224,14 +224,17 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         oe.quantity as order_quantity,
         vodf.order_description_uuid,
         vodf.order_number,
-        vodf.item_description
+        vodf.item_description,
+        sfg.warehouse as warehouse,
+		sfg.delivered as delivered,
+		(oe.quantity - sfg.warehouse) as balance_quantity
     FROM 
         delivery.packing_list pl
         LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
         LEFT JOIN hr.users ON users.uuid = pl.created_by
         LEFT JOIN zipper.sfg ON sfg.uuid = ple.sfg_uuid
         LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
-        LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+        LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid;
 `;
 
 export const OrderPlanningView = `

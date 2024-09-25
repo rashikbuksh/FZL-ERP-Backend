@@ -191,53 +191,55 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-		SELECT 
-			DISTINCT challan_entry.uuid as uuid,
-			challan_entry.challan_uuid,
-			challan.assign_to AS challan_assign_to,
-			assign_to_user.name AS challan_assign_to_name,
-			challan.created_by AS challan_created_by,
-			created_by_user.name AS challan_created_by_name,
-			challan_entry.packing_list_uuid,
-			CONCAT('PL', TO_CHAR(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS packing_number,
-			challan_entry.created_at,
-			challan_entry.updated_at,
-			ple.uuid as packing_list_entry_uuid,
-			ple.sfg_uuid,
-			ple.quantity,
-			ple.short_quantity,
-			ple.reject_quantity,
-			ple.remarks as remarks,
-			vod.order_info_uuid as order_info_uuid,
-			vod.order_number,
-			vod.item_description,
-			vod.order_description_uuid,
-			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-			oe.quantity as order_quantity,
-			sfg.warehouse as warehouse,
-			sfg.delivered as delivered,
-			(oe.quantity - sfg.warehouse) as balance_quantity
-		FROM 
-			zipper.v_order_details vod
-		LEFT JOIN 
-			delivery.challan challan ON vod.order_info_uuid = challan.order_info_uuid
-		LEFT JOIN 
-			delivery.challan_entry challan_entry ON challan.uuid = challan_entry.challan_uuid
-		LEFT JOIN
-			zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
-		LEFT JOIN
-			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-		LEFT JOIN
-			delivery.packing_list pl ON challan_entry.packing_list_uuid = pl.uuid
-		LEFT JOIN
-			delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid AND sfg.uuid = ple.sfg_uuid AND challan_entry.packing_list_uuid = pl.uuid
-		LEFT JOIN
-			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
-		LEFT JOIN
-			hr.users created_by_user ON challan.created_by = created_by_user.uuid
-		WHERE 
-			challan_entry.challan_uuid = ${req.params.challan_uuid} AND challan_entry.uuid IS NOT NULL AND ple.uuid IS NOT NULL;
-	`;
+			SELECT 
+				challan_entry.uuid as uuid,
+				challan_entry.challan_uuid,
+				challan.assign_to AS challan_assign_to,
+				assign_to_user.name AS challan_assign_to_name,
+				challan.created_by AS challan_created_by,
+				created_by_user.name AS challan_created_by_name,
+				challan_entry.packing_list_uuid,
+				challan_entry.created_at,
+				challan_entry.updated_at,
+				array_agg(DISTINCT vpl.packing_number) as packing_numbers,
+				array_agg(DISTINCT vpl.packing_list_entry_uuid) as packing_list_entry_uuids,
+				array_agg(DISTINCT vpl.sfg_uuid) as sfg_uuids,
+				array_agg(DISTINCT vpl.quantity) as quantities,
+				array_agg(DISTINCT vpl.short_quantity) as short_quantities,
+				array_agg(DISTINCT vpl.reject_quantity) as reject_quantities,
+				array_agg(DISTINCT vpl.remarks) as remarks,
+				array_agg(DISTINCT vpl.order_info_uuid) as order_info_uuids,
+				array_agg(DISTINCT vpl.order_number) as order_numbers,
+				array_agg(DISTINCT vpl.item_description) as item_descriptions,
+				array_agg(DISTINCT vpl.order_description_uuid) as order_description_uuids,
+				array_agg(DISTINCT vpl.style_color_size) as style_color_sizes,
+				array_agg(DISTINCT vpl.order_quantity) as order_quantities,
+				array_agg(DISTINCT vpl.warehouse) as warehouses,
+				array_agg(DISTINCT vpl.delivered) as delivered,
+				array_agg(DISTINCT vpl.balance_quantity) as balance_quantities
+			FROM 
+				delivery.challan_entry
+			LEFT JOIN 
+				delivery.challan ON challan_entry.challan_uuid = challan.uuid
+			LEFT JOIN 
+				delivery.v_packing_list vpl ON challan_entry.packing_list_uuid = vpl.packing_list_uuid
+			LEFT JOIN
+				hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
+			LEFT JOIN
+				hr.users created_by_user ON challan.created_by = created_by_user.uuid
+			WHERE 
+				challan_entry.challan_uuid = ${req.params.challan_uuid}
+			GROUP BY 
+				challan_entry.uuid,
+				challan_entry.challan_uuid,
+				challan.assign_to,
+				assign_to_user.name,
+				challan.created_by,
+				created_by_user.name,
+				challan_entry.packing_list_uuid,
+				challan_entry.created_at,
+				challan_entry.updated_at;
+		`;
 
 	const challan_entryPromise = db.execute(query);
 
