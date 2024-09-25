@@ -124,6 +124,8 @@ export async function selectAll(req, res, next) {
 				dyed_tape_transaction_from_stock.order_description_uuid,
 				dyed_tape_transaction_from_stock.trx_quantity,
 				dyed_tape_transaction_from_stock.tape_coil_uuid,
+				vodf.order_number,
+				vodf.item_description,
 				tape_coil.name AS tape_coil_name,
 				tape_coil.stock_quantity,
 				tape_coil.item_uuid,
@@ -145,6 +147,8 @@ export async function selectAll(req, res, next) {
 				public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
 			LEFT JOIN 
 				public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
+			LEFT JOIN
+				zipper.view_order_description_full vodf ON dyed_tape_transaction_from_stock.order_description_uuid = vodf.order_description_uuid
 			WHERE 
 				CASE 
 					WHEN ${item} = 'nylon' THEN LOWER(item_properties.name) = 'nylon'
