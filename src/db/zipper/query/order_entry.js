@@ -211,6 +211,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			order_entry_status: order_entry.status,
 			swatch_status: order_entry.swatch_status,
 			swatch_approval_date: order_entry.swatch_approval_date,
+			bleaching: order_entry.bleaching,
 			created_at: order_entry.created_at,
 			updated_at: order_entry.updated_at,
 			teeth_molding_stock: sfg.teeth_molding_stock,

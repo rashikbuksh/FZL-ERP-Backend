@@ -855,7 +855,7 @@ export async function selectLabDipRecipe(req, res, next) {
 						eq(labDipSchema.recipe.approved, 1)
 					)
 				: info_uuid
-					? isNull(labDipSchema.recipe.lab_dip_info_uuid)
+					? sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
 					: null
 		);
 
