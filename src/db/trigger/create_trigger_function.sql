@@ -146,7 +146,7 @@ EXECUTE FUNCTION zipper.sfg_after_sfg_transaction_update_function();
 CREATE OR REPLACE FUNCTION commercial.sfg_after_commercial_pi_entry_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE zipper.sfg SET
-        pi = pi + NEW.pi__cash_quantity
+        pi = pi + NEW.pi_cash_quantity
     WHERE uuid = NEW.sfg_uuid;
 
     RETURN NEW;
@@ -175,17 +175,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER sfg_after_commercial_pi_entry_insert_trigger
+CREATE OR REPLACE sfg_after_commercial_pi_entry_insert_trigger
 AFTER INSERT ON commercial.pi_entry
 FOR EACH ROW
 EXECUTE FUNCTION commercial.sfg_after_commercial_pi_entry_insert_function();
 
-CREATE TRIGGER sfg_after_commercial_pi_entry_delete_trigger
+CREATE OR REPLACE sfg_after_commercial_pi_entry_delete_trigger
 AFTER DELETE ON commercial.pi_entry
 FOR EACH ROW
 EXECUTE FUNCTION commercial.sfg_after_commercial_pi_entry_delete_function();
 
-CREATE TRIGGER sfg_after_commercial_pi_entry_update_trigger
+CREATE OR REPLACE TRIGGER sfg_after_commercial_pi_entry_update_trigger
 AFTER UPDATE ON commercial.pi_entry
 FOR EACH ROW
 EXECUTE FUNCTION commercial.sfg_after_commercial_pi_entry_update_function();
