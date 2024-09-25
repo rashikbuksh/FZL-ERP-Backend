@@ -1073,8 +1073,6 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 
 	const { challan_uuid } = req.query;
 
-	console.log(challan_uuid, 'challan_uuid');
-
 	let query = sql`
 	SELECT
 		pl.uuid AS value,
