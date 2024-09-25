@@ -619,18 +619,25 @@ export async function selectMaterialType(req, res, next) {
 }
 
 export async function selectMaterial(req, res, next) {
+	const type = req.query.type;
 	const infoPromise = db
 		.select({
 			value: materialSchema.info.uuid,
 			label: materialSchema.info.name,
 			unit: materialSchema.info.unit,
 			stock: materialSchema.stock.stock,
+			type_name: materialSchema.type.name,
 		})
 		.from(materialSchema.info)
 		.leftJoin(
 			materialSchema.stock,
 			eq(materialSchema.info.uuid, materialSchema.stock.material_uuid)
-		);
+		)
+		.leftJoin(
+			materialSchema.type,
+			eq(materialSchema.info.type_uuid, materialSchema.type.uuid)
+		)
+		.where(type ? eq(materialSchema.type.name, type) : null);
 
 	const toast = {
 		status: 200,
