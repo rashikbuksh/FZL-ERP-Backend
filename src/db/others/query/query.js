@@ -1073,14 +1073,22 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 
 	const { challan_uuid } = req.query;
 
-	const query = sql`
+	console.log(challan_uuid, 'challan_uuid');
+
+	let query = sql`
 	SELECT
 		pl.uuid AS value,
 		concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS label
 	FROM
 		delivery.packing_list pl
 	WHERE
-		pl.order_info_uuid = ${order_info_uuid} AND (pl.challan_uuid IS NULL  ${challan_uuid ? `OR pl.challan_uuid = ${challan_uuid}` : ''});`;
+		pl.order_info_uuid = ${order_info_uuid} AND (pl.challan_uuid IS NULL`;
+
+	// Conditionally add the challan_uuid part
+	if (challan_uuid) {
+		query += sql` OR pl.challan_uuid = ${challan_uuid}`;
+	}
+	query += sql`);`;
 
 	const packingListPromise = db.execute(query);
 
