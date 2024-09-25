@@ -192,7 +192,7 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 
 	const query = sql`
 		SELECT 
-			challan_entry.uuid as uuid,
+			DISTINCT challan_entry.uuid as uuid,
 			challan_entry.challan_uuid,
 			challan.assign_to AS challan_assign_to,
 			assign_to_user.name AS challan_assign_to_name,
@@ -208,35 +208,35 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 			ple.short_quantity,
 			ple.reject_quantity,
 			ple.remarks as remarks,
-			vodf.order_info_uuid as order_info_uuid,
-			vodf.order_number,
-			vodf.item_description,
-			vodf.order_description_uuid,
+			vod.order_info_uuid as order_info_uuid,
+			vod.order_number,
+			vod.item_description,
+			vod.order_description_uuid,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			oe.quantity as order_quantity,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
 			(oe.quantity - sfg.warehouse) as balance_quantity
 		FROM 
-			delivery.challan_entry
+			zipper.v_order_details vod
 		LEFT JOIN 
-			delivery.challan ON challan_entry.challan_uuid = challan.uuid
+			delivery.challan challan ON vod.order_info_uuid = challan.order_info_uuid
 		LEFT JOIN 
-			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
-		LEFT JOIN 
-			hr.users created_by_user ON challan.created_by = created_by_user.uuid
-		LEFT JOIN 
-			delivery.packing_list pl ON challan_entry.packing_list_uuid = pl.uuid
-		LEFT JOIN 
-			delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
-		LEFT JOIN 
-			zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+			delivery.challan_entry challan_entry ON challan.uuid = challan_entry.challan_uuid
 		LEFT JOIN
-			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-		LEFT JOIN 
-			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+			zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
+		LEFT JOIN
+			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+		LEFT JOIN
+			delivery.packing_list pl ON challan_entry.packing_list_uuid = pl.uuid
+		LEFT JOIN
+			delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid AND sfg.uuid = ple.sfg_uuid AND challan_entry.packing_list_uuid = pl.uuid
+		LEFT JOIN
+			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
+		LEFT JOIN
+			hr.users created_by_user ON challan.created_by = created_by_user.uuid
 		WHERE 
-			challan_entry.challan_uuid = ${req.params.challan_uuid};
+			challan_entry.challan_uuid = ${req.params.challan_uuid} AND challan_entry.uuid IS NOT NULL AND ple.uuid IS NOT NULL;
 	`;
 
 	const challan_entryPromise = db.execute(query);
