@@ -831,6 +831,7 @@ export async function selectDepartmentAndDesignation(req, res, next) {
 // * Lab Dip * //
 export async function selectLabDipRecipe(req, res, next) {
 	const order_info_uuid = req.query.order_info_uuid;
+	const info_uuid = req.query.info_uuid;
 
 	const recipePromise = db
 		.select({
@@ -850,7 +851,9 @@ export async function selectLabDipRecipe(req, res, next) {
 						eq(labDipSchema.info.order_info_uuid, order_info_uuid),
 						eq(labDipSchema.recipe.approved, 1)
 					)
-				: null
+				: info_uuid === false
+					? labDipSchema.recipe.lab_dip_info_uuid === null
+					: null
 		);
 
 	const toast = {
