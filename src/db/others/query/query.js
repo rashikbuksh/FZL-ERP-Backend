@@ -1085,10 +1085,14 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 		pl.order_info_uuid = ${order_info_uuid} AND (pl.challan_uuid IS NULL`;
 
 	// Conditionally add the challan_uuid part
-	if (challan_uuid) {
-		query += sql` OR pl.challan_uuid = ${challan_uuid}`;
+	if (
+		challan_uuid != undefined &&
+		challan_uuid != '' &&
+		challan_uuid != 'null'
+	) {
+		query.append(sql` OR pl.challan_uuid = ${challan_uuid}`);
 	}
-	query += sql`);`;
+	query.append(sql`);`);
 
 	const packingListPromise = db.execute(query);
 
