@@ -251,10 +251,6 @@ export async function selectSfgBySection(req, res, next) {
 			od.coloring_type,
 			op_coloring_type.name as coloring_type_name,
 			op_coloring_type.short_name as coloring_type_short_name,
-			od.nylon_plastic_finishing,
-			od.nylon_metallic_finishing,
-			od.vislon_teeth_molding,
-			od.metal_teeth_molding,
 			od.slider_finishing_stock,
 			sfg.dying_and_iron_prod as dying_and_iron_prod,
 			sfg.teeth_molding_stock as teeth_molding_stock,
@@ -284,10 +280,6 @@ export async function selectSfgBySection(req, res, next) {
 			COALESCE(ss.coloring_prod,0) as coloring_prod,
 			COALESCE(od.tape_received,0) as tape_received,
 			COALESCE(od.tape_transferred,0) as tape_transferred,
-			COALESCE(od.nylon_plastic_finishing,0) as nylon_plastic_finishing,
-			COALESCE(od.vislon_teeth_molding,0) as vislon_teeth_molding,
-			COALESCE(od.metal_teeth_molding,0) as metal_teeth_molding,
-			COALESCE(od.nylon_metallic_finishing,0) as nylon_metallic_finishing,
 			COALESCE(od.slider_finishing_stock,0) as slider_finishing_stock
 		FROM
 			zipper.sfg sfg

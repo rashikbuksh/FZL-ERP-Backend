@@ -884,10 +884,6 @@ export const pathZipperSfg = {
 					coloring_type: SE.uuid(),
 					coloring_type_name: SE.string('Dyed'),
 					coloring_type_short_name: SE.string('D'),
-					nylon_plastic_finishing: SE.number(10),
-					nylon_metallic_finishing: SE.number(10),
-					vislon_teeth_molding: SE.number(10),
-					metal_teeth_molding: SE.number(10),
 					dying_and_iron_prod: SE.number(10),
 					teeth_molding_stock: SE.number(10),
 					teeth_molding_prod: SE.number(10),
@@ -1312,7 +1308,7 @@ export const pathZipperDyedTapeTransaction = {
 			},
 		},
 	},
-	'/zipper/dyed-tape-transaction/by/{section}': {
+	'/zipper/dyed-tape-transaction/by/{item_name}': {
 		get: {
 			tags: ['zipper.dyed_tape_transaction'],
 			summary: 'Get all Dyed Tape Transaction by section',
@@ -1323,10 +1319,14 @@ export const pathZipperDyedTapeTransaction = {
 			parameters: [
 				SE.parameter_params(
 					'dyed tape transaction to update',
-					'section',
+					'item_name',
 					'string',
-					'teeth_molding_prod'
+					'nylon'
 				),
+				SE.parameter_query('nylon_stopper', 'nylon_stopper', [
+					'plastic',
+					'metallic',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {

@@ -1,3 +1,5 @@
+-- * problem in the trigger function
+
 -- CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
 -- BEGIN
 --     IF NEW.is_drying_complete = TRUE THEN
@@ -105,3 +107,77 @@ EXECUTE FUNCTION thread.order_entry_after_batch_is_dyeing_update();
 
 -- Trigger for batch_entry
 
+
+
+---- * Inserted in DB issue persists
+CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_drying_update() RETURNS TRIGGER AS $$
+BEGIN
+    -- Handle insert when is_drying_complete is true
+
+    IF TG_OP = 'UPDATE' AND NEW.is_drying_complete = '1' THEN
+        -- Update order_entry table
+        UPDATE thread.order_entry
+        SET production_quantity = production_quantity + NEW.quantity
+        WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE batch_uuid = NEW.uuid);
+
+        -- Update batch_entry table
+        UPDATE thread.batch_entry
+        SET quantity = quantity - NEW.quantity
+        WHERE batch_uuid = NEW.uuid;
+
+    -- Handle remove when is_drying_complete changes from true to false
+
+    ELSIF TG_OP = 'UPDATE' AND OLD.is_drying_complete = '1' AND NEW.is_drying_complete = '0' THEN
+        -- Update order_entry table
+        UPDATE thread.order_entry
+        SET production_quantity = production_quantity - OLD.quantity
+        WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE batch_uuid = NEW.uuid);
+
+        -- Update batch_entry table
+        UPDATE thread.batch_entry
+        SET quantity = quantity + OLD.quantity
+        WHERE batch_uuid = NEW.uuid;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger
+CREATE TRIGGER order_entry_after_batch_is_drying_update_function
+AFTER UPDATE ON thread.batch
+FOR EACH ROW
+EXECUTE FUNCTION thread.order_entry_after_batch_is_drying_update();
+
+
+
+CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
+BEGIN
+    RAISE NOTICE 'Trigger executed for batch UUID: %', NEW.uuid;
+
+    -- Update order_entry
+    UPDATE thread.order_entry oe
+    SET 
+        production_quantity = production_quantity 
+        + CASE WHEN (NEW.is_drying_complete = '1' AND OLD.is_drying_complete = '0') THEN be.quantity ELSE 0 END 
+        - CASE WHEN (NEW.is_drying_complete = '0' AND OLD.is_drying_complete = '1') THEN be.quantity ELSE 0 END
+    FROM thread.batch_entry be
+    LEFT JOIN thread.batch b ON be.batch_uuid = b.uuid
+    WHERE b.uuid = NEW.uuid AND oe.uuid = be.order_entry_uuid;
+
+    -- Update batch_entry
+    UPDATE thread.batch_entry be
+    SET
+        quantity = quantity 
+        - CASE WHEN (NEW.is_drying_complete = '1' AND OLD.is_drying_complete = '0') THEN be.quantity ELSE 0 END
+        + CASE WHEN (NEW.is_drying_complete = '0' AND OLD.is_drying_complete = '1') THEN be.quantity ELSE 0 END
+    WHERE be.batch_uuid = OLD.uuid;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER order_entry_after_batch_is_dyeing_update_function
+AFTER UPDATE ON thread.batch
+FOR EACH ROW
+EXECUTE FUNCTION thread.order_entry_after_batch_is_dyeing_update();
