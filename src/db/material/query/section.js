@@ -89,7 +89,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(section)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))
-		.orderBy(desc(section.created_at));
+		.orderBy(asc(section.name));
 
 	const toast = {
 		status: 200,

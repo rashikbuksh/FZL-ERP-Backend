@@ -87,7 +87,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(vendor)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, vendor.created_by))
-		.orderBy(desc(vendor.created_at));
+		.orderBy(asc(vendor.name));
 	const toast = {
 		status: 200,
 		type: 'select_all',

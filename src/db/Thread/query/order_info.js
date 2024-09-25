@@ -136,7 +136,8 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			publicSchema.buyer,
 			eq(order_info.buyer_uuid, publicSchema.buyer.uuid)
-		);
+		)
+		.orderBy(desc(order_info.created_at));
 
 	const toast = {
 		status: 200,
@@ -276,7 +277,8 @@ export async function selectThreadSwatch(req, res, next) {
 		.leftJoin(
 			labDipSchema.recipe,
 			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
-		);
+		)
+		.orderBy(desc(order_info.created_at));
 
 	const toast = {
 		status: 200,

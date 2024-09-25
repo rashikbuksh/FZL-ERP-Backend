@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -89,7 +89,8 @@ export async function selectAll(req, res, next) {
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
 		})
-		.from(batch_entry);
+		.from(batch_entry)
+		.orderBy(desc(batch_entry.created_at));
 	const toast = {
 		status: 201,
 		type: 'select_all',
@@ -168,8 +169,10 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	) as be_given ON be_given.order_entry_uuid = oe.uuid
 	 LEFT JOIN 
 	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
+	ORDER BY
+		oe.created_at DESC
 	WHERE
-	oe.recipe_uuid IS NOT NULL
+		oe.recipe_uuid IS NOT NULL
 	`;
 
 	const batchEntryPromise = db.execute(query);

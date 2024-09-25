@@ -99,7 +99,7 @@ export async function selectAll(req, res, next) {
 			hrSchema.users,
 			eq(dyes_category.created_by, hrSchema.users.uuid)
 		)
-		.orderBy(desc(dyes_category.created_at));
+		.orderBy(asc(dyes_category.id));
 
 	const toast = {
 		status: 200,
