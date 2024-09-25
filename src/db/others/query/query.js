@@ -1,4 +1,4 @@
-import { eq, min, sql, sum, and } from 'drizzle-orm';
+import { and, eq, min, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -832,6 +832,8 @@ export async function selectDepartmentAndDesignation(req, res, next) {
 export async function selectLabDipRecipe(req, res, next) {
 	const order_info_uuid = req.query.order_info_uuid;
 	const info_uuid = req.query.info_uuid;
+	console.log('order_info_uuid', order_info_uuid);
+	console.log('info_uuid', info_uuid);
 
 	const recipePromise = db
 		.select({
@@ -839,6 +841,7 @@ export async function selectLabDipRecipe(req, res, next) {
 			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
 			approved: labDipSchema.recipe.approved,
 			status: labDipSchema.recipe.status,
+			info: labDipSchema.recipe.lab_dip_info_uuid,
 		})
 		.from(labDipSchema.recipe)
 		.leftJoin(
@@ -852,7 +855,7 @@ export async function selectLabDipRecipe(req, res, next) {
 						eq(labDipSchema.recipe.approved, 1)
 					)
 				: info_uuid
-					? eq(labDipSchema.recipe.lab_dip_info_uuid, null)
+					? isNull(labDipSchema.recipe.lab_dip_info_uuid)
 					: null
 		);
 
