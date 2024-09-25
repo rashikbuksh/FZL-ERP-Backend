@@ -175,14 +175,15 @@ export async function selectSwatchInfo(req, res, next) {
 					sfg.remarks as remarks,
 					vod.order_number as order_number,
 					vod.item_description as item_description,
-					order_description.created_at
+					od.created_at
 				FROM
 					zipper.sfg sfg
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
 					LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
 					LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
-					ORDER BY order_description.created_at`;
+					ORDER BY 
+					od.created_at`;
 
 	const swatchPromise = db.execute(query);
 
