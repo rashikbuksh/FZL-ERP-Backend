@@ -101,9 +101,8 @@ export async function selectAll(req, res, next) {
 			labDipSchema.recipe,
 			eq(sfg.recipe_uuid, labDipSchema.recipe.uuid)
 		)
-		.where(
-			recipe_uuid === 'true' ? sql`sfg.recipe_uuid IS NOT NULL` : null
-		);
+		.where(recipe_uuid === 'true' ? sql`sfg.recipe_uuid IS NOT NULL` : null)
+		.orderBy(desc(sfg.created_at));
 
 	const toast = {
 		status: 200,
@@ -175,12 +174,15 @@ export async function selectSwatchInfo(req, res, next) {
 					recipe.name as recipe_name,
 					sfg.remarks as remarks,
 					vod.order_number as order_number,
-					vod.item_description as item_description
+					vod.item_description as item_description,
+					order_description.created_at
 				FROM
 					zipper.sfg sfg
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
-					LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid`;
+					LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+					LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
+					ORDER BY order_description.created_at`;
 
 	const swatchPromise = db.execute(query);
 
