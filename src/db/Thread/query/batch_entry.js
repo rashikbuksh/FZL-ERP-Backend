@@ -169,10 +169,10 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	) as be_given ON be_given.order_entry_uuid = oe.uuid
 	 LEFT JOIN 
 	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
-	ORDER BY
-		oe.created_at DESC
 	WHERE
 		oe.recipe_uuid IS NOT NULL
+		ORDER BY
+		oe.created_at DESC
 	`;
 
 	const batchEntryPromise = db.execute(query);
