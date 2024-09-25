@@ -1,4 +1,16 @@
-import { and, desc, eq, gt, gte, lt, lte, not, or, sql } from 'drizzle-orm';
+import {
+	and,
+	desc,
+	asc,
+	eq,
+	gt,
+	gte,
+	lt,
+	lte,
+	not,
+	or,
+	sql,
+} from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -306,7 +318,8 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
-		.where(eq(recipe.lab_dip_info_uuid, req.params.lab_dip_info_uuid));
+		.where(eq(recipe.lab_dip_info_uuid, req.params.lab_dip_info_uuid))
+		.orderBy(asc(recipe.created_at));
 
 	const toast = {
 		status: 200,
