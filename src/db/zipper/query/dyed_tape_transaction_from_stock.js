@@ -148,7 +148,7 @@ export async function selectAll(req, res, next) {
 			LEFT JOIN 
 				public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 			LEFT JOIN
-				zipper.view_order_description_full vodf ON dyed_tape_transaction_from_stock.order_description_uuid = vodf.order_description_uuid
+				zipper.v_order_details_full vodf ON dyed_tape_transaction_from_stock.order_description_uuid = vodf.order_description_uuid
 			WHERE 
 				${
 					item === 'nylon'
