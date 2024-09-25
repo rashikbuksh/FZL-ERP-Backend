@@ -146,10 +146,11 @@ export async function selectAll(req, res, next) {
 			LEFT JOIN 
 				public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 			WHERE 
-				CASE 
-					WHEN ${item} = 'nylon' THEN LOWER(item_properties.name) = 'nylon'
-					ELSE LOWER(item_properties.name) <> 'nylon'
-				END
+				${
+					item === 'nylon'
+						? sql`LOWER(item_properties.name) = 'nylon'`
+						: sql`LOWER(item_properties.name) != 'nylon'`
+				}
 			ORDER BY 
 				dyed_tape_transaction_from_stock.created_at DESC;
 	`;
@@ -158,9 +159,12 @@ export async function selectAll(req, res, next) {
 
 	try {
 		const data = await dyedTapeTransactionFromStockPromise;
+
+		console.log(data.rows);
+
 		const toast = {
 			status: 201,
-			type: 'select',
+			type: 'select_all',
 			message: 'dyed_tape_transaction_from_stock list',
 		};
 
