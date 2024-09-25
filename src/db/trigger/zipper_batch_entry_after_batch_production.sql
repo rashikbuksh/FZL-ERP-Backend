@@ -7,13 +7,13 @@ BEGIN
     WHERE
         uuid = NEW.batch_entry_uuid;
 
- UPDATE zipper.sfg
-    SET
-        dying_and_iron_prod = dying_and_iron_prod + NEW.production_quantity_in_kg
+    UPDATE zipper.sfg
+        SET
+            dying_and_iron_prod = dying_and_iron_prod + NEW.production_quantity_in_kg
         FROM zipper.batch_entry
-    WHERE
-        uuid = batch_entry.sfg_uuid AND batch_entry.uuid = NEW.batch_entry_uuid;
-RETURN NEW;
+        WHERE
+            zipper.sfg.uuid = batch_entry.sfg_uuid AND batch_entry.uuid = NEW.batch_entry_uuid;
+    RETURN NEW;
 
 END;
 
@@ -27,12 +27,12 @@ BEGIN
     WHERE
         uuid = NEW.batch_entry_uuid;
 
-  UPDATE zipper.sfg
+    UPDATE zipper.sfg
     SET
         dying_and_iron_prod = dying_and_iron_prod + NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
         FROM zipper.batch_entry
     WHERE
-        uuid = batch_entry.sfg_uuid AND batch_entry.uuid = NEW.batch_entry_uuid;
+         zipper.sfg.uuid = batch_entry.sfg_uuid AND batch_entry.uuid = NEW.batch_entry_uuid;
     RETURN NEW;
 
 RETURN NEW;
@@ -54,7 +54,7 @@ BEGIN
         dying_and_iron_prod = dying_and_iron_prod - OLD.production_quantity_in_kg
         FROM zipper.batch_entry
     WHERE
-        uuid = batch_entry.sfg_uuid AND batch_entry.uuid = OLD.batch_entry_uuid;
+         zipper.sfg.uuid = batch_entry.sfg_uuid AND batch_entry.uuid = OLD.batch_entry_uuid;
     RETURN OLD;
 END;
 

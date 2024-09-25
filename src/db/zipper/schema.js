@@ -335,7 +335,7 @@ export const dyed_tape_transaction_from_stock = zipper.table(
 export const batchStatusEnum = zipper.enum('batch_status', [
 	'pending',
 	'completed',
-	'rejected',
+	'cancelled',
 ]);
 
 // zipper batch
