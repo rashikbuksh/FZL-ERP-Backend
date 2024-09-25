@@ -138,7 +138,9 @@ export async function selectAll(req, res, next) {
 					LEFT JOIN 
 						zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
 					LEFT JOIN 
-						hr.users AS users ON stock_to_sfg.created_by = users.uuid`;
+						hr.users AS users ON stock_to_sfg.created_by = users.uuid
+					ORDER BY
+						stock_to_sfg.created_at DESC`;
 
 	const resultPromise = db.execute(query);
 
