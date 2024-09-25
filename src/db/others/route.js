@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
 import * as otherOperations from './query/query.js';
+import { param } from 'express-validator';
 
 const otherRouter = Router();
 
@@ -986,6 +987,13 @@ const pathLabDip = {
 			summary: 'get all lab dip recipes',
 			description: 'All lab dip recipes',
 			operationId: 'getAllLabDipRecipes',
+			parameters: [
+				SE.parameter_query(
+					'order_info_uuid',
+					'order_info_uuid',
+					'2ggcphnwHGzEUGy'
+				),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all lab dip recipes.',
@@ -1016,6 +1024,13 @@ const pathLabDip = {
 			summary: 'get all shade recipes',
 			description: 'All shade recipes',
 			operationId: 'getAllShadeRecipes',
+			parameters: [
+				SE.parameter_query(
+					'thread_order_info_uuid',
+					'thread_order_info_uuid',
+					'2ggcphnwHGzEUGy'
+				),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all shade recipes.',
