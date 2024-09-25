@@ -84,6 +84,29 @@ export async function remove(req, res, next) {
 	}
 }
 
+export async function removeByPackingListUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const challan_entryPromise = db
+		.delete(challan_entry)
+		.where(
+			eq(challan_entry.packing_list_uuid, req.params.packing_list_uuid)
+		)
+		.returning({ deletedName: challan_entry.uuid });
+
+	try {
+		const data = await challan_entryPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		handleError({ error, res });
+	}
+}
+
 export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({

@@ -87,10 +87,10 @@ deliveryRouter.get(
 );
 deliveryRouter.post('/challan-entry', challanEntryOperations.insert);
 deliveryRouter.put('/challan-entry/:uuid', challanEntryOperations.update);
+deliveryRouter.delete('/challan-entry/:uuid', challanEntryOperations.remove);
 deliveryRouter.delete(
-	'/challan-entry/:uuid',
-
-	challanEntryOperations.remove
+	'/remove-challan-entry-by/:packing_list_uuid',
+	challanEntryOperations.removeByPackingListUuid
 );
 deliveryRouter.get(
 	'/challan-entry/by/:challan_uuid',
