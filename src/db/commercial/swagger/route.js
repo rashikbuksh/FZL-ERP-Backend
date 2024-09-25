@@ -1,5 +1,6 @@
 import { is } from 'drizzle-orm';
 import SE, { SED } from '../../../util/swagger_example.js';
+import { param } from 'express-validator';
 
 // * Commercial Bank * //
 export const pathCommercialBank = {
@@ -375,6 +376,7 @@ export const pathCommercialPiCash = {
 			tags: ['commercial.pi_cash'],
 			summary: 'Get all pis',
 			description: 'All pis',
+			parameters: [SE.parameter_query('is_cash', 'is_cash', 'false')],
 			responses: {
 				200: SE.response_schema('200', {
 					uuid: SE.uuid(),
