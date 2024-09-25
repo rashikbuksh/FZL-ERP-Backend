@@ -1071,6 +1071,8 @@ export async function selectDyesCategory(req, res, next) {
 export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	const { order_info_uuid } = req.params;
 
+	const { challan_uuid } = req.query;
+
 	const query = sql`
 	SELECT
 		pl.uuid AS value,
@@ -1078,7 +1080,7 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	FROM
 		delivery.packing_list pl
 	WHERE
-		pl.order_info_uuid = ${order_info_uuid} AND pl.challan_uuid IS NULL;`;
+		pl.order_info_uuid = ${order_info_uuid} AND (pl.challan_uuid IS NULL  ${challan_uuid ? `OR pl.challan_uuid = ${challan_uuid}` : ''});`;
 
 	const packingListPromise = db.execute(query);
 

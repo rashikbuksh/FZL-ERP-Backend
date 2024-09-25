@@ -1256,6 +1256,11 @@ const pathDelivery = {
 						'order_info_uuid',
 						'uuid'
 					),
+					SE.parameter_query(
+						'challan_uuid',
+						'challan_uuid',
+						'2ggcphnwHGzEUGy'
+					),
 				],
 				responses: {
 					200: {
