@@ -149,6 +149,7 @@ export async function select(req, res, next) {
 
 export async function selectDyedTapeTransactionBySection(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+	const { nylon_stopper } = req.body;
 	const query = sql`
 		SELECT
 			dtt.uuid AS uuid,
@@ -165,8 +166,16 @@ export async function selectDyedTapeTransactionBySection(req, res, next) {
 		FROM zipper.dyed_tape_transaction dtt
 			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
-		WHERE dtt.section = ${req.params.section}
+		WHERE lower(vod.item_name) = ${req.params.item_name}
 	`;
+
+	if (
+		nylon_stopper !== undefined &&
+		nylon_stopper !== null &&
+		nylon_stopper !== ''
+	) {
+		query.append(sql`AND lower(vod.nylon_stopper_name) = ${nylon_stopper}`);
+	}
 
 	const resultPromise = db.execute(query);
 

@@ -1312,7 +1312,7 @@ export const pathZipperDyedTapeTransaction = {
 			},
 		},
 	},
-	'/zipper/dyed-tape-transaction/by/{section}': {
+	'/zipper/dyed-tape-transaction/by/{item_name}': {
 		get: {
 			tags: ['zipper.dyed_tape_transaction'],
 			summary: 'Get all Dyed Tape Transaction by section',
@@ -1323,10 +1323,14 @@ export const pathZipperDyedTapeTransaction = {
 			parameters: [
 				SE.parameter_params(
 					'dyed tape transaction to update',
-					'section',
+					'item_name',
 					'string',
-					'teeth_molding_prod'
+					'nylon'
 				),
+				SE.parameter_query('nylon_stopper', 'nylon_stopper', [
+					'plastic',
+					'metallic',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {

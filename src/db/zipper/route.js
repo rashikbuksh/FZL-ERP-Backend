@@ -159,7 +159,7 @@ zipperRouter.delete(
 );
 
 zipperRouter.get(
-	'/dyed-tape-transaction/by/:section',
+	'/dyed-tape-transaction/by/:item_name',
 	dyedTapeTransactionOperations.selectDyedTapeTransactionBySection
 );
 
