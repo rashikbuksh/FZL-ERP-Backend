@@ -166,6 +166,7 @@ export async function selectSwatchInfo(req, res, next) {
 					sfg.uuid as uuid,
 					sfg.order_entry_uuid as order_entry_uuid,
 					oe.order_description_uuid as order_description_uuid,
+					od.order_info_uuid,
 					oe.style as style,
 					oe.color as color,
 					oe.size as size,
