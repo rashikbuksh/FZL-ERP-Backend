@@ -46,6 +46,8 @@ const isZipperOrderInfo = async (order_info_uuid) => {
 		.from(zipperSchema.order_info)
 		.where(eq(zipperSchema.order_info.uuid, order_info_uuid));
 
+	console.log('zipperOrderInfo', zipperOrderInfo);
+
 	return zipperOrderInfo?.length > 0;
 };
 const isThreadOrderInfo = async (order_info_uuid) => {
@@ -54,6 +56,8 @@ const isThreadOrderInfo = async (order_info_uuid) => {
 		.from(threadSchema.order_info)
 		.where(eq(threadSchema.order_info.uuid, order_info_uuid));
 
+	console.log('threadOrderInfo', threadOrderInfo);
+
 	return threadOrderInfo?.length > 0;
 };
 
@@ -61,6 +65,9 @@ export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { order_info_uuid } = req.body;
+
+	console.log('order_info_uuid', order_info_uuid);
+	console.log('req.body-lab dip', req.body);
 
 	let insertData = { ...req.body };
 	insertData.order_info_uuid = null;
@@ -119,21 +126,9 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_info_uuid } = req.body;
-
 	let updateData = { ...req.body };
-	updateData.order_info_uuid = null;
-	updateData.thread_order_info_uuid = null;
 
 	try {
-		if (await isZipperOrderInfo(order_info_uuid)) {
-			updateData.order_info_uuid = order_info_uuid;
-		} else if (await isThreadOrderInfo(order_info_uuid)) {
-			updateData.thread_order_info_uuid = order_info_uuid;
-		} else {
-			return res.status(400).json({ error: 'Invalid order_info_uuid' });
-		}
-
 		const infoPromise = db
 			.update(info)
 			.set(updateData)

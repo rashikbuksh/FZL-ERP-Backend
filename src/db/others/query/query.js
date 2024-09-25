@@ -361,10 +361,10 @@ export async function selectOrderDescription(req, res, next) {
 						FROM zipper.order_entry oe 
 				        group by oe.order_description_uuid
 					) AS totals_of_oe ON totals_of_oe.order_description_uuid = vodf.order_description_uuid 
-				LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid AND vodf.zipper_number = tcr.zipper_number_uuid AND vodf.end_type = tcr.end_type_uuid AND vodf.nylon_stopper = tcr.nylon_stopper_uuid
+				LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid AND vodf.zipper_number = tcr.zipper_number_uuid AND vodf.end_type = tcr.end_type_uuid
 				LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != '' AND tape_coil.dyed_per_kg_meter IS NOT NULL
+					vodf.item_description != '---' AND vodf.item_description != '' AND tape_coil.dyed_per_kg_meter IS NOT NULL AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END
 				`;
 
 	if (item == 'nylon') {
@@ -626,7 +626,6 @@ export async function selectMaterial(req, res, next) {
 			label: materialSchema.info.name,
 			unit: materialSchema.info.unit,
 			stock: materialSchema.stock.stock,
-			type_name: materialSchema.type.name,
 		})
 		.from(materialSchema.info)
 		.leftJoin(
@@ -639,7 +638,7 @@ export async function selectMaterial(req, res, next) {
 		)
 		.where(
 			type
-				? eq(materialSchema.type.name.toLowerCase(), type.toLowerCase())
+				? eq(sql`lower(material.type.name)`, sql`lower(${type})`)
 				: null
 		);
 
