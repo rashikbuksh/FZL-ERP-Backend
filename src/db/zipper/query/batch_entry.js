@@ -251,8 +251,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN
-			zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid AND vodf.item = tcr.item_uuid 
-        AND vodf.nylon_stopper = tcr.nylon_stopper_uuid 
+			zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid 
+		AND vodf.item = tcr.item_uuid 
         AND vodf.zipper_number = tcr.zipper_number_uuid 
         AND vodf.end_type = tcr.end_type_uuid 
 		LEFT JOIN
@@ -273,7 +273,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 					sfg.uuid
 			) AS be_given ON sfg.uuid = be_given.sfg_uuid
 		WHERE
-			sfg.recipe_uuid IS NOT NULL AND coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0) > 0`;
+			sfg.recipe_uuid IS NOT NULL AND coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0) > 0 AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END`;
 
 	const batchEntryPromise = db.execute(query);
 
