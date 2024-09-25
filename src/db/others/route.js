@@ -87,11 +87,11 @@ otherRouter.get(
 
 // lab_dip
 otherRouter.get(
-	'/lab-dip/shade-recipe/value/label',
+	'/lab-dip/shade-recipe/value/label/:thread_order_info_uuid',
 	otherOperations.selectLabDipShadeRecipe
 );
 otherRouter.get(
-	'/lab-dip/recipe/value/label',
+	'/lab-dip/recipe/value/label/:order_info_uuid',
 	otherOperations.selectLabDipRecipe
 );
 
@@ -980,15 +980,25 @@ const pathHr = {
 };
 
 const pathLabDip = {
-	'/other/lab-dip/recipe/value/label': {
+	'/other/lab-dip/recipe/value/label/{order_info_uuid}': {
 		get: {
 			tags: ['others'],
-			summary: 'get all lab dip recipes',
-			description: 'All lab dip recipes',
-			operationId: 'getAllLabDipRecipes',
+			summary: 'get lab dip recipe',
+			description: 'Lab dip recipe',
+			operationId: 'getLabDipRecipe',
+			parameters: [
+				{
+					name: 'order_info_uuid',
+					in: 'path',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: '2ggcphnwHGzEUGy',
+				},
+			],
 			responses: {
 				200: {
-					description: 'Returns a all lab dip recipes.',
+					description: 'Returns a lab dip recipe.',
 					content: {
 						'application/json': {
 							schema: {
@@ -1000,7 +1010,7 @@ const pathLabDip = {
 									},
 									label: {
 										type: 'string',
-										example: 'LDR24-0001 - Recipe 1',
+										example: 'recipe 1',
 									},
 								},
 							},
@@ -1010,12 +1020,22 @@ const pathLabDip = {
 			},
 		},
 	},
-	'/other/lab-dip/shade-recipe/value/label': {
+	'/other/lab-dip/shade-recipe/value/label/{thread_order_info_uuid}': {
 		get: {
 			tags: ['others'],
 			summary: 'get all shade recipes',
 			description: 'All shade recipes',
 			operationId: 'getAllShadeRecipes',
+			parameters: [
+				{
+					name: 'thread_order_info_uuid',
+					in: 'path',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: '2ggcphnwHGzEUGy',
+				},
+			],
 			responses: {
 				200: {
 					description: 'Returns a all shade recipes.',
