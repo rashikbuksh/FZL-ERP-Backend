@@ -233,10 +233,6 @@ export async function selectBySection(req, res, next) {
 			COALESCE(sfg.reject_quantity,0) as reject_quantity,
 			COALESCE(vodf.tape_received,0) as tape_received,
 			COALESCE(vodf.tape_transferred,0) as tape_transferred,
-			COALESCE(vodf.nylon_plastic_finishing,0) as nylon_plastic_finishing,
-			COALESCE(vodf.vislon_teeth_molding,0) as vislon_teeth_molding,
-			COALESCE(vodf.metal_teeth_molding,0) as metal_teeth_molding,
-			COALESCE(vodf.nylon_metallic_finishing,0) as nylon_metallic_finishing,
 			COALESCE(vodf.slider_finishing_stock,0) as slider_finishing_stock
 		FROM
 			zipper.sfg_production
