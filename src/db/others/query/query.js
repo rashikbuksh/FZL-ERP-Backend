@@ -626,7 +626,6 @@ export async function selectMaterial(req, res, next) {
 			label: materialSchema.info.name,
 			unit: materialSchema.info.unit,
 			stock: materialSchema.stock.stock,
-			type_name: materialSchema.type.name,
 		})
 		.from(materialSchema.info)
 		.leftJoin(
@@ -637,7 +636,11 @@ export async function selectMaterial(req, res, next) {
 			materialSchema.type,
 			eq(materialSchema.info.type_uuid, materialSchema.type.uuid)
 		)
-		.where(type ? eq(sql`lower(materialSchema.type.name)`, type) : null);
+		.where(
+			type
+				? eq(sql`lower(material.type.name)`, sql`lower(${type})`)
+				: null
+		);
 
 	const toast = {
 		status: 200,
