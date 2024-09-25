@@ -1273,6 +1273,30 @@ export const pathDeliveryChallanEntry = {
 			},
 		},
 	},
+	'/delivery/remove-challan-entry-by/{packing_list_uuid}': {
+		delete: {
+			tags: ['delivery.challan-entry'],
+			summary: 'Remove a challan entry by packing_list_uuid',
+			description: 'Remove a challan entry by packing_list_uuid',
+			// operationId: "removeChallanEntryByPackingListUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'packing_list_uuid',
+					in: 'path',
+					description: ' packing list to remove',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+			},
+		},
+	},
 };
 
 export const pathDelivery = {
