@@ -14,6 +14,23 @@ import * as zipperSchema from '../../zipper/schema.js';
 import { info } from '../schema.js';
 
 const thread = alias(threadSchema.order_info, 'thread');
+const zipper = alias(zipperSchema.order_info, 'zipper');
+const threadBuyer = alias(publicSchema.buyer, 'thread_buyer');
+const zipperBuyer = alias(publicSchema.buyer, 'zipper_buyer');
+const threadParty = alias(publicSchema.party, 'thread_party');
+const zipperParty = alias(publicSchema.party, 'zipper_party');
+const threadMarketing = alias(publicSchema.marketing, 'thread_marketing');
+const zipperMarketing = alias(publicSchema.marketing, 'zipper_marketing');
+const threadMerchandiser = alias(
+	publicSchema.merchandiser,
+	'thread_merchandiser'
+);
+const zipperMerchandiser = alias(
+	publicSchema.merchandiser,
+	'zipper_merchandiser'
+);
+const threadFactory = alias(publicSchema.factory, 'thread_factory');
+const zipperFactory = alias(publicSchema.factory, 'zipper_factory');
 
 // export async function insert(req, res, next) {
 // 	if (!(await validateRequest(req, next))) return;
@@ -180,22 +197,22 @@ export async function selectAll(req, res, next) {
 			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
 			order_number: sql`
-                CASE 
-                    WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.order_info.created_at, 'YY'), '-', LPAD(zipper.order_info.id::text, 4, '0'))
-                    WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
-                    ELSE NULL
-                END
-            `,
-			buyer_uuid: zipperSchema.order_info.buyer_uuid,
-			buyer_name: publicSchema.buyer.name,
-			party_uuid: zipperSchema.order_info.party_uuid,
-			party_name: publicSchema.party.name,
-			marketing_uuid: zipperSchema.order_info.marketing_uuid,
-			marketing_name: publicSchema.marketing.name,
-			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
-			merchandiser_name: publicSchema.merchandiser.name,
-			factory_uuid: zipperSchema.order_info.factory_uuid,
-			factory_name: publicSchema.factory.name,
+        CASE 
+            WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.created_at, 'YY'), '-', LPAD(zipper.id::text, 4, '0'))
+            WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+            ELSE NULL
+        END
+    `,
+			buyer_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.buyer_uuid ELSE thread.buyer_uuid END`,
+			buyer_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_buyer.name ELSE thread_buyer.name END`,
+			party_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.party_uuid ELSE thread.party_uuid END`,
+			party_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_party.name ELSE thread_party.name END`,
+			marketing_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.marketing_uuid ELSE thread.marketing_uuid END`,
+			marketing_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_marketing.name ELSE thread_marketing.name END`,
+			merchandiser_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.merchandiser_uuid ELSE thread.merchandiser_uuid END`,
+			merchandiser_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_merchandiser.name ELSE thread_merchandiser.name END`,
+			factory_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.factory_uuid ELSE thread.factory_uuid END`,
+			factory_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_factory.name ELSE thread_factory.name END`,
 			lab_status: info.lab_status,
 			created_by: info.created_by,
 			created_by_name: hrSchema.users.name,
@@ -204,38 +221,31 @@ export async function selectAll(req, res, next) {
 			remarks: info.remarks,
 		})
 		.from(info)
-		.leftJoin(
-			zipperSchema.order_info,
-			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+		.leftJoin(zipper, eq(info.order_info_uuid, zipper.uuid))
+		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
+		.leftJoin(zipperBuyer, eq(zipper.buyer_uuid, zipperBuyer.uuid))
+		.leftJoin(threadBuyer, eq(thread.buyer_uuid, threadBuyer.uuid))
+		.leftJoin(zipperParty, eq(zipper.party_uuid, zipperParty.uuid))
+		.leftJoin(threadParty, eq(thread.party_uuid, threadParty.uuid))
 		.leftJoin(
-			publicSchema.buyer,
-			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
+			zipperMarketing,
+			eq(zipper.marketing_uuid, zipperMarketing.uuid)
 		)
 		.leftJoin(
-			publicSchema.party,
-			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
+			threadMarketing,
+			eq(thread.marketing_uuid, threadMarketing.uuid)
 		)
 		.leftJoin(
-			publicSchema.marketing,
-			eq(
-				zipperSchema.order_info.marketing_uuid,
-				publicSchema.marketing.uuid
-			)
+			zipperMerchandiser,
+			eq(zipper.merchandiser_uuid, zipperMerchandiser.uuid)
 		)
 		.leftJoin(
-			publicSchema.merchandiser,
-			eq(
-				zipperSchema.order_info.merchandiser_uuid,
-				publicSchema.merchandiser.uuid
-			)
+			threadMerchandiser,
+			eq(thread.merchandiser_uuid, threadMerchandiser.uuid)
 		)
-		.leftJoin(
-			publicSchema.factory,
-			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
-		)
+		.leftJoin(zipperFactory, eq(zipper.factory_uuid, zipperFactory.uuid))
+		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
 		.orderBy(desc(info.created_at));
 
 	const toast = {
@@ -258,22 +268,22 @@ export async function select(req, res, next) {
 			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
 			order_number: sql`
-                CASE 
-                    WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.order_info.created_at, 'YY'), '-', LPAD(zipper.order_info.id::text, 4, '0'))
-                    WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
-                    ELSE NULL
-                END
-            `,
-			buyer_uuid: zipperSchema.order_info.buyer_uuid,
-			buyer_name: publicSchema.buyer.name,
-			party_uuid: zipperSchema.order_info.party_uuid,
-			party_name: publicSchema.party.name,
-			marketing_uuid: zipperSchema.order_info.marketing_uuid,
-			marketing_name: publicSchema.marketing.name,
-			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
-			merchandiser_name: publicSchema.merchandiser.name,
-			factory_uuid: zipperSchema.order_info.factory_uuid,
-			factory_name: publicSchema.factory.name,
+        CASE 
+            WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.created_at, 'YY'), '-', LPAD(zipper.id::text, 4, '0'))
+            WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+            ELSE NULL
+        END
+    `,
+			buyer_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.buyer_uuid ELSE thread.buyer_uuid END`,
+			buyer_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_buyer.name ELSE thread_buyer.name END`,
+			party_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.party_uuid ELSE thread.party_uuid END`,
+			party_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_party.name ELSE thread_party.name END`,
+			marketing_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.marketing_uuid ELSE thread.marketing_uuid END`,
+			marketing_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_marketing.name ELSE thread_marketing.name END`,
+			merchandiser_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.merchandiser_uuid ELSE thread.merchandiser_uuid END`,
+			merchandiser_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_merchandiser.name ELSE thread_merchandiser.name END`,
+			factory_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.factory_uuid ELSE thread.factory_uuid END`,
+			factory_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_factory.name ELSE thread_factory.name END`,
 			lab_status: info.lab_status,
 			created_by: info.created_by,
 			created_by_name: hrSchema.users.name,
@@ -282,39 +292,33 @@ export async function select(req, res, next) {
 			remarks: info.remarks,
 		})
 		.from(info)
-		.leftJoin(
-			zipperSchema.order_info,
-			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+		.leftJoin(zipper, eq(info.order_info_uuid, zipper.uuid))
+		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
+		.leftJoin(zipperBuyer, eq(zipper.buyer_uuid, zipperBuyer.uuid))
+		.leftJoin(threadBuyer, eq(thread.buyer_uuid, threadBuyer.uuid))
+		.leftJoin(zipperParty, eq(zipper.party_uuid, zipperParty.uuid))
+		.leftJoin(threadParty, eq(thread.party_uuid, threadParty.uuid))
 		.leftJoin(
-			publicSchema.buyer,
-			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
+			zipperMarketing,
+			eq(zipper.marketing_uuid, zipperMarketing.uuid)
 		)
 		.leftJoin(
-			publicSchema.party,
-			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
+			threadMarketing,
+			eq(thread.marketing_uuid, threadMarketing.uuid)
 		)
 		.leftJoin(
-			publicSchema.marketing,
-			eq(
-				zipperSchema.order_info.marketing_uuid,
-				publicSchema.marketing.uuid
-			)
+			zipperMerchandiser,
+			eq(zipper.merchandiser_uuid, zipperMerchandiser.uuid)
 		)
 		.leftJoin(
-			publicSchema.merchandiser,
-			eq(
-				zipperSchema.order_info.merchandiser_uuid,
-				publicSchema.merchandiser.uuid
-			)
+			threadMerchandiser,
+			eq(thread.merchandiser_uuid, threadMerchandiser.uuid)
 		)
-		.leftJoin(
-			publicSchema.factory,
-			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
-		)
-		.where(eq(info.uuid, req.params.uuid));
+		.leftJoin(zipperFactory, eq(zipper.factory_uuid, zipperFactory.uuid))
+		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
+		.where(eq(info.uuid, req.params.uuid))
+		.orderBy(desc(info.created_at));
 
 	try {
 		const data = await infoPromise;
