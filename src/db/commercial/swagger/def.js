@@ -1,6 +1,5 @@
 import SE, { SED } from '../../../util/swagger_example.js';
 
-
 //* ./schema.js#bank
 
 export const defCommercialBank = SED({
@@ -112,7 +111,13 @@ export const defCommercialPiCash = SED({
 
 export const defCommercialPiCashEntry = SED({
 	// type: 'object',
-	required: ['uuid', 'pi_uuid', 'sfg_uuid', 'pi_quantity', 'created_at'],
+	required: [
+		'uuid',
+		'pi_cash_uuid',
+		'sfg_uuid',
+		'pi_cash_quantity',
+		'created_at',
+	],
 	properties: {
 		uuid: SE.uuid(),
 		pi_cash_uuid: SE.uuid(),

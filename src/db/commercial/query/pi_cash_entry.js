@@ -153,7 +153,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 	                pe.pi_cash_quantity as pi_cash_quantity,
 	                oe.quantity as max_quantity,
 	                oe.party_price as unit_price,
-					sfg.pi as given_pi_quantity,
+					sfg.pi as given_pi_cash_quantity,
 	                (pe.pi_cash_quantity * oe.party_price) as value,
 	                (oe.quantity - sfg.pi) as balance_quantity,
 	                pe.created_at as created_at,
@@ -202,9 +202,9 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             oe.color as color,
             oe.size as size,
             oe.quantity as quantity,
-            sfg.pi as given_pi_quantity,
+            sfg.pi as given_pi_cash_quantity,
             (oe.quantity - sfg.pi) as max_quantity,
-            (oe.quantity - sfg.pi) as pi_quantity,
+            (oe.quantity - sfg.pi) as pi_cash_quantity,
             (oe.quantity - sfg.pi) as balance_quantity,
             CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked
         FROM
