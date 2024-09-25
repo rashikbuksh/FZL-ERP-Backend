@@ -993,6 +993,7 @@ const pathLabDip = {
 					'order_info_uuid',
 					'2ggcphnwHGzEUGy'
 				),
+				SE.parameter_query('info_uuid', 'info_uuid', 'false'),
 			],
 			responses: {
 				200: {
