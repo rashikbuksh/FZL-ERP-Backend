@@ -232,6 +232,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			oe.color,
 			oe.size,
 			oe.quantity as order_quantity,
+			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
 			be_given.given_quantity,
