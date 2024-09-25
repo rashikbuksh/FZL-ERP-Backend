@@ -182,7 +182,6 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN 
 			zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid AND vodf.item = tcr.item_uuid 
-        AND vodf.nylon_stopper = tcr.nylon_stopper_uuid 
         AND vodf.zipper_number = tcr.zipper_number_uuid 
         AND vodf.end_type = tcr.end_type_uuid 
 		LEFT JOIN
@@ -203,7 +202,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 					batch_entry.uuid, bp.uuid
 			) AS bp_given ON be.uuid = bp_given.batch_entry_uuid
 		WHERE
-			be.batch_uuid = ${batch_uuid}`;
+			be.batch_uuid = ${batch_uuid} AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END`;
 
 	const batchEntryPromise = db.execute(query);
 
