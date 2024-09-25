@@ -175,18 +175,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE sfg_after_commercial_pi_entry_insert_trigger
-AFTER INSERT ON commercial.pi_entry
+CREATE OR REPLACE TRIGGER sfg_after_commercial_pi_entry_insert_trigger
+AFTER INSERT ON commercial.pi_cash_entry
 FOR EACH ROW
 EXECUTE FUNCTION commercial.sfg_after_commercial_pi_entry_insert_function();
 
-CREATE OR REPLACE sfg_after_commercial_pi_entry_delete_trigger
-AFTER DELETE ON commercial.pi_entry
+CREATE OR REPLACE TRIGGER sfg_after_commercial_pi_entry_delete_trigger
+AFTER DELETE ON commercial.pi_cash_entry
 FOR EACH ROW
 EXECUTE FUNCTION commercial.sfg_after_commercial_pi_entry_delete_function();
 
 CREATE OR REPLACE TRIGGER sfg_after_commercial_pi_entry_update_trigger
-AFTER UPDATE ON commercial.pi_entry
+AFTER UPDATE ON commercial.pi_cash_entry
 FOR EACH ROW
 EXECUTE FUNCTION commercial.sfg_after_commercial_pi_entry_update_function();
 
