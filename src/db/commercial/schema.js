@@ -34,7 +34,7 @@ export const lc = commercial.table('lc', {
 		.default(sql`nextval('commercial.lc_sequence')`)
 		.notNull(),
 	lc_number: text('lc_number').notNull(),
-	lc_date: text('lc_date').notNull(),
+	lc_date: DateTime('lc_date').notNull(),
 	payment_value: decimal('payment_value', {
 		precision: 20,
 		scale: 4,
