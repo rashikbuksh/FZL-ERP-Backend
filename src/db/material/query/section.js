@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,

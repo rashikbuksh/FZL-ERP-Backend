@@ -637,11 +637,7 @@ export async function selectMaterial(req, res, next) {
 			materialSchema.type,
 			eq(materialSchema.info.type_uuid, materialSchema.type.uuid)
 		)
-		.where(
-			type
-				? eq(materialSchema.type.name.toLowerCase(), type.toLowerCase())
-				: null
-		);
+		.where(type ? eq(sql`lower(materialSchema.type.name)`, type) : null);
 
 	const toast = {
 		status: 200,

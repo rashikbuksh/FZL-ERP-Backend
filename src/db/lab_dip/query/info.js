@@ -62,6 +62,9 @@ export async function insert(req, res, next) {
 
 	const { order_info_uuid } = req.body;
 
+	console.log('order_info_uuid', order_info_uuid);
+	console.log('req.body-lab dip', req.body);
+
 	let insertData = { ...req.body };
 	insertData.order_info_uuid = null;
 	insertData.thread_order_info_uuid = null;
