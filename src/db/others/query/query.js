@@ -831,6 +831,7 @@ export async function selectDepartmentAndDesignation(req, res, next) {
 // * Lab Dip * //
 export async function selectLabDipRecipe(req, res, next) {
 	const order_info_uuid = req.query.order_info_uuid;
+	const info_uuid = req.query.info_uuid;
 
 	const recipePromise = db
 		.select({
@@ -846,8 +847,13 @@ export async function selectLabDipRecipe(req, res, next) {
 		)
 		.where(
 			order_info_uuid
-				? eq(labDipSchema.info.order_info_uuid, order_info_uuid)
-				: null
+				? and(
+						eq(labDipSchema.info.order_info_uuid, order_info_uuid),
+						eq(labDipSchema.recipe.approved, 1)
+					)
+				: info_uuid === false
+					? eq(labDipSchema.recipe.lab_dip_info_uuid, null)
+					: null
 		);
 
 	const toast = {
@@ -874,7 +880,7 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	LEFT JOIN
 		lab_dip.info ON recipe.lab_dip_info_uuid = lab_dip.info.uuid
 	WHERE
-	  ${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid}` : sql`1=1`}
+	  ${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.recipe.approved = 1 ` : sql`1=1`}
 	`;
 
 	const RecipePromise = db.execute(query);
