@@ -846,8 +846,10 @@ export async function selectLabDipRecipe(req, res, next) {
 		)
 		.where(
 			order_info_uuid
-				? eq(labDipSchema.info.order_info_uuid, order_info_uuid) &&
+				? and(
+						eq(labDipSchema.info.order_info_uuid, order_info_uuid),
 						eq(labDipSchema.recipe.approved, 1)
+					)
 				: null
 		);
 
