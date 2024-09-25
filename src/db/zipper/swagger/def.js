@@ -118,6 +118,7 @@ export const def_zipper_order_entry = SED({
 		'color',
 		'size',
 		'quantity',
+		'bleaching',
 		'created_at',
 	],
 	properties: {
@@ -132,6 +133,7 @@ export const def_zipper_order_entry = SED({
 		status: SE.integer(),
 		swatch_status: SE.string('pending'),
 		swatch_approval_date: SE.date_time(),
+		bleaching: SE.string(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string(),

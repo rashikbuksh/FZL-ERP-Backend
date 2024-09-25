@@ -182,6 +182,7 @@ export const order_entry = zipper.table('order_entry', {
 	status: integer('status').default(1),
 	swatch_status: swatchStatusEnum('swatch_status_enum').default('pending'),
 	swatch_approval_date: text('swatch_approval_date').default(null),
+	bleaching: text('bleaching').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
