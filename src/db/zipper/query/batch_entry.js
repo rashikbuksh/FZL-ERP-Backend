@@ -274,7 +274,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 					sfg.uuid
 			) AS be_given ON sfg.uuid = be_given.sfg_uuid
 		WHERE
-			sfg.recipe_uuid IS NOT NULL AND coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0) > 0 AND vodf.tap_coil_uuid IS NOT NULL AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END  `;
+			vodf.tape_coil_uuid IS NOT NULL AND sfg.recipe_uuid IS NOT NULL AND coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0) > 0 AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END `;
 
 	const batchEntryPromise = db.execute(query);
 
