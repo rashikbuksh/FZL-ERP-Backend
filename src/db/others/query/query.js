@@ -830,10 +830,7 @@ export async function selectDepartmentAndDesignation(req, res, next) {
 
 // * Lab Dip * //
 export async function selectLabDipRecipe(req, res, next) {
-	const order_info_uuid = req.query.order_info_uuid;
-	const info_uuid = req.query.info_uuid;
-	console.log('order_info_uuid', order_info_uuid);
-	console.log('info_uuid', info_uuid);
+	const { order_info_uuid, bleaching, info_uuid } = req.query;
 
 	const recipePromise = db
 		.select({
@@ -852,7 +849,10 @@ export async function selectLabDipRecipe(req, res, next) {
 			order_info_uuid
 				? and(
 						eq(labDipSchema.info.order_info_uuid, order_info_uuid),
-						eq(labDipSchema.recipe.approved, 1)
+						eq(labDipSchema.recipe.approved, 1),
+						bleaching
+							? eq(labDipSchema.recipe.bleaching, bleaching)
+							: null
 					)
 				: info_uuid
 					? sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
@@ -873,7 +873,7 @@ export async function selectLabDipRecipe(req, res, next) {
 }
 
 export async function selectLabDipShadeRecipe(req, res, next) {
-	const thread_order_info_uuid = req.query.thread_order_info_uuid;
+	const { thread_order_info_uuid, bleaching } = req.query;
 	const query = sql`
 	SELECT
 		recipe.uuid AS value,
@@ -884,6 +884,8 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 		lab_dip.info ON recipe.lab_dip_info_uuid = lab_dip.info.uuid
 	WHERE
 	  ${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.recipe.approved = 1 ` : sql`1=1`}
+	  AND
+	  ${bleaching ? sql` recipe.bleaching = ${bleaching}` : sql`1=1`}
 	`;
 
 	const RecipePromise = db.execute(query);

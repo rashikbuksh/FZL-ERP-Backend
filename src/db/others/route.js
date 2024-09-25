@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
+import { param } from 'express-validator';
 import SE, { SED } from '../../util/swagger_example.js';
 import * as otherOperations from './query/query.js';
-import { param } from 'express-validator';
 
 const otherRouter = Router();
 
@@ -994,6 +994,7 @@ const pathLabDip = {
 					'2ggcphnwHGzEUGy'
 				),
 				SE.parameter_query('info_uuid', 'info_uuid', 'false'),
+				SE.parameter_query('bleaching', 'bleaching', [1, 0]),
 			],
 			responses: {
 				200: {
@@ -1031,6 +1032,7 @@ const pathLabDip = {
 					'thread_order_info_uuid',
 					'2ggcphnwHGzEUGy'
 				),
+				SE.parameter_query('bleaching', 'bleaching', [1, 0]),
 			],
 			responses: {
 				200: {
