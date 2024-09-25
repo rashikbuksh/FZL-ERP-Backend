@@ -150,10 +150,11 @@ export async function selectAll(req, res, next) {
 			LEFT JOIN
 				zipper.view_order_description_full vodf ON dyed_tape_transaction_from_stock.order_description_uuid = vodf.order_description_uuid
 			WHERE 
-				CASE 
-					WHEN ${item} = 'nylon' THEN LOWER(item_properties.name) = 'nylon'
-					ELSE LOWER(item_properties.name) <> 'nylon'
-				END
+				${
+					item === 'nylon'
+						? sql`LOWER(item_properties.name) = 'nylon'`
+						: sql`LOWER(item_properties.name) != 'nylon'`
+				}
 			ORDER BY 
 				dyed_tape_transaction_from_stock.created_at DESC;
 	`;
@@ -162,9 +163,12 @@ export async function selectAll(req, res, next) {
 
 	try {
 		const data = await dyedTapeTransactionFromStockPromise;
+
+		console.log(data.rows);
+
 		const toast = {
 			status: 201,
-			type: 'select',
+			type: 'select_all',
 			message: 'dyed_tape_transaction_from_stock list',
 		};
 
