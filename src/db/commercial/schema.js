@@ -115,6 +115,7 @@ export const pi_cash = commercial.table('pi_cash', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	weight: PG_DECIMAL('weight').default(0),
 });
 
 export const pi_cash_entry = commercial.table('pi_cash_entry', {
@@ -128,7 +129,6 @@ export const pi_cash_entry = commercial.table('pi_cash_entry', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
-	weight: PG_DECIMAL('weight').default(0),
 	thread_order_entry_uuid: defaultUUID('thread_order_entry_uuid').references(
 		() => threadSchema.order_entry.uuid
 	),
