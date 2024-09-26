@@ -41,7 +41,7 @@ otherRouter.get(
 );
 otherRouter.get('/order/entry/value/label', otherOperations.selectOrderEntry);
 otherRouter.get(
-	'/order-number-for-pi/value/label/:marketing_uuid/:party_uuid',
+	'/order-number-for-pi-zipper/value/label/:marketing_uuid/:party_uuid',
 	otherOperations.selectOrderNumberForPi
 );
 otherRouter.get(
@@ -749,35 +749,37 @@ const pathZipper = {
 			},
 		},
 	},
-	'/other/order-number-for-pi/value/label/{marketing_uuid}/{party_uuid}': {
-		get: {
-			tags: ['others'],
-			summary: 'get order number for pi',
-			description: 'Order number for pi',
-			operationId: 'getOrderNumberForPi',
-			parameters: [
-				SE.parameter_query(
-					'marketing_uuid',
-					'marketing_uuid',
-					'2ggcphnwHGzEUGy'
-				),
-				SE.parameter_query(
-					'party_uuid',
-					'party_uuid',
-					'2ggcphnwHGzEUGy'
-				),
-				SE.parameter_query('is_cash', 'is_cash', [true, false]),
-			],
-			responses: {
-				200: {
-					description: 'Returns a order number.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									value: SE.string('2ggcphnwHGzEUGy'),
-									label: SE.string('Z24-0001'),
+	'/other/order-number-for-pi-zipper/value/label/{marketing_uuid}/{party_uuid}':
+		{
+			get: {
+				tags: ['others'],
+				summary: 'get order number for pi',
+				description: 'Order number for pi',
+				operationId: 'getOrderNumberForPi',
+				parameters: [
+					SE.parameter_query(
+						'marketing_uuid',
+						'marketing_uuid',
+						'2ggcphnwHGzEUGy'
+					),
+					SE.parameter_query(
+						'party_uuid',
+						'party_uuid',
+						'2ggcphnwHGzEUGy'
+					),
+					SE.parameter_query('is_cash', 'is_cash', [true, false]),
+				],
+				responses: {
+					200: {
+						description: 'Returns a order number.',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										value: SE.string('2ggcphnwHGzEUGy'),
+										label: SE.string('Z24-0001'),
+									},
 								},
 							},
 						},
@@ -785,7 +787,6 @@ const pathZipper = {
 				},
 			},
 		},
-	},
 	'/other/order/description/value/label': {
 		get: {
 			tags: ['others'],

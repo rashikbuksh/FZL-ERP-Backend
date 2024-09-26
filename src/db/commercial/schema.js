@@ -1,9 +1,15 @@
 import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
+import {
+	DateTime,
+	defaultUUID,
+	PG_DECIMAL,
+	uuid_primary,
+} from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
+import * as threadSchema from '../thread/schema.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const commercial = pgSchema('commercial');
@@ -17,6 +23,7 @@ export const bank = commercial.table('bank', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	routing_no: text('routing_no').default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -121,6 +128,10 @@ export const pi_cash_entry = commercial.table('pi_cash_entry', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	weight: PG_DECIMAL('weight').default(0),
+	thread_order_entry_uuid: defaultUUID('thread_order_entry_uuid').references(
+		() => threadSchema.order_entry.uuid
+	),
 });
 
 export default commercial;

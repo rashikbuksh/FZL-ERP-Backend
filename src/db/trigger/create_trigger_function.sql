@@ -142,7 +142,7 @@ FOR EACH ROW
 EXECUTE FUNCTION zipper.sfg_after_sfg_transaction_update_function();
 
 
-------------------------- SFG Commercial PI Entry Trigger ------------------------- // inserted in DB
+------------------------- SFG Commercial PI Entry Trigger ------------------------- * inserted in DB
 CREATE OR REPLACE FUNCTION commercial.sfg_after_commercial_pi_entry_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE zipper.sfg SET

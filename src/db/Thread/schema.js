@@ -13,7 +13,6 @@ import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
 import * as materialSchema from '../material/schema.js';
 import * as publicSchema from '../public/schema.js';
-import { material } from '../schema.js';
 import {
 	DateTime,
 	defaultUUID,
@@ -114,6 +113,8 @@ export const order_entry = thread.table('order_entry', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	pi: PG_DECIMAL('pi').default(0),
+	delivered: PG_DECIMAL('delivered').default(0),
 });
 
 export const thread_batch_sequence = thread.sequence('thread_batch_sequence', {
