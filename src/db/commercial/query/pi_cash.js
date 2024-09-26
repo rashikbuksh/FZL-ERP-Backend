@@ -182,17 +182,22 @@ export async function selectAll(req, res, next) {
 
 		.orderBy(desc(pi_cash.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Pi Cash list',
-	};
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await resultPromise;
+
+		data.forEach((item) => {
+			item.order_info_uuids = JSON.parse(item.order_info_uuids);
+		});
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Pi Cash list',
+		};
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -253,6 +258,11 @@ export async function select(req, res, next) {
 
 	try {
 		const data = await piPromise;
+
+		data.forEach((item) => {
+			item.order_info_uuids = JSON.parse(item.order_info_uuids);
+		});
+
 		const toast = {
 			status: 200,
 			type: 'select',
@@ -280,6 +290,11 @@ export async function selectPiDetailsByPiUuid(req, res, next) {
 			fetchData('/commercial/pi-cash'),
 			fetchData('/commercial/pi-cash-entry/by'),
 		]);
+
+		console.log(
+			typeof pi_cash.data.data.order_info_uuids,
+			'order_info_uuids'
+		);
 
 		const response = {
 			...pi_cash?.data?.data,
@@ -348,6 +363,10 @@ export async function selectPiDetailsByPiId(req, res, next) {
 			fetchData('/commercial/pi-cash'),
 			fetchData('/commercial/pi-cash-entry/by'),
 		]);
+
+		pi_cash.data.data.order_info_uuids = JSON.parse(
+			pi_cash.data.data.order_info_uuids
+		);
 
 		const response = {
 			...pi_cash?.data?.data,
@@ -497,16 +516,20 @@ export async function selectPiByLcUuid(req, res, next) {
 		.leftJoin(lc, eq(pi_cash.lc_uuid, lc.uuid))
 		.where(eq(pi_cash.lc_uuid, lc_uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Pi Cash',
-	};
+	try {
+		const data = await piPromise;
 
-	handleResponse({
-		promise: piPromise,
-		res,
-		next,
-		...toast,
-	});
+		data.forEach((item) => {
+			item.order_info_uuids = JSON.parse(item.order_info_uuids);
+		});
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Pi Cash list',
+		};
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
