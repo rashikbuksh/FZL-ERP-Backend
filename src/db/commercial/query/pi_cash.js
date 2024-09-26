@@ -291,11 +291,6 @@ export async function selectPiDetailsByPiUuid(req, res, next) {
 			fetchData('/commercial/pi-cash-entry/by'),
 		]);
 
-		console.log(
-			typeof pi_cash.data.data.order_info_uuids,
-			'order_info_uuids'
-		);
-
 		const response = {
 			...pi_cash?.data?.data,
 			pi_cash_entry: pi_cash_entry?.data?.data || [],
