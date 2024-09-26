@@ -279,7 +279,7 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
         WHERE
             toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.pi) > 0
         ORDER BY 
-            toe.id ASC,
+            toi.id ASC,
             toe.style ASC, 
             toe.color ASC
     `;
@@ -314,10 +314,8 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			.map(String)
 			.map((String) => [String]);
 
-		const fetchData = async (endpoint) => {
+		const fetchData = async (endpoint) =>
 			await api.get(`/commercial/pi-cash-entry/details/by/${endpoint}`);
-			await api.get(`/commercial/pi-cash-entry/thread-details/by/${endpoint}`);
-		};
 
 		const results = await Promise.all(
 			order_info_uuids.flat().map((uuid) => fetchData(uuid))
@@ -333,6 +331,59 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 				return [...acc, ...result?.data?.data];
 			}, []),
 		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			msg: 'Pi Details By Order Info Uuids',
+		};
+
+		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		return res.status(500).json(error);
+	}
+}
+
+export async function selectPiEntryByPiDetailsByThreadOrderInfoUuids(
+	req,
+	res,
+	next
+) {
+	try {
+		const api = await createApi(req);
+		let { order_info_uuids, party_uuid, marketing_uuid } = req?.params;
+
+		if (order_info_uuids === 'null') {
+			return res.status(400).json({ error: 'Order Number is required' });
+		}
+
+		order_info_uuids = order_info_uuids
+			.split(',')
+			.map(String)
+			.map((String) => [String]);
+
+		const fetchDataThread = async (endpoint) =>
+			await api.get(
+				`/commercial/pi-cash-entry/thread-details/by/${endpoint}`
+			);
+
+		const result2 = await Promise.all(
+			order_info_uuids.flat().map((uuid) => fetchDataThread(uuid))
+		);
+
+		order_info_uuids = order_info_uuids.flat();
+
+		const response = {
+			party_uuid,
+			marketing_uuid,
+			order_info_uuids,
+			pi_cash_entry_thread: result2?.reduce((acc, result) => {
+				console.log(result, 'result - thread_order');
+				return [...acc, ...result?.data?.data];
+			}, []),
+		};
+
+		console.log(response, 'response - thread_order');
 
 		const toast = {
 			status: 200,

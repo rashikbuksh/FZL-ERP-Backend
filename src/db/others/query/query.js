@@ -1052,7 +1052,12 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 	console.log('pi_uuid', pi_uuid);
 	let query;
 
-	if (is_cash == 'true') {
+	if (
+		is_cash == null ||
+		is_cash == undefined ||
+		is_cash == '' ||
+		is_cash == 'true'
+	) {
 		query = sql`
 		SELECT
 			DISTINCT toi.uuid AS value,
@@ -1064,7 +1069,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		WHERE
 			toi.is_cash = 1 AND
 			toi.marketing_uuid = ${marketing_uuid} AND
-			toe.party_uuid = ${party_uuid}
+			toi.party_uuid = ${party_uuid}
 	`;
 	} else {
 		query = sql`
@@ -1078,7 +1083,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		WHERE
 			toi.is_cash = 0 AND
 			toi.marketing_uuid = ${marketing_uuid} AND
-			toe.party_uuid = ${party_uuid}
+			toi.party_uuid = ${party_uuid}
 		${pi_uuid ? sql`AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql``}
 	`;
 	}

@@ -94,5 +94,9 @@ commercialRouter.get(
 	'/pi-cash/details/by/order-info-ids/:order_info_uuids/:party_uuid/:marketing_uuid',
 	piCashEntryOperations.selectPiEntryByPiDetailsByOrderInfoUuids
 );
+commercialRouter.get(
+	'/pi-cash/thread-details/by/order-info-ids/:order_info_uuids/:party_uuid/:marketing_uuid',
+	piCashEntryOperations.selectPiEntryByPiDetailsByThreadOrderInfoUuids
+);
 
 export { commercialRouter };
