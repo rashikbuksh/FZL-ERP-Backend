@@ -87,6 +87,10 @@ commercialRouter.get(
 	piCashEntryOperations.selectPiEntryByOrderInfoUuid
 );
 commercialRouter.get(
+	'/pi-cash-entry/thread-details/by/:order_info_uuid',
+	piCashEntryOperations.selectPiEntryByThreadOrderInfoUuid
+);
+commercialRouter.get(
 	'/pi-cash/details/by/order-info-ids/:order_info_uuids/:party_uuid/:marketing_uuid',
 	piCashEntryOperations.selectPiEntryByPiDetailsByOrderInfoUuids
 );

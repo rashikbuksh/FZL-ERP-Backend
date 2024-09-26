@@ -1,6 +1,6 @@
 import { is } from 'drizzle-orm';
-import SE, { SED } from '../../../util/swagger_example.js';
 import { param } from 'express-validator';
+import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Commercial Bank * //
 export const pathCommercialBank = {
@@ -845,7 +845,7 @@ export const pathCommercialPiCashEntry = {
 			},
 		},
 	},
-	'/commercial/pi-cash/details/by/order-info-ids/{order_info_uuids}/{party_uuid}/{marketing_uuid}':
+	'/commercial/pi-cash/details/by/order-info-ids/{order_info_uuids}':
 		{
 			get: {
 				tags: ['commercial.pi_cash_entry'],
@@ -886,6 +886,54 @@ export const pathCommercialPiCashEntry = {
 						pi_cash_quantity: SE.number(100),
 						balance_quantity: SE.number(100),
 						is_checked: SE.boolean(true),
+						is_thread_order: SE.boolean(false),
+					}),
+					400: SE.response(400),
+					404: SE.response(404),
+				},
+			},
+		},
+	'/commercial/pi-cash/thread-details/by/{order_info_uuids}/{party_uuid}/{marketing_uuid}':
+		{
+			get: {
+				tags: ['commercial.pi_cash_entry'],
+				summary: 'Get a pi_cash_entry by order_info_uuids',
+				description: ' Get a pi_cash_entry by order_info_uuids',
+				//operationId: "getPet",
+				produces: ['application/json'],
+				parameters: [
+					SE.parameter_params(
+						'Get data using uuid',
+						'order_info_uuids',
+						'uuid'
+					),
+					SE.parameter_params(
+						'Get data using uuid',
+						'party_uuid',
+						'uuid'
+					),
+					SE.parameter_params(
+						'Get data using uuid',
+						'marketing_uuid',
+						'uuid'
+					),
+				],
+				responses: {
+					200: SE.response_schema(200, {
+						uuid: SE.uuid(),
+						thread_order_entry_uuid: SE.uuid(),
+						order_info_uuid: SE.uuid(),
+						order_number: SE.string('Z24-0001'),
+						style: SE.string('NM-8-OE-RP'),
+						color: SE.string('Red'),
+						size: SE.number(10),
+						quantity: SE.number(100),
+						given_pi_cash_quantity: SE.number(100),
+						max_quantity: SE.number(100),
+						pi_cash_quantity: SE.number(100),
+						balance_quantity: SE.number(100),
+						is_checked: SE.boolean(true),
+						is_thread_order: SE.boolean(true),
 					}),
 					400: SE.response(400),
 					404: SE.response(404),
