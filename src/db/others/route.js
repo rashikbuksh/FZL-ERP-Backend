@@ -757,12 +757,12 @@ const pathZipper = {
 				description: 'Order number for pi',
 				operationId: 'getOrderNumberForPi',
 				parameters: [
-					SE.parameter_query(
+					SE.parameter_params(
 						'marketing_uuid',
 						'marketing_uuid',
 						'2ggcphnwHGzEUGy'
 					),
-					SE.parameter_query(
+					SE.parameter_params(
 						'party_uuid',
 						'party_uuid',
 						'2ggcphnwHGzEUGy'
