@@ -347,6 +347,7 @@ export const batch = zipper.table('batch', {
 		() => publicSchema.machine.uuid
 	),
 	slot: integer('slot').default(0),
+	received: integer('received').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

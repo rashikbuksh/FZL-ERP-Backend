@@ -277,6 +277,7 @@ export const def_zipper_batch = SED({
 		uuid: SE.uuid(),
 		machine_uuid: SE.uuid(),
 		slot: SE.number(),
+		received: SE.number(),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
