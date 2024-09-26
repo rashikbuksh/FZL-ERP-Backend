@@ -1042,6 +1042,64 @@ export async function selectDieCastingUsingType(req, res, next) {
 
 // * Thread *//
 
+// Order Info
+
+export async function selectOrderNumberForPiThread(req, res, next) {
+	const { marketing_uuid, party_uuid } = req.params;
+	const { is_cash, pi_uuid } = req.query;
+
+	console.log('is_cash', is_cash);
+	console.log('pi_uuid', pi_uuid);
+	let query;
+
+	if (is_cash == 'true') {
+		query = sql`
+		SELECT
+			DISTINCT toi.uuid AS value,
+			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label
+		FROM
+			thread.order_info toi
+		LEFT JOIN
+			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+		WHERE
+			toi.is_cash = 1 AND
+			toi.marketing_uuid = ${marketing_uuid} AND
+			toe.party_uuid = ${party_uuid}
+	`;
+	} else {
+		query = sql`
+		SELECT
+			DISTINCT toi.uuid AS value,
+			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label
+		FROM
+			thread.order_info toi
+		LEFT JOIN
+			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+		WHERE
+			toi.is_cash = 0 AND
+			toi.marketing_uuid = ${marketing_uuid} AND
+			toe.party_uuid = ${party_uuid}
+		${pi_uuid ? sql`AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql``}
+	`;
+	}
+
+	const orderInfoPromise = db.execute(query);
+
+	try {
+		const data = await orderInfoPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Thread Order Info list',
+		};
+
+		res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 // Count Length
 
 export async function selectCountLength(req, res, next) {

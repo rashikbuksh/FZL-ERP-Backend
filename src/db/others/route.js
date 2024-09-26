@@ -113,6 +113,12 @@ otherRouter.get(
 
 // * Thread
 
+// order info
+otherRouter.get(
+	'/order-number-for-pi-thread/value/label/:party_uuid/:marketing_uuid',
+	otherOperations.selectOrderNumberForPiThread
+);
+
 //count-length
 otherRouter.get(
 	'/thread/count-length/value/label',
@@ -1148,6 +1154,42 @@ const pathSlider = {
 };
 
 const pathThread = {
+	'/other/order-number-for-pi-thread/value/label/{marketing_uuid}/{party_uuid}': {
+		get: {
+			tags: ['others'],
+			summary: 'get all thread order info',
+			description: 'All thread order info',
+			operationId: 'getAllThreadOrderInfo',
+			parameters: [
+				SE.parameter_params(
+					'marketing_uuid',
+					'marketing_uuid',
+					'2ggcphnwHGzEUGy'
+				),
+				SE.parameter_params(
+					'party_uuid',
+					'party_uuid',
+					'2ggcphnwHGzEUGy'
+				),
+			],
+			responses: {
+				200: {
+					description: 'Returns a all thread order info.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('TO24-0001'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 	'/other/thread/count-length/value/label': {
 		get: {
 			tags: ['others'],
