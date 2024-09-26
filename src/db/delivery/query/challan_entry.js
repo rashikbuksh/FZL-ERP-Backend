@@ -201,22 +201,22 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 				challan_entry.packing_list_uuid,
 				challan_entry.created_at,
 				challan_entry.updated_at,
-				array_agg(DISTINCT vpl.packing_number) as packing_numbers,
-				array_agg(DISTINCT vpl.packing_list_entry_uuid) as packing_list_entry_uuids,
-				array_agg(DISTINCT vpl.sfg_uuid) as sfg_uuids,
-				array_agg(DISTINCT vpl.quantity) as quantities,
-				array_agg(DISTINCT vpl.short_quantity) as short_quantities,
-				array_agg(DISTINCT vpl.reject_quantity) as reject_quantities,
-				array_agg(DISTINCT vpl.remarks) as remarks,
-				array_agg(DISTINCT vpl.order_info_uuid) as order_info_uuids,
-				array_agg(DISTINCT vpl.order_number) as order_numbers,
-				array_agg(DISTINCT vpl.item_description) as item_descriptions,
-				array_agg(DISTINCT vpl.order_description_uuid) as order_description_uuids,
-				array_agg(DISTINCT vpl.style_color_size) as style_color_sizes,
-				array_agg(DISTINCT vpl.order_quantity) as order_quantities,
-				array_agg(DISTINCT vpl.warehouse) as warehouses,
-				array_agg(DISTINCT vpl.delivered) as delivered,
-				array_agg(DISTINCT vpl.balance_quantity) as balance_quantities
+				vpl.packing_number,
+				vpl.packing_list_entry_uuid,
+				vpl.sfg_uuid,
+				vpl.quantity,
+				vpl.short_quantity,
+				vpl.reject_quantity,
+				vpl.remarks,
+				vpl.order_info_uuid,
+				vpl.order_number,
+				vpl.item_description,
+				vpl.order_description_uuid,
+				vpl.style_color_size,
+				vpl.order_quantity,
+				vpl.warehouse,
+				vpl.delivered,
+				vpl.balance_quantity
 			FROM 
 				delivery.challan_entry
 			LEFT JOIN 
@@ -228,17 +228,7 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 			LEFT JOIN
 				hr.users created_by_user ON challan.created_by = created_by_user.uuid
 			WHERE 
-				challan_entry.challan_uuid = ${req.params.challan_uuid}
-			GROUP BY 
-				challan_entry.uuid,
-				challan_entry.challan_uuid,
-				challan.assign_to,
-				assign_to_user.name,
-				challan.created_by,
-				created_by_user.name,
-				challan_entry.packing_list_uuid,
-				challan_entry.created_at,
-				challan_entry.updated_at;
+				challan_entry.challan_uuid = ${req.params.challan_uuid} AND vpl.challan_uuid IS NOT NULL;
 		`;
 
 	const challan_entryPromise = db.execute(query);
