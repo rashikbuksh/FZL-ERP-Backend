@@ -81,6 +81,7 @@ export async function selectAll(req, res, next) {
 			uuid: pi_cash_entry.uuid,
 			pi_cash_uuid: pi_cash_entry.pi_cash_uuid,
 			sfg_uuid: pi_cash_entry.sfg_uuid,
+			thread_order_entry_uuid: pi_cash_entry.thread_order_entry_uuid,
 			pi_cash_quantity: pi_cash_entry.pi_cash_quantity,
 			created_at: pi_cash_entry.created_at,
 			updated_at: pi_cash_entry.updated_at,
@@ -110,6 +111,7 @@ export async function select(req, res, next) {
 			uuid: pi_cash_entry.uuid,
 			pi_cash_uuid: pi_cash_entry.pi_cash_uuid,
 			sfg_uuid: pi_cash_entry.sfg_uuid,
+			thread_order_entry_uuid: pi_cash_entry.thread_order_entry_uuid,
 			pi_cash_quantity: pi_cash_entry.pi_cash_quantity,
 			created_at: pi_cash_entry.created_at,
 			updated_at: pi_cash_entry.updated_at,
@@ -134,7 +136,6 @@ export async function select(req, res, next) {
 
 export async function selectPiEntryByPiUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
 
 	try {
 		const query = sql`
