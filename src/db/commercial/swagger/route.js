@@ -123,6 +123,7 @@ export const pathCommercialLc = {
 					amd_count: SE.integer(1),
 					problematical: SE.integer(1),
 					epz: SE.integer(1),
+					is_rtgs: SE.integer(1),
 					created_by: SE.uuid('igD0v9DIJQhJeet'),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -188,6 +189,7 @@ export const pathCommercialLc = {
 					amd_count: SE.integer(1),
 					problematical: SE.integer(1),
 					epz: SE.integer(1),
+					is_rtgs: SE.integer(1),
 					created_by: SE.uuid('igD0v9DIJQhJeet'),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -233,7 +235,7 @@ export const pathCommercialLc = {
 			},
 		},
 	},
-	'/commercial/lc-pi/by/{lc_uuid}': {
+	'/commercial/lc-pi-cash/by/{lc_uuid}': {
 		get: {
 			tags: ['commercial.lc'],
 			summary: 'Get a lc by lc_uuid',
@@ -274,12 +276,13 @@ export const pathCommercialLc = {
 					amd_count: SE.integer(1),
 					problematical: SE.integer(1),
 					epz: SE.integer(1),
+					is_rtgs: SE.integer(1),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
 					update_at: SE.date_time(),
 					remarks: SE.string('remarks'),
-					pi: SE.sub_response_schema({
+					pi_cash: SE.sub_response_schema({
 						uuid: SE.uuid(),
 						id: SE.string('PI24-0001'),
 						lc_uuid: SE.uuid(),

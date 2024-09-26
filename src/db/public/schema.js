@@ -7,6 +7,7 @@ import {
 } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
+import { add } from 'winston';
 
 export const buyer = pgTable('buyer', {
 	uuid: uuid_primary,
@@ -22,6 +23,7 @@ export const party = pgTable('party', {
 	uuid: uuid_primary,
 	name: text('name').notNull().unique(),
 	short_name: text('short_name').notNull(),
+	address: text('address').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

@@ -27,7 +27,10 @@ commercialRouter.get('/lc/:uuid', lcOperations.select);
 commercialRouter.post('/lc', lcOperations.insert);
 commercialRouter.put('/lc/:uuid', lcOperations.update);
 commercialRouter.delete('/lc/:uuid', lcOperations.remove);
-commercialRouter.get('/lc-pi/by/:lc_uuid', lcOperations.selectLcPiByLcUuid);
+commercialRouter.get(
+	'/lc-pi-cash/by/:lc_uuid',
+	lcOperations.selectLcPiByLcUuid
+);
 commercialRouter.get(
 	'/lc/by/lc-number/:lc_number',
 	lcOperations.selectLcByLcNumber
