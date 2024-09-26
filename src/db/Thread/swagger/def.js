@@ -79,6 +79,7 @@ export const defThreadOrderInfo = {
 		'buyer_uuid',
 		'is_sample',
 		'is_bill',
+		'is_cash',
 		'delivery_date',
 		'created_by',
 		'created_at',
@@ -120,6 +121,10 @@ export const defThreadOrderInfo = {
 		is_bill: {
 			type: 'string',
 			example: 'Bill',
+		},
+		is_cash: {
+			type: 'number',
+			example: 0,
 		},
 		delivery_date: {
 			type: 'string',
