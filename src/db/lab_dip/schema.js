@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as materialSchema from '../material/schema.js';
-import * as threadSchema from '../Thread/schema.js';
+import * as threadSchema from '../thread/schema.js';
 import {
 	DateTime,
 	defaultUUID,
