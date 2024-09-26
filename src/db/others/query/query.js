@@ -499,6 +499,9 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 
 export async function selectOrderNumberForPi(req, res, next) {
 	const is_cash = req.query.is_cash === 'true';
+
+	const pi_uuid = req.query.pi_uuid;
+
 	let query;
 
 	if (is_cash) {
@@ -519,7 +522,6 @@ export async function selectOrderNumberForPi(req, res, next) {
 	} else {
 		query = sql`
 	SELECT
-
 		DISTINCT vod.order_info_uuid AS value,
 		vod.order_number AS label
 	FROM
@@ -529,6 +531,7 @@ export async function selectOrderNumberForPi(req, res, next) {
 		vod.is_cash = 0 AND
 		vod.marketing_uuid = ${req.params.marketing_uuid} AND
 		oi.party_uuid = ${req.params.party_uuid}
+		${pi_uuid ? sql`AND vod.order_info_uuid NOT IN (SELECT order_info_uuid FROM commercial.pi_cash_entry WHERE pi_cash_uuid = ${pi_uuid})` : sql``}
 	ORDER BY
 		vod.order_number ASC
 `;
