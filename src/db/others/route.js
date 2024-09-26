@@ -768,6 +768,7 @@ const pathZipper = {
 						'2ggcphnwHGzEUGy'
 					),
 					SE.parameter_query('is_cash', 'is_cash', [true, false]),
+					SE.parameter_query('pi_uuid', 'pi_uuid', '2ggcphnwHGzEUGy'),
 				],
 				responses: {
 					200: {
