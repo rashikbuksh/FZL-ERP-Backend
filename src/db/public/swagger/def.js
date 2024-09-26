@@ -17,6 +17,7 @@ export const defPublicParty = SED({
 		uuid: SE.uuid(),
 		name: SE.string('John Doe'),
 		short_name: SE.string('JD'),
+		address: SE.string('Address'),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		created_by: SE.uuid(),

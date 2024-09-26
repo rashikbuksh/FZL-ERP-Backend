@@ -500,7 +500,7 @@ export async function selectPiByLcUuid(req, res, next) {
 	const toast = {
 		status: 200,
 		type: 'select',
-		message: 'Pi',
+		message: 'Pi Cash',
 	};
 
 	handleResponse({
