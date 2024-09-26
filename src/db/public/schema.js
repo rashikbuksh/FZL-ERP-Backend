@@ -7,7 +7,6 @@ import {
 } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
-import { add } from 'winston';
 
 export const buyer = pgTable('buyer', {
 	uuid: uuid_primary,

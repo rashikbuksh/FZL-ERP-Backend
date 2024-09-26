@@ -499,16 +499,19 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 
 export async function selectOrderNumberForPi(req, res, next) {
 	const is_cash = req.query.is_cash;
-
-	if (is_cash == null || is_cash == undefined || is_cash == '') {
-		is_cash = 'true';
-	}
-
 	const pi_uuid = req.query.pi_uuid;
+
+	console.log('is_cash', is_cash);
+	console.log('pi_uuid', pi_uuid);
 
 	let query;
 
-	if (is_cash == 'true') {
+	if (
+		is_cash == null ||
+		is_cash == undefined ||
+		is_cash == '' ||
+		is_cash == 'true'
+	) {
 		query = sql`
 	SELECT
 		DISTINCT vod.order_info_uuid AS value,
