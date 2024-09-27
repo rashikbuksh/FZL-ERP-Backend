@@ -352,7 +352,7 @@ export async function selectOrderDescription(req, res, next) {
 					tcr.top,
 					tcr.bottom,
 					tape_coil.dyed_per_kg_meter,
-					batch_stock.stock
+					coalesce(batch_stock.stock,0) as stock
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN 
@@ -370,7 +370,7 @@ export async function selectOrderDescription(req, res, next) {
 						LEFT JOIN zipper.sfg ON oe.uuid = sfg.order_entry_uuid
 						LEFT JOIN zipper.batch_entry be ON be.sfg_uuid = sfg.uuid
 						LEFT JOIN zipper.batch b ON b.uuid = be.batch_uuid
-					WHERE b.batch_status = 'completed'
+					WHERE b.received = 1
 					GROUP BY oe.order_description_uuid
 				) batch_stock ON vodf.order_description_uuid = batch_stock.order_description_uuid
 				WHERE 
