@@ -190,6 +190,9 @@ export async function selectAll(req, res, next) {
 
 		data.forEach((item) => {
 			item.order_info_uuids = JSON.parse(item.order_info_uuids);
+			item.thread_order_info_uuids = JSON.parse(
+				item.thread_order_info_uuids
+			);
 		});
 
 		const toast = {
@@ -265,6 +268,9 @@ export async function select(req, res, next) {
 
 		data.forEach((item) => {
 			item.order_info_uuids = JSON.parse(item.order_info_uuids);
+			item.thread_order_info_uuids = JSON.parse(
+				item.thread_order_info_uuids
+			);
 		});
 
 		const toast = {

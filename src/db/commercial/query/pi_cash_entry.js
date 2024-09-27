@@ -160,7 +160,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price ELSE toe.party_price END as unit_price,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi ELSE toe.pi END as given_pi_cash_quantity,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (pe.pi_cash_quantity * oe.party_price) ELSE (pe.pi_cash_quantity * toe.party_price) END as value,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.quantity - sfg.pi) ELSE (toi.quantity - toe.pi) END as balance_quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.quantity - sfg.pi) ELSE (toe.quantity - toe.pi) END as balance_quantity,
 					pe.thread_order_entry_uuid as thread_order_entry_uuid,
 					toe.count_length_uuid as count_length_uuid,
 					CONCAT(count_length.count,' ', count_length.length) as count_length_name,
