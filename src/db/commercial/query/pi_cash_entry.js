@@ -361,18 +361,18 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 		// );
 
 		console.log(pi_cash_entry, 'pi_cash_entry');
-		console.log(pi_cash_entry_thread, 'pi_cash_entry_thread');
+		// console.log(pi_cash_entry_thread, 'pi_cash_entry_thread');
 
 		// Check if both pi_cash_entry and pi_cash_entry_thread are undefined
-		const allUndefined =
-			pi_cash_entry.every((entry) => entry === undefined) &&
-			pi_cash_entry_thread.every((entry) => entry === undefined);
+		// const allUndefined =
+		// 	pi_cash_entry.every((entry) => entry === undefined) &&
+		// 	pi_cash_entry_thread.every((entry) => entry === undefined);
 
-		if (allUndefined) {
-			throw new Error(
-				'Both pi_cash_entry and pi_cash_entry_thread are undefined'
-			);
-		}
+		// if (allUndefined) {
+		// 	throw new Error(
+		// 		'Both pi_cash_entry and pi_cash_entry_thread are undefined'
+		// 	);
+		// }
 
 		order_info_uuids = order_info_uuids.flat();
 
