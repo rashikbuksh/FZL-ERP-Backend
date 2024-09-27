@@ -1,3 +1,4 @@
+-- * Inserted 
 CREATE OR REPLACE FUNCTION delivery.packing_list_after_challan_entry_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     -- Update delivery,packing_list

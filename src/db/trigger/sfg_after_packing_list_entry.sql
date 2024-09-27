@@ -1,3 +1,4 @@
+-- * Inserted 
 CREATE OR REPLACE FUNCTION delivery.sfg_after_packing_list_entry_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     -- Update zipper,sfg
