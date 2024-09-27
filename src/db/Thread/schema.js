@@ -116,6 +116,12 @@ export const order_entry = thread.table('order_entry', {
 	remarks: text('remarks').default(null),
 	pi: PG_DECIMAL('pi').default(0),
 	delivered: PG_DECIMAL('delivered').default(0),
+	warehouse: PG_DECIMAL('warehouse').default(0),
+	short_quantity: PG_DECIMAL('short_quantity').default(0),
+	reject_quantity: PG_DECIMAL('reject_quantity').default(0),
+	production_quantity_in_kg: PG_DECIMAL('production_quantity_in_kg').default(
+		0
+	),
 });
 
 export const thread_batch_sequence = thread.sequence('thread_batch_sequence', {

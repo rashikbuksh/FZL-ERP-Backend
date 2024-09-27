@@ -174,6 +174,12 @@ export const defThreadOrderEntry = {
 		'bleaching',
 		'created_by',
 		'created_at',
+		'pi',
+		'delivered',
+		'warehouse',
+		'short_quantity',
+		'reject_quantity',
+		'production_quantity_in_kg',
 	],
 
 	properties: {
@@ -255,6 +261,30 @@ export const defThreadOrderEntry = {
 		remarks: {
 			type: 'string',
 			example: 'Remarks',
+		},
+		pi: {
+			type: 'number',
+			example: 10.0,
+		},
+		delivered: {
+			type: 'number',
+			example: 10.0,
+		},
+		warehouse: {
+			type: 'number',
+			example: 10.0,
+		},
+		short_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		reject_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		production_quantity_in_kg: {
+			type: 'number',
+			example: 10.0,
 		},
 	},
 	xml: {

@@ -433,6 +433,38 @@ export const pathThreadBatchEntry = {
 			},
 		},
 	},
+	'/thread/batch-entry-details': {
+		get: {
+			tags: ['thread.batch_entry'],
+			summary: 'Get Batch Entry Details',
+			description: 'Get Batch Entry Details',
+			produces: ['application/json'],
+			responses: {
+				200: SE.response_schema(200, {
+					batch_entry_uuid: SE.uuid(),
+					batch_uuid: SE.uuid(),
+					batch_number: SE.string('TB24-0001'),
+					order_entry_uuid: SE.uuid(),
+					order_number: SE.string('TO24-0001'),
+					color: SE.string('black'),
+					po: SE.string('po 1'),
+					style: SE.string('style 1'),
+					bleaching: SE.string('bleaching'),
+					count_length_uuid: SE.uuid(),
+					count_length: SE.string('40/2'),
+					batch_quantity: SE.number(10),
+					quantity: SE.integer(10),
+					coning_production_quantity: SE.integer(10),
+					coning_production_quantity_in_kg: SE.integer(10),
+					transfer_quantity: SE.integer(10),
+					balance_quantity: SE.integer(10),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+	},
 };
 
 // * Thread Batch * //

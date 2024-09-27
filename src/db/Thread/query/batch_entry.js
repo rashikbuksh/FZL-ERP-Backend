@@ -260,3 +260,59 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function getBatchEntryDetails(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+	WITH calculated_balance AS (SELECT 
+		be.uuid as batch_entry_uuid,
+		be.batch_uuid,
+		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
+		be.order_entry_uuid, 
+		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+	    oe.color as color,
+		oe.po as po,
+		oe.style as style,
+		oe.bleaching as bleaching,
+		oe.count_length_uuid as count_length_uuid,
+		CONCAT(cl.count, '/', cl.length) as count_length,
+		be.quantity as batch_quantity,
+		be.coning_production_quantity,
+		be.coning_production_quantity_in_kg,
+		be.transfer_quantity as transfer_quantity,
+		(oe.quantity -oe.delivered - oe.warehouse) as balance_quantity,
+		be.created_at,
+		be.updated_at,
+		be.remarks as batch_remarks
+	FROM
+		thread.batch_entry be
+	LEFT JOIN 
+		thread.order_entry oe ON be.order_entry_uuid = oe.uuid
+	LEFT JOIN
+		thread.count_length cl ON oe.count_length_uuid = cl.uuid
+	LEFT JOIN 
+		thread.order_info ON oe.order_info_uuid = order_info.uuid
+	LEFT JOIN
+		thread.batch ON be.batch_uuid = batch.uuid
+)
+	SELECT * FROM calculated_balance
+WHERE balance_quantity > 0;
+	`;
+
+	const resultPromise = db.execute(query);
+	try {
+		const data = await resultPromise;
+		const batch_entry_details = { batch_entry: data?.rows };
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'batch_entry_details list',
+		};
+
+		return await res.status(200).json({ toast, data: batch_entry_details });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
