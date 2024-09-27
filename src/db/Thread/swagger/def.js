@@ -555,6 +555,106 @@ export const defThreadPrograms = {
 	},
 };
 
+export const defThreadBatchEntryProduction = {
+	type: 'object',
+	required: [
+		'uuid',
+		'batch_entry_uuid',
+		'production_quantity',
+		'production_quantity_in_kg',
+		'created_by',
+		'created_at',
+	],
+
+	properties: {
+		uuid: SE.uuid(),
+		batch_entry_uuid: SE.uuid(),
+		production_quantity: SE.number(10),
+		production_quantity_in_kg: SE.number(10),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: {
+		name: 'Thread/BatchEntryProduction',
+	},
+};
+
+export const defThreadBatchEntryTrx = {
+	type: 'object',
+	required: [
+		'uuid',
+		'batch_entry_uuid',
+		'quantity',
+		'created_by',
+		'created_at',
+	],
+
+	properties: {
+		uuid: SE.uuid(),
+		batch_entry_uuid: SE.uuid(),
+		quantity: SE.number(10),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: {
+		name: 'Thread/BatchEntryTrx',
+	},
+};
+
+export const defThreadChallan = {
+	type: 'object',
+	required: [
+		'uuid',
+		'order_info_uuid',
+		'carton_quantity',
+		'created_by',
+		'created_at',
+	],
+
+	properties: {
+		uuid: SE.uuid(),
+		order_info_uuid: SE.uuid(),
+		carton_quantity: SE.number(10),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: {
+		name: 'Thread/Challan',
+	},
+};
+
+export const defThreadChallanEntry = {
+	type: 'object',
+	required: [
+		'uuid',
+		'challan_uuid',
+		'order_entry_uuid',
+		'quantity',
+		'created_by',
+		'created_at',
+	],
+
+	properties: {
+		uuid: SE.uuid(),
+		challan_uuid: SE.uuid(),
+		order_entry_uuid: SE.uuid(),
+		quantity: SE.number(10),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: {
+		name: 'Thread/ChallanEntry',
+	},
+};
+
 // * Marge All
 
 export const defThread = {
@@ -565,6 +665,10 @@ export const defThread = {
 	batch_entry: defThreadBatchEntry,
 	dyes_category: defThreadDyesCategory,
 	programs: defThreadPrograms,
+	batch_entry_production: defThreadBatchEntryProduction,
+	batch_entry_trx: defThreadBatchEntryTrx,
+	challan: defThreadChallan,
+	challan_entry: defThreadChallanEntry,
 };
 
 // * Tag
@@ -596,5 +700,21 @@ export const tagThread = [
 	{
 		name: 'thread.programs',
 		description: 'Thread Programs',
+	},
+	{
+		name: 'thread.batch_entry_production',
+		description: 'Thread Batch Entry Production',
+	},
+	{
+		name: 'thread.batch_entry_trx',
+		description: 'Thread Batch Entry Trx',
+	},
+	{
+		name: 'thread.challan',
+		description: 'Thread Challan',
+	},
+	{
+		name: 'thread.challan_entry',
+		description: 'Thread Challan Entry',
 	},
 ];
