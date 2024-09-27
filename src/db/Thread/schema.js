@@ -226,3 +226,55 @@ export const programs = thread.table('programs', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
+
+export const batch_entry_production = thread.table('batch_entry_production', {
+	uuid: uuid_primary,
+	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
+		() => batch_entry.uuid
+	),
+	production_quantity: PG_DECIMAL('production_quantity').notNull(),
+	production_quantity_in_kg: PG_DECIMAL(
+		'production_quantity_in_kg'
+	).notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const batch_entry_trx = thread.table('batch_entry_trx', {
+	uuid: uuid_primary,
+	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
+		() => batch_entry.uuid
+	),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const challan = thread.table('challan', {
+	uuid: uuid_primary,
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => order_info.uuid
+	),
+	carton_quantity: integer('carton_quantity').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const challan_entry = thread.table('challan_entry', {
+	uuid: uuid_primary,
+	challan_uuid: defaultUUID('challan_uuid').references(() => challan.uuid),
+	order_entry_uuid: defaultUUID('order_entry_uuid').references(
+		() => order_entry.uuid
+	),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
