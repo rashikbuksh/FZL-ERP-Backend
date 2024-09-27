@@ -301,8 +301,6 @@ export async function selectPiDetailsByPiUuid(req, res, next) {
 			fetchData('/commercial/pi-cash-entry/by'),
 		]);
 
-		const emptyArray = null;
-
 		const pi_cash_entry_thread = pi_cash_entry?.data?.data.filter(
 			(fields) => fields.is_thread_order == true
 		);
@@ -379,13 +377,17 @@ export async function selectPiDetailsByPiId(req, res, next) {
 			fetchData('/commercial/pi-cash-entry/by'),
 		]);
 
-		pi_cash.data.data.order_info_uuids = JSON.parse(
-			pi_cash.data.data.order_info_uuids
+		const pi_cash_entry_thread = pi_cash_entry?.data?.data.filter(
+			(fields) => fields.is_thread_order == true
+		);
+		const zipper_pi_entry = pi_cash_entry?.data?.data.filter(
+			(fields) => fields.is_thread_order == false
 		);
 
 		const response = {
 			...pi_cash?.data?.data,
-			pi_cash_entry: pi_cash_entry?.data?.data || [],
+			pi_cash_entry: zipper_pi_entry || [],
+			pi_cash_entry_thread: pi_cash_entry_thread || [],
 		};
 
 		const toast = {
