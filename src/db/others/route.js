@@ -820,11 +820,18 @@ const pathZipper = {
 								type: 'object',
 								properties: {
 									value: SE.string('2ggcphnwHGzEUGy'),
-									label: SE.string('Z24-0001'),
+									label: SE.string(
+										'Z24-0001 ⇾ N-5-OE-SP ⇾ 10'
+									),
 									item_name: SE.string('Nylon'),
 									tape_received: SE.number(10),
 									tape_transferred: SE.number(10),
-									colors: SE.string('[black, white]'),
+									total_size: SE.number(10),
+									total_quantity: SE.number(10),
+									top: SE.number(10),
+									bottom: SE.number(10),
+									dyed_per_kg_meter: SE.number(10),
+									stock: SE.number(10),
 								},
 							},
 						},
@@ -1154,34 +1161,36 @@ const pathSlider = {
 };
 
 const pathThread = {
-	'/other/order-number-for-pi-thread/value/label/{marketing_uuid}/{party_uuid}': {
-		get: {
-			tags: ['others'],
-			summary: 'get all thread order info',
-			description: 'All thread order info',
-			operationId: 'getAllThreadOrderInfo',
-			parameters: [
-				SE.parameter_params(
-					'marketing_uuid',
-					'marketing_uuid',
-					'2ggcphnwHGzEUGy'
-				),
-				SE.parameter_params(
-					'party_uuid',
-					'party_uuid',
-					'2ggcphnwHGzEUGy'
-				),
-			],
-			responses: {
-				200: {
-					description: 'Returns a all thread order info.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									value: SE.uuid(),
-									label: SE.string('TO24-0001'),
+	'/other/order-number-for-pi-thread/value/label/{marketing_uuid}/{party_uuid}':
+		{
+			get: {
+				tags: ['others'],
+				summary: 'get all thread order info',
+				description: 'All thread order info',
+				operationId: 'getAllThreadOrderInfo',
+				parameters: [
+					SE.parameter_params(
+						'marketing_uuid',
+						'marketing_uuid',
+						'2ggcphnwHGzEUGy'
+					),
+					SE.parameter_params(
+						'party_uuid',
+						'party_uuid',
+						'2ggcphnwHGzEUGy'
+					),
+				],
+				responses: {
+					200: {
+						description: 'Returns a all thread order info.',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										value: SE.uuid(),
+										label: SE.string('TO24-0001'),
+									},
 								},
 							},
 						},
@@ -1189,7 +1198,6 @@ const pathThread = {
 				},
 			},
 		},
-	},
 	'/other/thread/count-length/value/label': {
 		get: {
 			tags: ['others'],

@@ -351,7 +351,8 @@ export async function selectOrderDescription(req, res, next) {
 					totals_of_oe.total_quantity,
 					tcr.top,
 					tcr.bottom,
-					tape_coil.dyed_per_kg_meter
+					tape_coil.dyed_per_kg_meter,
+					batch_stock.stock
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN 
@@ -363,18 +364,23 @@ export async function selectOrderDescription(req, res, next) {
 					) AS totals_of_oe ON totals_of_oe.order_description_uuid = vodf.order_description_uuid 
 				LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid AND vodf.zipper_number = tcr.zipper_number_uuid AND vodf.end_type = tcr.end_type_uuid
 				LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
+				LEFT JOIN (
+					SELECT oe.order_description_uuid, SUM(be.production_quantity_in_kg) as stock
+					FROM zipper.order_entry oe
+						LEFT JOIN zipper.sfg ON oe.uuid = sfg.order_entry_uuid
+						LEFT JOIN zipper.batch_entry be ON be.sfg_uuid = sfg.uuid
+						LEFT JOIN zipper.batch b ON b.uuid = be.batch_uuid
+					WHERE b.batch_status = 'completed'
+					GROUP BY oe.order_description_uuid
+				) batch_stock ON vodf.order_description_uuid = batch_stock.order_description_uuid
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != '' AND tape_coil.dyed_per_kg_meter IS NOT NULL AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END
 				`;
 
 	if (item == 'nylon') {
-		query.append(
-			sql` AND LOWER(vodf.item_name) = 'nylon plastic' AND LOWER(vodf.item_name) = 'nylon metallic'`
-		);
+		query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`);
 	} else if (item == 'without-nylon') {
-		query.append(
-			sql` AND LOWER(vodf.item_name) != 'nylon plastic' AND LOWER(vodf.item_name) != 'nylon metallic'`
-		);
+		query.append(sql` AND LOWER(vodf.item_name) != 'nylon'`);
 	}
 
 	if (tape_received == 'true') {
@@ -513,34 +519,34 @@ export async function selectOrderNumberForPi(req, res, next) {
 		is_cash == 'true'
 	) {
 		query = sql`
-	SELECT
-		DISTINCT vod.order_info_uuid AS value,
-		vod.order_number AS label
-	FROM
-		zipper.v_order_details vod
-		LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
-	WHERE
-		vod.is_cash = 1 AND
-		vod.marketing_uuid = ${req.params.marketing_uuid} AND
-		oi.party_uuid = ${req.params.party_uuid}
-	ORDER BY
-		vod.order_number ASC
+			SELECT
+				DISTINCT vod.order_info_uuid AS value,
+				vod.order_number AS label
+			FROM
+				zipper.v_order_details vod
+				LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
+			WHERE
+				vod.is_cash = 1 AND
+				vod.marketing_uuid = ${req.params.marketing_uuid} AND
+				oi.party_uuid = ${req.params.party_uuid}
+			ORDER BY
+				vod.order_number ASC
 `;
 	} else {
 		query = sql`
-	SELECT
-		DISTINCT vod.order_info_uuid AS value,
-		vod.order_number AS label
-	FROM
-		zipper.v_order_details vod
-		LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
-	WHERE
-		vod.is_cash = 0 AND
-		vod.marketing_uuid = ${req.params.marketing_uuid} AND
-		oi.party_uuid = ${req.params.party_uuid}
-		${pi_uuid ? sql`AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql``}
-	ORDER BY
-		vod.order_number ASC`;
+			SELECT
+				DISTINCT vod.order_info_uuid AS value,
+				vod.order_number AS label
+			FROM
+				zipper.v_order_details vod
+				LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
+			WHERE
+				vod.is_cash = 0 AND
+				vod.marketing_uuid = ${req.params.marketing_uuid} AND
+				oi.party_uuid = ${req.params.party_uuid}
+				${pi_uuid ? sql`AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql``}
+			ORDER BY
+				vod.order_number ASC`;
 	}
 
 	const orderNumberPromise = db.execute(query);
