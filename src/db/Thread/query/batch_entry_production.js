@@ -1,4 +1,4 @@
-import { eq, desc, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -163,6 +163,7 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		be.coning_production_quantity,
 		be.coning_production_quantity_in_kg,
 		be.transfer_quantity as transfer_quantity,
+		(be.quantity - be.coning_production_quantity) as coning_balance_quantity,
 		(be.quantity - be.transfer_quantity) as balance_quantity,
 		bep.created_by,
 		users.name as created_by_name,
