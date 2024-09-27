@@ -291,9 +291,21 @@ export async function selectPiDetailsByPiUuid(req, res, next) {
 			fetchData('/commercial/pi-cash-entry/by'),
 		]);
 
+		const emptyArray = '';
+
+		const pi_cash_entry_thread = pi_cash_entry?.data?.data.map((fields) => {
+			return fields.is_thread_order == true ? fields : emptyArray;
+		});
+		const zipper_pi_entry = pi_cash_entry?.data?.data.map((fields) => {
+			return fields.is_thread_order == false ? fields : emptyArray;
+		});
+
 		const response = {
 			...pi_cash?.data?.data,
-			pi_cash_entry: pi_cash_entry?.data?.data || [],
+			pi_cash_entry:
+				zipper_pi_entry.length != emptyArray ? zipper_pi_entry : [],
+			pi_cash_entry_thread:
+				pi_cash_entry_thread != emptyArray ? pi_cash_entry_thread : [],
 		};
 
 		const toast = {

@@ -486,7 +486,11 @@ export const pathCommercialPiCash = {
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('Get data using uuid', 'pi_uuid', 'uuid'),
+				SE.parameter_params(
+					'Get data using uuid',
+					'pi_cash_uuid',
+					'uuid'
+				),
 			],
 			responses: {
 				200: SE.response_schema('200', {
@@ -786,7 +790,11 @@ export const pathCommercialPiCashEntry = {
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('Get data using uuid', 'pi_uuid', 'uuid'),
+				SE.parameter_params(
+					'Get data using uuid',
+					'pi_cash_uuid',
+					'uuid'
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {

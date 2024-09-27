@@ -192,6 +192,17 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 		const pi_entryPromise = db.execute(query);
 
 		const data = await pi_entryPromise;
+
+		// fg_uuid is null then pass thread_order_entry array
+		const thread_order_entry = data?.rows.filter(
+			(row) => row.sfg_uuid === null
+		);
+
+		// fg_uuid is not null then pass zipper_order_entry array
+		const zipper_order_entry = data?.rows.filter(
+			(row) => row.sfg_uuid !== null
+		);
+
 		const toast = {
 			status: 200,
 			type: 'select',
@@ -332,10 +343,10 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			order_info_uuids.flat().map((uuid) => {
 				return Promise.all([
 					fetchData('/commercial/pi-cash-entry/details/by', uuid),
-					fetchData(
-						'/commercial/pi-cash-entry/thread-details/by',
-						uuid
-					),
+					// fetchData(
+					// 	'/commercial/pi-cash-entry/thread-details/by',
+					// 	uuid
+					// ),
 				]);
 			})
 		);
@@ -345,9 +356,9 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 
 		// Extract pi_cash_entry and pi_cash_entry_thread from flattenedResults
 		const pi_cash_entry = flattenedResults.map((result) => result[0]);
-		const pi_cash_entry_thread = flattenedResults.map(
-			(result) => result[1]
-		);
+		// const pi_cash_entry_thread = flattenedResults.map(
+		// 	(result) => result[1]
+		// );
 
 		console.log(pi_cash_entry, 'pi_cash_entry');
 		console.log(pi_cash_entry_thread, 'pi_cash_entry_thread');
@@ -372,12 +383,12 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			pi_cash_entry: pi_cash_entry?.reduce((acc, result) => {
 				return [...acc, ...(result?.data || [])];
 			}, []),
-			pi_cash_entry_thread: pi_cash_entry_thread?.reduce(
-				(acc, result) => {
-					return [...acc, ...(result?.data || [])];
-				},
-				[]
-			),
+			// pi_cash_entry_thread: pi_cash_entry_thread?.reduce(
+			// 	(acc, result) => {
+			// 		return [...acc, ...(result?.data || [])];
+			// 	},
+			// 	[]
+			// ),
 			// Other response properties
 		};
 
@@ -427,7 +438,6 @@ export async function selectPiEntryByPiDetailsByThreadOrderInfoUuids(
 			marketing_uuid,
 			order_info_uuids,
 			pi_cash_entry_thread: result2?.reduce((acc, result) => {
-				console.log(result, 'result - thread_order');
 				return [...acc, ...result?.data?.data];
 			}, []),
 		};
