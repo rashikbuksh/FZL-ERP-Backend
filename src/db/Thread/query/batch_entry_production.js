@@ -60,12 +60,19 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	const resultPromise = db
 		.delete(batch_entry_production)
-		.where(eq(batch_entry_production.uuid, req.params.uuid));
+		.where(eq(batch_entry_production.uuid, req.params.uuid))
+		.returning({ deletedId: batch_entry_production.uuid });
 
 	try {
-		await resultPromise;
+		const data = await resultPromise;
 
-		return await res.status(204).json();
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
+
+		return await res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -86,7 +93,7 @@ export async function selectAll(req, res, next) {
 			remarks: batch_entry_production.remarks,
 		})
 		.from(batch_entry_production)
-		.join(
+		.leftJoin(
 			hrSchema.users,
 			eq(batch_entry_production.created_by, hrSchema.users.uuid)
 		)
@@ -116,7 +123,7 @@ export async function select(req, res, next) {
 			remarks: batch_entry_production.remarks,
 		})
 		.from(batch_entry_production)
-		.join(
+		.leftJoin(
 			hrSchema.users,
 			eq(batch_entry_production.created_by, hrSchema.users.uuid)
 		)

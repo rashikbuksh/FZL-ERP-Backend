@@ -56,12 +56,20 @@ export async function update(req, res, next) {
 }
 
 export async function remove(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
 	const resultPromise = db
 		.delete(challan_entry)
-		.where(eq(challan_entry.uuid, req.params.uuid));
+		.where(eq(challan_entry.uuid, req.params.uuid))
+		.returning({ deletedId: challan_entry.uuid });
+
 	try {
-		await resultPromise;
-		return await res.status(204).json();
+		const data = await resultPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
+		return await res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

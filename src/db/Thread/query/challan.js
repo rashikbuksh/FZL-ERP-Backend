@@ -57,15 +57,15 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	const resultPromise = db
 		.delete(challan)
-		.where(eq(challan.uuid, req.params.uuid));
-
+		.where(eq(challan.uuid, req.params.uuid))
+		.returning({ deletedId: challan.uuid });
 	try {
 		const data = await resultPromise;
 
 		const toast = {
 			status: 201,
 			type: 'delete',
-			message: `${data} deleted`,
+			message: `${data[0].deletedId} deleted`,
 		};
 
 		return await res.status(201).json({ toast, data });
