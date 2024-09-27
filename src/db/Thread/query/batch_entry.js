@@ -281,7 +281,7 @@ export async function getBatchEntryDetails(req, res, next) {
 		be.coning_production_quantity,
 		be.coning_production_quantity_in_kg,
 		be.transfer_quantity as transfer_quantity,
-		(oe.quantity - oe.delivered - oe.warehouse) as balance_quantity,
+		(be.quantity - be.transfer_quantity) as balance_quantity,
 		be.created_at,
 		be.updated_at,
 		be.remarks as batch_remarks
