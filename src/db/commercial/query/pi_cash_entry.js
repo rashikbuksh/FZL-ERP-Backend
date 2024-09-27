@@ -315,12 +315,53 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			.map(String)
 			.map((String) => [String]);
 
-		const fetchData = async (endpoint) =>
-			await api.get(`/commercial/pi-cash-entry/details/by/${endpoint}`);
+		const fetchData = async (endpoint, data) => {
+			console.log(`${endpoint}/${data}`, 'endpoint - data');
+
+			try {
+				const response = await api.get(`${endpoint}/${data}`);
+				console.log(response.data, 'response data'); // Log the response data
+				return response.data; // Ensure to return the data from the response
+			} catch (error) {
+				console.error(error);
+				return null; // Return null or handle the error as needed
+			}
+		};
 
 		const results = await Promise.all(
-			order_info_uuids.flat().map((uuid) => fetchData(uuid))
+			order_info_uuids.flat().map((uuid) => {
+				return Promise.all([
+					fetchData('/commercial/pi-cash-entry/details/by', uuid),
+					fetchData(
+						'/commercial/pi-cash-entry/thread-details/by',
+						uuid
+					),
+				]);
+			})
 		);
+
+		// Flatten the results array
+		const flattenedResults = results;
+
+		// Extract pi_cash_entry and pi_cash_entry_thread from flattenedResults
+		const pi_cash_entry = flattenedResults.map((result) => result[0]);
+		const pi_cash_entry_thread = flattenedResults.map(
+			(result) => result[1]
+		);
+
+		console.log(pi_cash_entry, 'pi_cash_entry');
+		console.log(pi_cash_entry_thread, 'pi_cash_entry_thread');
+
+		// Check if both pi_cash_entry and pi_cash_entry_thread are undefined
+		const allUndefined =
+			pi_cash_entry.every((entry) => entry === undefined) &&
+			pi_cash_entry_thread.every((entry) => entry === undefined);
+
+		if (allUndefined) {
+			throw new Error(
+				'Both pi_cash_entry and pi_cash_entry_thread are undefined'
+			);
+		}
 
 		order_info_uuids = order_info_uuids.flat();
 
@@ -328,9 +369,16 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			party_uuid,
 			marketing_uuid,
 			order_info_uuids,
-			pi_cash_entry: results?.reduce((acc, result) => {
-				return [...acc, ...result?.data?.data];
+			pi_cash_entry: pi_cash_entry?.reduce((acc, result) => {
+				return [...acc, ...(result?.data || [])];
 			}, []),
+			pi_cash_entry_thread: pi_cash_entry_thread?.reduce(
+				(acc, result) => {
+					return [...acc, ...(result?.data || [])];
+				},
+				[]
+			),
+			// Other response properties
 		};
 
 		const toast = {
