@@ -57,6 +57,10 @@ threadRouter.get(
 	'/batch-entry/by/:batch_uuid',
 	batch_entryOperations.getBatchEntryByBatchUuid
 );
+threadRouter.get(
+	'/batch-entry-details',
+	batch_entryOperations.getBatchEntryDetails
+);
 
 // batch routes
 threadRouter.get('/batch', batchOperations.selectAll);
