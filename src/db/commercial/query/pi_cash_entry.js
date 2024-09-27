@@ -147,39 +147,33 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 	                pe.updated_at as updated_at,
 					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN true ELSE false END as is_thread_order,
 					sfg.uuid as sfg_uuid,
-					vodf.order_info_uuid as order_info_uuid,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_info_uuid ELSE toe.order_info_uuid END as order_info_uuid,
 					vodf.order_description_uuid as order_description_uuid,
-					vodf.order_number as order_number,
-					vodf.buyer_name as buyer_name,
-					oe.style as style,
-					oe.color as color,
-					oe.quantity as quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_number ELSE concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.buyer_name ELSE thread_buyer.name END as buyer_name,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.style ELSE toe.style END as style,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.color ELSE toe.color END as color,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as quantity,
 					vodf.item_description as item_description,
 					oe.size as size,
-					oe.quantity as max_quantity,
-					oe.party_price as unit_price,
-					sfg.pi as given_pi_cash_quantity,
-					(pe.pi_cash_quantity * oe.party_price) as value,
-					(oe.quantity - sfg.pi) as balance_quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as max_quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price ELSE toe.party_price END as unit_price,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi ELSE toe.pi END as given_pi_cash_quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (pe.pi_cash_quantity * oe.party_price) ELSE (pe.pi_cash_quantity * toe.party_price) END as value,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.quantity - sfg.pi) ELSE (toi.quantity - toe.pi) END as balance_quantity,
 					pe.thread_order_entry_uuid as thread_order_entry_uuid,
-					concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as thread_order_number,
-					toe.color as toe_color,
-					toe.style as toe_style,
 					toe.count_length_uuid as count_length_uuid,
 					CONCAT(count_length.count,' ', count_length.length) as count_length_name,
-					toe.pi as given_pi_cash_quantity_thread,
-					(pe.pi_cash_quantity * toe.party_price) as value_thread,
-					(oe.quantity - toe.pi) as balance_quantity_thread,
-					toe.quantity as thread_max_quantity,
 					CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked
 	            FROM
-					zipper.sfg sfg
+					commercial.pi_cash_entry pe 
+					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
 	                LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 	                LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-					LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
 					LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
-					LEFT JOIN thread.order_info toi ON vodf.order_info_uuid = toi.uuid
+					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 					LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
+                    LEFT JOIN public.buyer thread_buyer ON toi.buyer_uuid = thread_buyer.uuid
 				WHERE 
 					pe.pi_cash_uuid = ${req.params.pi_cash_uuid}
 				ORDER BY
@@ -192,16 +186,6 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 		const pi_entryPromise = db.execute(query);
 
 		const data = await pi_entryPromise;
-
-		// fg_uuid is null then pass thread_order_entry array
-		const thread_order_entry = data?.rows.filter(
-			(row) => row.sfg_uuid === null
-		);
-
-		// fg_uuid is not null then pass zipper_order_entry array
-		const zipper_order_entry = data?.rows.filter(
-			(row) => row.sfg_uuid !== null
-		);
 
 		const toast = {
 			status: 200,

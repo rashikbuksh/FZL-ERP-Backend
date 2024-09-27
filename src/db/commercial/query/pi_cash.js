@@ -18,6 +18,7 @@ export async function insert(req, res, next) {
 	const {
 		uuid,
 		order_info_uuids,
+		thread_order_info_uuids,
 		marketing_uuid,
 		party_uuid,
 		merchandiser_uuid,
@@ -38,6 +39,7 @@ export async function insert(req, res, next) {
 		.values({
 			uuid,
 			order_info_uuids,
+			thread_order_info_uuids,
 			marketing_uuid,
 			party_uuid,
 			merchandiser_uuid,
@@ -128,6 +130,7 @@ export async function selectAll(req, res, next) {
 			lc_uuid: pi_cash.lc_uuid,
 			lc_number: lc.lc_number,
 			order_info_uuids: pi_cash.order_info_uuids,
+			thread_order_info_uuids: pi_cash.thread_order_info_uuids,
 			marketing_uuid: pi_cash.marketing_uuid,
 			marketing_name: publicSchema.marketing.name,
 			party_uuid: pi_cash.party_uuid,
@@ -210,6 +213,7 @@ export async function select(req, res, next) {
 			lc_uuid: pi_cash.lc_uuid,
 			lc_number: lc.lc_number,
 			order_info_uuids: pi_cash.order_info_uuids,
+			thread_order_info_uuids: pi_cash.thread_order_info_uuids,
 			marketing_uuid: pi_cash.marketing_uuid,
 			marketing_name: publicSchema.marketing.name,
 			party_uuid: pi_cash.party_uuid,
@@ -291,21 +295,19 @@ export async function selectPiDetailsByPiUuid(req, res, next) {
 			fetchData('/commercial/pi-cash-entry/by'),
 		]);
 
-		const emptyArray = '';
+		const emptyArray = null;
 
-		const pi_cash_entry_thread = pi_cash_entry?.data?.data.map((fields) => {
-			return fields.is_thread_order == true ? fields : emptyArray;
-		});
-		const zipper_pi_entry = pi_cash_entry?.data?.data.map((fields) => {
-			return fields.is_thread_order == false ? fields : emptyArray;
-		});
+		const pi_cash_entry_thread = pi_cash_entry?.data?.data.filter(
+			(fields) => fields.is_thread_order == true
+		);
+		const zipper_pi_entry = pi_cash_entry?.data?.data.filter(
+			(fields) => fields.is_thread_order == false
+		);
 
 		const response = {
 			...pi_cash?.data?.data,
-			pi_cash_entry:
-				zipper_pi_entry.length != emptyArray ? zipper_pi_entry : [],
-			pi_cash_entry_thread:
-				pi_cash_entry_thread != emptyArray ? pi_cash_entry_thread : [],
+			pi_cash_entry: zipper_pi_entry || [],
+			pi_cash_entry_thread: pi_cash_entry_thread || [],
 		};
 
 		const toast = {
