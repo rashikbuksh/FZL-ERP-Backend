@@ -5,7 +5,7 @@ BEGIN
     SET
         coning_production_quantity = coning_production_quantity + NEW.production_quantity,
         coning_production_quantity_in_kg = coning_production_quantity_in_kg + NEW.production_quantity_in_kg
-    WHERE uuid = NEW.thread_batch_entry_uuid;
+    WHERE uuid = NEW.batch_entry_uuid;
 
     UPDATE thread.order_entry
     SET
