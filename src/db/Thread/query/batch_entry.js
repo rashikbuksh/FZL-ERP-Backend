@@ -281,7 +281,7 @@ export async function getBatchEntryDetails(req, res, next) {
 		be.coning_production_quantity,
 		be.coning_production_quantity_in_kg,
 		be.transfer_quantity as transfer_quantity,
-		(oe.quantity -oe.delivered - oe.warehouse) as balance_quantity,
+		(oe.quantity - oe.delivered - oe.warehouse) as balance_quantity,
 		be.created_at,
 		be.updated_at,
 		be.remarks as batch_remarks
@@ -303,15 +303,12 @@ WHERE balance_quantity > 0;
 	const resultPromise = db.execute(query);
 	try {
 		const data = await resultPromise;
-		const batch_entry_details = { batch_entry: data?.rows };
-
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'batch_entry_details list',
 		};
-
-		return await res.status(200).json({ toast, data: batch_entry_details });
+		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
