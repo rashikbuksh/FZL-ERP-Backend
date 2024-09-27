@@ -1,3 +1,4 @@
+-- * Inserted 
 CREATE OR REPLACE FUNCTION delivery.sfg_after_challan_receive_status_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     -- Update zipper,sfg
@@ -36,7 +37,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER sfg_after_challan_receive_status_insert
-AFTER INSERT ON delivery.packing_list_entry
+AFTER INSERT ON delivery.challan
 FOR EACH ROW
 EXECUTE FUNCTION delivery.sfg_after_challan_receive_status_insert_function();
 
