@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -137,6 +137,67 @@ export async function select(req, res, next) {
 			message: 'batch_entry_production',
 		};
 		return await res.status(201).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function getBatchEntryProductionDetails(req, res, next) {
+	const query = sql`
+	WITH calculated_balance AS (SELECT 
+		bep.uuid,
+		bep.batch_entry_uuid,
+		bep.production_quantity,
+		bep.production_quantity_in_kg,
+		be.batch_uuid,
+		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
+		be.order_entry_uuid, 
+		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+	    oe.color as color,
+		oe.po as po,
+		oe.style as style,
+		oe.bleaching as bleaching,
+		oe.count_length_uuid as count_length_uuid,
+		CONCAT(cl.count, '/', cl.length) as count_length,
+		be.quantity as batch_quantity,
+		be.coning_production_quantity,
+		be.coning_production_quantity_in_kg,
+		be.transfer_quantity as transfer_quantity,
+		(be.quantity - be.transfer_quantity) as balance_quantity,
+		bep.created_by,
+		users.name as created_by_name,
+		bep.created_at,
+		bep.updated_at,
+		bep.remarks as production_remarks
+		
+	FROM
+		thread.batch_entry_production bep
+	LEFT JOIN
+		hr.users ON bep.created_by = users.uuid
+	LEFT JOIN
+		thread.batch_entry be ON bep.batch_entry_uuid = be.uuid
+	LEFT JOIN 
+		thread.order_entry oe ON be.order_entry_uuid = oe.uuid
+	LEFT JOIN
+		thread.count_length cl ON oe.count_length_uuid = cl.uuid
+	LEFT JOIN 
+		thread.order_info ON oe.order_info_uuid = order_info.uuid
+	LEFT JOIN
+		thread.batch ON be.batch_uuid = batch.uuid
+)
+	SELECT * FROM calculated_balance
+WHERE balance_quantity > 0;
+	`;
+
+	const resultPromise = db.execute(query);
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'batch_entry_production_details list',
+		};
+		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}

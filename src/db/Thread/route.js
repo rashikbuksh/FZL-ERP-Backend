@@ -108,6 +108,10 @@ threadRouter.delete(
 	'/batch-entry-production/:uuid',
 	batchEntryProductionOperations.remove
 );
+threadRouter.get(
+	'/batch-entry-production-details',
+	batchEntryProductionOperations.getBatchEntryProductionDetails
+);
 
 // batch_entry_trx routes
 threadRouter.get('/batch-entry-trx', batchEntryTrxOperations.selectAll);
@@ -115,6 +119,10 @@ threadRouter.get('/batch-entry-trx/:uuid', batchEntryTrxOperations.select);
 threadRouter.post('/batch-entry-trx', batchEntryTrxOperations.insert);
 threadRouter.put('/batch-entry-trx/:uuid', batchEntryTrxOperations.update);
 threadRouter.delete('/batch-entry-trx/:uuid', batchEntryTrxOperations.remove);
+threadRouter.get(
+	'/batch-entry-trx-details',
+	batchEntryTrxOperations.getBatchEntryTrxDetails
+);
 
 // challan routes
 threadRouter.get('/challan', challanOperations.selectAll);
