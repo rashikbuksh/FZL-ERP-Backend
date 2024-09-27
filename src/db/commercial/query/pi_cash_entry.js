@@ -311,11 +311,8 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			.map((String) => [String]);
 
 		const fetchData = async (endpoint, data) => {
-			console.log(`${endpoint}/${data}`, 'endpoint - data');
-
 			try {
 				const response = await api.get(`${endpoint}/${data}`);
-				console.log(response.data, 'response data'); // Log the response data
 				return response.data; // Ensure to return the data from the response
 			} catch (error) {
 				console.error(error);
@@ -343,9 +340,6 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 		// const pi_cash_entry_thread = flattenedResults.map(
 		// 	(result) => result[1]
 		// );
-
-		console.log(pi_cash_entry, 'pi_cash_entry');
-		// console.log(pi_cash_entry_thread, 'pi_cash_entry_thread');
 
 		// Check if both pi_cash_entry and pi_cash_entry_thread are undefined
 		// const allUndefined =
@@ -425,8 +419,6 @@ export async function selectPiEntryByPiDetailsByThreadOrderInfoUuids(
 				return [...acc, ...result?.data?.data];
 			}, []),
 		};
-
-		console.log(response, 'response - thread_order');
 
 		const toast = {
 			status: 200,

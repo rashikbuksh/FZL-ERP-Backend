@@ -164,8 +164,6 @@ export async function selectAll(req, res, next) {
 	try {
 		const data = await dyedTapeTransactionFromStockPromise;
 
-		console.log(data.rows);
-
 		const toast = {
 			status: 201,
 			type: 'select_all',

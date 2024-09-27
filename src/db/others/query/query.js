@@ -411,9 +411,6 @@ export async function selectOrderDescription(req, res, next) {
 // ) {
 // 	const { item_name, zipper_number } = req.params;
 
-// 	console.log('params', req.params);
-// 	console.log(item_name, zipper_number);
-
 // 	const query = sql`SELECT
 // 					vodf.order_description_uuid AS value,
 // 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label
@@ -506,9 +503,6 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 export async function selectOrderNumberForPi(req, res, next) {
 	const is_cash = req.query.is_cash;
 	const pi_uuid = req.query.pi_uuid;
-
-	console.log('is_cash', is_cash);
-	console.log('pi_uuid', pi_uuid);
 
 	let query;
 
@@ -1053,9 +1047,6 @@ export async function selectDieCastingUsingType(req, res, next) {
 export async function selectOrderNumberForPiThread(req, res, next) {
 	const { marketing_uuid, party_uuid } = req.params;
 	const { is_cash, pi_uuid } = req.query;
-
-	console.log('is_cash', is_cash);
-	console.log('pi_uuid', pi_uuid);
 	let query;
 
 	if (
