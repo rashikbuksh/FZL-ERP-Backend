@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -132,6 +132,66 @@ export async function select(req, res, next) {
 			message: 'batch_entry_trx',
 		};
 		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function getBatchEntryTrxDetails(req, res, next) {
+	const query = sql`
+	WITH calculated_balance AS (SELECT 
+		bet.uuid,
+		bet.batch_entry_uuid,
+		bet.quantity,
+		be.batch_uuid,
+		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
+		be.order_entry_uuid, 
+		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+	    oe.color as color,
+		oe.po as po,
+		oe.style as style,
+		oe.bleaching as bleaching,
+		oe.count_length_uuid as count_length_uuid,
+		CONCAT(cl.count, '/', cl.length) as count_length,
+		be.quantity as batch_quantity,
+		be.coning_production_quantity,
+		be.coning_production_quantity_in_kg,
+		be.transfer_quantity as transfer_quantity,
+		(be.quantity - be.transfer_quantity) as balance_quantity,
+		bet.created_by,
+		users.name as created_by_name,
+		bet.created_at,
+		bet.updated_at,
+		bet.remarks as trx_remarks
+		
+	FROM
+		thread.batch_entry_trx bet
+	LEFT JOIN
+		hr.users ON bet.created_by = users.uuid
+	LEFT JOIN
+		thread.batch_entry be ON bet.batch_entry_uuid = be.uuid
+	LEFT JOIN 
+		thread.order_entry oe ON be.order_entry_uuid = oe.uuid
+	LEFT JOIN
+		thread.count_length cl ON oe.count_length_uuid = cl.uuid
+	LEFT JOIN 
+		thread.order_info ON oe.order_info_uuid = order_info.uuid
+	LEFT JOIN
+		thread.batch ON be.batch_uuid = batch.uuid
+)
+	SELECT * FROM calculated_balance
+WHERE balance_quantity > 0;
+	`;
+
+	const resultPromise = db.execute(query);
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'batch_entry_trx_details list',
+		};
+		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
