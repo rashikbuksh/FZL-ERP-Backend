@@ -197,6 +197,7 @@ export async function select(req, res, next) {
 			batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			machine_uuid: batch.machine_uuid,
 			machine_name: publicSchema.machine.name,
+			water_capacity: publicSchema.machine.water_capacity,
 			slot: batch.slot,
 			lab_created_by: batch.lab_created_by,
 			lab_created_by_name: labCreated.name,
