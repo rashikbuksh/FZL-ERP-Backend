@@ -3,7 +3,8 @@ CREATE OR REPLACE FUNCTION thread_batch_entry_and_order_entry_after_batch_entry_
 BEGIN
     UPDATE thread.batch_entry
     SET
-        transfer_quantity = transfer_quantity + NEW.quantity
+        transfer_quantity = transfer_quantity + NEW.quantity,
+        coning_production_quantity = coning_production_quantity - NEW.quantity
     WHERE uuid = NEW.batch_entry_uuid;
 
     UPDATE thread.order_entry
@@ -23,7 +24,8 @@ CREATE OR REPLACE FUNCTION thread_batch_entry_and_order_entry_after_batch_entry_
 BEGIN
     UPDATE thread.batch_entry
     SET
-        transfer_quantity = transfer_quantity - OLD.quantity
+        transfer_quantity = transfer_quantity - OLD.quantity,
+        coning_production_quantity = coning_production_quantity + OLD.quantity
     WHERE uuid = OLD.batch_entry_uuid;
 
     UPDATE thread.order_entry
@@ -41,7 +43,8 @@ CREATE OR REPLACE FUNCTION thread_batch_entry_and_order_entry_after_batch_entry_
 BEGIN
     UPDATE thread.batch_entry
     SET
-        transfer_quantity = transfer_quantity - OLD.quantity + NEW.quantity
+        transfer_quantity = transfer_quantity - OLD.quantity + NEW.quantity,
+        coning_production_quantity = coning_production_quantity + OLD.quantity - NEW.quantity
     WHERE uuid = NEW.batch_entry_uuid;
 
     UPDATE thread.order_entry
