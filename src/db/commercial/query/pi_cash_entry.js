@@ -141,44 +141,39 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 		const query = sql`
 				SELECT
 	                pe.uuid as uuid,
+                    pe.pi_cash_uuid as pi_cash_uuid,
 					pe.pi_cash_quantity as pi_cash_quantity,
 					pe.created_at as created_at,
 	                pe.updated_at as updated_at,
 					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN true ELSE false END as is_thread_order,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.uuid ELSE NULL END as sfg_uuid,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_info_uuid ELSE NULL END as order_info_uuid,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_description_uuid ELSE NULL END as order_description_uuid,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_number ELSE NULL END as order_number,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.buyer_name ELSE NULL END as buyer_name,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.style ELSE NULL END as style,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.color ELSE NULL END as color,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE NULL END as quantity,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.item_description ELSE NULL END as item_description,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.size ELSE NULL END as size,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE NULL END as max_quantity,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price ELSE NULL END as unit_price,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi ELSE NULL END as given_pi_cash_quantity,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (pe.pi_cash_quantity * oe.party_price) ELSE NULL END as value,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.quantity - sfg.pi) ELSE NULL END as balance_quantity,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN pe.thread_order_entry_uuid ELSE NULL END as thread_order_entry_uuid,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END as thread_order_number,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN toe.color ELSE NULL END as toe_color,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN toe.style ELSE NULL END as toe_style,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN toe.count_length_uuid ELSE NULL END as count_length_uuid,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN CONCAT(count_length.count,' ', count_length.) ELSE NULL END as count_length_name,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN toe.pi ELSE NULL END as given_pi_cash_quantity_thread,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN (pe.pi_cash_quantity * toe.party_price) ELSE NULL END as value_thread,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN (oe.quantity - toe.pi) ELSE NULL END as balance_quantity_thread,
-					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN toe.quantity ELSE NULL END as thread_max_quantity,
+					sfg.uuid as sfg_uuid,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_info_uuid ELSE toe.order_info_uuid END as order_info_uuid,
+					vodf.order_description_uuid as order_description_uuid,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_number ELSE concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.buyer_name ELSE thread_buyer.name END as buyer_name,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.style ELSE toe.style END as style,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.color ELSE toe.color END as color,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as quantity,
+					vodf.item_description as item_description,
+					oe.size as size,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as max_quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price ELSE toe.party_price END as unit_price,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi ELSE toe.pi END as given_pi_cash_quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (pe.pi_cash_quantity * oe.party_price) ELSE (pe.pi_cash_quantity * toe.party_price) END as value,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.quantity - sfg.pi) ELSE (toe.quantity - toe.pi) END as balance_quantity,
+					pe.thread_order_entry_uuid as thread_order_entry_uuid,
+					toe.count_length_uuid as count_length_uuid,
+					CONCAT(count_length.count,' ', count_length.length) as count_length_name,
 					CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked
 	            FROM
-					zipper.sfg sfg
+					commercial.pi_cash_entry pe 
+					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
 	                LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 	                LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-					LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
 					LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
-					LEFT JOIN thread.order_info toi ON vodf.order_info_uuid = toi.uuid
+					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 					LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
+                    LEFT JOIN public.buyer thread_buyer ON toi.buyer_uuid = thread_buyer.uuid
 				WHERE 
 					pe.pi_cash_uuid = ${req.params.pi_cash_uuid}
 				ORDER BY
@@ -191,6 +186,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 		const pi_entryPromise = db.execute(query);
 
 		const data = await pi_entryPromise;
+
 		const toast = {
 			status: 200,
 			type: 'select',
@@ -279,7 +275,7 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
         WHERE
             toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.pi) > 0
         ORDER BY 
-            toe.id ASC,
+            toi.id ASC,
             toe.style ASC, 
             toe.color ASC
     `;
@@ -314,13 +310,103 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			.map(String)
 			.map((String) => [String]);
 
-		const fetchData = async (endpoint) => {
-			await api.get(`/commercial/pi-cash-entry/details/by/${endpoint}`);
-			await api.get(`/commercial/pi-cash-entry/thread-details/by/${endpoint}`);
+		const fetchData = async (endpoint, data) => {
+			try {
+				const response = await api.get(`${endpoint}/${data}`);
+				return response.data; // Ensure to return the data from the response
+			} catch (error) {
+				console.error(error);
+				return null; // Return null or handle the error as needed
+			}
 		};
 
 		const results = await Promise.all(
-			order_info_uuids.flat().map((uuid) => fetchData(uuid))
+			order_info_uuids.flat().map((uuid) => {
+				return Promise.all([
+					fetchData('/commercial/pi-cash-entry/details/by', uuid),
+					// fetchData(
+					// 	'/commercial/pi-cash-entry/thread-details/by',
+					// 	uuid
+					// ),
+				]);
+			})
+		);
+
+		// Flatten the results array
+		const flattenedResults = results;
+
+		// Extract pi_cash_entry and pi_cash_entry_thread from flattenedResults
+		const pi_cash_entry = flattenedResults.map((result) => result[0]);
+		// const pi_cash_entry_thread = flattenedResults.map(
+		// 	(result) => result[1]
+		// );
+
+		// Check if both pi_cash_entry and pi_cash_entry_thread are undefined
+		// const allUndefined =
+		// 	pi_cash_entry.every((entry) => entry === undefined) &&
+		// 	pi_cash_entry_thread.every((entry) => entry === undefined);
+
+		// if (allUndefined) {
+		// 	throw new Error(
+		// 		'Both pi_cash_entry and pi_cash_entry_thread are undefined'
+		// 	);
+		// }
+
+		order_info_uuids = order_info_uuids.flat();
+
+		const response = {
+			party_uuid,
+			marketing_uuid,
+			order_info_uuids,
+			pi_cash_entry: pi_cash_entry?.reduce((acc, result) => {
+				return [...acc, ...(result?.data || [])];
+			}, []),
+			// pi_cash_entry_thread: pi_cash_entry_thread?.reduce(
+			// 	(acc, result) => {
+			// 		return [...acc, ...(result?.data || [])];
+			// 	},
+			// 	[]
+			// ),
+			// Other response properties
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			msg: 'Pi Details By Order Info Uuids',
+		};
+
+		res.status(200).json({ toast, data: response });
+	} catch (error) {
+		return res.status(500).json(error);
+	}
+}
+
+export async function selectPiEntryByPiDetailsByThreadOrderInfoUuids(
+	req,
+	res,
+	next
+) {
+	try {
+		const api = await createApi(req);
+		let { order_info_uuids, party_uuid, marketing_uuid } = req?.params;
+
+		if (order_info_uuids === 'null') {
+			return res.status(400).json({ error: 'Order Number is required' });
+		}
+
+		order_info_uuids = order_info_uuids
+			.split(',')
+			.map(String)
+			.map((String) => [String]);
+
+		const fetchDataThread = async (endpoint) =>
+			await api.get(
+				`/commercial/pi-cash-entry/thread-details/by/${endpoint}`
+			);
+
+		const result2 = await Promise.all(
+			order_info_uuids.flat().map((uuid) => fetchDataThread(uuid))
 		);
 
 		order_info_uuids = order_info_uuids.flat();
@@ -329,7 +415,7 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			party_uuid,
 			marketing_uuid,
 			order_info_uuids,
-			pi_cash_entry: results?.reduce((acc, result) => {
+			pi_cash_entry_thread: result2?.reduce((acc, result) => {
 				return [...acc, ...result?.data?.data];
 			}, []),
 		};

@@ -6,6 +6,10 @@ import * as dyes_categoryOperations from './query/dyes_category.js';
 import * as order_entryOperations from './query/order_entry.js';
 import * as order_infoOperations from './query/order_info.js';
 import * as programsOperations from './query/programs.js';
+import * as batchEntryProductionOperations from './query/batch_entry_production.js';
+import * as batchEntryTrxOperations from './query/batch_entry_trx.js';
+import * as challanOperations from './query/challan.js';
+import * as challanEntryOperations from './query/challan_entry.js';
 
 const threadRouter = Router();
 
@@ -53,6 +57,10 @@ threadRouter.get(
 	'/batch-entry/by/:batch_uuid',
 	batch_entryOperations.getBatchEntryByBatchUuid
 );
+threadRouter.get(
+	'/batch-entry-details',
+	batch_entryOperations.getBatchEntryDetails
+);
 
 // batch routes
 threadRouter.get('/batch', batchOperations.selectAll);
@@ -78,5 +86,56 @@ threadRouter.get('/programs/:uuid', programsOperations.select);
 threadRouter.post('/programs', programsOperations.insert);
 threadRouter.put('/programs/:uuid', programsOperations.update);
 threadRouter.delete('/programs/:uuid', programsOperations.remove);
+
+// batch_entry_production routes
+threadRouter.get(
+	'/batch-entry-production',
+	batchEntryProductionOperations.selectAll
+);
+threadRouter.get(
+	'/batch-entry-production/:uuid',
+	batchEntryProductionOperations.select
+);
+threadRouter.post(
+	'/batch-entry-production',
+	batchEntryProductionOperations.insert
+);
+threadRouter.put(
+	'/batch-entry-production/:uuid',
+	batchEntryProductionOperations.update
+);
+threadRouter.delete(
+	'/batch-entry-production/:uuid',
+	batchEntryProductionOperations.remove
+);
+threadRouter.get(
+	'/batch-entry-production-details',
+	batchEntryProductionOperations.getBatchEntryProductionDetails
+);
+
+// batch_entry_trx routes
+threadRouter.get('/batch-entry-trx', batchEntryTrxOperations.selectAll);
+threadRouter.get('/batch-entry-trx/:uuid', batchEntryTrxOperations.select);
+threadRouter.post('/batch-entry-trx', batchEntryTrxOperations.insert);
+threadRouter.put('/batch-entry-trx/:uuid', batchEntryTrxOperations.update);
+threadRouter.delete('/batch-entry-trx/:uuid', batchEntryTrxOperations.remove);
+threadRouter.get(
+	'/batch-entry-trx-details',
+	batchEntryTrxOperations.getBatchEntryTrxDetails
+);
+
+// challan routes
+threadRouter.get('/challan', challanOperations.selectAll);
+threadRouter.get('/challan/:uuid', challanOperations.select);
+threadRouter.post('/challan', challanOperations.insert);
+threadRouter.put('/challan/:uuid', challanOperations.update);
+threadRouter.delete('/challan/:uuid', challanOperations.remove);
+
+// challan_entry routes
+threadRouter.get('/challan-entry', challanEntryOperations.selectAll);
+threadRouter.get('/challan-entry/:uuid', challanEntryOperations.select);
+threadRouter.post('/challan-entry', challanEntryOperations.insert);
+threadRouter.put('/challan-entry/:uuid', challanEntryOperations.update);
+threadRouter.delete('/challan-entry/:uuid', challanEntryOperations.remove);
 
 export { threadRouter };

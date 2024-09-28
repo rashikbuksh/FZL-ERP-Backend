@@ -192,15 +192,11 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 
 	const query = sql`
 			SELECT 
-				challan_entry.uuid as uuid,
-				challan_entry.challan_uuid,
+				challan.uuid as uuid,
 				challan.assign_to AS challan_assign_to,
 				assign_to_user.name AS challan_assign_to_name,
 				challan.created_by AS challan_created_by,
 				created_by_user.name AS challan_created_by_name,
-				challan_entry.packing_list_uuid,
-				challan_entry.created_at,
-				challan_entry.updated_at,
 				vpl.packing_number,
 				vpl.packing_list_entry_uuid,
 				vpl.sfg_uuid,
@@ -218,17 +214,15 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 				vpl.delivered,
 				vpl.balance_quantity
 			FROM 
-				delivery.challan_entry
+				delivery.challan
 			LEFT JOIN 
-				delivery.challan ON challan_entry.challan_uuid = challan.uuid
-			LEFT JOIN 
-				delivery.v_packing_list vpl ON challan_entry.packing_list_uuid = vpl.packing_list_uuid
+				delivery.v_packing_list vpl ON challan.uuid = vpl.challan_uuid
 			LEFT JOIN
 				hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
 			LEFT JOIN
 				hr.users created_by_user ON challan.created_by = created_by_user.uuid
 			WHERE 
-				challan_entry.challan_uuid = ${req.params.challan_uuid} AND vpl.challan_uuid IS NOT NULL;
+				challan.uuid = ${req.params.challan_uuid} AND vpl.challan_uuid IS NOT NULL;
 		`;
 
 	const challan_entryPromise = db.execute(query);
@@ -252,16 +246,13 @@ export async function selectPackingListForChallan(req, res, next) {
 
 	const query = sql`
 		SELECT 
-			challan_entry.uuid as uuid,
-			challan_entry.challan_uuid,
+			challan.uuid as uuid,
+			challan.uuid as challan_uuid,
 			challan.assign_to AS challan_assign_to,
 			assign_to_user.name AS challan_assign_to_name,
 			challan.created_by AS challan_created_by,
 			created_by_user.name AS challan_created_by_name,
-			challan_entry.packing_list_uuid,
 			CONCAT('PL', TO_CHAR(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS packing_number,
-			challan_entry.created_at,
-			challan_entry.updated_at,
 			ple.uuid as packing_list_entry_uuid,
 			ple.sfg_uuid,
 			ple.quantity,
@@ -288,15 +279,13 @@ export async function selectPackingListForChallan(req, res, next) {
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN
-			delivery.challan_entry challan_entry ON pl.uuid = challan_entry.packing_list_uuid
-		LEFT JOIN
-			delivery.challan ON challan_entry.challan_uuid = challan.uuid
+			delivery.challan ON pl.challan_uuid = challan.uuid
 		LEFT JOIN
 			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
 		LEFT JOIN
 			hr.users created_by_user ON challan.created_by = created_by_user.uuid
 		WHERE 
-			ple.packing_list_uuid = ${req.params.packing_list_uuid} AND challan_entry.uuid IS NULL;
+			ple.packing_list_uuid = ${req.params.packing_list_uuid} AND challan.uuid IS NULL;
 	`;
 
 	const challan_entryPromise = db.execute(query);
@@ -325,7 +314,7 @@ export async function selectPackingListForChallanMulti(req, res, next) {
 		const fetchData = async (packing_list_uuid) =>
 			await api
 				.get(
-					`/delivery//challan-entry-for-packing-list/by/${packing_list_uuid}`
+					`/delivery/challan-entry-for-packing-list/by/${packing_list_uuid}`
 				)
 				.then((response) => response);
 

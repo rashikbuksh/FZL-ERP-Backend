@@ -486,7 +486,11 @@ export const pathCommercialPiCash = {
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('Get data using uuid', 'pi_uuid', 'uuid'),
+				SE.parameter_params(
+					'Get data using uuid',
+					'pi_cash_uuid',
+					'uuid'
+				),
 			],
 			responses: {
 				200: SE.response_schema('200', {
@@ -786,7 +790,11 @@ export const pathCommercialPiCashEntry = {
 			//operationId: "getPet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('Get data using uuid', 'pi_uuid', 'uuid'),
+				SE.parameter_params(
+					'Get data using uuid',
+					'pi_cash_uuid',
+					'uuid'
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -845,7 +853,42 @@ export const pathCommercialPiCashEntry = {
 			},
 		},
 	},
-	'/commercial/pi-cash/details/by/order-info-ids/{order_info_uuids}':
+	'/commercial/pi-cash-entry/thread-details/by/{order_info_uuid}': {
+		get: {
+			tags: ['commercial.pi_cash_entry'],
+			summary: 'Get a pi_cash_entry by order_info_uuid',
+			description: ' Get a pi_cash_entry by order_info_uuid',
+			//operationId: "getPet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Get data using uuid',
+					'order_info_uuid',
+					'uuid'
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					sfg_uuid: SE.uuid(),
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0001'),
+					item_description: SE.string('NM-8-OE-RP'),
+					style: SE.string('St-1'),
+					color: SE.string('Red'),
+					size: SE.number(10),
+					quantity: SE.number(100),
+					given_pi_cash_quantity: SE.number(100),
+					max_quantity: SE.number(100),
+					pi_cash_quantity: SE.number(100),
+					is_checked: SE.boolean(true),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+	'/commercial/pi-cash/details/by/order-info-ids/{order_info_uuids}/{marketing_uuid}/{party_uuid}':
 		{
 			get: {
 				tags: ['commercial.pi_cash_entry'],
@@ -893,7 +936,7 @@ export const pathCommercialPiCashEntry = {
 				},
 			},
 		},
-	'/commercial/pi-cash/thread-details/by/{order_info_uuids}/{party_uuid}/{marketing_uuid}':
+	'/commercial/pi-cash/thread-details/by/order-info-ids/{order_info_uuids}/{party_uuid}/{marketing_uuid}':
 		{
 			get: {
 				tags: ['commercial.pi_cash_entry'],
@@ -905,26 +948,28 @@ export const pathCommercialPiCashEntry = {
 					SE.parameter_params(
 						'Get data using uuid',
 						'order_info_uuids',
-						'uuid'
+						'uuid',
+						'zN6v0dRLd4VRvmX'
 					),
 					SE.parameter_params(
 						'Get data using uuid',
 						'party_uuid',
-						'uuid'
+						'uuid',
+						'cf-daf86b3eedf1'
 					),
 					SE.parameter_params(
 						'Get data using uuid',
 						'marketing_uuid',
-						'uuid'
+						'uuid',
+						'j14NcevenyrWSei'
 					),
 				],
 				responses: {
 					200: SE.response_schema(200, {
 						uuid: SE.uuid(),
 						thread_order_entry_uuid: SE.uuid(),
-						order_info_uuid: SE.uuid(),
-						order_number: SE.string('Z24-0001'),
-						style: SE.string('NM-8-OE-RP'),
+						order_number: SE.string('TO24-0001'),
+						style: SE.string('style 1'),
 						color: SE.string('Red'),
 						size: SE.number(10),
 						quantity: SE.number(100),

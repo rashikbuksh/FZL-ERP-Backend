@@ -433,6 +433,38 @@ export const pathThreadBatchEntry = {
 			},
 		},
 	},
+	'/thread/batch-entry-details': {
+		get: {
+			tags: ['thread.batch_entry'],
+			summary: 'Get Batch Entry Details',
+			description: 'Get Batch Entry Details',
+			produces: ['application/json'],
+			responses: {
+				200: SE.response_schema(200, {
+					batch_entry_uuid: SE.uuid(),
+					batch_uuid: SE.uuid(),
+					batch_number: SE.string('TB24-0001'),
+					order_entry_uuid: SE.uuid(),
+					order_number: SE.string('TO24-0001'),
+					color: SE.string('black'),
+					po: SE.string('po 1'),
+					style: SE.string('style 1'),
+					bleaching: SE.string('bleaching'),
+					count_length_uuid: SE.uuid(),
+					count_length: SE.string('40/2'),
+					batch_quantity: SE.number(10),
+					quantity: SE.integer(10),
+					coning_production_quantity: SE.integer(10),
+					coning_production_quantity_in_kg: SE.integer(10),
+					transfer_quantity: SE.integer(10),
+					balance_quantity: SE.integer(10),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+	},
 };
 
 // * Thread Batch * //
@@ -740,6 +772,381 @@ export const pathThreadPrograms = {
 	},
 };
 
+export const pathThreadBatchEntryProduction = {
+	'/thread/batch-entry-production': {
+		get: {
+			tags: ['thread.batch_entry_production'],
+			summary: 'Get all Thread Batch Entry Production',
+			description: 'Get all Thread Batch Entry Production',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					batch_entry_uuid: SE.uuid(),
+					production_quantity: SE.integer(),
+					production_quantity_in_kg: SE.integer(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['thread.batch_entry_production'],
+			summary: 'Create Thread Batch Entry Production',
+			description: 'Create Thread Batch Entry Production',
+			requestBody: SE.requestBody_schema_ref(
+				'thread/batch_entry_production'
+			),
+			responses: {
+				201: SE.response_schema_ref(
+					201,
+					'thread/batch_entry_production'
+				),
+			},
+		},
+	},
+
+	'/thread/batch-entry-production/{uuid}': {
+		get: {
+			tags: ['thread.batch_entry_production'],
+			summary: 'Get Thread Batch Entry Production',
+			description: 'Get Thread Batch Entry Production',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					batch_entry_uuid: SE.uuid(),
+					production_quantity: SE.integer(),
+					production_quantity_in_kg: SE.integer(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		put: {
+			tags: ['thread.batch_entry_production'],
+			summary: 'Update Thread Batch Entry Production',
+			description: 'Update Thread Batch Entry Production',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody_schema_ref(
+				'thread/batch_entry_production'
+			),
+			responses: {
+				201: SE.response_schema_ref(
+					201,
+					'thread/batch_entry_production'
+				),
+			},
+		},
+
+		delete: {
+			tags: ['thread.batch_entry_production'],
+			summary: 'Delete Thread Batch Entry Production',
+			description: 'Delete Thread Batch Entry Production',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response(200),
+			},
+		},
+	},
+	'/thread/batch-entry-production-details': {
+		get: {
+			tags: ['thread.batch_entry_production'],
+			summary: 'Get Batch Entry Production Details',
+			description: 'Get Batch Entry Production Details',
+			produces: ['application/json'],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					batch_entry_uuid: SE.uuid(),
+					production_quantity: SE.integer(),
+					production_quantity_in_kg: SE.integer(),
+					batch_uuid: SE.uuid(),
+					batch_number: SE.string('TB24-0001'),
+					order_entry_uuid: SE.uuid(),
+					order_number: SE.string('TO24-0001'),
+					color: SE.string('black'),
+					po: SE.string('po 1'),
+					style: SE.string('style 1'),
+					bleaching: SE.string('bleaching'),
+					count_length_uuid: SE.uuid(),
+					count_length: SE.string('40/2'),
+					batch_quantity: SE.number(10),
+					quantity: SE.integer(10),
+					coning_production_quantity: SE.integer(10),
+					coning_production_quantity_in_kg: SE.integer(10),
+					transfer_quantity: SE.integer(10),
+					balance_quantity: SE.integer(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					production_remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+	},
+};
+
+export const pathThreadBatchEntryTrx = {
+	'/thread/batch-entry-trx': {
+		get: {
+			tags: ['thread.batch_entry_trx'],
+			summary: 'Get all Thread Batch Entry Trx',
+			description: 'Get all Thread Batch Entry Trx',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					batch_entry_uuid: SE.uuid(),
+					quantity: SE.integer(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['thread.batch_entry_trx'],
+			summary: 'Create Thread Batch Entry Trx',
+			description: 'Create Thread Batch Entry Trx',
+			requestBody: SE.requestBody_schema_ref('thread/batch_entry_trx'),
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/batch_entry_trx'),
+			},
+		},
+	},
+
+	'/thread/batch-entry-trx/{uuid}': {
+		get: {
+			tags: ['thread.batch_entry_trx'],
+			summary: 'Get Thread Batch Entry Trx',
+			description: 'Get Thread Batch Entry Trx',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					batch_entry_uuid: SE.uuid(),
+					quantity: SE.integer(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		put: {
+			tags: ['thread.batch_entry_trx'],
+			summary: 'Update Thread Batch Entry Trx',
+			description: 'Update Thread Batch Entry Trx',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('thread/batch_entry_trx'),
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/batch_entry_trx'),
+			},
+		},
+
+		delete: {
+			tags: ['thread.batch_entry_trx'],
+			summary: 'Delete Thread Batch Entry Trx',
+			description: 'Delete Thread Batch Entry Trx',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response(200),
+			},
+		},
+	},
+	'/thread/batch-entry-trx-details': {
+		get: {
+			tags: ['thread.batch_entry_trx'],
+			summary: 'Get Batch Entry Trx Details',
+			description: 'Get Batch Entry Trx Details',
+			produces: ['application/json'],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					batch_entry_uuid: SE.uuid(),
+					quantity: SE.integer(),
+					batch_uuid: SE.uuid(),
+					batch_number: SE.string('TB24-0001'),
+					order_entry_uuid: SE.uuid(),
+					order_number: SE.string('TO24-0001'),
+					color: SE.string('black'),
+					po: SE.string('po 1'),
+					style: SE.string('style 1'),
+					bleaching: SE.string('bleaching'),
+					count_length_uuid: SE.uuid(),
+					count_length: SE.string('40/2'),
+					batch_quantity: SE.number(10),
+					quantity: SE.integer(10),
+					coning_production_quantity: SE.integer(10),
+					coning_production_quantity_in_kg: SE.integer(10),
+					transfer_quantity: SE.integer(10),
+					balance_quantity: SE.integer(10),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					trx_remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+	},
+};
+
+export const pathThreadChallan = {
+	'/thread/challan': {
+		get: {
+			tags: ['thread.challan'],
+			summary: 'Get all Thread Challan',
+			description: 'Get all Thread Challan',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_info_uuid: SE.uuid(),
+					carton_quantity: SE.integer(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['thread.challan'],
+			summary: 'Create Thread Challan',
+			description: 'Create Thread Challan',
+			requestBody: SE.requestBody_schema_ref('thread/challan'),
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/challan'),
+			},
+		},
+	},
+
+	'/thread/challan/{uuid}': {
+		get: {
+			tags: ['thread.challan'],
+			summary: 'Get Thread Challan',
+			description: 'Get Thread Challan',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_info_uuid: SE.uuid(),
+					carton_quantity: SE.integer(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		put: {
+			tags: ['thread.challan'],
+			summary: 'Update Thread Challan',
+			description: 'Update Thread Challan',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('thread/challan'),
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/challan'),
+			},
+		},
+
+		delete: {
+			tags: ['thread.challan'],
+			summary: 'Delete Thread Challan',
+			description: 'Delete Thread Challan',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response(200),
+			},
+		},
+	},
+};
+
+export const pathThreadChallanEntry = {
+	'/thread/challan-entry': {
+		get: {
+			tags: ['thread.challan_entry'],
+			summary: 'Get all Thread Challan Entry',
+			description: 'Get all Thread Challan Entry',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					challan_uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					quantity: SE.integer(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['thread.challan_entry'],
+			summary: 'Create Thread Challan Entry',
+			description: 'Create Thread Challan Entry',
+			requestBody: SE.requestBody_schema_ref('thread/challan_entry'),
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/challan_entry'),
+			},
+		},
+	},
+
+	'/thread/challan-entry/{uuid}': {
+		get: {
+			tags: ['thread.challan_entry'],
+			summary: 'Get Thread Challan Entry',
+			description: 'Get Thread Challan Entry',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					challan_uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					quantity: SE.integer(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		put: {
+			tags: ['thread.challan_entry'],
+			summary: 'Update Thread Challan Entry',
+			description: 'Update Thread Challan Entry',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('thread/challan_entry'),
+			responses: {
+				201: SE.response_schema_ref(201, 'thread/challan_entry'),
+			},
+		},
+
+		delete: {
+			tags: ['thread.challan_entry'],
+			summary: 'Delete Thread Challan Entry',
+			description: 'Delete Thread Challan Entry',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				200: SE.response(200),
+			},
+		},
+	},
+};
+
 // * Thread * //
 
 export const pathThread = {
@@ -750,4 +1157,8 @@ export const pathThread = {
 	...pathThreadBatch,
 	...pathThreadDyesCategory,
 	...pathThreadPrograms,
+	...pathThreadBatchEntryProduction,
+	...pathThreadBatchEntryTrx,
+	...pathThreadChallan,
+	...pathThreadChallanEntry,
 };

@@ -149,6 +149,10 @@ BEGIN
         pi = pi + NEW.pi_cash_quantity
     WHERE uuid = NEW.sfg_uuid;
 
+    UPDATE thread.order_entry SET
+        pi = pi + NEW.pi_cash_quantity
+    WHERE uuid = NEW.thread_order_entry_uuid;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -160,6 +164,10 @@ BEGIN
         pi = pi - OLD.pi_cash_quantity
     WHERE uuid = OLD.sfg_uuid;
 
+    UPDATE thread.order_entry SET
+        pi = pi - OLD.pi_cash_quantity
+    WHERE uuid = OLD.thread_order_entry_uuid;
+
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
@@ -170,6 +178,10 @@ BEGIN
     UPDATE zipper.sfg SET
         pi = pi + NEW.pi_cash_quantity - OLD.pi_cash_quantity
     WHERE uuid = NEW.sfg_uuid;
+
+    UPDATE thread.order_entry SET
+        pi = pi + NEW.pi_cash_quantity - OLD.pi_cash_quantity
+    WHERE uuid = NEW.thread_order_entry_uuid;
 
     RETURN NEW;
 END;
