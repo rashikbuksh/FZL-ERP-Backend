@@ -112,6 +112,11 @@ BEGIN
                         ELSE NEW.production_quantity_in_kg + NEW.wastage 
                     END 
                 ELSE 0
+            END 
+            + 
+            CASE 
+                WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity 
+                ELSE 0 
             END,
         finishing_prod = finishing_prod +
             CASE 
@@ -132,11 +137,11 @@ BEGIN
                 WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity 
                 ELSE 0 
             END,
-        teeth_coloring_prod = teeth_coloring_prod + 
-            CASE 
-                WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity 
-                ELSE 0 
-            END,
+        -- teeth_coloring_prod = teeth_coloring_prod + 
+        --     CASE 
+        --         WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity 
+        --         ELSE 0 
+        --     END,
         coloring_prod = coloring_prod + 
             CASE 
                 WHEN NEW.section = 'coloring' THEN NEW.production_quantity
@@ -271,6 +276,11 @@ BEGIN
                         ELSE (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
                     END 
                 ELSE 0
+            END 
+            + 
+            CASE 
+                WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity - OLD.production_quantity
+                ELSE 0 
             END,
         finishing_prod = finishing_prod + 
             CASE 
@@ -291,11 +301,11 @@ BEGIN
                 WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity - OLD.production_quantity
                 ELSE 0 
             END,
-        teeth_coloring_prod = teeth_coloring_prod + 
-            CASE 
-                WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity - OLD.production_quantity
-                ELSE 0 
-            END,
+        -- teeth_coloring_prod = teeth_coloring_prod + 
+        --     CASE 
+        --         WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity - OLD.production_quantity
+        --         ELSE 0 
+        --     END,
         coloring_prod = coloring_prod + 
             CASE 
                 WHEN NEW.section = 'coloring' THEN NEW.production_quantity - OLD.production_quantity
@@ -428,6 +438,11 @@ BEGIN
                         ELSE OLD.production_quantity_in_kg + OLD.wastage 
                     END 
                 ELSE 0
+            END 
+            - 
+            CASE 
+                WHEN OLD.section = 'teeth_coloring' THEN OLD.production_quantity 
+                ELSE 0 
             END,
         finishing_prod = finishing_prod - 
             CASE 
@@ -448,11 +463,11 @@ BEGIN
                 WHEN OLD.section = 'dying_and_iron' THEN OLD.production_quantity 
                 ELSE 0 
             END,
-        teeth_coloring_prod = teeth_coloring_prod - 
-            CASE 
-                WHEN OLD.section = 'teeth_coloring' THEN OLD.production_quantity 
-                ELSE 0 
-            END,
+        -- teeth_coloring_prod = teeth_coloring_prod - 
+        --     CASE 
+        --         WHEN OLD.section = 'teeth_coloring' THEN OLD.production_quantity 
+        --         ELSE 0 
+        --     END,
         coloring_prod = coloring_prod - 
             CASE 
                 WHEN OLD.section = 'coloring' THEN OLD.production_quantity

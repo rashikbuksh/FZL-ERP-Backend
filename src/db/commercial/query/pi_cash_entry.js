@@ -202,6 +202,8 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { is_update } = req.query;
+
 	const query = sql`
         SELECT
             sfg.uuid as uuid,
@@ -225,7 +227,7 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
 			LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
         WHERE
-            vod.order_info_uuid = ${req.params.order_info_uuid} AND (oe.quantity - sfg.pi) > 0
+            vod.order_info_uuid = ${req.params.order_info_uuid} AND (oe.quantity - sfg.pi) > 0 ${is_update == 'true' ? sql`AND pe.uuid IS NULL` : ''}
         ORDER BY 
             vod.order_number ASC,
             vod.item_description ASC, 
@@ -253,6 +255,8 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { is_update } = req.query;
+
 	const query = sql`
         SELECT
             toe.uuid as uuid,
@@ -273,7 +277,7 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
             LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 			LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
         WHERE
-            toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.pi) > 0
+            toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.pi) > 0 ${is_update == 'true' ? sql`AND pe.uuid IS NULL` : ''}
         ORDER BY 
             toi.id ASC,
             toe.style ASC, 
@@ -301,6 +305,10 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 		const api = await createApi(req);
 		let { order_info_uuids, party_uuid, marketing_uuid } = req?.params;
 
+		let { is_update } = req?.query;
+
+		console.log(is_update);
+
 		if (order_info_uuids === 'null') {
 			return res.status(400).json({ error: 'Order Number is required' });
 		}
@@ -312,7 +320,9 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 
 		const fetchData = async (endpoint, data) => {
 			try {
-				const response = await api.get(`${endpoint}/${data}`);
+				const response = await api.get(
+					`${endpoint}/${data}?is_update=${is_update}`
+				);
 				return response.data; // Ensure to return the data from the response
 			} catch (error) {
 				console.error(error);
@@ -391,6 +401,8 @@ export async function selectPiEntryByPiDetailsByThreadOrderInfoUuids(
 		const api = await createApi(req);
 		let { order_info_uuids, party_uuid, marketing_uuid } = req?.params;
 
+		let { is_update } = req?.query;
+
 		if (order_info_uuids === 'null') {
 			return res.status(400).json({ error: 'Order Number is required' });
 		}
@@ -402,7 +414,7 @@ export async function selectPiEntryByPiDetailsByThreadOrderInfoUuids(
 
 		const fetchDataThread = async (endpoint) =>
 			await api.get(
-				`/commercial/pi-cash-entry/thread-details/by/${endpoint}`
+				`/commercial/pi-cash-entry/thread-details/by/${endpoint}?is_update=${is_update}`
 			);
 
 		const result2 = await Promise.all(
