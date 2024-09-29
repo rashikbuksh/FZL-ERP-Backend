@@ -434,7 +434,7 @@ export async function selectPiEntryByPiDetailsByThreadOrderInfoUuids(
 
 		const fetchDataThread = async (endpoint) =>
 			await api.get(
-				`/commercial/pi-cash-entry/thread-details/by/${endpoint}?is_update=${is_update}`
+				`/commercial/pi-cash-entry/thread-details/by/${endpoint}?${is_update == 'true' ? 'is_update=true' : 'is_update=false'}`
 			);
 
 		const result2 = await Promise.all(
