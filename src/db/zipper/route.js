@@ -38,6 +38,10 @@ zipperRouter.delete(
 	orderInfoOperations.remove
 );
 zipperRouter.get('/order/details', orderInfoOperations.getOrderDetails);
+zipperRouter.put(
+	'/order-info/print-in/update/by/:uuid',
+	orderInfoOperations.updatePrintIn
+);
 
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------
 
