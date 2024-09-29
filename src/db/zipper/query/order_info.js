@@ -345,3 +345,32 @@ export async function getOrderDetails(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function updatePrintIn(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { print_in } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			print_in,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
