@@ -139,6 +139,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		oe.count_length_uuid as count_length_uuid,
 		oe.quantity as order_quantity,
 		oe.bleaching as bleaching,
+		cl.count,
+		cl.length,
 		CONCAT(cl.count, '/', cl.length) as count_length,
 		cl.cone_per_carton,
 		cl.min_weight,
@@ -170,7 +172,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
 	WHERE
 		oe.recipe_uuid IS NOT NULL
-		ORDER BY
+	ORDER BY
 		oe.created_at DESC
 	`;
 
@@ -205,6 +207,8 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		oe.count_length_uuid as count_length_uuid,
 		oe.quantity as order_quantity,
 		oe.bleaching as bleaching,
+		cl.count,
+		cl.length,
 		CONCAT(cl.count, '/', cl.length) as count_length,
 		cl.cone_per_carton,
 		cl.min_weight,
