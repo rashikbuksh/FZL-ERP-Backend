@@ -123,6 +123,7 @@ export const order_entry = thread.table('order_entry', {
 	production_quantity_in_kg: PG_DECIMAL('production_quantity_in_kg').default(
 		0
 	),
+	carton_quantity: integer('carton_quantity').default(0),
 });
 
 export const thread_batch_sequence = thread.sequence('thread_batch_sequence', {
@@ -200,6 +201,7 @@ export const batch_entry = thread.table('batch_entry', {
 	coning_created_at: DateTime('coning_created_at').default(null),
 	coning_updated_at: DateTime('coning_updated_at').default(null),
 	transfer_quantity: PG_DECIMAL('transfer_quantity').default(0),
+	transfer_carton_quantity: integer('transfer_carton_quantity').default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -251,6 +253,7 @@ export const batch_entry_trx = thread.table('batch_entry_trx', {
 		() => batch_entry.uuid
 	),
 	quantity: PG_DECIMAL('quantity').notNull(),
+	carton_quantity: integer('carton_quantity').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

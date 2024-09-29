@@ -185,6 +185,7 @@ export const defThreadOrderEntry = {
 		'short_quantity',
 		'reject_quantity',
 		'coning_carton_quantity',
+		'carton_quantity',
 	],
 
 	properties: {
@@ -288,6 +289,10 @@ export const defThreadOrderEntry = {
 			example: 10.0,
 		},
 		coning_carton_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		carton_quantity: {
 			type: 'number',
 			example: 10.0,
 		},
@@ -423,6 +428,7 @@ export const defThreadBatchEntry = {
 		'quantity',
 		'coning_production_quantity',
 		'coning_carton_quantity',
+		'transfer_carton_quantity',
 		'created_by',
 		'created_at',
 	],
@@ -454,6 +460,10 @@ export const defThreadBatchEntry = {
 			example: 10.0,
 		},
 		transfer_quantity: {
+			type: 'number',
+			example: 10.0,
+		},
+		transfer_carton_quantity: {
 			type: 'number',
 			example: 10.0,
 		},
@@ -622,6 +632,7 @@ export const defThreadBatchEntryTrx = {
 		'uuid',
 		'batch_entry_uuid',
 		'quantity',
+		'carton_quantity',
 		'created_by',
 		'created_at',
 	],
@@ -630,6 +641,7 @@ export const defThreadBatchEntryTrx = {
 		uuid: SE.uuid(),
 		batch_entry_uuid: SE.uuid(),
 		quantity: SE.number(10),
+		carton_quantity: SE.number(10),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
