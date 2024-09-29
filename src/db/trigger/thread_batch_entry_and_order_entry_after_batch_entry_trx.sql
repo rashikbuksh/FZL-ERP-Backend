@@ -4,13 +4,15 @@ BEGIN
     UPDATE thread.batch_entry
     SET
         transfer_quantity = transfer_quantity + NEW.quantity,
-        coning_production_quantity = coning_production_quantity - NEW.quantity
+        coning_production_quantity = coning_production_quantity - NEW.quantity,
+        transfer_carton_quantity = transfer_carton_quantity + NEW.carton_quantity,
+        coning_carton_quantity = coning_carton_quantity - NEW.carton_quantity
     WHERE uuid = NEW.batch_entry_uuid;
 
     UPDATE thread.order_entry
     SET
-        warehouse = warehouse + NEW.quantity
-
+        warehouse = warehouse + NEW.quantity,
+        carton_quantity = carton_quantity + NEW.carton_quantity
     WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE uuid = NEW.batch_entry_uuid);
     RETURN NEW;
 END;
@@ -25,13 +27,15 @@ BEGIN
     UPDATE thread.batch_entry
     SET
         transfer_quantity = transfer_quantity - OLD.quantity,
-        coning_production_quantity = coning_production_quantity + OLD.quantity
+        coning_production_quantity = coning_production_quantity + OLD.quantity,
+        transfer_carton_quantity = transfer_carton_quantity - OLD.carton_quantity,
+        coning_carton_quantity = coning_carton_quantity + OLD.carton_quantity
     WHERE uuid = OLD.batch_entry_uuid;
 
     UPDATE thread.order_entry
     SET
-        warehouse = warehouse - OLD.quantity
-
+        warehouse = warehouse - OLD.quantity,
+        carton_quantity = carton_quantity - OLD.carton_quantity
     WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE uuid = OLD.batch_entry_uuid);
     RETURN OLD;
 END;
@@ -44,13 +48,15 @@ BEGIN
     UPDATE thread.batch_entry
     SET
         transfer_quantity = transfer_quantity - OLD.quantity + NEW.quantity,
-        coning_production_quantity = coning_production_quantity + OLD.quantity - NEW.quantity
+        coning_production_quantity = coning_production_quantity + OLD.quantity - NEW.quantity,
+        transfer_carton_quantity = transfer_carton_quantity - OLD.carton_quantity + NEW.carton_quantity,
+        coning_carton_quantity = coning_carton_quantity + OLD.carton_quantity - NEW.carton_quantity
     WHERE uuid = NEW.batch_entry_uuid;
 
     UPDATE thread.order_entry
     SET
-        warehouse = warehouse - OLD.quantity + NEW.quantity
-
+        warehouse = warehouse - OLD.quantity + NEW.quantity,
+        carton_quantity = carton_quantity - OLD.carton_quantity + NEW.carton_quantity
     WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE uuid = NEW.batch_entry_uuid);
     RETURN NEW;
 END;

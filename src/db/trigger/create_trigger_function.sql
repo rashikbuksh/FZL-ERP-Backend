@@ -168,13 +168,17 @@ BEGIN
         pi = pi - OLD.pi_cash_quantity
     WHERE uuid = OLD.thread_order_entry_uuid;
 
-    -- UPDATE pi_cash table and remove the particular order_info_uuids or thread_order_entry_uuids if pi_cash_entry has has no sfg_uuid or thread_order_entry_uuid in zipper.sfg or thread.order_entry
+    -- UPDATE pi_cash table and remove the particular order_info_uuids or thread_order_entry_uuids from the array if pi_cash_entry has has no sfg_uuid or thread_order_entry_uuid of the removed zipper.sfg tables order_info_uuid or thread.order_entry tables order_info_uuid
     UPDATE commercial.pi_cash
-    SET order_info_uuids = array_remove(order_info_uuids, OLD.order_info_uuid),
-        thread_order_entry_uuids = array_remove(thread_order_entry_uuids, OLD.thread_order_entry_uuid)
-    WHERE uuid = OLD.pi_cash_uuid AND NOT EXISTS (
-        SELECT 1 FROM zipper.sfg WHERE uuid = ANY(order_info_uuids)
-    );
+    SET
+        order_info_uuids = array_remove(order_info_uuids, vod.order_info_uuid),
+        thread_order_info_uuids = array_remove(thread_order_info_uuids, toi.uuid)
+    FROM zipper.sfg sfg
+    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+    LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+    LEFT JOIN thread.order_entry toe ON sfg.order_entry_uuid = toe.uuid
+    LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+    WHERE sfg.uuid = OLD.sfg_uuid OR toe.uuid = OLD.thread_order_entry_uuid;
 
     RETURN OLD;
 END;
