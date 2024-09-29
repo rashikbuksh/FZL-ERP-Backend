@@ -32,6 +32,7 @@ export async function insert(req, res, next) {
 		created_by,
 		created_at,
 		remarks,
+		print_in,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -54,6 +55,7 @@ export async function insert(req, res, next) {
 			created_by,
 			created_at,
 			remarks,
+			print_in,
 		})
 		.returning({
 			insertedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
@@ -94,6 +96,7 @@ export async function update(req, res, next) {
 		created_at,
 		updated_at,
 		remarks,
+		print_in,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -116,6 +119,7 @@ export async function update(req, res, next) {
 			created_at,
 			updated_at,
 			remarks,
+			print_in,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -189,6 +193,7 @@ export async function selectAll(req, res, next) {
 			created_at: order_info.created_at,
 			updated_at: order_info.updated_at,
 			remarks: order_info.remarks,
+			print_in: order_info.print_in,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -261,6 +266,7 @@ export async function select(req, res, next) {
 			created_at: order_info.created_at,
 			updated_at: order_info.updated_at,
 			remarks: order_info.remarks,
+			print_in: order_info.print_in,
 		})
 		.from(order_info)
 		.leftJoin(

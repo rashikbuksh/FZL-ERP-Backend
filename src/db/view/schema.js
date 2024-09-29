@@ -77,6 +77,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_info.status AS order_status,
     order_info.created_at,
     order_info.updated_at,
+    order_info.print_in,
     concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
     order_description.item,
     op_item.name AS item_name,
