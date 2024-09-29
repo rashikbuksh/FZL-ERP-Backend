@@ -272,12 +272,12 @@ export const pathSliderDieCasting = {
 										type: 'string',
 										example: 'body shape short name',
 									},
-									puller_link: SE.uuid(),
-									puller_link_name: {
+									slider_link: SE.uuid(),
+									slider_link_name: {
 										type: 'string',
 										example: 'puller link name',
 									},
-									puller_link_short_name: {
+									slider_link_short_name: {
 										type: 'string',
 										example: 'puller link short name',
 									},
@@ -411,12 +411,12 @@ export const pathSliderDieCasting = {
 								type: 'string',
 								example: 'body shape short name',
 							},
-							puller_link: SE.uuid(),
-							puller_link_name: {
+							slider_link: SE.uuid(),
+							slider_link_name: {
 								type: 'string',
 								example: 'puller link name',
 							},
-							puller_link_short_name: {
+							slider_link_short_name: {
 								type: 'string',
 								example: 'puller link short name',
 							},
@@ -913,9 +913,9 @@ export const pathSliderDieCastingTransaction = {
 					slider_body_shape: SE.uuid(),
 					slider_body_shape_name: SE.string('Standard'),
 					slider_body_shape_short_name: SE.string('SP'),
-					puller_link: SE.uuid(),
-					puller_link_name: SE.string('Standard'),
-					puller_link_short_name: SE.string('SP'),
+					slider_link: SE.uuid(),
+					slider_link_name: SE.string('Standard'),
+					slider_link_short_name: SE.string('SP'),
 					trx_quantity: SE.number(1),
 					weight: SE.number(1),
 					created_by: SE.uuid(),
@@ -981,9 +981,9 @@ export const pathSliderDieCastingTransaction = {
 					slider_body_shape: SE.uuid(),
 					slider_body_shape_name: SE.string('Standard'),
 					slider_body_shape_short_name: SE.string('SP'),
-					puller_link: SE.uuid(),
-					puller_link_name: SE.string('Standard'),
-					puller_link_short_name: SE.string('SP'),
+					slider_link: SE.uuid(),
+					slider_link_name: SE.string('Standard'),
+					slider_link_short_name: SE.string('SP'),
 					trx_quantity: SE.number(1),
 					weight: SE.number(1),
 					created_by: SE.uuid(),
@@ -1165,9 +1165,9 @@ const pathSliderTransaction = {
 					puller_color_short_name: SE.string(
 						'puller_color_short_name'
 					),
-					puller_link: SE.uuid(),
-					puller_link_name: SE.string('puller_link_name'),
-					puller_link_short_name: SE.string('puller_link_short_name'),
+					slider_link: SE.uuid(),
+					slider_link_name: SE.string('slider_link_name'),
+					slider_link_short_name: SE.string('slider_link_short_name'),
 					logo_type: SE.uuid(),
 					logo_type_name: SE.string('logo_type_name'),
 					logo_type_short_name: SE.string('logo_type_short_name'),
@@ -1260,9 +1260,9 @@ const pathSliderTransaction = {
 					puller_color_short_name: SE.string(
 						'puller_color_short_name'
 					),
-					puller_link: SE.uuid(),
-					puller_link_name: SE.string('puller_link_name'),
-					puller_link_short_name: SE.string('puller_link_short_name'),
+					slider_link: SE.uuid(),
+					slider_link_name: SE.string('slider_link_name'),
+					slider_link_short_name: SE.string('slider_link_short_name'),
 					logo_type: SE.uuid(),
 					logo_type_name: SE.string('logo_type_name'),
 					logo_type_short_name: SE.string('logo_type_short_name'),
@@ -1372,9 +1372,9 @@ const pathSliderTransaction = {
 					puller_color_short_name: SE.string(
 						'puller_color_short_name'
 					),
-					puller_link: SE.uuid(),
-					puller_link_name: SE.string('puller_link_name'),
-					puller_link_short_name: SE.string('puller_link_short_name'),
+					slider_link: SE.uuid(),
+					slider_link_name: SE.string('slider_link_name'),
+					slider_link_short_name: SE.string('slider_link_short_name'),
 					logo_type: SE.uuid(),
 					logo_type_name: SE.string('logo_type_name'),
 					logo_type_short_name: SE.string('logo_type_short_name'),
@@ -1534,9 +1534,9 @@ const pathTrxAgainstStock = {
 					slider_body_shape_short_name: SE.string(
 						'slider_body_shape_short_name'
 					),
-					puller_link: SE.uuid(),
-					puller_link_name: SE.string('puller_link_name'),
-					puller_link_short_name: SE.string('puller_link_short_name'),
+					slider_link: SE.uuid(),
+					slider_link_name: SE.string('slider_link_name'),
+					slider_link_short_name: SE.string('slider_link_short_name'),
 					quantity: SE.number(1),
 					weight: SE.number(100),
 					created_by: SE.uuid(),
@@ -1596,9 +1596,9 @@ const pathTrxAgainstStock = {
 					slider_body_shape_short_name: SE.string(
 						'slider_body_shape_short_name'
 					),
-					puller_link: SE.uuid(),
-					puller_link_name: SE.string('puller_link_name'),
-					puller_link_short_name: SE.string('puller_link_short_name'),
+					slider_link: SE.uuid(),
+					slider_link_name: SE.string('slider_link_name'),
+					slider_link_short_name: SE.string('slider_link_short_name'),
 					quantity: SE.number(1),
 					weight: SE.number(100),
 					created_by: SE.uuid(),
@@ -1775,9 +1775,9 @@ const pathSliderProduction = {
 					puller_color_short_name: SE.string(
 						'puller_color_short_name'
 					),
-					puller_link: SE.uuid(),
-					puller_link_name: SE.string('puller_link_name'),
-					puller_link_short_name: SE.string('puller_link_short_name'),
+					slider_link: SE.uuid(),
+					slider_link_name: SE.string('slider_link_name'),
+					slider_link_short_name: SE.string('slider_link_short_name'),
 					logo_type: SE.uuid(),
 					logo_type_name: SE.string('logo_type_name'),
 					logo_type_short_name: SE.string('logo_type_short_name'),

@@ -66,7 +66,6 @@ export const def_zipper_order_description = SED({
 		'end_user',
 		'light_preference',
 		'garments_wash',
-		'puller_link',
 		'created_by',
 	],
 	properties: {
@@ -102,7 +101,6 @@ export const def_zipper_order_description = SED({
 		garment: SE.string(),
 		light_preference: SE.string(),
 		garments_wash: SE.string(),
-		puller_link: SE.string(),
 		created_by: SE.uuid(),
 		slider_finishing_stock: SE.number(),
 	},

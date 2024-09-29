@@ -103,7 +103,7 @@ export const die_casting = slider.table('die_casting', {
 	slider_body_shape: defaultUUID('slider_body_shape')
 		.default(null)
 		.references(() => publicSchema.properties.uuid),
-	puller_link: defaultUUID('puller_link')
+	slider_link: defaultUUID('slider_link')
 		.default(null)
 		.references(() => publicSchema.properties.uuid),
 	is_logo_body: integer('is_logo_body').default(0),

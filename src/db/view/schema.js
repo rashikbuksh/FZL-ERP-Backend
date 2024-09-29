@@ -96,9 +96,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.lock_type,
     op_lock.name AS lock_type_name,
     op_lock.short_name AS lock_type_short_name,
-    order_description.tape_color,
-    op_tape_color.name AS tape_color_name,
-    op_tape_color.short_name AS tape_color_short_name,
     order_description.teeth_color,
     op_teeth_color.name AS teeth_color_name,
     op_teeth_color.short_name AS teeth_color_short_name,
@@ -136,9 +133,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.slider_body_shape,
     op_slider_body_shape.name AS slider_body_shape_name,
     op_slider_body_shape.short_name AS slider_body_shape_short_name,
-    order_description.slider_link,
-    op_slider_link.name AS slider_link_name,
-    op_slider_link.short_name AS slider_link_short_name,
     order_description.end_user,
     op_end_user.name AS end_user_name,
     op_end_user.short_name AS end_user_short_name,
@@ -147,9 +141,9 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     op_light_preference.name AS light_preference_name,
     op_light_preference.short_name AS light_preference_short_name,
     order_description.garments_wash,
-    order_description.puller_link,
-    op_puller_link.name AS puller_link_name,
-    op_puller_link.short_name AS puller_link_short_name,
+    order_description.slider_link,
+    op_slider_link.name AS slider_link_name,
+    op_slider_link.short_name AS slider_link_short_name,
     order_info.marketing_priority,
     order_info.factory_priority,
     order_description.garments_remarks,
@@ -174,7 +168,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_end ON op_end.uuid = order_description.end_type
      LEFT JOIN properties op_puller ON op_puller.uuid = order_description.puller_type
      LEFT JOIN properties op_lock ON op_lock.uuid = order_description.lock_type
-     LEFT JOIN properties op_tape_color ON op_tape_color.uuid = order_description.tape_color
      LEFT JOIN properties op_teeth_color ON op_teeth_color.uuid = order_description.teeth_color
      LEFT JOIN properties op_puller_color ON op_puller_color.uuid = order_description.puller_color
      LEFT JOIN properties op_hand ON op_hand.uuid = order_description.hand
@@ -187,7 +180,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
      LEFT JOIN properties op_slider_link ON op_slider_link.uuid = order_description.slider_link
      LEFT JOIN properties op_end_user ON op_end_user.uuid = order_description.end_user
      LEFT JOIN properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
-     LEFT JOIN properties op_puller_link ON op_puller_link.uuid = order_description.puller_link
      LEFT JOIN slider.stock ON stock.order_description_uuid = order_description.uuid
      LEFT JOIN zipper.tape_coil tc ON tc.uuid = order_description.tape_coil_uuid
      LEFT JOIN properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type;

@@ -31,6 +31,7 @@ export const count_length = thread.table(
 		sst: text('sst').notNull(),
 		min_weight: PG_DECIMAL('min_weight').notNull(),
 		max_weight: PG_DECIMAL('max_weight').notNull(),
+		cone_per_carton: integer('cone_per_carton').notNull().default(0),
 		price: PG_DECIMAL('price').notNull(),
 		created_by: defaultUUID('created_by')
 			.notNull()

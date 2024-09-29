@@ -143,9 +143,9 @@ export async function selectAll(req, res, next) {
 			slider_body_shape: die_casting.slider_body_shape,
 			slider_body_shape_name: sliderBodyShapeProperties.name,
 			slider_body_shape_short_name: sliderBodyShapeProperties.short_name,
-			puller_link: die_casting.puller_link,
-			puller_link_name: pullerLinkProperties.name,
-			puller_link_short_name: pullerTypeProperties.short_name,
+			slider_link: die_casting.slider_link,
+			slider_link_name: pullerLinkProperties.name,
+			slider_link_short_name: pullerTypeProperties.short_name,
 			is_logo_body: die_casting.is_logo_body,
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: die_casting.quantity,
@@ -181,7 +181,7 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(
 			pullerLinkProperties,
-			eq(die_casting.puller_link, pullerLinkProperties.uuid)
+			eq(die_casting.slider_link, pullerLinkProperties.uuid)
 		)
 		.orderBy(desc(die_casting.created_at));
 
@@ -219,9 +219,9 @@ export async function select(req, res, next) {
 			slider_body_shape: die_casting.slider_body_shape,
 			slider_body_shape_name: sliderBodyShapeProperties.name,
 			slider_body_shape_short_name: sliderBodyShapeProperties.short_name,
-			puller_link: die_casting.puller_link,
-			puller_link_name: pullerLinkProperties.name,
-			puller_link_short_name: pullerTypeProperties.short_name,
+			slider_link: die_casting.slider_link,
+			slider_link_name: pullerLinkProperties.name,
+			slider_link_short_name: pullerTypeProperties.short_name,
 			is_logo_body: die_casting.is_logo_body,
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: die_casting.quantity,
@@ -257,7 +257,7 @@ export async function select(req, res, next) {
 		)
 		.leftJoin(
 			pullerLinkProperties,
-			eq(die_casting.puller_link, pullerLinkProperties.uuid)
+			eq(die_casting.slider_link, pullerLinkProperties.uuid)
 		)
 		.where(eq(die_casting.uuid, req.params.uuid));
 

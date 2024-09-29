@@ -37,6 +37,12 @@ export const sliderStartingSectionEnum = zipper.enum(
 	['die_casting', 'slider_assembly', 'coloring', '---']
 );
 
+export const print_in_enum = zipper.enum('print_in_enum', [
+	'portrait',
+	'landscape',
+	'break_down',
+]);
+
 export const order_info = zipper.table('order_info', {
 	uuid: uuid_primary,
 	id: integer('id')
@@ -71,6 +77,7 @@ export const order_info = zipper.table('order_info', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	print_in: print_in_enum('print_in').default('portrait'),
 });
 
 export const order_description = zipper.table('order_description', {
@@ -97,9 +104,6 @@ export const order_description = zipper.table('order_description', {
 		() => publicSchema.properties.uuid
 	),
 	puller_type: defaultUUID('puller_type').references(
-		() => publicSchema.properties.uuid
-	),
-	tape_color: defaultUUID('tape_color').references(
 		() => publicSchema.properties.uuid
 	),
 	teeth_color: defaultUUID('teeth_color').references(
@@ -153,9 +157,6 @@ export const order_description = zipper.table('order_description', {
 		() => publicSchema.properties.uuid
 	),
 	garments_wash: text('garments_wash').default(null),
-	puller_link: defaultUUID('puller_link').references(
-		() => publicSchema.properties.uuid
-	),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	garments_remarks: text('garments_remarks').default(null),
 	// nylon_plastic_finishing: PG_DECIMAL('nylon_plastic_finishing').default(0),

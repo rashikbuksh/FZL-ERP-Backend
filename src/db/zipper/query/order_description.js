@@ -86,7 +86,6 @@ export async function insert(req, res, next) {
 		end_type,
 		lock_type,
 		puller_type,
-		tape_color,
 		teeth_color,
 		teeth_type,
 		puller_color,
@@ -111,7 +110,6 @@ export async function insert(req, res, next) {
 		garment,
 		light_preference,
 		garments_wash,
-		puller_link,
 		created_by,
 		garments_remarks,
 	} = req.body;
@@ -127,7 +125,6 @@ export async function insert(req, res, next) {
 			end_type,
 			lock_type,
 			puller_type,
-			tape_color,
 			teeth_color,
 			teeth_type,
 			puller_color,
@@ -152,7 +149,6 @@ export async function insert(req, res, next) {
 			garment,
 			light_preference,
 			garments_wash,
-			puller_link,
 			created_by,
 			garments_remarks,
 		})
@@ -183,7 +179,6 @@ export async function update(req, res, next) {
 		end_type,
 		lock_type,
 		puller_type,
-		tape_color,
 		teeth_color,
 		teeth_type,
 		puller_color,
@@ -209,7 +204,6 @@ export async function update(req, res, next) {
 		garment,
 		light_preference,
 		garments_wash,
-		puller_link,
 		created_by,
 		garments_remarks,
 	} = req.body;
@@ -224,7 +218,6 @@ export async function update(req, res, next) {
 			end_type,
 			lock_type,
 			puller_type,
-			tape_color,
 			teeth_color,
 			teeth_type,
 			puller_color,
@@ -250,7 +243,6 @@ export async function update(req, res, next) {
 			garment,
 			light_preference,
 			garments_wash,
-			puller_link,
 			created_by,
 			garments_remarks,
 		})
@@ -318,9 +310,6 @@ export async function selectAll(req, res, next) {
 			puller_type: order_description.puller_type,
 			puller_type_name: pullerTypeProperties.name,
 			puller_type_short_name: pullerTypeProperties.short_name,
-			tape_color: order_description.teeth_color,
-			tape_color_name: tapeColorProperties.name,
-			tape_color_short_name: tapeColorProperties.short_name,
 			teeth_color: order_description.teeth_color,
 			teeth_color_name: teethColorProperties.name,
 			teeth_color_short_name: teethColorProperties.short_name,
@@ -372,9 +361,6 @@ export async function selectAll(req, res, next) {
 			light_preference_name: lightPreferenceProperties.name,
 			light_preference_short_name: lightPreferenceProperties.short_name,
 			garments_wash: order_description.garments_wash,
-			puller_link: order_description.puller_link,
-			puller_link_name: pullerLinkProperties.name,
-			puller_link_short_name: pullerLinkProperties.short_name,
 			created_by: order_description.created_by,
 			created_by_name: hrSchema.users.name,
 			garments_remarks: order_description.garments_remarks,
@@ -412,10 +398,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			pullerTypeProperties,
 			eq(order_description.puller_type, pullerTypeProperties.uuid)
-		)
-		.leftJoin(
-			tapeColorProperties,
-			eq(order_description.tape_color, tapeColorProperties.uuid)
 		)
 		.leftJoin(
 			teethColorProperties,
@@ -474,10 +456,6 @@ export async function selectAll(req, res, next) {
 				order_description.light_preference,
 				lightPreferenceProperties.uuid
 			)
-		)
-		.leftJoin(
-			pullerLinkProperties,
-			eq(order_description.puller_link, pullerLinkProperties.uuid)
 		)
 		.leftJoin(
 			hrSchema.users,
@@ -530,9 +508,6 @@ export async function select(req, res, next) {
 			puller_type: order_description.puller_type,
 			puller_type_name: pullerTypeProperties.name,
 			puller_type_short_name: pullerTypeProperties.short_name,
-			tape_color: order_description.teeth_color,
-			tape_color_name: tapeColorProperties.name,
-			tape_color_short_name: tapeColorProperties.short_name,
 			teeth_color: order_description.teeth_color,
 			teeth_color_name: teethColorProperties.name,
 			teeth_color_short_name: teethColorProperties.short_name,
@@ -584,9 +559,6 @@ export async function select(req, res, next) {
 			light_preference_name: lightPreferenceProperties.name,
 			light_preference_short_name: lightPreferenceProperties.short_name,
 			garments_wash: order_description.garments_wash,
-			puller_link: order_description.puller_link,
-			puller_link_name: pullerLinkProperties.name,
-			puller_link_short_name: pullerLinkProperties.short_name,
 			created_by: order_description.created_by,
 			created_by_name: hrSchema.users.name,
 			garments_remarks: order_description.garments_remarks,
@@ -624,10 +596,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			pullerTypeProperties,
 			eq(order_description.puller_type, pullerTypeProperties.uuid)
-		)
-		.leftJoin(
-			tapeColorProperties,
-			eq(order_description.tape_color, tapeColorProperties.uuid)
 		)
 		.leftJoin(
 			teethColorProperties,
@@ -686,10 +654,6 @@ export async function select(req, res, next) {
 				order_description.light_preference,
 				lightPreferenceProperties.uuid
 			)
-		)
-		.leftJoin(
-			pullerLinkProperties,
-			eq(order_description.puller_link, pullerLinkProperties.uuid)
 		)
 		.leftJoin(
 			hrSchema.users,

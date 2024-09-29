@@ -96,9 +96,9 @@ export async function selectAll(req, res, next) {
 			dc.slider_body_shape,
 			op_slider_body_shape.name AS slider_body_shape_name,
 			op_slider_body_shape.short_name AS slider_body_shape_short_name,
-			dc.puller_link,
-			op_puller_link.name AS puller_link_name,
-			op_puller_link.short_name AS puller_link_short_name,
+			dc.slider_link,
+			op_slider_link.name AS slider_link_name,
+			op_slider_link.short_name AS slider_link_short_name,
 			dct.trx_quantity,
 			dct.weight,
 			(dc.weight + dct.weight) as max_weight,
@@ -126,7 +126,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
 		LEFT JOIN
-			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+			public.properties op_slider_link ON dc.slider_link = op_slider_link.uuid
 		LEFT JOIN 
 			slider.stock ON dct.stock_uuid = stock.uuid
 		LEFT JOIN 
@@ -178,9 +178,9 @@ export async function select(req, res, next) {
 			dc.slider_body_shape,
 			op_slider_body_shape.name AS slider_body_shape_name,
 			op_slider_body_shape.short_name AS slider_body_shape_short_name,
-			dc.puller_link,
-			op_puller_link.name AS puller_link_name,
-			op_puller_link.short_name AS puller_link_short_name,
+			dc.slider_link,
+			op_slider_link.name AS slider_link_name,
+			op_slider_link.short_name AS slider_link_short_name,
 			dct.trx_quantity,
 			dct.weight,
 			(dc.weight + dct.weight) as max_weight,
@@ -208,7 +208,7 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
 		LEFT JOIN
-			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+			public.properties op_slider_link ON dc.slider_link = op_slider_link.uuid
 		LEFT JOIN 
 			slider.stock ON dct.stock_uuid = stock.uuid
 		LEFT JOIN 
@@ -269,9 +269,9 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			stock.slider_body_shape,
 			slider_body_shape_properties.name as slider_body_shape_name,
 			slider_body_shape_properties.short_name as slider_body_shape_short_name,
-			stock.puller_link,
-			slider_puller_link_properties.name as puller_link_name,
-			slider_puller_link_properties.short_name as puller_link_short_name,
+			stock.slider_link,
+			slider_slider_link_properties.name as slider_link_name,
+			slider_slider_link_properties.short_name as slider_link_short_name,
 			coalesce(stock.order_quantity, 0) as order_quantity,
 			coalesce(die_casting_transaction_given.quantity,0) as provided_quantity,
 			coalesce(stock.order_quantity, 0) - coalesce(die_casting_transaction_given.quantity, 0) as balance_quantity
@@ -292,7 +292,7 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 		LEFT JOIN
 			public.properties slider_body_shape_properties ON stock.slider_body_shape = slider_body_shape_properties.uuid
 		LEFT JOIN
-			public.properties slider_puller_link_properties ON stock.puller_link = slider_puller_link_properties.uuid
+			public.properties slider_slider_link_properties ON stock.slider_link = slider_slider_link_properties.uuid
 		LEFT JOIN 
 			zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
 		LEFT JOIN
@@ -316,7 +316,7 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			dc.puller_type = stock.puller_type AND
 			dc.logo_type = stock.logo_type AND 
 			dc.slider_body_shape = stock.slider_body_shape AND
-			dc.puller_link = stock.puller_link)
+			dc.slider_link = stock.slider_link)
 		WHERE
 			stock.order_description_uuid = ${order_info_uuid}
 		`;

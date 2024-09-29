@@ -94,9 +94,9 @@ export async function selectAll(req, res, next) {
 			dc.slider_body_shape,
 			op_slider_body_shape.name AS slider_body_shape_name,
 			op_slider_body_shape.short_name AS slider_body_shape_short_name,
-			dc.puller_link,
-			op_puller_link.name AS puller_link_name,
-			op_puller_link.short_name AS puller_link_short_name,
+			dc.slider_link,
+			op_slider_link.name AS slider_link_name,
+			op_slider_link.short_name AS slider_link_short_name,
 			tas.quantity,
 			tas.weight,
 			(dc.weight + tas.weight) as max_weight,
@@ -123,7 +123,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
 		LEFT JOIN
-			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+			public.properties op_slider_link ON dc.slider_link = op_slider_link.uuid
 		ORDER BY
 			tas.created_at DESC;
 			`;
@@ -169,9 +169,9 @@ export async function select(req, res, next) {
 			dc.slider_body_shape,
 			op_slider_body_shape.name AS slider_body_shape_name,
 			op_slider_body_shape.short_name AS slider_body_shape_short_name,
-			dc.puller_link,
-			op_puller_link.name AS puller_link_name,
-			op_puller_link.short_name AS puller_link_short_name,
+			dc.slider_link,
+			op_slider_link.name AS slider_link_name,
+			op_slider_link.short_name AS slider_link_short_name,
 			tas.quantity,
 			tas.weight,
 			(dc.weight + tas.weight) as max_weight,
@@ -198,7 +198,7 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			public.properties op_slider_body_shape ON dc.slider_body_shape = op_slider_body_shape.uuid
 		LEFT JOIN
-			public.properties op_puller_link ON dc.puller_link = op_puller_link.uuid
+			public.properties op_slider_link ON dc.slider_link = op_slider_link.uuid
 		WHERE
 			tas.uuid = ${uuid};
 			`;

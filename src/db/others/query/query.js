@@ -714,7 +714,7 @@ export async function selectPi(req, res, next) {
 
 	const query = sql`
 	SELECT
-		pi_cash.uuid AS value,
+		DISTINCT pi_cash.uuid AS value,
 		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
 		bank.name AS pi_bank,
 		SUM(pi_cash_entry.pi_cash_quantity * zipper.order_entry.party_price) AS pi_value,
@@ -732,11 +732,13 @@ export async function selectPi(req, res, next) {
 		zipper.order_entry ON order_entry.uuid = sfg.order_entry_uuid
 	LEFT JOIN
 		zipper.v_order_details ON v_order_details.order_description_uuid = order_entry.order_description_uuid
-	WHERE pi_cash.is_pi = 1 ${is_update == 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
+	WHERE
+		pi_cash.is_pi = 1 
+		${is_update == 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
 	GROUP BY
 		pi_cash.uuid,
 		bank.name,
-		v_order_details.order_number,
+		v_order_details.party_name,
 		v_order_details.marketing_name;
 	`;
 
