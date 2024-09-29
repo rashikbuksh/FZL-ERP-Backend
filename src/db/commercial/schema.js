@@ -113,11 +113,11 @@ export const pi_cash = commercial.table('pi_cash', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+	weight: PG_DECIMAL('weight').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
-	weight: PG_DECIMAL('weight').default(0),
 });
 
 export const pi_cash_entry = commercial.table('pi_cash_entry', {

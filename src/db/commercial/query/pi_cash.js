@@ -31,6 +31,7 @@ export async function insert(req, res, next) {
 		remarks,
 		is_pi,
 		conversion_rate,
+		weight,
 		receive_amount,
 	} = req.body;
 
@@ -52,6 +53,7 @@ export async function insert(req, res, next) {
 			remarks,
 			is_pi,
 			conversion_rate,
+			weight,
 			receive_amount,
 		})
 		.returning({
@@ -153,6 +155,7 @@ export async function selectAll(req, res, next) {
 			remarks: pi_cash.remarks,
 			is_pi: pi_cash.is_pi,
 			conversion_rate: pi_cash.conversion_rate,
+			weight: pi_cash.weight,
 			receive_amount: pi_cash.receive_amount,
 		})
 		.from(pi_cash)
@@ -239,6 +242,7 @@ export async function select(req, res, next) {
 			remarks: pi_cash.remarks,
 			is_pi: pi_cash.is_pi,
 			conversion_rate: pi_cash.conversion_rate,
+			weight: pi_cash.weight,
 			receive_amount: pi_cash.receive_amount,
 		})
 		.from(pi_cash)
@@ -509,6 +513,7 @@ export async function selectPiByLcUuid(req, res, next) {
 			remarks: pi_cash.remarks,
 			is_pi: pi_cash.is_pi,
 			conversion_rate: pi_cash.conversion_rate,
+			weight: pi_cash.weight,
 			receive_amount: pi_cash.receive_amount,
 		})
 		.from(pi_cash)
