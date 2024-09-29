@@ -184,7 +184,7 @@ export const defThreadOrderEntry = {
 		'warehouse',
 		'short_quantity',
 		'reject_quantity',
-		'production_quantity_in_kg',
+		'coning_carton_quantity',
 	],
 
 	properties: {
@@ -287,7 +287,7 @@ export const defThreadOrderEntry = {
 			type: 'number',
 			example: 10.0,
 		},
-		production_quantity_in_kg: {
+		coning_carton_quantity: {
 			type: 'number',
 			example: 10.0,
 		},
@@ -422,7 +422,7 @@ export const defThreadBatchEntry = {
 		'order_entry_uuid',
 		'quantity',
 		'coning_production_quantity',
-		'coning_production_quantity_in_kg',
+		'coning_carton_quantity',
 		'created_by',
 		'created_at',
 	],
@@ -449,7 +449,7 @@ export const defThreadBatchEntry = {
 			type: 'number',
 			example: 10.0,
 		},
-		coning_production_quantity_in_kg: {
+		coning_carton_quantity: {
 			type: 'number',
 			example: 10.0,
 		},
@@ -596,7 +596,7 @@ export const defThreadBatchEntryProduction = {
 		'uuid',
 		'batch_entry_uuid',
 		'production_quantity',
-		'production_quantity_in_kg',
+		'coning_carton_quantity',
 		'created_by',
 		'created_at',
 	],
@@ -605,7 +605,7 @@ export const defThreadBatchEntryProduction = {
 		uuid: SE.uuid(),
 		batch_entry_uuid: SE.uuid(),
 		production_quantity: SE.number(10),
-		production_quantity_in_kg: SE.number(10),
+		coning_carton_quantity: SE.number(10),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
