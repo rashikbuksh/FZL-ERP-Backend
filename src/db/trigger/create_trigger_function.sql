@@ -168,6 +168,14 @@ BEGIN
         pi = pi - OLD.pi_cash_quantity
     WHERE uuid = OLD.thread_order_entry_uuid;
 
+    -- UPDATE pi_cash table and remove the particular order_info_uuids or thread_order_entry_uuids if pi_cash_entry has has no sfg_uuid or thread_order_entry_uuid in zipper.sfg or thread.order_entry
+    UPDATE commercial.pi_cash
+    SET order_info_uuids = array_remove(order_info_uuids, OLD.order_info_uuid),
+        thread_order_entry_uuids = array_remove(thread_order_entry_uuids, OLD.thread_order_entry_uuid)
+    WHERE uuid = OLD.pi_cash_uuid AND NOT EXISTS (
+        SELECT 1 FROM zipper.sfg WHERE uuid = ANY(order_info_uuids)
+    );
+
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;

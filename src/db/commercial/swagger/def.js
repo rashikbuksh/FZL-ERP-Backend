@@ -107,6 +107,7 @@ export const defCommercialPiCash = SED({
 		remarks: SE.string('remarks'),
 		is_pi: SE.integer(0),
 		conversion_rate: SE.number(1000.0),
+		weight: SE.number(1000.0),
 		receive_amount: SE.number(1000.0),
 	},
 	xml: 'Commercial/PiCash',
