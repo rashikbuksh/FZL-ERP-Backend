@@ -214,7 +214,7 @@ export async function getBatchEntryTrxDetails(req, res, next) {
 		thread.batch ON be.batch_uuid = batch.uuid
 )
 	SELECT * FROM calculated_balance
-WHERE balance_quantity > 0;
+WHERE balance_quantity >= 0;
 	`;
 
 	const resultPromise = db.execute(query);
