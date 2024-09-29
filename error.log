@@ -2571,3 +2571,4 @@
 {"code":"42703","file":"parse_relation.c","hint":"Perhaps you meant to reference the column \"toi.id\".","length":158,"level":"\u001b[31merror\u001b[39m","line":"3738","name":"error","position":"988","routine":"errorMissingColumn","severity":"ERROR","timestamp":"2024-09-26 08:13:39 PM"}
 {"code":"42703","file":"parse_relation.c","hint":"Perhaps you meant to reference the column \"toi.id\".","length":158,"level":"\u001b[31merror\u001b[39m","line":"3738","name":"error","position":"988","routine":"errorMissingColumn","severity":"ERROR","timestamp":"2024-09-26 08:13:42 PM"}
 {"code":"42703","file":"parse_relation.c","hint":"Perhaps you meant to reference the column \"toi.id\".","length":158,"level":"\u001b[31merror\u001b[39m","line":"3738","name":"error","position":"988","routine":"errorMissingColumn","severity":"ERROR","timestamp":"2024-09-26 08:13:46 PM"}
+{"level":"\u001b[31merror\u001b[39m","timestamp":"2024-09-29 04:46:57 PM"}

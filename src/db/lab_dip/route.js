@@ -11,10 +11,10 @@ const labDipRouter = Router();
 // info routes
 
 labDipRouter.get('/info', infoOperations.selectAll);
-labDipRouter.get('/info/:uuid', validateUuidParam(), infoOperations.select);
+labDipRouter.get('/info/:uuid', infoOperations.select);
 labDipRouter.post('/info', infoOperations.insert);
 labDipRouter.put('/info/:uuid', infoOperations.update);
-labDipRouter.delete('/info/:uuid', validateUuidParam(), infoOperations.remove);
+labDipRouter.delete('/info/:uuid', infoOperations.remove);
 labDipRouter.get(
 	'/info/details/:lab_dip_info_uuid',
 	infoOperations.selectInfoRecipeByLabDipInfoUuid
@@ -23,12 +23,11 @@ labDipRouter.get(
 // recipe routes
 
 labDipRouter.get('/recipe', recipeOperations.selectAll);
-labDipRouter.get('/recipe/:uuid', validateUuidParam(), recipeOperations.select);
+labDipRouter.get('/recipe/:uuid', recipeOperations.select);
 labDipRouter.post('/recipe', recipeOperations.insert);
 labDipRouter.put('/recipe/:uuid', recipeOperations.update);
 labDipRouter.delete(
 	'/recipe/:uuid',
-	validateUuidParam(),
 	recipeOperations.remove
 );
 labDipRouter.get(

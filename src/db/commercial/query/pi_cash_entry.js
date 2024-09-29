@@ -202,7 +202,13 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { is_update } = req.query;
+	let { is_update } = req?.query;
+
+	if (is_update == undefined && is_update == null) {
+		is_update = 'false';
+	}
+
+	console.log(is_update, 'selectPiEntryByOrderInfoUuid');
 
 	const query = sql`
         SELECT
@@ -227,7 +233,7 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
 			LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
         WHERE
-            vod.order_info_uuid = ${req.params.order_info_uuid} AND (oe.quantity - sfg.pi) > 0 ${is_update == 'true' ? sql`AND pe.uuid IS NULL` : ''}
+            vod.order_info_uuid = ${req.params.order_info_uuid} AND (oe.quantity - sfg.pi) > 0 ${is_update == 'true' ? sql`AND pe.uuid IS NULL` : sql`AND TRUE`}
         ORDER BY 
             vod.order_number ASC,
             vod.item_description ASC, 
@@ -255,7 +261,13 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { is_update } = req.query;
+	let { is_update } = req?.query;
+
+	if (is_update == undefined && is_update == null) {
+		is_update = 'false';
+	}
+
+	console.log(is_update, 'selectPiEntryByThreadOrderInfoUuid');
 
 	const query = sql`
         SELECT
@@ -277,7 +289,7 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
             LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 			LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
         WHERE
-            toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.pi) > 0 ${is_update == 'true' ? sql`AND pe.uuid IS NULL` : ''}
+            toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.pi) > 0 ${is_update == 'true' ? sql`AND pe.uuid IS NULL` : sql`AND TRUE`}
         ORDER BY 
             toi.id ASC,
             toe.style ASC, 
@@ -307,7 +319,9 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 
 		let { is_update } = req?.query;
 
-		console.log(is_update);
+		if (is_update == undefined && is_update == null) {
+			is_update = 'false';
+		}
 
 		if (order_info_uuids === 'null') {
 			return res.status(400).json({ error: 'Order Number is required' });
@@ -318,10 +332,12 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			.map(String)
 			.map((String) => [String]);
 
+		console.log(is_update, 'selectPiEntryByPiDetailsByOrderInfoUuids');
+
 		const fetchData = async (endpoint, data) => {
 			try {
 				const response = await api.get(
-					`${endpoint}/${data}?is_update=${is_update}`
+					`${endpoint}/${data}?${is_update == 'true' ? 'is_update=true' : 'is_update=false'}`
 				);
 				return response.data; // Ensure to return the data from the response
 			} catch (error) {
@@ -402,6 +418,10 @@ export async function selectPiEntryByPiDetailsByThreadOrderInfoUuids(
 		let { order_info_uuids, party_uuid, marketing_uuid } = req?.params;
 
 		let { is_update } = req?.query;
+
+		if (is_update == undefined && is_update == null) {
+			is_update = 'false';
+		}
 
 		if (order_info_uuids === 'null') {
 			return res.status(400).json({ error: 'Order Number is required' });

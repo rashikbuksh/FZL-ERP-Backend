@@ -827,6 +827,7 @@ export const pathCommercialPiCashEntry = {
 					'order_info_uuid',
 					'uuid'
 				),
+				SE.parameter_query('is_update', 'is_update', ['false', 'true']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -912,6 +913,10 @@ export const pathCommercialPiCashEntry = {
 						'marketing_uuid',
 						'uuid'
 					),
+					SE.parameter_query('is_update', 'is_update', [
+						'false',
+						'true',
+					]),
 				],
 				responses: {
 					200: SE.response_schema(200, {
