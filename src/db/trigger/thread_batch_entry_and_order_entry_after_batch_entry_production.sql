@@ -4,13 +4,13 @@ BEGIN
     UPDATE thread.batch_entry
     SET
         coning_production_quantity = coning_production_quantity + NEW.production_quantity,
-        coning_production_quantity_in_kg = coning_production_quantity_in_kg + NEW.production_quantity_in_kg
+        coning_carton_quantity = coning_carton_quantity + NEW.coning_carton_quantity
     WHERE uuid = NEW.batch_entry_uuid;
 
     UPDATE thread.order_entry
     SET
-        production_quantity = production_quantity + NEW.production_quantity,
-        production_quantity_in_kg = production_quantity_in_kg + NEW.production_quantity_in_kg
+        production_quantity = production_quantity + NEW.production_quantity
+        -- production_quantity_in_kg = production_quantity_in_kg + NEW.production_quantity_in_kg
 
     WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE uuid = NEW.batch_entry_uuid);
 
@@ -26,13 +26,13 @@ BEGIN
     UPDATE thread.batch_entry
     SET
         coning_production_quantity = coning_production_quantity - OLD.production_quantity,
-        coning_production_quantity_in_kg = coning_production_quantity_in_kg - OLD.production_quantity_in_kg
+        coning_carton_quantity = coning_carton_quantity - OLD.coning_carton_quantity
     WHERE uuid = OLD.batch_entry_uuid;
 
     UPDATE thread.order_entry
     SET
-        production_quantity = production_quantity - OLD.production_quantity,
-        production_quantity_in_kg = production_quantity_in_kg - OLD.production_quantity_in_kg
+        production_quantity = production_quantity - OLD.production_quantity
+        -- production_quantity_in_kg = production_quantity_in_kg - OLD.production_quantity_in_kg
 
     WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE uuid = OLD.batch_entry_uuid);
 
@@ -49,13 +49,13 @@ BEGIN
     UPDATE thread.batch_entry
     SET
         coning_production_quantity = coning_production_quantity - OLD.production_quantity + NEW.production_quantity,
-        coning_production_quantity_in_kg = coning_production_quantity_in_kg - OLD.production_quantity_in_kg + NEW.production_quantity_in_kg
+        coning_carton_quantity = coning_carton_quantity - OLD.coning_carton_quantity + NEW.coning_carton_quantity
     WHERE uuid = NEW.batch_entry_uuid;
 
     UPDATE thread.order_entry
     SET
-        production_quantity = production_quantity - OLD.production_quantity + NEW.production_quantity,
-        production_quantity_in_kg = production_quantity_in_kg - OLD.production_quantity_in_kg + NEW.production_quantity_in_kg
+        production_quantity = production_quantity - OLD.production_quantity + NEW.production_quantity
+        -- production_quantity_in_kg = production_quantity_in_kg - OLD.production_quantity_in_kg + NEW.production_quantity_in_kg
 
     WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE uuid = NEW.batch_entry_uuid);
 
@@ -78,7 +78,3 @@ CREATE OR REPLACE TRIGGER thread_batch_entry_after_batch_entry_production_update
 AFTER UPDATE ON thread.batch_entry_production
 FOR EACH ROW
 EXECUTE FUNCTION thread_batch_entry_after_batch_entry_production_update_funct();
-
-
-
-
