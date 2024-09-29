@@ -196,9 +196,7 @@ export const batch_entry = thread.table('batch_entry', {
 	coning_production_quantity: PG_DECIMAL(
 		'coning_production_quantity'
 	).default(0),
-	coning_production_quantity_in_kg: PG_DECIMAL(
-		'coning_production_quantity_in_kg'
-	).default(0),
+	coning_carton_quantity: PG_DECIMAL('coning_carton_quantity').default(0),
 	coning_created_at: DateTime('coning_created_at').default(null),
 	coning_updated_at: DateTime('coning_updated_at').default(null),
 	transfer_quantity: PG_DECIMAL('transfer_quantity').default(0),
@@ -240,9 +238,7 @@ export const batch_entry_production = thread.table('batch_entry_production', {
 		() => batch_entry.uuid
 	),
 	production_quantity: PG_DECIMAL('production_quantity').notNull(),
-	production_quantity_in_kg: PG_DECIMAL(
-		'production_quantity_in_kg'
-	).notNull(),
+	coning_carton_quantity: PG_DECIMAL('coning_carton_quantity').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

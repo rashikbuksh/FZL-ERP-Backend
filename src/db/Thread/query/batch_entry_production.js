@@ -84,8 +84,8 @@ export async function selectAll(req, res, next) {
 			uuid: batch_entry_production.uuid,
 			batch_entry_uuid: batch_entry_production.batch_entry_uuid,
 			production_quantity: batch_entry_production.production_quantity,
-			production_quantity_in_kg:
-				batch_entry_production.production_quantity_in_kg,
+			coning_carton_quantity:
+				batch_entry_production.coning_carton_quantity,
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
@@ -114,8 +114,8 @@ export async function select(req, res, next) {
 			uuid: batch_entry_production.uuid,
 			batch_entry_uuid: batch_entry_production.batch_entry_uuid,
 			production_quantity: batch_entry_production.production_quantity,
-			production_quantity_in_kg:
-				batch_entry_production.production_quantity_in_kg,
+			coning_carton_quantity:
+				batch_entry_production.coning_carton_quantity,
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
@@ -148,7 +148,7 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		bep.uuid,
 		bep.batch_entry_uuid,
 		bep.production_quantity,
-		bep.production_quantity_in_kg,
+		bep.coning_carton_quantity,
 		be.batch_uuid,
 		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
 		be.order_entry_uuid, 
@@ -161,7 +161,7 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		CONCAT(cl.count, '/', cl.length) as count_length,
 		be.quantity as batch_quantity,
 		be.coning_production_quantity,
-		be.coning_production_quantity_in_kg,
+		be.coning_carton_quantity,
 		be.transfer_quantity as transfer_quantity,
 		(be.quantity - be.coning_production_quantity) as coning_balance_quantity,
 		(be.quantity - be.transfer_quantity) as balance_quantity,
