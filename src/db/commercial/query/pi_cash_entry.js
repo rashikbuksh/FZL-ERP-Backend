@@ -208,8 +208,6 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 		is_update = 'false';
 	}
 
-	console.log(is_update, 'selectPiEntryByOrderInfoUuid');
-
 	const query = sql`
         SELECT
             sfg.uuid as uuid,
@@ -266,8 +264,6 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
 	if (is_update == undefined && is_update == null) {
 		is_update = 'false';
 	}
-
-	console.log(is_update, 'selectPiEntryByThreadOrderInfoUuid');
 
 	const query = sql`
         SELECT
@@ -331,8 +327,6 @@ export async function selectPiEntryByPiDetailsByOrderInfoUuids(req, res, next) {
 			.split(',')
 			.map(String)
 			.map((String) => [String]);
-
-		console.log(is_update, 'selectPiEntryByPiDetailsByOrderInfoUuids');
 
 		const fetchData = async (endpoint, data) => {
 			try {

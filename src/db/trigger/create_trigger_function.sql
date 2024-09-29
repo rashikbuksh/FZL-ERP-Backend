@@ -168,17 +168,68 @@ BEGIN
         pi = pi - OLD.pi_cash_quantity
     WHERE uuid = OLD.thread_order_entry_uuid;
 
-    -- UPDATE pi_cash table and remove the particular order_info_uuids or thread_order_entry_uuids from the array if pi_cash_entry has has no sfg_uuid or thread_order_entry_uuid of the removed zipper.sfg tables order_info_uuid or thread.order_entry tables order_info_uuid
+    -- UPDATE pi_cash table and remove the particular order_info_uuids from the array if there is no sfg_uuid in pi_cash_entry
+    IF OLD.sfg_uuid IS NOT NULL THEN 
     UPDATE commercial.pi_cash
     SET
-        order_info_uuids = array_remove(order_info_uuids, vod.order_info_uuid),
-        thread_order_info_uuids = array_remove(thread_order_info_uuids, toi.uuid)
-    FROM zipper.sfg sfg
-    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-    LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
-    LEFT JOIN thread.order_entry toe ON sfg.order_entry_uuid = toe.uuid
-    LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-    WHERE sfg.uuid = OLD.sfg_uuid OR toe.uuid = OLD.thread_order_entry_uuid;
+        order_info_uuids = COALESCE(
+            (
+                SELECT jsonb_agg(elem)
+                FROM (
+                    SELECT elem
+                    FROM jsonb_array_elements_text(order_info_uuids::jsonb) elem
+                    WHERE elem != (
+                        SELECT DISTINCT vod.order_info_uuid::text 
+                        FROM zipper.v_order_details vod 
+                        WHERE vod.order_description_uuid = (
+                            SELECT oe.order_description_uuid 
+                            FROM zipper.order_entry oe 
+                            WHERE oe.uuid = OLD.sfg_uuid
+                        )
+                    )
+                ) subquery
+            ), '[]'::jsonb
+        )
+    WHERE EXISTS (
+        -- Check existence after the deletion is complete
+        SELECT 1
+        FROM zipper.sfg sfg
+        LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+        LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+        WHERE sfg.uuid = OLD.sfg_uuid
+    );
+    END IF;
+
+    -- If the pi_cash_entry is deleted, then delete the pi_cash_entry from pi_cash table for thread
+    IF OLD.thread_order_entry_uuid IS NOT NULL THEN
+    UPDATE commercial.pi_cash
+    SET
+        thread_order_info_uuids = COALESCE(
+            (
+                SELECT jsonb_agg(elem)
+                FROM (
+                    SELECT elem
+                    FROM jsonb_array_elements_text(thread_order_info_uuids::jsonb) elem
+                    WHERE elem != (
+                        SELECT DISTINCT toi.uuid::text 
+                        FROM thread.order_info toi 
+                        WHERE toi.uuid = (
+                            SELECT toe.order_info_uuid 
+                            FROM thread.order_entry toe 
+                            WHERE toe.uuid = OLD.thread_order_entry_uuid
+                        )
+                    )
+                ) subquery
+            ), '[]'::jsonb
+        )
+    WHERE EXISTS (
+        -- Check existence after the deletion is complete
+        SELECT 1
+        FROM thread.order_entry toe
+        LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+        WHERE toe.uuid = OLD.thread_order_entry_uuid
+    );
+    END IF;
 
     RETURN OLD;
 END;
