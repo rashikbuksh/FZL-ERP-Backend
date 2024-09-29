@@ -1,5 +1,3 @@
-import { is } from 'drizzle-orm';
-import { param } from 'express-validator';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Commercial Bank * //
@@ -391,6 +389,7 @@ export const pathCommercialPiCash = {
 					marketing_name: SE.string('marketing'),
 					party_uuid: SE.uuid(),
 					party_name: SE.string('party'),
+					party_address: SE.string('address'),
 					merchandiser_uuid: SE.uuid(),
 					merchandiser_name: SE.string('merchandiser'),
 					factory_uuid: SE.uuid(),
@@ -504,6 +503,7 @@ export const pathCommercialPiCash = {
 					marketing_name: SE.string('marketing'),
 					party_uuid: SE.uuid(),
 					party_name: SE.string('party'),
+					party_address: SE.string('address'),
 					merchandiser_uuid: SE.uuid(),
 					merchandiser_name: SE.string('merchandiser'),
 					factory_uuid: SE.uuid(),
@@ -610,6 +610,7 @@ export const pathCommercialPiCash = {
 					marketing_name: SE.string('marketing'),
 					party_uuid: SE.uuid(),
 					party_name: SE.string('party'),
+					party_address: SE.string('address'),
 					merchandiser_uuid: SE.uuid(),
 					merchandiser_name: SE.string('merchandiser'),
 					factory_uuid: SE.uuid(),
@@ -684,6 +685,7 @@ export const pathCommercialPiCash = {
 					marketing_name: SE.string('marketing'),
 					party_uuid: SE.uuid(),
 					party_name: SE.string('party'),
+					party_address: SE.string('address'),
 					merchandiser_uuid: SE.uuid(),
 					merchandiser_name: SE.string('merchandiser'),
 					factory_uuid: SE.uuid(),
