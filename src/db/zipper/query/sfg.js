@@ -214,9 +214,9 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 		.returning({ updatedId: sfg.uuid });
 
 	const query = sql`
-			UPDATE order_entry
+			UPDATE zipper.order_entry
 			SET swatch_approval_date = ${req.body.swatch_approval_date}
-			FROM sfg
+			FROM zipper.sfg
 			WHERE order_entry.uuid = sfg.order_entry_uuid
 			AND sfg.uuid = ${req.params.uuid}
 			RETURNING order_entry.uuid AS updatedId;
