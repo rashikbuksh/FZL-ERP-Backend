@@ -1,12 +1,12 @@
-import { eq, desc } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { challan_entry, order_entry } from '../schema.js';
-import * as hrSchema from '../../hr/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -132,6 +132,49 @@ export async function select(req, res, next) {
 			message: 'challan_entry',
 		};
 		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
+	const query = sql`
+		SELECT
+			challan_entry.*,
+			order_entry.count_length_uuid,
+			count_length.count,
+			count_length.length,
+			order_entry.quantity as order_quantity,
+			order_entry.style,
+			order_entry.color,
+			order_entry.po,
+			order_entry.bleaching,
+			order_entry.recipe_uuid,
+			order_entry.delivered,
+			order_entry.warehouse,
+			order_entry.quantity - order_entry.warehouse as balance_quantity,
+		FROM
+			thread.challan_entry
+		LEFT JOIN
+			thread.order_entry ON challan_entry.order_entry_uuid = order_entry.uuid
+		LEFT JOIN
+			thread.count_length ON order_entry.count_length_uuid = count_length.uuid
+		WHERE
+			challan_entry.challan_uuid = ${req.params.challan_uuid}
+		ORDER BY
+			created_at DESC
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'challan_entry',
+		};
+		return await res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}

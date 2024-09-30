@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import * as batchOperations from './query/batch.js';
 import * as batch_entryOperations from './query/batch_entry.js';
+import * as batchEntryProductionOperations from './query/batch_entry_production.js';
+import * as batchEntryTrxOperations from './query/batch_entry_trx.js';
+import * as challanOperations from './query/challan.js';
+import * as challanEntryOperations from './query/challan_entry.js';
 import * as count_lengthOperations from './query/count_length.js';
 import * as dyes_categoryOperations from './query/dyes_category.js';
 import * as order_entryOperations from './query/order_entry.js';
 import * as order_infoOperations from './query/order_info.js';
 import * as programsOperations from './query/programs.js';
-import * as batchEntryProductionOperations from './query/batch_entry_production.js';
-import * as batchEntryTrxOperations from './query/batch_entry_trx.js';
-import * as challanOperations from './query/challan.js';
-import * as challanEntryOperations from './query/challan_entry.js';
 
 const threadRouter = Router();
 
@@ -130,6 +130,10 @@ threadRouter.get('/challan/:uuid', challanOperations.select);
 threadRouter.post('/challan', challanOperations.insert);
 threadRouter.put('/challan/:uuid', challanOperations.update);
 threadRouter.delete('/challan/:uuid', challanOperations.remove);
+threadRouter.get(
+	'/order-details-for-challan/by/:order_info_uuid',
+	challanOperations.selectByOrderInfoUuid
+);
 
 // challan_entry routes
 threadRouter.get('/challan-entry', challanEntryOperations.selectAll);
