@@ -266,6 +266,9 @@ export const challan = thread.table('challan', {
 		() => order_info.uuid
 	),
 	carton_quantity: integer('carton_quantity').notNull(),
+	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
+	gate_pass: integer('gate_pass').default(0),
+	received: integer('received').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -279,6 +282,9 @@ export const challan_entry = thread.table('challan_entry', {
 		() => order_entry.uuid
 	),
 	quantity: PG_DECIMAL('quantity').notNull(),
+	carton_quantity: integer('carton_quantity').notNull(),
+	short_quantity: PG_DECIMAL('short_quantity').default(0),
+	reject_quantity: PG_DECIMAL('reject_quantity').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
