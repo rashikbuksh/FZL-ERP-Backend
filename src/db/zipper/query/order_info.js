@@ -319,7 +319,8 @@ export async function getOrderDetails(req, res, next) {
 						) AS order_number_wise_rank, 
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
-						order_entry_counts.order_entry_count
+						order_entry_counts.order_entry_count,
+						CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
 					FROM zipper.v_order_details vod
 					LEFT JOIN (
 						SELECT order_number, COUNT(*) AS order_number_wise_count
@@ -337,7 +338,7 @@ export async function getOrderDetails(req, res, next) {
 						SELECT COUNT(*) AS order_entry_count, oe.order_description_uuid
 						FROM zipper.order_entry oe
 						GROUP BY oe.order_description_uuid
-					) order_entry_counts ON vod.order_description_uuid = swatch_approval_counts.order_description_uuid
+					) order_entry_counts ON vod.order_description_uuid = order_entry_counts.order_description_uuid
 					WHERE vod.order_description_uuid IS NOT NULL
 					ORDER BY vod.created_at DESC;`;
 
