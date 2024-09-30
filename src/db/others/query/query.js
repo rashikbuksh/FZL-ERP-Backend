@@ -1046,6 +1046,33 @@ export async function selectDieCastingUsingType(req, res, next) {
 
 // Order Info
 
+export async function selectThreadOrder(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const query = sql`
+						SELECT
+							ot.uuid AS value,
+							CONCAT('TO', to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
+						FROM
+							thread.order_info ot`;
+
+	const orderThreadPromise = db.execute(query);
+
+	try {
+		const data = await orderThreadPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Thread list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function selectOrderNumberForPiThread(req, res, next) {
 	const { marketing_uuid, party_uuid } = req.params;
 	const { is_cash, pi_uuid } = req.query;

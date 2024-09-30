@@ -114,6 +114,7 @@ otherRouter.get(
 // * Thread
 
 // order info
+otherRouter.get('/thread/value/label', otherOperations.selectThreadOrder);
 otherRouter.get(
 	'/order-number-for-pi-thread/value/label/:party_uuid/:marketing_uuid',
 	otherOperations.selectOrderNumberForPiThread
@@ -1161,6 +1162,30 @@ const pathSlider = {
 };
 
 const pathThread = {
+	'/other/thread/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all threads',
+			description: 'All threads',
+			operationId: 'getAllThreads',
+			responses: {
+				200: {
+					description: 'Returns a all threads.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('Thread 1'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 	'/other/order-number-for-pi-thread/value/label/{marketing_uuid}/{party_uuid}':
 		{
 			get: {
