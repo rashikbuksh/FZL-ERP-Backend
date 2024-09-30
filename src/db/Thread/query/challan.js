@@ -163,7 +163,10 @@ export async function selectByOrderInfoUuid(req, res, next) {
 			type: 'select',
 			message: 'challan',
 		};
-		return await res.status(200).json({ toast, data: data.rows });
+		const formattedData = {
+			entries: data.rows,
+		};
+		return await res.status(200).json({ toast, data: formattedData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
