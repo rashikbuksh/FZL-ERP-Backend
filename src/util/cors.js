@@ -1,6 +1,10 @@
 import cors from 'cors';
 
 const whitelist = [
+	// * VPS
+	'http://147.79.70.48:4010',
+	'http://147.79.70.48:4015',
+	'http://www.fortunezip.com',
 	//* FZL H/O
 	'http://103.147.163.46:3005',
 	'http://103.147.163.46:4010',
