@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -152,7 +152,7 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 			order_entry.recipe_uuid,
 			order_entry.delivered,
 			order_entry.warehouse,
-			order_entry.quantity - order_entry.warehouse as balance_quantity,
+			order_entry.quantity - order_entry.warehouse as balance_quantity
 		FROM
 			thread.challan_entry
 		LEFT JOIN
