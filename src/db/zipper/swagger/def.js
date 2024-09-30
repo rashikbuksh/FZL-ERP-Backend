@@ -4,6 +4,8 @@ import SE, { SED } from '../../../util/swagger_example.js';
 export const def_zipper_order_info = SED({
 	required: [
 		'uuid',
+		'id',
+		'reference_order_info_uuid',
 		'buyer_uuid',
 		'party_uuid',
 		'marketing_uuid',
@@ -17,9 +19,13 @@ export const def_zipper_order_info = SED({
 		'status',
 		'created_by',
 		'created_at',
+		'remarks',
+		'print_in',
 	],
 	properties: {
 		uuid: SE.uuid(),
+		id: SE.integer(),
+		reference_order_info_uuid: SE.uuid(),
 		buyer_uuid: SE.uuid(),
 		party_uuid: SE.uuid(),
 		marketing_uuid: SE.uuid(),
@@ -36,6 +42,7 @@ export const def_zipper_order_info = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('Remarks'),
+		print_in: SE.string('portrait'),
 	},
 	xml: 'Zipper/Order-Info',
 });
@@ -46,6 +53,7 @@ export const def_zipper_order_description = SED({
 		'uuid',
 		'order_info_uuid',
 		'item',
+		'nylon_stopper',
 		'zipper_number',
 		'end_type',
 		'lock_type',
@@ -55,7 +63,9 @@ export const def_zipper_order_description = SED({
 		'puller_color',
 		'hand',
 		'coloring_type',
+		'is_slider_provided',
 		'slider',
+		'slider_starting_section',
 		'top_stopper',
 		'bottom_stopper',
 		'logo_type',
@@ -67,6 +77,7 @@ export const def_zipper_order_description = SED({
 		'light_preference',
 		'garments_wash',
 		'created_by',
+		'slider_finishing_stock',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -75,16 +86,20 @@ export const def_zipper_order_description = SED({
 		tape_received: SE.number(10),
 		tape_transferred: SE.number(10),
 		item: SE.string(),
-		zipper_number: SE.string(),
-		end_type: SE.string(),
-		lock_type: SE.string(),
-		puller_type: SE.string(),
-		teeth_color: SE.string(),
-		teeth_type: SE.string(),
-		puller_color: SE.string(),
+		nylon_stopper: SE.uuid(),
+		zipper_number: SE.uuid(),
+		end_type: SE.uuid(),
+		lock_type: SE.uuid(),
+		puller_type: SE.uuid(),
+		teeth_color: SE.uuid(),
+		teeth_type: SE.uuid(),
+		puller_color: SE.uuid(),
+		special_requirement: SE.string(),
 		hand: SE.string(),
-		coloring_type: SE.string(),
-		slider: SE.string(),
+		coloring_type: SE.uuid(),
+		is_slider_provided: SE.integer(),
+		slider: SE.uuid(),
+		slider_starting_section: SE.string(),
 		top_stopper: SE.string(),
 		bottom_stopper: SE.string(),
 		logo_type: SE.string(),
@@ -95,13 +110,14 @@ export const def_zipper_order_description = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
-		slider_body_shape: SE.string(),
-		slider_link: SE.string(),
-		end_user: SE.string(),
+		slider_body_shape: SE.uuid(),
+		slider_link: SE.uuid(),
+		end_user: SE.uuid(),
 		garment: SE.string(),
 		light_preference: SE.string(),
 		garments_wash: SE.string(),
 		created_by: SE.uuid(),
+		garments_remarks: SE.string(),
 		slider_finishing_stock: SE.number(),
 	},
 	xml: 'Zipper/Order-Description',
@@ -141,7 +157,26 @@ export const def_zipper_order_entry = SED({
 
 // * Zipper Sfg * //
 export const def_zipper_sfg = SED({
-	required: ['uuid', 'order_entry_uuid'],
+	required: [
+		'uuid',
+		'order_entry_uuid',
+		'recipe_uuid',
+		'dying_and_iron_prod',
+		'teeth_molding_stock',
+		'teeth_molding_prod',
+		'teeth_coloring_stock',
+		'teeth_coloring_prod',
+		'finishing_stock',
+		'finishing_prod',
+		'coloring_prod',
+		'warehouse',
+		'delivered',
+		'pi',
+		'short_quantity',
+		'reject_quantity',
+		'created_at',
+		'remarks',
+	],
 	properties: {
 		uuid: SE.uuid(),
 		order_entry_uuid: SE.uuid(),
@@ -200,6 +235,7 @@ export const def_zipper_sfg_transaction = SED({
 		'trx_to',
 		'trx_quantity',
 		'trx_quantity_in_kg',
+		'slider_item_uuid',
 		'created_by',
 		'created_at',
 	],
@@ -225,7 +261,6 @@ export const def_zipper_dyed_tape_transaction = SED({
 	required: [
 		'uuid',
 		'order_description_uuid',
-		'section',
 		'trx_quantity',
 		'created_by',
 		'created_at',
@@ -234,7 +269,6 @@ export const def_zipper_dyed_tape_transaction = SED({
 		uuid: SE.uuid(),
 		order_description_uuid: SE.uuid(),
 		colors: SE.string('colors'),
-		section: SE.string('section'),
 		trx_quantity: SE.number('10.0'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
@@ -270,9 +304,21 @@ export const def_zipper_dyed_tape_transaction_from_stock = SED({
 
 // * Zipper Batch * //
 export const def_zipper_batch = SED({
-	required: ['uuid', 'created_by', 'created_at'],
+	required: [
+		'uuid',
+		'created_by',
+		'created_at',
+		'remarks',
+		'batch_status',
+		'machine_uuid',
+		'slot',
+		'received',
+		'id',
+	],
 	properties: {
 		uuid: SE.uuid(),
+		id: SE.integer(),
+		batch_status: SE.string('pending'),
 		machine_uuid: SE.uuid(),
 		slot: SE.number(),
 		received: SE.number(),
@@ -437,6 +483,28 @@ export const def_zipper_tape_coil_production = SED({
 	},
 	xml: 'Zipper/Tape-Coil-Production',
 });
+// * Zipper tape coil to dyeing * //
+
+export const def_zipper_tape_coil_to_dyeing = SED({
+	required: [
+		'uuid',
+		'tape_coil_uuid',
+		'order_description_uuid',
+		'trx_quantity',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		tape_coil_uuid: SE.uuid(),
+		order_description_uuid: SE.uuid(),
+		trx_quantity: SE.number('100.0'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
+	},
+	xml: 'Zipper/Tape-Coil-To-Dyeing',
+});
 // * Zipper Tape Coil Required * //
 export const def_zipper_tape_coil_required = SED({
 	required: [
@@ -447,8 +515,6 @@ export const def_zipper_tape_coil_required = SED({
 		'zipper_number_uuid',
 		'top',
 		'bottom',
-		'raw_mtr_per_kg',
-		'dyed_mtr_per_kg',
 		'created_by',
 		'created_at',
 	],
@@ -460,8 +526,6 @@ export const def_zipper_tape_coil_required = SED({
 		zipper_number_uuid: SE.uuid(),
 		top: SE.number('100.0'),
 		bottom: SE.number('100.0'),
-		raw_mtr_per_kg: SE.number('100.0'),
-		dyed_mtr_per_kg: SE.number('100.0'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
@@ -534,28 +598,6 @@ export const def_zipper_material_trx_against_order_description = SED({
 		remarks: SE.string('Remarks'),
 	},
 	xml: 'Zipper/Material_trx_against_order_description',
-});
-// * Zipper tape coil to dyeing * //
-
-export const def_zipper_tape_coil_to_dyeing = SED({
-	required: [
-		'uuid',
-		'tape_coil_uuid',
-		'order_description_uuid',
-		'trx_quantity',
-		'created_by',
-		'created_at',
-	],
-	properties: {
-		uuid: SE.uuid(),
-		tape_coil_uuid: SE.uuid(),
-		order_description_uuid: SE.uuid(),
-		trx_quantity: SE.number('100.0'),
-		created_by: SE.uuid(),
-		created_at: SE.date_time(),
-		remarks: SE.string('Remarks'),
-	},
-	xml: 'Zipper/Tape-Coil-To-Dyeing',
 });
 
 export const def_zipper_batch_production = SED({
