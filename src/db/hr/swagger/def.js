@@ -2,13 +2,12 @@ import SE, { SED } from '../../../util/swagger_example.js';
 
 //* ./schema.js#department
 export const defDepartment = SED({
-	required: ['uuid', 'department', 'created_at', 'created_by'],
+	required: ['uuid', 'department', 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
 		department: SE.string('HR'),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
-		created_by: SE.uuid(),
 		remarks: SE.string('remarks'),
 	},
 	xml: 'Hr/Department',
@@ -22,7 +21,6 @@ export const defDesignation = SED({
 		designation: SE.string('HR Manager'),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
-		created_by: SE.uuid(),
 		remarks: SE.string('remarks'),
 	},
 	xml: 'Hr/Designation',
@@ -63,6 +61,7 @@ export const defPolicyAndNotice = SED({
 		'title',
 		'sub_title',
 		'url',
+		'created_by',
 		'created_at',
 		'status',
 	],
@@ -72,6 +71,7 @@ export const defPolicyAndNotice = SED({
 		title: SE.string('Privacy Policy'),
 		sub_title: SE.string('Privacy Policy'),
 		url: SE.string('http://fzl.com'),
+		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		status: SE.integer(1),

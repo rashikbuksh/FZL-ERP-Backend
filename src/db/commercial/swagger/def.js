@@ -12,6 +12,7 @@ export const defCommercialBank = SED({
 		address: SE.string('Dhaka, Bangladesh'),
 		policy: SE.string('Policy'),
 		routing_no: SE.string('Routing No'),
+		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
@@ -109,6 +110,7 @@ export const defCommercialPiCash = SED({
 		conversion_rate: SE.number(1000.0),
 		weight: SE.number(1000.0),
 		receive_amount: SE.number(1000.0),
+		thread_order_info_uuids: SE.array([SE.uuid()]),
 	},
 	xml: 'Commercial/PiCash',
 });
@@ -130,6 +132,7 @@ export const defCommercialPiCashEntry = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		thread_order_entry_uuid: SE.uuid(),
 	},
 	xml: 'Commercial/PiCashEntry',
 });

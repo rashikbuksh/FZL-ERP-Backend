@@ -1,7 +1,15 @@
 import SE, { SED } from '../../../util/swagger_example.js';
 // */schema.js#vendor
 export const defPurchaseVendor = SED({
-	required: ['uuid', 'name', 'email', 'office_address'],
+	required: [
+		'uuid',
+		'name',
+		'email',
+		'office_address',
+		'contact_number',
+		'created_by',
+		'created_at',
+	],
 	properties: {
 		uuid: SE.uuid(),
 		name: SE.string('Z Group'),
@@ -9,6 +17,9 @@ export const defPurchaseVendor = SED({
 		email: SE.string('z456@gmail.com'),
 		office_address: SE.string('Dhaka, Bangladesh'),
 		contact_number: SE.string('01700000000'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
 		remarks: SE.string('This is a vendor'),
 	},
 	xml: 'Purchase/Vendor',
@@ -36,7 +47,6 @@ export const defPurchaseEntry = SED({
 		'purchase_description_uuid',
 		'material_uuid',
 		'quantity',
-		'created_by',
 		'created_at',
 	],
 	properties: {
@@ -45,7 +55,6 @@ export const defPurchaseEntry = SED({
 		material_uuid: SE.uuid(),
 		quantity: SE.number(1000.0),
 		price: SE.number(1111.0),
-		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('This is a entry'),
