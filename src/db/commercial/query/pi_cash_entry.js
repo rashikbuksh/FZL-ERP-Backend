@@ -155,6 +155,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.color ELSE toe.color END as color,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as quantity,
 					vodf.item_description as item_description,
+					CONCAT(vodf.item_name, ' Zipper', '-', vodf.zipper_number_short_name, '-', vodf.end_type_short_name, '-', vodf.puller_type_short_name) as pi_item_description,
 					oe.size as size,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as max_quantity,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price ELSE toe.party_price END as unit_price,
@@ -164,6 +165,8 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					pe.thread_order_entry_uuid as thread_order_entry_uuid,
 					toe.count_length_uuid as count_length_uuid,
 					CONCAT(count_length.count,' ', count_length.length) as count_length_name,
+					count_length.count,
+					count_length.length,
 					CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked
 	            FROM
 					commercial.pi_cash_entry pe 
