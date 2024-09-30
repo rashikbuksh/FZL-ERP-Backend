@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -213,12 +213,25 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 		.where(eq(sfg.uuid, req.params.uuid))
 		.returning({ updatedId: sfg.uuid });
 
+	const orderEntryPromise = db
+		.update(order_entry)
+		.set({ swatch_approval_date: req.body.swatch_approval_date })
+		.from(sfg)
+		.where(
+			and(
+				eq(order_entry.uuid, sfg.order_entry_uuid),
+				eq(sfg.uuid, req.params.uuid)
+			)
+		)
+		.returning({ updatedId: order_entry.uuid });
+
 	try {
 		const data = await sfgPromise;
+		const data2 = await orderEntryPromise;
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedId} updated`,
+			message: `${data[0].updatedId} - ${data2[0].updatedId} updated`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
