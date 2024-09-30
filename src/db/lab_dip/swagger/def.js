@@ -1,7 +1,15 @@
 import SE, { SED } from '../../../util/swagger_example.js';
 //* ./schema.js#info
 export const defLabDipInfo = SED({
-	required: ['uuid', 'name', 'order_info_uuid', 'created_by', 'created_at'],
+	required: [
+		'uuid',
+		'name',
+		'order_info_uuid',
+		'thread_order_info_uuid',
+		'lab_status',
+		'created_by',
+		'created_at',
+	],
 	properties: {
 		uuid: SE.uuid(),
 		id: SE.integer(1),
@@ -53,7 +61,14 @@ export const defLabDipRecipeEntry = SED({
 
 // * Shade Recipe * //
 export const defShadeRecipe = SED({
-	required: ['uuid', 'name'],
+	required: [
+		'uuid',
+		'name',
+		'sub_streat',
+		'lab_status',
+		'created_by',
+		'created_at',
+	],
 	properties: {
 		uuid: SE.uuid(),
 		name: SE.string('Shade Recipe 1'),

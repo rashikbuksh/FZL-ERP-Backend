@@ -2,22 +2,28 @@ import SE, { SED } from '../../../util/swagger_example.js';
 //* ./schema.js#section
 
 export const defMaterialSection = SED({
-	required: ['uuid', 'name'],
+	required: ['uuid', 'name', 'created_at', 'created_by'],
 	properties: {
 		uuid: SE.uuid(),
 		name: SE.string('Section 1'),
 		short_name: SE.string('S1'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
 	xml: 'Material/Section',
 });
 
 export const defMaterialType = SED({
-	required: ['uuid', 'name'],
+	required: ['uuid', 'name', 'created_at', 'created_by'],
 	properties: {
 		uuid: SE.uuid(),
 		name: SE.string('Type 1'),
 		short_name: SE.string('T1'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
 	xml: 'Material/Type',
@@ -31,6 +37,7 @@ export const defMaterialInfo = SED({
 		'name',
 		'unit',
 		'threshold',
+		'created_by',
 		'created_at',
 	],
 	properties: {
@@ -42,6 +49,7 @@ export const defMaterialInfo = SED({
 		unit: SE.string('kg'),
 		threshold: SE.number(100),
 		description: SE.string('description'),
+		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
@@ -55,6 +63,7 @@ export const defMaterialStock = SED({
 		uuid: SE.uuid(),
 		material_uuid: SE.uuid(),
 		stock: SE.number(1000.0),
+		lab_dip: SE.number(1000.0),
 		tape_making: SE.number(1000.0),
 		coil_forming: SE.number(1000.0),
 		dying_and_iron: SE.number(1000.0),

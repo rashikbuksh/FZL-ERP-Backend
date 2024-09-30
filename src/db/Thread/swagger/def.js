@@ -16,56 +16,18 @@ export const defThreadCountLength = {
 	],
 
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		count: {
-			type: 'string',
-			example: 10.0,
-		},
-		length: {
-			type: 'number',
-			example: 10.0,
-		},
-		sst: {
-			type: 'string',
-			example: 'SST',
-		},
-		min_weight: {
-			type: 'number',
-			example: 10.0,
-		},
-		max_weight: {
-			type: 'number',
-			example: 10.0,
-		},
-		cone_per_carton: {
-			type: 'number',
-			example: 10.0,
-		},
-		price: {
-			type: 'number',
-			example: 10.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		count: SE.number(10),
+		length: SE.number(10),
+		sst: SE.number(10),
+		min_weight: SE.number(10),
+		max_weight: SE.number(10),
+		cone_per_carton: SE.number(10),
+		price: SE.number(10),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
 	xml: {
 		name: 'Thread/CountLength',
@@ -91,69 +53,21 @@ export const defThreadOrderInfo = {
 	],
 
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		id: {
-			type: 'number',
-			example: 0,
-		},
-		party_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		marketing_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		factory_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		merchandiser_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		buyer_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		is_sample: {
-			type: 'string',
-			example: 'Sample',
-		},
-		is_bill: {
-			type: 'string',
-			example: 'Bill',
-		},
-		is_cash: {
-			type: 'number',
-			example: 0,
-		},
-		delivery_date: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		id: SE.integer(1),
+		party_uuid: SE.uuid(),
+		marketing_uuid: SE.uuid(),
+		factory_uuid: SE.uuid(),
+		merchandiser_uuid: SE.uuid(),
+		buyer_uuid: SE.uuid(),
+		is_sample: SE.number(0),
+		is_bill: SE.number(0),
+		is_cash: SE.number(0),
+		delivery_date: SE.date_time(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
 	xml: {
 		name: 'Thread/OrderInfo',
@@ -184,118 +98,37 @@ export const defThreadOrderEntry = {
 		'warehouse',
 		'short_quantity',
 		'reject_quantity',
-		'coning_carton_quantity',
+		'production_quantity_in_kg',
 		'carton_quantity',
 	],
 
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_info_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		lab_reference: {
-			type: 'string',
-			example: 'Lab Reference',
-		},
-		color: {
-			type: 'string',
-			example: 'Color',
-		},
-		recipe_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		po: {
-			type: 'string',
-			example: 'PO',
-		},
-		style: {
-			type: 'string',
-			example: 'Style',
-		},
-		count_length_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		company_price: {
-			type: 'number',
-			example: 10.0,
-		},
-		party_price: {
-			type: 'number',
-			example: 10.0,
-		},
-		swatch_approval_date: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		production_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		bleaching: {
-			type: 'string',
-			example: 'Bleaching',
-		},
-		transfer_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
-		pi: {
-			type: 'number',
-			example: 10.0,
-		},
-		delivered: {
-			type: 'number',
-			example: 10.0,
-		},
-		warehouse: {
-			type: 'number',
-			example: 10.0,
-		},
-		short_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		reject_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		coning_carton_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		carton_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
+		uuid: SE.uuid(),
+		order_info_uuid: SE.uuid(),
+		lab_reference: SE.string('lab_reference'),
+		color: SE.string('color'),
+		recipe_uuid: SE.uuid(),
+		po: SE.string('po'),
+		style: SE.string('style'),
+		count_length_uuid: SE.uuid(),
+		quantity: SE.number(10),
+		company_price: SE.number(10),
+		party_price: SE.number(10),
+		swatch_approval_date: SE.date_time(),
+		production_quantity: SE.number(10),
+		bleaching: SE.string('bleaching'),
+		transfer_quantity: SE.number(10),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+		pi: SE.string('pi'),
+		delivered: SE.number(10),
+		warehouse: SE.number(10),
+		short_quantity: SE.number(10),
+		reject_quantity: SE.number(10),
+		production_quantity_in_kg: SE.number(10),
+		carton_quantity: SE.number(10),
 	},
 	xml: {
 		name: 'Thread/OrderEntry',
@@ -355,64 +188,19 @@ export const defThreadBatch = {
 		yarn_issue_created_by: SE.uuid(),
 		yarn_issue_created_at: SE.date_time(),
 		yarn_issue_updated_at: SE.date_time(),
-		is_drying_complete: {
-			type: 'string',
-			example: 'Dyeing Complete',
-		},
-		drying_created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		drying_updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		coning_operator: {
-			type: 'string',
-			example: 'Coning Operator',
-		},
-		coning_supervisor: {
-			type: 'string',
-			example: 'Coning Supervisor',
-		},
-		coning_machines: {
-			type: 'string',
-			example: 'Coning Machines',
-		},
-		coning_created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		coning_created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		coning_updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		is_drying_complete: SE.number(0),
+		drying_created_at: SE.date_time(),
+		drying_updated_at: SE.date_time(),
+		coning_operator: SE.string('coning_operator'),
+		coning_supervisor: SE.string('coning_supervisor'),
+		coning_machines: SE.string('coning_machines'),
+		coning_created_by: SE.uuid(),
+		coning_created_at: SE.date_time(),
+		coning_updated_at: SE.date_time(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
 	xml: {
 		name: 'Thread/Batch',
@@ -429,62 +217,24 @@ export const defThreadBatchEntry = {
 		'coning_production_quantity',
 		'coning_carton_quantity',
 		'transfer_carton_quantity',
-		'created_by',
 		'created_at',
 	],
 
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		batch_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		order_entry_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		quantity: {
-			type: 'number',
-			example: 10.0,
-		},
+		uuid: SE.uuid(),
+		batch_uuid: SE.uuid(),
+		order_entry_uuid: SE.uuid(),
+		quantity: SE.number(10),
 
-		coning_production_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		coning_carton_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		transfer_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		transfer_carton_quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		coning_production_quantity: SE.number(10),
+		coning_carton_quantity: SE.number(10),
+		coning_created_at: SE.date_time(),
+		coning_updated_at: SE.date_time(),
+		transfer_quantity: SE.number(10),
+		transfer_carton_quantity: SE.number(10),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
 	xml: {
 		name: 'Thread/BatchEntry',
@@ -504,44 +254,15 @@ export const defThreadDyesCategory = {
 	],
 
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		name: {
-			type: 'string',
-			example: 'Dyes Category Name',
-		},
-		upto_percentage: {
-			type: 'number',
-			example: 10.0,
-		},
-		bleaching: {
-			type: 'string',
-			example: 'Bleaching',
-		},
-		id: {
-			type: 'number',
-			example: 0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		name: SE.string('name'),
+		upto_percentage: SE.number(10),
+		bleaching: SE.string('bleaching'),
+		id: SE.integer(1),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
 	xml: {
 		name: 'Thread/DyesCategory',
@@ -560,40 +281,14 @@ export const defThreadPrograms = {
 	],
 
 	properties: {
-		uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		dyes_category_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		material_uuid: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		quantity: {
-			type: 'number',
-			example: 10.0,
-		},
-		created_by: {
-			type: 'string',
-			example: 'igD0v9DIJQhJeet',
-		},
-		created_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		updated_at: {
-			type: 'string',
-			format: 'date-time',
-			example: '2024-01-01 00:00:00',
-		},
-		remarks: {
-			type: 'string',
-			example: 'Remarks',
-		},
+		uuid: SE.uuid(),
+		dyes_category_uuid: SE.uuid(),
+		material_uuid: SE.uuid(),
+		quantity: SE.number(10),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
 	},
 	xml: {
 		name: 'Thread/Programs',
@@ -658,6 +353,9 @@ export const defThreadChallan = {
 		'uuid',
 		'order_info_uuid',
 		'carton_quantity',
+		'assign_to',
+		'gate_pass',
+		'received',
 		'created_by',
 		'created_at',
 	],
@@ -666,6 +364,9 @@ export const defThreadChallan = {
 		uuid: SE.uuid(),
 		order_info_uuid: SE.uuid(),
 		carton_quantity: SE.number(10),
+		assign_to: SE.uuid(),
+		gate_pass: SE.number(0),
+		received: SE.number(0),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
@@ -683,6 +384,9 @@ export const defThreadChallanEntry = {
 		'challan_uuid',
 		'order_entry_uuid',
 		'quantity',
+		'carton_quantity',
+		'short_quantity',
+		'reject_quantity',
 		'created_by',
 		'created_at',
 	],
@@ -692,6 +396,9 @@ export const defThreadChallanEntry = {
 		challan_uuid: SE.uuid(),
 		order_entry_uuid: SE.uuid(),
 		quantity: SE.number(10),
+		carton_quantity: SE.number(10),
+		short_quantity: SE.number(10),
+		reject_quantity: SE.number(10),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
