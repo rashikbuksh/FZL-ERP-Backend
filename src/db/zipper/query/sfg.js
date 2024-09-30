@@ -213,17 +213,16 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 		.where(eq(sfg.uuid, req.params.uuid))
 		.returning({ updatedId: sfg.uuid });
 
-	const orderEntryPromise = db
-		.update(order_entry)
-		.set({ swatch_approval_date: req.body.swatch_approval_date })
-		.from(sfg)
-		.where(
-			and(
-				eq(order_entry.uuid, sfg.order_entry_uuid),
-				eq(sfg.uuid, req.params.uuid)
-			)
-		)
-		.returning({ updatedId: order_entry.uuid });
+	const query = sql`
+			UPDATE order_entry
+			SET swatch_approval_date = ${req.body.swatch_approval_date}
+			FROM sfg
+			WHERE order_entry.uuid = sfg.order_entry_uuid
+			AND sfg.uuid = ${req.params.uuid}
+			RETURNING order_entry.uuid AS updatedId;
+		`;
+
+	const orderEntryPromise = db.execute(query);
 
 	try {
 		const data = await sfgPromise;
@@ -231,7 +230,7 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedId} - ${data2[0].updatedId} updated`,
+			message: `${data[0].updatedId} - ${data2.rows[0].updatedId} updated`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
