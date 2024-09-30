@@ -134,6 +134,10 @@ threadRouter.get(
 	'/order-details-for-challan/by/:order_info_uuid',
 	challanOperations.selectByOrderInfoUuid
 );
+threadRouter.get(
+	'/challan-details/by/:challan_uuid',
+	challanOperations.selectThreadChallanDetailsByChallanUuid
+);
 
 // challan_entry routes
 threadRouter.get('/challan-entry', challanEntryOperations.selectAll);
@@ -141,5 +145,9 @@ threadRouter.get('/challan-entry/:uuid', challanEntryOperations.select);
 threadRouter.post('/challan-entry', challanEntryOperations.insert);
 threadRouter.put('/challan-entry/:uuid', challanEntryOperations.update);
 threadRouter.delete('/challan-entry/:uuid', challanEntryOperations.remove);
+threadRouter.get(
+	'/challan-entry/by/:challan_uuid',
+	challanEntryOperations.selectThreadChallanEntryByChallanUuid
+);
 
 export { threadRouter };

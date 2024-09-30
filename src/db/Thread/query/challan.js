@@ -1,4 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -161,6 +162,39 @@ export async function selectByOrderInfoUuid(req, res, next) {
 			message: 'challan',
 		};
 		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { challan_uuid } = req.params;
+	try {
+		const api = await createApi(req);
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/${challan_uuid}`)
+				.then((response) => response);
+
+		const [challan, challan_entry] = await Promise.all([
+			fetchData('/thread/challan'),
+			fetchData('/thread/challan-entry/by'),
+		]);
+
+		const response = {
+			...challan?.data?.data,
+			challan_entry: challan_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Thread Challan',
+		};
+
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}

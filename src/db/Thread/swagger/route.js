@@ -1108,6 +1108,24 @@ export const pathThreadChallan = {
 			},
 		},
 	},
+	'/thread/challan-details/by/{challan_uuid}': {
+		get: {
+			tags: ['thread.challan'],
+			summary: 'Get Challan Details by Challan UUID',
+			description: 'Get Challan Details by Challan UUID',
+			parameters: [SE.parameter_params('challan_uuid', 'challan_uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_info_uuid: SE.uuid(),
+					carton_quantity: SE.integer(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+				}),
+			},
+		},
+	},
 };
 
 export const pathThreadChallanEntry = {
@@ -1179,6 +1197,25 @@ export const pathThreadChallanEntry = {
 			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				200: SE.response(200),
+			},
+		},
+	},
+	'/thread//challan-entry/by/{challan_uuid}': {
+		get: {
+			tags: ['thread.challan_entry'],
+			summary: 'Get Thread Challan Entry by Challan UUID',
+			description: 'Get Thread Challan Entry by Challan UUID',
+			parameters: [SE.parameter_params('challan_uuid', 'challan_uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					challan_uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					quantity: SE.integer(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
 			},
 		},
 	},
