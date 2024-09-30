@@ -154,8 +154,10 @@ export async function selectByOrderInfoUuid(req, res, next) {
 		LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
 		WHERE toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.delivered) > 0
 	`;
+
+	const resultPromise = db.execute(query);
 	try {
-		const data = await db.query(query);
+		const data = await resultPromise;
 		const toast = {
 			status: 200,
 			type: 'select',
@@ -171,6 +173,7 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { challan_uuid } = req.params;
+	console.log('challan_uuid:', challan_uuid);
 	try {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
