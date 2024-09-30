@@ -199,12 +199,6 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 
 		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
-		console.error('Error fetching challan details:', error);
-		const toast = {
-			status: 500,
-			type: 'error',
-			message: 'Failed to fetch Thread Challan details',
-		};
-		return await res.status(500).json({ toast, error: error.message });
+		await handleError({ error, res });
 	}
 }
