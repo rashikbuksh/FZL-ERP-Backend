@@ -115,7 +115,7 @@ export async function selectAll(req, res, next) {
 			order_info.remarks,
 			swatch_approval_counts.swatch_approval_count,
 			order_entry_counts.order_entry_count,
-			CASE WHEN swatch_approval_counts.swatch_approval_count > 1 THEN 1 ELSE 0 END AS is_swatches_approved
+			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved
 		FROM 
 			thread.order_info
 		LEFT JOIN 
