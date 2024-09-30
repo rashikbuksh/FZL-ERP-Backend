@@ -176,7 +176,6 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { challan_uuid } = req.params;
-	console.log('challan_uuid:', challan_uuid);
 	try {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
