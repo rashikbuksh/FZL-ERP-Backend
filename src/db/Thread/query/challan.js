@@ -1,4 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -8,13 +9,18 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { challan } from '../schema.js';
+
+const assignToUser = alias(hrSchema.users, 'assignToUser');
+
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const resultPromise = db
 		.insert(challan)
 		.values(req.body)
-		.returning({ insertedId: challan.uuid });
+		.returning({
+			insertedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -38,7 +44,9 @@ export async function update(req, res, next) {
 		.update(challan)
 		.set(req.body)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning({ updatedId: challan.uuid });
+		.returning({
+			updatedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -59,7 +67,9 @@ export async function remove(req, res, next) {
 	const resultPromise = db
 		.delete(challan)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning({ deletedId: challan.uuid });
+		.returning({
+			deletedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+		});
 	try {
 		const data = await resultPromise;
 
@@ -76,45 +86,35 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: challan.uuid,
-			order_info_uuid: challan.order_info_uuid,
-			carton_quantity: challan.carton_quantity,
-			created_by: challan.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: challan.created_at,
-			updated_at: challan.updated_at,
-			remarks: challan.remarks,
-		})
-		.from(challan)
-		.leftJoin(hrSchema.users, eq(challan.created_by, hrSchema.users.uuid))
-		.orderBy(desc(challan.created_at));
+	const query = sql`
+		SELECT 
+			challan.uuid,
+			CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
+			challan.order_info_uuid,
+			challan.carton_quantity,
+			challan.gate_pass,
+			challan.received,
+			challan.assign_to,
+			assign_to_user.name AS assign_to_name,
+			challan.created_by,
+			users.name AS created_by_name,
+			challan.created_at,
+			challan.updated_at,
+			challan.remarks,
+			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number
+		FROM 
+			thread.challan
+		LEFT JOIN 
+			hr.users users ON challan.created_by = users.uuid
+		LEFT JOIN 
+			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
+		LEFT JOIN 
+			thread.order_info toi ON challan.order_info_uuid = toi.uuid
+		ORDER BY
+			challan.created_at DESC
+	`;
 
-	const toast = {
-		status: 200,
-		type: 'select all',
-		message: 'challan list',
-	};
-
-	handleResponse({ promise: resultPromise, res, next, ...toast });
-}
-
-export async function select(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: challan.uuid,
-			order_info_uuid: challan.order_info_uuid,
-			carton_quantity: challan.carton_quantity,
-			created_by: challan.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: challan.created_at,
-			updated_at: challan.updated_at,
-			remarks: challan.remarks,
-		})
-		.from(challan)
-		.leftJoin(hrSchema.users, eq(challan.created_by, hrSchema.users.uuid))
-		.where(eq(challan.uuid, req.params.uuid));
+	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
@@ -125,7 +125,53 @@ export async function select(req, res, next) {
 			message: 'challan',
 		};
 
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function select(req, res, next) {
+	const query = sql`
+		SELECT 
+			challan.uuid,
+			CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
+			challan.order_info_uuid,
+			challan.carton_quantity,
+			challan.gate_pass,
+			challan.received,
+			challan.assign_to,
+			assign_to_user.name AS assign_to_name,
+			challan.created_by,
+			users.name AS created_by_name,
+			challan.created_at,
+			challan.updated_at,
+			challan.remarks,
+			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number
+		FROM 
+			thread.challan
+		LEFT JOIN 
+			hr.users users ON challan.created_by = users.uuid
+		LEFT JOIN 
+			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
+		LEFT JOIN 
+			thread.order_info toi ON challan.order_info_uuid = toi.uuid
+		WHERE 
+			challan.uuid = ${req.params.uuid};
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'challan',
+		};
+
+		return await res.status(200).json({ toast, data: data.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -152,7 +198,8 @@ export async function selectByOrderInfoUuid(req, res, next) {
 		FROM thread.order_entry toe
 		LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 		LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
-		WHERE toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.delivered) > 0
+		LEFT JOIN thread.challan_entry ON toe.uuid = challan_entry.order_entry_uuid
+		WHERE toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.delivered) > 0 AND challan_entry.uuid IS NULL
 	`;
 
 	const resultPromise = db.execute(query);
@@ -164,7 +211,7 @@ export async function selectByOrderInfoUuid(req, res, next) {
 			message: 'challan',
 		};
 		const formattedData = {
-			entries: data.rows,
+			batch_entry: data.rows,
 		};
 		return await res.status(200).json({ toast, data: formattedData });
 	} catch (error) {
@@ -176,6 +223,7 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { challan_uuid } = req.params;
+	const { is_update } = req.query;
 	try {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
@@ -188,10 +236,33 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 			fetchData('/thread/challan-entry/by'),
 		]);
 
+		let query_data;
+
+		if (is_update === 'true') {
+			const order_info_uuid = challan?.data?.data?.order_info_uuid;
+
+			const fetchOrderDataForChallan = async () =>
+				await api
+					.get(
+						`/thread/order-details-for-challan/by/${order_info_uuid}`
+					)
+					.then((response) => response);
+
+			query_data = await fetchOrderDataForChallan();
+		}
+
 		const response = {
 			...challan?.data?.data,
 			challan_entry: challan_entry?.data?.data || [],
+			batch_entry: [],
 		};
+
+		if (is_update == 'true') {
+			response.batch_entry = [
+				...response.challan_entry,
+				...query_data?.data,
+			];
+		}
 
 		const toast = {
 			status: 200,
