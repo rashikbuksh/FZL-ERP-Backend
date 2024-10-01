@@ -1,4 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -8,6 +9,9 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { challan } from '../schema.js';
+
+const assignToUser = alias(hrSchema.users, 'assignToUser');
+
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -79,8 +83,13 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: challan.uuid,
+			challan_id: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			order_info_uuid: challan.order_info_uuid,
 			carton_quantity: challan.carton_quantity,
+			gate_pass: challan.gate_pass,
+			received: challan.received,
+			assign_to: challan.assign_to,
+			assign_to_name: assignToUser.name,
 			created_by: challan.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: challan.created_at,
@@ -89,6 +98,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(challan)
 		.leftJoin(hrSchema.users, eq(challan.created_by, hrSchema.users.uuid))
+		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
 		.orderBy(desc(challan.created_at));
 
 	const toast = {
@@ -104,8 +114,13 @@ export async function select(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: challan.uuid,
+			challan_id: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			order_info_uuid: challan.order_info_uuid,
 			carton_quantity: challan.carton_quantity,
+			gate_pass: challan.gate_pass,
+			received: challan.received,
+			assign_to: challan.assign_to,
+			assign_to_name: assignToUser.name,
 			created_by: challan.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: challan.created_at,
@@ -114,6 +129,7 @@ export async function select(req, res, next) {
 		})
 		.from(challan)
 		.leftJoin(hrSchema.users, eq(challan.created_by, hrSchema.users.uuid))
+		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
 		.where(eq(challan.uuid, req.params.uuid));
 
 	try {
