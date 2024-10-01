@@ -164,7 +164,7 @@ export async function selectByOrderInfoUuid(req, res, next) {
 			message: 'challan',
 		};
 		const formattedData = {
-			entries: data.rows,
+			batch_entry: data.rows,
 		};
 		return await res.status(200).json({ toast, data: formattedData });
 	} catch (error) {
