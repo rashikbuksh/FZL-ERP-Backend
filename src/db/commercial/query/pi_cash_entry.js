@@ -177,6 +177,8 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							vodf.teeth_type_short_name,
 							vodf.description
 						] as short_names,
+
+					vodf.special_requirement,
 					CONCAT(vodf.item_name, ' Zipper', '-', vodf.zipper_number_short_name, '-', vodf.end_type_short_name, '-', vodf.puller_type_short_name) as pi_item_description,
 					oe.size as size,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as max_quantity,
@@ -212,11 +214,78 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 
 		const data = await pi_entryPromise;
 
+		const uuids = new Set();
+
+		data.rows.forEach((row) => {
+			if (row.special_requirement) {
+				try {
+					const specialRequirement = JSON.parse(
+						row.special_requirement
+					);
+
+					// specialRequirement.values is still a string, so we need to parse it
+					const nestedValuesObject = JSON.parse(
+						specialRequirement.values
+					);
+
+					// Log to verify the structure after parsing
+					console.log('Nested values object:', nestedValuesObject);
+
+					// Extract the UUID from the nested values array
+					const [uuid] = nestedValuesObject.values; // Destructuring to get the first value from the array
+
+					if (uuid) {
+						uuids.add(uuid);
+					}
+				} catch (error) {
+					console.log('Error parsing special_requirement:', error);
+				}
+			}
+		});
+
+		console.log('Extracted UUIDs:', Array.from(uuids));
+
+		let s_short_name = { values: { values: [] } };
+
+		const uuidArray = Array.from(uuids);
+
+		console.log('UUID Array:', uuidArray);
+
+		const shortNameQuery = sql`
+								SELECT
+									pp.uuid,
+									pp.short_name
+								FROM public.properties as pp
+								WHERE pp.uuid IN (${uuidArray.map((uuid) => `'${uuid}'`).join(', ')})
+   								 `;
+		console.log('Executing query:', shortNameQuery);
+
+		try {
+			const result = await db.execute(shortNameQuery);
+
+			console.log('Query result:', result);
+
+			if (result.rows.length > 0) {
+				s_short_name.values.values = result.rows.map(
+					(row) => row.short_name
+				);
+			} else {
+				console.log('No rows returned from the query.');
+			}
+		} catch (error) {
+			console.error('Error executing query:', error);
+		}
+
+		console.log('Short names:', s_short_name);
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'pi_cash_entry By Pi Cash Uuid',
 		};
+		data.rows.forEach((row) => {
+			row.s_short_name = s_short_name;
+		});
 
 		return res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
