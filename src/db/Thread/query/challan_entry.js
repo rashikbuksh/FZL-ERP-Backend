@@ -154,7 +154,7 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 			order_entry.delivered,
 			order_entry.warehouse,
 			order_entry.quantity - order_entry.warehouse as balance_quantity,
-			true as is_checked
+			true AS is_checked
 		FROM
 			thread.challan_entry
 		LEFT JOIN

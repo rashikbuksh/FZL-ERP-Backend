@@ -180,7 +180,6 @@ export async function select(req, res, next) {
 export async function selectByOrderInfoUuid(req, res, next) {
 	const query = sql`
 		SELECT
-			challan_entry.*,
 			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
 			toe.order_info_uuid as order_info_uuid,
 			toe.uuid as order_entry_uuid,
@@ -236,8 +235,6 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 			fetchData('/thread/challan'),
 			fetchData('/thread/challan-entry/by'),
 		]);
-
-		console.log('challan', challan);
 
 		let query_data;
 
