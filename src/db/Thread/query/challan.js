@@ -254,10 +254,11 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 		const response = {
 			...challan?.data?.data,
 			challan_entry: challan_entry?.data?.data || [],
+			batch_entry: [],
 		};
 
 		if (is_update == 'true') {
-			response.challan_entry = [
+			response.batch_entry = [
 				...response.challan_entry,
 				...query_data?.data,
 			];
