@@ -152,7 +152,8 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 			order_entry.recipe_uuid,
 			order_entry.delivered,
 			order_entry.warehouse,
-			order_entry.quantity - order_entry.warehouse as balance_quantity
+			order_entry.quantity - order_entry.warehouse as balance_quantity,
+			true as is_check
 		FROM
 			thread.challan_entry
 		LEFT JOIN
