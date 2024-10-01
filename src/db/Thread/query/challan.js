@@ -103,7 +103,7 @@ export async function selectAll(req, res, next) {
 			challan.remarks,
 			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number
 		FROM 
-			challan
+			thread.challan
 		LEFT JOIN 
 			hr.users users ON challan.created_by = users.uuid
 		LEFT JOIN 
@@ -149,7 +149,7 @@ export async function select(req, res, next) {
 			challan.remarks,
 			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number
 		FROM 
-			challan
+			thread.challan
 		LEFT JOIN 
 			hr.users users ON challan.created_by = users.uuid
 		LEFT JOIN 
