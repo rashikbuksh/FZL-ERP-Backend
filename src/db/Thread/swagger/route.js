@@ -1200,7 +1200,7 @@ export const pathThreadChallanEntry = {
 			},
 		},
 	},
-	'/thread//challan-entry/by/{challan_uuid}': {
+	'/thread/challan-entry/by/{challan_uuid}': {
 		get: {
 			tags: ['thread.challan_entry'],
 			summary: 'Get Thread Challan Entry by Challan UUID',
