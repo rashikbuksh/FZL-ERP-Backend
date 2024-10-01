@@ -240,30 +240,15 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 
 		if (is_update === 'true') {
 			const order_info_uuid = challan?.data?.data?.order_info_uuid;
-			let query = sql`
-				SELECT
-					concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
-					toe.order_info_uuid as order_info_uuid,
-					toe.uuid as order_entry_uuid,
-					toe.count_length_uuid,
-					cl.count as count,
-					cl.length as length,
-					cl.cone_per_carton,
-					toe.style as style,
-					toe.color as color,
-					toe.quantity as order_quantity,
-					toe.delivered as delivered,
-					toe.warehouse as warehouse,
-					toe.bleaching as bleaching,
-					(toe.quantity - toe.delivered) as balance_quantity,
-					false as is_checked
-				FROM thread.order_entry toe
-				LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-				LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
-				LEFT JOIN thread.challan_entry ON toe.uuid = challan_entry.order_entry_uuid
-				WHERE toe.order_info_uuid = ${order_info_uuid} AND (toe.quantity - toe.delivered) > 0 AND challan_entry.uuid IS NULL
-			`;
-			query_data = await db.execute(query);
+
+			const fetchOrderDataForChallan = async () =>
+				await api
+					.get(
+						`/thread/order-details-for-challan/by/${order_info_uuid}`
+					)
+					.then((response) => response);
+
+			query_data = await fetchOrderDataForChallan();
 		}
 
 		const response = {
@@ -274,7 +259,7 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 		if (is_update == 'true') {
 			response.challan_entry = [
 				...response.challan_entry,
-				...query_data?.rows,
+				...query_data?.data,
 			];
 		}
 
