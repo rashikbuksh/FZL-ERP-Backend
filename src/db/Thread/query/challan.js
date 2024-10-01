@@ -236,10 +236,14 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 			fetchData('/thread/challan-entry/by'),
 		]);
 
+		console.log('challan', challan);
+
 		let query_data;
 
 		if (is_update === 'true') {
 			const order_info_uuid = challan?.data?.data?.order_info_uuid;
+
+			console.log('order_info_uuid', order_info_uuid);
 
 			const fetchOrderDataForChallan = async () =>
 				await api
@@ -249,6 +253,8 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 					.then((response) => response);
 
 			query_data = await fetchOrderDataForChallan();
+
+			console.log('query_data', query_data);
 		}
 
 		const response = {
@@ -260,7 +266,7 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 		if (is_update == 'true') {
 			response.batch_entry = [
 				...response.challan_entry,
-				...query_data?.data?.batch_entry,
+				...query_data?.data?.data?.batch_entry,
 			];
 		}
 
