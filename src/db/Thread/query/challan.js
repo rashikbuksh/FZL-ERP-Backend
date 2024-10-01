@@ -170,7 +170,8 @@ export async function selectByOrderInfoUuid(req, res, next) {
 			toe.warehouse as warehouse,
 			toe.bleaching as bleaching,
 			(toe.quantity - toe.delivered) as balance_quantity,
-			false as is_checked
+			false as is_checked,
+			toe.carton_quantity as carton_quantity
 		FROM thread.order_entry toe
 		LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 		LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
