@@ -18,7 +18,9 @@ export async function insert(req, res, next) {
 	const resultPromise = db
 		.insert(challan)
 		.values(req.body)
-		.returning({ insertedId: challan.uuid });
+		.returning({
+			insertedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -42,7 +44,9 @@ export async function update(req, res, next) {
 		.update(challan)
 		.set(req.body)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning({ updatedId: challan.uuid });
+		.returning({
+			updatedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+		});
 
 	try {
 		const data = await resultPromise;
@@ -63,7 +67,9 @@ export async function remove(req, res, next) {
 	const resultPromise = db
 		.delete(challan)
 		.where(eq(challan.uuid, req.params.uuid))
-		.returning({ deletedId: challan.uuid });
+		.returning({
+			deletedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+		});
 	try {
 		const data = await resultPromise;
 
