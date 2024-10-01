@@ -166,7 +166,7 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 		WHERE
 			challan_entry.challan_uuid = ${req.params.challan_uuid}
 		ORDER BY
-			created_at DESC
+			challan_entry.created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);
