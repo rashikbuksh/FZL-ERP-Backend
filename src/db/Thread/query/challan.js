@@ -260,7 +260,7 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 		if (is_update == 'true') {
 			response.batch_entry = [
 				...response.challan_entry,
-				...query_data?.data,
+				...query_data?.data?.batch_entry,
 			];
 		}
 
