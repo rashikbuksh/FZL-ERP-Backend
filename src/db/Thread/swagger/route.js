@@ -1113,7 +1113,10 @@ export const pathThreadChallan = {
 			tags: ['thread.challan'],
 			summary: 'Get Challan Details by Challan UUID',
 			description: 'Get Challan Details by Challan UUID',
-			parameters: [SE.parameter_params('challan_uuid', 'challan_uuid')],
+			parameters: [
+				SE.parameter_params('challan_uuid', 'challan_uuid'),
+				SE.parameter_query('is_update', 'is_update', ['false', 'true']),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -1200,7 +1203,7 @@ export const pathThreadChallanEntry = {
 			},
 		},
 	},
-	'/thread//challan-entry/by/{challan_uuid}': {
+	'/thread/challan-entry/by/{challan_uuid}': {
 		get: {
 			tags: ['thread.challan_entry'],
 			summary: 'Get Thread Challan Entry by Challan UUID',

@@ -260,11 +260,20 @@ export const batch_entry_trx = thread.table('batch_entry_trx', {
 	remarks: text('remarks').default(null),
 });
 
+export const thread_challan_sequence = thread.sequence(
+	'thread_challan_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
+
 export const challan = thread.table('challan', {
 	uuid: uuid_primary,
 	order_info_uuid: defaultUUID('order_info_uuid').references(
 		() => order_info.uuid
 	),
+	id: integer('id').default(sql`nextval('thread.thread_challan_sequence')`),
 	carton_quantity: integer('carton_quantity').notNull(),
 	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
 	gate_pass: integer('gate_pass').default(0),
@@ -282,7 +291,6 @@ export const challan_entry = thread.table('challan_entry', {
 		() => order_entry.uuid
 	),
 	quantity: PG_DECIMAL('quantity').notNull(),
-	carton_quantity: integer('carton_quantity').notNull(),
 	short_quantity: PG_DECIMAL('short_quantity').default(0),
 	reject_quantity: PG_DECIMAL('reject_quantity').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

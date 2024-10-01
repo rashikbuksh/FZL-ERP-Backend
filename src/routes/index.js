@@ -7,6 +7,7 @@ import { materialRouter } from '../db/material/route.js';
 import { otherRouter } from '../db/others/route.js';
 import { publicRouter } from '../db/public/route.js';
 import { purchaseRouter } from '../db/purchase/route.js';
+import { reportRouter } from '../db/report/route.js';
 import { sliderRouter } from '../db/slider/route.js';
 import { threadRouter } from '../db/thread/route.js';
 import { zipperRouter } from '../db/zipper/route.js';
@@ -56,5 +57,8 @@ route.use('/other', otherRouter);
 
 // thread routes
 route.use('/thread', threadRouter);
+
+//* report routes
+route.use('/report', reportRouter);
 
 export default route;

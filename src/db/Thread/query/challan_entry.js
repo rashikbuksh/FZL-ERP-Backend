@@ -142,6 +142,7 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 		SELECT
 			challan_entry.*,
 			order_entry.count_length_uuid,
+			concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 			count_length.count,
 			count_length.length,
 			order_entry.quantity as order_quantity,
@@ -152,17 +153,20 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 			order_entry.recipe_uuid,
 			order_entry.delivered,
 			order_entry.warehouse,
-			order_entry.quantity - order_entry.warehouse as balance_quantity
+			order_entry.quantity - order_entry.warehouse as balance_quantity,
+			true AS is_checked
 		FROM
 			thread.challan_entry
 		LEFT JOIN
 			thread.order_entry ON challan_entry.order_entry_uuid = order_entry.uuid
 		LEFT JOIN
 			thread.count_length ON order_entry.count_length_uuid = count_length.uuid
+		LEFT JOIN 
+			thread.order_info ON order_entry.order_info_uuid = order_info.uuid
 		WHERE
 			challan_entry.challan_uuid = ${req.params.challan_uuid}
 		ORDER BY
-			created_at DESC
+			challan_entry.created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);
