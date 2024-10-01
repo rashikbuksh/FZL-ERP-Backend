@@ -350,7 +350,7 @@ export async function getOrderDetails(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			msg: 'Order Info list',
+			message: 'Order Info list',
 		};
 
 		res.status(200).json({ toast, data: data?.rows });
