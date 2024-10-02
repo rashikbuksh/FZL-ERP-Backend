@@ -402,7 +402,7 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 						GROUP BY oe.order_description_uuid
 					) order_entry_counts ON vod.order_description_uuid = order_entry_counts.order_description_uuid
 					WHERE vod.order_description_uuid IS NOT NULL 
-						AND vod.created_by_uuid = ${own_uuid} AND ${
+						AND oi.marketing_uuid = ${own_uuid} AND ${
 							approved === 'true'
 								? sql`swatch_approval_counts.swatch_approval_count > 0`
 								: sql`1=1`
