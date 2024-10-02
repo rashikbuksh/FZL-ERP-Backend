@@ -371,6 +371,7 @@ export async function getOrderDetails(req, res, next) {
 
 export async function getOrderDetailsByOwnUuid(req, res, next) {
 	const { own_uuid } = req.params;
+	const { approved } = req.query;
 	const query = sql`
 					SELECT 
 						vod.*, 
@@ -401,7 +402,11 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 						GROUP BY oe.order_description_uuid
 					) order_entry_counts ON vod.order_description_uuid = order_entry_counts.order_description_uuid
 					WHERE vod.order_description_uuid IS NOT NULL 
-						AND oi.marketing_uuid = ${own_uuid}
+						AND vod.created_by_uuid = ${own_uuid} AND ${
+							approved === 'true'
+								? sql`swatch_approval_counts.swatch_approval_count > 0`
+								: sql`1=1`
+						}
 					ORDER BY vod.created_at DESC;`;
 
 	const orderInfoPromise = db.execute(query);

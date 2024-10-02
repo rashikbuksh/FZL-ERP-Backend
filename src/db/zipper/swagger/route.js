@@ -164,7 +164,10 @@ export const pathZipperOrderInfo = {
 		get: {
 			tags: ['zipper.order_info'],
 			summary: 'Get Order Details by Ownn UUID',
-			parameters: [SE.parameter_params('own_uuid', 'own_uuid')],
+			parameters: [
+				SE.parameter_params('own_uuid', 'own_uuid'),
+				SE.parameter_query('approved', 'approved', [true, false]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					order_info_uuid: SE.uuid(),
