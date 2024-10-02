@@ -346,7 +346,7 @@ export async function getOrderDetails(req, res, next) {
 							all == 'true'
 								? sql`1=1`
 								: sql`AND ${approved == 'true' ? sql`swatch_approval_counts.swatch_approval_count > 0` : sql`1=1`}
-						AND ${own ? sql`oi.marketing_uuid = ${own}` : sql`1=1`}`
+						AND ${own != 'null' ? sql`oi.marketing_uuid = ${own}` : sql`1=1`}`
 						}
 					ORDER BY vod.created_at DESC;`;
 
