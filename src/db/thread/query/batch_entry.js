@@ -208,6 +208,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		oe.bleaching as bleaching,
 		CONCAT(cl.count, '/', cl.length) as count_length,
 		cl.min_weight,
+		cl.max_weight,
 		oe.recipe_uuid as recipe_uuid,
 		re.name as recipe_name,
 		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,

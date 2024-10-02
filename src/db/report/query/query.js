@@ -182,4 +182,55 @@ export async function zipperProductionStatusReport(req, res, next) {
 	} catch (error) {
 		await handleError({ error, res });
 	}
-} // incomplete
+}
+
+export async function DailyChallanReport(req, res, next) {
+	const query = sql`
+            SELECT 
+                challan.created_at AS challan_uuid,
+                challan.id AS challan_id,
+                challan.order_info_uuid,
+                challan.created_at AS challan_created_at,
+                challan.carton_quantity,
+                challan.gate_pass,
+                challan.receive_status,
+                challan.created_by,
+                oe.color,
+                oe.style,
+                oe.size,
+                packing_list_entry.quantity,
+                packing_list_entry.short_quantity,
+                packing_list_entry.reject_quantity,
+                packing_list_entry.created_at AS packing_list_entry_created_at,
+                packing_list_entry.updated_at AS packing_list_entry_updated_at,
+                packing_list_entry.remarks AS packing_list_entry_remarks
+            FROM
+                delivery.challan
+            LEFT JOIN
+                delivery.packing_list ON challan.uuid = packing_list.challan_uuid
+            LEFT JOIN
+                delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+            LEFT JOIN
+                zipper.sfg ON packing_list_entry.sfg_uuid = sfg.uuid
+            LEFT JOIN
+                zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+            WHERE challan.uuid IS NOT NULL
+            ORDER BY challan.created_at DESC
+        `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Daily Challan Report',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
