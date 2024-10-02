@@ -348,8 +348,20 @@ export async function getOrderDetails(req, res, next) {
 								: sql`AND ${approved == 'true' ? sql`swatch_approval_counts.swatch_approval_count > 0` : sql`1=1`}
 						AND ${own ? sql`oi.marketing_uuid = ${own}` : sql`1=1`}`
 						}
-						
 					ORDER BY vod.created_at DESC;`;
+
+	if (all === 'false') {
+		if (approved === 'false' && (own == null || own == undefined)) {
+			res.status(200).json({
+				toast: {
+					status: 200,
+					type: 'select_all',
+					message: 'Order Info list',
+				},
+				data: [],
+			});
+		}
+	}
 
 	const orderInfoPromise = db.execute(query);
 
