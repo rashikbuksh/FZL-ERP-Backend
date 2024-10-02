@@ -93,7 +93,7 @@ export async function selectAll(req, res, next) {
 			email: users.email,
 			designation_uuid: users.designation_uuid,
 			designation: designation.designation,
-			department_uuid: department.uuid,
+			department_uuid: users.department_uuid,
 			department: department.department,
 			ext: users.ext,
 			phone: users.phone,
@@ -104,7 +104,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(users)
 		.leftJoin(designation, eq(users.designation_uuid, designation.uuid))
-		.leftJoin(department, eq(designation.department_uuid, department.uuid))
+		.leftJoin(department, eq(users.department_uuid, department.uuid))
 		.orderBy(desc(users.created_at));
 
 	const toast = {
@@ -131,7 +131,7 @@ export async function select(req, res, next) {
 			email: users.email,
 			designation_uuid: users.designation_uuid,
 			designation: designation.designation,
-			department_uuid: department.uuid,
+			department_uuid: users.department_uuid,
 			department: department.department,
 			ext: users.ext,
 			phone: users.phone,
@@ -142,7 +142,7 @@ export async function select(req, res, next) {
 		})
 		.from(users)
 		.leftJoin(designation, eq(users.designation_uuid, designation.uuid))
-		.leftJoin(department, eq(designation.department_uuid, department.uuid))
+		.leftJoin(department, eq(users.department_uuid, department.uuid))
 		.where(eq(users.uuid, req.params.uuid));
 
 	try {
@@ -172,6 +172,7 @@ export async function loginUser(req, res, next) {
 			pass: users.pass,
 			can_access: users.can_access,
 			designation_uuid: users.designation_uuid,
+			department_uuid: users.department_uuid,
 			ext: users.ext,
 			phone: users.phone,
 			created_at: users.created_at,
@@ -183,7 +184,7 @@ export async function loginUser(req, res, next) {
 		})
 		.from(users)
 		.leftJoin(designation, eq(users.designation_uuid, designation.uuid))
-		.leftJoin(department, eq(designation.department_uuid, department.uuid))
+		.leftJoin(department, eq(users.department_uuid, department.uuid))
 		.where(eq(users.email, email));
 
 	const USER = await userPromise;

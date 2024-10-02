@@ -78,7 +78,9 @@ export async function selectMarketingUser(req, res, next) {
 			value: hrSchema.users.uuid,
 			label: sql`concat(users.name,
 				' - ',
-				designation.designation)`,
+				designation.designation,
+				' - ',
+				department.department)`,
 		})
 		.from(hrSchema.users)
 		.leftJoin(
@@ -87,7 +89,7 @@ export async function selectMarketingUser(req, res, next) {
 		)
 		.leftJoin(
 			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
 		)
 		.where(eq(hrSchema.department.department, 'Sales And Marketing'));
 
@@ -816,25 +818,21 @@ export async function selectHrUser(req, res, next) {
 	}
 }
 
-export async function selectDepartmentAndDesignation(req, res, next) {
-	const DepartmentAndDesignation = db
+export async function selectDesignation(req, res, next) {
+	const Designation = db
 		.select({
 			value: hrSchema.designation.uuid,
-			label: sql`concat(department.department, ' - ', designation.designation)`,
+			label: hrSchema.designation.designation,
 		})
-		.from(hrSchema.designation)
-		.leftJoin(
-			hrSchema.department,
-			eq(hrSchema.designation.department_uuid, hrSchema.department.uuid)
-		);
+		.from(hrSchema.designation);
 
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		message: 'Department and Designation list',
+		message: 'Designation list',
 	};
 	handleResponse({
-		promise: DepartmentAndDesignation,
+		promise: Designation,
 		res,
 		next,
 		...toast,

@@ -81,10 +81,7 @@ otherRouter.get('/pi/value/label', otherOperations.selectPi);
 // hr
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);
 otherRouter.get('/hr/user/value/label', otherOperations.selectHrUser);
-otherRouter.get(
-	'/department-designation/value/label',
-	otherOperations.selectDepartmentAndDesignation
-);
+otherRouter.get('/designation/value/label', otherOperations.selectDesignation);
 
 // lab_dip
 otherRouter.get(
@@ -973,15 +970,15 @@ const pathHr = {
 			},
 		},
 	},
-	'/other/department-designation/value/label': {
+	'/other/designation/value/label': {
 		get: {
 			tags: ['others'],
-			summary: 'get all department and designation',
-			description: 'All Department and Designation',
+			summary: 'get all designation',
+			description: 'All Designation',
 			operationId: 'getAllDepartment',
 			responses: {
 				200: {
-					description: 'Returns a all Department and Designation.',
+					description: 'Returns a all Designation.',
 					content: {
 						'application/json': {
 							schema: {

@@ -450,10 +450,6 @@ export const pathHrDesignation = {
 										type: 'string',
 										example: 'Admin',
 									},
-									department_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
 									department: {
 										type: 'string',
 										example: 'Admin',
@@ -509,10 +505,6 @@ export const pathHrDesignation = {
 							designation: {
 								type: 'string',
 								example: 'Admin',
-							},
-							department_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
 							},
 							department: {
 								type: 'string',
