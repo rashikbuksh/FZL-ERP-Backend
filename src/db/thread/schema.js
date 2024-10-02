@@ -31,6 +31,7 @@ export const count_length = thread.table(
 		sst: text('sst').notNull(),
 		min_weight: PG_DECIMAL('min_weight').notNull(),
 		max_weight: PG_DECIMAL('max_weight').notNull(),
+		cone_per_carton: integer('cone_per_carton').notNull().default(0),
 		price: PG_DECIMAL('price').notNull(),
 		created_by: defaultUUID('created_by')
 			.notNull()
@@ -116,6 +117,13 @@ export const order_entry = thread.table('order_entry', {
 	remarks: text('remarks').default(null),
 	pi: PG_DECIMAL('pi').default(0),
 	delivered: PG_DECIMAL('delivered').default(0),
+	warehouse: PG_DECIMAL('warehouse').default(0),
+	short_quantity: PG_DECIMAL('short_quantity').default(0),
+	reject_quantity: PG_DECIMAL('reject_quantity').default(0),
+	production_quantity_in_kg: PG_DECIMAL('production_quantity_in_kg').default(
+		0
+	),
+	carton_quantity: integer('carton_quantity').default(0),
 });
 
 export const thread_batch_sequence = thread.sequence('thread_batch_sequence', {
@@ -189,12 +197,14 @@ export const batch_entry = thread.table('batch_entry', {
 	coning_production_quantity: PG_DECIMAL(
 		'coning_production_quantity'
 	).default(0),
+	coning_carton_quantity: PG_DECIMAL('coning_carton_quantity').default(0),
 	coning_production_quantity_in_kg: PG_DECIMAL(
 		'coning_production_quantity_in_kg'
 	).default(0),
 	coning_created_at: DateTime('coning_created_at').default(null),
 	coning_updated_at: DateTime('coning_updated_at').default(null),
 	transfer_quantity: PG_DECIMAL('transfer_quantity').default(0),
+	transfer_carton_quantity: integer('transfer_carton_quantity').default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
@@ -221,6 +231,71 @@ export const programs = thread.table('programs', {
 		() => materialSchema.info.uuid
 	),
 	quantity: PG_DECIMAL('quantity').default(0),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const batch_entry_production = thread.table('batch_entry_production', {
+	uuid: uuid_primary,
+	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
+		() => batch_entry.uuid
+	),
+	production_quantity: PG_DECIMAL('production_quantity').notNull(),
+	coning_carton_quantity: PG_DECIMAL('coning_carton_quantity').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const batch_entry_trx = thread.table('batch_entry_trx', {
+	uuid: uuid_primary,
+	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
+		() => batch_entry.uuid
+	),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	carton_quantity: integer('carton_quantity').default(0),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const thread_challan_sequence = thread.sequence(
+	'thread_challan_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
+
+export const challan = thread.table('challan', {
+	uuid: uuid_primary,
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => order_info.uuid
+	),
+	id: integer('id').default(sql`nextval('thread.thread_challan_sequence')`),
+	carton_quantity: integer('carton_quantity').notNull(),
+	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
+	gate_pass: integer('gate_pass').default(0),
+	received: integer('received').default(0),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const challan_entry = thread.table('challan_entry', {
+	uuid: uuid_primary,
+	challan_uuid: defaultUUID('challan_uuid').references(() => challan.uuid),
+	order_entry_uuid: defaultUUID('order_entry_uuid').references(
+		() => order_entry.uuid
+	),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	short_quantity: PG_DECIMAL('short_quantity').default(0),
+	reject_quantity: PG_DECIMAL('reject_quantity').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
