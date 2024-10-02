@@ -688,29 +688,30 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 	const { order_description_uuid } = req.params;
 
 	const query = sql`
-	SELECT 
-        v_order_details_full.*, 
-        tape_coil_required.top, 
-        tape_coil_required.bottom,
-		tape_coil.raw_per_kg_meter,
-		tape_coil.dyed_per_kg_meter
-    FROM 
-        zipper.v_order_details_full 
-    LEFT JOIN 
-        zipper.tape_coil_required 
-    ON 
-        v_order_details_full.item = tape_coil_required.item_uuid  
-        AND v_order_details_full.zipper_number = tape_coil_required.zipper_number_uuid 
-        AND v_order_details_full.end_type = tape_coil_required.end_type_uuid 
-	LEFT JOIN
-		zipper.tape_coil
-	ON
-		v_order_details_full.tape_coil_uuid = tape_coil.uuid
-    WHERE 
-        v_order_details_full.order_description_uuid = ${order_description_uuid}  AND (
-            lower(v_order_details_full.item_name) != 'nylon' 
-            OR v_order_details_full.nylon_stopper = tape_coil_required.nylon_stopper_uuid
-        )`;
+		SELECT 
+			v_order_details_full.*, 
+			tape_coil_required.top, 
+			tape_coil_required.bottom,
+			tape_coil.raw_per_kg_meter,
+			tape_coil.dyed_per_kg_meter
+		FROM 
+			zipper.v_order_details_full 
+		LEFT JOIN 
+			zipper.tape_coil_required 
+		ON 
+			v_order_details_full.item = tape_coil_required.item_uuid  
+			AND v_order_details_full.zipper_number = tape_coil_required.zipper_number_uuid 
+			AND v_order_details_full.end_type = tape_coil_required.end_type_uuid 
+			AND (
+				lower(v_order_details_full.item_name) != 'nylon' 
+				OR v_order_details_full.nylon_stopper = tape_coil_required.nylon_stopper_uuid
+			)
+		LEFT JOIN
+			zipper.tape_coil
+		ON
+			v_order_details_full.tape_coil_uuid = tape_coil.uuid
+		WHERE 
+			v_order_details_full.order_description_uuid = ${order_description_uuid}`;
 
 	const orderInfoPromise = db.execute(query);
 
