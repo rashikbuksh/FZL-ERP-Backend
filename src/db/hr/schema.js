@@ -13,7 +13,7 @@ export const department = hr.table('department', {
 
 export const designation = hr.table('designation', {
 	uuid: uuid_primary,
-	designation: text('designation').notNull(),
+	designation: text('designation').notNull().unique(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
