@@ -312,6 +312,8 @@ export async function select(req, res, next) {
 export async function getOrderDetails(req, res, next) {
 	const { all, approved, own } = req.query;
 
+	console.log(all, '- all', approved, '- approved');
+
 	const query = sql`
 					SELECT 
 						vod.*, 
@@ -349,19 +351,6 @@ export async function getOrderDetails(req, res, next) {
 						AND ${own != 'null' ? sql`oi.marketing_uuid = ${own}` : sql`1=1`}`
 						}
 					ORDER BY vod.created_at DESC;`;
-
-	if (all === 'false') {
-		if (approved === 'false' && (own == null || own == undefined)) {
-			res.status(200).json({
-				toast: {
-					status: 200,
-					type: 'select_all',
-					message: 'Order Info list',
-				},
-				data: [],
-			});
-		}
-	}
 
 	const orderInfoPromise = db.execute(query);
 
