@@ -78,7 +78,7 @@ export async function selectMarketingUser(req, res, next) {
 			value: hrSchema.users.uuid,
 			label: sql`concat(users.name,
 				' - ',
-				designation.designation
+				designation.designation,
 				' - ',
 				department.department)`,
 		})
@@ -822,7 +822,7 @@ export async function selectDesignation(req, res, next) {
 	const Designation = db
 		.select({
 			value: hrSchema.designation.uuid,
-			label: sql`designation.designation`,
+			label: hrSchema.designation.designation,
 		})
 		.from(hrSchema.designation);
 
