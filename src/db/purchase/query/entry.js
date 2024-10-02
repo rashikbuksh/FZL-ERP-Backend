@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -7,6 +7,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -84,8 +85,8 @@ export async function selectAll(req, res, next) {
 			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
 			unit: materialSchema.info.unit,
-			quantity: entry.quantity,
-			price: entry.price,
+			quantity: decimalToNumber(entry.quantity),
+			price: decimalToNumber(entry.price),
 			created_at: entry.created_at,
 			updated_at: entry.updated_at,
 			remarks: entry.remarks,
@@ -116,8 +117,8 @@ export async function select(req, res, next) {
 			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
 			unit: materialSchema.info.unit,
-			quantity: entry.quantity,
-			price: entry.price,
+			quantity: decimalToNumber(entry.quantity),
+			price: decimalToNumber(entry.price),
 			created_at: entry.created_at,
 			updated_at: entry.updated_at,
 			remarks: entry.remarks,
@@ -153,8 +154,8 @@ export async function selectEntryByPurchaseDescriptionUuid(req, res, next) {
 			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
 			unit: materialSchema.info.unit,
-			quantity: entry.quantity,
-			price: entry.price,
+			quantity: decimalToNumber(entry.quantity),
+			price: decimalToNumber(entry.price),
 			created_at: entry.created_at,
 			updated_at: entry.updated_at,
 			remarks: entry.remarks,
@@ -169,7 +170,8 @@ export async function selectEntryByPurchaseDescriptionUuid(req, res, next) {
 				entry.purchase_description_uuid,
 				req.params.purchase_description_uuid
 			)
-		);
+		)
+		.orderBy(desc(entry.created_at));
 
 	const toast = {
 		status: 200,

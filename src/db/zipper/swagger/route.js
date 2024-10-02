@@ -1,3 +1,4 @@
+import { param } from 'express-validator';
 import SE from '../../../util/swagger_example.js';
 import { tape_coil } from '../schema.js';
 
@@ -123,6 +124,11 @@ export const pathZipperOrderInfo = {
 		get: {
 			tags: ['zipper.order_info'],
 			summary: 'Get Order Details',
+			parameters: [
+				SE.parameter_query('all Order', 'all', [true, false]),
+				SE.parameter_query('approved', 'approved', [true, false]),
+				SE.parameter_query('own order', 'own', SE.uuid()),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					order_info_uuid: SE.uuid(),
