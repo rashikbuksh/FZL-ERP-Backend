@@ -34,7 +34,17 @@ export async function zipperProductionStatusReport(req, res, next) {
                 SUM(oe.quantity) AS total_quantity,
                 stock.uuid as stock_uuid,
                 COALESCE(production_sum.assembly_production_quantity, 0) AS assembly_production_quantity,
-                COALESCE(production_sum.coloring_production_quantity, 0) AS coloring_production_quantity
+                COALESCE(production_sum.coloring_production_quantity, 0) AS coloring_production_quantity,
+                (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)) AS total_dyeing_transaction_quantity,
+                COALESCE(sfg_production_sum.teeth_molding_quantity, 0) AS teeth_molding_quantity,
+                CASE WHEN lower(vodf.item_name) = 'vislon' THEN 'KG' ELSE 'PCS' END AS teeth_molding_unit,
+                COALESCE(sfg_production_sum.teeth_coloring_quantity, 0) AS teeth_coloring_quantity,
+                COALESCE(sfg_production_sum.finishing_quantity, 0) AS finishing_quantity,
+                COALESCE(delivery_sum.total_delivery_delivered_quantity, 0) AS total_delivery_delivered_quantity,
+                COALESCE(delivery_sum.total_delivery_balance_quantity, 0) AS total_delivery_balance_quantity,
+                COALESCE(delivery_sum.total_short_quantity, 0) AS total_short_quantity,
+                COALESCE(delivery_sum.total_reject_quantity, 0) AS total_reject_quantity,
+                vodf.remarks
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -57,6 +67,73 @@ export async function zipperProductionStatusReport(req, res, next) {
                 FROM slider.production
                 GROUP BY stock_uuid
             ) production_sum ON production_sum.stock_uuid = stock.uuid
+            LEFT JOIN (
+                SELECT 
+                    SUM(dtt.trx_quantity) AS total_trx_quantity, dtt.order_description_uuid
+                FROM zipper.dyed_tape_transaction dtt
+                GROUP BY dtt.order_description_uuid
+            ) dyed_tape_transaction_sum ON dyed_tape_transaction_sum.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN (
+                SELECT SUM(dttfs.trx_quantity) AS total_trx_quantity, dttfs.order_description_uuid
+                FROM zipper.dyed_tape_transaction_from_stock dttfs
+                GROUP BY dttfs.order_description_uuid
+            ) dyed_tape_transaction_from_stock_sum ON dyed_tape_transaction_from_stock_sum.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN (
+                SELECT 
+                    sfg_prod.sfg_uuid AS sfg_uuid,
+                    oe.uuid AS order_entry_uuid,
+                    od.uuid as order_description_uuid,
+                    SUM(CASE 
+                        WHEN sfg_prod.section = 'teeth_molding' THEN 
+                            CASE 
+                                WHEN sfg_prod.production_quantity > 0 THEN sfg_prod.production_quantity 
+                                ELSE sfg_prod.production_quantity_in_kg 
+                            END 
+                        ELSE 0 
+                    END) AS teeth_molding_quantity,
+                    SUM(CASE 
+                        WHEN sfg_prod.section = 'teeth_coloring' THEN sfg_prod.production_quantity 
+                        ELSE 0 
+                    END) AS teeth_coloring_quantity,
+                    SUM(CASE 
+                        WHEN sfg_prod.section = 'finishing' THEN sfg_prod.production_quantity 
+                        ELSE 0 
+                    END) AS finishing_quantity
+                FROM 
+                    zipper.sfg_production sfg_prod
+                LEFT JOIN 
+                    zipper.sfg ON sfg_prod.sfg_uuid = sfg.uuid
+                LEFT JOIN 
+                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                LEFT JOIN 
+                    zipper.order_description od ON oe.order_description_uuid = od.uuid
+                GROUP BY 
+                    sfg_prod.sfg_uuid, oe.uuid, od.uuid
+            ) sfg_production_sum ON sfg_production_sum.order_description_uuid = oe.order_description_uuid
+            LEFT JOIN (
+                SELECT 
+                    sfg.uuid as sfg_uuid,
+                    od.uuid as order_description_uuid,
+                    oe.uuid as order_entry_uuid,
+                    SUM(CASE WHEN challan.gate_pass = 1 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
+                    SUM(CASE WHEN challan.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
+                    SUM(packing_list_entry.short_quantity) AS total_short_quantity,
+                    SUM(packing_list_entry.reject_quantity) AS total_reject_quantity
+                FROM
+                    delivery.challan
+                LEFT JOIN
+                    delivery.packing_list ON challan.uuid = packing_list.challan_uuid
+                LEFT JOIN
+                    delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+                LEFT JOIN
+                    zipper.sfg ON packing_list_entry.sfg_uuid = sfg.uuid
+                LEFT JOIN
+                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                LEFT JOIN
+                    zipper.order_description od ON oe.order_description_uuid = od.uuid
+                GROUP BY
+                    sfg.uuid, oe.uuid, od.uuid
+            ) delivery_sum ON delivery_sum.order_description_uuid = oe.order_description_uuid
             WHERE vodf.order_description_uuid IS NOT NULL
             GROUP BY
                 vodf.order_info_uuid,
@@ -76,7 +153,18 @@ export async function zipperProductionStatusReport(req, res, next) {
                 order_entry_counts.order_entry_count,
                 stock.uuid,
                 production_sum.assembly_production_quantity,
-                production_sum.coloring_production_quantity
+                production_sum.coloring_production_quantity,
+                dyed_tape_transaction_sum.total_trx_quantity,
+                dyed_tape_transaction_from_stock_sum.total_trx_quantity,
+                sfg_production_sum.teeth_molding_quantity,
+                sfg_production_sum.teeth_coloring_quantity,
+                sfg_production_sum.finishing_quantity,
+                vodf.item_name,
+                delivery_sum.total_delivery_delivered_quantity,
+                delivery_sum.total_delivery_balance_quantity,
+                delivery_sum.total_short_quantity,
+                delivery_sum.total_reject_quantity,
+                vodf.remarks
         `;
 
 	const resultPromise = db.execute(query);
