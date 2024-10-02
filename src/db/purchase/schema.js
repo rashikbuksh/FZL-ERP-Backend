@@ -53,11 +53,11 @@ export const entry = purchase.table('entry', {
 	),
 	quantity: decimal('quantity', {
 		precision: 20,
-		scale: 4,
+		scale: 3,
 	}).notNull(),
 	price: decimal('price', {
 		precision: 20,
-		scale: 4,
+		scale: 3,
 	}).default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
