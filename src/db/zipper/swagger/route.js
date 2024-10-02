@@ -125,6 +125,7 @@ export const pathZipperOrderInfo = {
 			tags: ['zipper.order_info'],
 			summary: 'Get Order Details',
 			parameters: [
+				SE.parameter_query('all Order', 'all', [true, false]),
 				SE.parameter_query('approved', 'approved', [true, false]),
 				SE.parameter_query('own order', 'own', SE.uuid()),
 			],
