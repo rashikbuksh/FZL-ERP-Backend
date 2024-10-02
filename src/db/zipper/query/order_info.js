@@ -310,7 +310,7 @@ export async function select(req, res, next) {
 }
 
 export async function getOrderDetails(req, res, next) {
-	const { all, approved, own } = req.query;
+	const { all, approved } = req.query;
 
 	console.log(all, '- all', approved, '- approved');
 
@@ -348,10 +348,60 @@ export async function getOrderDetails(req, res, next) {
 							all === 'true'
 								? sql`1=1`
 								: sql`
-                    ${approved === 'true' ? sql`swatch_approval_counts.swatch_approval_count > 0` : sql`1=1`}
-                    ${own !== 'null' ? sql`AND oi.marketing_uuid = ${own}` : sql`AND 1=1`}
-                `
+                    ${approved === 'true' ? sql`swatch_approval_counts.swatch_approval_count > 0` : sql`1=1`}`
 						}
+					ORDER BY vod.created_at DESC;`;
+
+	const orderInfoPromise = db.execute(query);
+
+	try {
+		const data = await orderInfoPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Info list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function getOrderDetailsByOwnUuid(req, res, next) {
+	const { own_uuid } = req.params;
+	const query = sql`
+					SELECT 
+						vod.*, 
+						ROW_NUMBER() OVER (
+							PARTITION BY vod.order_number
+							ORDER BY vod.order_info_uuid
+						) AS order_number_wise_rank, 
+						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
+						swatch_approval_counts.swatch_approval_count,
+						order_entry_counts.order_entry_count,
+						CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
+					FROM zipper.v_order_details vod
+					LEFT JOIN (
+						SELECT order_number, COUNT(*) AS order_number_wise_count
+						FROM zipper.v_order_details
+						GROUP BY order_number
+					) order_number_wise_counts
+					ON vod.order_number = order_number_wise_counts.order_number
+					LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
+					LEFT JOIN (
+						SELECT COUNT(oe.swatch_approval_date) AS swatch_approval_count, oe.order_description_uuid
+						FROM zipper.order_entry oe
+						GROUP BY oe.order_description_uuid
+					) swatch_approval_counts ON vod.order_description_uuid = swatch_approval_counts.order_description_uuid
+					 LEFT JOIN (
+						SELECT COUNT(*) AS order_entry_count, oe.order_description_uuid
+						FROM zipper.order_entry oe
+						GROUP BY oe.order_description_uuid
+					) order_entry_counts ON vod.order_description_uuid = order_entry_counts.order_description_uuid
+					WHERE vod.order_description_uuid IS NOT NULL 
+						AND oi.marketing_uuid = ${own_uuid}
 					ORDER BY vod.created_at DESC;`;
 
 	const orderInfoPromise = db.execute(query);
