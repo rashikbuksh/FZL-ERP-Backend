@@ -310,6 +310,8 @@ export async function select(req, res, next) {
 }
 
 export async function getOrderDetails(req, res, next) {
+	const { approved, own } = req.query;
+
 	const query = sql`
 					SELECT 
 						vod.*, 
@@ -339,7 +341,9 @@ export async function getOrderDetails(req, res, next) {
 						FROM zipper.order_entry oe
 						GROUP BY oe.order_description_uuid
 					) order_entry_counts ON vod.order_description_uuid = order_entry_counts.order_description_uuid
-					WHERE vod.order_description_uuid IS NOT NULL
+					WHERE vod.order_description_uuid IS NOT NULL 
+						AND ${approved == 'true' ? sql`swatch_approval_counts.swatch_approval_count > 0` : sql`1=1`}
+						AND ${own ? sql`oi.marketing_uuid = ${own}` : sql`1=1`}
 					ORDER BY vod.created_at DESC;`;
 
 	const orderInfoPromise = db.execute(query);
