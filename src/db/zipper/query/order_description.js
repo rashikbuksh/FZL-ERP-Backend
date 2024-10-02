@@ -687,7 +687,8 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 
 	const { order_description_uuid } = req.params;
 
-	const query = sql`SELECT 
+	const query = sql`
+	SELECT 
         v_order_details_full.*, 
         tape_coil_required.top, 
         tape_coil_required.bottom,
@@ -706,7 +707,10 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 	ON
 		v_order_details_full.tape_coil_uuid = tape_coil.uuid
     WHERE 
-        v_order_details_full.order_description_uuid = ${order_description_uuid} AND CASE WHEN lower(v_order_details_full.item_name) = 'nylon' THEN v_order_details_full.nylon_stopper = tape_coil_required.nylon_stopper_uuid ELSE TRUE END`;
+        v_order_details_full.order_description_uuid = ${order_description_uuid}  AND (
+            lower(v_order_details_full.item_name) != 'nylon' 
+            OR v_order_details_full.nylon_stopper = tape_coil_required.nylon_stopper_uuid
+        )`;
 
 	const orderInfoPromise = db.execute(query);
 
