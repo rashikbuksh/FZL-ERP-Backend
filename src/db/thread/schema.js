@@ -198,9 +198,6 @@ export const batch_entry = thread.table('batch_entry', {
 		'coning_production_quantity'
 	).default(0),
 	coning_carton_quantity: PG_DECIMAL('coning_carton_quantity').default(0),
-	coning_production_quantity_in_kg: PG_DECIMAL(
-		'coning_production_quantity_in_kg'
-	).default(0),
 	coning_created_at: DateTime('coning_created_at').default(null),
 	coning_updated_at: DateTime('coning_updated_at').default(null),
 	transfer_quantity: PG_DECIMAL('transfer_quantity').default(0),

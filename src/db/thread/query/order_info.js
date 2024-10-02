@@ -88,66 +88,75 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: order_info.uuid,
-			id: order_info.id,
-			order_number: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
-			party_uuid: order_info.party_uuid,
-			party_name: publicSchema.party.name,
-			marketing_uuid: order_info.marketing_uuid,
-			marketing_name: publicSchema.marketing.name,
-			factory_uuid: order_info.factory_uuid,
-			factory_name: publicSchema.factory.name,
-			factory_address: publicSchema.factory.address,
-			merchandiser_uuid: order_info.merchandiser_uuid,
-			merchandiser_name: publicSchema.merchandiser.name,
-			buyer_uuid: order_info.buyer_uuid,
-			buyer_name: publicSchema.buyer.name,
-			is_sample: order_info.is_sample,
-			is_bill: order_info.is_bill,
-			is_cash: order_info.is_cash,
-			delivery_date: order_info.delivery_date,
-			created_by: order_info.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: order_info.created_at,
-			updated_at: order_info.updated_at,
-			remarks: order_info.remarks,
-		})
-		.from(order_info)
-		.leftJoin(
-			hrSchema.users,
-			eq(order_info.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			publicSchema.party,
-			eq(order_info.party_uuid, publicSchema.party.uuid)
-		)
-		.leftJoin(
-			publicSchema.marketing,
-			eq(order_info.marketing_uuid, publicSchema.marketing.uuid)
-		)
-		.leftJoin(
-			publicSchema.factory,
-			eq(order_info.factory_uuid, publicSchema.factory.uuid)
-		)
-		.leftJoin(
-			publicSchema.merchandiser,
-			eq(order_info.merchandiser_uuid, publicSchema.merchandiser.uuid)
-		)
-		.leftJoin(
-			publicSchema.buyer,
-			eq(order_info.buyer_uuid, publicSchema.buyer.uuid)
-		)
-		.orderBy(desc(order_info.created_at));
+	const query = sql`
+		SELECT 
+			order_info.uuid,
+			order_info.id,
+			CONCAT('TO', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+			order_info.party_uuid,
+			party.name AS party_name,
+			order_info.marketing_uuid,
+			marketing.name AS marketing_name,
+			order_info.factory_uuid,
+			factory.name AS factory_name,
+			factory.address AS factory_address,
+			order_info.merchandiser_uuid,
+			merchandiser.name AS merchandiser_name,
+			order_info.buyer_uuid,
+			buyer.name AS buyer_name,
+			order_info.is_sample,
+			order_info.is_bill,
+			order_info.is_cash,
+			order_info.delivery_date,
+			order_info.created_by,
+			hr.users.name AS created_by_name,
+			order_info.created_at,
+			order_info.updated_at,
+			order_info.remarks,
+			swatch_approval_counts.swatch_approval_count,
+			order_entry_counts.order_entry_count,
+			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved
+		FROM 
+			thread.order_info
+		LEFT JOIN 
+			hr.users ON order_info.created_by = hr.users.uuid
+		LEFT JOIN 
+			public.party ON order_info.party_uuid = public.party.uuid
+		LEFT JOIN 
+			public.marketing ON order_info.marketing_uuid = public.marketing.uuid
+		LEFT JOIN 
+			public.factory ON order_info.factory_uuid = public.factory.uuid
+		LEFT JOIN 
+			public.merchandiser ON order_info.merchandiser_uuid = public.merchandiser.uuid
+		LEFT JOIN 
+			public.buyer ON order_info.buyer_uuid = public.buyer.uuid
+		LEFT JOIN (
+					SELECT COUNT(toe.swatch_approval_date) AS swatch_approval_count, toe.order_info_uuid as order_info_uuid
+					FROM thread.order_entry toe
+					GROUP BY toe.order_info_uuid
+		) swatch_approval_counts ON order_info.uuid = swatch_approval_counts.order_info_uuid
+		LEFT JOIN (
+					SELECT COUNT(*) AS order_entry_count, toe.order_info_uuid as order_info_uuid
+					FROM thread.order_entry toe
+					GROUP BY toe.order_info_uuid
+		) order_entry_counts ON order_info.uuid = order_entry_counts.order_info_uuid
+		ORDER BY 
+			order_info.created_at DESC;
+	`;
+	const resultPromise = db.execute(query);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Order info list',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order info',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
