@@ -195,6 +195,15 @@ export async function DailyChallanReport(req, res, next) {
                 user.name AS created_by_name,
                 challan.order_info_uuid,
                 vodf.order_number
+                pi_cash.uuid as pi_cash_uuid,
+                concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS pi_cash_number,
+                lc.uuid as lc_uuid,
+                vodf.marketing_uuid,
+                vodf.marketing_name,
+                vodf.party_uuid,
+                vodf.party_name,
+                vodf.factory_uuid,
+                vodf.factory_name
             FROM
                 delivery.challan
             LEFT JOIN
