@@ -187,23 +187,23 @@ export async function zipperProductionStatusReport(req, res, next) {
 export async function DailyChallanReport(req, res, next) {
 	const query = sql`
             SELECT 
-                challan.created_at AS challan_uuid,
-                challan.id AS challan_id,
-                challan.order_info_uuid,
-                challan.created_at AS challan_created_at,
-                challan.carton_quantity,
+                challan.created_at AS challan_date,
+                concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
                 challan.gate_pass,
                 challan.receive_status,
                 challan.created_by,
-                oe.color,
-                oe.style,
-                oe.size,
-                packing_list_entry.quantity,
-                packing_list_entry.short_quantity,
-                packing_list_entry.reject_quantity,
-                packing_list_entry.created_at AS packing_list_entry_created_at,
-                packing_list_entry.updated_at AS packing_list_entry_updated_at,
-                packing_list_entry.remarks AS packing_list_entry_remarks
+                user.name AS created_by_name,
+                challan.order_info_uuid,
+                vodf.order_number
+                pi_cash.uuid as pi_cash_uuid,
+                concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS pi_cash_number,
+                lc.uuid as lc_uuid,
+                vodf.marketing_uuid,
+                vodf.marketing_name,
+                vodf.party_uuid,
+                vodf.party_name,
+                vodf.factory_uuid,
+                vodf.factory_name
             FROM
                 delivery.challan
             LEFT JOIN

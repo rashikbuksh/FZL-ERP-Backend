@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import {
 	decimal,
 	integer,
@@ -26,3 +27,7 @@ export const PG_DECIMAL = (column) =>
 		precision: 20,
 		scale: 4,
 	}).notNull();
+
+export const decimalToNumber = (column) => {
+	return sql`${column}::float8`;
+};

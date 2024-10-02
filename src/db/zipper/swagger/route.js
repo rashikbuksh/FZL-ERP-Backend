@@ -1,3 +1,4 @@
+import { param } from 'express-validator';
 import SE from '../../../util/swagger_example.js';
 import { tape_coil } from '../schema.js';
 
@@ -123,6 +124,50 @@ export const pathZipperOrderInfo = {
 		get: {
 			tags: ['zipper.order_info'],
 			summary: 'Get Order Details',
+			parameters: [
+				SE.parameter_query('all Order', 'all', [true, false]),
+				SE.parameter_query('approved', 'approved', [true, false]),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-SP'),
+					reference_order_info_uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					buyer_uuid: SE.uuid(),
+					buyer_name: SE.string('John'),
+					party_uuid: SE.uuid(),
+					party_name: SE.string('John'),
+					marketing_uuid: SE.uuid(),
+					marketing_name: SE.string('John'),
+					merchandiser_uuid: SE.uuid(),
+					merchandiser_name: SE.string('John'),
+					factory_uuid: SE.uuid(),
+					factory_name: SE.string('John'),
+					is_sample: SE.number(0),
+					is_bill: SE.number(0),
+					is_cash: SE.number(0),
+					marketing_priority: SE.string('Urgent'),
+					factory_priority: SE.string('FIFO'),
+					status: SE.number(0),
+					created_by_uuid: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					order_number_wise_rank: SE.number(1),
+					order_number_wise_count: SE.number(1),
+				}),
+			},
+		},
+	},
+	'/zipper/order/details/by/{own_uuid}': {
+		get: {
+			tags: ['zipper.order_info'],
+			summary: 'Get Order Details by Ownn UUID',
+			parameters: [
+				SE.parameter_params('own_uuid', 'own_uuid'),
+				SE.parameter_query('approved', 'approved', [true, false]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					order_info_uuid: SE.uuid(),
