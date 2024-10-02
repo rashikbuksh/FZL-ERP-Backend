@@ -1,5 +1,10 @@
 import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
+import {
+	ColumnNumericTransformer,
+	DateTime,
+	defaultUUID,
+	uuid_primary,
+} from '../variables.js';
 
 import { sql } from 'drizzle-orm';
 import * as hrSchema from '../hr/schema.js';
@@ -54,10 +59,12 @@ export const entry = purchase.table('entry', {
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 3,
+		transformer: new ColumnNumericTransformer(),
 	}).notNull(),
 	price: decimal('price', {
 		precision: 20,
 		scale: 3,
+		transformer: new ColumnNumericTransformer(),
 	}).default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

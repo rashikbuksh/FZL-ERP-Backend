@@ -26,3 +26,12 @@ export const PG_DECIMAL = (column) =>
 		precision: 20,
 		scale: 4,
 	}).notNull();
+
+export class ColumnNumericTransformer {
+	to(data) {
+		return data;
+	}
+	from(data) {
+		return parseFloat(data);
+	}
+}
