@@ -17,7 +17,6 @@ export const defDesignation = SED({
 	required: ['uuid', 'department_uuid', 'designation'],
 	properties: {
 		uuid: SE.uuid(),
-		department_uuid: SE.uuid(),
 		designation: SE.string('HR Manager'),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
@@ -33,6 +32,7 @@ export const defHrUser = SED({
 		'email',
 		'pass',
 		'designation_uuid',
+		'department_uuid',
 		'can_access',
 		'created_at',
 		'status',
@@ -43,6 +43,7 @@ export const defHrUser = SED({
 		email: SE.string('john@fzl.com'),
 		pass: SE.string('1234'),
 		designation_uuid: SE.uuid(),
+		department_uuid: SE.uuid(),
 		can_access: SE.string('1,2,3'),
 		ext: SE.string('562'),
 		phone: SE.string('01521533595'),

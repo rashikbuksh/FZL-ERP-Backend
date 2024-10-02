@@ -82,14 +82,11 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: designation.uuid,
 			designation: designation.designation,
-			department_uuid: designation.department_uuid,
-			department: department.department,
 			created_at: designation.created_at,
 			updated_at: designation.updated_at,
 			remarks: designation.remarks,
 		})
 		.from(designation)
-		.leftJoin(department, eq(designation.department_uuid, department.uuid))
 		.orderBy(desc(designation.created_at));
 
 	const toast = {
@@ -113,14 +110,11 @@ export async function select(req, res, next) {
 		.select({
 			uuid: designation.uuid,
 			designation: designation.designation,
-			department_uuid: designation.department_uuid,
-			department: department.department,
 			created_at: designation.created_at,
 			updated_at: designation.updated_at,
 			remarks: designation.remarks,
 		})
 		.from(designation)
-		.leftJoin(department, eq(designation.department_uuid, department.uuid))
 		.where(eq(designation.uuid, req.params.uuid));
 
 	try {
