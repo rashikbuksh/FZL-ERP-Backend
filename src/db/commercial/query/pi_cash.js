@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, or, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -125,6 +125,8 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { is_cash, own_uuid } = req?.query;
 
+	console.log(own_uuid, 'own_uuid');
+
 	const resultPromise = db
 		.select({
 			uuid: pi_cash.uuid,
@@ -188,7 +190,9 @@ export async function selectAll(req, res, next) {
 					: is_cash == 'true'
 						? eq(pi_cash.is_pi, 0)
 						: eq(pi_cash.is_pi, 1),
-				own_uuid ? eq(pi_cash.marketing_uuid, own_uuid) : ''
+				own_uuid == null
+					? sql`1=1`
+					: eq(pi_cash.marketing_uuid, own_uuid)
 			)
 		)
 
