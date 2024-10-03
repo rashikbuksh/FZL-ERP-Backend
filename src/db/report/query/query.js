@@ -182,7 +182,7 @@ export async function zipperProductionStatusReport(req, res, next) {
 	} catch (error) {
 		await handleError({ error, res });
 	}
-}
+} //* tape_preparation is missing
 
 export async function dailyChallanReport(req, res, next) {
 	const query = sql`

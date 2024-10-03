@@ -205,11 +205,12 @@ export async function select(req, res, next) {
 
 export async function selectProductionLogForAssembly(req, res, next) {
 	const query = sql`
+		SELECT
 			production.uuid,
 			production.stock_uuid,
-			production.production_quantity,
-			production.weight,
-			production.wastage,
+			production.production_quantity::float8,
+			production.weight::float8,
+			production.wastage::float8,
 			production.section,
 			production.created_by,
 			users.name as created_by_name,
@@ -249,14 +250,14 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			vodf.coloring_type,
 			vodf.coloring_type_name,
 			vodf.coloring_type_short_name,
-			stock.order_quantity,
+			stock.order_quantity::float8,
 			vodf.order_info_uuid,
 			vodf.order_number,
 			vodf.item_description,
-			stock.sa_prod,
-			stock.coloring_stock,
-			stock.coloring_prod,
-			stock.coloring_stock + production.production_quantity as max_coloring_quantity,
+			stock.sa_prod::float8,
+			stock.coloring_stock::float8,
+			stock.coloring_prod::float8,
+			stock.coloring_stock::float8 + production.production_quantity::float8 as max_coloring_quantity::float8,
 			production.with_link,
 			CAST(
 				CASE 
@@ -275,7 +276,8 @@ export async function selectProductionLogForAssembly(req, res, next) {
 								CAST(stock.puller_quantity AS DOUBLE PRECISION)
 							) 
 						END
-			AS DOUBLE PRECISION) + production.production_quantity AS max_sa_quantity
+			AS DOUBLE PRECISION) + production.production_quantity::float8 AS max_sa_quantity,
+			TRUE as against_order
 		FROM
 			slider.production
 		LEFT JOIN
@@ -284,24 +286,111 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			hr.users ON production.created_by = users.uuid
 		LEFT JOIN 
 			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
+		WHERE production.section = 'sa_prod'
 		UNION 
 		SELECT 
 			die_casting_to_assembly_stock.uuid,
 			null as stock_uuid,
-			die_casting_to_assembly_stock.production_quantity,
-			die_casting_to_assembly_stock.weight,
-			die_casting_to_assembly_stock.wastage,
+			die_casting_to_assembly_stock.production_quantity::float8,
+			die_casting_to_assembly_stock.weight::float8,
+			die_casting_to_assembly_stock.wastage::float8,
 			'assembly' as section,
 			die_casting_to_assembly_stock.created_by,
 			users.name as created_by_name,
 			die_casting_to_assembly_stock.created_at,
 			die_casting_to_assembly_stock.updated_at,
 			die_casting_to_assembly_stock.remarks,
-			item_properties.uuid as item,
-			item_properties.name as item_name,
-			item_properties.short_name as item_short_name,
-			item_properties.zipper_number,
-			item_properties.zipper_number_name,
-			item_properties.zipper_number_short_name,
+			null as item,
+			assembly_stock.name as item_name,
+			null as item_short_name,
+			null as zipper_number,
+			null as zipper_number_name,
+			null as zipper_number_short_name,
+			null as end_type,
+			null as end_type_name,
+			null as end_type_short_name,
+			null as lock_type,
+			null as lock_type_name,
+			null as lock_type_short_name,
+			null as puller_type,
+			diecastingpuller.name as puller_type_name,
+			null as puller_type_short_name,
+			null as puller_color,
+			null as puller_color_name,
+			null as puller_color_short_name,
+			null as logo_type,
+			null as logo_type_name,
+			null as logo_type_short_name,
+			null as slider_link,
+			diecastinglink.name as slider_link_name,
+			null as slider_link_short_name,
+			null as slider,
+			null as slider_name,
+			null as slider_short_name,
+			null as slider_body_shape,
+			diecastingbody.name as slider_body_shape_name,
+			null as slider_body_shape_short_name,
+			null as coloring_type,
+			null as coloring_type_name,
+			null as coloring_type_short_name,
+			null as order_quantity::float8,
+			null as order_info_uuid,
+			'Assembly Stock' as order_number,
+			null as item_description,
+			null as sa_prod,
+			null as coloring_stock,
+			null as coloring_prod,
+			null as max_coloring_quantity::float8,
+			die_casting_to_assembly_stock.with_link,
+			CAST(
+				CASE 
+					WHEN die_casting_to_assembly_stock.with_link = 1
+						THEN
+							LEAST(
+								CAST(diecastingbody.quantity_in_sa AS DOUBLE PRECISION),
+								CAST(diecastingpuller.quantity_in_sa AS DOUBLE PRECISION),
+								CAST(diecastingcap.quantity_in_sa AS DOUBLE PRECISION),
+								CAST(diecastinglink.quantity_in_sa AS DOUBLE PRECISION)
+							) 
+						ELSE 
+							LEAST(
+								CAST(diecastingbody.quantity_in_sa AS DOUBLE PRECISION),
+								CAST(diecastingpuller.quantity_in_sa AS DOUBLE PRECISION),
+								CAST(diecastingcap.quantity_in_sa AS DOUBLE PRECISION)
+							) 
+						END
+			AS DOUBLE PRECISION) + die_casting_to_assembly_stock.production_quantity::float8 AS max_sa_quantity,
+			FALSE as against_order
+		FROM
+			slider.die_casting_to_assembly_stock
+		LEFT JOIN 
+			slider.assembly_stock ON die_casting_to_assembly_stock.assembly_stock_uuid = assembly_stock.uuid
+		LEFT JOIN
+			hr.users ON die_casting_to_assembly_stock.created_by = users.uuid
+		LEFT JOIN
+			slider.die_casting diecastingbody ON assembly_stock.die_casting_body_uuid = diecastingbody.uuid
+		LEFT JOIN
+			slider.die_casting diecastingpuller ON assembly_stock.die_casting_puller_uuid = diecastingpuller.uuid
+		LEFT JOIN
+			slider.die_casting diecastingcap ON assembly_stock.die_casting_cap_uuid = diecastingcap.uuid
+		LEFT JOIN
+			slider.die_casting diecastinglink ON assembly_stock.die_casting_link_uuid = diecastinglink.uuid
+		ORDER BY
+			created_at DESC;
 	`;
+
+	const productionLogPromise = db.execute(query);
+
+	try {
+		const data = await productionLogPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: `production log for assembly`,
+		};
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

@@ -48,6 +48,10 @@ sliderRouter.get('/assembly-stock/:uuid', assemblyStockOperations.select);
 sliderRouter.post('/assembly-stock', assemblyStockOperations.insert);
 sliderRouter.put('/assembly-stock/:uuid', assemblyStockOperations.update);
 sliderRouter.delete('/assembly-stock/:uuid', assemblyStockOperations.remove);
+sliderRouter.get(
+	'/assembly-production-log',
+	assemblyStockOperations.selectProductionLogForAssembly
+);
 
 // --------------------- Die Casting to Assembly Stock ---------------------
 
