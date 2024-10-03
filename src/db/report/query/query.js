@@ -189,7 +189,7 @@ export async function DailyChallanReport(req, res, next) {
             SELECT 
                 challan.uuid,
                 challan.created_at AS challan_date,
-                concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
+                concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
                 challan.gate_pass,
                 challan.created_by,
                 users.name AS created_by_name,
@@ -207,6 +207,7 @@ export async function DailyChallanReport(req, res, next) {
                 vodf.factory_name,
                 oe.uuid as order_entry_uuid,
                 CONCAT(oe.style, ' - ', oe.color, ' - ', oe.size) AS style_color_size,
+                null as count_length_name,
                 packing_list_grouped.total_quantity,
                 challan.receive_status,
                 packing_list_grouped.total_short_quantity,
@@ -247,55 +248,62 @@ export async function DailyChallanReport(req, res, next) {
             SELECT
                 thread_challan.uuid,
                 thread_challan.created_at AS thread_challan_date,
-                concat('C', to_char(thread_challan.created_at, 'YY'), '-', LPAD(thread_challan.id::text, 4, '0')) AS thread_challan_id,
+                concat('TC', to_char(thread_challan.created_at, 'YY'), '-', LPAD(thread_challan.id::text, 4, '0')) AS thread_challan_id,
                 thread_challan.gate_pass,
                 thread_challan.created_by,
                 users.name AS created_by_name,
-                order_info.order_info_uuid,
-                order_info.order_number,
+                order_info.uuid as order_info_uuid,
+                CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
                 pi_cash.uuid as pi_cash_uuid,
                 CASE WHEN pi_cash.uuid IS NOT NULL THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE NULL END AS pi_cash_number,
                 lc.uuid as lc_uuid,
                 lc.lc_number,
-                vodf.marketing_uuid,
-                vodf.marketing_name,
-                vodf.party_uuid,
-                vodf.party_name,
-                vodf.factory_uuid,
-                vodf.factory_name,
+                order_info.marketing_uuid,
+                marketing.name as marketing_name,
+                order_info.party_uuid,
+                party.name as party_name,
+                order_info.factory_uuid,
+                factory.name as factory_name,
                 oe.uuid as order_entry_uuid,
-                CONCAT(oe.style, ' - ', oe.color, ' - ', oe.size) AS style_color_size,
-                packing_list_grouped.total_quantity,
-                thread_challan.receive_status,
-                packing_list_grouped.total_short_quantity,
-                packing_list_grouped.total_reject_quantity,
+                CONCAT(oe.style, ' - ', oe.color) AS style_color_size,
+                CONCAT(count_length.count, ' - ', count_length.length) as count_length_name,
+                thread_challan_entry_grouped.total_quantity,
+                thread_challan.received as receive_status,
+                thread_challan_entry_grouped.total_short_quantity,
+                thread_challan_entry_grouped.total_reject_quantity,
                 'thread' as product
             FROM
                 thread.challan thread_challan
-            LEFT JOIN 
-                thread.challan_entry thread_challan_entry ON thread_challan.uuid = thread_challan_entry.challan_uuid
             LEFT JOIN
                 hr.users ON thread_challan.created_by = users.uuid
             LEFT JOIN (
                 SELECT 
-                    packing_list.challan_uuid,
-                    SUM(packing_list_entry.quantity) AS total_quantity,
-                    SUM(packing_list_entry.short_quantity) AS total_short_quantity,
-                    SUM(packing_list_entry.reject_quantity) AS total_reject_quantity,
-                    oe.quantity AS order_quantity,
-                    oe.uuid AS order_entry_uuid
-                FROM
-                    thread.packing_list
-                LEFT JOIN
-                    thread.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
-                LEFT JOIN
-                    zipper.sfg ON packing_list_entry.sfg_uuid = sfg.uuid
-                LEFT JOIN
-                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    challan_entry.challan_uuid,
+                    SUM(challan_entry.quantity) AS total_quantity,
+                    SUM(challan_entry.short_quantity) AS total_short_quantity,
+                    SUM(challan_entry.reject_quantity) AS total_reject_quantity,
+                    challan_entry.order_entry_uuid
+                FROM 
+                    thread.challan_entry challan_entry
                 GROUP BY
-                    packing_list.challan_uuid, oe.uuid
-            ) packing_list_grouped ON thread_challan.uuid = packing_list_grouped.challan_uuid
-
+                    challan_entry.challan_uuid, challan_entry.order_entry_uuid
+            ) thread_challan_entry_grouped ON thread_challan.uuid = thread_challan_entry_grouped.challan_uuid
+            LEFT JOIN 
+                thread.order_entry oe ON thread_challan_entry_grouped.order_entry_uuid = oe.uuid
+            LEFT JOIN
+                thread.order_info ON oe.order_info_uuid = order_info.uuid
+            LEFT JOIN 
+                thread.count_length ON oe.count_length_uuid = count_length.uuid
+            LEFT JOIN
+                public.marketing ON order_info.marketing_uuid = marketing.uuid
+            LEFT JOIN
+                public.party ON order_info.party_uuid = party.uuid
+            LEFT JOIN
+                public.factory ON order_info.factory_uuid = factory.uuid
+            LEFT JOIN
+                commercial.pi_cash pi_cash ON pi_cash.thread_order_info_uuids IN (order_info.uuid)
+            LEFT JOIN
+                commercial.lc ON pi_cash.lc_uuid = lc.uuid
         `;
 
 	const resultPromise = db.execute(query);
