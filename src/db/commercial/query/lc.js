@@ -92,7 +92,7 @@ export async function selectAll(req, res, next) {
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
-				WHERE pi_cash.lc_uuid = lc.uuid ${own_uuid == null ? sql`` : sql`AND pi_cash.marketing_uuid = ${own_uuid}`}
+				WHERE pi_cash.lc_uuid = lc.uuid
 			) AS total_value,
 			concat(
 			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
@@ -133,6 +133,7 @@ export async function selectAll(req, res, next) {
 			public.party ON lc.party_uuid = party.uuid
 		LEFT JOIN
 			commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
+		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${own_uuid}`}
 		GROUP BY lc.uuid, party.name, users.name
 		ORDER BY lc.created_at DESC
 		`;
