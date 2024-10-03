@@ -365,18 +365,25 @@ export async function selectPiDetailsByPiId(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const { pi_cash_id } = req.params;
-
-	const api = await createApi(req);
-
-	const fetchPiUuid = async () =>
-		await api
-			.get(`/commercial/pi-cash-uuid/${pi_cash_id}`)
-			.then((response) => response);
-
-	const piCashUuid = await fetchPiUuid();
-
 	try {
 		const api = await createApi(req);
+
+		const fetchPiUuid = async () =>
+			await api
+				.get(`/commercial/pi-cash-uuid/${pi_cash_id}`)
+				.then((response) => response);
+
+		const piCashUuid = await fetchPiUuid();
+
+		if (!piCashUuid.data.data.length) {
+			const toast = {
+				status: 404,
+				type: 'select',
+				message: 'No data found',
+			};
+			return res.status(404).json({ toast });
+		}
+
 		const fetchData = async (endpoint) =>
 			await api
 				.get(`${endpoint}/${piCashUuid.data.data[0].uuid}`)
