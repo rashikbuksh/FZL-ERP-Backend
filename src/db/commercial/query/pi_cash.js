@@ -81,7 +81,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(pi_cash.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))`,
+			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
 		});
 
 	try {
@@ -105,7 +105,7 @@ export async function remove(req, res, next) {
 		.delete(pi_cash)
 		.where(eq(pi_cash.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))`,
+			deletedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
 		});
 
 	try {
