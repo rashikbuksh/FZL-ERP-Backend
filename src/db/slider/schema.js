@@ -133,10 +133,18 @@ export const die_casting = slider.table('die_casting', {
 export const assembly_stock = slider.table('assembly_stock', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
-	die_casting_body_uuid: defaultUUID('die_casting_body_uuid'),
-	die_casting_puller_uuid: defaultUUID('die_casting_puller_uuid'),
-	die_casting_cap_uuid: defaultUUID('die_casting_cap_uuid'),
-	die_casting_link_uuid: defaultUUID('die_casting_link_uuid'),
+	die_casting_body_uuid: defaultUUID('die_casting_body_uuid').references(
+		() => die_casting.uuid
+	),
+	die_casting_puller_uuid: defaultUUID('die_casting_puller_uuid').references(
+		() => die_casting.uuid
+	),
+	die_casting_cap_uuid: defaultUUID('die_casting_cap_uuid').references(
+		() => die_casting.uuid
+	),
+	die_casting_link_uuid: defaultUUID('die_casting_link_uuid').references(
+		() => die_casting.uuid
+	),
 	quantity: PG_DECIMAL('quantity').default(0),
 	weight: PG_DECIMAL('weight').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

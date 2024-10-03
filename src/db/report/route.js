@@ -11,6 +11,9 @@ reportRouter.get(
 	reportOperations.zipperProductionStatusReport
 );
 
+// * Daily Challan Report
+reportRouter.get('/daily-challan-report', reportOperations.dailyChallanReport);
+
 export const pathReport = {
 	'/report/zipper-production-status-report': {
 		get: {
@@ -27,6 +30,28 @@ export const pathReport = {
 							schema: {
 								type: 'array',
 								items: SED('zipperProductionStatusReport'),
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/report/daily-challan-report': {
+		get: {
+			summary: 'Daily Challan Report',
+			description: 'Daily Challan Report',
+			tags: ['report'],
+			operationId: 'dailyChallanReport',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'Daily Challan Report',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: SED('dailyChallanReport'),
 							},
 						},
 					},

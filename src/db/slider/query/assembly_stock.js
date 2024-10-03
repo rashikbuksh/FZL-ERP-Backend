@@ -202,3 +202,106 @@ export async function select(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectProductionLogForAssembly(req, res, next) {
+	const query = sql`
+			production.uuid,
+			production.stock_uuid,
+			production.production_quantity,
+			production.weight,
+			production.wastage,
+			production.section,
+			production.created_by,
+			users.name as created_by_name,
+			production.created_at,
+			production.updated_at,
+			production.remarks,
+			vodf.item,
+			vodf.item_name,
+			vodf.item_short_name,
+			vodf.zipper_number,
+			vodf.zipper_number_name,
+			vodf.zipper_number_short_name,
+			vodf.end_type,
+			vodf.end_type_name,
+			vodf.end_type_short_name,
+			vodf.lock_type,
+			vodf.lock_type_name,
+			vodf.lock_type_short_name,
+			vodf.puller_type,
+			vodf.puller_type_name,
+			vodf.puller_type_short_name,
+			vodf.puller_color,
+			vodf.puller_color_name,
+			vodf.puller_color_short_name,
+			vodf.logo_type,
+			vodf.logo_type_name,
+			vodf.logo_type_short_name,
+			vodf.slider_link,
+			vodf.slider_link_name,
+			vodf.slider_link_short_name,
+			vodf.slider,
+			vodf.slider_name,
+			vodf.slider_short_name,
+			vodf.slider_body_shape,
+			vodf.slider_body_shape_name,
+			vodf.slider_body_shape_short_name,
+			vodf.coloring_type,
+			vodf.coloring_type_name,
+			vodf.coloring_type_short_name,
+			stock.order_quantity,
+			vodf.order_info_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			stock.sa_prod,
+			stock.coloring_stock,
+			stock.coloring_prod,
+			stock.coloring_stock + production.production_quantity as max_coloring_quantity,
+			production.with_link,
+			CAST(
+				CASE 
+					WHEN production.with_link = 1
+						THEN
+							LEAST(
+								CAST(stock.body_quantity AS DOUBLE PRECISION),
+								CAST(stock.cap_quantity AS DOUBLE PRECISION),
+								CAST(stock.puller_quantity AS DOUBLE PRECISION),
+								CAST(stock.link_quantity AS DOUBLE PRECISION)
+							) 
+						ELSE 
+							LEAST(
+								CAST(stock.body_quantity AS DOUBLE PRECISION),
+								CAST(stock.cap_quantity AS DOUBLE PRECISION),
+								CAST(stock.puller_quantity AS DOUBLE PRECISION)
+							) 
+						END
+			AS DOUBLE PRECISION) + production.production_quantity AS max_sa_quantity
+		FROM
+			slider.production
+		LEFT JOIN
+			slider.stock ON production.stock_uuid = stock.uuid
+		LEFT JOIN 
+			hr.users ON production.created_by = users.uuid
+		LEFT JOIN 
+			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
+		UNION 
+		SELECT 
+			die_casting_to_assembly_stock.uuid,
+			null as stock_uuid,
+			die_casting_to_assembly_stock.production_quantity,
+			die_casting_to_assembly_stock.weight,
+			die_casting_to_assembly_stock.wastage,
+			'assembly' as section,
+			die_casting_to_assembly_stock.created_by,
+			users.name as created_by_name,
+			die_casting_to_assembly_stock.created_at,
+			die_casting_to_assembly_stock.updated_at,
+			die_casting_to_assembly_stock.remarks,
+			item_properties.uuid as item,
+			item_properties.name as item_name,
+			item_properties.short_name as item_short_name,
+			item_properties.zipper_number,
+			item_properties.zipper_number_name,
+			item_properties.zipper_number_short_name,
+	`;
+}

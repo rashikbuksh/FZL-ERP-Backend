@@ -184,7 +184,7 @@ export async function zipperProductionStatusReport(req, res, next) {
 	}
 }
 
-export async function DailyChallanReport(req, res, next) {
+export async function dailyChallanReport(req, res, next) {
 	const query = sql`
             SELECT 
                 challan.uuid,
