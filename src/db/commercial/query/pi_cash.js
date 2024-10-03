@@ -125,8 +125,6 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { is_cash, own_uuid } = req?.query;
 
-	console.log(own_uuid, 'own_uuid');
-
 	const resultPromise = db
 		.select({
 			uuid: pi_cash.uuid,

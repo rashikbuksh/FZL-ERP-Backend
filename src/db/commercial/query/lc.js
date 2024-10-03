@@ -75,6 +75,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { own_uuid } = req?.query;
+
 	const query = sql`
 		SELECT
 			lc.uuid,
@@ -90,7 +92,7 @@ export async function selectAll(req, res, next) {
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
-				WHERE pi_cash.lc_uuid = lc.uuid
+				WHERE pi_cash.lc_uuid = lc.uuid ${own_uuid == null ? sql`` : sql`AND pi_cash.marketing_uuid = ${own_uuid}`}
 			) AS total_value,
 			concat(
 			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')

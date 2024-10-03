@@ -90,6 +90,7 @@ export const pathCommercialLc = {
 			tags: ['commercial.lc'],
 			summary: 'Get all lcs',
 			description: 'All lcs',
+			parameters: [SE.parameter_query('own_uuid', 'own_uuid', SE.uuid())],
 			responses: {
 				200: SE.response_schema('200', {
 					uuid: SE.uuid('igD0v9DIJQhJeet'),
