@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -307,18 +307,18 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				die_casting.updated_at,
 				die_casting.remarks,
 				die_casting.type,
-				die_casting.quantity_in_sa,
+				die_casting.quantity_in_sa::float8,
 				FALSE AS against_order,
 				trx_against_stock.uuid AS uuid,
-				trx_against_stock.quantity,
-				trx_against_stock.weight,
-				(die_casting.weight + trx_against_stock.weight) as max_weight,
+				trx_against_stock.quantity::float8,
+				trx_against_stock.weight::float8,
+				(die_casting.weight::float8 + trx_against_stock.weight::float8) as max_weight,
 				trx_against_stock.created_by,
 				user_trx_against_stock.name as created_by_name,
 				trx_against_stock.created_at,
 				trx_against_stock.updated_at,
 				trx_against_stock.remarks,
-				(die_casting.quantity + trx_against_stock.quantity) as max_quantity
+				(die_casting.quantity::float8 + trx_against_stock.quantity::float8) as max_quantity
 			FROM 
 				slider.trx_against_stock
 			LEFT JOIN
@@ -373,10 +373,10 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				die_casting.updated_at,
 				die_casting.remarks,
 				die_casting.type,
-				die_casting.quantity_in_sa,
+				die_casting.quantity_in_sa::float8,
 				TRUE AS against_order,
 				die_casting_transaction.uuid AS uuid,
-				die_casting_transaction.trx_quantity,
+				die_casting_transaction.trx_quantity::float8,
 				die_casting_transaction.weight,
 				(die_casting.weight + die_casting_transaction.weight) as max_weight,
 				die_casting_transaction.created_by,
@@ -384,7 +384,7 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				die_casting_transaction.created_at,
 				die_casting_transaction.updated_at,
 				die_casting_transaction.remarks,
-				(die_casting.quantity + die_casting_transaction.trx_quantity) as max_quantity
+				(die_casting.quantity::float8 + die_casting_transaction.trx_quantity::float8) as max_quantity
 			FROM 
 				slider.die_casting_transaction
 			LEFT JOIN
@@ -406,4 +406,18 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 			LEFT JOIN
 				hr.users user_die_casting_transaction ON die_casting_transaction.created_by = user_die_casting_transaction.uuid
 	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Die Casting Transactions',
+		};
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

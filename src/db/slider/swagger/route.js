@@ -496,6 +496,29 @@ export const pathSliderDieCasting = {
 			},
 		},
 	},
+	'/slider/die-casting-trx-log': {
+		get: {
+			tags: ['slider.die_casting'],
+			summary: 'Gets all transactions from die casting',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [],
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/slider/die_casting',
+						},
+					},
+				},
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
 };
 
 // * Slider Die Casting Assembly Stock * //

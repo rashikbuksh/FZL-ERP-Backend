@@ -36,6 +36,10 @@ sliderRouter.delete(
 
 	dieCastingOperations.remove
 );
+sliderRouter.get(
+	'/die-casting-trx-log',
+	dieCastingOperations.selectTransactionsFromDieCasting
+);
 
 // --------------------- Assembly Stock ---------------------
 
