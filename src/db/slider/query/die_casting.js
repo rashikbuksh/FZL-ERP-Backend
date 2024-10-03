@@ -309,7 +309,16 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				die_casting.type,
 				die_casting.quantity_in_sa,
 				FALSE AS against_order,
-				trx_against_stock.uuid AS uuid
+				trx_against_stock.uuid AS uuid,
+				trx_against_stock.quantity,
+				trx_against_stock.weight,
+				(die_casting.weight + trx_against_stock.weight) as max_weight,
+				trx_against_stock.created_by,
+				user_trx_against_stock.name as created_by_name,
+				trx_against_stock.created_at,
+				trx_against_stock.updated_at,
+				trx_against_stock.remarks,
+				(die_casting.quantity + trx_against_stock.quantity) as max_quantity
 			FROM 
 				slider.trx_against_stock
 			LEFT JOIN
@@ -328,9 +337,11 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				public.properties slider_body_shape_properties ON die_casting.slider_body_shape = slider_body_shape_properties.uuid
 			LEFT JOIN 
 				public.properties slider_link_properties ON die_casting.slider_link = slider_link_properties.uuid
+			LEFT JOIN
+				hr.users user_trx_against_stock ON trx_against_stock.created_by = user_trx_against_stock.uuid
 			UNION 
 			SELECT 
-				die_casting1.uuid as die_casting_uuid,
+				die_casting.uuid as die_casting_uuid,
 				die_casting.name,
 				die_casting.item,
 				item_properties.name AS item_name,
@@ -364,11 +375,20 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				die_casting.type,
 				die_casting.quantity_in_sa,
 				TRUE AS against_order,
-				die_casting_transaction.uuid AS uuid
+				die_casting_transaction.uuid AS uuid,
+				die_casting_transaction.trx_quantity,
+				die_casting_transaction.weight,
+				(die_casting.weight + die_casting_transaction.weight) as max_weight,
+				die_casting_transaction.created_by,
+				user_die_casting_transaction.name as created_by_name,
+				die_casting_transaction.created_at,
+				die_casting_transaction.updated_at,
+				die_casting_transaction.remarks,
+				(die_casting.quantity + die_casting_transaction.trx_quantity) as max_quantity
 			FROM 
 				slider.die_casting_transaction
 			LEFT JOIN
-				slider.die_casting1 ON die_casting1.uuid = die_casting_transaction.die_casting_uuid
+				slider.die_casting ON die_casting.uuid = die_casting_transaction.die_casting_uuid
 			LEFT JOIN 
 				public.properties item_properties ON die_casting.item = item_properties.uuid
 			LEFT JOIN 
@@ -383,7 +403,7 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				public.properties slider_body_shape_properties ON die_casting.slider_body_shape = slider_body_shape_properties.uuid
 			LEFT JOIN 
 				public.properties slider_link_properties ON die_casting.slider_link = slider_link_properties.uuid
-			ORDER BY 
-				die_casting.created_at DESC
+			LEFT JOIN
+				hr.users user_die_casting_transaction ON die_casting_transaction.created_by = user_die_casting_transaction.uuid
 	`;
 }
