@@ -175,7 +175,9 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							vodf.light_preference_short_name,
 							vodf.slider_link_short_name,
 							vodf.teeth_type_short_name,
-							vodf.description
+							vodf.description,
+							CASE WHEN(vodf.is_logo_body = 1 ) THEN 'B' ELSE NULL END,
+							CASE WHEN(vodf.is_logo_puller = 1 ) THEN 'P' ELSE NULL END
 							
 						] as short_names,
 
