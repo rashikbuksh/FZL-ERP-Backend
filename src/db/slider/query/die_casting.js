@@ -54,10 +54,7 @@ const garmentsWashProperties = alias(
 	publicSchema.properties,
 	'garmentsWashProperties'
 );
-const pullerLinkProperties = alias(
-	publicSchema.properties,
-	'pullerLinkProperties'
-);
+
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -144,8 +141,8 @@ export async function selectAll(req, res, next) {
 			slider_body_shape_name: sliderBodyShapeProperties.name,
 			slider_body_shape_short_name: sliderBodyShapeProperties.short_name,
 			slider_link: die_casting.slider_link,
-			slider_link_name: pullerLinkProperties.name,
-			slider_link_short_name: pullerTypeProperties.short_name,
+			slider_link_name: sliderLinkProperties.name,
+			slider_link_short_name: sliderLinkProperties.short_name,
 			is_logo_body: die_casting.is_logo_body,
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: die_casting.quantity,
@@ -180,8 +177,8 @@ export async function selectAll(req, res, next) {
 			eq(die_casting.slider_body_shape, sliderBodyShapeProperties.uuid)
 		)
 		.leftJoin(
-			pullerLinkProperties,
-			eq(die_casting.slider_link, pullerLinkProperties.uuid)
+			sliderLinkProperties,
+			eq(die_casting.slider_link, sliderLinkProperties.uuid)
 		)
 		.orderBy(desc(die_casting.created_at));
 
@@ -220,8 +217,8 @@ export async function select(req, res, next) {
 			slider_body_shape_name: sliderBodyShapeProperties.name,
 			slider_body_shape_short_name: sliderBodyShapeProperties.short_name,
 			slider_link: die_casting.slider_link,
-			slider_link_name: pullerLinkProperties.name,
-			slider_link_short_name: pullerTypeProperties.short_name,
+			slider_link_name: sliderLinkProperties.name,
+			slider_link_short_name: sliderLinkProperties.short_name,
 			is_logo_body: die_casting.is_logo_body,
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: die_casting.quantity,
@@ -256,8 +253,8 @@ export async function select(req, res, next) {
 			eq(die_casting.slider_body_shape, sliderBodyShapeProperties.uuid)
 		)
 		.leftJoin(
-			pullerLinkProperties,
-			eq(die_casting.slider_link, pullerLinkProperties.uuid)
+			sliderLinkProperties,
+			eq(die_casting.slider_link, sliderLinkProperties.uuid)
 		)
 		.where(eq(die_casting.uuid, req.params.uuid));
 
@@ -272,4 +269,121 @@ export async function select(req, res, next) {
 	} catch (error) {
 		await handleError({ error, res });
 	}
+}
+
+export async function selectTransactionsFromDieCasting(req, res, next) {
+	// die_casting connection to die_casting_transaction and trx_against stock
+	const query = sql`
+			SELECT 
+				die_casting.uuid as die_casting_uuid,
+				die_casting.name,
+				die_casting.item,
+				item_properties.name AS item_name,
+				item_properties.short_name AS item_short_name,
+				die_casting.zipper_number,
+				zipper_properties.name AS zipper_number_name,
+				zipper_properties.short_name AS zipper_number_short_name,
+				die_casting.end_type,
+				end_type_properties.name AS end_type_name,
+				end_type_properties.short_name AS end_type_short_name,
+				die_casting.puller_type,
+				puller_type_properties.name AS puller_type_name,
+				puller_type_properties.short_name AS puller_type_short_name,
+				die_casting.slider_body_shape,
+				slider_body_shape_properties.name AS slider_body_shape_name,
+				slider_body_shape_properties.short_name AS slider_body_shape_short_name,
+				die_casting.slider_link,
+				slider_link_properties.name AS slider_link_name,
+				slider_link_properties.short_name AS slider_link_short_name,
+				die_casting.logo_type,
+				logo_type_properties.name AS logo_type_name,
+				logo_type_properties.short_name AS logo_type_short_name,
+				die_casting.is_logo_body,
+				die_casting.is_logo_puller,
+				die_casting.quantity::float8,
+				die_casting.weight::float8,
+				CASE WHEN die_casting.weight != 0 THEN (die_casting.quantity::float8 / die_casting.weight::float8) ELSE 0 END AS pcs_per_kg,
+				die_casting.created_at,
+				die_casting.updated_at,
+				die_casting.remarks,
+				die_casting.type,
+				die_casting.quantity_in_sa,
+				FALSE AS against_order,
+				trx_against_stock.uuid AS uuid
+			FROM 
+				slider.trx_against_stock
+			LEFT JOIN
+				slider.die_casting ON die_casting.uuid = trx_against_stock.die_casting_uuid
+			LEFT JOIN 
+				public.properties item_properties ON die_casting.item = item_properties.uuid
+			LEFT JOIN 
+				public.properties zipper_properties ON die_casting.zipper_number = zipper_properties.uuid
+			LEFT JOIN 
+				public.properties end_type_properties ON die_casting.end_type = end_type_properties.uuid
+			LEFT JOIN 
+				public.properties puller_type_properties ON die_casting.puller_type = puller_type_properties.uuid
+			LEFT JOIN 
+				public.properties logo_type_properties ON die_casting.logo_type = logo_type_properties.uuid
+			LEFT JOIN 
+				public.properties slider_body_shape_properties ON die_casting.slider_body_shape = slider_body_shape_properties.uuid
+			LEFT JOIN 
+				public.properties slider_link_properties ON die_casting.slider_link = slider_link_properties.uuid
+			UNION 
+			SELECT 
+				die_casting1.uuid as die_casting_uuid,
+				die_casting.name,
+				die_casting.item,
+				item_properties.name AS item_name,
+				item_properties.short_name AS item_short_name,
+				die_casting.zipper_number,
+				zipper_properties.name AS zipper_number_name,
+				zipper_properties.short_name AS zipper_number_short_name,
+				die_casting.end_type,
+				end_type_properties.name AS end_type_name,
+				end_type_properties.short_name AS end_type_short_name,
+				die_casting.puller_type,
+				puller_type_properties.name AS puller_type_name,
+				puller_type_properties.short_name AS puller_type_short_name,
+				die_casting.slider_body_shape,
+				slider_body_shape_properties.name AS slider_body_shape_name,
+				slider_body_shape_properties.short_name AS slider_body_shape_short_name,
+				die_casting.slider_link,
+				slider_link_properties.name AS slider_link_name,
+				slider_link_properties.short_name AS slider_link_short_name,
+				die_casting.logo_type,
+				logo_type_properties.name AS logo_type_name,
+				logo_type_properties.short_name AS logo_type_short_name,
+				die_casting.is_logo_body,
+				die_casting.is_logo_puller,
+				die_casting.quantity::float8,
+				die_casting.weight::float8,
+				CASE WHEN die_casting.weight != 0 THEN (die_casting.quantity::float8 / die_casting.weight::float8) ELSE 0 END AS pcs_per_kg,
+				die_casting.created_at,
+				die_casting.updated_at,
+				die_casting.remarks,
+				die_casting.type,
+				die_casting.quantity_in_sa,
+				TRUE AS against_order,
+				die_casting_transaction.uuid AS uuid
+			FROM 
+				slider.die_casting_transaction
+			LEFT JOIN
+				slider.die_casting1 ON die_casting1.uuid = die_casting_transaction.die_casting_uuid
+			LEFT JOIN 
+				public.properties item_properties ON die_casting.item = item_properties.uuid
+			LEFT JOIN 
+				public.properties zipper_properties ON die_casting.zipper_number = zipper_properties.uuid
+			LEFT JOIN 
+				public.properties end_type_properties ON die_casting.end_type = end_type_properties.uuid
+			LEFT JOIN 
+				public.properties puller_type_properties ON die_casting.puller_type = puller_type_properties.uuid
+			LEFT JOIN 
+				public.properties logo_type_properties ON die_casting.logo_type = logo_type_properties.uuid
+			LEFT JOIN 
+				public.properties slider_body_shape_properties ON die_casting.slider_body_shape = slider_body_shape_properties.uuid
+			LEFT JOIN 
+				public.properties slider_link_properties ON die_casting.slider_link = slider_link_properties.uuid
+			ORDER BY 
+				die_casting.created_at DESC
+	`;
 }
