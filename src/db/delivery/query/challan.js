@@ -21,7 +21,7 @@ export async function insert(req, res, next) {
 		.insert(challan)
 		.values(req.body)
 		.returning({
-			insertedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			insertedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			updatedUuid: challan.uuid,
 		});
 	try {
@@ -45,7 +45,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(challan.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			updatedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			updatedUuid: challan.uuid,
 		});
 
@@ -69,7 +69,7 @@ export async function remove(req, res, next) {
 		.delete(challan)
 		.where(eq(challan.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			deletedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -89,7 +89,7 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: challan.uuid,
-			challan_number: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			challan_number: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			order_info_uuid: challan.order_info_uuid,
 			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			carton_quantity: challan.carton_quantity,
@@ -132,7 +132,7 @@ export async function select(req, res, next) {
 	const challanPromise = db
 		.select({
 			uuid: challan.uuid,
-			challan_number: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			challan_number: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			order_info_uuid: challan.order_info_uuid,
 			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			packing_list_uuids: sql`array_agg(packing_list.uuid)`,
