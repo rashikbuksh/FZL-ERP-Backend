@@ -176,6 +176,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							vodf.slider_link_short_name,
 							vodf.teeth_type_short_name,
 							vodf.description
+							
 						] as short_names,
 
 					vodf.special_requirement,
@@ -232,7 +233,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					console.log('Nested values object:', nestedValuesObject);
 
 					// Extract the UUID from the nested values array
-					const [uuid] = nestedValuesObject.values; // Destructuring to get the first value from the array
+					const [uuid] = nestedValuesObject.values;
 
 					if (uuid) {
 						uuids.add(uuid);
@@ -243,40 +244,28 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 			}
 		});
 
-		console.log('Extracted UUIDs:', Array.from(uuids));
-
-		let s_short_name = { values: { values: [] } };
-
+		let s_short_name = [];
 		const uuidArray = Array.from(uuids);
-
-		console.log('UUID Array:', uuidArray);
 
 		const shortNameQuery = sql`
 								SELECT
 									pp.uuid,
 									pp.short_name
 								FROM public.properties as pp
-								WHERE pp.uuid IN (${uuidArray.map((uuid) => `'${uuid}'`).join(', ')})
+								WHERE pp.uuid IN (${sql.join(uuidArray, sql`, `)})
    								 `;
-		console.log('Executing query:', shortNameQuery);
 
 		try {
 			const result = await db.execute(shortNameQuery);
 
-			console.log('Query result:', result);
-
 			if (result.rows.length > 0) {
-				s_short_name.values.values = result.rows.map(
-					(row) => row.short_name
-				);
+				s_short_name = result.rows.map((row) => row.short_name);
 			} else {
-				console.log('No rows returned from the query.');
+				s_short_name = [];
 			}
 		} catch (error) {
-			console.error('Error executing query:', error);
+			console.log('Error fetching short names:', error);
 		}
-
-		console.log('Short names:', s_short_name);
 
 		const toast = {
 			status: 200,
@@ -284,7 +273,11 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 			message: 'pi_cash_entry By Pi Cash Uuid',
 		};
 		data.rows.forEach((row) => {
-			row.s_short_name = s_short_name;
+			if (Array.isArray(row.short_names)) {
+				row.short_names = [...row.short_names, ...s_short_name];
+			} else {
+				row.short_names = [...s_short_name];
+			}
 		});
 
 		return res.status(200).json({ toast, data: data?.rows });
