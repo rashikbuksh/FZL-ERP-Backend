@@ -191,7 +191,6 @@ export async function DailyChallanReport(req, res, next) {
                 challan.created_at AS challan_date,
                 concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
                 challan.gate_pass,
-                challan.receive_status,
                 challan.created_by,
                 users.name AS created_by_name,
                 challan.order_info_uuid,
@@ -209,8 +208,10 @@ export async function DailyChallanReport(req, res, next) {
                 oe.uuid as order_entry_uuid,
                 CONCAT(oe.style, ' - ', oe.color, ' - ', oe.size) AS style_color_size,
                 packing_list_grouped.total_quantity,
+                challan.receive_status,
                 packing_list_grouped.total_short_quantity,
-                packing_list_grouped.total_reject_quantity
+                packing_list_grouped.total_reject_quantity,
+                'zipper' as product
             FROM
                 delivery.challan
             LEFT JOIN 
@@ -242,8 +243,59 @@ export async function DailyChallanReport(req, res, next) {
                 commercial.pi_cash pi_cash ON pi_cash.order_info_uuids IN (vodf.order_info_uuid)
             LEFT JOIN
                 commercial.lc ON pi_cash.lc_uuid = lc.uuid
-            WHERE challan.uuid IS NOT NULL
-            ORDER BY challan.created_at DESC
+            UNION 
+            SELECT
+                thread_challan.uuid,
+                thread_challan.created_at AS thread_challan_date,
+                concat('C', to_char(thread_challan.created_at, 'YY'), '-', LPAD(thread_challan.id::text, 4, '0')) AS thread_challan_id,
+                thread_challan.gate_pass,
+                thread_challan.created_by,
+                users.name AS created_by_name,
+                order_info.order_info_uuid,
+                order_info.order_number,
+                pi_cash.uuid as pi_cash_uuid,
+                CASE WHEN pi_cash.uuid IS NOT NULL THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE NULL END AS pi_cash_number,
+                lc.uuid as lc_uuid,
+                lc.lc_number,
+                vodf.marketing_uuid,
+                vodf.marketing_name,
+                vodf.party_uuid,
+                vodf.party_name,
+                vodf.factory_uuid,
+                vodf.factory_name,
+                oe.uuid as order_entry_uuid,
+                CONCAT(oe.style, ' - ', oe.color, ' - ', oe.size) AS style_color_size,
+                packing_list_grouped.total_quantity,
+                thread_challan.receive_status,
+                packing_list_grouped.total_short_quantity,
+                packing_list_grouped.total_reject_quantity,
+                'thread' as product
+            FROM
+                thread.challan thread_challan
+            LEFT JOIN 
+                thread.challan_entry thread_challan_entry ON thread_challan.uuid = thread_challan_entry.challan_uuid
+            LEFT JOIN
+                hr.users ON thread_challan.created_by = users.uuid
+            LEFT JOIN (
+                SELECT 
+                    packing_list.challan_uuid,
+                    SUM(packing_list_entry.quantity) AS total_quantity,
+                    SUM(packing_list_entry.short_quantity) AS total_short_quantity,
+                    SUM(packing_list_entry.reject_quantity) AS total_reject_quantity,
+                    oe.quantity AS order_quantity,
+                    oe.uuid AS order_entry_uuid
+                FROM
+                    thread.packing_list
+                LEFT JOIN
+                    thread.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+                LEFT JOIN
+                    zipper.sfg ON packing_list_entry.sfg_uuid = sfg.uuid
+                LEFT JOIN
+                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                GROUP BY
+                    packing_list.challan_uuid, oe.uuid
+            ) packing_list_grouped ON thread_challan.uuid = packing_list_grouped.challan_uuid
+
         `;
 
 	const resultPromise = db.execute(query);

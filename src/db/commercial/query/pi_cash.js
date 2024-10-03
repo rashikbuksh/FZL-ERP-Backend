@@ -123,7 +123,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const is_cash = req.query.is_cash;
+	const { is_cash, own_uuid } = req?.query;
 
 	const resultPromise = db
 		.select({
@@ -182,11 +182,14 @@ export async function selectAll(req, res, next) {
 		.leftJoin(bank, eq(pi_cash.bank_uuid, bank.uuid))
 		.leftJoin(lc, eq(pi_cash.lc_uuid, lc.uuid))
 		.where(
-			is_cash == null
-				? ''
-				: is_cash == 'true'
-					? eq(pi_cash.is_pi, 0)
-					: eq(pi_cash.is_pi, 1)
+			and(
+				is_cash == null
+					? ''
+					: is_cash == 'true'
+						? eq(pi_cash.is_pi, 0)
+						: eq(pi_cash.is_pi, 1),
+				own_uuid ? eq(pi_cash.marketing_uuid, own_uuid) : ''
+			)
 		)
 
 		.orderBy(desc(pi_cash.created_at));

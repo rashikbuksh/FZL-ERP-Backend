@@ -378,7 +378,10 @@ export const pathCommercialPiCash = {
 			tags: ['commercial.pi_cash'],
 			summary: 'Get all pis',
 			description: 'All pis',
-			parameters: [SE.parameter_query('is_cash', 'is_cash', 'false')],
+			parameters: [
+				SE.parameter_query('is_cash', 'is_cash', 'false'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
 			responses: {
 				200: SE.response_schema('200', {
 					uuid: SE.uuid(),
