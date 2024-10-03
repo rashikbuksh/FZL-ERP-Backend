@@ -318,7 +318,9 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				trx_against_stock.created_at,
 				trx_against_stock.updated_at,
 				trx_against_stock.remarks,
-				(die_casting.quantity::float8 + trx_against_stock.quantity::float8) as max_quantity
+				(die_casting.quantity::float8 + trx_against_stock.quantity::float8) as max_quantity,
+				null as order_number,
+				null as item_description
 			FROM 
 				slider.trx_against_stock
 			LEFT JOIN
@@ -384,7 +386,9 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				die_casting_transaction.created_at,
 				die_casting_transaction.updated_at,
 				die_casting_transaction.remarks,
-				(die_casting.quantity::float8 + die_casting_transaction.trx_quantity::float8) as max_quantity
+				(die_casting.quantity::float8 + die_casting_transaction.trx_quantity::float8) as max_quantity,
+				vod.order_number,
+				vod.item_description
 			FROM 
 				slider.die_casting_transaction
 			LEFT JOIN
@@ -405,6 +409,10 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				public.properties slider_link_properties ON die_casting.slider_link = slider_link_properties.uuid
 			LEFT JOIN
 				hr.users user_die_casting_transaction ON die_casting_transaction.created_by = user_die_casting_transaction.uuid
+			LEFT JOIN 
+				slider.stock ON die_casting_transaction.stock_uuid = stock.uuid
+			LEFT JOIN 
+				zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
 	`;
 
 	const resultPromise = db.execute(query);
