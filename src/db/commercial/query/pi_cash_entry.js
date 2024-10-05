@@ -219,68 +219,68 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 
 		const uuids = new Set();
 
-		// data.rows.forEach((row) => {
-		// 	if (row.special_requirement) {
-		// 		try {
-		// 			const specialRequirement = JSON.parse(
-		// 				row.special_requirement
-		// 			);
+		data.rows.forEach((row) => {
+			if (row.special_requirement) {
+				try {
+					const specialRequirement = JSON.parse(
+						row.special_requirement
+					);
 
-		// 			// specialRequirement.values is still a string, so we need to parse it
-		// 			const nestedValuesObject = JSON.parse(
-		// 				specialRequirement.values
-		// 			);
+					// specialRequirement.values is still a string, so we need to parse it
+					const nestedValuesObject = JSON.parse(
+						specialRequirement.values
+					);
 
-		// 			// Log to verify the structure after parsing
-		// 			console.log('Nested values object:', nestedValuesObject);
+					// Log to verify the structure after parsing
+					console.log('Nested values object:', nestedValuesObject);
 
-		// 			// Extract the UUID from the nested values array
-		// 			const [uuid] = nestedValuesObject.values;
+					// Extract the UUID from the nested values array
+					const [uuid] = nestedValuesObject.values;
 
-		// 			if (uuid) {
-		// 				uuids.add(uuid);
-		// 			}
-		// 		} catch (error) {
-		// 			console.log('Error parsing special_requirement:', error);
-		// 		}
-		// 	}
-		// });
+					if (uuid) {
+						uuids.add(uuid);
+					}
+				} catch (error) {
+					console.log('Error parsing special_requirement:', error);
+				}
+			}
+		});
 
 		let s_short_name = [];
 		const uuidArray = Array.from(uuids);
 
-		// const shortNameQuery = sql`
-		// 						SELECT
-		// 							pp.uuid,
-		// 							pp.short_name
-		// 						FROM public.properties as pp
-		// 						WHERE pp.uuid IN (${sql.join(uuidArray, sql`, `)})
-		// 						 `;
+		const shortNameQuery = sql`
+								SELECT
+									pp.uuid,
+									pp.short_name
+								FROM public.properties as pp
+								WHERE pp.uuid IN (${sql.join(uuidArray, sql`, `)})
+								 `;
 
-		// try {
-		// 	const result = await db.execute(shortNameQuery);
+		try {
+			const result = await db.execute(shortNameQuery);
 
-		// 	if (result.rows.length > 0) {
-		// 		s_short_name = result.rows.map((row) => row.short_name);
-		// 	} else {
-		// 		s_short_name = [];
-		// 	}
-		// } catch (error) {
-		// 	console.log('Error fetching short names:', error);
-		// }
+			if (result.rows.length > 0) {
+				s_short_name = result.rows.map((row) => row.short_name);
+			} else {
+				s_short_name = [];
+			}
+		} catch (error) {
+			console.log('Error fetching short names:', error);
+		}
 
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'pi_cash_entry By Pi Cash Uuid',
 		};
-		// data.rows.forEach((row) => {
-		// 	if (Array.isArray(row.short_names)) {
-		// 		row.short_names = [...row.short_names, ...s_short_name];
-		// 	} else {
-		// 		row.short_names = [...s_short_name];
-		// 	}
-		// });
+		data.rows.forEach((row) => {
+			if (Array.isArray(row.short_names)) {
+				row.short_names = [...row.short_names, ...s_short_name];
+			} else {
+				row.short_names = [...s_short_name];
+			}
+		});
 
 		return res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
