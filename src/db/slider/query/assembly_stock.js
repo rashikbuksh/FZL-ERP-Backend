@@ -250,14 +250,14 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			vodf.coloring_type,
 			vodf.coloring_type_name,
 			vodf.coloring_type_short_name,
-			stock.order_quantity::float8,
+			stock.order_quantity,
 			vodf.order_info_uuid,
 			vodf.order_number,
 			vodf.item_description,
 			stock.sa_prod::float8,
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
-			stock.coloring_stock::float8 + production.production_quantity::float8 as max_coloring_quantity::float8,
+			stock.coloring_stock::float8 + production.production_quantity::float8 as max_coloring_quantity,
 			production.with_link,
 			CAST(
 				CASE 
@@ -333,14 +333,14 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			null as coloring_type,
 			null as coloring_type_name,
 			null as coloring_type_short_name,
-			null as order_quantity::float8,
+			null as order_quantity,
 			null as order_info_uuid,
 			'Assembly Stock' as order_number,
 			null as item_description,
 			null as sa_prod,
 			null as coloring_stock,
 			null as coloring_prod,
-			null as max_coloring_quantity::float8,
+			null as max_coloring_quantity,
 			die_casting_to_assembly_stock.with_link,
 			CAST(
 				CASE 
