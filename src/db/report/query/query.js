@@ -322,3 +322,53 @@ export async function dailyChallanReport(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function PiRegister(req, res, next) {
+	const query = sql`
+            SELECT 
+                pi_cash.uuid,
+                concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS pi_cash_number,
+                pi_cash.created_at AS pi_cash_date,
+                pi_cash.lc_uuid,
+                lc.lc_number,
+                pi_cash.order_info_uuids,
+                pi_cash.thread_order_info_uuids,
+                pi_cash.marketing_uuid,
+                marketing.name as marketing_name,
+                pi_cash.party_uuid,
+                party.name as party_name,
+                pi_cash.factory_uuid,
+                factory.name as factory_name,
+                pi_cash.created_by,
+                users.name AS created_by_name,
+                pi_cash.remarks
+            FROM
+                commercial.pi_cash
+            LEFT JOIN
+                hr.users ON pi_cash.created_by = users.uuid
+            LEFT JOIN
+                commercial.lc ON pi_cash.lc_uuid = lc.uuid
+            LEFT JOIN
+                public.marketing ON pi_cash.marketing_uuid = marketing.uuid
+            LEFT JOIN
+                public.party ON pi_cash.party_uuid = party.uuid
+            LEFT JOIN
+                public.factory ON pi_cash.factory_uuid = factory.uuid
+        `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'PI Register',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
