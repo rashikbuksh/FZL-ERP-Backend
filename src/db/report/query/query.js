@@ -338,6 +338,7 @@ export async function PiRegister(req, res, next) {
                 pi_cash.marketing_uuid,
                 marketing.name as marketing_name,
                 pi_cash.conversion_rate,
+                pi_cash_entry_order_numbers.total_pi_quantity,
                 (pi_cash_entry_order_numbers.total_zipper_pi_price + pi_cash_entry_order_numbers.total_thread_pi_price) as total_pi_value,
                 pi_cash.lc_uuid,
                 lc.lc_number,
@@ -364,6 +365,7 @@ export async function PiRegister(req, res, next) {
                     array_agg(DISTINCT vodf.order_number) as order_numbers, 
                     array_agg(DISTINCT CASE WHEN toi.uuid is NOT NULL THEN concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, 
                     pi_cash_uuid, 
+                    SUM(pe.pi_cash_quantity) as total_pi_quantity,
                     SUM(pe.pi_cash_quantity * oe.party_price) as total_zipper_pi_price, 
                     SUM(pe.pi_cash_quantity * toe.party_price) as total_thread_pi_price
 				FROM
