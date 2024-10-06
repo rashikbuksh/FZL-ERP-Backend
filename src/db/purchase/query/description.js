@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import * as materialSchema from '../../material/schema.js';
 import { description, entry, vendor } from '../schema.js';
 
@@ -206,8 +207,8 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			purchase_entry_uuid: entry.uuid,
 			material_uuid: entry.material_uuid,
 			material_name: materialSchema.info.name,
-			quantity: entry.quantity,
-			price: entry.price,
+			quantity: decimalToNumber(entry.quantity),
+			price: decimalToNumber(entry.price),
 			unit: materialSchema.info.unit,
 			created_by: description.created_by,
 			created_by_name: hrSchema.users.name,
