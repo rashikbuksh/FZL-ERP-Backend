@@ -5,6 +5,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { info, stock_to_sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -115,7 +116,7 @@ export async function selectAll(req, res, next) {
 						stock_to_sfg.order_entry_uuid,
 						order_entry.order_description_uuid AS order_description_uuid,
 						stock_to_sfg.trx_to,
-						stock_to_sfg.trx_quantity,
+						stock_to_sfg.trx_quantity::float8,
 						stock_to_sfg.created_by,
 						users.name AS created_by_name,
 						stock_to_sfg.created_at,
@@ -171,7 +172,7 @@ export async function select(req, res, next) {
 						stock_to_sfg.order_entry_uuid,
 						order_entry.order_description_uuid AS order_description_uuid,
 						stock_to_sfg.trx_to,
-						stock_to_sfg.trx_quantity,
+						stock_to_sfg.trx_quantity::float8,
 						stock_to_sfg.created_by,
 						users.name AS created_by_name,
 						stock_to_sfg.created_at,

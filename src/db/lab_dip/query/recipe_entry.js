@@ -5,6 +5,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import * as materialSchema from '../../material/schema.js';
 import { recipe, recipe_entry } from '../schema.js';
 
@@ -85,7 +86,7 @@ export async function selectAll(req, res, next) {
 			recipe_uuid: recipe_entry.recipe_uuid,
 			recipe_name: recipe.name,
 			color: recipe_entry.color,
-			quantity: recipe_entry.quantity,
+			quantity: decimalToNumber(recipe_entry.quantity),
 			material_uuid: recipe_entry.material_uuid,
 			material_name: materialSchema.info.name,
 			unit: materialSchema.info.unit,
@@ -118,7 +119,7 @@ export async function select(req, res, next) {
 			recipe_uuid: recipe_entry.recipe_uuid,
 			recipe_name: recipe.name,
 			color: recipe_entry.color,
-			quantity: recipe_entry.quantity,
+			quantity: decimalToNumber(recipe_entry.quantity),
 			material_uuid: recipe_entry.material_uuid,
 			material_name: materialSchema.info.name,
 			unit: materialSchema.info.unit,
@@ -158,7 +159,7 @@ export async function selectRecipeEntryByRecipeUuid(req, res, next) {
 			recipe_uuid: recipe_entry.recipe_uuid,
 			recipe_name: recipe.name,
 			color: recipe_entry.color,
-			quantity: recipe_entry.quantity,
+			quantity: decimalToNumber(recipe_entry.quantity),
 			material_uuid: recipe_entry.material_uuid,
 			material_name: materialSchema.info.name,
 			unit: materialSchema.info.unit,

@@ -9,6 +9,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { challan, challan_entry, packing_list } from '../schema.js';
 
 const assignToUser = alias(hrSchema.users, 'assignToUser');
@@ -92,7 +93,7 @@ export async function selectAll(req, res, next) {
 			challan_number: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			order_info_uuid: challan.order_info_uuid,
 			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
-			carton_quantity: challan.carton_quantity,
+			carton_quantity: decimalToNumber(challan.carton_quantity),
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
 			receive_status: challan.receive_status,
@@ -141,7 +142,7 @@ export async function select(req, res, next) {
 					concat('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))
 				)
 			`,
-			carton_quantity: challan.carton_quantity,
+			carton_quantity: decimalToNumber(challan.carton_quantity),
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
 			receive_status: challan.receive_status,

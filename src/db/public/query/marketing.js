@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { marketing } from '../schema.js';
 
 const hr = alias(hrSchema.users, 'hr');
