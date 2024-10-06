@@ -277,6 +277,8 @@ export async function selectProductionLogForAssembly(req, res, next) {
 							) 
 						END
 			AS DOUBLE PRECISION) + production.production_quantity::float8 AS max_sa_quantity,
+			0 as max_production_quantity_with_link,
+			0 as max_production_quantity_without_link,
 			TRUE as against_order
 		FROM
 			slider.production
@@ -342,24 +344,9 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			null as coloring_prod,
 			null as max_coloring_quantity,
 			die_casting_to_assembly_stock.with_link,
-			CAST(
-				CASE 
-					WHEN die_casting_to_assembly_stock.with_link = 1
-						THEN
-							LEAST(
-								CAST(diecastingbody.quantity_in_sa AS DOUBLE PRECISION),
-								CAST(diecastingpuller.quantity_in_sa AS DOUBLE PRECISION),
-								CAST(diecastingcap.quantity_in_sa AS DOUBLE PRECISION),
-								CAST(diecastinglink.quantity_in_sa AS DOUBLE PRECISION)
-							) 
-						ELSE 
-							LEAST(
-								CAST(diecastingbody.quantity_in_sa AS DOUBLE PRECISION),
-								CAST(diecastingpuller.quantity_in_sa AS DOUBLE PRECISION),
-								CAST(diecastingcap.quantity_in_sa AS DOUBLE PRECISION)
-							) 
-						END
-			AS DOUBLE PRECISION) + die_casting_to_assembly_stock.production_quantity::float8 AS max_sa_quantity,
+			0 as max_sa_quantity,
+			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity as max_production_quantity_with_link,
+			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity as max_production_quantity_without_link,
 			FALSE as against_order
 		FROM
 			slider.die_casting_to_assembly_stock
