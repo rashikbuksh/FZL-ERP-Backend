@@ -329,17 +329,16 @@ export async function PiRegister(req, res, next) {
                 pi_cash.uuid,
                 concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS pi_cash_number,
                 pi_cash.created_at AS pi_cash_created_date,
-                pi_cash_entry_order_numbers.order_info_uuids,
-                pi_cash_entry_order_numbers.thread_order_info_uuids,
+                pi_cash_entry_order_numbers.order_numbers,
+                pi_cash_entry_order_numbers.thread_order_numbers,
                 pi_cash.party_uuid,
                 party.name as party_name,
                 pi_cash.bank_uuid,
                 bank.name as bank_name,
                 pi_cash.marketing_uuid,
                 marketing.name as marketing_name,
-                pi_cash_entry_order_numbers.total_pi_quantity,
                 pi_cash.conversion_rate,
-                pi_cash_entry_order_numbers.total_pi_quantity * pi_cash.conversion_rate as total_pi_value,
+                (pi_cash_entry_order_numbers.total_zipper_pi_price + pi_cash_entry_order_numbers.total_thread_pi_price) as total_pi_value,
                 pi_cash.lc_uuid,
                 lc.lc_number,
                 lc.lc_date,
@@ -361,7 +360,7 @@ export async function PiRegister(req, res, next) {
             LEFT JOIN
                 public.factory ON pi_cash.factory_uuid = factory.uuid
             LEFT JOIN (
-				SELECT array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, pi_cash_uuid, sum(pe.pi_cash_quantity) as total_pi_quantity
+				SELECT array_agg(DISTINCT vodf.order_number) as order_numbers, array_agg(DISTINCT CASE WHEN toi.uuid is NOT NULL THEN concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, pi_cash_uuid, SUM(pe.pi_cash_quantity * oe.party_price) as total_zipper_pi_price, SUM(pe.pi_cash_quantity * toe.party_price) as total_thread_pi_price
 				FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
