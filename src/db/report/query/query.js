@@ -328,24 +328,30 @@ export async function PiRegister(req, res, next) {
             SELECT 
                 pi_cash.uuid,
                 concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS pi_cash_number,
-                pi_cash.created_at AS pi_cash_date,
-                pi_cash.lc_uuid,
-                lc.lc_number,
-                pi_cash.order_info_uuids,
-                pi_cash.thread_order_info_uuids,
-                pi_cash.marketing_uuid,
-                marketing.name as marketing_name,
+                pi_cash.created_at AS pi_cash_created_date,
+                pi_cash_entry_order_numbers.order_info_uuids,
+                pi_cash_entry_order_numbers.thread_order_info_uuids,
                 pi_cash.party_uuid,
                 party.name as party_name,
-                pi_cash.factory_uuid,
-                factory.name as factory_name,
-                pi_cash.created_by,
-                users.name AS created_by_name,
-                pi_cash.remarks
+                pi_cash.bank_uuid,
+                bank.name as bank_name,
+                pi_cash.marketing_uuid,
+                marketing.name as marketing_name,
+                pi_cash_entry_order_numbers.total_pi_quantity,
+                pi_cash.conversion_rate,
+                pi_cash_entry_order_numbers.total_pi_quantity * pi_cash.conversion_rate as total_pi_value,
+                pi_cash.lc_uuid,
+                lc.lc_number,
+                lc.lc_date,
+                lc.payment_value,
+                CASE WHEN lc.uuid IS NOT NULL THEN concat('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) ELSE NULL END as file_number,
+                lc.created_at as lc_created_at
             FROM
                 commercial.pi_cash
             LEFT JOIN
                 hr.users ON pi_cash.created_by = users.uuid
+            LEFT JOIN 
+                commercial.bank ON pi_cash.bank_uuid = bank.uuid
             LEFT JOIN
                 commercial.lc ON pi_cash.lc_uuid = lc.uuid
             LEFT JOIN
@@ -354,6 +360,18 @@ export async function PiRegister(req, res, next) {
                 public.party ON pi_cash.party_uuid = party.uuid
             LEFT JOIN
                 public.factory ON pi_cash.factory_uuid = factory.uuid
+            LEFT JOIN (
+				SELECT array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, pi_cash_uuid, sum(pe.pi_cash_quantity) as total_pi_quantity
+				FROM
+					commercial.pi_cash_entry pe 
+					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+					LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
+					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+				GROUP BY pi_cash_uuid
+			) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
+            WHERE is_pi = 1
         `;
 
 	const resultPromise = db.execute(query);
@@ -365,6 +383,74 @@ export async function PiRegister(req, res, next) {
 			status: 200,
 			type: 'select_all',
 			message: 'PI Register',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function PiToBeRegister(req, res, next) {
+	//* Incomplete query
+	const query = sql`
+            SELECT 
+                pi_cash.uuid,
+                concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS pi_cash_number,
+                pi_cash.created_at AS pi_cash_created_date,
+                pi_cash_entry_order_numbers.order_info_uuids,
+                pi_cash_entry_order_numbers.thread_order_info_uuids,
+                pi_cash.party_uuid,
+                party.name as party_name,
+                pi_cash.bank_uuid,
+                bank.name as bank_name,
+                pi_cash.marketing_uuid,
+                marketing.name as marketing_name,
+                pi_cash_entry_order_numbers.total_pi_quantity,
+                pi_cash.conversion_rate,
+                pi_cash_entry_order_numbers.total_pi_quantity * pi_cash.conversion_rate as total_pi_value,
+                pi_cash.lc_uuid,
+                lc.lc_number,
+                lc.lc_date,
+                lc.payment_value,
+                CASE WHEN lc.uuid IS NOT NULL THEN concat('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) ELSE NULL END as file_number,
+                lc.created_at as lc_created_at
+            FROM
+                commercial.pi_cash
+            LEFT JOIN
+                hr.users ON pi_cash.created_by = users.uuid
+            LEFT JOIN 
+                commercial.bank ON pi_cash.bank_uuid = bank.uuid
+            LEFT JOIN
+                commercial.lc ON pi_cash.lc_uuid = lc.uuid
+            LEFT JOIN
+                public.marketing ON pi_cash.marketing_uuid = marketing.uuid
+            LEFT JOIN
+                public.party ON pi_cash.party_uuid = party.uuid
+            LEFT JOIN
+                public.factory ON pi_cash.factory_uuid = factory.uuid
+            LEFT JOIN (
+                SELECT array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, pi_cash_uuid, sum(pe.pi_cash_quantity) as total_pi_quantity
+                FROM
+                    commercial.pi_cash_entry pe 
+                    LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
+                    LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                GROUP BY pi_cash_uuid
+            ) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
+        `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'PI To Be Register',
 		};
 
 		res.status(200).json({ toast, data: data?.rows });
