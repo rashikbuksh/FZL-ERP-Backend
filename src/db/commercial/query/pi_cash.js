@@ -10,7 +10,23 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 
-import { bank, lc, pi_cash } from '../schema.js';
+import { alias } from 'drizzle-orm/pg-core';
+import { bank, lc, pi_cash, pi_cash_entry } from '../schema.js';
+
+const pi_cash_entry_order_numbers = alias(
+	sql`
+		SELECT array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, pi_cash_uuid
+		FROM
+			commercial.pi_cash_entry pe 
+			LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
+	        LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+	        LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+			LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
+			LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+		GROUP BY pi_cash_uuid
+	`,
+	'pi_cash_entry_order_numbers'
+);
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -125,93 +141,78 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { is_cash, own_uuid } = req?.query;
 
-	const resultPromise = db
-		.select({
-			uuid: pi_cash.uuid,
-			id: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
-			lc_uuid: pi_cash.lc_uuid,
-			lc_number: lc.lc_number,
-			order_info_uuids: pi_cash.order_info_uuids,
-			thread_order_info_uuids: pi_cash.thread_order_info_uuids,
-			marketing_uuid: pi_cash.marketing_uuid,
-			marketing_name: publicSchema.marketing.name,
-			party_uuid: pi_cash.party_uuid,
-			party_name: publicSchema.party.name,
-			party_address: publicSchema.party.address,
-			merchandiser_uuid: pi_cash.merchandiser_uuid,
-			merchandiser_name: publicSchema.merchandiser.name,
-			factory_uuid: pi_cash.factory_uuid,
-			factory_name: publicSchema.factory.name,
-			bank_uuid: pi_cash.bank_uuid,
-			bank_name: bank.name,
-			bank_swift_code: bank.swift_code,
-			bank_address: bank.address,
-			bank_policy: bank.policy,
-			routing_no: bank.routing_no,
-			factory_address: publicSchema.factory.address,
-			validity: pi_cash.validity,
-			payment: pi_cash.payment,
-			created_by: pi_cash.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: pi_cash.created_at,
-			updated_at: pi_cash.updated_at,
-			remarks: pi_cash.remarks,
-			is_pi: pi_cash.is_pi,
-			conversion_rate: pi_cash.conversion_rate,
-			weight: pi_cash.weight,
-			receive_amount: pi_cash.receive_amount,
-		})
-		.from(pi_cash)
-		.leftJoin(hrSchema.users, eq(pi_cash.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			publicSchema.marketing,
-			eq(pi_cash.marketing_uuid, publicSchema.marketing.uuid)
-		)
-		.leftJoin(
-			publicSchema.party,
-			eq(pi_cash.party_uuid, publicSchema.party.uuid)
-		)
-		.leftJoin(
-			publicSchema.merchandiser,
-			eq(pi_cash.merchandiser_uuid, publicSchema.merchandiser.uuid)
-		)
-		.leftJoin(
-			publicSchema.factory,
-			eq(pi_cash.factory_uuid, publicSchema.factory.uuid)
-		)
-		.leftJoin(bank, eq(pi_cash.bank_uuid, bank.uuid))
-		.leftJoin(lc, eq(pi_cash.lc_uuid, lc.uuid))
-		.where(
-			and(
-				is_cash == null
-					? ''
-					: is_cash == 'true'
-						? eq(pi_cash.is_pi, 0)
-						: eq(pi_cash.is_pi, 1),
-				own_uuid == null
-					? sql`1=1`
-					: eq(pi_cash.marketing_uuid, own_uuid)
-			)
-		)
+	const query = sql`
+		SELECT 
+			pi_cash.uuid,
+			CASE 
+				WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+				ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+			END AS id,
+			pi_cash.lc_uuid,
+			lc.lc_number,
+			pi_cash.order_info_uuids,
+			pi_cash.thread_order_info_uuids,
+			pi_cash.marketing_uuid,
+			public.marketing.name AS marketing_name,
+			pi_cash.party_uuid,
+			public.party.name AS party_name,
+			public.party.address AS party_address,
+			pi_cash.merchandiser_uuid,
+			public.merchandiser.name AS merchandiser_name,
+			pi_cash.factory_uuid,
+			public.factory.name AS factory_name,
+			pi_cash.bank_uuid,
+			bank.name AS bank_name,
+			bank.swift_code AS bank_swift_code,
+			bank.address AS bank_address,
+			bank.policy AS bank_policy,
+			bank.routing_no AS routing_no,
+			public.factory.address AS factory_address,
+			pi_cash.validity,
+			pi_cash.payment,
+			pi_cash.created_by,
+			hr.users.name AS created_by_name,
+			pi_cash.created_at,
+			pi_cash.updated_at,
+			pi_cash.remarks,
+			pi_cash.is_pi,
+			pi_cash.conversion_rate,
+			pi_cash.weight,
+			pi_cash.receive_amount
+		FROM 
+			commercial.pi_cash
+		LEFT JOIN 
+			hr.users ON pi_cash.created_by = hr.users.uuid
+		LEFT JOIN 
+			public.marketing ON pi_cash.marketing_uuid = public.marketing.uuid
+		LEFT JOIN 
+			public.party ON pi_cash.party_uuid = public.party.uuid
+		LEFT JOIN 
+			public.merchandiser ON pi_cash.merchandiser_uuid = public.merchandiser.uuid
+		LEFT JOIN 
+			public.factory ON pi_cash.factory_uuid = public.factory.uuid
+		LEFT JOIN 
+			commercial.bank ON pi_cash.bank_uuid = bank.uuid
+		LEFT JOIN 
+			commercial.lc ON pi_cash.lc_uuid = lc.uuid
+		WHERE 
+			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
+    		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${own_uuid}` : sql`TRUE`}
+		ORDER BY 
+			pi_cash.created_at DESC;
+	`;
 
-		.orderBy(desc(pi_cash.created_at));
+	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
-
-		data.forEach((item) => {
-			item.order_info_uuids = JSON.parse(item.order_info_uuids);
-			item.thread_order_info_uuids = JSON.parse(
-				item.thread_order_info_uuids
-			);
-		});
 
 		const toast = {
 			status: 200,
 			type: 'select_all',
 			message: 'Pi Cash list',
 		};
-		return res.status(200).json({ toast, data });
+		return res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -220,80 +221,87 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const piPromise = db
-		.select({
-			uuid: pi_cash.uuid,
-			id: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
-			lc_uuid: pi_cash.lc_uuid,
-			lc_number: lc.lc_number,
-			order_info_uuids: pi_cash.order_info_uuids,
-			thread_order_info_uuids: pi_cash.thread_order_info_uuids,
-			marketing_uuid: pi_cash.marketing_uuid,
-			marketing_name: publicSchema.marketing.name,
-			party_uuid: pi_cash.party_uuid,
-			party_name: publicSchema.party.name,
-			party_address: publicSchema.party.address,
-			merchandiser_uuid: pi_cash.merchandiser_uuid,
-			merchandiser_name: publicSchema.merchandiser.name,
-			factory_uuid: pi_cash.factory_uuid,
-			factory_name: publicSchema.factory.name,
-			bank_uuid: pi_cash.bank_uuid,
-			bank_name: bank.name,
-			bank_swift_code: bank.swift_code,
-			bank_address: bank.address,
-			bank_policy: bank.policy,
-			routing_no: bank.routing_no,
-			factory_address: publicSchema.factory.address,
-			validity: pi_cash.validity,
-			payment: pi_cash.payment,
-			created_by: pi_cash.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: pi_cash.created_at,
-			updated_at: pi_cash.updated_at,
-			remarks: pi_cash.remarks,
-			is_pi: pi_cash.is_pi,
-			conversion_rate: pi_cash.conversion_rate,
-			weight: pi_cash.weight,
-			receive_amount: pi_cash.receive_amount,
-		})
-		.from(pi_cash)
-		.leftJoin(hrSchema.users, eq(pi_cash.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			publicSchema.marketing,
-			eq(pi_cash.marketing_uuid, publicSchema.marketing.uuid)
-		)
-		.leftJoin(
-			publicSchema.party,
-			eq(pi_cash.party_uuid, publicSchema.party.uuid)
-		)
-		.leftJoin(
-			publicSchema.merchandiser,
-			eq(pi_cash.merchandiser_uuid, publicSchema.merchandiser.uuid)
-		)
-		.leftJoin(
-			publicSchema.factory,
-			eq(pi_cash.factory_uuid, publicSchema.factory.uuid)
-		)
-		.leftJoin(bank, eq(pi_cash.bank_uuid, bank.uuid))
-		.leftJoin(lc, eq(pi_cash.lc_uuid, lc.uuid))
-		.where(eq(pi_cash.uuid, req.params.uuid));
+	const query = sql`
+			SELECT 
+				pi_cash.uuid,
+				CASE 
+					WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+					ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+				END AS id,
+				pi_cash.lc_uuid,
+				lc.lc_number,
+				pi_cash_entry_order_numbers.order_info_uuids,
+				pi_cash_entry_order_numbers.thread_order_info_uuids,
+				pi_cash.marketing_uuid,
+				public.marketing.name AS marketing_name,
+				pi_cash.party_uuid,
+				public.party.name AS party_name,
+				public.party.address AS party_address,
+				pi_cash.merchandiser_uuid,
+				public.merchandiser.name AS merchandiser_name,
+				pi_cash.factory_uuid,
+				public.factory.name AS factory_name,
+				pi_cash.bank_uuid,
+				bank.name AS bank_name,
+				bank.swift_code AS bank_swift_code,
+				bank.address AS bank_address,
+				bank.policy AS bank_policy,
+				bank.routing_no AS bank_routing_no,
+				public.factory.address AS factory_address,
+				pi_cash.validity,
+				pi_cash.payment,
+				pi_cash.created_by,
+				users.name AS created_by_name,
+				pi_cash.created_at,
+				pi_cash.updated_at,
+				pi_cash.remarks,
+				pi_cash.is_pi,
+				pi_cash.conversion_rate,
+				pi_cash.weight,
+				pi_cash.receive_amount
+			FROM 
+				commercial.pi_cash
+			LEFT JOIN 
+				hr.users ON pi_cash.created_by = hr.users.uuid
+			LEFT JOIN 
+				public.marketing ON pi_cash.marketing_uuid = public.marketing.uuid
+			LEFT JOIN 
+				public.party ON pi_cash.party_uuid = public.party.uuid
+			LEFT JOIN 
+				public.merchandiser ON pi_cash.merchandiser_uuid = public.merchandiser.uuid
+			LEFT JOIN 
+				public.factory ON pi_cash.factory_uuid = public.factory.uuid
+			LEFT JOIN 
+				commercial.bank ON pi_cash.bank_uuid = bank.uuid
+			LEFT JOIN 
+				commercial.lc ON pi_cash.lc_uuid = lc.uuid
+			LEFT JOIN 
+			(
+				SELECT array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, pi_cash_uuid
+				FROM
+					commercial.pi_cash_entry pe 
+					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+					LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
+					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+				GROUP BY pi_cash_uuid
+			) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
+			WHERE 
+				pi_cash.uuid = ${req.params.uuid}
+	`;
+
+	const piPromise = db.execute(query);
 
 	try {
 		const data = await piPromise;
-
-		data.forEach((item) => {
-			item.order_info_uuids = JSON.parse(item.order_info_uuids);
-			item.thread_order_info_uuids = JSON.parse(
-				item.thread_order_info_uuids
-			);
-		});
 
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'Pi',
 		};
-		return res.status(200).json({ toast, data: data[0] });
+		return res.status(200).json({ toast, data: data.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}

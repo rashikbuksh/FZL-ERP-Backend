@@ -255,7 +255,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 									pp.short_name
 								FROM public.properties as pp
 								WHERE pp.uuid IN (${sql.join(uuidArray, sql`, `)})
-   								 `;
+								 `;
 
 		try {
 			const result = await db.execute(shortNameQuery);
