@@ -345,6 +345,7 @@ export async function selectProductionBySection(req, res, next) {
 			vodf.is_logo_puller as logo_is_puller,
 			stock.order_quantity,
 			vodf.order_info_uuid,
+			pp.name as party_name,
 			vodf.order_number,
 			vodf.item_description,
 			stock.sa_prod,
@@ -378,6 +379,10 @@ export async function selectProductionBySection(req, res, next) {
 			hr.users ON production.created_by = users.uuid
 		LEFT JOIN 
 			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN 
+			zipper.order_info ON vodf.order_info_uuid = order_info.uuid
+		LEFT JOIN
+			public.party pp ON order_info.party_uuid = pp.uuid
 		WHERE 
 			production.section = ${section}
 		ORDER BY
