@@ -258,6 +258,7 @@ export async function selectStockByFromSection(req, res, next) {
 		stock.uuid,
 		stock.order_description_uuid,
 		order_description.order_info_uuid,
+		pp.name AS party_name,
 		CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 		vodf.item_description,
 		vodf.item,
@@ -333,12 +334,15 @@ export async function selectStockByFromSection(req, res, next) {
 		slider_transaction_given.trx_weight as trx_weight
 	FROM
 		slider.stock
+
 	LEFT JOIN
 		zipper.order_description ON stock.order_description_uuid = order_description.uuid
 	LEFT JOIN 
 		zipper.order_info ON order_description.order_info_uuid = order_info.uuid
 	LEFT JOIN 
 		zipper.v_order_details_full vodf ON order_description.uuid = vodf.order_description_uuid
+	LEFT JOIN
+		public.party pp ON order_info.party_uuid = pp.uuid
 	LEFT JOIN
     (
         SELECT
