@@ -385,6 +385,16 @@ export async function PiRegister(req, res, next) {
 	try {
 		const data = await resultPromise;
 
+		// * remove the null values in order_numbers and thread_order_numbers
+		data?.rows.forEach((row) => {
+			row.order_numbers = row.order_numbers.filter(
+				(order_number) => order_number !== null
+			);
+			row.thread_order_numbers = row.thread_order_numbers.filter(
+				(order_number) => order_number !== null
+			);
+		});
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
