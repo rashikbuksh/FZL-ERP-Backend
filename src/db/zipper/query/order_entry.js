@@ -5,6 +5,7 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as deliverySchema from '../../delivery/schema.js';
 import db from '../../index.js';
 import {
 	order_description,
@@ -235,6 +236,10 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 				CASE WHEN sfg_production.section = 'finishing' THEN sfg_production.production_quantity ELSE 0 END
 				)`,
 			coloring_prod: sfg.coloring_prod,
+			total_pi_quantity: sfg.pi,
+			total_delivery_quantity: sfg.delivered,
+			total_reject_quantity: sfg.reject_quantity,
+			total_short_quantity: sfg.short_quantity,
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -243,6 +248,24 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 		)
 		.leftJoin(sfg, eq(order_entry.uuid, sfg.order_entry_uuid))
 		.leftJoin(sfg_production, eq(sfg.uuid, sfg_production.sfg_uuid))
+		.leftJoin(
+			deliverySchema.packing_list_entry,
+			eq(deliverySchema.packing_list_entry.sfg_uuid, sfg.uuid)
+		)
+		.leftJoin(
+			deliverySchema.packing_list,
+			eq(
+				deliverySchema.packing_list.uuid,
+				deliverySchema.packing_list_entry.packing_list_uuid
+			)
+		)
+		.leftJoin(
+			deliverySchema.challan,
+			eq(
+				deliverySchema.challan.uuid,
+				deliverySchema.packing_list.challan_uuid
+			)
+		)
 		.where(eq(order_description.uuid, order_description_uuid))
 		.groupBy(order_entry.uuid, sfg.uuid)
 		.orderBy(asc(order_entry.size));
