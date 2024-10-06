@@ -360,7 +360,12 @@ export async function PiRegister(req, res, next) {
             LEFT JOIN
                 public.factory ON pi_cash.factory_uuid = factory.uuid
             LEFT JOIN (
-				SELECT array_agg(DISTINCT vodf.order_number) as order_numbers, array_agg(DISTINCT CASE WHEN toi.uuid is NOT NULL THEN concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, pi_cash_uuid, SUM(pe.pi_cash_quantity * oe.party_price) as total_zipper_pi_price, SUM(pe.pi_cash_quantity * toe.party_price) as total_thread_pi_price
+				SELECT 
+                    array_agg(DISTINCT vodf.order_number) as order_numbers, 
+                    array_agg(DISTINCT CASE WHEN toi.uuid is NOT NULL THEN concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, 
+                    pi_cash_uuid, 
+                    SUM(pe.pi_cash_quantity * oe.party_price) as total_zipper_pi_price, 
+                    SUM(pe.pi_cash_quantity * toe.party_price) as total_thread_pi_price
 				FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
