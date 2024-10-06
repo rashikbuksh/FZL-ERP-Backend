@@ -14,6 +14,9 @@ reportRouter.get(
 // * Daily Challan Report
 reportRouter.get('/daily-challan-report', reportOperations.dailyChallanReport);
 
+// * Pi Register Report
+reportRouter.get('/pi-register-report', reportOperations.PiRegister);
+
 export const pathReport = {
 	'/report/zipper-production-status-report': {
 		get: {
@@ -52,6 +55,28 @@ export const pathReport = {
 							schema: {
 								type: 'array',
 								items: SED('dailyChallanReport'),
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/report/pi-register-report': {
+		get: {
+			summary: 'Pi Register Report',
+			description: 'Pi Register Report',
+			tags: ['report'],
+			operationId: 'PiRegister',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'Pi Register Report',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: SED('PiRegister'),
 							},
 						},
 					},

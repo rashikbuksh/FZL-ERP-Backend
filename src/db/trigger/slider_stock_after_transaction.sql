@@ -32,7 +32,8 @@ BEGIN
 
         UPDATE slider.assembly_stock
         SET
-            quantity = quantity - CASE WHEN NEW.from_section = 'assembly_stock' THEN NEW.trx_quantity ELSE 0 END
+            quantity = quantity - CASE WHEN NEW.from_section = 'assembly_stock' THEN NEW.trx_quantity ELSE 0 END,
+            weight = weight - CASE WHEN NEW.from_section = 'assembly_stock' THEN NEW.weight ELSE 0 END
         WHERE uuid = NEW.assembly_stock_uuid;
     END IF;
 
@@ -76,7 +77,8 @@ BEGIN
 
         UPDATE slider.assembly_stock
         SET
-            quantity = quantity + CASE WHEN OLD.from_section = 'assembly_stock' THEN OLD.trx_quantity ELSE 0 END
+            quantity = quantity + CASE WHEN OLD.from_section = 'assembly_stock' THEN OLD.trx_quantity ELSE 0 END,
+            weight = weight + CASE WHEN OLD.from_section = 'assembly_stock' THEN OLD.weight ELSE 0 END
         WHERE uuid = OLD.assembly_stock_uuid;
     END IF;
 
@@ -129,7 +131,9 @@ BEGIN
         UPDATE slider.assembly_stock
         SET
             quantity = quantity 
-            + CASE WHEN OLD.from_section = 'assembly_stock' THEN OLD.trx_quantity ELSE 0 END
+            + CASE WHEN OLD.from_section = 'assembly_stock' THEN OLD.trx_quantity ELSE 0 END,
+            weight = weight
+            + CASE WHEN OLD.from_section = 'assembly_stock' THEN OLD.weight ELSE 0 END
         WHERE uuid = OLD.assembly_stock_uuid;
     END IF;
 
@@ -143,7 +147,10 @@ BEGIN
 
         UPDATE slider.assembly_stock
         SET
-            quantity = quantity - CASE WHEN NEW.from_section = 'assembly_stock' THEN NEW.trx_quantity ELSE 0 END
+            quantity = quantity 
+            - CASE WHEN NEW.from_section = 'assembly_stock' THEN NEW.trx_quantity ELSE 0 END,
+            weight = weight
+            - CASE WHEN NEW.from_section = 'assembly_stock' THEN NEW.weight ELSE 0 END
         WHERE uuid = NEW.assembly_stock_uuid;
     END IF;
 
@@ -151,17 +158,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER slider_stock_after_transaction_insert
+CREATE OR REPLACE TRIGGER slider_stock_after_transaction_insert
 AFTER INSERT ON slider.transaction
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_transaction_insert();
 
-CREATE TRIGGER slider_stock_after_transaction_delete
+CREATE OR REPLACE TRIGGER slider_stock_after_transaction_delete
 AFTER DELETE ON slider.transaction
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_transaction_delete();
 
-CREATE TRIGGER slider_stock_after_transaction_update
+CREATE OR REPLACE TRIGGER slider_stock_after_transaction_update
 AFTER UPDATE ON slider.transaction
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_transaction_update();
