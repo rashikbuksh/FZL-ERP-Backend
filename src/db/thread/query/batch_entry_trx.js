@@ -7,6 +7,7 @@ import {
 
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { batch_entry_trx } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -82,8 +83,8 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: batch_entry_trx.uuid,
 			batch_entry_uuid: batch_entry_trx.batch_entry_uuid,
-			quantity: batch_entry_trx.quantity,
-			carton_quantity: batch_entry_trx.carton_quantity,
+			quantity: decimalToNumber(batch_entry_trx.quantity),
+			carton_quantity: decimalToNumber(batch_entry_trx.carton_quantity),
 			created_by: batch_entry_trx.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_trx.created_at,
@@ -111,8 +112,8 @@ export async function select(req, res, next) {
 		WITH calculated_balance AS (SELECT 
 			bet.uuid,
 			bet.batch_entry_uuid,
-			bet.quantity,
-			bet.carton_quantity,
+			bet.quantity::float8,
+			bet.carton_quantity::float8,
 			be.batch_uuid,
 			CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
 			be.order_entry_uuid, 
@@ -124,11 +125,11 @@ export async function select(req, res, next) {
 			oe.count_length_uuid as count_length_uuid,
 			CONCAT(cl.count, '/', cl.length) as count_length,
 			cl.cone_per_carton,
-			be.quantity as batch_quantity,
-			be.coning_production_quantity,
-			be.coning_carton_quantity,
-			be.transfer_quantity as transfer_quantity,
-			(be.quantity - be.transfer_quantity) as balance_quantity,
+			be.quantity::float8 as batch_quantity,
+			be.coning_production_quantity::float8,
+			be.coning_carton_quantity::float8,
+			be.transfer_quantity::float8 as transfer_quantity,
+			(be.quantity - be.transfer_quantity)::float8 as balance_quantity,
 			bet.created_by,
 			users.name as created_by_name,
 			bet.created_at,
@@ -174,8 +175,8 @@ export async function getBatchEntryTrxDetails(req, res, next) {
 	WITH calculated_balance AS (SELECT 
 		bet.uuid,
 		bet.batch_entry_uuid,
-		bet.quantity,
-		bet.carton_quantity,
+		bet.quantity::float8,
+		bet.carton_quantity::float8,
 		be.batch_uuid,
 		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
 		be.order_entry_uuid, 
@@ -187,11 +188,11 @@ export async function getBatchEntryTrxDetails(req, res, next) {
 		oe.count_length_uuid as count_length_uuid,
 		CONCAT(cl.count, '/', cl.length) as count_length,
 		cl.cone_per_carton,
-		be.quantity as batch_quantity,
-		be.coning_production_quantity,
-		be.coning_carton_quantity,
-		be.transfer_quantity as transfer_quantity,
-		(be.quantity - be.transfer_quantity) as balance_quantity,
+		be.quantity::float8 as batch_quantity,
+		be.coning_production_quantity::float8,
+		be.coning_carton_quantity::float8,
+		be.transfer_quantity::float8 as transfer_quantity,
+		(be.quantity - be.transfer_quantity)::float8 as balance_quantity,
 		bet.created_by,
 		users.name as created_by_name,
 		bet.created_at,

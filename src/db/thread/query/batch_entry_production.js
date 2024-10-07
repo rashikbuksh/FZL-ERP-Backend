@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { batch_entry, batch_entry_production } from '../schema.js';
 
 import * as hrSchema from '../../hr/schema.js';
@@ -83,9 +84,9 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: batch_entry_production.uuid,
 			batch_entry_uuid: batch_entry_production.batch_entry_uuid,
-			production_quantity: batch_entry_production.production_quantity,
+			production_quantity: decimalToNumber(batch_entry_production.production_quantity),
 			coning_carton_quantity:
-				batch_entry_production.coning_carton_quantity,
+				decimalToNumber(batch_entry_production.coning_carton_quantity),
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
@@ -113,9 +114,9 @@ export async function select(req, res, next) {
 		.select({
 			uuid: batch_entry_production.uuid,
 			batch_entry_uuid: batch_entry_production.batch_entry_uuid,
-			production_quantity: batch_entry_production.production_quantity,
+			production_quantity: decimalToNumber(batch_entry_production.production_quantity),
 			coning_carton_quantity:
-				batch_entry_production.coning_carton_quantity,
+				decimalToNumber(batch_entry_production.coning_carton_quantity),
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
@@ -147,8 +148,8 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 	WITH calculated_balance AS (SELECT 
 		bep.uuid,
 		bep.batch_entry_uuid,
-		bep.production_quantity,
-		bep.coning_carton_quantity,
+		bep.production_quantity::float8,
+		bep.coning_carton_quantity::float8,
 		be.batch_uuid,
 		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
 		be.order_entry_uuid, 
@@ -160,12 +161,12 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		oe.count_length_uuid as count_length_uuid,
 		CONCAT(cl.count, '/', cl.length) as count_length,
 		cl.cone_per_carton,
-		be.quantity as batch_quantity,
-		be.coning_production_quantity,
-		be.coning_carton_quantity,
-		be.transfer_quantity as transfer_quantity,
-		(be.quantity - be.coning_production_quantity) as coning_balance_quantity,
-		(be.quantity - be.transfer_quantity) as balance_quantity,
+		be.quantity::float8 as batch_quantity,
+		be.coning_production_quantity::float8,
+		be.coning_carton_quantity::float8,
+		be.transfer_quantity::float8 as transfer_quantity,
+		(be.quantity - be.coning_production_quantity)::float8 as coning_balance_quantity,
+		(be.quantity - be.transfer_quantity)::float8 as balance_quantity,
 		bep.created_by,
 		users.name as created_by_name,
 		bep.created_at,

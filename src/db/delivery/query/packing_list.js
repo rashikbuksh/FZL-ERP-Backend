@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import { challan, packing_list, packing_list_entry } from '../schema.js';
 
@@ -193,9 +194,9 @@ export async function selectPackingListDetailsByPackingListUuid(
 					ple.uuid,
 					ple.packing_list_uuid,
 					ple.sfg_uuid,
-					ple.quantity,
-					ple.short_quantity,
-					ple.reject_quantity,
+					ple.quantity::float8,
+					ple.short_quantity::float8,
+					ple.reject_quantity::float8,
 					ple.created_at,
 					ple.updated_at,
 					ple.remarks,
@@ -207,11 +208,11 @@ export async function selectPackingListDetailsByPackingListUuid(
 					oe.color,
 					oe.size,
 					concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-					oe.quantity as order_quantity,
+					oe.quantity::float8 as order_quantity,
 					sfg.uuid as sfg_uuid,
 					sfg.warehouse as warehouse,
 					sfg.delivered as delivered,
-					(oe.quantity - sfg.delivered) as balance_quantity,
+					(oe.quantity - sfg.delivered)::float8  as balance_quantity,
 					false as is_checked
 				FROM
 					zipper.v_order_details_full vodf
@@ -265,11 +266,11 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			oe.color,
 			oe.size,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8  as order_quantity,
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
-			(oe.quantity - sfg.delivered) as balance_quantity
+			(oe.quantity - sfg.delivered)::float8  as balance_quantity,
 		FROM
 			zipper.v_order_details_full vodf
 		LEFT JOIN

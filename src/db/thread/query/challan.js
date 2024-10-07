@@ -91,7 +91,7 @@ export async function selectAll(req, res, next) {
 			challan.uuid,
 			CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
 			challan.order_info_uuid,
-			challan.carton_quantity,
+			challan.carton_quantity::float8,
 			challan.gate_pass,
 			challan.received,
 			challan.assign_to,
@@ -137,7 +137,7 @@ export async function select(req, res, next) {
 			challan.uuid,
 			CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
 			challan.order_info_uuid,
-			challan.carton_quantity,
+			challan.carton_quantity::float8,
 			challan.gate_pass,
 			challan.received,
 			challan.assign_to,
@@ -189,11 +189,11 @@ export async function selectByOrderInfoUuid(req, res, next) {
 			cl.cone_per_carton,
 			toe.style as style,
 			toe.color as color,
-			toe.quantity as order_quantity,
-			toe.delivered as delivered,
-			toe.warehouse as warehouse,
+			toe.quantity::float8 as order_quantity,
+			toe.delivered::float8 as delivered,
+			toe.warehouse::float8 as warehouse,
 			toe.bleaching as bleaching,
-			(toe.quantity - toe.delivered) as balance_quantity,
+			(toe.quantity - toe.delivered)::float8 as balance_quantity,
 			false as is_checked
 		FROM thread.order_entry toe
 		LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid

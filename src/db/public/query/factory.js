@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import { handleResponse, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { factory, party } from '../schema.js';
 
 export async function insert(req, res, next) {

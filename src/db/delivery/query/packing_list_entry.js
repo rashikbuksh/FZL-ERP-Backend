@@ -6,6 +6,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { packing_list_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -78,9 +79,9 @@ export async function selectAll(req, res, next) {
 			ple.uuid,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
-			ple.quantity,
-			ple.short_quantity,
-			ple.reject_quantity,
+			ple.quantity::float8,
+			ple.short_quantity::float8,
+			ple.reject_quantity::float8,
 			ple.created_at,
 			ple.updated_at,
 			ple.remarks,
@@ -92,11 +93,11 @@ export async function selectAll(req, res, next) {
 			oe.color,
 			oe.size,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
-			(oe.quantity - sfg.warehouse) as balance_quantity
+			(oe.quantity - sfg.warehouse)::float8 as balance_quantity
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN 
@@ -134,9 +135,9 @@ export async function select(req, res, next) {
 			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
-			ple.quantity,
-			ple.short_quantity,
-			ple.reject_quantity,
+			ple.quantity::float8,
+			ple.short_quantity::float8,
+			ple.reject_quantity::float8,
 			ple.created_at,
 			ple.updated_at,
 			ple.remarks,
@@ -145,11 +146,11 @@ export async function select(req, res, next) {
 			vodf.item_description,
 			vodf.order_description_uuid,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
-			(oe.quantity - sfg.warehouse) as balance_quantity,
+			(oe.quantity - sfg.warehouse)::float8 as balance_quantity,
 			true as is_checked
 		FROM 
 			delivery.packing_list_entry ple
@@ -191,9 +192,9 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
-			ple.quantity,
-			ple.short_quantity,
-			ple.reject_quantity,
+			ple.quantity::float8,
+			ple.short_quantity::float8,
+			ple.reject_quantity::float8,
 			ple.created_at,
 			ple.updated_at,
 			ple.remarks,
@@ -202,11 +203,11 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			vodf.item_description,
 			vodf.order_description_uuid,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
-			(oe.quantity - sfg.warehouse) as balance_quantity,
+			(oe.quantity - sfg.warehouse)::float8 as balance_quantity,
 			true as is_checked
 		FROM 
 			delivery.packing_list_entry ple

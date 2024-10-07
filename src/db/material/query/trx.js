@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { info, stock, trx } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -105,15 +106,16 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
 	const resultPromise = db
 		.select({
 			uuid: trx.uuid,
 			material_uuid: trx.material_uuid,
 			material_name: info.name,
 			unit: info.unit,
-			stock: stock.stock,
+			stock: decimalToNumber(stock.stock),
 			trx_to: trx.trx_to,
-			trx_quantity: trx.trx_quantity,
+			trx_quantity: decimalToNumber(trx.trx_quantity),
 			created_by: trx.created_by,
 			created_by_name: hrSchema.users.name,
 			user_designation: hrSchema.designation.designation,
@@ -154,9 +156,9 @@ export async function select(req, res, next) {
 			material_uuid: trx.material_uuid,
 			material_name: info.name,
 			unit: info.unit,
-			stock: stock.stock,
+			stock: decimalToNumber(stock.stock),
 			trx_to: trx.trx_to,
-			trx_quantity: trx.trx_quantity,
+			trx_quantity: decimalToNumber(trx.trx_quantity),
 			created_by: trx.created_by,
 			created_by_name: hrSchema.users.name,
 			user_designation: hrSchema.designation.designation,
@@ -202,7 +204,7 @@ export async function selectMaterialTrxByMaterialTrxTo(req, res, next) {
 			material_uuid: trx.material_uuid,
 			material_name: info.name,
 			trx_to: trx.trx_to,
-			trx_quantity: trx.trx_quantity,
+			trx_quantity: decimalToNumber(trx.trx_quantity),
 			created_by: trx.created_by,
 			created_by_name: hrSchema.users.name,
 			user_designation: hrSchema.designation.designation,

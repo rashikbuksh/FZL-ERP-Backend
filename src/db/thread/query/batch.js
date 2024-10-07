@@ -8,6 +8,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import * as publicSchema from '../../public/schema.js';
 import { batch } from '../schema.js';
 
@@ -121,7 +122,7 @@ export async function selectAll(req, res, next) {
 			dyeing_supervisor_name: dyeingSupervisor.name,
 			dyeing_created_at: batch.dyeing_created_at,
 			dyeing_updated_at: batch.dyeing_updated_at,
-			yarn_quantity: batch.yarn_quantity,
+			yarn_quantity: decimalToNumber(batch.yarn_quantity),
 			yarn_issue_created_by: batch.yarn_issue_created_by,
 			yarn_issue_created_by_name: yarnIssueCreated.name,
 			yarn_issue_created_at: batch.yarn_issue_created_at,
@@ -215,7 +216,7 @@ export async function select(req, res, next) {
 			dyeing_supervisor_name: dyeingSupervisor.name,
 			dyeing_created_at: batch.dyeing_created_at,
 			dyeing_updated_at: batch.dyeing_updated_at,
-			yarn_quantity: batch.yarn_quantity,
+			yarn_quantity: decimalToNumber(batch.yarn_quantity),
 			yarn_issue_created_by: batch.yarn_issue_created_by,
 			yarn_issue_created_by_name: yarnIssueCreated.name,
 			yarn_issue_created_at: batch.yarn_issue_created_at,

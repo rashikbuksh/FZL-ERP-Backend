@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { die_casting, die_casting_transaction } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -99,16 +100,16 @@ export async function selectAll(req, res, next) {
 			dc.slider_link,
 			op_slider_link.name AS slider_link_name,
 			op_slider_link.short_name AS slider_link_short_name,
-			dct.trx_quantity,
-			dct.weight,
-			(dc.weight + dct.weight) as max_weight,
+			dct.trx_quantity::float8,
+			dct.weight::float8,
+			(dc.weight + dct.weight)::float8 as max_weight,
 			dc.type,
 			dct.created_by,
 			u.name as created_by_name,
 			dct.created_at,
 			dct.updated_at,
 			dct.remarks,
-			(dc.quantity + dct.trx_quantity) as max_quantity
+			(dc.quantity + dct.trx_quantity)::float8 as max_quantity
 		FROM
 			slider.die_casting_transaction dct
 		LEFT JOIN
@@ -181,16 +182,16 @@ export async function select(req, res, next) {
 			dc.slider_link,
 			op_slider_link.name AS slider_link_name,
 			op_slider_link.short_name AS slider_link_short_name,
-			dct.trx_quantity,
-			dct.weight,
-			(dc.weight + dct.weight) as max_weight,
+			dct.trx_quantity::float8,
+			dct.weight::float8,
+			(dc.weight + dct.weight)::float8 as max_weight,
 			dc.type,
 			dct.created_by,
 			u.name as created_by_name,
 			dct.created_at,
 			dct.updated_at,
 			dct.remarks,
-			(dc.quantity + dct.trx_quantity) as max_quantity
+			(dc.quantity + dct.trx_quantity)::float8 as max_quantity
 		FROM
 			slider.die_casting_transaction dct
 		LEFT JOIN
@@ -272,9 +273,9 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			stock.slider_link,
 			slider_slider_link_properties.name as slider_link_name,
 			slider_slider_link_properties.short_name as slider_link_short_name,
-			coalesce(stock.order_quantity, 0) as order_quantity,
-			coalesce(die_casting_transaction_given.quantity,0) as provided_quantity,
-			coalesce(stock.order_quantity, 0) - coalesce(die_casting_transaction_given.quantity, 0) as balance_quantity
+			coalesce(stock.order_quantity, 0)::float8 as order_quantity,
+			coalesce(die_casting_transaction_given.quantity,0)::float8 as provided_quantity,
+			coalesce(stock.order_quantity, 0) - coalesce(die_casting_transaction_given.quantity, 0)::float8 as balance_quantity
 		FROM
 			slider.stock stock
 		LEFT JOIN

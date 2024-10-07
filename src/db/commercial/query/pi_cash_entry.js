@@ -8,6 +8,7 @@ import {
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import { pi_cash_entry } from '../schema.js';
+import { decimalToNumber } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -82,7 +83,7 @@ export async function selectAll(req, res, next) {
 			pi_cash_uuid: pi_cash_entry.pi_cash_uuid,
 			sfg_uuid: pi_cash_entry.sfg_uuid,
 			thread_order_entry_uuid: pi_cash_entry.thread_order_entry_uuid,
-			pi_cash_quantity: pi_cash_entry.pi_cash_quantity,
+			pi_cash_quantity: decimalToNumber(pi_cash_entry.pi_cash_quantity),
 			created_at: pi_cash_entry.created_at,
 			updated_at: pi_cash_entry.updated_at,
 			remarks: pi_cash_entry.remarks,
@@ -112,7 +113,7 @@ export async function select(req, res, next) {
 			pi_cash_uuid: pi_cash_entry.pi_cash_uuid,
 			sfg_uuid: pi_cash_entry.sfg_uuid,
 			thread_order_entry_uuid: pi_cash_entry.thread_order_entry_uuid,
-			pi_cash_quantity: pi_cash_entry.pi_cash_quantity,
+			pi_cash_quantity: decimalToNumber(pi_cash_entry.pi_cash_quantity),
 			created_at: pi_cash_entry.created_at,
 			updated_at: pi_cash_entry.updated_at,
 			remarks: pi_cash_entry.remarks,
@@ -142,7 +143,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 				SELECT
 	                pe.uuid as uuid,
                     pe.pi_cash_uuid as pi_cash_uuid,
-					pe.pi_cash_quantity as pi_cash_quantity,
+					pe.pi_cash_quantity as pi_cash_quantity::float8,
 					pe.created_at as created_at,
 	                pe.updated_at as updated_at,
 					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN true ELSE false END as is_thread_order,
@@ -153,7 +154,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.buyer_name ELSE thread_buyer.name END as buyer_name,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.style ELSE toe.style END as style,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.color ELSE toe.color END as color,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as quantity::float8,
 					vodf.item_description as item_description,
 					ARRAY[
 							vodf.item_short_name,
@@ -184,10 +185,10 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					vodf.special_requirement,
 					CONCAT(vodf.item_name, ' Zipper', '-', vodf.zipper_number_short_name, '-', vodf.end_type_short_name, '-', vodf.puller_type_short_name) as pi_item_description,
 					oe.size as size,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as max_quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity ELSE toe.quantity END as max_quantity::float8,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price ELSE toe.party_price END as unit_price,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi ELSE toe.pi END as given_pi_cash_quantity,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (pe.pi_cash_quantity * oe.party_price) ELSE (pe.pi_cash_quantity * toe.party_price) END as value,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi ELSE toe.pi END as given_pi_cash_quantity::float8,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (pe.pi_cash_quantity * oe.party_price) ELSE (pe.pi_cash_quantity * toe.party_price) END as value ::float8,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.quantity - sfg.pi) ELSE (toe.quantity - toe.pi) END as balance_quantity,
 					pe.thread_order_entry_uuid as thread_order_entry_uuid,
 					toe.count_length_uuid as count_length_uuid,
@@ -307,11 +308,11 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             oe.style as style,
             oe.color as color,
             oe.size as size,
-            oe.quantity as quantity,
-            sfg.pi as given_pi_cash_quantity,
-            (oe.quantity - sfg.pi) as max_quantity,
-            (oe.quantity - sfg.pi) as pi_cash_quantity,
-            (oe.quantity - sfg.pi) as balance_quantity,
+            oe.quantity as quantity::float8,
+            sfg.pi as given_pi_cash_quantity::float8,
+            (oe.quantity - sfg.pi) as max_quantity::float8,
+            (oe.quantity - sfg.pi) as pi_cash_quantity::float8,
+            (oe.quantity - sfg.pi) as balance_quantity::float8,
             CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked,
 			false as is_thread_order
         FROM
@@ -362,11 +363,11 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
             CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
             toe.style as style,
             toe.color as color,
-            toe.quantity as quantity,
-            toe.pi as given_pi_cash_quantity,
-            (toe.quantity - toe.pi) as max_quantity,
-            (toe.quantity - toe.pi) as pi_cash_quantity,
-            (toe.quantity - toe.pi) as balance_quantity,
+            toe.quantity as quantity::float8,
+            toe.pi as given_pi_cash_quantity::float8,
+            (toe.quantity - toe.pi) as max_quantity::float8,
+            (toe.quantity - toe.pi) as pi_cash_quantity::float8,
+            (toe.quantity - toe.pi) as balance_quantity::float8,
             CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked,
 			true as is_thread_order
         FROM

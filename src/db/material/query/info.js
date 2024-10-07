@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { info, section, stock, type } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -87,7 +88,7 @@ export async function selectAll(req, res, next) {
 			short_name: info.short_name,
 			stock: stock.stock,
 			unit: info.unit,
-			threshold: info.threshold,
+			threshold: decimalToNumber(info.threshold),
 			description: info.description,
 			created_at: info.created_at,
 			updated_at: info.updated_at,
@@ -124,7 +125,7 @@ export async function select(req, res, next) {
 			short_name: info.short_name,
 			stock: stock.stock,
 			unit: info.unit,
-			threshold: info.threshold,
+			threshold: decimalToNumber(info.threshold),
 			description: info.description,
 			created_at: info.created_at,
 			updated_at: info.updated_at,

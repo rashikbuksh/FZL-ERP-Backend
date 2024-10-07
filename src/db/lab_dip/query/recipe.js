@@ -19,6 +19,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import * as materialSchema from '../../material/schema.js';
 import * as threadSchema from '../../thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
@@ -235,7 +236,7 @@ export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
 				dyes_category_id: dyes_category.id,
 				bleaching_program: dyes_category.bleaching,
 				percentage: dyes_category.upto_percentage,
-				quantity: programs.quantity,
+				quantity: decimalToNumber(programs.quantity),
 				created_by: programs.created_by,
 				created_by_name: hrSchema.users.name,
 				created_at: programs.created_at,

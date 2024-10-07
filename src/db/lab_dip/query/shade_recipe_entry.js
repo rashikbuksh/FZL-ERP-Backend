@@ -5,6 +5,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import * as materialSchema from '../../material/schema.js';
 import { shade_recipe, shade_recipe_entry } from '../schema.js';
 
@@ -85,7 +86,7 @@ export async function selectAll(req, res, next) {
 			material_uuid: shade_recipe_entry.material_uuid,
 			material_name: materialSchema.info.name,
 			unit: materialSchema.info.unit,
-			quantity: shade_recipe_entry.quantity,
+			quantity: decimalToNumber(shade_recipe_entry.quantity),
 			created_at: shade_recipe_entry.created_at,
 			updated_at: shade_recipe_entry.updated_at,
 			remarks: shade_recipe_entry.remarks,
@@ -119,7 +120,7 @@ export async function select(req, res, next) {
 			material_uuid: shade_recipe_entry.material_uuid,
 			material_name: materialSchema.info.name,
 			unit: materialSchema.info.unit,
-			quantity: shade_recipe_entry.quantity,
+			quantity: decimalToNumber(shade_recipe_entry.quantity),
 			created_at: shade_recipe_entry.created_at,
 			updated_at: shade_recipe_entry.updated_at,
 			remarks: shade_recipe_entry.remarks,
@@ -161,7 +162,7 @@ export async function selectShadeRecipeEntryByShadeRecipeUuid(req, res, next) {
 			material_uuid: shade_recipe_entry.material_uuid,
 			material_name: materialSchema.info.name,
 			unit: materialSchema.info.unit,
-			quantity: shade_recipe_entry.quantity,
+			quantity: decimalToNumber(shade_recipe_entry.quantity),
 			created_at: shade_recipe_entry.created_at,
 			updated_at: shade_recipe_entry.updated_at,
 			remarks: shade_recipe_entry.remarks,

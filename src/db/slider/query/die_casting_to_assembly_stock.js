@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import {
 	assembly_stock,
 	die_casting,
@@ -95,11 +96,16 @@ export async function selectAll(req, res, next) {
 			die_casting_cap_name: diecastingcap.name,
 			die_casting_link_uuid: assembly_stock.die_casting_link_uuid,
 			die_casting_link_name: diecastinglink.name,
-			production_quantity:
-				die_casting_to_assembly_stock.production_quantity,
-			weight: die_casting_to_assembly_stock.weight,
-			max_production_quantity_with_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`,
-			max_production_quantity_without_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`,
+			production_quantity: decimalToNumber(
+				die_casting_to_assembly_stock.production_quantity
+			),
+			weight: decimalToNumber(die_casting_to_assembly_stock.weight),
+			max_production_quantity_with_link: decimalToNumber(
+				sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`
+			),
+			max_production_quantity_without_link: decimalToNumber(
+				sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`
+			),
 			with_link: die_casting_to_assembly_stock.with_link,
 			created_by: die_casting_to_assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,
@@ -166,11 +172,16 @@ export async function select(req, res, next) {
 			die_casting_cap_name: diecastingcap.name,
 			die_casting_link_uuid: assembly_stock.die_casting_link_uuid,
 			die_casting_link_name: diecastinglink.name,
-			production_quantity:
-				die_casting_to_assembly_stock.production_quantity,
-			weight: die_casting_to_assembly_stock.weight,
-			max_production_quantity_with_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`,
-			max_production_quantity_without_link: sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`,
+			production_quantity: decimalToNumber(
+				die_casting_to_assembly_stock.production_quantity
+			),
+			weight: decimalToNumber(die_casting_to_assembly_stock.weight),
+			max_production_quantity_with_link: decimalToNumber(
+				sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`
+			),
+			max_production_quantity_without_link: decimalToNumber(
+				sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`
+			),
 			with_link: die_casting_to_assembly_stock.with_link,
 			created_by: die_casting_to_assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,

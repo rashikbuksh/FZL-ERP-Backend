@@ -10,6 +10,7 @@ import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
 
 import { dyes_category, programs } from '../schema.js';
+import { decimalToNumber } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -91,7 +92,7 @@ export async function selectAll(req, res, next) {
 			material_name: materialSchema.info.name,
 			dyes_category_id: dyes_category.id,
 			bleaching: dyes_category.bleaching,
-			quantity: programs.quantity,
+			quantity: decimalToNumber(programs.quantity),
 			created_by: programs.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: programs.created_at,
@@ -131,7 +132,7 @@ export async function select(req, res, next) {
 			material_name: materialSchema.info.name,
 			dyes_category_id: dyes_category.id,
 			bleaching: dyes_category.bleaching,
-			quantity: programs.quantity,
+			quantity: decimalToNumber(programs.quantity),
 			created_by: programs.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: programs.created_at,

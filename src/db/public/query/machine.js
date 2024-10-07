@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { machine } from '../../public/schema.js';
 
 export async function insert(req, res, next) {
@@ -88,9 +89,9 @@ export async function selectAll(req, res, next) {
 			is_sewing_thread: machine.is_sewing_thread,
 			is_bulk: machine.is_bulk,
 			is_sample: machine.is_sample,
-			max_capacity: machine.max_capacity,
-			min_capacity: machine.min_capacity,
-			water_capacity: machine.water_capacity,
+			max_capacity: decimalToNumber(machine.max_capacity),
+			min_capacity: decimalToNumber(machine.min_capacity),
+			water_capacity:decimalToNumber(machine.water_capacity),
 			created_by: machine.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: machine.created_at,
@@ -121,9 +122,9 @@ export async function select(req, res, next) {
 			is_sewing_thread: machine.is_sewing_thread,
 			is_bulk: machine.is_bulk,
 			is_sample: machine.is_sample,
-			max_capacity: machine.max_capacity,
-			min_capacity: machine.min_capacity,
-			water_capacity: machine.water_capacity,
+			max_capacity: decimalToNumber(machine.max_capacity),
+			min_capacity: decimalToNumber(machine.min_capacity),
+			water_capacity: decimalToNumber(machine.water_capacity),
 			created_by: machine.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: machine.created_at,
