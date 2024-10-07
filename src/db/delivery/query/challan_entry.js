@@ -210,6 +210,9 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 				vpl.item_description,
 				vpl.order_description_uuid,
 				vpl.style_color_size,
+				vpl.style,
+				vpl.color,
+				vpl.size,
 				vpl.order_quantity::float8,
 				vpl.warehouse,
 				vpl.delivered,
@@ -223,7 +226,9 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 			LEFT JOIN
 				hr.users created_by_user ON challan.created_by = created_by_user.uuid
 			WHERE 
-				challan.uuid = ${req.params.challan_uuid} AND vpl.challan_uuid IS NOT NULL;
+				challan.uuid = ${req.params.challan_uuid} AND vpl.challan_uuid IS NOT NULL
+			ORDER BY
+				challan.created_at ASC;
 		`;
 
 	const challan_entryPromise = db.execute(query);
@@ -265,10 +270,10 @@ export async function selectPackingListForChallan(req, res, next) {
 			vodf.item_description,
 			vodf.order_description_uuid,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-			oe.quantity as order_quantity::float8,
+			oe.quantity::float8 as order_quantity,
 			sfg.warehouse as warehouse,
 			sfg.delivered as delivered,
-			(oe.quantity - sfg.warehouse) as balance_quantity::float8
+			(oe.quantity - sfg.warehouse)::float8 as balance_quantity
 		FROM 
 			delivery.packing_list pl 
 		LEFT JOIN

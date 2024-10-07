@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { asc, desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -167,7 +167,7 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 		WHERE
 			challan_entry.challan_uuid = ${req.params.challan_uuid}
 		ORDER BY
-			challan_entry.created_at DESC
+			challan_entry.created_at ASC
 	`;
 
 	const resultPromise = db.execute(query);
