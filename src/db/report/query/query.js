@@ -208,10 +208,10 @@ export async function dailyChallanReport(req, res, next) {
                 oe.uuid as order_entry_uuid,
                 CONCAT(oe.style, ' - ', oe.color, ' - ', oe.size) AS style_color_size,
                 null as count_length_name,
-                packing_list_grouped.total_quantity,
+                packing_list_grouped.total_quantity::float8,
                 challan.receive_status,
-                packing_list_grouped.total_short_quantity,
-                packing_list_grouped.total_reject_quantity,
+                packing_list_grouped.total_short_quantity::float8,
+                packing_list_grouped.total_reject_quantity::float8,
                 'zipper' as product
             FROM
                 delivery.challan
@@ -267,10 +267,10 @@ export async function dailyChallanReport(req, res, next) {
                 oe.uuid as order_entry_uuid,
                 CONCAT(oe.style, ' - ', oe.color) AS style_color_size,
                 CONCAT(count_length.count, ' - ', count_length.length) as count_length_name,
-                thread_challan_entry_grouped.total_quantity,
+                thread_challan_entry_grouped.total_quantity::float8,
                 thread_challan.received as receive_status,
-                thread_challan_entry_grouped.total_short_quantity,
-                thread_challan_entry_grouped.total_reject_quantity,
+                thread_challan_entry_grouped.total_short_quantity::float8,
+                thread_challan_entry_grouped.total_reject_quantity::float8,
                 'thread' as product
             FROM
                 thread.challan thread_challan
@@ -338,12 +338,12 @@ export async function PiRegister(req, res, next) {
                 pi_cash.marketing_uuid,
                 marketing.name as marketing_name,
                 pi_cash.conversion_rate,
-                pi_cash_entry_order_numbers.total_pi_quantity,
-                (pi_cash_entry_order_numbers.total_zipper_pi_price + pi_cash_entry_order_numbers.total_thread_pi_price) as total_pi_value,
+                pi_cash_entry_order_numbers.total_pi_quantity::float8,
+                (pi_cash_entry_order_numbers.total_zipper_pi_price + pi_cash_entry_order_numbers.total_thread_pi_price)::float8 as total_pi_value,
                 pi_cash.lc_uuid,
                 lc.lc_number,
                 lc.lc_date,
-                lc.payment_value,
+                lc.payment_value::float8,
                 CASE WHEN lc.uuid IS NOT NULL THEN concat('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) ELSE NULL END as file_number,
                 lc.created_at as lc_created_at
             FROM
@@ -441,6 +441,56 @@ export async function PiToBeRegister(req, res, next) {
             ) vodf_grouped ON party.uuid = vodf_grouped.party_uuid
             WHERE 
                 vodf_grouped.total_quantity > 0 OR vodf_grouped.total_delivered > 0 OR vodf_grouped.total_balance_pi_quantity > 0 OR vodf_grouped.total_undelivered_balance_quantity > 0
+        `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'PI To Be Register',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function PiToBeRegisterThread(req, res, next) {
+	const query = sql`
+            SELECT 
+                party.uuid,
+                party.name,
+                toi_grouped.total_quantity::float8,
+                toi_grouped.total_pi::float8,
+                toi_grouped.total_balance_pi_quantity::float8,
+                toi_grouped.total_balance_pi_value::float8,
+                toi_grouped.total_delivered::float8,
+                toi_grouped.total_undelivered_balance_quantity::float8
+            FROM
+                public.party party
+            LEFT JOIN (
+                SELECT 
+                    SUM(order_entry.quantity) AS total_quantity,
+                    SUM(order_entry.quantity - order_entry.pi) AS total_balance_pi_quantity,
+                    SUM((order_entry.quantity - order_entry.pi) * order_entry.party_price) AS total_balance_pi_value,
+                    SUM(order_entry.pi) AS total_pi,
+                    SUM(order_entry.delivered) AS total_delivered,
+                    SUM(order_entry.pi - order_entry.delivered) AS total_undelivered_balance_quantity,
+                    toi.party_uuid
+                FROM
+                    thread.order_entry
+                LEFT JOIN 
+                    thread.order_info toi ON order_entry.order_info_uuid = toi.uuid
+                GROUP BY
+                    toi.party_uuid
+            ) toi_grouped ON party.uuid = toi_grouped.party_uuid
+            WHERE 
+                toi_grouped.total_quantity > 0 OR toi_grouped.total_delivered > 0 OR toi_grouped.total_balance_pi_quantity > 0 OR toi_grouped.total_undelivered_balance_quantity > 0
         `;
 
 	const resultPromise = db.execute(query);

@@ -20,6 +20,12 @@ reportRouter.get('/pi-register-report', reportOperations.PiRegister);
 // * Pi To Be Register Report
 reportRouter.get('/pi-to-be-register-report', reportOperations.PiToBeRegister);
 
+// * Pi To Be Register Report Thread
+reportRouter.get(
+	'/pi-to-be-register-report-thread',
+	reportOperations.PiToBeRegisterThread
+);
+
 export const pathReport = {
 	'/report/zipper-production-status-report': {
 		get: {
@@ -93,6 +99,27 @@ export const pathReport = {
 			description: 'Pi To Be Register Report',
 			tags: ['report'],
 			operationId: 'PiToBeRegister',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					party_uuid: SE.uuid(),
+					party_name: SE.string(),
+					total_quantity: SE.number(3950),
+					total_pi: SE.number(610),
+					total_balance_pi_quantity: SE.number(3340),
+					total_balance_pi_value: SE.number(101555),
+					total_delivered: SE.number(0),
+					total_undelivered_balance_quantity: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/pi-to-be-register-report-thread': {
+		get: {
+			summary: 'Pi To Be Register Report Thread',
+			description: 'Pi To Be Register Report Thread',
+			tags: ['report'],
+			operationId: 'PiToBeRegisterThread',
 			parameters: [],
 			responses: {
 				200: SE.response_schema(200, {
