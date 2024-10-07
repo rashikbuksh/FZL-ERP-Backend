@@ -293,13 +293,18 @@ export async function selectThreadSwatch(req, res, next) {
 			labDipSchema.recipe,
 			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		)
-		.orderBy(desc(order_info.created_at));
+		.orderBy(desc(order_entry.created_at, order_info.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Order info',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Swatch',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
