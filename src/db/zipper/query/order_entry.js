@@ -269,7 +269,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 		)
 		.where(eq(order_description.uuid, order_description_uuid))
 		.groupBy(order_entry.uuid, sfg.uuid)
-		.orderBy(asc(order_entry.size));
+		.orderBy(asc(order_entry.created_at));
 
 	const toast = {
 		status: 200,
