@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as deliverySchema from '../../delivery/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import {
 	order_description,
 	order_entry,
@@ -219,27 +220,27 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			bleaching: order_entry.bleaching,
 			created_at: order_entry.created_at,
 			updated_at: order_entry.updated_at,
-			teeth_molding_stock: sfg.teeth_molding_stock,
-			teeth_molding_prod: sfg.teeth_molding_prod,
-			dying_and_iron_prod: sfg.dying_and_iron_prod,
+			teeth_molding_stock: decimalToNumber(sfg.teeth_molding_stock),
+			teeth_molding_prod: decimalToNumber(sfg.teeth_molding_prod),
+			dying_and_iron_prod: decimalToNumber(sfg.dying_and_iron_prod),
 			total_teeth_molding: sql`SUM(
 				CASE WHEN sfg_production.section = 'teeth_molding' THEN sfg_production.production_quantity ELSE 0 END
-				)`,
-			teeth_coloring_stock: sfg.teeth_coloring_stock,
-			teeth_coloring_prod: sfg.teeth_coloring_prod,
+				)::float8`,
+			teeth_coloring_stock: decimalToNumber(sfg.teeth_coloring_stock),
+			teeth_coloring_prod: decimalToNumber(sfg.teeth_coloring_prod),
 			total_teeth_coloring: sql`SUM(
 				CASE WHEN sfg_production.section = 'teeth_coloring' THEN sfg_production.production_quantity ELSE 0 END
-				)`,
-			finishing_stock: sfg.finishing_stock,
+				)::float8`,
+			finishing_stock: decimalToNumber(sfg.finishing_stock),
 			finishing_prod: sfg.finishing_prod,
 			total_finishing: sql`SUM(
 				CASE WHEN sfg_production.section = 'finishing' THEN sfg_production.production_quantity ELSE 0 END
-				)`,
-			coloring_prod: sfg.coloring_prod,
-			total_pi_quantity: sfg.pi,
-			total_delivery_quantity: sfg.delivered,
-			total_reject_quantity: sfg.reject_quantity,
-			total_short_quantity: sfg.short_quantity,
+				)::float8`,
+			coloring_prod: decimalToNumber(sfg.coloring_prod),
+			total_pi_quantity: decimalToNumber(sfg.pi),
+			total_delivery_quantity: decimalToNumber(sfg.delivered),
+			total_reject_quantity: decimalToNumber(sfg.reject_quantity),
+			total_short_quantity: decimalToNumber(sfg.short_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
