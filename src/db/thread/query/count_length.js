@@ -7,7 +7,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-
+import { decimalToNumber } from '../../variables.js';
 import { count_length } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -91,10 +91,10 @@ export async function selectAll(req, res, next) {
 			count: count_length.count,
 			length: count_length.length,
 			sst: count_length.sst,
-			min_weight: count_length.min_weight,
-			max_weight: count_length.max_weight,
+			min_weight: decimalToNumber(count_length.min_weight),
+			max_weight: decimalToNumber(count_length.max_weight),
 			cone_per_carton: count_length.cone_per_carton,
-			price: count_length.price,
+			price: decimalToNumber(count_length.price),
 			created_by: count_length.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: count_length.created_at,
@@ -124,10 +124,10 @@ export async function select(req, res, next) {
 			count: count_length.count,
 			length: count_length.length,
 			sst: count_length.sst,
-			min_weight: count_length.min_weight,
-			max_weight: count_length.max_weight,
+			min_weight: decimalToNumber(count_length.min_weight),
+			max_weight: decimalToNumber(count_length.max_weight),
 			cone_per_carton: count_length.cone_per_carton,
-			price: count_length.price,
+			price: decimalToNumber(count_length.price),
 			created_by: count_length.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: count_length.created_at,

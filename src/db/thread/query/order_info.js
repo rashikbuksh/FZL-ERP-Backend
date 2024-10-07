@@ -10,6 +10,7 @@ import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { count_length, order_entry, order_info } from '../schema.js';
+import { decimalToNumber } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -277,7 +278,7 @@ export async function selectThreadSwatch(req, res, next) {
 			count: count_length.count,
 			length: count_length.length,
 			count_length_name: sql`concat(count_length.count, ' - ', count_length.length)`,
-			order_quantity: order_entry.quantity,
+			order_quantity: decimalToNumber(order_entry.quantity),
 			created_at: order_info.created_at,
 			updated_at: order_info.updated_at,
 			remarks: order_info.remarks,

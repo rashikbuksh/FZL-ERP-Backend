@@ -6,6 +6,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import * as publicSchema from '../../public/schema.js';
 import { die_casting } from '../schema.js';
 
@@ -145,14 +146,16 @@ export async function selectAll(req, res, next) {
 			slider_link_short_name: sliderLinkProperties.short_name,
 			is_logo_body: die_casting.is_logo_body,
 			is_logo_puller: die_casting.is_logo_puller,
-			quantity: die_casting.quantity,
-			weight: die_casting.weight,
-			pcs_per_kg: die_casting.quantity / die_casting.weight,
+			quantity: decimalToNumber(die_casting.quantity),
+			weight: decimalToNumber(die_casting.weight),
+			pcs_per_kg: decimalToNumber(
+				die_casting.quantity / die_casting.weight
+			),
 			created_at: die_casting.created_at,
 			updated_at: die_casting.updated_at,
 			remarks: die_casting.remarks,
 			type: die_casting.type,
-			quantity_in_sa: die_casting.quantity_in_sa,
+			quantity_in_sa: decimalToNumber(die_casting.quantity_in_sa),
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))
@@ -221,14 +224,14 @@ export async function select(req, res, next) {
 			slider_link_short_name: sliderLinkProperties.short_name,
 			is_logo_body: die_casting.is_logo_body,
 			is_logo_puller: die_casting.is_logo_puller,
-			quantity: die_casting.quantity,
-			weight: die_casting.weight,
-			pcs_per_kg: die_casting.quantity / die_casting.weight,
+			quantity: decimalToNumber(die_casting.quantity),
+			weight: decimalToNumber(die_casting.weight),
+			pcs_per_kg: decimalToNumber(die_casting.quantity / die_casting.weight),
 			created_at: die_casting.created_at,
 			updated_at: die_casting.updated_at,
 			remarks: die_casting.remarks,
 			type: die_casting.type,
-			quantity_in_sa: die_casting.quantity_in_sa,
+			quantity_in_sa: decimalToNumber(die_casting.quantity_in_sa),
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))

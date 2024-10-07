@@ -9,6 +9,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
 import { dyes_category } from '../schema.js';
+import { decimalToNumber } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -85,7 +86,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: dyes_category.uuid,
 			name: dyes_category.name,
-			upto_percentage: dyes_category.upto_percentage,
+			upto_percentage: decimalToNumber(dyes_category.upto_percentage),
 			bleaching: dyes_category.bleaching,
 			id: dyes_category.id,
 			created_by: dyes_category.created_by,
@@ -116,7 +117,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: dyes_category.uuid,
 			name: dyes_category.name,
-			upto_percentage: dyes_category.upto_percentage,
+			upto_percentage: decimalToNumber(dyes_category.upto_percentage),
 			bleaching: dyes_category.bleaching,
 			id: dyes_category.id,
 			created_by: dyes_category.created_by,

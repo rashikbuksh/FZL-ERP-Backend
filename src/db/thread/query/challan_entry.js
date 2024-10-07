@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { challan_entry, order_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -81,7 +82,7 @@ export async function selectAll(req, res, next) {
 			uuid: challan_entry.uuid,
 			challan_uuid: challan_entry.challan_uuid,
 			order_entry_uuid: challan_entry.order_entry_uuid,
-			quantity: challan_entry.quantity,
+			quantity: decimalToNumber(challan_entry.quantity),
 			created_by: challan_entry.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: challan_entry.created_at,
@@ -110,7 +111,7 @@ export async function select(req, res, next) {
 			uuid: challan_entry.uuid,
 			challan_uuid: challan_entry.challan_uuid,
 			order_entry_uuid: challan_entry.order_entry_uuid,
-			quantity: challan_entry.quantity,
+			quantity: decimalToNumber(challan_entry.quantity),
 			created_by: challan_entry.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: challan_entry.created_at,
@@ -145,15 +146,15 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 			concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 			count_length.count,
 			count_length.length,
-			order_entry.quantity as order_quantity,
+			order_entry.quantity::float8 as order_quantity,
 			order_entry.style,
 			order_entry.color,
 			order_entry.po,
 			order_entry.bleaching,
 			order_entry.recipe_uuid,
-			order_entry.delivered,
-			order_entry.warehouse,
-			order_entry.quantity - order_entry.warehouse as balance_quantity,
+			order_entry.delivered::float8,
+			order_entry.warehouse::float8,
+			order_entry.quantity::float8 - order_entry.warehouse::float8 as balance_quantity,
 			true AS is_checked
 		FROM
 			thread.challan_entry

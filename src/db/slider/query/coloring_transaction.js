@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { coloring_transaction, stock } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -76,7 +77,7 @@ export async function selectAll(req, res, next) {
 			uuid: coloring_transaction.uuid,
 			stock_uuid: coloring_transaction.stock_uuid,
 			order_info_uuid: coloring_transaction.order_info_uuid,
-			trx_quantity: coloring_transaction.trx_quantity,
+			trx_quantity: decimalToNumber(coloring_transaction.trx_quantity),
 			weight: coloring_transaction.weight,
 			created_by: coloring_transaction.created_by,
 			created_by_name: hrSchema.users.name,
@@ -115,7 +116,7 @@ export async function select(req, res, next) {
 			uuid: coloring_transaction.uuid,
 			stock_uuid: coloring_transaction.stock_uuid,
 			order_info_uuid: coloring_transaction.order_info_uuid,
-			trx_quantity: coloring_transaction.trx_quantity,
+			trx_quantity: decimalToNumber(coloring_transaction.trx_quantity),
 			weight: coloring_transaction.weight,
 			created_by: coloring_transaction.created_by,
 			created_by_name: hrSchema.users.name,

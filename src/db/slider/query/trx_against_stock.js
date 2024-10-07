@@ -97,15 +97,15 @@ export async function selectAll(req, res, next) {
 			dc.slider_link,
 			op_slider_link.name AS slider_link_name,
 			op_slider_link.short_name AS slider_link_short_name,
-			tas.quantity,
-			tas.weight,
-			(dc.weight + tas.weight) as max_weight,
+			tas.quantity::float8,
+			tas.weight::float8,
+			(dc.weight::float8 + tas.weight::float8) as max_weight,
 			tas.created_by,
 			u.name as created_by_name,
 			tas.created_at,
 			tas.updated_at,
 			tas.remarks,
-			(dc.quantity + tas.quantity) as max_quantity
+			(dc.quantity + tas.quantity)::float8 as max_quantity
 		FROM
 			slider.trx_against_stock tas
 		LEFT JOIN
@@ -172,15 +172,15 @@ export async function select(req, res, next) {
 			dc.slider_link,
 			op_slider_link.name AS slider_link_name,
 			op_slider_link.short_name AS slider_link_short_name,
-			tas.quantity,
-			tas.weight,
-			(dc.weight + tas.weight) as max_weight,
+			tas.quantity::float8,
+			tas.weight::float8,
+			(dc.weight::float8 + tas.weight::float8) as max_weight,
 			tas.created_by,
 			u.name as created_by_name,
 			tas.created_at,
 			tas.updated_at,
 			tas.remarks,
-			(dc.quantity + tas.quantity) as max_quantity
+			(dc.quantity + tas.quantity)::float8 as max_quantity
 		FROM
 			slider.trx_against_stock tas
 		LEFT JOIN

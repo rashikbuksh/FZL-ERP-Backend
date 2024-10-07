@@ -83,7 +83,7 @@ export async function selectAll(req, res, next) {
 		CAST(stock.body_quantity AS DOUBLE PRECISION),
 		CAST(stock.cap_quantity AS DOUBLE PRECISION),
 		CAST(stock.puller_quantity AS DOUBLE PRECISION),
-		CAST(stock.link_quantity AS DOUBLE PRECISION),
+		CAST(stock.link_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.sa_prod AS DOUBLE PRECISION),
 		CAST(stock.coloring_stock AS DOUBLE PRECISION),
 		CAST(stock.coloring_prod AS DOUBLE PRECISION),
