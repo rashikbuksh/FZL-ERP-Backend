@@ -311,7 +311,7 @@ export async function getBatchEntryDetails(req, res, next) {
 		be.created_at,
 		be.updated_at,
 		be.remarks as batch_remarks,
-		b.is_drying_complete
+		batch.is_drying_complete
 	FROM
 		thread.batch_entry be
 	LEFT JOIN 
