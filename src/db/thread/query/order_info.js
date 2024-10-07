@@ -294,11 +294,16 @@ export async function selectThreadSwatch(req, res, next) {
 		)
 		.orderBy(desc(order_entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Order info',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Swatch',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
