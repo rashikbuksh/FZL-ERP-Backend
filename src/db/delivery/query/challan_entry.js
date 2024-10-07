@@ -228,7 +228,7 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 			WHERE 
 				challan.uuid = ${req.params.challan_uuid} AND vpl.challan_uuid IS NOT NULL
 			ORDER BY
-				challan.created_at ASC;
+				vpl.packing_number ASC;
 		`;
 
 	const challan_entryPromise = db.execute(query);
