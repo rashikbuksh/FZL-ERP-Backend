@@ -8,6 +8,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { tape_coil, tape_trx } from '../schema.js';
 
 const item_properties = alias(publicSchema.properties, 'item_properties');
@@ -90,12 +91,16 @@ export async function selectAll(req, res, next) {
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
 			zipper_number_name: zipper_number_properties.name,
 			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
-			quantity: tape_coil.quantity,
-			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
-			trx_quantity_in_dying: tape_coil.trx_quantity_in_dying,
-			quantity_in_coil: tape_coil.quantity_in_coil,
+			quantity: decimalToNumber(tape_coil.quantity),
+			trx_quantity_in_coil: decimalToNumber(
+				tape_coil.trx_quantity_in_coil
+			),
+			trx_quantity_in_dying: decimalToNumber(
+				tape_coil.trx_quantity_in_dying
+			),
+			quantity_in_coil: decimalToNumber(tape_coil.quantity_in_coil),
 			to_section: tape_trx.to_section,
-			trx_quantity: tape_trx.trx_quantity,
+			trx_quantity: decimalToNumber(tape_trx.trx_quantity),
 			created_by: tape_trx.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_trx.created_at,
@@ -135,12 +140,16 @@ export async function select(req, res, next) {
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
 			zipper_number_name: zipper_number_properties.name,
 			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
-			quantity: tape_coil.quantity,
-			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
-			trx_quantity_in_dying: tape_coil.trx_quantity_in_dying,
-			quantity_in_coil: tape_coil.quantity_in_coil,
+			quantity: decimalToNumber(tape_coil.quantity),
+			trx_quantity_in_coil: decimalToNumber(
+				tape_coil.trx_quantity_in_coil
+			),
+			trx_quantity_in_dying: decimalToNumber(
+				tape_coil.trx_quantity_in_dying
+			),
+			quantity_in_coil: decimalToNumber(tape_coil.quantity_in_coil),
 			to_section: tape_trx.to_section,
-			trx_quantity: tape_trx.trx_quantity,
+			trx_quantity: decimalToNumber(tape_trx.trx_quantity),
 			created_by: tape_trx.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_trx.created_at,
@@ -188,12 +197,16 @@ export async function selectBySection(req, res, next) {
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
 			zipper_number_name: zipper_number_properties.name,
 			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
-			quantity: tape_coil.quantity,
-			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
-			trx_quantity_in_dying: tape_coil.trx_quantity_in_dying,
-			quantity_in_coil: tape_coil.quantity_in_coil,
+			quantity: decimalToNumber(tape_coil.quantity),
+			trx_quantity_in_coil: decimalToNumber(
+				tape_coil.trx_quantity_in_coil
+			),
+			trx_quantity_in_dying: decimalToNumber(
+				tape_coil.trx_quantity_in_dying
+			),
+			quantity_in_coil: decimalToNumber(tape_coil.quantity_in_coil),
 			to_section: tape_trx.to_section,
-			trx_quantity: tape_trx.trx_quantity,
+			trx_quantity: decimalToNumber(tape_trx.trx_quantity),
 			created_by: tape_trx.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_trx.created_at,

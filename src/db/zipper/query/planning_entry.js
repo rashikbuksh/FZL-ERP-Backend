@@ -5,6 +5,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { planning, planning_entry, sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -143,10 +144,14 @@ export async function selectAll(req, res, next) {
 			uuid: planning_entry.uuid,
 			planning_week: planning_entry.planning_week,
 			sfg_uuid: planning_entry.sfg_uuid,
-			sno_quantity: planning_entry.sno_quantity,
-			factory_quantity: planning_entry.factory_quantity,
-			production_quantity: planning_entry.production_quantity,
-			batch_production_quantity: planning_entry.batch_production_quantity,
+			sno_quantity: decimalToNumber(planning_entry.sno_quantity),
+			factory_quantity: decimalToNumber(planning_entry.factory_quantity),
+			production_quantity: decimalToNumber(
+				planning_entry.production_quantity
+			),
+			batch_production_quantity: decimalToNumber(
+				planning_entry.batch_production_quantity
+			),
 			created_at: planning_entry.created_at,
 			updated_at: planning_entry.updated_at,
 			sno_remarks: planning_entry.sno_remarks,
@@ -178,10 +183,14 @@ export async function select(req, res, next) {
 			uuid: planning_entry.uuid,
 			planning_week: planning_entry.planning_week,
 			sfg_uuid: planning_entry.sfg_uuid,
-			sno_quantity: planning_entry.sno_quantity,
-			factory_quantity: planning_entry.factory_quantity,
-			production_quantity: planning_entry.production_quantity,
-			batch_production_quantity: planning_entry.batch_production_quantity,
+			sno_quantity: decimalToNumber(planning_entry.sno_quantity),
+			factory_quantity: decimalToNumber(planning_entry.factory_quantity),
+			production_quantity: decimalToNumber(
+				planning_entry.production_quantity
+			),
+			batch_production_quantity: decimalToNumber(
+				planning_entry.batch_production_quantity
+			),
 			created_at: planning_entry.created_at,
 			updated_at: planning_entry.updated_at,
 			sno_remarks: planning_entry.sno_remarks,
@@ -214,10 +223,10 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			pe.uuid as planning_entry_uuid,
 			pe.planning_week,
 			pe.sfg_uuid,
-			pe.sno_quantity,
-			pe.factory_quantity,
-			pe.production_quantity,
-			pe.batch_production_quantity,
+			pe.sno_quantity::float8,
+			pe.factory_quantity::float8,
+			pe.production_quantity::float8,
+			pe.batch_production_quantity::float8,
 			pe.created_at,
 			pe.updated_at,
 			pe.sno_remarks as sno_remarks,
@@ -225,21 +234,21 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			vod.order_number,
 			vod.item_description,
-			pe_given.given_sno_quantity as given_sno_quantity,
-			pe_given.given_factory_quantity as given_factory_quantity,
-			pe_given.given_production_quantity as given_production_quantity,
-			pe_given.given_batch_production_quantity as given_batch_production_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_sno_quantity,0) as balance_sno_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_factory_quantity,0) as balance_factory_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_production_quantity,0) as balance_production_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_batch_production_quantity,0) as balance_batch_production_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_sno_quantity,0) + coalesce(pe.sno_quantity,0) as max_sno_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_factory_quantity,0) + coalesce(pe.factory_quantity,0) as max_factory_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_production_quantity,0) + coalesce(pe.production_quantity,0) as max_production_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_batch_production_quantity,0) + coalesce(pe.batch_production_quantity,0) as max_batch_production_quantity
+			pe_given.given_sno_quantity::float8 as given_sno_quantity,
+			pe_given.given_factory_quantity::float8 as given_factory_quantity,
+			pe_given.given_production_quantity::float8 as given_production_quantity,
+			pe_given.given_batch_production_quantity::float8 as given_batch_production_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_sno_quantity,0))::float8 as balance_sno_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_factory_quantity,0))::float8 as balance_factory_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_production_quantity,0))::float8 as balance_production_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_batch_production_quantity,0))::float8 as balance_batch_production_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_sno_quantity,0) + coalesce(pe.sno_quantity,0))::float8 as max_sno_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_factory_quantity,0) + coalesce(pe.factory_quantity,0))::float8 as max_factory_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_production_quantity,0) + coalesce(pe.production_quantity,0))::float8 as max_production_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_batch_production_quantity,0) + coalesce(pe.batch_production_quantity,0))::float8 as max_batch_production_quantity
 		FROM
 			zipper.planning_entry pe
 		LEFT JOIN
@@ -309,17 +318,17 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			vod.order_number,
 			vod.item_description,
-			pe_given.given_sno_quantity as given_sno_quantity,
-			pe_given.given_factory_quantity as given_factory_quantity,
-			pe_given.given_production_quantity as given_production_quantity,
-			pe_given.given_batch_production_quantity as given_batch_production_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_sno_quantity,0)  as balance_sno_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_factory_quantity,0) as balance_factory_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_production_quantity,0) as balance_production_quantity,
-			coalesce(oe.quantity,0) - coalesce(pe_given.given_batch_production_quantity,0) as balance_batch_production_quantity
+			pe_given.given_sno_quantity::float8 as given_sno_quantity,
+			pe_given.given_factory_quantity::float8 as given_factory_quantity,
+			pe_given.given_production_quantity::float8 as given_production_quantity,
+			pe_given.given_batch_production_quantity::float8 as given_batch_production_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_sno_quantity,0))::float8  as balance_sno_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_factory_quantity,0))::float8 as balance_factory_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_production_quantity,0))::float8 as balance_production_quantity,
+			(coalesce(oe.quantity,0) - coalesce(pe_given.given_batch_production_quantity,0))::float8 as balance_batch_production_quantity
 		FROM
 			zipper.order_entry oe
 		LEFT JOIN

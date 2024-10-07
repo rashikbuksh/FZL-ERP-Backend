@@ -8,6 +8,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { tape_coil } from '../schema.js';
 
 const item_properties = alias(publicSchema.properties, 'item_properties');
@@ -91,13 +92,17 @@ export async function selectAll(req, res, next) {
 			name: tape_coil.name,
 			is_import: tape_coil.is_import,
 			is_reverse: tape_coil.is_reverse,
-			raw_per_kg_meter: tape_coil.raw_per_kg_meter,
-			dyed_per_kg_meter: tape_coil.dyed_per_kg_meter,
-			quantity: tape_coil.quantity,
-			trx_quantity_in_dying: tape_coil.trx_quantity_in_dying,
-			stock_quantity: tape_coil.stock_quantity,
-			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
-			quantity_in_coil: tape_coil.quantity_in_coil,
+			raw_per_kg_meter: decimalToNumber(tape_coil.raw_per_kg_meter),
+			dyed_per_kg_meter: decimalToNumber(tape_coil.dyed_per_kg_meter),
+			quantity: decimalToNumber(tape_coil.quantity),
+			trx_quantity_in_dying: decimalToNumber(
+				tape_coil.trx_quantity_in_dying
+			),
+			stock_quantity: decimalToNumber(tape_coil.stock_quantity),
+			trx_quantity_in_coil: decimalToNumber(
+				tape_coil.trx_quantity_in_coil
+			),
+			quantity_in_coil: decimalToNumber(tape_coil.quantity_in_coil),
 			created_by: tape_coil.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_coil.created_at,
@@ -138,13 +143,17 @@ export async function select(req, res, next) {
 			name: tape_coil.name,
 			is_import: tape_coil.is_import,
 			is_reverse: tape_coil.is_reverse,
-			raw_per_kg_meter: tape_coil.raw_per_kg_meter,
-			dyed_per_kg_meter: tape_coil.dyed_per_kg_meter,
-			quantity: tape_coil.quantity,
-			trx_quantity_in_dying: tape_coil.trx_quantity_in_dying,
-			stock_quantity: tape_coil.stock_quantity,
-			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
-			quantity_in_coil: tape_coil.quantity_in_coil,
+			raw_per_kg_meter: decimalToNumber(tape_coil.raw_per_kg_meter),
+			dyed_per_kg_meter: decimalToNumber(tape_coil.dyed_per_kg_meter),
+			quantity: decimalToNumber(tape_coil.quantity),
+			trx_quantity_in_dying: decimalToNumber(
+				tape_coil.trx_quantity_in_dying
+			),
+			stock_quantity: decimalToNumber(tape_coil.stock_quantity),
+			trx_quantity_in_coil: decimalToNumber(
+				tape_coil.trx_quantity_in_coil
+			),
+			quantity_in_coil: decimalToNumber(tape_coil.quantity_in_coil),
 			created_by: tape_coil.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_coil.created_at,
@@ -190,13 +199,17 @@ export async function selectByNylon(req, res, next) {
 			name: tape_coil.name,
 			is_import: tape_coil.is_import,
 			is_reverse: tape_coil.is_reverse,
-			raw_per_kg_meter: tape_coil.raw_per_kg_meter,
-			dyed_per_kg_meter: tape_coil.dyed_per_kg_meter,
-			quantity: tape_coil.quantity,
-			trx_quantity_in_dying: tape_coil.trx_quantity_in_dying,
-			stock_quantity: tape_coil.stock_quantity,
-			trx_quantity_in_coil: tape_coil.trx_quantity_in_coil,
-			quantity_in_coil: tape_coil.quantity_in_coil,
+			raw_per_kg_meter: decimalToNumber(tape_coil.raw_per_kg_meter),
+			dyed_per_kg_meter: decimalToNumber(tape_coil.dyed_per_kg_meter),
+			quantity: decimalToNumber(tape_coil.quantity),
+			trx_quantity_in_dying: decimalToNumber(
+				tape_coil.trx_quantity_in_dying
+			),
+			stock_quantity: decimalToNumber(tape_coil.stock_quantity),
+			trx_quantity_in_coil: decimalToNumber(
+				tape_coil.trx_quantity_in_coil
+			),
+			quantity_in_coil: decimalToNumber(tape_coil.quantity_in_coil),
 			created_by: tape_coil.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_coil.created_at,

@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { tape_coil_to_dyeing } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -109,7 +110,7 @@ export async function selectAll(req, res, next) {
 			tape_coil_to_dyeing.uuid,
 			tape_coil_to_dyeing.tape_coil_uuid,
 			tape_coil_to_dyeing.order_description_uuid,
-			tape_coil_to_dyeing.trx_quantity,
+			tape_coil_to_dyeing.trx_quantity::float8,
 			tape_coil_to_dyeing.created_by,
 			users.name AS created_by_name,
 			tape_coil_to_dyeing.created_at,
@@ -122,8 +123,8 @@ export async function selectAll(req, res, next) {
 			item_properties.name AS item_name,
 			tape_coil.zipper_number_uuid,
 			zipper_number_properties.name AS zipper_number_name,
-			tape_coil.quantity as tape_prod,
-				 coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
+			tape_coil.quantity::float8 as tape_prod,
+			(coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -162,7 +163,7 @@ export async function select(req, res, next) {
 			tape_coil_to_dyeing.uuid,
 			tape_coil_to_dyeing.tape_coil_uuid,
 			tape_coil_to_dyeing.order_description_uuid,
-			tape_coil_to_dyeing.trx_quantity,
+			tape_coil_to_dyeing.trx_quantity::float8,
 			tape_coil_to_dyeing.created_by,
 			users.name AS created_by_name,
 			tape_coil_to_dyeing.created_at,
@@ -176,9 +177,9 @@ export async function select(req, res, next) {
 			tape_coil.zipper_number_uuid,
 			zipper_number_properties.name AS zipper_number_name,
 			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
-			tape_coil.quantity as tape_prod,
-			CASE WHEN lower(item_properties.name) = 'nylon' THEN coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) 
-			ELSE coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) END AS max_trf_qty
+			tape_coil.quantity::float8 as tape_prod,
+			CASE WHEN lower(item_properties.name) = 'nylon' THEN (coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 
+			ELSE (coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 END AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -219,7 +220,7 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 			tape_coil_to_dyeing.uuid,
 			tape_coil_to_dyeing.tape_coil_uuid,
 			tape_coil_to_dyeing.order_description_uuid,
-			tape_coil_to_dyeing.trx_quantity,
+			tape_coil_to_dyeing.trx_quantity::float8,
 			tape_coil_to_dyeing.created_by,
 			users.name AS created_by_name,
 			tape_coil_to_dyeing.created_at,
@@ -233,8 +234,8 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 			tape_coil.zipper_number_uuid,
 			zipper_number_properties.name AS zipper_number_name,
 			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
-			tape_coil.quantity as tape_prod,
-			coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
+			tape_coil.quantity::float8 as tape_prod,
+			(coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -275,7 +276,7 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 			tape_coil_to_dyeing.uuid,
 			tape_coil_to_dyeing.tape_coil_uuid,
 			tape_coil_to_dyeing.order_description_uuid,
-			tape_coil_to_dyeing.trx_quantity,
+			tape_coil_to_dyeing.trx_quantity::float8,
 			tape_coil_to_dyeing.created_by,
 			users.name AS created_by_name,
 			tape_coil_to_dyeing.created_at,
@@ -289,8 +290,8 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 			tape_coil.zipper_number_uuid,
 			zipper_number_properties.name AS zipper_number_name,
 			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
-			tape_coil.quantity as tape_prod,
-				 coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0) AS max_trf_qty
+			tape_coil.quantity::float8 as tape_prod,
+			(coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 AS max_trf_qty
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN

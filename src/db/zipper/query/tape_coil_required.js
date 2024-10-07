@@ -8,7 +8,9 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { tape_coil_required } from '../schema.js';
+
 const endTypeProperties = alias(publicSchema.properties, 'endTypeProperties');
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
 const nylonStopperProperties = alias(
@@ -93,8 +95,8 @@ export async function selectAll(req, res, next) {
 			nylon_stopper_name: nylonStopperProperties.name,
 			zipper_number_uuid: tape_coil_required.zipper_number_uuid,
 			zipper_number_name: zipperNumberProperties.name,
-			top: tape_coil_required.top,
-			bottom: tape_coil_required.bottom,
+			top: decimalToNumber(tape_coil_required.top),
+			bottom: decimalToNumber(tape_coil_required.bottom),
 			created_by: tape_coil_required.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_coil_required.created_at,
@@ -128,7 +130,6 @@ export async function selectAll(req, res, next) {
 				zipperNumberProperties.uuid
 			)
 		)
-
 		.orderBy(desc(tape_coil_required.created_at));
 
 	const toast = {
@@ -152,8 +153,8 @@ export async function select(req, res, next) {
 			nylon_stopper_name: nylonStopperProperties.name,
 			zipper_number_uuid: tape_coil_required.zipper_number_uuid,
 			zipper_number_name: zipperNumberProperties.name,
-			top: tape_coil_required.top,
-			bottom: tape_coil_required.bottom,
+			top: decimalToNumber(tape_coil_required.top),
+			bottom: decimalToNumber(tape_coil_required.bottom),
 			created_by: tape_coil_required.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_coil_required.created_at,

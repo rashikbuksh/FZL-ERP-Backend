@@ -7,10 +7,9 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
-import * as publicSchema from '../../public/schema.js';
-
 import db from '../../index.js';
-
+import * as publicSchema from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import zipper, {
 	dyed_tape_transaction_from_stock,
 	tape_coil,
@@ -122,12 +121,12 @@ export async function selectAll(req, res, next) {
 			SELECT 
 				dyed_tape_transaction_from_stock.uuid,
 				dyed_tape_transaction_from_stock.order_description_uuid,
-				dyed_tape_transaction_from_stock.trx_quantity,
+				dyed_tape_transaction_from_stock.trx_quantity::float8,
 				dyed_tape_transaction_from_stock.tape_coil_uuid,
 				vodf.order_number,
 				vodf.item_description,
 				tape_coil.name AS tape_coil_name,
-				tape_coil.stock_quantity,
+				tape_coil.stock_quantity::float8,
 				tape_coil.item_uuid,
 				item_properties.name AS item_name,
 				tape_coil.zipper_number_uuid,
@@ -183,10 +182,10 @@ export async function select(req, res, next) {
 			SELECT 
 				dyed_tape_transaction_from_stock.uuid,
 				dyed_tape_transaction_from_stock.order_description_uuid,
-				dyed_tape_transaction_from_stock.trx_quantity,
+				dyed_tape_transaction_from_stock.trx_quantity::float8,
 				dyed_tape_transaction_from_stock.tape_coil_uuid,
 				tape_coil.name AS tape_coil_name,
-				tape_coil.stock_quantity,
+				tape_coil.stock_quantity::float8,
 				tape_coil.item_uuid,
 				item_properties.name AS item_name,
 				tape_coil.zipper_number_uuid,
