@@ -292,7 +292,7 @@ export async function selectThreadSwatch(req, res, next) {
 			labDipSchema.recipe,
 			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		)
-		.orderBy(desc(order_info.created_at));
+		.orderBy(desc(order_entry.created_at));
 
 	const toast = {
 		status: 200,
