@@ -82,10 +82,16 @@ export async function selectAll(req, res, next) {
 			batch_uuid: batch_entry.batch_uuid,
 			order_entry_uuid: batch_entry.order_entry_uuid,
 			quantity: decimalToNumber(batch_entry.quantity),
-			coning_production_quantity: decimalToNumber(batch_entry.coning_production_quantity),
-			coning_carton_quantity: decimalToNumber(batch_entry.coning_carton_quantity),
+			coning_production_quantity: decimalToNumber(
+				batch_entry.coning_production_quantity
+			),
+			coning_carton_quantity: decimalToNumber(
+				batch_entry.coning_carton_quantity
+			),
 			transfer_quantity: decimalToNumber(batch_entry.transfer_quantity),
-			transfer_carton_quantity: decimalToNumber(batch_entry.transfer_carton_quantity),
+			transfer_carton_quantity: decimalToNumber(
+				batch_entry.transfer_carton_quantity
+			),
 			created_at: batch_entry.created_at,
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
@@ -304,7 +310,8 @@ export async function getBatchEntryDetails(req, res, next) {
 		(be.quantity - be.transfer_quantity)::float8 as balance_quantity,
 		be.created_at,
 		be.updated_at,
-		be.remarks as batch_remarks
+		be.remarks as batch_remarks,
+		b.is_drying_complete
 	FROM
 		thread.batch_entry be
 	LEFT JOIN 
@@ -317,7 +324,7 @@ export async function getBatchEntryDetails(req, res, next) {
 		thread.batch ON be.batch_uuid = batch.uuid
 )
 	SELECT * FROM calculated_balance
-WHERE balance_quantity > 0
+WHERE balance_quantity > 0 AND is_drying_complete = 1
 ORDER BY created_at DESC
 ;
 	`;
