@@ -698,7 +698,8 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 			tape_coil_required.top, 
 			tape_coil_required.bottom,
 			tape_coil.raw_per_kg_meter,
-			tape_coil.dyed_per_kg_meter
+			tape_coil.dyed_per_kg_meter,
+			pi_cash_grouped.pi_numbers
 		FROM 
 			zipper.v_order_details_full 
 		LEFT JOIN 
@@ -712,9 +713,18 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 				OR v_order_details_full.nylon_stopper = tape_coil_required.nylon_stopper_uuid
 			)
 		LEFT JOIN
-			zipper.tape_coil
-		ON
-			v_order_details_full.tape_coil_uuid = tape_coil.uuid
+			zipper.tape_coil ON v_order_details_full.tape_coil_uuid = tape_coil.uuid
+		LEFT JOIN (
+			SELECT vodf.order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers
+			FROM
+				zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+				LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
+				LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+			WHERE pi_cash.id IS NOT NULL
+			GROUP BY vodf.order_info_uuid
+		) pi_cash_grouped ON v_order_details_full.order_info_uuid = pi_cash_grouped.order_info_uuid
 		WHERE 
 			v_order_details_full.order_description_uuid = ${order_description_uuid}`;
 
