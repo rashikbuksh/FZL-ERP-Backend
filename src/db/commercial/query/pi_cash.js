@@ -257,8 +257,8 @@ export async function select(req, res, next) {
 				pi_cash.updated_at,
 				pi_cash.remarks,
 				pi_cash.is_pi,
-				pi_cash.conversion_rate,
-				pi_cash.weight,
+				pi_cash.conversion_rate::float8,
+				pi_cash.weight::float8,
 				pi_cash.receive_amount
 			FROM 
 				commercial.pi_cash
