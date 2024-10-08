@@ -210,8 +210,8 @@ export async function selectPackingListDetailsByPackingListUuid(
 					concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 					oe.quantity::float8 as order_quantity,
 					sfg.uuid as sfg_uuid,
-					sfg.warehouse as warehouse,
-					sfg.delivered as delivered,
+					sfg.warehouse::float8 as warehouse,
+					sfg.delivered::float8 as delivered,
 					(oe.quantity - sfg.delivered)::float8  as balance_quantity,
 					false as is_checked
 				FROM
@@ -268,8 +268,8 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			oe.quantity::float8  as order_quantity,
 			sfg.uuid as sfg_uuid,
-			sfg.warehouse as warehouse,
-			sfg.delivered as delivered,
+			sfg.warehouse::float8 as warehouse,
+			sfg.delivered::float8 as delivered,
 			(oe.quantity - sfg.delivered)::float8  as balance_quantity,
 		FROM
 			zipper.v_order_details_full vodf

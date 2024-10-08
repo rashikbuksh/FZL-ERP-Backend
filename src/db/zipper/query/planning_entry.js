@@ -263,10 +263,10 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			(
 				SELECT 
 					sfg.uuid as sfg_uuid,
-					SUM(pe.sno_quantity) as given_sno_quantity, 
-					SUM(pe.factory_quantity) as given_factory_quantity,
-					SUM(pe.production_quantity) as given_production_quantity,
-					SUM(pe.batch_production_quantity) as given_batch_production_quantity
+					SUM(pe.sno_quantity)::float8 as given_sno_quantity, 
+					SUM(pe.factory_quantity)::float8 as given_factory_quantity,
+					SUM(pe.production_quantity)::float8 as given_production_quantity,
+					SUM(pe.batch_production_quantity)::float8 as given_batch_production_quantity
 				FROM 
 					zipper.planning_entry pe
 				LEFT JOIN 
@@ -282,13 +282,13 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			oe.style, 
 			oe.color, 
 			oe.size, 
-			oe.quantity, 
+			oe.quantity::float8, 
 			vod.order_number, 
 			vod.item_description,
-			pe_given.given_sno_quantity,
-			pe_given.given_factory_quantity,
-			pe_given.given_production_quantity,
-			pe_given.given_batch_production_quantity
+			pe_given.given_sno_quantity::float8,
+			pe_given.given_factory_quantity::float8,
+			pe_given.given_production_quantity::float8,
+			pe_given.given_batch_production_quantity::float8
 	`;
 
 	//  AND oe.swatch_status_enum = 'approved' // removed because of development purpose
@@ -341,10 +341,10 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			(
 				SELECT 
 					sfg.uuid as sfg_uuid,
-					SUM(pe.sno_quantity) as given_sno_quantity, 
-					SUM(pe.factory_quantity) as given_factory_quantity,
-					SUM(pe.production_quantity) as given_production_quantity,
-					SUM(pe.batch_production_quantity) as given_batch_production_quantity
+					SUM(pe.sno_quantity)::float8 as given_sno_quantity, 
+					SUM(pe.factory_quantity)::float8 as given_factory_quantity,
+					SUM(pe.production_quantity)::float8 as given_production_quantity,
+					SUM(pe.batch_production_quantity)::float8 as given_batch_production_quantity
 				FROM 
 					zipper.planning_entry pe
 				LEFT JOIN 
@@ -359,13 +359,13 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			oe.style, 
 			oe.color, 
 			oe.size, 
-			oe.quantity, 
+			oe.quantity::float8, 
 			vod.order_number, 
 			vod.item_description,
-			pe_given.given_sno_quantity,
-			pe_given.given_factory_quantity,
-			pe_given.given_production_quantity,
-			pe_given.given_batch_production_quantity
+			pe_given.given_sno_quantity::float8,
+			pe_given.given_factory_quantity::float8,
+			pe_given.given_production_quantity::float8,
+			pe_given.given_batch_production_quantity::float8
 	`;
 
 	const orderDetailsPromise = db.execute(query);

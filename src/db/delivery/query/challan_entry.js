@@ -271,8 +271,8 @@ export async function selectPackingListForChallan(req, res, next) {
 			vodf.order_description_uuid,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			oe.quantity::float8 as order_quantity,
-			sfg.warehouse as warehouse,
-			sfg.delivered as delivered,
+			sfg.warehouse::float8 as warehouse,
+			sfg.delivered::float8 as delivered,
 			(oe.quantity - sfg.warehouse)::float8 as balance_quantity
 		FROM 
 			delivery.packing_list pl 

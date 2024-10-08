@@ -695,10 +695,10 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 	const query = sql`
 		SELECT 
 			v_order_details_full.*, 
-			tape_coil_required.top, 
-			tape_coil_required.bottom,
-			tape_coil.raw_per_kg_meter,
-			tape_coil.dyed_per_kg_meter,
+			tape_coil_required.top::float8, 
+			tape_coil_required.bottom::float8,
+			tape_coil.raw_per_kg_meter::float8,
+			tape_coil.dyed_per_kg_meter::float8,
 			pi_cash_grouped.pi_numbers
 		FROM 
 			zipper.v_order_details_full 
