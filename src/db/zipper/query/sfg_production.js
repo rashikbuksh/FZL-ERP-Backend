@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { sfg_production } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -123,9 +124,13 @@ export async function selectAll(req, res, next) {
 			uuid: sfg_production.uuid,
 			sfg_uuid: sfg_production.sfg_uuid,
 			section: sfg_production.section,
-			production_quantity_in_kg: sfg_production.production_quantity_in_kg,
-			production_quantity: sfg_production.production_quantity,
-			wastage: sfg_production.wastage,
+			production_quantity_in_kg: decimalToNumber(
+				sfg_production.production_quantity_in_kg
+			),
+			production_quantity: decimalToNumber(
+				sfg_production.production_quantity
+			),
+			wastage: decimalToNumber(sfg_production.wastage),
 			created_by: sfg_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: sfg_production.created_at,
@@ -160,9 +165,13 @@ export async function select(req, res, next) {
 			uuid: sfg_production.uuid,
 			sfg_uuid: sfg_production.sfg_uuid,
 			section: sfg_production.section,
-			production_quantity_in_kg: sfg_production.production_quantity_in_kg,
-			production_quantity: sfg_production.production_quantity,
-			wastage: sfg_production.wastage,
+			production_quantity_in_kg: decimalToNumber(
+				sfg_production.production_quantity_in_kg
+			),
+			production_quantity: decimalToNumber(
+				sfg_production.production_quantity
+			),
+			wastage: decimalToNumber(sfg_production.wastage),
 			created_by: sfg_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: sfg_production.created_at,
@@ -205,11 +214,11 @@ export async function selectBySection(req, res, next) {
 			vodf.order_number,
 			vodf.item_description,
 			concat(oe.style, '-', oe.color, '-', oe.size) AS style_color_size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			sfg_production.section,
-			COALESCE(sfg_production.production_quantity_in_kg,0) as production_quantity_in_kg,
-			COALESCE(sfg_production.production_quantity,0) as production_quantity,
-			COALESCE(sfg_production.wastage,0) as wastage,
+			COALESCE(sfg_production.production_quantity_in_kg,0)::float8 as production_quantity_in_kg,
+			COALESCE(sfg_production.production_quantity,0)::float8 as production_quantity,
+			COALESCE(sfg_production.wastage,0)::float8 as wastage,
 			sfg_production.created_by,
 			users.name AS created_by_name,
 			sfg_production.created_at,
@@ -217,23 +226,23 @@ export async function selectBySection(req, res, next) {
 			sfg_production.remarks,
 			CASE WHEN sfg.finishing_prod != 0 
 			THEN (oe.quantity - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0)) 
-			ELSE (oe.quantity - COALESCE(sfg.warehouse, 0)) END as balance_quantity,
-			COALESCE(sfg.dying_and_iron_prod,0) as dying_and_iron_prod,
-			COALESCE(sfg.teeth_molding_stock,0) as teeth_molding_stock,
-			COALESCE(sfg.teeth_molding_prod,0) as teeth_molding_prod,
-			COALESCE(sfg.teeth_coloring_stock,0) as teeth_coloring_stock,
-			COALESCE(sfg.teeth_coloring_prod,0) as teeth_coloring_prod,
-			COALESCE(sfg.finishing_stock,0) as finishing_stock,
-			COALESCE(sfg.finishing_prod,0) as finishing_prod,
-			COALESCE(sfg.coloring_prod,0) as coloring_prod,
-			COALESCE(sfg.warehouse,0) as warehouse,
-			COALESCE(sfg.delivered,0) as delivered,
-			COALESCE(sfg.pi,0) as pi,
-			COALESCE(sfg.short_quantity,0) as short_quantity,
-			COALESCE(sfg.reject_quantity,0) as reject_quantity,
-			COALESCE(vodf.tape_received,0) as tape_received,
-			COALESCE(vodf.tape_transferred,0) as tape_transferred,
-			COALESCE(vodf.slider_finishing_stock,0) as slider_finishing_stock
+			ELSE (oe.quantity - COALESCE(sfg.warehouse, 0))::float8 END as balance_quantity,
+			COALESCE(sfg.dying_and_iron_prod,0)::float8 as dying_and_iron_prod,
+			COALESCE(sfg.teeth_molding_stock,0)::float8 as teeth_molding_stock,
+			COALESCE(sfg.teeth_molding_prod,0)::float8 as teeth_molding_prod,
+			COALESCE(sfg.teeth_coloring_stock,0)::float8 as teeth_coloring_stock,
+			COALESCE(sfg.teeth_coloring_prod,0)::float8 as teeth_coloring_prod,
+			COALESCE(sfg.finishing_stock,0)::float8 as finishing_stock,
+			COALESCE(sfg.finishing_prod,0)::float8 as finishing_prod,
+			COALESCE(sfg.coloring_prod,0)::float8 as coloring_prod,
+			COALESCE(sfg.warehouse,0)::float8 as warehouse,
+			COALESCE(sfg.delivered,0)::float8 as delivered,
+			COALESCE(sfg.pi,0)::float8 as pi,
+			COALESCE(sfg.short_quantity,0)::float8 as short_quantity,
+			COALESCE(sfg.reject_quantity,0)::float8 as reject_quantity,
+			COALESCE(vodf.tape_received,0)::float8 as tape_received,
+			COALESCE(vodf.tape_transferred,0)::float8 as tape_transferred,
+			COALESCE(vodf.slider_finishing_stock,0)::float8 as slider_finishing_stock
 		FROM
 			zipper.sfg_production
 		LEFT JOIN

@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { order_entry, sfg, sfg_transaction } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -119,11 +120,13 @@ export async function selectAll(req, res, next) {
 			uuid: sfg_transaction.uuid,
 			sfg_uuid: sfg_transaction.sfg_uuid,
 			order_description_uuid: order_entry.order_description_uuid,
-			order_quantity: order_entry.quantity,
+			order_quantity: decimalToNumber(order_entry.quantity),
 			trx_from: sfg_transaction.trx_from,
 			trx_to: sfg_transaction.trx_to,
-			trx_quantity: sfg_transaction.trx_quantity,
-			trx_quantity_in_kg: sfg_transaction.trx_quantity_in_kg,
+			trx_quantity: decimalToNumber(sfg_transaction.trx_quantity),
+			trx_quantity_in_kg: decimalToNumber(
+				sfg_transaction.trx_quantity_in_kg
+			),
 			slider_item_uuid: sfg_transaction.slider_item_uuid,
 			created_by: sfg_transaction.created_by,
 			created_by_name: hrSchema.users.name,
@@ -160,11 +163,13 @@ export async function select(req, res, next) {
 			uuid: sfg_transaction.uuid,
 			sfg_uuid: sfg_transaction.sfg_uuid,
 			order_description_uuid: order_entry.order_description_uuid,
-			order_quantity: order_entry.quantity,
+			order_quantity: decimalToNumber(order_entry.quantity),
 			trx_from: sfg_transaction.trx_from,
 			trx_to: sfg_transaction.trx_to,
-			trx_quantity: sfg_transaction.trx_quantity,
-			trx_quantity_in_kg: sfg_transaction.trx_quantity_in_kg,
+			trx_quantity: decimalToNumber(sfg_transaction.trx_quantity),
+			trx_quantity_in_kg: decimalToNumber(
+				sfg_transaction.trx_quantity_in_kg
+			),
 			slider_item_uuid: sfg_transaction.slider_item_uuid,
 			created_by: sfg_transaction.created_by,
 			created_by_name: hrSchema.users.name,
@@ -210,29 +215,29 @@ export async function selectByTrxFrom(req, res, next) {
 			vodf.order_number, 
 			vodf.item_description, 
 			concat(oe.style, '-', oe.color, '-', oe.size) AS style_color_size, 
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			sfg_transaction.trx_from,
 			sfg_transaction.trx_to,
-			coalesce(sfg_transaction.trx_quantity_in_kg::numeric,0) as trx_quantity_in_kg,
-			coalesce(sfg_transaction.trx_quantity::numeric,0) as trx_quantity,
+			coalesce(sfg_transaction.trx_quantity_in_kg::numeric,0)::float8 as trx_quantity_in_kg,
+			coalesce(sfg_transaction.trx_quantity::numeric,0)::float8 as trx_quantity,
 			sfg_transaction.created_by,
 			users.name AS created_by_name,
 			sfg_transaction.created_at,
 			sfg_transaction.updated_at,
 			sfg_transaction.remarks,
-			coalesce(sfg.dying_and_iron_prod::numeric,0) as dying_and_iron_prod,
-			coalesce(sfg.teeth_molding_stock::numeric,0) as teeth_molding_stock,
-			coalesce(sfg.teeth_molding_prod::numeric,0) as teeth_molding_prod,
-			coalesce(sfg.teeth_coloring_stock::numeric,0) as teeth_coloring_stock,
-			coalesce(sfg.teeth_coloring_prod::numeric,0) as teeth_coloring_prod,
-			coalesce(sfg.finishing_stock::numeric,0) as finishing_stock,
-			coalesce(sfg.finishing_prod::numeric,0) as finishing_prod,
-			coalesce(sfg.coloring_prod::numeric,0) as coloring_prod,
-			coalesce(sfg.warehouse::numeric,0) as warehouse,
-			coalesce(sfg.delivered::numeric,0) as delivered,
-			coalesce(sfg.pi::numeric,0) as pi,
-			coalesce(sfg.short_quantity,0) as short_quantity,
-			coalesce(sfg.reject_quantity,0) as reject_quantity
+			coalesce(sfg.dying_and_iron_prod::numeric,0)::float8 as dying_and_iron_prod,
+			coalesce(sfg.teeth_molding_stock::numeric,0)::float8 as teeth_molding_stock,
+			coalesce(sfg.teeth_molding_prod::numeric,0)::float8 as teeth_molding_prod,
+			coalesce(sfg.teeth_coloring_stock::numeric,0)::float8 as teeth_coloring_stock,
+			coalesce(sfg.teeth_coloring_prod::numeric,0)::float8 as teeth_coloring_prod,
+			coalesce(sfg.finishing_stock::numeric,0)::float8 as finishing_stock,
+			coalesce(sfg.finishing_prod::numeric,0)::float8 as finishing_prod,
+			coalesce(sfg.coloring_prod::numeric,0)::float8 as coloring_prod,
+			coalesce(sfg.warehouse::numeric,0)::float8 as warehouse,
+			coalesce(sfg.delivered::numeric,0)::float8 as delivered,
+			coalesce(sfg.pi::numeric,0)::float8 as pi,
+			coalesce(sfg.short_quantity,0)::float8 as short_quantity,
+			coalesce(sfg.reject_quantity,0)::float8 as reject_quantity
 		FROM
 			zipper.sfg_transaction
 		LEFT JOIN

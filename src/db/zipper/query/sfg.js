@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { order_entry, sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -77,22 +78,22 @@ export async function selectAll(req, res, next) {
 			uuid: sfg.uuid,
 			order_entry_uuid: sfg.order_entry_uuid,
 			order_description_uuid: order_entry.order_description_uuid,
-			order_quantity: order_entry.quantity,
+			order_quantity: decimalToNumber(order_entry.quantity),
 			recipe_uuid: sfg.recipe_uuid,
 			recipe_name: labDipSchema.recipe.name,
-			dying_and_iron_prod: sfg.dying_and_iron_prod,
-			teeth_molding_stock: sfg.teeth_molding_stock,
-			teeth_molding_prod: sfg.teeth_molding_prod,
-			teeth_coloring_stock: sfg.teeth_coloring_stock,
-			teeth_coloring_prod: sfg.teeth_coloring_prod,
-			finishing_stock: sfg.finishing_stock,
-			finishing_prod: sfg.finishing_prod,
-			coloring_prod: sfg.coloring_prod,
-			warehouse: sfg.warehouse,
-			delivered: sfg.delivered,
-			pi: sfg.pi,
-			short_quantity: sfg.short_quantity,
-			reject_quantity: sfg.reject_quantity,
+			dying_and_iron_prod: decimalToNumber(sfg.dying_and_iron_prod),
+			teeth_molding_stock: decimalToNumber(sfg.teeth_molding_stock),
+			teeth_molding_prod: decimalToNumber(sfg.teeth_molding_prod),
+			teeth_coloring_stock: decimalToNumber(sfg.teeth_coloring_stock),
+			teeth_coloring_prod: decimalToNumber(sfg.teeth_coloring_prod),
+			finishing_stock: decimalToNumber(sfg.finishing_stock),
+			finishing_prod: decimalToNumber(sfg.finishing_prod),
+			coloring_prod: decimalToNumber(sfg.coloring_prod),
+			warehouse: decimalToNumber(sfg.warehouse),
+			delivered: decimalToNumber(sfg.delivered),
+			pi: decimalToNumber(sfg.pi),
+			short_quantity: decimalToNumber(sfg.short_quantity),
+			reject_quantity: decimalToNumber(sfg.reject_quantity),
 			remarks: sfg.remarks,
 		})
 		.from(sfg)
@@ -120,22 +121,22 @@ export async function select(req, res, next) {
 			uuid: sfg.uuid,
 			order_entry_uuid: sfg.order_entry_uuid,
 			order_description_uuid: order_entry.order_description_uuid,
-			order_quantity: order_entry.quantity,
+			order_quantity: decimalToNumber(order_entry.quantity),
 			recipe_uuid: sfg.recipe_uuid,
 			recipe_name: labDipSchema.recipe.name,
-			dying_and_iron_prod: sfg.dying_and_iron_prod,
-			teeth_molding_stock: sfg.teeth_molding_stock,
-			teeth_molding_prod: sfg.teeth_molding_prod,
-			teeth_coloring_stock: sfg.teeth_coloring_stock,
-			teeth_coloring_prod: sfg.teeth_coloring_prod,
-			finishing_stock: sfg.finishing_stock,
-			finishing_prod: sfg.finishing_prod,
-			coloring_prod: sfg.coloring_prod,
-			warehouse: sfg.warehouse,
-			delivered: sfg.delivered,
-			pi: sfg.pi,
-			short_quantity: sfg.short_quantity,
-			reject_quantity: sfg.reject_quantity,
+			dying_and_iron_prod: decimalToNumber(sfg.dying_and_iron_prod),
+			teeth_molding_stock: decimalToNumber(sfg.teeth_molding_stock),
+			teeth_molding_prod: decimalToNumber(sfg.teeth_molding_prod),
+			teeth_coloring_stock: decimalToNumber(sfg.teeth_coloring_stock),
+			teeth_coloring_prod: decimalToNumber(sfg.teeth_coloring_prod),
+			finishing_stock: decimalToNumber(sfg.finishing_stock),
+			finishing_prod: decimalToNumber(sfg.finishing_prod),
+			coloring_prod: decimalToNumber(sfg.coloring_prod),
+			warehouse: decimalToNumber(sfg.warehouse),
+			delivered: decimalToNumber(sfg.delivered),
+			pi: decimalToNumber(sfg.pi),
+			short_quantity: decimalToNumber(sfg.short_quantity),
+			reject_quantity: decimalToNumber(sfg.reject_quantity),
 			remarks: sfg.remarks,
 		})
 		.from(sfg)
@@ -171,7 +172,7 @@ export async function selectSwatchInfo(req, res, next) {
 					oe.color as color,
 					oe.size as size,
 					oe.bleaching,
-					oe.quantity as quantity,
+					oe.quantity::float8 as quantity,
 					sfg.recipe_uuid as recipe_uuid,
 					recipe.name as recipe_name,
 					sfg.remarks as remarks,
@@ -255,7 +256,7 @@ export async function selectSfgBySection(req, res, next) {
 			oe.color as color,
 			oe.size as size,
 			concat(oe.style, '/', oe.color, '/', oe.size) as style_color_size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			sfg.recipe_uuid as recipe_uuid,
 			recipe.name as recipe_name,
 			od.item,
@@ -264,23 +265,23 @@ export async function selectSfgBySection(req, res, next) {
 			od.coloring_type,
 			op_coloring_type.name as coloring_type_name,
 			op_coloring_type.short_name as coloring_type_short_name,
-			od.slider_finishing_stock,
-			sfg.dying_and_iron_prod as dying_and_iron_prod,
-			sfg.teeth_molding_stock as teeth_molding_stock,
-			sfg.teeth_molding_prod as teeth_molding_prod,
-			sfg.teeth_coloring_stock as teeth_coloring_stock,
-			sfg.teeth_coloring_prod as teeth_coloring_prod,
-			sfg.finishing_stock as finishing_stock,
-			sfg.finishing_prod as finishing_prod,
-			sfg.warehouse as warehouse,
-			sfg.delivered as delivered,
-			sfg.pi as pi,
-			sfg.short_quantity,
-			sfg.reject_quantity,
+			od.slider_finishing_stock::float8,
+			sfg.dying_and_iron_prod::float8 as dying_and_iron_prod,
+			sfg.teeth_molding_stock::float8 as teeth_molding_stock,
+			sfg.teeth_molding_prod::float8 as teeth_molding_prod,
+			sfg.teeth_coloring_stock::float8 as teeth_coloring_stock,
+			sfg.teeth_coloring_prod::float8 as teeth_coloring_prod,
+			sfg.finishing_stock::float8 as finishing_stock,
+			sfg.finishing_prod::float8 as finishing_prod,
+			sfg.warehouse::float8 as warehouse,
+			sfg.delivered::float8 as delivered,
+			sfg.pi::float8 as pi,
+			sfg.short_quantity::float8,
+			sfg.reject_quantity::float8,
 			sfg.remarks as remarks,
 			CASE WHEN sfg.finishing_prod != 0 
-			THEN (oe.quantity - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0)) 
-			ELSE (oe.quantity - COALESCE(sfg.warehouse, 0)) END as balance_quantity,
+			THEN (oe.quantity - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0))::float8 
+			ELSE (oe.quantity - COALESCE(sfg.warehouse, 0))::float8 END as balance_quantity,
 			COALESCE((
 				SELECT 
 					CASE 
@@ -289,11 +290,11 @@ export async function selectSfgBySection(req, res, next) {
 					END
 				FROM zipper.sfg_transaction sfgt
 				WHERE sfgt.sfg_uuid = sfg.uuid AND sfgt.trx_from = ${section}
-			), 0) as total_trx_quantity,
-			COALESCE(ss.coloring_prod,0) as coloring_prod,
-			COALESCE(od.tape_received,0) as tape_received,
-			COALESCE(od.tape_transferred,0) as tape_transferred,
-			COALESCE(od.slider_finishing_stock,0) as slider_finishing_stock
+			), 0)::float8 as total_trx_quantity,
+			COALESCE(ss.coloring_prod,0)::float8 as coloring_prod,
+			COALESCE(od.tape_received,0)::float8 as tape_received,
+			COALESCE(od.tape_transferred,0)::float8 as tape_transferred,
+			COALESCE(od.slider_finishing_stock,0)::float8 as slider_finishing_stock
 		FROM
 			zipper.sfg sfg
 			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid

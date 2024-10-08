@@ -211,9 +211,9 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			style: order_entry.style,
 			color: order_entry.color,
 			size: order_entry.size,
-			quantity: order_entry.quantity,
-			company_price: order_entry.company_price,
-			party_price: order_entry.party_price,
+			quantity: decimalToNumber(order_entry.quantity),
+			company_price: decimalToNumber(order_entry.company_price),
+			party_price: decimalToNumber(order_entry.party_price),
 			order_entry_status: order_entry.status,
 			swatch_status: order_entry.swatch_status,
 			swatch_approval_date: order_entry.swatch_approval_date,
@@ -269,7 +269,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 		)
 		.where(eq(order_description.uuid, order_description_uuid))
 		.groupBy(order_entry.uuid, sfg.uuid)
-		.orderBy(asc(order_entry.size));
+		.orderBy(asc(order_entry.created_at));
 
 	const toast = {
 		status: 200,

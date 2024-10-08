@@ -5,6 +5,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { batch_entry, sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -81,9 +82,13 @@ export async function selectAll(req, res, next) {
 			uuid: batch_entry.uuid,
 			batch_uuid: batch_entry.batch_uuid,
 			sfg_uuid: batch_entry.sfg_uuid,
-			quantity: batch_entry.quantity,
-			production_quantity: batch_entry.production_quantity,
-			production_quantity_in_kg: batch_entry.production_quantity_in_kg,
+			quantity: decimalToNumber(batch_entry.quantity),
+			production_quantity: decimalToNumber(
+				batch_entry.production_quantity
+			),
+			production_quantity_in_kg: decimalToNumber(
+				batch_entry.production_quantity_in_kg
+			),
 			created_at: batch_entry.created_at,
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
@@ -114,9 +119,13 @@ export async function select(req, res, next) {
 			uuid: batch_entry.uuid,
 			batch_uuid: batch_entry.batch_uuid,
 			sfg_uuid: batch_entry.sfg_uuid,
-			quantity: batch_entry.quantity,
-			production_quantity: batch_entry.production_quantity,
-			production_quantity_in_kg: batch_entry.production_quantity_in_kg,
+			quantity: decimalToNumber(batch_entry.quantity),
+			production_quantity: decimalToNumber(
+				batch_entry.production_quantity
+			),
+			production_quantity_in_kg: decimalToNumber(
+				batch_entry.production_quantity_in_kg
+			),
 			created_at: batch_entry.created_at,
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
@@ -160,16 +169,16 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			vodf.order_number,
 			vodf.item_description,
-			bp_given.given_production_quantity,
-			bp_given.given_production_quantity_in_kg,
-			COALESCE(be.quantity,0) - COALESCE(bp_given.given_production_quantity,0) as balance_quantity,
-			tcr.top,
-			tcr.bottom,
-			tc.raw_per_kg_meter as raw_mtr_per_kg,
-			tc.dyed_per_kg_meter as dyed_mtr_per_kg
+			bp_given.given_production_quantity::float8,
+			bp_given.given_production_quantity_in_kg::float8,
+			COALESCE(be.quantity::float8,0) - COALESCE(bp_given.given_production_quantity::float8,0) as balance_quantity,
+			tcr.top::float8,
+			tcr.bottom::float8,
+			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
+			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
 		FROM
 			zipper.batch_entry be
 		LEFT JOIN
@@ -192,8 +201,8 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 				SELECT
 					batch_entry.uuid as batch_entry_uuid,
 					bp.uuid as batch_production_uuid,
-					SUM(bp.production_quantity) AS given_production_quantity,
-					SUM(bp.production_quantity_in_kg) AS given_production_quantity_in_kg
+					SUM(bp.production_quantity::float8) AS given_production_quantity,
+					SUM(bp.production_quantity_in_kg::float8) AS given_production_quantity_in_kg
 				FROM
 					zipper.batch_production bp
 				LEFT JOIN 
@@ -231,18 +240,18 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size,
-			oe.quantity as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
-			be_given.given_quantity,
-			be_given.given_production_quantity,
-			be_given.given_production_quantity_in_kg,
-			coalesce(coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0),0)  as balance_quantity,
-			tcr.top,
-			tcr.bottom,
-			tc.raw_per_kg_meter as raw_mtr_per_kg,
-			tc.dyed_per_kg_meter as dyed_mtr_per_kg
+			be_given.given_quantity::float8,
+			be_given.given_production_quantity::float8,
+			be_given.given_production_quantity_in_kg::float8,
+			coalesce(coalesce(oe.quantity::float8,0) - coalesce(be_given.given_quantity::float8,0),0)  as balance_quantity,
+			tcr.top::float8,
+			tcr.bottom::float8,
+			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
+			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
 		FROM
 			zipper.sfg sfg
 		LEFT JOIN 
@@ -263,9 +272,9 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			(
 				SELECT
 					sfg.uuid as sfg_uuid,
-					SUM(be.quantity) AS given_quantity,
-					SUM(be.production_quantity) AS given_production_quantity,
-					SUM(be.production_quantity_in_kg) AS given_production_quantity_in_kg
+					SUM(be.quantity::float8) AS given_quantity,
+					SUM(be.production_quantity::float8) AS given_production_quantity,
+					SUM(be.production_quantity_in_kg::float8) AS given_production_quantity_in_kg
 				FROM
 					zipper.batch_entry be
 				LEFT JOIN 

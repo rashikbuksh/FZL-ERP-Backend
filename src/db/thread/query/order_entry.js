@@ -8,8 +8,8 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
-import { count_length, order_entry, order_info } from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
+import { count_length, order_entry, order_info } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -137,7 +137,7 @@ export async function selectAll(req, res, next) {
 			count_length,
 			eq(order_entry.count_length_uuid, count_length.uuid)
 		)
-		.orderBy(desc(order_entry.created_at));
+		.orderBy(asc(order_entry.created_at));
 
 	const toast = {
 		status: 200,
@@ -167,7 +167,9 @@ export async function select(req, res, next) {
 			company_price: decimalToNumber(order_entry.company_price),
 			party_price: decimalToNumber(order_entry.party_price),
 			swatch_approval_date: order_entry.swatch_approval_date,
-			production_quantity: decimalToNumber(order_entry.production_quantity),
+			production_quantity: decimalToNumber(
+				order_entry.production_quantity
+			),
 			bleaching: order_entry.bleaching,
 			transfer_quantity: decimalToNumber(order_entry.transfer_quantity),
 			carton_quantity: decimalToNumber(order_entry.carton_quantity),
@@ -227,11 +229,13 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			count: count_length.count,
 			length: count_length.length,
 			count_length_name: sql`concat(count_length.count, ' - ', count_length.length)`,
-			quantity:decimalToNumber(order_entry.quantity),
+			quantity: decimalToNumber(order_entry.quantity),
 			company_price: decimalToNumber(order_entry.company_price),
 			party_price: decimalToNumber(order_entry.party_price),
 			swatch_approval_date: order_entry.swatch_approval_date,
-			production_quantity: decimalToNumber(order_entry.production_quantity),
+			production_quantity: decimalToNumber(
+				order_entry.production_quantity
+			),
 			bleaching: order_entry.bleaching,
 			transfer_quantity: decimalToNumber(order_entry.transfer_quantity),
 			carton_quantity: decimalToNumber(order_entry.carton_quantity),

@@ -6,6 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import { batch_production } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -81,9 +82,9 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: batch_production.uuid,
 			batch_entry_uuid: batch_production.batch_entry_uuid,
-			production_quantity: batch_production.production_quantity,
+			production_quantity: decimalToNumber(batch_production.production_quantity),
 			production_quantity_in_kg:
-				batch_production.production_quantity_in_kg,
+				decimalToNumber(batch_production.production_quantity_in_kg),
 			created_by: batch_production.created_by,
 			created_name: hrSchema.users.name,
 			created_at: batch_production.created_at,
@@ -115,9 +116,9 @@ export async function select(req, res, next) {
 		.select({
 			uuid: batch_production.uuid,
 			batch_entry_uuid: batch_production.batch_entry_uuid,
-			production_quantity: batch_production.production_quantity,
+			production_quantity: decimalToNumber(batch_production.production_quantity),
 			production_quantity_in_kg:
-				batch_production.production_quantity_in_kg,
+				decimalToNumber(batch_production.production_quantity_in_kg),
 			created_by: batch_production.created_by,
 			created_name: hrSchema.users.name,
 			created_at: batch_production.created_at,

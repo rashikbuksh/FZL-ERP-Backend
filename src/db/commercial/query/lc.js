@@ -87,13 +87,13 @@ export async function selectAll(req, res, next) {
 			party.name AS party_name,
 			(	
 				SELECT 
-					SUM(coalesce(pi_cash.payment,0) * coalesce(order_entry.party_price,0))
+					SUM(coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(order_entry.party_price,0))::float8
 				FROM commercial.pi_cash 
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
 				WHERE pi_cash.lc_uuid = lc.uuid
-			) AS total_value,
+			)::float8 AS total_value,
 			concat(
 			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
 			) as file_number,
