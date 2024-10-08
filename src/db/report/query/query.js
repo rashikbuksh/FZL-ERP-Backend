@@ -512,6 +512,9 @@ export async function PiToBeRegisterThread(req, res, next) {
 
 export async function LCReport(req, res, next) {
 	const { document_receiving, acceptance, maturity, payment } = req.query;
+
+	console.log(document_receiving, acceptance, maturity, payment);
+
 	const query = sql`
             SELECT 
                 CONCAT('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) AS file_number,
@@ -520,7 +523,6 @@ export async function LCReport(req, res, next) {
                 lc.lc_date,
                 party.uuid as party_uuid,
                 party.name as party_name,
-                lc.payment_value::float8,
                 lc.created_at,
                 lc.updated_at,
                 lc.remarks,
@@ -539,7 +541,16 @@ export async function LCReport(req, res, next) {
                 marketing.name as marketing_name,
                 pi_cash.bank_uuid,
                 bank.name as bank_name,
-                lc.party_bank
+                lc.party_bank,
+                CASE WHEN is_old_pi = 0 THEN(	
+				SELECT 
+					SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12)
+				FROM commercial.pi_cash 
+					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+				WHERE pi_cash.lc_uuid = lc.uuid
+			) ELSE lc.lc_value::float8 END AS total_value
             FROM
                 commercial.lc
             LEFT JOIN
@@ -553,11 +564,24 @@ export async function LCReport(req, res, next) {
             LEFT JOIN
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             WHERE
-                    ${document_receiving ? sql`lc.document_receive_date IS NULL AND lc.handover_date IS NOT NULL` : sql`lc.document_receive_date IS NOT NULL AND lc.handover_date IS NOT NULL`}
-                AND ${document_receiving && acceptance ? sql`lc.acceptance_date IS NULL` : sql`lc.acceptance_date IS NOT NULL`}
-                AND ${document_receiving && acceptance && maturity ? sql`lc.maturity_date IS NULL` : sql`lc.maturity_date IS NOT NULL`}
-                AND ${document_receiving && acceptance && maturity && payment ? sql`lc.payment_date IS NULL` : sql`lc.payment_date IS NOT NULL`}
+                lc.handover_date IS NOT NULL
         `;
+
+	if (document_receiving) {
+		query.append(sql`AND lc.document_receive_date IS NULL`);
+	} else if (acceptance) {
+		query.append(
+			sql`AND lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NULL`
+		);
+	} else if (maturity) {
+		query.append(
+			sql`AND lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NULL`
+		);
+	} else if (payment) {
+		query.append(
+			sql`AND lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NOT NULL AND lc.payment_date IS NULL`
+		);
+	}
 
 	const resultPromise = db.execute(query);
 

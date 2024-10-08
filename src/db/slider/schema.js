@@ -142,9 +142,9 @@ export const assembly_stock = slider.table('assembly_stock', {
 	die_casting_cap_uuid: defaultUUID('die_casting_cap_uuid').references(
 		() => die_casting.uuid
 	),
-	die_casting_link_uuid: defaultUUID('die_casting_link_uuid').references(
-		() => die_casting.uuid
-	),
+	die_casting_link_uuid: defaultUUID('die_casting_link_uuid')
+		.references(() => die_casting.uuid)
+		.default(null),
 	quantity: PG_DECIMAL('quantity').default(0),
 	weight: PG_DECIMAL('weight').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

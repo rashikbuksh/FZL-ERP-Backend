@@ -256,10 +256,12 @@ export async function select(req, res, next) {
 				pi_cash.created_at,
 				pi_cash.updated_at,
 				pi_cash.remarks,
+
 				pi_cash.is_pi::float8,
 				pi_cash.conversion_rate::float8,
 				pi_cash.weight::float8,
 				pi_cash.receive_amount::float8
+
 			FROM 
 				commercial.pi_cash
 			LEFT JOIN 

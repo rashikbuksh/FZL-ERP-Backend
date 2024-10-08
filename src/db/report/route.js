@@ -145,7 +145,15 @@ export const pathReport = {
 			description: 'LCReport',
 			tags: ['report'],
 			operationId: 'LCReport',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('document_receiving', 'document_receiving', [
+					true,
+					false,
+				]),
+				SE.parameter_query('acceptance', 'acceptance', [true, false]),
+				SE.parameter_query('maturity', 'maturity', [true, false]),
+				SE.parameter_query('payment', 'payment', [true, false]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					file_number: SE.string('LC24-0001'),
