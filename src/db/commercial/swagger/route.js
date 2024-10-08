@@ -1,3 +1,4 @@
+import { is } from 'drizzle-orm';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Commercial Bank * //
@@ -123,6 +124,9 @@ export const pathCommercialLc = {
 					problematical: SE.integer(1),
 					epz: SE.integer(1),
 					is_rtgs: SE.integer(1),
+					is_old_pi: SE.integer(0),
+					pi_number: SE.string('123456'),
+					lc_value: SE.number(12.3456),
 					created_by: SE.uuid('igD0v9DIJQhJeet'),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -189,6 +193,9 @@ export const pathCommercialLc = {
 					problematical: SE.integer(1),
 					epz: SE.integer(1),
 					is_rtgs: SE.integer(1),
+					is_old_pi: SE.integer(0),
+					pi_number: SE.string('123456'),
+					lc_value: SE.number(12.3456),
 					created_by: SE.uuid('igD0v9DIJQhJeet'),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
@@ -276,6 +283,9 @@ export const pathCommercialLc = {
 					problematical: SE.integer(1),
 					epz: SE.integer(1),
 					is_rtgs: SE.integer(1),
+					is_old_pi: SE.integer(0),
+					pi_number: SE.string('123456'),
+					lc_value: SE.number(12.3456),
 					created_by: SE.uuid(),
 					created_by_name: SE.string('John Doe'),
 					created_at: SE.date_time(),
