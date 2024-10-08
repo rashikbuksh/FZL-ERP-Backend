@@ -509,3 +509,69 @@ export async function PiToBeRegisterThread(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function LCReport(req, res, next) {
+	const { document_receiving, acceptance, maturity, payment } = req.query;
+	const query = sql`
+            SELECT 
+                CONCAT('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) AS file_number,
+                lc.uuid,
+                lc.lc_number,
+                lc.lc_date,
+                party.uuid as party_uuid,
+                party.name as party_name,
+                lc.payment_value::float8,
+                lc.created_at,
+                lc.updated_at,
+                lc.remarks,
+                lc.commercial_executive,
+                lc.handover_date,
+                lc.document_receive_date,
+                lc.acceptance_date,
+                lc.maturity_date,
+                lc.payment_date,
+                lc.ldbc_fdbc,
+                lc.shipment_date,
+                lc.expiry_date,
+                lc.ud_no,
+                lc.ud_received,
+                pi_cash.marketing_uuid,
+                marketing.name as marketing_name,
+                pi_cash.bank_uuid,
+                bank.name as bank_name,
+                lc.party_bank
+            FROM
+                commercial.lc
+            LEFT JOIN
+                public.party ON lc.party_uuid = party.uuid
+            LEFT JOIN 
+                commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
+            LEFT JOIN 
+                public.marketing ON pi_cash.marketing_uuid = marketing.uuid
+            LEFT JOIN
+                hr.users ON lc.created_by = users.uuid
+            LEFT JOIN
+                commercial.bank ON pi_cash.bank_uuid = bank.uuid
+            WHERE
+                    ${document_receiving ? sql`lc.document_receive_date IS NULL AND lc.handover_date IS NOT NULL` : sql`lc.document_receive_date IS NOT NULL AND lc.handover_date IS NOT NULL`}
+                AND ${acceptance ? sql`lc.acceptance_date IS NULL` : sql`lc.acceptance_date IS NOT NULL`}
+                AND ${maturity ? sql`lc.maturity_date IS NULL` : sql`lc.maturity_date IS NOT NULL`}
+                AND ${payment ? sql`lc.payment_date IS NULL` : sql`lc.payment_date IS NOT NULL`}
+        `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'LC Report',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
+import { marketing } from '../public/schema.js';
 import * as reportOperations from './query/query.js';
 
 const reportRouter = Router();
@@ -25,6 +26,9 @@ reportRouter.get(
 	'/pi-to-be-register-report-thread',
 	reportOperations.PiToBeRegisterThread
 );
+
+// * LCReport
+reportRouter.get('/lc-report', reportOperations.LCReport);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -131,6 +135,45 @@ export const pathReport = {
 					total_balance_pi_value: SE.number(101555),
 					total_delivered: SE.number(0),
 					total_undelivered_balance_quantity: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/lc-report': {
+		get: {
+			summary: 'LCReport',
+			description: 'LCReport',
+			tags: ['report'],
+			operationId: 'LCReport',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					file_number: SE.string('LC24-0001'),
+					uuid: SE.uuid(),
+					lc_number: SE.number(610),
+					lc_date: SE.date_time(),
+					party_uuid: SE.uuid(),
+					party_name: SE.string('Party Name'),
+					payment_value: SE.number(101555),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+					commercial_executive: SE.string('Commercial Executive'),
+					handover_date: SE.date_time(),
+					document_receive_date: SE.date_time(),
+					acceptance_date: SE.date_time(),
+					maturity_date: SE.date_time(),
+					payment_date: SE.date_time(),
+					ldbc_fdbc: SE.string('LDBC/FDBC'),
+					shipment_date: SE.date_time(),
+					expiry_date: SE.date_time(),
+					ud_no: SE.string('UD No'),
+					ud_received: SE.string('UD Received'),
+					marketing_uuid: SE.uuid(),
+					marketing_name: SE.string('Marketing Name'),
+					bank_uuid: SE.uuid(),
+					bank_name: SE.string('Bank Name'),
+					party_bank: SE.string('Party Bank'),
 				}),
 			},
 		},
