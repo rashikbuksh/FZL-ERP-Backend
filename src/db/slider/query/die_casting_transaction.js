@@ -275,7 +275,7 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			slider_slider_link_properties.short_name as slider_link_short_name,
 			coalesce(stock.order_quantity, 0)::float8 as order_quantity,
 			coalesce(die_casting_transaction_given.quantity,0)::float8 as provided_quantity,
-			coalesce(stock.order_quantity, 0) - coalesce(die_casting_transaction_given.quantity, 0)::float8 as balance_quantity
+			coalesce(stock.order_quantity, 0)::float8 - coalesce(die_casting_transaction_given.quantity, 0)::float8 as balance_quantity
 		FROM
 			slider.stock stock
 		LEFT JOIN

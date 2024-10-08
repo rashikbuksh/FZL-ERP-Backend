@@ -285,8 +285,8 @@ export async function selectSfgBySection(req, res, next) {
 			COALESCE((
 				SELECT 
 					CASE 
-						WHEN SUM(trx_quantity) > 0 THEN SUM(trx_quantity)
-						ELSE SUM(trx_quantity_in_kg)
+						WHEN SUM(trx_quantity)::float8 > 0 THEN SUM(trx_quantity)::float8
+						ELSE SUM(trx_quantity_in_kg)::float8
 					END
 				FROM zipper.sfg_transaction sfgt
 				WHERE sfgt.sfg_uuid = sfg.uuid AND sfgt.trx_from = ${section}

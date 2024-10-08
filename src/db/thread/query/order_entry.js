@@ -118,11 +118,11 @@ export async function selectAll(req, res, next) {
 			created_at: order_entry.created_at,
 			updated_at: order_entry.updated_at,
 			remarks: order_entry.remarks,
-			pi: order_entry.pi,
-			delivered: order_entry.delivered,
-			warehouse: order_entry.warehouse,
-			short_quantity: order_entry.short_quantity,
-			reject_quantity: order_entry.reject_quantity,
+			pi: decimalToNumber(order_entry.pi),
+			delivered: decimalToNumber(order_entry.delivered),
+			warehouse: decimalToNumber(order_entry.warehouse),
+			short_quantity: decimalToNumber(order_entry.short_quantity),
+			reject_quantity: decimalToNumber(order_entry.reject_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -178,11 +178,11 @@ export async function select(req, res, next) {
 			created_at: order_entry.created_at,
 			updated_at: order_entry.updated_at,
 			remarks: order_entry.remarks,
-			pi: order_entry.pi,
-			delivered: order_entry.delivered,
-			warehouse: order_entry.warehouse,
-			short_quantity: order_entry.short_quantity,
-			reject_quantity: order_entry.reject_quantity,
+			pi: decimalToNumber(order_entry.pi),
+			delivered: decimalToNumber(order_entry.delivered),
+			warehouse: decimalToNumber(order_entry.warehouse),
+			short_quantity: decimalToNumber(order_entry.short_quantity),
+			reject_quantity: decimalToNumber(order_entry.reject_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -244,11 +244,11 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			created_at: order_entry.created_at,
 			updated_at: order_entry.updated_at,
 			remarks: order_entry.remarks,
-			pi: order_entry.pi,
-			delivered: order_entry.delivered,
-			warehouse: order_entry.warehouse,
-			short_quantity: order_entry.short_quantity,
-			reject_quantity: order_entry.reject_quantity,
+			pi: decimalToNumber(order_entry.pi),
+			delivered: decimalToNumber(order_entry.delivered),
+			warehouse: decimalToNumber(order_entry.warehouse),
+			short_quantity: decimalToNumber(order_entry.short_quantity),
+			reject_quantity: decimalToNumber(order_entry.reject_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(

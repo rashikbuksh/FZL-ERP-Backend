@@ -336,7 +336,7 @@ export async function selectTransactionByFromSection(req, res, next) {
 			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN 
 			(
-				SELECT stock.uuid, SUM(trx_quantity) as trx_quantity
+				SELECT stock.uuid, SUM(trx_quantity)::float8 as trx_quantity
 				FROM slider.transaction
 				LEFT JOIN slider.stock ON transaction.stock_uuid = stock.uuid
 				WHERE transaction.from_section = ${from_section}

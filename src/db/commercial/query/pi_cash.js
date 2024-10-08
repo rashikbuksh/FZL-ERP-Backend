@@ -169,14 +169,14 @@ export async function selectAll(req, res, next) {
 			bank.policy AS bank_policy,
 			bank.routing_no AS routing_no,
 			public.factory.address AS factory_address,
-			pi_cash.validity,
-			pi_cash.payment,
+			pi_cash.validity::float8,
+			pi_cash.payment::float8,
 			pi_cash.created_by,
 			hr.users.name AS created_by_name,
 			pi_cash.created_at,
 			pi_cash.updated_at,
 			pi_cash.remarks,
-			pi_cash.is_pi,
+			pi_cash.is_pi::float8,
 			pi_cash.conversion_rate::float8,
 			pi_cash.weight::float8,
 			pi_cash.receive_amount::float8
@@ -249,17 +249,19 @@ export async function select(req, res, next) {
 				bank.policy AS bank_policy,
 				bank.routing_no AS bank_routing_no,
 				public.factory.address AS factory_address,
-				pi_cash.validity,
-				pi_cash.payment,
+				pi_cash.validity::float8,
+				pi_cash.payment::float8,
 				pi_cash.created_by,
 				users.name AS created_by_name,
 				pi_cash.created_at,
 				pi_cash.updated_at,
 				pi_cash.remarks,
-				pi_cash.is_pi,
+
+				pi_cash.is_pi::float8,
 				pi_cash.conversion_rate::float8,
 				pi_cash.weight::float8,
-				pi_cash.receive_amount
+				pi_cash.receive_amount::float8
+
 			FROM 
 				commercial.pi_cash
 			LEFT JOIN 
@@ -539,9 +541,9 @@ export async function selectPiByLcUuid(req, res, next) {
 			updated_at: pi_cash.updated_at,
 			remarks: pi_cash.remarks,
 			is_pi: pi_cash.is_pi,
-			conversion_rate: pi_cash.conversion_rate,
-			weight: pi_cash.weight,
-			receive_amount: pi_cash.receive_amount,
+			conversion_rate: decimalToNumber(pi_cash.conversion_rate),
+			weight: decimalToNumber(pi_cash.weight),
+			receive_amount: decimalToNumber(pi_cash.receive_amount),
 		})
 		.from(pi_cash)
 		.leftJoin(hrSchema.users, eq(pi_cash.created_by, hrSchema.users.uuid))
