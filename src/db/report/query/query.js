@@ -554,9 +554,9 @@ export async function LCReport(req, res, next) {
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             WHERE
                     ${document_receiving ? sql`lc.document_receive_date IS NULL AND lc.handover_date IS NOT NULL` : sql`lc.document_receive_date IS NOT NULL AND lc.handover_date IS NOT NULL`}
-                AND ${acceptance ? sql`lc.acceptance_date IS NULL` : sql`lc.acceptance_date IS NOT NULL`}
-                AND ${maturity ? sql`lc.maturity_date IS NULL` : sql`lc.maturity_date IS NOT NULL`}
-                AND ${payment ? sql`lc.payment_date IS NULL` : sql`lc.payment_date IS NOT NULL`}
+                AND ${document_receiving && acceptance ? sql`lc.acceptance_date IS NULL` : sql`lc.acceptance_date IS NOT NULL`}
+                AND ${document_receiving && acceptance && maturity ? sql`lc.maturity_date IS NULL` : sql`lc.maturity_date IS NOT NULL`}
+                AND ${document_receiving && acceptance && maturity && payment ? sql`lc.payment_date IS NULL` : sql`lc.payment_date IS NOT NULL`}
         `;
 
 	const resultPromise = db.execute(query);
