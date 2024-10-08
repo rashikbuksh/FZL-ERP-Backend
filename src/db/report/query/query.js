@@ -535,14 +535,22 @@ export async function LCReport(req, res, next) {
                 lc.ldbc_fdbc,
                 lc.shipment_date,
                 lc.expiry_date,
-                lc.lc_value::float8,
                 lc.ud_no,
                 lc.ud_received,
                 pi_cash.marketing_uuid,
                 marketing.name as marketing_name,
                 pi_cash.bank_uuid,
                 bank.name as bank_name,
-                lc.party_bank
+                lc.party_bank,
+                CASE WHEN is_old_pi = 0 THEN(	
+				SELECT 
+					SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12)
+				FROM commercial.pi_cash 
+					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+				WHERE pi_cash.lc_uuid = lc.uuid
+			) ELSE lc.lc_value::float8 END AS total_value
             FROM
                 commercial.lc
             LEFT JOIN
