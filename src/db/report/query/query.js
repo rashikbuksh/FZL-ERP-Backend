@@ -512,6 +512,9 @@ export async function PiToBeRegisterThread(req, res, next) {
 
 export async function LCReport(req, res, next) {
 	const { document_receiving, acceptance, maturity, payment } = req.query;
+
+	console.log(document_receiving, acceptance, maturity, payment);
+
 	const query = sql`
             SELECT 
                 CONCAT('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) AS file_number,
@@ -520,7 +523,6 @@ export async function LCReport(req, res, next) {
                 lc.lc_date,
                 party.uuid as party_uuid,
                 party.name as party_name,
-                lc.payment_value::float8,
                 lc.created_at,
                 lc.updated_at,
                 lc.remarks,
@@ -533,6 +535,7 @@ export async function LCReport(req, res, next) {
                 lc.ldbc_fdbc,
                 lc.shipment_date,
                 lc.expiry_date,
+                lc.lc_value::float8,
                 lc.ud_no,
                 lc.ud_received,
                 pi_cash.marketing_uuid,
@@ -553,10 +556,10 @@ export async function LCReport(req, res, next) {
             LEFT JOIN
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             WHERE
-                    ${document_receiving ? sql`lc.document_receive_date IS NULL AND lc.handover_date IS NOT NULL` : sql`lc.document_receive_date IS NOT NULL AND lc.handover_date IS NOT NULL`}
-                AND ${document_receiving && acceptance ? sql`lc.acceptance_date IS NULL` : sql`lc.acceptance_date IS NOT NULL`}
-                AND ${document_receiving && acceptance && maturity ? sql`lc.maturity_date IS NULL` : sql`lc.maturity_date IS NOT NULL`}
-                AND ${document_receiving && acceptance && maturity && payment ? sql`lc.payment_date IS NULL` : sql`lc.payment_date IS NOT NULL`}
+                ${document_receiving == 'true' ? sql`lc.document_receive_date IS NULL AND lc.handover_date IS NOT NULL` : sql`lc.document_receive_date IS NOT NULL AND lc.handover_date IS NOT NULL`}
+                AND ${acceptance == 'true' ? sql`lc.acceptance_date IS NULL` : sql`lc.acceptance_date IS NOT NULL`}
+                AND ${maturity == 'true' ? sql`lc.maturity_date IS NULL` : sql`lc.maturity_date IS NOT NULL`}
+                AND ${payment == 'true' ? sql`lc.payment_date IS NULL` : sql`lc.payment_date IS NOT NULL`}
         `;
 
 	const resultPromise = db.execute(query);
