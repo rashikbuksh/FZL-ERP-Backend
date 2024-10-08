@@ -102,6 +102,7 @@ export async function selectAll(req, res, next) {
 			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
 			merchandiser_name: publicSchema.merchandiser.name,
 			factory_uuid: zipperSchema.order_info.factory_uuid,
+			factory_name: publicSchema.factory.name,
 			factory_address: publicSchema.factory.address,
 			carton_quantity: decimalToNumber(challan.carton_quantity),
 			assign_to: challan.assign_to,
@@ -183,6 +184,7 @@ export async function select(req, res, next) {
 			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
 			merchandiser_name: publicSchema.merchandiser.name,
 			factory_uuid: zipperSchema.order_info.factory_uuid,
+			factory_name: publicSchema.factory.name,
 			factory_address: publicSchema.factory.address,
 			carton_quantity: decimalToNumber(challan.carton_quantity),
 			assign_to: challan.assign_to,
@@ -241,7 +243,8 @@ export async function select(req, res, next) {
 			zipperSchema.order_info.merchandiser_uuid,
 			publicSchema.merchandiser.name,
 			zipperSchema.order_info.factory_uuid,
-			publicSchema.factory.address
+			publicSchema.factory.address,
+			publicSchema.factory.name
 		);
 
 	try {
