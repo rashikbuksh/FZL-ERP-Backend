@@ -6,9 +6,9 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import { pi_cash_entry } from '../schema.js';
-import { decimalToNumber } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -187,7 +187,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					oe.size as size,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity::float8 ELSE toe.quantity::float8 END as max_quantity,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price ELSE toe.party_price END as unit_price,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi ELSE toe.pi END as given_pi_cash_quantity::float8,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi ELSE toe.pi END as given_pi_cash_quantity,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (pe.pi_cash_quantity * oe.party_price)::float8 ELSE (pe.pi_cash_quantity * toe.party_price)::float8 END as value ,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.quantity - sfg.pi)::float8 ELSE (toe.quantity - toe.pi)::float8 END as balance_quantity,
 					pe.thread_order_entry_uuid as thread_order_entry_uuid,
