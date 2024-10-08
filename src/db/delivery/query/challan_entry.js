@@ -214,8 +214,8 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 				vpl.color,
 				vpl.size,
 				vpl.order_quantity::float8,
-				vpl.warehouse,
-				vpl.delivered,
+				vpl.warehouse::float8,
+				vpl.delivered::float8,
 				vpl.balance_quantity::float8
 			FROM 
 				delivery.challan

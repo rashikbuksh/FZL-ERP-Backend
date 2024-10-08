@@ -9,7 +9,9 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
+import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
+
 import { challan, challan_entry, packing_list } from '../schema.js';
 
 const assignToUser = alias(hrSchema.users, 'assignToUser');
@@ -93,6 +95,15 @@ export async function selectAll(req, res, next) {
 			challan_number: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			order_info_uuid: challan.order_info_uuid,
 			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			buyer_uuid: zipperSchema.order_info.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
+			party_uuid: zipperSchema.order_info.party_uuid,
+			party_name: publicSchema.party.name,
+			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
+			merchandiser_name: publicSchema.merchandiser.name,
+			factory_uuid: zipperSchema.order_info.factory_uuid,
+			factory_name: publicSchema.factory.name,
+			factory_address: publicSchema.factory.address,
 			carton_quantity: decimalToNumber(challan.carton_quantity),
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
@@ -110,6 +121,30 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			zipperSchema.order_info,
 			eq(challan.order_info_uuid, zipperSchema.order_info.uuid)
+		)
+		.leftJoin(challan_entry, eq(challan.uuid, challan_entry.challan_uuid))
+		.leftJoin(
+			packing_list,
+			eq(challan_entry.packing_list_uuid, packing_list.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(
+				zipperSchema.order_info.merchandiser_uuid,
+				publicSchema.merchandiser.uuid
+			)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
 		)
 		.orderBy(desc(challan.created_at));
 
@@ -142,6 +177,15 @@ export async function select(req, res, next) {
 					concat('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))
 				)
 			`,
+			buyer_uuid: zipperSchema.order_info.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
+			party_uuid: zipperSchema.order_info.party_uuid,
+			party_name: publicSchema.party.name,
+			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
+			merchandiser_name: publicSchema.merchandiser.name,
+			factory_uuid: zipperSchema.order_info.factory_uuid,
+			factory_name: publicSchema.factory.name,
+			factory_address: publicSchema.factory.address,
 			carton_quantity: decimalToNumber(challan.carton_quantity),
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
@@ -165,6 +209,25 @@ export async function select(req, res, next) {
 			packing_list,
 			eq(challan_entry.packing_list_uuid, packing_list.uuid)
 		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(
+				zipperSchema.order_info.merchandiser_uuid,
+				publicSchema.merchandiser.uuid
+			)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
+		)
 		.where(eq(challan.uuid, req.params.uuid))
 		.groupBy(
 			challan.uuid,
@@ -172,7 +235,16 @@ export async function select(req, res, next) {
 			zipperSchema.order_info.created_at,
 			zipperSchema.order_info.id,
 			assignToUser.name,
-			createdByUser.name
+			createdByUser.name,
+			zipperSchema.order_info.buyer_uuid,
+			publicSchema.buyer.name,
+			zipperSchema.order_info.party_uuid,
+			publicSchema.party.name,
+			zipperSchema.order_info.merchandiser_uuid,
+			publicSchema.merchandiser.name,
+			zipperSchema.order_info.factory_uuid,
+			publicSchema.factory.address,
+			publicSchema.factory.name
 		);
 
 	try {

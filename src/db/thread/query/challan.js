@@ -91,6 +91,15 @@ export async function selectAll(req, res, next) {
 			challan.uuid,
 			CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
 			challan.order_info_uuid,
+			toi.buyer_uuid,
+			pb.name AS buyer_name,
+			toi.party_uuid,
+			pp.name AS party_name,
+			toi.merchandiser_uuid,
+			pm.name AS merchandiser_name,
+			toi.factory_uuid,
+			pf.name AS factory_name,
+			pf.address AS factory_address,
 			challan.carton_quantity::float8,
 			challan.gate_pass,
 			challan.received,
@@ -110,6 +119,14 @@ export async function selectAll(req, res, next) {
 			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
 		LEFT JOIN 
 			thread.order_info toi ON challan.order_info_uuid = toi.uuid
+		LEFT JOIN
+			public.buyer pb ON toi.buyer_uuid = pb.uuid
+		LEFT JOIN
+			public.party pp ON toi.party_uuid = pp.uuid
+		LEFT JOIN
+			public.merchandiser pm ON toi.merchandiser_uuid = pm.uuid
+		LEFT JOIN
+			public.factory pf ON toi.factory_uuid = pf.uuid
 		ORDER BY
 			challan.created_at DESC
 	`;
@@ -137,6 +154,15 @@ export async function select(req, res, next) {
 			challan.uuid,
 			CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
 			challan.order_info_uuid,
+			toi.buyer_uuid,
+			pb.name AS buyer_name,
+			toi.party_uuid,
+			pp.name AS party_name,
+			toi.merchandiser_uuid,
+			pm.name AS merchandiser_name,
+			toi.factory_uuid,
+			pf.name AS factory_name,
+			pf.address AS factory_address,
 			challan.carton_quantity::float8,
 			challan.gate_pass,
 			challan.received,
@@ -156,6 +182,14 @@ export async function select(req, res, next) {
 			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
 		LEFT JOIN 
 			thread.order_info toi ON challan.order_info_uuid = toi.uuid
+		LEFT JOIN
+			public.buyer pb ON toi.buyer_uuid = pb.uuid
+		LEFT JOIN
+			public.party pp ON toi.party_uuid = pp.uuid
+		LEFT JOIN
+			public.merchandiser pm ON toi.merchandiser_uuid = pm.uuid
+		LEFT JOIN
+			public.factory pf ON toi.factory_uuid = pf.uuid
 		WHERE 
 			challan.uuid = ${req.params.uuid};
 	`;
