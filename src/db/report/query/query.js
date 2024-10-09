@@ -599,3 +599,79 @@ export async function LCReport(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function threadProductionStatusBatchWise(req, res, next) {
+	const query = sql`
+            SELECT
+                batch.uuid,
+                CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) AS batch_number,
+                batch.created_at AS batch_created_at,
+                order_entry.uuid as order_entry_uuid,
+                order_info.uuid as order_info_uuid,
+                CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+                order_info.party_uuid,
+                party.name as party_name,
+                order_info.marketing_uuid,
+                marketing.name as marketing_name,
+                order_entry.style,
+                order_entry.color,
+                order_entry.swatch_approval_date,
+                order_entry.count_length_uuid,
+                count_length.count,
+                count_length.length,
+                batch_entry_quantity_length.quantity,
+                batch_entry_quantity_length.total_weight,
+                batch.yarn_quantity,
+                batch.is_drying_complete,
+                batch_entry_coning.total_coning_production_quantity
+            FROM
+                thread.batch
+            LEFT JOIN
+                thread.batch_entry ON batch.uuid = batch_entry.batch_uuid
+            LEFT JOIN
+                thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+            LEFT JOIN
+                thread.order_info ON order_entry.order_info_uuid = order_info.uuid
+            LEFT JOIN
+                thread.count_length ON order_entry.count_length_uuid = count_length.uuid
+            LEFT JOIN
+                public.party ON order_info.party_uuid = party.uuid
+            LEFT JOIN
+                public.marketing ON order_info.marketing_uuid = marketing.uuid
+            LEFT JOIN (
+                SELECT 
+                    SUM(batch_entry.quantity),
+                    SUM(count_length.max_weight * batch_entry.quantity) as total_weight,
+                    batch_entry.batch_uuid
+                FROM
+                    thread.batch_entry
+                GROUP BY
+                    batch_entry.batch_uuid
+            ) batch_entry_quantity_length ON batch.uuid = batch_entry.batch_uuid
+            LEFT JOIN (
+                SELECT 
+                    SUM(coning_production_quantity) as total_coning_production_quantity,
+                    batch_uuid
+                FROM
+                    thread.batch_entry
+                GROUP BY
+                    batch_uuid
+            ) batch_entry_coning ON batch.uuid = batch_entry_coning.batch_uuid
+            `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Thread Production Status Batch Wise',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+} // incomplete
