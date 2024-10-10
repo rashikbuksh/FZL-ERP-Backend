@@ -297,6 +297,7 @@ const order_description_fields = {
 	created_by_name: SE.string('John Doe'),
 	garments_remarks: SE.string('Remarks'),
 	slider_finishing_stock: SE.number(0),
+	is_inch: SE.number(0),
 };
 
 const order_description_merge_schema_fields = {
