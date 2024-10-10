@@ -35,7 +35,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 stock.uuid as stock_uuid,
                 COALESCE(production_sum.assembly_production_quantity, 0)::float8 AS assembly_production_quantity,
                 COALESCE(production_sum.coloring_production_quantity, 0)::float8 AS coloring_production_quantity,
-                (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0)::float8 + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)::float8)::float8 AS total_dyeing_transaction_quantity,
+                (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0))::float8 AS total_dyeing_transaction_quantity,
                 COALESCE(sfg_production_sum.teeth_molding_quantity, 0)::float8 AS teeth_molding_quantity,
                 CASE WHEN lower(vodf.item_name) = 'vislon' THEN 'KG' ELSE 'PCS' END AS teeth_molding_unit,
                 COALESCE(sfg_production_sum.teeth_coloring_quantity, 0)::float8 AS teeth_coloring_quantity,
@@ -115,10 +115,10 @@ export async function zipperProductionStatusReport(req, res, next) {
                     sfg.uuid as sfg_uuid,
                     od.uuid as order_description_uuid,
                     oe.uuid as order_entry_uuid,
-                    SUM(CASE WHEN challan.gate_pass = 1 THEN packing_list_entry.quantity ELSE 0 END)::float8 AS total_delivery_delivered_quantity,
-                    SUM(CASE WHEN challan.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END)::float8 AS total_delivery_balance_quantity,
-                    SUM(packing_list_entry.short_quantity)::float8 AS total_short_quantity,
-                    SUM(packing_list_entry.reject_quantity)::float8 AS total_reject_quantity
+                    SUM(CASE WHEN challan.gate_pass = 1 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
+                    SUM(CASE WHEN challan.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
+                    SUM(packing_list_entry.short_quantity)AS total_short_quantity,
+                    SUM(packing_list_entry.reject_quantity) AS total_reject_quantity
                 FROM
                     delivery.challan
                 LEFT JOIN
@@ -152,18 +152,18 @@ export async function zipperProductionStatusReport(req, res, next) {
                 swatch_approval_counts.swatch_approval_count,
                 order_entry_counts.order_entry_count,
                 stock.uuid,
-                production_sum.assembly_production_quantity::float8,
-                production_sum.coloring_production_quantity::float8,
-                dyed_tape_transaction_sum.total_trx_quantity::float8,
-                dyed_tape_transaction_from_stock_sum.total_trx_quantity::float8,
-                sfg_production_sum.teeth_molding_quantity::float8,
-                sfg_production_sum.teeth_coloring_quantity::float8,
-                sfg_production_sum.finishing_quantity::float8,
+                production_sum.assembly_production_quantity,
+                production_sum.coloring_production_quantity,
+                dyed_tape_transaction_sum.total_trx_quantity,
+                dyed_tape_transaction_from_stock_sum.total_trx_quantity,
+                sfg_production_sum.teeth_molding_quantity,
+                sfg_production_sum.teeth_coloring_quantity,
+                sfg_production_sum.finishing_quantity,
                 vodf.item_name,
-                delivery_sum.total_delivery_delivered_quantity::float8,
-                delivery_sum.total_delivery_balance_quantity::float8,
-                delivery_sum.total_short_quantity::float8,
-                delivery_sum.total_reject_quantity::float8,
+                delivery_sum.total_delivery_delivered_quantity,
+                delivery_sum.total_delivery_balance_quantity,
+                delivery_sum.total_short_quantity,
+                delivery_sum.total_reject_quantity,
                 vodf.remarks
         `;
 
@@ -343,7 +343,7 @@ export async function PiRegister(req, res, next) {
                 pi_cash.lc_uuid,
                 lc.lc_number,
                 lc.lc_date,
-                lc.payment_value::float8,
+                lc.lc_value::float8,
                 CASE WHEN lc.uuid IS NOT NULL THEN concat('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) ELSE NULL END as file_number,
                 lc.created_at as lc_created_at
             FROM
