@@ -6,7 +6,7 @@ BEGIN
     SET
         warehouse = warehouse - CASE WHEN NEW.receive_status = 1 THEN NEW.quantity ELSE 0 END,
         delivered = delivered + CASE WHEN NEW.receive_status = 1 THEN NEW.quantity ELSE 0 END
-    WHERE uuid = NEW.sfg_uuid;
+    WHERE uuid = (SELECT sfg_uuid FROM delivery.challan_entry WHERE uuid = NEW.challan_uuid);
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -18,7 +18,7 @@ BEGIN
     SET
         warehouse = warehouse + CASE WHEN OLD.receive_status = 1 THEN OLD.quantity ELSE 0 END,
         delivered = delivered - CASE WHEN OLD.receive_status = 1 THEN OLD.quantity ELSE 0 END
-    WHERE uuid = OLD.sfg_uuid;
+    WHERE uuid = (SELECT sfg_uuid FROM delivery.challan_entry WHERE uuid = OLD.challan_uuid);
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
@@ -31,7 +31,7 @@ BEGIN
     SET
         warehouse = warehouse - CASE WHEN NEW.receive_status = 1 THEN NEW.quantity ELSE 0 END + CASE WHEN OLD.receive_status = 1 THEN OLD.quantity ELSE 0 END,
         delivered = delivered + CASE WHEN NEW.receive_status = 1 THEN NEW.quantity ELSE 0 END - CASE WHEN OLD.receive_status = 1 THEN OLD.quantity ELSE 0 END
-    WHERE uuid = NEW.sfg_uuid;
+    WHERE uuid = (SELECT sfg_uuid FROM delivery.challan_entry WHERE uuid = NEW.challan_uuid);
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
