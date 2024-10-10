@@ -4,9 +4,10 @@ BEGIN
     -- Update zipper,sfg
     UPDATE zipper.sfg
     SET
-        warehouse = warehouse - CASE WHEN NEW.receive_status = 1 THEN NEW.quantity ELSE 0 END,
-        delivered = delivered + CASE WHEN NEW.receive_status = 1 THEN NEW.quantity ELSE 0 END
-    WHERE uuid = (SELECT sfg_uuid FROM delivery.challan_entry WHERE uuid = NEW.challan_uuid);
+        warehouse = warehouse - CASE WHEN NEW.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END,
+        delivered = delivered + CASE WHEN NEW.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END
+    FROM (SELECT packing_list_entry.sfg_uuid, packing_list_entry.quantity FROM delivery.packing_list LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid WHERE packing_list.challan_uuid = NEW.uuid) as pl_sfg
+    WHERE uuid = pl_sfg.sfg_uuid;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -16,9 +17,10 @@ BEGIN
     -- Update zipper,sfg
     UPDATE zipper.sfg
     SET
-        warehouse = warehouse + CASE WHEN OLD.receive_status = 1 THEN OLD.quantity ELSE 0 END,
-        delivered = delivered - CASE WHEN OLD.receive_status = 1 THEN OLD.quantity ELSE 0 END
-    WHERE uuid = (SELECT sfg_uuid FROM delivery.challan_entry WHERE uuid = OLD.challan_uuid);
+        warehouse = warehouse + CASE WHEN OLD.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END,
+        delivered = delivered - CASE WHEN OLD.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END
+    FROM (SELECT packing_list_entry.sfg_uuid, packing_list_entry.quantity FROM delivery.packing_list LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid WHERE packing_list.challan_uuid = OLD.uuid) as pl_sfg
+    WHERE uuid = pl_sfg.sfg_uuid;
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
@@ -29,9 +31,10 @@ BEGIN
     -- Update zipper,sfg
     UPDATE zipper.sfg
     SET
-        warehouse = warehouse - CASE WHEN NEW.receive_status = 1 THEN NEW.quantity ELSE 0 END + CASE WHEN OLD.receive_status = 1 THEN OLD.quantity ELSE 0 END,
-        delivered = delivered + CASE WHEN NEW.receive_status = 1 THEN NEW.quantity ELSE 0 END - CASE WHEN OLD.receive_status = 1 THEN OLD.quantity ELSE 0 END
-    WHERE uuid = (SELECT sfg_uuid FROM delivery.challan_entry WHERE uuid = NEW.challan_uuid);
+        warehouse = warehouse - CASE WHEN NEW.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END + CASE WHEN OLD.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END,
+        delivered = delivered + CASE WHEN NEW.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END - CASE WHEN OLD.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END
+    FROM (SELECT packing_list_entry.sfg_uuid, packing_list_entry.quantity FROM delivery.packing_list LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid WHERE packing_list.challan_uuid = NEW.uuid) as pl_sfg
+    WHERE uuid = pl_sfg.sfg_uuid;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
