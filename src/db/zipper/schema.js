@@ -188,6 +188,7 @@ export const order_entry = zipper.table('order_entry', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	is_inch: integer('is_inch').default(0),
 });
 
 export const sfg = zipper.table('sfg', {

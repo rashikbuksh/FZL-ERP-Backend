@@ -171,6 +171,7 @@ export async function selectSwatchInfo(req, res, next) {
 					oe.style as style,
 					oe.color as color,
 					oe.size as size,
+					oe.is_inch,
 					oe.bleaching,
 					oe.quantity::float8 as quantity,
 					sfg.recipe_uuid as recipe_uuid,
