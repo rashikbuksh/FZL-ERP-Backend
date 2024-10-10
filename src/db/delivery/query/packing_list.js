@@ -265,6 +265,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size,
+			oe.is_inch,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			oe.quantity::float8  as order_quantity,
 			sfg.uuid as sfg_uuid,

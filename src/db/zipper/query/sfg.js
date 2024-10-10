@@ -170,8 +170,11 @@ export async function selectSwatchInfo(req, res, next) {
 					od.order_info_uuid,
 					oe.style as style,
 					oe.color as color,
-					oe.size as size,
 					oe.is_inch,
+					CASE 
+                        WHEN oe.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END as size,
 					oe.bleaching,
 					oe.quantity::float8 as quantity,
 					sfg.recipe_uuid as recipe_uuid,

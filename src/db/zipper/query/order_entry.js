@@ -34,6 +34,7 @@ export async function insert(req, res, next) {
 		created_by,
 		created_at,
 		remarks,
+		is_inch,
 	} = req.body;
 
 	const order_entryPromise = db
@@ -54,6 +55,7 @@ export async function insert(req, res, next) {
 			created_by,
 			created_at,
 			remarks,
+			is_inch,
 		})
 		.returning({ insertedUuid: order_entry.uuid });
 
@@ -91,6 +93,7 @@ export async function update(req, res, next) {
 		created_at,
 		updated_at,
 		remarks,
+		is_inch,
 	} = req.body;
 
 	const order_entryPromise = db
@@ -111,6 +114,7 @@ export async function update(req, res, next) {
 			created_at,
 			updated_at,
 			remarks,
+			is_inch,
 		})
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_entry.uuid });
@@ -211,6 +215,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			style: order_entry.style,
 			color: order_entry.color,
 			size: order_entry.size,
+			is_inch: order_entry.is_inch,
 			quantity: decimalToNumber(order_entry.quantity),
 			company_price: decimalToNumber(order_entry.company_price),
 			party_price: decimalToNumber(order_entry.party_price),

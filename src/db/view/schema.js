@@ -56,9 +56,9 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_info.uuid AS order_info_uuid,
     concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
     order_description.uuid AS order_description_uuid,
-    order_description.tape_received,
-	order_description.tape_transferred,
-    order_description.slider_finishing_stock,
+    order_description.tape_received::float8,
+	order_description.tape_transferred::float8,
+    order_description.slider_finishing_stock::float8,
     order_info.marketing_uuid,
     marketing.name AS marketing_name,
     order_info.buyer_uuid,
@@ -150,7 +150,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_info.factory_priority,
     order_description.garments_remarks,
     stock.uuid as stock_uuid,
-    stock.order_quantity as stock_order_quantity,
+    stock.order_quantity::float8 as stock_order_quantity,
     order_description.tape_coil_uuid,
     tc.name as tape_name,
     order_description.teeth_type,
@@ -205,9 +205,9 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         pl.remarks,
         ple.uuid as packing_list_entry_uuid,
         ple.sfg_uuid,
-        ple.quantity,
-        ple.short_quantity,
-        ple.reject_quantity,
+        ple.quantity::float8,
+        ple.short_quantity::float8,
+        ple.reject_quantity::float8,
         ple.created_at as entry_created_at,
         ple.updated_at as entry_updated_at,
         ple.remarks as entry_remarks,
@@ -216,13 +216,13 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         oe.color,
         oe.size,
         CONCAT(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-        oe.quantity as order_quantity,
+        oe.quantity::float8 as order_quantity,
         vodf.order_description_uuid,
         vodf.order_number,
         vodf.item_description,
-        sfg.warehouse as warehouse,
-		sfg.delivered as delivered,
-		(oe.quantity - sfg.warehouse) as balance_quantity
+        sfg.warehouse::float8 as warehouse,
+		sfg.delivered::float8 as delivered,
+		(oe.quantity - sfg.warehouse)::float8 as balance_quantity
     FROM 
         delivery.packing_list pl
         LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
@@ -249,7 +249,7 @@ SELECT
     vodf.zipper_name AS zipper_number, 
     vodf.end_name AS end_type, 
     oe.size AS zipper_size, 
-    oe.quantity AS quantity, 
+    oe.quantity::float8 AS quantity, 
     sfg.dying_and_iron_prod AS dying_and_iron_prod, 
     vodf.marketing_uuid AS marketing_uuid, 
     vodf.marketing_name AS marketing_name, 
@@ -288,7 +288,7 @@ SElECT
 	od.item as item,
 	properties.name as item_name,
 	order_info.status as status,
-	SUM(order_entry.quantity) as total
+	SUM(order_entry.quantity)::float8 as total
 FROM
 	zipper.order_description od
 	LEFT JOIN zipper.order_info ON order_info.uuid = od.order_info_uuid
@@ -320,7 +320,7 @@ SELECT
 	od.zipper_number as zipper_number,
 	od.end_type as end_type,
 	oe.size as zipper_size,
-	oe.quantity as quantity,
+	oe.quantity::float8 as quantity,
 	sfg.dying_and_iron_prod as dying_and_iron_prod,
 	oi.marketing_uuid as marketing_id,
 	marketing.name as marketing_name,
@@ -360,7 +360,7 @@ export const ProductionView = `
 CREATE OR REPLACE VIEW zipper.v_production AS
 SELECT 
 	od.uuid as order_description_uuid,
-	ROUND(SUM(sfg.finishing_prod)/SUM(oe.quantity)*100.0, 0) as production_percentage,
+	ROUND(SUM(sfg.finishing_prod)/SUM(oe.quantity)*100.0, 0)::float8 as production_percentage,
 	SUM(CASE WHEN oe.company_price > 0 AND oe.party_price > 0 THEN 1 ELSE 0 END) as price_given
 FROM
 	zipper.order_description od
