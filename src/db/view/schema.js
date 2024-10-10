@@ -11,7 +11,6 @@ export const OrderDetailsView = `
       op_end.name AS end_type_name,
       op_puller.name AS puller_type_name,
       order_description.uuid as order_description_uuid,
-      order_description.is_inch,
       order_info.buyer_uuid,
       buyer.name AS buyer_name,
       order_info.party_uuid,
@@ -32,7 +31,8 @@ export const OrderDetailsView = `
       users.name AS created_by_name,
       order_info.created_at AS created_at,
       order_info.updated_at AS updated_at,
-      order_info.remarks
+      order_info.remarks,
+      order_description.is_inch
     FROM
       zipper.order_info
       LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
