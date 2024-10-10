@@ -271,7 +271,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
-			(oe.quantity - sfg.delivered)::float8  as balance_quantity,
+			(oe.quantity - sfg.delivered)::float8  as balance_quantity
 		FROM
 			zipper.v_order_details_full vodf
 		LEFT JOIN
