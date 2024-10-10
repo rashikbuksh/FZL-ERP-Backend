@@ -136,6 +136,7 @@ export const def_zipper_order_entry = SED({
 		'quantity',
 		'bleaching',
 		'created_at',
+		'is_inch',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -143,6 +144,7 @@ export const def_zipper_order_entry = SED({
 		style: SE.string(),
 		color: SE.string(),
 		size: SE.string(),
+		is_inch: SE.integer(0),
 		quantity: SE.integer(),
 		company_price: SE.number(),
 		party_price: SE.number(),
