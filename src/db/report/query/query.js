@@ -29,7 +29,13 @@ export async function zipperProductionStatusReport(req, res, next) {
                 CONCAT(swatch_approval_counts.swatch_approval_count, ' / ',
 				order_entry_counts.order_entry_count) AS swatch_approval_count,
                 ARRAY_AGG(DISTINCT oe.style) AS styles,
-                CONCAT(MIN(oe.size), ' - ', MAX(oe.size)) AS sizes,
+                CONCAT(MIN(CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END), ' - ', MAX(CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END)) AS sizes,
                 COUNT(DISTINCT oe.size) AS size_count,
                 SUM(oe.quantity)::float8 AS total_quantity,
                 stock.uuid as stock_uuid,
@@ -206,7 +212,11 @@ export async function dailyChallanReport(req, res, next) {
                 vodf.factory_uuid,
                 vodf.factory_name,
                 oe.uuid as order_entry_uuid,
-                CONCAT(oe.style, ' - ', oe.color, ' - ', oe.size) AS style_color_size,
+                CONCAT(oe.style, ' - ', oe.color, ' - ', 
+                    CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END) AS style_color_size,
                 null as count_length_name,
                 packing_list_grouped.total_quantity::float8,
                 challan.receive_status,

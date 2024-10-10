@@ -311,7 +311,11 @@ export async function selectOrderInfoToGetOrderDescription(req, res, next) {
 export async function selectOrderEntry(req, res, next) {
 	const query = sql`SELECT
 					oe.uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', oe.style, '/', oe.color, '/', oe.size) AS label,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', oe.style, '/', oe.color, '/', 
+					CASE 
+					WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+					ELSE oe.size END
+					) AS label,
 					oe.quantity::float8 AS quantity,
 					oe.quantity - (
 						COALESCE(sfg.coloring_prod, 0) + COALESCE(sfg.finishing_prod, 0)
@@ -360,7 +364,11 @@ export async function selectOrderDescription(req, res, next) {
 					zipper.v_order_details_full vodf
 				LEFT JOIN 
 					(
-						SELECT oe.order_description_uuid, SUM(oe.size::numeric * oe.quantity::numeric) as total_size, 
+						SELECT oe.order_description_uuid, 
+						SUM(CASE 
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
+                ELSE oe.size::numeric
+            END * oe.quantity::numeric) as total_size, 
 						SUM(oe.quantity::numeric) as total_quantity
 						FROM zipper.order_entry oe 
 				        group by oe.order_description_uuid
@@ -472,7 +480,11 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				zipper.v_order_details_full vodf
 			LEFT JOIN (
 				SELECT oe.order_description_uuid, 
-					SUM(oe.size::numeric * oe.quantity::numeric) as total_size, 
+					SUM(
+					CASE 
+						WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
+						ELSE oe.size::numeric
+					END * oe.quantity::numeric) as total_size, 
 					SUM(oe.quantity::numeric) as total_quantity
 				FROM zipper.order_entry oe
 				GROUP BY oe.order_description_uuid

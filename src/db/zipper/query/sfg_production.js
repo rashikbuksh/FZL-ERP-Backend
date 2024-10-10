@@ -213,7 +213,11 @@ export async function selectBySection(req, res, next) {
 			vodf.order_description_uuid,
 			vodf.order_number,
 			vodf.item_description,
-			concat(oe.style, '-', oe.color, '-', oe.size) AS style_color_size,
+			concat(oe.style, '-', oe.color, '-', 
+					CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END) AS style_color_size,
 			oe.quantity::float8 as order_quantity,
 			sfg_production.section,
 			COALESCE(sfg_production.production_quantity_in_kg,0)::float8 as production_quantity_in_kg,

@@ -225,30 +225,28 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 
 		const uuids = new Set();
 
-		data.rows.forEach((row) => {
-			if (row.special_requirement) {
+		data?.rows?.forEach((row) => {
+			if (JSON.parse(row?.special_requirement)) {
 				try {
 					const specialRequirement = JSON.parse(
-						row.special_requirement
+						row?.special_requirement
 					);
 
 					// specialRequirement.values is still a string, so we need to parse it
 					const nestedValuesObject = JSON.parse(
-						specialRequirement.values
+						specialRequirement?.values
 					);
 
 					// Log to verify the structure after parsing
 					// console.log('Nested values object:', nestedValuesObject);
 
 					// Extract the UUID from the nested values array
-					const [uuid] = nestedValuesObject.values;
+					const [uuid] = nestedValuesObject?.values;
 
 					if (uuid) {
 						uuids.add(uuid);
 					}
-				} catch (error) {
-					console.log('Error parsing special_requirement:', error);
-				}
+				} catch (error) {}
 			}
 		});
 
@@ -271,9 +269,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 			} else {
 				s_short_name = [];
 			}
-		} catch (error) {
-			console.log('Error fetching short names:', error);
-		}
+		} catch (error) {}
 
 		const toast = {
 			status: 200,
@@ -312,7 +308,10 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             vod.item_description as item_description,
             oe.style as style,
             oe.color as color,
-            oe.size as size,
+            CASE 
+                WHEN vod.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                ELSE oe.size
+            END as size,
             oe.quantity::float8 as quantity,
             sfg.pi::float8 as given_pi_cash_quantity,
             (oe.quantity - sfg.pi)::float8 as max_quantity,
