@@ -463,7 +463,7 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 			SELECT
 				vodf.order_description_uuid AS value,
 				CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label,
-				totals_of_oe.total_size,
+				totals_of_oe.total_size::float8,
 				totals_of_oe.total_quantity::float8,
 				tcr.top::float8,
 				tcr.bottom::float8,
