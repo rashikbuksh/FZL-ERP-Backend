@@ -170,9 +170,9 @@ export async function selectSwatchInfo(req, res, next) {
 					od.order_info_uuid,
 					oe.style as style,
 					oe.color as color,
-					oe.is_inch,
+					od.is_inch,
 					CASE 
-                        WHEN oe.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        WHEN od.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
                         ELSE oe.size
                     END as size,
 					oe.bleaching,
