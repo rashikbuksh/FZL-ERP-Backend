@@ -11,6 +11,7 @@ export const OrderDetailsView = `
       op_end.name AS end_type_name,
       op_puller.name AS puller_type_name,
       order_description.uuid as order_description_uuid,
+      order_description.is_inch,
       order_info.buyer_uuid,
       buyer.name AS buyer_name,
       order_info.party_uuid,
@@ -154,7 +155,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     tc.name as tape_name,
     order_description.teeth_type,
     op_teeth_type.name as teeth_type_name,
-    op_teeth_type.short_name as teeth_type_short_name
+    op_teeth_type.short_name as teeth_type_short_name,
+    order_description.is_inch
    FROM zipper.order_info
      LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
      LEFT JOIN marketing ON marketing.uuid = order_info.marketing_uuid
