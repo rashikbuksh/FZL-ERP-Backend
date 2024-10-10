@@ -444,7 +444,6 @@ export async function selectOrderDescription(req, res, next) {
 
 export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 	const { coil_uuid } = req.params;
-	console.log(coil_uuid);
 	const tapeCOilQuery = sql`
 			SELECT
 				item_uuid,
