@@ -214,8 +214,14 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         oe.uuid as order_entry_uuid,
         oe.style,
         oe.color,
-        oe.size,
-        CONCAT(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
+        CASE 
+            WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+            ELSE oe.size
+        END as size,
+        CONCAT(oe.style, ' / ', oe.color, ' / ', CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END) as style_color_size,
         oe.quantity::float8 as order_quantity,
         vodf.order_description_uuid,
         vodf.order_number,
