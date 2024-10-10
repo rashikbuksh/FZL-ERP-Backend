@@ -78,6 +78,7 @@ export const def_zipper_order_description = SED({
 		'garments_wash',
 		'created_by',
 		'slider_finishing_stock',
+		'is_inch',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -119,6 +120,7 @@ export const def_zipper_order_description = SED({
 		created_by: SE.uuid(),
 		garments_remarks: SE.string(),
 		slider_finishing_stock: SE.number(),
+		is_inch: SE.integer(0),
 	},
 	xml: 'Zipper/Order-Description',
 });

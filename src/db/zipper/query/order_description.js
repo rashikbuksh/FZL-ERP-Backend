@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, is, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
@@ -113,6 +113,7 @@ export async function insert(req, res, next) {
 		garments_wash,
 		created_by,
 		garments_remarks,
+		is_inch,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -152,6 +153,7 @@ export async function insert(req, res, next) {
 			garments_wash,
 			created_by,
 			garments_remarks,
+			is_inch,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -207,6 +209,7 @@ export async function update(req, res, next) {
 		garments_wash,
 		created_by,
 		garments_remarks,
+		is_inch,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -246,6 +249,7 @@ export async function update(req, res, next) {
 			garments_wash,
 			created_by,
 			garments_remarks,
+			is_inch,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
@@ -369,6 +373,7 @@ export async function selectAll(req, res, next) {
 			garments_remarks: order_description.garments_remarks,
 			tape_coil_uuid: order_description.tape_coil_uuid,
 			tape_name: tape_coil.name,
+			is_inch: order_description.is_inch,
 		})
 		.from(order_description)
 		.where(
@@ -569,6 +574,7 @@ export async function select(req, res, next) {
 			garments_remarks: order_description.garments_remarks,
 			tape_coil_uuid: order_description.tape_coil_uuid,
 			tape_name: tape_coil.name,
+			is_inch: order_description.is_inch,
 		})
 		.from(order_description)
 		.where(

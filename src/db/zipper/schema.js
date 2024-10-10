@@ -164,6 +164,7 @@ export const order_description = zipper.table('order_description', {
 	// vislon_teeth_molding: PG_DECIMAL('vislon_teeth_molding').default(0),
 	// metal_teeth_molding: PG_DECIMAL('metal_teeth_molding').default(0),
 	slider_finishing_stock: PG_DECIMAL('slider_finishing_stock').default(0),
+	is_inch: integer('is_inch').default(0),
 });
 
 export const order_entry = zipper.table('order_entry', {
