@@ -123,7 +123,7 @@ export async function selectAll(req, res, next) {
 			dcp.cavity_defect::float8,
 			dcp.push::float8,
 			(dcp.cavity_goods * dcp.push)::float8 AS production_quantity,
-			dcp.weight,
+			dcp.weight::float8,
 			((dcp.cavity_goods * dcp.push) / dcp.weight)::float8 AS pcs_per_kg,
 			dcp.created_by,
 			users.name AS created_by_name,
