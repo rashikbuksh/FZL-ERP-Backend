@@ -144,7 +144,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 	                pe.uuid as uuid,
                     pe.pi_cash_uuid as pi_cash_uuid,
 					pe.pi_cash_quantity::float8 as pi_cash_quantity,
-					(pe.pi_cash_quantity / 12) as pi_cash_quantity_dzn,
+					(pe.pi_cash_quantity / 12)::float8 as pi_cash_quantity_dzn,
 					pe.created_at as created_at,
 	                pe.updated_at as updated_at,
 					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN true ELSE false END as is_thread_order,
@@ -183,11 +183,14 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 						] as short_names,
 					vodf.special_requirement,
 					CONCAT(vodf.item_name, ' Zipper', '-', vodf.zipper_number_short_name, '-', vodf.end_type_short_name, '-', vodf.puller_type_short_name) as pi_item_description,
-					oe.size as size,
+					CASE 
+                        WHEN od.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END as size,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity::float8 ELSE toe.quantity::float8 END as max_quantity,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as unit_price,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.party_price/12)::float8 ELSE toe.party_price::float8 END as unit_price_pcs,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi ELSE toe.pi END as given_pi_cash_quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi::float8 ELSE toe.pi::float8 END as given_pi_cash_quantity,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (pe.pi_cash_quantity * (oe.party_price/12))::float8 ELSE (pe.pi_cash_quantity * toe.party_price)::float8 END as value,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN ((pe.pi_cash_quantity/12) * oe.party_price)::float8 ELSE (pe.pi_cash_quantity * toe.party_price)::float8 END as value_dzn,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.quantity - sfg.pi)::float8 ELSE (toe.quantity - toe.pi)::float8 END as balance_quantity,
