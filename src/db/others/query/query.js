@@ -444,7 +444,7 @@ export async function selectOrderDescription(req, res, next) {
 
 export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 	const { coil_uuid } = req.params;
-
+	console.log(coil_uuid);
 	const tapeCOilQuery = sql`
 			SELECT
 				item_uuid,
@@ -454,10 +454,8 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 			WHERE
 				uuid = ${coil_uuid}
 	`;
-
 	try {
 		const tapeCoilData = await db.execute(tapeCOilQuery);
-
 		const item_uuid = tapeCoilData.rows[0].item_uuid;
 		const zipper_number_uuid = tapeCoilData.rows[0].zipper_number_uuid;
 
@@ -470,7 +468,7 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				tcr.top::float8,
 				tcr.bottom::float8,
 				vodf.tape_received::float8,
-				vodf.tape_transferred::float8,
+				vodf.tape_transferred::float8
 			FROM
 				zipper.v_order_details_full vodf
 			LEFT JOIN (
