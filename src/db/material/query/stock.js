@@ -83,14 +83,15 @@ export async function selectAll(req, res, next) {
 			stock: decimalToNumber(stock.stock),
 			lab_dip: decimalToNumber(stock.lab_dip),
 			tape_making: decimalToNumber(stock.tape_making),
-			coil_forming:decimalToNumber (stock.coil_forming),
+			coil_forming: decimalToNumber(stock.coil_forming),
 			dying_and_iron: decimalToNumber(stock.dying_and_iron),
 			m_gapping: decimalToNumber(stock.m_gapping),
 			v_gapping: decimalToNumber(stock.v_gapping),
 			v_teeth_molding: decimalToNumber(stock.v_teeth_molding),
 			m_teeth_molding: decimalToNumber(stock.m_teeth_molding),
-			teeth_assembling_and_polishing:
-				decimalToNumber(stock.teeth_assembling_and_polishing),
+			teeth_assembling_and_polishing: decimalToNumber(
+				stock.teeth_assembling_and_polishing
+			),
 			m_teeth_cleaning: decimalToNumber(stock.m_teeth_cleaning),
 			v_teeth_cleaning: decimalToNumber(stock.v_teeth_cleaning),
 			plating_and_iron: decimalToNumber(stock.plating_and_iron),
@@ -215,7 +216,7 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 			material_name: info.name,
 			stock: decimalToNumber(stock.stock),
 			unit: info.unit,
-			[fieldName]: sql`stock.${sql.raw(fieldName)}`,
+			[fieldName]: sql`stock.${sql.raw(fieldName)}::float8`,
 			remarks: stock.remarks,
 		})
 		.from(stock)
