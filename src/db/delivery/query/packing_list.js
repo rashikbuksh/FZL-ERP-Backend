@@ -264,8 +264,11 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			vodf.order_description_uuid,
 			oe.style,
 			oe.color,
-			oe.size,
-			oe.is_inch,
+			CASE 
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                ELSE oe.size
+                ND as size,
+			vodf.is_inch,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			oe.quantity::float8  as order_quantity,
 			sfg.uuid as sfg_uuid,
