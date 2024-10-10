@@ -183,8 +183,9 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 						] as short_names,
 					vodf.special_requirement,
 					CONCAT(vodf.item_name, ' Zipper', '-', vodf.zipper_number_short_name, '-', vodf.end_type_short_name, '-', vodf.puller_type_short_name) as pi_item_description,
+					vodf.is_inch,
 					CASE 
-                        WHEN od.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
                         ELSE oe.size
                     END as size,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity::float8 ELSE toe.quantity::float8 END as max_quantity,
@@ -237,7 +238,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					);
 
 					// Log to verify the structure after parsing
-					console.log('Nested values object:', nestedValuesObject);
+					// console.log('Nested values object:', nestedValuesObject);
 
 					// Extract the UUID from the nested values array
 					const [uuid] = nestedValuesObject.values;
