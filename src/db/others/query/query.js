@@ -366,14 +366,22 @@ export async function selectOrderDescription(req, res, next) {
 					(
 						SELECT oe.order_description_uuid, 
 						SUM(CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
-                ELSE oe.size::numeric
-            END * oe.quantity::numeric) as total_size, 
+							WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
+							ELSE oe.size::numeric
+						END * oe.quantity::numeric) as total_size, 
 						SUM(oe.quantity::numeric) as total_quantity
 						FROM zipper.order_entry oe 
+						LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 				        group by oe.order_description_uuid
 					) AS totals_of_oe ON totals_of_oe.order_description_uuid = vodf.order_description_uuid 
-				LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid AND vodf.zipper_number = tcr.zipper_number_uuid AND vodf.end_type = tcr.end_type_uuid
+				LEFT JOIN zipper.tape_coil_required tcr ON
+					vodf.item = tcr.item_uuid  
+					AND vodf.zipper_number = tcr.zipper_number_uuid 
+					AND vodf.end_type = tcr.end_type_uuid 
+					AND (
+						lower(vodf.item_name) != 'nylon' 
+						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+					)
 				LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
 				LEFT JOIN (
 					SELECT oe.order_description_uuid, SUM(be.production_quantity_in_kg) as stock
@@ -385,7 +393,7 @@ export async function selectOrderDescription(req, res, next) {
 					GROUP BY oe.order_description_uuid
 				) batch_stock ON vodf.order_description_uuid = batch_stock.order_description_uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != '' AND tape_coil.dyed_per_kg_meter IS NOT NULL AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END
+					vodf.item_description != '---' AND vodf.item_description != '' AND tape_coil.dyed_per_kg_meter IS NOT NULL
 				`;
 
 	if (item == 'nylon') {
@@ -487,13 +495,21 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 					END * oe.quantity::numeric) as total_size, 
 					SUM(oe.quantity::numeric) as total_quantity
 				FROM zipper.order_entry oe
+				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 				GROUP BY oe.order_description_uuid
 			) totals_of_oe ON vodf.order_description_uuid = totals_of_oe.order_description_uuid
-			LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid AND vodf.zipper_number = tcr.zipper_number_uuid AND vodf.end_type = tcr.end_type_uuid
+			LEFT JOIN zipper.tape_coil_required tcr ON 
+				vodf.item = tcr.item_uuid  
+				AND vodf.zipper_number = tcr.zipper_number_uuid 
+				AND vodf.end_type = tcr.end_type_uuid 
+				AND (
+					lower(vodf.item_name) != 'nylon' 
+					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+				)
 			LEFT JOIN 
 				public.properties item_properties ON vodf.item = item_properties.uuid
 			WHERE
-				(vodf.tape_coil_uuid = ${coil_uuid} OR (vodf.item = ${item_uuid} AND vodf.zipper_number = ${zipper_number_uuid} AND vodf.tape_coil_uuid IS NULL)) AND vodf.order_description_uuid IS NOT NULL AND CASE WHEN lower(item_properties.name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END
+				(vodf.tape_coil_uuid = ${coil_uuid} OR (vodf.item = ${item_uuid} AND vodf.zipper_number = ${zipper_number_uuid} AND vodf.tape_coil_uuid IS NULL)) AND vodf.order_description_uuid IS NOT NULL
 		`;
 
 		const orderEntryPromise = db.execute(query);
