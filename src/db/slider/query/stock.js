@@ -299,34 +299,32 @@ export async function selectStockByFromSection(req, res, next) {
 		vodf.logo_type_short_name,
 		vodf.is_logo_body as logo_is_body,
 		vodf.is_logo_puller as logo_is_puller,
-		CAST(stock.order_quantity::float8 AS DOUBLE PRECISION),
-		CAST(stock.body_quantity::float8 AS DOUBLE PRECISION),
-		CAST(stock.cap_quantity::float8 AS DOUBLE PRECISION),
-		CAST(stock.puller_quantity::float8 AS DOUBLE PRECISION),
-		CAST(stock.link_quantity::float8 AS DOUBLE PRECISION),
-		CAST(stock.sa_prod::float8 AS DOUBLE PRECISION),
-		CAST(stock.coloring_stock::float8 AS DOUBLE PRECISION),
-		CAST(stock.coloring_prod::float8 AS DOUBLE PRECISION),
-		CAST(stock.trx_to_finishing::float8 AS DOUBLE PRECISION),
-		CAST(stock.u_top_quantity AS::float8 DOUBLE PRECISION),
-		CAST(stock.h_bottom_quantity::float8 AS DOUBLE PRECISION),
-		CAST(stock.box_pin_quantity::float8 AS DOUBLE PRECISION),
-		CAST(stock.two_way_pin_quantity::float8 AS DOUBLE PRECISION),
-		CAST(
-			LEAST(
-					CAST(stock.body_quantity::float8 AS DOUBLE PRECISION),
-					CAST(stock.cap_quantity::float8 AS DOUBLE PRECISION),
-					CAST(stock.puller_quantity::float8 AS DOUBLE PRECISION),
-					CAST(stock.link_quantity::float8 AS DOUBLE PRECISION)
-			) 
-		AS DOUBLE PRECISION) AS max_sa_quantity_with_link,
-		CAST(
-			LEAST(
-					CAST(stock.body_quantity::float8 AS DOUBLE PRECISION),
-					CAST(stock.cap_quantity::float8 AS DOUBLE PRECISION),
-					CAST(stock.puller_quantity::float8 AS DOUBLE PRECISION)
-			) 
-		AS DOUBLE PRECISION) AS max_sa_quantity_without_link,
+		stock.order_quantity::float8,
+		stock.body_quantity::float8,
+		stock.cap_quantity::float8,
+		stock.puller_quantity::float8,
+		stock.link_quantity::float8,
+		stock.sa_prod::float8,
+		stock.coloring_stock::float8,
+		stock.coloring_prod::float8,
+		stock.trx_to_finishing::float8,
+		stock.u_top_quantity::float8,
+		stock.h_bottom_quantity::float8,
+		stock.box_pin_quantity::float8,
+		stock.two_way_pin_quantity::float8,
+		LEAST(
+				stock.body_quantity::float8,
+				stock.cap_quantity::float8,
+				stock.puller_quantity::float8,
+				stock.link_quantity::float8
+		) 
+		AS max_sa_quantity_with_link,
+		LEAST(
+				stock.body_quantity::float8,
+				stock.cap_quantity::float8,
+				stock.puller_quantity::float8
+		) 
+		AS max_sa_quantity_without_link,
 		stock.created_at,
 		stock.updated_at,
 		stock.remarks,

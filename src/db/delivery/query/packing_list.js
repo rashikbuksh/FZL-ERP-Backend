@@ -206,8 +206,14 @@ export async function selectPackingListDetailsByPackingListUuid(
 					vodf.order_description_uuid,
 					oe.style,
 					oe.color,
-					oe.size,
-					concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
+					CASE 
+						WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+						ELSE oe.size
+					END as size,
+					concat(oe.style, ' / ', oe.color, ' / ', CASE 
+						WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+						ELSE oe.size
+					END) as style_color_size,
 					oe.quantity::float8 as order_quantity,
 					sfg.uuid as sfg_uuid,
 					sfg.warehouse::float8 as warehouse,
@@ -264,14 +270,17 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			vodf.order_description_uuid,
 			oe.style,
 			oe.color,
-			oe.size,
-			oe.is_inch,
+			CASE 
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                ELSE oe.size
+                END as size,
+			vodf.is_inch,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			oe.quantity::float8  as order_quantity,
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
-			(oe.quantity - sfg.delivered)::float8  as balance_quantity,
+			(oe.quantity - sfg.delivered)::float8  as balance_quantity
 		FROM
 			zipper.v_order_details_full vodf
 		LEFT JOIN

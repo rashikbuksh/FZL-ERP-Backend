@@ -8,9 +8,9 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as zipperSchema from '../../zipper/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
+import * as zipperSchema from '../../zipper/schema.js';
 
 import { challan, challan_entry, packing_list } from '../schema.js';
 
@@ -121,11 +121,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			zipperSchema.order_info,
 			eq(challan.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.leftJoin(challan_entry, eq(challan.uuid, challan_entry.challan_uuid))
-		.leftJoin(
-			packing_list,
-			eq(challan_entry.packing_list_uuid, packing_list.uuid)
 		)
 		.leftJoin(
 			publicSchema.buyer,

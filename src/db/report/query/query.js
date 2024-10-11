@@ -29,21 +29,27 @@ export async function zipperProductionStatusReport(req, res, next) {
                 CONCAT(swatch_approval_counts.swatch_approval_count, ' / ',
 				order_entry_counts.order_entry_count) AS swatch_approval_count,
                 ARRAY_AGG(DISTINCT oe.style) AS styles,
-                CONCAT(MIN(oe.size), ' - ', MAX(oe.size)) AS sizes,
+                CONCAT(MIN(CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END), ' - ', MAX(CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END)) AS sizes,
                 COUNT(DISTINCT oe.size) AS size_count,
-                SUM(oe.quantity) AS total_quantity,
+                SUM(oe.quantity)::float8 AS total_quantity,
                 stock.uuid as stock_uuid,
-                COALESCE(production_sum.assembly_production_quantity, 0) AS assembly_production_quantity,
-                COALESCE(production_sum.coloring_production_quantity, 0) AS coloring_production_quantity,
-                (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)) AS total_dyeing_transaction_quantity,
-                COALESCE(sfg_production_sum.teeth_molding_quantity, 0) AS teeth_molding_quantity,
+                COALESCE(production_sum.assembly_production_quantity, 0)::float8 AS assembly_production_quantity,
+                COALESCE(production_sum.coloring_production_quantity, 0)::float8 AS coloring_production_quantity,
+                (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0))::float8 AS total_dyeing_transaction_quantity,
+                COALESCE(sfg_production_sum.teeth_molding_quantity, 0)::float8 AS teeth_molding_quantity,
                 CASE WHEN lower(vodf.item_name) = 'vislon' THEN 'KG' ELSE 'PCS' END AS teeth_molding_unit,
-                COALESCE(sfg_production_sum.teeth_coloring_quantity, 0) AS teeth_coloring_quantity,
-                COALESCE(sfg_production_sum.finishing_quantity, 0) AS finishing_quantity,
-                COALESCE(delivery_sum.total_delivery_delivered_quantity, 0) AS total_delivery_delivered_quantity,
-                COALESCE(delivery_sum.total_delivery_balance_quantity, 0) AS total_delivery_balance_quantity,
-                COALESCE(delivery_sum.total_short_quantity, 0) AS total_short_quantity,
-                COALESCE(delivery_sum.total_reject_quantity, 0) AS total_reject_quantity,
+                COALESCE(sfg_production_sum.teeth_coloring_quantity, 0)::float8 AS teeth_coloring_quantity,
+                COALESCE(sfg_production_sum.finishing_quantity, 0)::float8 AS finishing_quantity,
+                COALESCE(delivery_sum.total_delivery_delivered_quantity, 0)::float8 AS total_delivery_delivered_quantity,
+                COALESCE(delivery_sum.total_delivery_balance_quantity, 0)::float8 AS total_delivery_balance_quantity,
+                COALESCE(delivery_sum.total_short_quantity, 0)::float8 AS total_short_quantity,
+                COALESCE(delivery_sum.total_reject_quantity, 0)::float8 AS total_reject_quantity,
                 vodf.remarks
             FROM
                 zipper.v_order_details_full vodf
@@ -117,7 +123,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                     oe.uuid as order_entry_uuid,
                     SUM(CASE WHEN challan.gate_pass = 1 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
                     SUM(CASE WHEN challan.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
-                    SUM(packing_list_entry.short_quantity) AS total_short_quantity,
+                    SUM(packing_list_entry.short_quantity)AS total_short_quantity,
                     SUM(packing_list_entry.reject_quantity) AS total_reject_quantity
                 FROM
                     delivery.challan
@@ -206,7 +212,11 @@ export async function dailyChallanReport(req, res, next) {
                 vodf.factory_uuid,
                 vodf.factory_name,
                 oe.uuid as order_entry_uuid,
-                CONCAT(oe.style, ' - ', oe.color, ' - ', oe.size) AS style_color_size,
+                CONCAT(oe.style, ' - ', oe.color, ' - ', 
+                    CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END) AS style_color_size,
                 null as count_length_name,
                 packing_list_grouped.total_quantity::float8,
                 challan.receive_status,
@@ -220,10 +230,10 @@ export async function dailyChallanReport(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     packing_list.challan_uuid,
-                    SUM(packing_list_entry.quantity) AS total_quantity,
-                    SUM(packing_list_entry.short_quantity) AS total_short_quantity,
-                    SUM(packing_list_entry.reject_quantity) AS total_reject_quantity,
-                    oe.quantity AS order_quantity,
+                    SUM(packing_list_entry.quantity)::float8 AS total_quantity,
+                    SUM(packing_list_entry.short_quantity)::float8 AS total_short_quantity,
+                    SUM(packing_list_entry.reject_quantity)::float8 AS total_reject_quantity,
+                    oe.quantity::float8 AS order_quantity,
                     oe.uuid AS order_entry_uuid
                 FROM
                     delivery.packing_list
@@ -279,9 +289,9 @@ export async function dailyChallanReport(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     challan_entry.challan_uuid,
-                    SUM(challan_entry.quantity) AS total_quantity,
-                    SUM(challan_entry.short_quantity) AS total_short_quantity,
-                    SUM(challan_entry.reject_quantity) AS total_reject_quantity,
+                    SUM(challan_entry.quantity)::float8 AS total_quantity,
+                    SUM(challan_entry.short_quantity)::float8 AS total_short_quantity,
+                    SUM(challan_entry.reject_quantity)::float8 AS total_reject_quantity,
                     challan_entry.order_entry_uuid
                 FROM 
                     thread.challan_entry challan_entry
@@ -343,7 +353,7 @@ export async function PiRegister(req, res, next) {
                 pi_cash.lc_uuid,
                 lc.lc_number,
                 lc.lc_date,
-                lc.payment_value::float8,
+                lc.lc_value::float8,
                 CASE WHEN lc.uuid IS NOT NULL THEN concat('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) ELSE NULL END as file_number,
                 lc.created_at as lc_created_at
             FROM
@@ -365,9 +375,9 @@ export async function PiRegister(req, res, next) {
                     array_agg(DISTINCT vodf.order_number) as order_numbers, 
                     array_agg(DISTINCT CASE WHEN toi.uuid is NOT NULL THEN concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, 
                     pi_cash_uuid, 
-                    SUM(pe.pi_cash_quantity) as total_pi_quantity,
-                    SUM(pe.pi_cash_quantity * oe.party_price) as total_zipper_pi_price, 
-                    SUM(pe.pi_cash_quantity * toe.party_price) as total_thread_pi_price
+                    SUM(pe.pi_cash_quantity)::float8 as total_pi_quantity,
+                    SUM(pe.pi_cash_quantity * oe.party_price)::float8 as total_zipper_pi_price, 
+                    SUM(pe.pi_cash_quantity * toe.party_price)::float8 as total_thread_pi_price
 				FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid

@@ -6,6 +6,7 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 
 import * as commercialSchema from '../../commercial/schema.js';
 import * as deliverySchema from '../../delivery/schema.js';
@@ -33,8 +34,8 @@ export async function selectMachine(req, res, next) {
 		.select({
 			value: publicSchema.machine.uuid,
 			label: publicSchema.machine.name,
-			max_capacity: publicSchema.machine.max_capacity,
-			min_capacity: publicSchema.machine.min_capacity,
+			max_capacity: decimalToNumber(publicSchema.machine.max_capacity),
+			min_capacity: decimalToNumber(publicSchema.machine.min_capacity),
 		})
 		.from(publicSchema.machine);
 
@@ -310,11 +311,15 @@ export async function selectOrderInfoToGetOrderDescription(req, res, next) {
 export async function selectOrderEntry(req, res, next) {
 	const query = sql`SELECT
 					oe.uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', oe.style, '/', oe.color, '/', oe.size) AS label,
-					oe.quantity AS quantity,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', oe.style, '/', oe.color, '/', 
+					CASE 
+					WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+					ELSE oe.size END
+					) AS label,
+					oe.quantity::float8 AS quantity,
 					oe.quantity - (
 						COALESCE(sfg.coloring_prod, 0) + COALESCE(sfg.finishing_prod, 0)
-					) AS can_trf_quantity
+					)::float8 AS can_trf_quantity
 				FROM
 					zipper.order_entry oe
 					LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
@@ -347,19 +352,23 @@ export async function selectOrderDescription(req, res, next) {
 					vodf.order_description_uuid AS value,
 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label,
 					vodf.item_name,
-					vodf.tape_received,
-					vodf.tape_transferred,
-					totals_of_oe.total_size,
-					totals_of_oe.total_quantity,
-					tcr.top,
-					tcr.bottom,
-					tape_coil.dyed_per_kg_meter,
-					coalesce(batch_stock.stock,0) as stock
+					vodf.tape_received::float8,
+					vodf.tape_transferred::float8,
+					totals_of_oe.total_size::float8,
+					totals_of_oe.total_quantity::float8,
+					tcr.top::float8,
+					tcr.bottom::float8,
+					tape_coil.dyed_per_kg_meter::float8,
+					coalesce(batch_stock.stock,0)::float8 as stock
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN 
 					(
-						SELECT oe.order_description_uuid, SUM(oe.size::numeric * oe.quantity::numeric) as total_size, 
+						SELECT oe.order_description_uuid, 
+						SUM(CASE 
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
+                ELSE oe.size::numeric
+            END * oe.quantity::numeric) as total_size, 
 						SUM(oe.quantity::numeric) as total_quantity
 						FROM zipper.order_entry oe 
 				        group by oe.order_description_uuid
@@ -443,7 +452,6 @@ export async function selectOrderDescription(req, res, next) {
 
 export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 	const { coil_uuid } = req.params;
-
 	const tapeCOilQuery = sql`
 			SELECT
 				item_uuid,
@@ -453,10 +461,8 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 			WHERE
 				uuid = ${coil_uuid}
 	`;
-
 	try {
 		const tapeCoilData = await db.execute(tapeCOilQuery);
-
 		const item_uuid = tapeCoilData.rows[0].item_uuid;
 		const zipper_number_uuid = tapeCoilData.rows[0].zipper_number_uuid;
 
@@ -465,16 +471,20 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				vodf.order_description_uuid AS value,
 				CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label,
 				totals_of_oe.total_size,
-				totals_of_oe.total_quantity,
-				tcr.top,
-				tcr.bottom,
-				vodf.tape_received,
-				vodf.tape_transferred
+				totals_of_oe.total_quantity::float8,
+				tcr.top::float8,
+				tcr.bottom::float8,
+				vodf.tape_received::float8,
+				vodf.tape_transferred::float8
 			FROM
 				zipper.v_order_details_full vodf
 			LEFT JOIN (
 				SELECT oe.order_description_uuid, 
-					SUM(oe.size::numeric * oe.quantity::numeric) as total_size, 
+					SUM(
+					CASE 
+						WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
+						ELSE oe.size::numeric
+					END * oe.quantity::numeric) as total_size, 
 					SUM(oe.quantity::numeric) as total_quantity
 				FROM zipper.order_entry oe
 				GROUP BY oe.order_description_uuid
@@ -636,7 +646,7 @@ export async function selectMaterial(req, res, next) {
 			value: materialSchema.info.uuid,
 			label: materialSchema.info.name,
 			unit: materialSchema.info.unit,
-			stock: materialSchema.stock.stock,
+			stock: decimalToNumber(materialSchema.stock.stock),
 		})
 		.from(materialSchema.info)
 		.leftJoin(
@@ -719,7 +729,7 @@ export async function selectPi(req, res, next) {
 		DISTINCT pi_cash.uuid AS value,
 		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
 		bank.name AS pi_bank,
-		SUM(pi_cash_entry.pi_cash_quantity * zipper.order_entry.party_price) AS pi_value,
+		SUM(pi_cash_entry.pi_cash_quantity * zipper.order_entry.party_price)::float8 AS pi_value,
 		ARRAY_AGG(DISTINCT v_order_details.order_number) AS order_numbers,
 		v_order_details.marketing_name
 	FROM

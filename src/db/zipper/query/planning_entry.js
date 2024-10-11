@@ -233,7 +233,10 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			pe.factory_remarks as factory_remarks,
 			oe.style,
 			oe.color,
-			oe.size,
+			CASE 
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+            END as size,,
 			oe.quantity::float8 as order_quantity,
 			vod.order_number,
 			vod.item_description,
@@ -317,7 +320,10 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			oe.style,
 			oe.color,
-			oe.size,
+			CASE 
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+            END as size,,
 			oe.quantity::float8 as order_quantity,
 			vod.order_number,
 			vod.item_description,
