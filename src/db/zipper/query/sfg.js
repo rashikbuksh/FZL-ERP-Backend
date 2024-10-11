@@ -259,12 +259,12 @@ export async function selectSfgBySection(req, res, next) {
 			oe.style as style,
 			oe.color as color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                WHEN vod.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
                         ELSE oe.size
             END as size,
 			concat(oe.style, '/', oe.color, '/', 
 					CASE 
-                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        WHEN vod.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
                         ELSE oe.size
                     END) as style_color_size,
 			oe.quantity::float8 as order_quantity,
