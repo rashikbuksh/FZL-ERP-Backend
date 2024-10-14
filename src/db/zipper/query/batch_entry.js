@@ -168,7 +168,9 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			be.remarks as batch_remarks,
 			oe.style,
 			oe.color,
-			oe.size,
+			CASE 
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT) ELSE oe.size
+            END as size,
 			oe.quantity::float8 as order_quantity,
 			vodf.order_number,
 			vodf.item_description,
@@ -239,7 +241,10 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
 			oe.style,
 			oe.color,
-			oe.size,
+			CASE 
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+            END as size,
 			oe.quantity::float8 as order_quantity,
 			oe.bleaching,
 			vodf.order_number,

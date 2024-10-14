@@ -29,7 +29,13 @@ export async function zipperProductionStatusReport(req, res, next) {
                 CONCAT(swatch_approval_counts.swatch_approval_count, ' / ',
 				order_entry_counts.order_entry_count) AS swatch_approval_count,
                 ARRAY_AGG(DISTINCT oe.style) AS styles,
-                CONCAT(MIN(oe.size), ' - ', MAX(oe.size)) AS sizes,
+                CONCAT(MIN(CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END), ' - ', MAX(CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END)) AS sizes,
                 COUNT(DISTINCT oe.size) AS size_count,
                 SUM(oe.quantity)::float8 AS total_quantity,
                 stock.uuid as stock_uuid,
@@ -206,7 +212,11 @@ export async function dailyChallanReport(req, res, next) {
                 vodf.factory_uuid,
                 vodf.factory_name,
                 oe.uuid as order_entry_uuid,
-                CONCAT(oe.style, ' - ', oe.color, ' - ', oe.size) AS style_color_size,
+                CONCAT(oe.style, ' - ', oe.color, ' - ', 
+                    CASE 
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END) AS style_color_size,
                 null as count_length_name,
                 packing_list_grouped.total_quantity::float8,
                 challan.receive_status,
@@ -609,6 +619,8 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 order_entry.uuid as order_entry_uuid,
                 order_info.uuid as order_info_uuid,
                 CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+                order_info.created_at as order_created_at,
+                order_info.updated_at as order_updated_at,
                 order_info.party_uuid,
                 party.name as party_name,
                 order_info.marketing_uuid,
@@ -619,17 +631,22 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 order_entry.count_length_uuid,
                 count_length.count,
                 count_length.length,
-                batch_entry_quantity_length.quantity,
+                batch_entry_quantity_length.total_quantity,
                 batch_entry_quantity_length.total_weight,
                 batch.yarn_quantity,
                 batch.is_drying_complete,
-                batch_entry_coning.total_coning_production_quantity
+                batch_entry_coning.total_coning_production_quantity,
+                coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) as total_delivery_delivered_quantity,
+                coalesce(thread_challan_sum.total_delivery_balance_quantity,0) as total_delivery_balance_quantity,
+                coalesce(thread_challan_sum.total_short_quantity,0) as total_short_quantity,
+                coalesce(thread_challan_sum.total_reject_quantity,0) as total_reject_quantity,
+                batch.remarks
             FROM
-                thread.batch
+                thread.order_entry
+            LEFT JOIN 
+                thread.batch_entry ON batch_entry.order_entry_uuid = order_entry.uuid
             LEFT JOIN
-                thread.batch_entry ON batch.uuid = batch_entry.batch_uuid
-            LEFT JOIN
-                thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                 thread.batch ON batch.uuid = batch_entry.batch_uuid
             LEFT JOIN
                 thread.order_info ON order_entry.order_info_uuid = order_info.uuid
             LEFT JOIN
@@ -640,11 +657,13 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 public.marketing ON order_info.marketing_uuid = marketing.uuid
             LEFT JOIN (
                 SELECT 
-                    SUM(batch_entry.quantity),
+                    SUM(batch_entry.quantity) as total_quantity,
                     SUM(count_length.max_weight * batch_entry.quantity) as total_weight,
                     batch_entry.batch_uuid
                 FROM
                     thread.batch_entry
+                LEFT JOIN thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                LEFT JOIN thread.count_length ON order_entry.count_length_uuid = count_length.uuid
                 GROUP BY
                     batch_entry.batch_uuid
             ) batch_entry_quantity_length ON batch.uuid = batch_entry.batch_uuid
@@ -657,6 +676,23 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 GROUP BY
                     batch_uuid
             ) batch_entry_coning ON batch.uuid = batch_entry_coning.batch_uuid
+             LEFT JOIN (
+                SELECT 
+                    toe.uuid as order_entry_uuid,
+                    SUM(CASE WHEN challan.gate_pass = 1 THEN challan_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
+                    SUM(CASE WHEN challan.gate_pass = 0 THEN challan_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
+                    SUM(challan_entry.short_quantity)AS total_short_quantity,
+                    SUM(challan_entry.reject_quantity) AS total_reject_quantity
+                FROM
+                    thread.challan
+                LEFT JOIN
+                    thread.challan_entry ON challan.uuid = challan_entry.challan_uuid
+                LEFT JOIN
+                    thread.order_entry toe ON challan_entry.order_entry_uuid = toe.uuid
+                GROUP BY
+                    toe.uuid
+            ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid
+            WHERE batch.uuid IS NOT NULL
             `;
 
 	const resultPromise = db.execute(query);

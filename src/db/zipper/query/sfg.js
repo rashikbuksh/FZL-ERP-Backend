@@ -258,8 +258,15 @@ export async function selectSfgBySection(req, res, next) {
 			oe.order_description_uuid as order_description_uuid,
 			oe.style as style,
 			oe.color as color,
-			oe.size as size,
-			concat(oe.style, '/', oe.color, '/', oe.size) as style_color_size,
+			CASE 
+                WHEN vod.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+            END as size,
+			concat(oe.style, '/', oe.color, '/', 
+					CASE 
+                        WHEN vod.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
+                        ELSE oe.size
+                    END) as style_color_size,
 			oe.quantity::float8 as order_quantity,
 			sfg.recipe_uuid as recipe_uuid,
 			recipe.name as recipe_name,
