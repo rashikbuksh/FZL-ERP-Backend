@@ -213,6 +213,9 @@ export async function selectBySection(req, res, next) {
 			vodf.order_description_uuid,
 			vodf.order_number,
 			vodf.item_description,
+			oe.style,
+			oe.color,
+			oe.size,
 			concat(oe.style, '-', oe.color, '-', 
 					CASE 
                         WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
