@@ -42,10 +42,6 @@ export const lc = commercial.table('lc', {
 		.notNull(),
 	lc_number: text('lc_number').notNull(),
 	lc_date: DateTime('lc_date').notNull(),
-	lc_value: decimal('payment_value', {
-		precision: 20,
-		scale: 4,
-	}).default(0),
 	payment_date: DateTime('payment_date').default(null),
 	ldbc_fdbc: text('ldbc_fdbc').default(null),
 	acceptance_date: DateTime('acceptance_date').default(null),

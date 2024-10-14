@@ -1,5 +1,10 @@
-import { decimal, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
+import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import {
+	DateTime,
+	defaultUUID,
+	PG_DECIMAL,
+	uuid_primary,
+} from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
 import * as zipperSchema from '../zipper/schema.js';
@@ -39,6 +44,7 @@ export const info = material.table('info', {
 	})
 		.notNull()
 		.default(0.0),
+	average_lead_time: integer('average_lead_time').default(0),
 	description: text('description').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
