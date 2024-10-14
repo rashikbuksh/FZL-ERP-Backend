@@ -213,7 +213,10 @@ export async function selectByTrxFrom(req, res, next) {
 			sfg.order_entry_uuid,
 			vodf.order_description_uuid,
 			vodf.order_number, 
-			vodf.item_description, 
+			vodf.item_description,
+			oe.style,
+			oe.color,
+			oe.size,
 			concat(oe.style, '-', oe.color, '-', CASE 
                         WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
                         ELSE oe.size
