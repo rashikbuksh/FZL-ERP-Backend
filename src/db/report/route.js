@@ -30,6 +30,12 @@ reportRouter.get(
 // * LCReport
 reportRouter.get('/lc-report', reportOperations.LCReport);
 
+// * Thread Batch Wise Report
+reportRouter.get(
+	'/thread-production-batch-wise-report',
+	reportOperations.threadProductionStatusBatchWise
+);
+
 export const pathReport = {
 	'/report/zipper-production-status-report': {
 		get: {
@@ -182,6 +188,28 @@ export const pathReport = {
 					bank_uuid: SE.uuid(),
 					bank_name: SE.string('Bank Name'),
 					party_bank: SE.string('Party Bank'),
+				}),
+			},
+		},
+	},
+	'/report/thread-production-batch-wise-report': {
+		get: {
+			summary: 'Thread Batch Wise Report',
+			description: 'Thread Batch Wise Report',
+			tags: ['report'],
+			operationId: 'threadProductionStatusBatchWise',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					batch_number: SE.string('Batch Number'),
+					production_date: SE.date_time(),
+					production_quantity: SE.number(610),
+					production_value: SE.number(101555),
+					production_status: SE.string('Production Status'),
+					production_type: SE.string('Production Type'),
+					production_remarks: SE.string('Production Remarks'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
 				}),
 			},
 		},

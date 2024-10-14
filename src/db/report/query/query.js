@@ -629,11 +629,16 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 order_entry.count_length_uuid,
                 count_length.count,
                 count_length.length,
-                batch_entry_quantity_length.quantity,
+                batch_entry_quantity_length.total_quantity,
                 batch_entry_quantity_length.total_weight,
                 batch.yarn_quantity,
                 batch.is_drying_complete,
-                batch_entry_coning.total_coning_production_quantity
+                batch_entry_coning.total_coning_production_quantity,
+                order_entry.warehouse,
+                order_entry.delivered,
+                order_entry.short_quantity,
+                order_entry.reject_quantity,
+                batch.remarks
             FROM
                 thread.batch
             LEFT JOIN
@@ -650,11 +655,13 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 public.marketing ON order_info.marketing_uuid = marketing.uuid
             LEFT JOIN (
                 SELECT 
-                    SUM(batch_entry.quantity),
+                    SUM(batch_entry.quantity) as total_quantity,
                     SUM(count_length.max_weight * batch_entry.quantity) as total_weight,
                     batch_entry.batch_uuid
                 FROM
                     thread.batch_entry
+                LEFT JOIN thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                LEFT JOIN thread.count_length ON order_entry.count_length_uuid = count_length.uuid
                 GROUP BY
                     batch_entry.batch_uuid
             ) batch_entry_quantity_length ON batch.uuid = batch_entry.batch_uuid
