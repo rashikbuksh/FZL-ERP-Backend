@@ -10,6 +10,11 @@ dashBoardRouter.get(
 	challanRegistrationOperations.selectChallanRegister
 );
 
+dashBoardRouter.get(
+	'/goods-in-warehouse',
+	challanRegistrationOperations.selectGoodsInWarehouse
+);
+
 const pathDashboard = {
 	'/dashboard/challan-register': {
 		get: {
