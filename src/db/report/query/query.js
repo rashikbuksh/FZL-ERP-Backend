@@ -710,4 +710,67 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 	} catch (error) {
 		await handleError({ error, res });
 	}
-} // incomplete
+}
+
+export async function ProductionReportDirector(req, res, next) {
+	const query = sql`
+            SELECT 
+                vodf.order_info_uuid,
+                vodf.item,
+                vodf.item_name,
+                vodf.order_number,
+                vodf.party_uuid,
+                vodf.party_name,
+                vodf.order_description_uuid,
+                vodf.item_description,
+                vodf.end_type,
+                vodf.end_type_name,
+                coalesce(close_end_sum.total_close_end_quantity,0) as total_close_end_quantity,
+                coalesce(open_end_sum.total_open_end_quantity,0) as total_open_end_quantity,
+                coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity
+            FROM
+                zipper.v_order_details_full vodf
+            LEFT JOIN (
+                SELECT 
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
+                    oe.order_description_uuid
+                FROM
+                    zipper.sfg_production
+                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                GROUP BY
+                    oe.order_description_uuid
+            ) close_end_sum ON vodf.order_description_uuid = close_end_sum.order_description_uuid
+            LEFT JOIN (
+                SELECT 
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
+                    oe.order_description_uuid
+                FROM
+                    zipper.sfg_production
+                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                GROUP BY
+                    oe.order_description_uuid
+            ) open_end_sum ON vodf.order_description_uuid = open_end_sum.order_description_uuid
+            WHERE vodf.order_description_uuid IS NOT NULL
+            ORDER BY vodf.item_name DESC
+    `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Production Report Director',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+} // NOTE: Incomplete

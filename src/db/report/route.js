@@ -36,6 +36,8 @@ reportRouter.get(
 	reportOperations.threadProductionStatusBatchWise
 );
 
+// * Production Report Director
+
 export const pathReport = {
 	'/report/zipper-production-status-report': {
 		get: {

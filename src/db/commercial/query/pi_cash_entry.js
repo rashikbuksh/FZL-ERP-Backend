@@ -158,12 +158,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity::float8 ELSE toe.quantity::float8 END as quantity,
 					vodf.item_description as item_description,
 					ARRAY[
-							vodf.item_short_name,
-							vodf.nylon_stopper_short_name,
-							vodf.end_type_short_name,
-							vodf.puller_type_short_name,
-							vodf.zipper_number_short_name,
-							vodf.lock_type_short_name,
+							vodf.nylon_stopper_name,
 							vodf.teeth_color_short_name,
 							vodf.puller_color_short_name,
 							vodf.hand_short_name,
