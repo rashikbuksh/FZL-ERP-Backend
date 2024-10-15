@@ -47,6 +47,9 @@ import { pathThread } from './db/thread/swagger/route.js';
 // Report
 import { pathReport, tagReport } from './db/report/route.js';
 
+// Dashboard
+import { pathDashboards, tagDashboards } from './db/dashboard/route.js';
+
 const tags = [
 	...tagHr,
 	...tagZipper,
@@ -60,6 +63,7 @@ const tags = [
 	...tagOthers,
 	...tagThread,
 	...tagReport,
+	...tagDashboards,
 ];
 
 const definitions = {
@@ -88,6 +92,7 @@ const paths = {
 	...pathOthers,
 	...pathThread,
 	...pathReport,
+	...pathDashboards,
 };
 
 const swaggerSpec = swaggerJSDoc({

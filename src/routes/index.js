@@ -11,6 +11,7 @@ import { reportRouter } from '../db/report/route.js';
 import { sliderRouter } from '../db/slider/route.js';
 import { threadRouter } from '../db/thread/route.js';
 import { zipperRouter } from '../db/zipper/route.js';
+import { dashBoardRouter } from '../db/dashboard/route.js';
 
 const route = express.Router();
 
@@ -60,5 +61,8 @@ route.use('/thread', threadRouter);
 
 //* report routes
 route.use('/report', reportRouter);
+
+// dashboard routes
+route.use('/dashboard', dashBoardRouter);
 
 export default route;
