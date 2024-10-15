@@ -710,4 +710,489 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 	} catch (error) {
 		await handleError({ error, res });
 	}
-} // incomplete
+}
+
+export async function ProductionReportDirector(req, res, next) {
+	const query = sql`
+            SELECT 
+                vodf.order_info_uuid,
+                vodf.item,
+                vodf.item_name,
+                vodf.order_number,
+                vodf.party_uuid,
+                vodf.party_name,
+                vodf.order_description_uuid,
+                vodf.item_description,
+                vodf.end_type,
+                vodf.end_type_name,
+                coalesce(close_end_sum.total_close_end_quantity,0) as total_close_end_quantity,
+                coalesce(open_end_sum.total_open_end_quantity,0) as total_open_end_quantity,
+                coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity
+            FROM
+                zipper.v_order_details_full vodf
+            LEFT JOIN (
+                SELECT 
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
+                    oe.order_description_uuid
+                FROM
+                    zipper.sfg_production
+                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                GROUP BY
+                    oe.order_description_uuid
+            ) close_end_sum ON vodf.order_description_uuid = close_end_sum.order_description_uuid
+            LEFT JOIN (
+                SELECT 
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
+                    oe.order_description_uuid
+                FROM
+                    zipper.sfg_production
+                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                GROUP BY
+                    oe.order_description_uuid
+            ) open_end_sum ON vodf.order_description_uuid = open_end_sum.order_description_uuid
+            WHERE vodf.order_description_uuid IS NOT NULL
+            ORDER BY vodf.item_name DESC
+    `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		// row group using item_name, then party_name, then order_number, then item_description
+		const groupedData = data?.rows.reduce((acc, row) => {
+			const {
+				item_name,
+				party_name,
+				order_number,
+				item_description,
+				total_close_end_quantity,
+				total_open_end_quantity,
+				total_quantity,
+			} = row;
+
+			const findOrCreate = (array, key, value, createFn) => {
+				let index = array.findIndex((item) => item[key] === value);
+				if (index === -1) {
+					array.push(createFn());
+					index = array.length - 1;
+				}
+				return array[index];
+			};
+
+			const item = findOrCreate(acc, 'item_name', item_name, () => ({
+				item_name,
+				parties: [],
+			}));
+
+			const party = findOrCreate(
+				item.parties,
+				'party_name',
+				party_name,
+				() => ({
+					party_name,
+					orders: [],
+				})
+			);
+
+			const order = findOrCreate(
+				party.orders,
+				'order_number',
+				order_number,
+				() => ({
+					order_number,
+					descriptions: [],
+				})
+			);
+
+			order.descriptions.push({
+				item_description,
+				total_close_end_quantity,
+				total_open_end_quantity,
+				total_quantity,
+			});
+
+			return acc;
+		}, []);
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Production Report Director',
+		};
+
+		res.status(200).json({ toast, data: groupedData });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function ProductionReportThreadDirector(req, res, next) {
+	const query = sql`
+            SELECT 
+                order_info.uuid,
+                'Sewing Thread' as item_name,
+                order_info.party_uuid,
+                party.name as party_name,
+                CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+                CONCAT(count_length.count, ' - ', count_length.length) as count_length_name,
+                coalesce(prod_quantity.total_quantity,0) as total_quantity,
+                coalesce(prod_quantity.total_coning_carton_quantity,0) as total_coning_carton_quantity
+            FROM
+                thread.order_info
+            LEFT JOIN
+                thread.order_entry ON order_entry.order_info_uuid = order_info.uuid
+            LEFT JOIN
+                thread.count_length ON order_entry.count_length_uuid = count_length.uuid
+            LEFT JOIN
+                public.party ON order_info.party_uuid = party.uuid
+            LEFT JOIN
+                public.marketing ON order_info.marketing_uuid = marketing.uuid
+            LEFT JOIN (
+                SELECT
+                    SUM(batch_entry_production.production_quantity) as total_quantity,
+                    SUM(batch_entry_production.coning_carton_quantity) as total_coning_carton_quantity,
+                    order_entry.order_info_uuid
+                FROM
+                    thread.batch_entry_production
+                LEFT JOIN thread.batch_entry ON batch_entry_production.batch_entry_uuid = batch_entry.uuid
+                LEFT JOIN thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                GROUP BY
+                    order_entry.order_info_uuid
+            ) prod_quantity ON order_info.uuid = prod_quantity.order_info_uuid
+            GROUP BY 
+                order_info.uuid, party.name, order_info.created_at, count_length.count, count_length.length, prod_quantity.total_quantity, prod_quantity.total_coning_carton_quantity
+            ORDER BY party.name DESC
+    `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		// first group by item_name, then party_name, then order_number, then count_length_name
+		const groupedData = data?.rows.reduce((acc, row) => {
+			const {
+				item_name,
+				party_name,
+				order_number,
+				count_length_name,
+				total_quantity,
+				total_coning_carton_quantity,
+			} = row;
+
+			const findOrCreate = (array, key, value, createFn) => {
+				let index = array.findIndex((item) => item[key] === value);
+				if (index === -1) {
+					array.push(createFn());
+					index = array.length - 1;
+				}
+				return array[index];
+			};
+
+			const item = findOrCreate(acc, 'item_name', item_name, () => ({
+				item_name,
+				parties: [],
+			}));
+
+			const party = findOrCreate(
+				item.parties,
+				'party_name',
+				party_name,
+				() => ({
+					party_name,
+					orders: [],
+				})
+			);
+
+			const order = findOrCreate(
+				party.orders,
+				'order_number',
+				order_number,
+				() => ({
+					order_number,
+					count_lengths: [],
+				})
+			);
+
+			order.count_lengths.push({
+				count_length_name,
+				total_quantity,
+				total_coning_carton_quantity,
+			});
+
+			return acc;
+		}, []);
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Production Report Director Thread',
+		};
+
+		res.status(200).json({ toast, data: groupedData });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function ProductionReportSnm(req, res, next) {
+	const query = sql`
+            SELECT 
+                vodf.order_info_uuid,
+                vodf.item,
+                vodf.item_name,
+                vodf.order_number,
+                vodf.party_uuid,
+                vodf.party_name,
+                vodf.order_description_uuid,
+                vodf.item_description,
+                vodf.end_type,
+                vodf.end_type_name,
+                oe,uuid as order_entry_uuid,
+                oe.size,
+                coalesce(close_end_sum.total_close_end_quantity,0) as total_close_end_quantity,
+                coalesce(open_end_sum.total_open_end_quantity,0) as total_open_end_quantity,
+                coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity
+            FROM
+                zipper.v_order_details_full vodf
+            LEFT JOIN 
+                zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+            LEFT JOIN (
+                SELECT 
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
+                    oe.uuid as order_entry_uuid
+                FROM
+                    zipper.sfg_production
+                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                GROUP BY
+                    oe.uuid
+            ) close_end_sum ON oe.uuid = close_end_sum.order_entry_uuid
+            LEFT JOIN (
+                SELECT 
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
+                    oe.uuid as order_entry_uuid
+                FROM
+                    zipper.sfg_production
+                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                GROUP BY
+                    oe.uuid
+            ) open_end_sum ON oe.uuid = open_end_sum.order_entry_uuid
+            WHERE vodf.order_description_uuid IS NOT NULL
+            ORDER BY vodf.item_name DESC
+    `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		// row group using firstly item_name, secondly party_name, thirdly order_number, fourthly item_description, fifth size
+
+		const groupedData = data?.rows.reduce((acc, row) => {
+			const {
+				item_name,
+				party_name,
+				order_number,
+				item_description,
+				size,
+				total_close_end_quantity,
+				total_open_end_quantity,
+				total_quantity,
+			} = row;
+
+			const findOrCreate = (array, key, value, createFn) => {
+				let index = array.findIndex((item) => item[key] === value);
+				if (index === -1) {
+					array.push(createFn());
+					index = array.length - 1;
+				}
+				return array[index];
+			};
+
+			const item = findOrCreate(acc, 'item_name', item_name, () => ({
+				item_name,
+				parties: [],
+			}));
+
+			const party = findOrCreate(
+				item.parties,
+				'party_name',
+				party_name,
+				() => ({
+					party_name,
+					orders: [],
+				})
+			);
+
+			const order = findOrCreate(
+				party.orders,
+				'order_number',
+				order_number,
+				() => ({
+					order_number,
+					items: [],
+				})
+			);
+
+			const itemEntry = findOrCreate(
+				order.items,
+				'item_description',
+				item_description,
+				() => ({
+					item_description,
+					sizes: [],
+				})
+			);
+
+			itemEntry.sizes.push({
+				size,
+				total_close_end_quantity,
+				total_open_end_quantity,
+				total_quantity,
+			});
+
+			return acc;
+		}, []);
+
+		console.log(groupedData);
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Production Report S&M',
+		};
+
+		res.status(200).json({ toast, data: groupedData });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function ProductionReportThreadSnm(req, res, next) {
+	const query = sql`
+            SELECT 
+                order_info.uuid,
+                'Sewing Thread' as item_name,
+                order_info.party_uuid,
+                party.name as party_name,
+                CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+                order_entry.uuid as order_entry_uuid,
+                count_length.count,
+                CONCAT(count_length.count, ' - ', count_length.length) as count_length_name,
+                coalesce(prod_quantity.total_quantity,0) as total_quantity,
+                coalesce(prod_quantity.total_coning_carton_quantity,0) as total_coning_carton_quantity
+            FROM
+                thread.order_info
+            LEFT JOIN
+                thread.order_entry ON order_entry.order_info_uuid = order_info.uuid
+            LEFT JOIN
+                thread.count_length ON order_entry.count_length_uuid = count_length.uuid
+            LEFT JOIN
+                public.party ON order_info.party_uuid = party.uuid
+            LEFT JOIN
+                public.marketing ON order_info.marketing_uuid = marketing.uuid
+            LEFT JOIN (
+                SELECT
+                    SUM(batch_entry_production.production_quantity) as total_quantity,
+                    SUM(batch_entry_production.coning_carton_quantity) as total_coning_carton_quantity,
+                    order_entry.uuid as order_entry_uuid
+                FROM
+                    thread.batch_entry_production
+                LEFT JOIN thread.batch_entry ON batch_entry_production.batch_entry_uuid = batch_entry.uuid
+                LEFT JOIN thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                GROUP BY
+                    order_entry.uuid
+            ) prod_quantity ON order_entry.uuid = prod_quantity.order_entry_uuid
+            ORDER BY party.name DESC
+    `;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		// first group by item_name, then party_name, then order_number, then count_length_name
+		const groupedData = data?.rows.reduce((acc, row) => {
+			const {
+				item_name,
+				party_name,
+				order_number,
+				count_length_name,
+				count,
+				total_quantity,
+				total_coning_carton_quantity,
+			} = row;
+
+			const findOrCreate = (array, key, value, createFn) => {
+				let index = array.findIndex((item) => item[key] === value);
+				if (index === -1) {
+					array.push(createFn());
+					index = array.length - 1;
+				}
+				return array[index];
+			};
+
+			const item = findOrCreate(acc, 'item_name', item_name, () => ({
+				item_name,
+				parties: [],
+			}));
+
+			const party = findOrCreate(
+				item.parties,
+				'party_name',
+				party_name,
+				() => ({
+					party_name,
+					orders: [],
+				})
+			);
+
+			const order = findOrCreate(
+				party.orders,
+				'order_number',
+				order_number,
+				() => ({
+					order_number,
+					count_lengths: [],
+				})
+			);
+
+			const count_length = findOrCreate(
+				order.count_lengths,
+				'count_length_name',
+				count_length_name,
+				() => ({
+					count_length_name,
+					count: [],
+				})
+			);
+
+			count_length.count.push({
+				count,
+				total_quantity,
+				total_coning_carton_quantity,
+			});
+
+			return acc;
+		}, []);
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Production Report Director Thread',
+		};
+
+		res.status(200).json({ toast, data: groupedData });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

@@ -1,16 +1,6 @@
-import { desc, eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
-import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
+import { sql } from 'drizzle-orm';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
-import { decimalToNumber } from '../../variables.js';
-import * as zipperSchema from '../../zipper/schema.js';
 
 export async function selectChallanRegister(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -32,14 +22,12 @@ export async function selectChallanRegister(req, res, next) {
         UNION 
         SELECT 
                 ce.quantity::float8 as amount,
-                null as item_name,
-                concat('ST', to_char(oi.created_at, 'YY'), '-', lpad(oi.id::text, 4, '0')) AS sewing_thread
-        
+                concat('ST', to_char(oi.created_at, 'YY'), '-', lpad(oi.id::text, 4, '0')) AS sewing_thread,
+                null as item_name
             FROM
                 thread.challan c 
                 LEFT JOIN thread.order_info oi ON c.order_info_uuid = oi.uuid
                 LEFT JOIN thread.challan_entry ce ON c.uuid = ce.challan_uuid
-
     `;
 	if (start_date && end_date) {
 		query = sql`${query} WHERE (pl.created_at BETWEEN ${start_date} AND ${end_date} OR ce.created_at BETWEEN ${start_date} AND ${end_date})`;
