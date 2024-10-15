@@ -37,6 +37,10 @@ reportRouter.get(
 );
 
 // * Production Report Director
+reportRouter.get(
+	'/production-report-director',
+	reportOperations.ProductionReportDirector
+);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -204,6 +208,27 @@ export const pathReport = {
 			responses: {
 				200: SE.response_schema(200, {
 					batch_number: SE.string('Batch Number'),
+					production_date: SE.date_time(),
+					production_quantity: SE.number(610),
+					production_value: SE.number(101555),
+					production_status: SE.string('Production Status'),
+					production_type: SE.string('Production Type'),
+					production_remarks: SE.string('Production Remarks'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/production-report-director': {
+		get: {
+			summary: 'Production Report Director',
+			description: 'Production Report Director',
+			tags: ['report'],
+			operationId: 'ProductionReportDirector',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
 					production_date: SE.date_time(),
 					production_quantity: SE.number(610),
 					production_value: SE.number(101555),
