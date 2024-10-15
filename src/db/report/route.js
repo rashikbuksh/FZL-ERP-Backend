@@ -36,6 +36,30 @@ reportRouter.get(
 	reportOperations.threadProductionStatusBatchWise
 );
 
+// * Production Report Director
+reportRouter.get(
+	'/production-report-director',
+	reportOperations.ProductionReportDirector
+);
+
+// * Production Report Thread Director
+reportRouter.get(
+	'/production-report-thread-director',
+	reportOperations.ProductionReportThreadDirector
+);
+
+// * Production Report Sales & Marketing
+reportRouter.get(
+	'/production-report-sales-marketing',
+	reportOperations.ProductionReportSnm
+);
+
+// * Production Report Thread Sales & Marketing
+reportRouter.get(
+	'/production-report-thread-sales-marketing',
+	reportOperations.ProductionReportThreadSnm
+);
+
 export const pathReport = {
 	'/report/zipper-production-status-report': {
 		get: {
@@ -202,6 +226,90 @@ export const pathReport = {
 			responses: {
 				200: SE.response_schema(200, {
 					batch_number: SE.string('Batch Number'),
+					production_date: SE.date_time(),
+					production_quantity: SE.number(610),
+					production_value: SE.number(101555),
+					production_status: SE.string('Production Status'),
+					production_type: SE.string('Production Type'),
+					production_remarks: SE.string('Production Remarks'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/production-report-director': {
+		get: {
+			summary: 'Production Report Director',
+			description: 'Production Report Director',
+			tags: ['report'],
+			operationId: 'ProductionReportDirector',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					production_date: SE.date_time(),
+					production_quantity: SE.number(610),
+					production_value: SE.number(101555),
+					production_status: SE.string('Production Status'),
+					production_type: SE.string('Production Type'),
+					production_remarks: SE.string('Production Remarks'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/production-report-thread-director': {
+		get: {
+			summary: 'Production Report Thread Director',
+			description: 'Production Report Thread Director',
+			tags: ['report'],
+			operationId: 'ProductionReportThreadDirector',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					production_date: SE.date_time(),
+					production_quantity: SE.number(610),
+					production_value: SE.number(101555),
+					production_status: SE.string('Production Status'),
+					production_type: SE.string('Production Type'),
+					production_remarks: SE.string('Production Remarks'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/production-report-sales-marketing': {
+		get: {
+			summary: 'Production Report Sales & Marketing',
+			description: 'Production Report Sales & Marketing',
+			tags: ['report'],
+			operationId: 'ProductionReportSnm',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					production_date: SE.date_time(),
+					production_quantity: SE.number(610),
+					production_value: SE.number(101555),
+					production_status: SE.string('Production Status'),
+					production_type: SE.string('Production Type'),
+					production_remarks: SE.string('Production Remarks'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/production-report-thread-sales-marketing': {
+		get: {
+			summary: 'Production Report Thread Sales & Marketing',
+			description: 'Production Report Thread Sales & Marketing',
+			tags: ['report'],
+			operationId: 'ProductionReportThreadSnm',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
 					production_date: SE.date_time(),
 					production_quantity: SE.number(610),
 					production_value: SE.number(101555),
