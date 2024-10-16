@@ -118,6 +118,7 @@ export async function selectAll(req, res, next) {
 			vodf.logo_type_short_name,
 			vodf.is_logo_body as logo_is_body,
 			vodf.is_logo_puller as logo_is_puller,
+			vodf.order_type,
 			dcp.mc_no,
 			dcp.cavity_goods::float8,
 			dcp.cavity_defect::float8,
