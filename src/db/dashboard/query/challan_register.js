@@ -5,7 +5,7 @@ import db from '../../index.js';
 export async function selectChallanRegister(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { start_date, end_date } = req.query;
-	console.log(start_date, end_date);
+
 	let query = sql`
 		WITH challan_data AS (
         SELECT 
@@ -39,10 +39,13 @@ export async function selectChallanRegister(req, res, next) {
     SELECT
         *,
         (SELECT SUM(number_of_challan) FROM challan_data) as total_number_of_challan
-    FROM challan_data;
+    FROM challan_data 
     `;
 	if (start_date && end_date) {
-		query = sql`${query} WHERE (pl.created_at BETWEEN ${start_date} AND ${end_date} OR ce.created_at BETWEEN ${start_date} AND ${end_date})`;
+		// convert day to date
+		query.append(
+			sql`WHERE (pl.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' OR ce.created_at BETWEEN $${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')`
+		);
 	}
 	const resultPromise = db.execute(query);
 
