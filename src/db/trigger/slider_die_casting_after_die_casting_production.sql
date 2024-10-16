@@ -41,17 +41,17 @@ BEGIN
 
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER slider_die_casting_after_die_casting_production_insert
+CREATE OR REPLACE TRIGGER slider_die_casting_after_die_casting_production_insert
 AFTER INSERT ON slider.die_casting_production
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_die_casting_after_die_casting_production_insert();
 
-CREATE TRIGGER slider_die_casting_after_die_casting_production_delete
+CREATE OR REPLACE TRIGGER slider_die_casting_after_die_casting_production_delete
 AFTER DELETE ON slider.die_casting_production
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_die_casting_after_die_casting_production_delete();
 
-CREATE TRIGGER slider_die_casting_after_die_casting_production_update
+CREATE OR REPLACE TRIGGER slider_die_casting_after_die_casting_production_update
 AFTER UPDATE ON slider.die_casting_production
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_die_casting_after_die_casting_production_update();
@@ -104,19 +104,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE TRIGGER slider_stock_after_coloring_transaction_insert
+CREATE OR REPLACE TRIGGER slider_stock_after_coloring_transaction_insert
 AFTER INSERT ON slider.coloring_transaction
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_coloring_transaction_insert();
 
 
-CREATE TRIGGER slider_stock_after_coloring_transaction_delete
+CREATE OR REPLACE TRIGGER slider_stock_after_coloring_transaction_delete
 AFTER DELETE ON slider.coloring_transaction
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_coloring_transaction_delete();
 
 
-CREATE TRIGGER slider_stock_after_coloring_transaction_update
+CREATE OR REPLACE TRIGGER slider_stock_after_coloring_transaction_update
 AFTER UPDATE ON slider.coloring_transaction
 FOR EACH ROW
 EXECUTE FUNCTION slider.slider_stock_after_coloring_transaction_update();
