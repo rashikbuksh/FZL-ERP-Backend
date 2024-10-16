@@ -1,5 +1,6 @@
 import e, { Router } from 'express';
 import * as challanRegistrationOperations from './query/challan_register.js';
+import * as goodsInWarehouseOperations from './query/goods_in_warehouse.js';
 
 const dashBoardRouter = Router();
 
@@ -12,7 +13,7 @@ dashBoardRouter.get(
 
 dashBoardRouter.get(
 	'/goods-in-warehouse',
-	challanRegistrationOperations.selectGoodsInWarehouse
+	goodsInWarehouseOperations.selectGoodsInWarehouse
 );
 
 const pathDashboard = {
@@ -43,6 +44,40 @@ const pathDashboard = {
 					},
 				},
 			],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							example: {
+								item_name: {
+									number_of_challan: 0,
+									amount: 0,
+								},
+							},
+						},
+					},
+				},
+				500: {
+					description: 'Internal server error',
+					content: {
+						'application/json': {
+							example: {
+								error: 'error message',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/dashboard/goods-in-warehouse': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get goods in warehouse summary',
+			description: 'Get goods in warehouse summary',
+			parameters: [],
 
 			responses: {
 				200: {

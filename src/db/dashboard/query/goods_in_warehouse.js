@@ -1,23 +1,19 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
-import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
-import { decimalToNumber } from '../../variables.js';
-import * as zipperSchema from '../../zipper/schema.js';
 
 export async function selectGoodsInWarehouse(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	const { start_date, end_date } = req.query;
-	let query = sql`
-        SELECT 
-            ple.quantity::float8 as amount,
+
+	const query = sql`
+		    WITH challan_data AS (
+        SELECT
+            sum(sfg.warehouse)::float8 as amount,
+            count(*) as number_of_challan,
             null as sewing_thread,
             CASE 
                 WHEN vodf.nylon_stopper_name = 'Metallic' THEN vodf.item_name || ' Metallic'
@@ -28,57 +24,36 @@ export async function selectGoodsInWarehouse(req, res, next) {
             delivery.packing_list pl
             LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
             LEFT JOIN zipper.v_order_details_full vodf ON pl.order_info_uuid = vodf.order_info_uuid
-        UNION 
-        SELECT 
-            ce.quantity::float8 as amount,
-            null as item_name,
-            concat('ST', to_char(oi.created_at, 'YY'), '-', lpad(oi.id::text, 4, '0')) AS sewing_thread
-        
+            LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+        WHERE pl.challan_uuid IS NULL
+        GROUP BY
+            item_name, sewing_thread, vodf.nylon_stopper_name, vodf.item_name
+        UNION
+        SELECT
+            sum(toe.warehouse)::float8  as amount,
+            sum(toe.carton_quantity) as number_of_carton,
+            'Sewing Thread' as sewing_thread,
+            null as item_name
         FROM
-            thread.challan c 
-            LEFT JOIN thread.order_info oi ON c.order_info_uuid = oi.uuid
-            LEFT JOIN thread.challan_entry ce ON c.uuid = ce.challan_uuid
-
-    `;
-	if (start_date && end_date) {
-		query = sql`${query} WHERE (pl.created_at BETWEEN ${start_date} AND ${end_date} OR ce.created_at BETWEEN ${start_date} AND ${end_date})`;
-	}
+            thread.order_entry toe
+            LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+    )
+    SELECT
+        *,
+        (SELECT SUM(number_of_challan) FROM challan_data) as total_number_of_challan
+    FROM challan_data;
+	`;
 	const resultPromise = db.execute(query);
-	try {
-		const result = await resultPromise;
-		// Accessing the rows directly, assuming result.rows contains the data
-		const data = result.rows || result; // Adjust this based on the structure of result
 
-		let totalChallanCount = 0;
-		const summary = data.reduce((acc, row) => {
-			const key = row.item_name || row.sewing_thread;
-			if (key.startsWith('ST')) {
-				if (!acc.sewing_thread) {
-					acc.sewing_thread = {
-						number_of_challan: 0,
-						amount: 0,
-					};
-				}
-				acc.sewing_thread.number_of_challan += 1;
-				acc.sewing_thread.amount += row.amount;
-			} else {
-				if (!acc.item) {
-					acc.item = {};
-				}
-				if (!acc.item[key]) {
-					acc.item[key] = {
-						number_of_challan: 0,
-						amount: 0,
-					};
-				}
-				acc.item[key].number_of_challan += 1;
-				acc.item[key].amount += row.amount;
-			}
-			totalChallanCount += 1;
-			return acc;
-		}, {});
-		summary.totalChallanCount = totalChallanCount;
-		handleResponse(res, summary);
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Goods in Warehouse',
+		};
+
+		return res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		handleError({ error, res });
 	}
