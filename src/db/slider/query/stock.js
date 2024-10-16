@@ -132,7 +132,8 @@ export async function selectAll(req, res, next) {
 		vodf.logo_type_name,
 		vodf.logo_type_short_name,
 		vodf.is_logo_body,
-		vodf.is_logo_puller
+		vodf.is_logo_puller,
+		vodf.order_type
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -222,7 +223,8 @@ export async function select(req, res, next) {
 		vodf.logo_type_name,
 		vodf.logo_type_short_name,
 		vodf.is_logo_body,
-		vodf.is_logo_puller
+		vodf.is_logo_puller,
+		vodf.order_type
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -299,6 +301,7 @@ export async function selectStockByFromSection(req, res, next) {
 		vodf.logo_type_short_name,
 		vodf.is_logo_body as logo_is_body,
 		vodf.is_logo_puller as logo_is_puller,
+		vodf.order_type,
 		stock.order_quantity::float8,
 		stock.body_quantity::float8,
 		stock.cap_quantity::float8,
