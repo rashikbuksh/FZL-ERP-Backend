@@ -261,7 +261,7 @@ export async function selectStockByFromSection(req, res, next) {
 		stock.order_description_uuid,
 		order_description.order_info_uuid,
 		pp.name AS party_name,
-		CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+		vodf.order_number,
 		vodf.item_description,
 		vodf.item,
 		vodf.item_name,

@@ -255,6 +255,7 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			pp.name as party_name,
 			vodf.order_number,
 			vodf.item_description,
+			vodf.order_type,
 			stock.sa_prod::float8,
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
