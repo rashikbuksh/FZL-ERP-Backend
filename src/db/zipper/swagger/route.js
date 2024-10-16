@@ -298,6 +298,7 @@ const order_description_fields = {
 	garments_remarks: SE.string('Remarks'),
 	slider_finishing_stock: SE.number(0),
 	is_inch: SE.number(0),
+	order_type: SE.string('full'),
 };
 
 const order_description_merge_schema_fields = {
@@ -338,6 +339,7 @@ const order_description_merge_schema_fields = {
 	created_by: SE.uuid(),
 	created_by_name: SE.string('John Doe'),
 	garments_remarks: SE.string('Remarks'),
+	order_type: SE.string('full'),
 };
 
 // * Zipper Order Description * //
@@ -424,6 +426,7 @@ export const pathZipperOrderDescription = {
 				created_by: SE.uuid(),
 				created_by_name: SE.string('John Doe'),
 				garments_remarks: SE.string('Remarks'),
+				order_type: SE.string('full'),
 			}),
 			responses: {
 				200: SE.response_schema_ref(200, 'zipper/order_description'),

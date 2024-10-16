@@ -43,6 +43,12 @@ export const print_in_enum = zipper.enum('print_in_enum', [
 	'break_down',
 ]);
 
+export const order_type_enum = zipper.enum('order_type_enum', [
+	'full',
+	'slider',
+	'tape',
+]);
+
 export const order_info = zipper.table('order_info', {
 	uuid: uuid_primary,
 	id: integer('id')
@@ -165,6 +171,7 @@ export const order_description = zipper.table('order_description', {
 	// metal_teeth_molding: PG_DECIMAL('metal_teeth_molding').default(0),
 	slider_finishing_stock: PG_DECIMAL('slider_finishing_stock').default(0),
 	is_inch: integer('is_inch').default(0),
+	order_type: order_type_enum('order_type').default('full'),
 });
 
 export const order_entry = zipper.table('order_entry', {

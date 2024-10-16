@@ -114,6 +114,7 @@ export async function insert(req, res, next) {
 		created_by,
 		garments_remarks,
 		is_inch,
+		order_type,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -154,6 +155,7 @@ export async function insert(req, res, next) {
 			created_by,
 			garments_remarks,
 			is_inch,
+			order_type,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -210,6 +212,7 @@ export async function update(req, res, next) {
 		created_by,
 		garments_remarks,
 		is_inch,
+		order_type,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -250,6 +253,7 @@ export async function update(req, res, next) {
 			created_by,
 			garments_remarks,
 			is_inch,
+			order_type,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
@@ -374,6 +378,7 @@ export async function selectAll(req, res, next) {
 			tape_coil_uuid: order_description.tape_coil_uuid,
 			tape_name: tape_coil.name,
 			is_inch: order_description.is_inch,
+			order_type: order_description.order_type,
 		})
 		.from(order_description)
 		.where(
@@ -575,6 +580,7 @@ export async function select(req, res, next) {
 			tape_coil_uuid: order_description.tape_coil_uuid,
 			tape_name: tape_coil.name,
 			is_inch: order_description.is_inch,
+			order_type: order_description.order_type,
 		})
 		.from(order_description)
 		.where(
