@@ -764,60 +764,60 @@ export async function ProductionReportDirector(req, res, next) {
 		const data = await resultPromise;
 
 		// row group using item_name, then party_name, then order_number, then item_description
-		const groupedData = data?.rows.reduce((acc, row) => {
-			const {
-				item_name,
-				party_name,
-				order_number,
-				item_description,
-				total_close_end_quantity,
-				total_open_end_quantity,
-				total_quantity,
-			} = row;
+		// const groupedData = data?.rows.reduce((acc, row) => {
+		// 	const {
+		// 		item_name,
+		// 		party_name,
+		// 		order_number,
+		// 		item_description,
+		// 		total_close_end_quantity,
+		// 		total_open_end_quantity,
+		// 		total_quantity,
+		// 	} = row;
 
-			const findOrCreate = (array, key, value, createFn) => {
-				let index = array.findIndex((item) => item[key] === value);
-				if (index === -1) {
-					array.push(createFn());
-					index = array.length - 1;
-				}
-				return array[index];
-			};
+		// 	const findOrCreate = (array, key, value, createFn) => {
+		// 		let index = array.findIndex((item) => item[key] === value);
+		// 		if (index === -1) {
+		// 			array.push(createFn());
+		// 			index = array.length - 1;
+		// 		}
+		// 		return array[index];
+		// 	};
 
-			const item = findOrCreate(acc, 'item_name', item_name, () => ({
-				item_name,
-				parties: [],
-			}));
+		// 	const item = findOrCreate(acc, 'item_name', item_name, () => ({
+		// 		item_name,
+		// 		parties: [],
+		// 	}));
 
-			const party = findOrCreate(
-				item.parties,
-				'party_name',
-				party_name,
-				() => ({
-					party_name,
-					orders: [],
-				})
-			);
+		// 	const party = findOrCreate(
+		// 		item.parties,
+		// 		'party_name',
+		// 		party_name,
+		// 		() => ({
+		// 			party_name,
+		// 			orders: [],
+		// 		})
+		// 	);
 
-			const order = findOrCreate(
-				party.orders,
-				'order_number',
-				order_number,
-				() => ({
-					order_number,
-					descriptions: [],
-				})
-			);
+		// 	const order = findOrCreate(
+		// 		party.orders,
+		// 		'order_number',
+		// 		order_number,
+		// 		() => ({
+		// 			order_number,
+		// 			descriptions: [],
+		// 		})
+		// 	);
 
-			order.descriptions.push({
-				item_description,
-				total_close_end_quantity,
-				total_open_end_quantity,
-				total_quantity,
-			});
+		// 	order.descriptions.push({
+		// 		item_description,
+		// 		total_close_end_quantity,
+		// 		total_open_end_quantity,
+		// 		total_quantity,
+		// 	});
 
-			return acc;
-		}, []);
+		// 	return acc;
+		// }, []);
 
 		const toast = {
 			status: 200,
@@ -825,7 +825,7 @@ export async function ProductionReportDirector(req, res, next) {
 			message: 'Production Report Director',
 		};
 
-		res.status(200).json({ toast, data: groupedData });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -875,58 +875,58 @@ export async function ProductionReportThreadDirector(req, res, next) {
 		const data = await resultPromise;
 
 		// first group by item_name, then party_name, then order_number, then count_length_name
-		const groupedData = data?.rows.reduce((acc, row) => {
-			const {
-				item_name,
-				party_name,
-				order_number,
-				count_length_name,
-				total_quantity,
-				total_coning_carton_quantity,
-			} = row;
+		// const groupedData = data?.rows.reduce((acc, row) => {
+		// 	const {
+		// 		item_name,
+		// 		party_name,
+		// 		order_number,
+		// 		count_length_name,
+		// 		total_quantity,
+		// 		total_coning_carton_quantity,
+		// 	} = row;
 
-			const findOrCreate = (array, key, value, createFn) => {
-				let index = array.findIndex((item) => item[key] === value);
-				if (index === -1) {
-					array.push(createFn());
-					index = array.length - 1;
-				}
-				return array[index];
-			};
+		// 	const findOrCreate = (array, key, value, createFn) => {
+		// 		let index = array.findIndex((item) => item[key] === value);
+		// 		if (index === -1) {
+		// 			array.push(createFn());
+		// 			index = array.length - 1;
+		// 		}
+		// 		return array[index];
+		// 	};
 
-			const item = findOrCreate(acc, 'item_name', item_name, () => ({
-				item_name,
-				parties: [],
-			}));
+		// 	const item = findOrCreate(acc, 'item_name', item_name, () => ({
+		// 		item_name,
+		// 		parties: [],
+		// 	}));
 
-			const party = findOrCreate(
-				item.parties,
-				'party_name',
-				party_name,
-				() => ({
-					party_name,
-					orders: [],
-				})
-			);
+		// 	const party = findOrCreate(
+		// 		item.parties,
+		// 		'party_name',
+		// 		party_name,
+		// 		() => ({
+		// 			party_name,
+		// 			orders: [],
+		// 		})
+		// 	);
 
-			const order = findOrCreate(
-				party.orders,
-				'order_number',
-				order_number,
-				() => ({
-					order_number,
-					count_lengths: [],
-				})
-			);
+		// 	const order = findOrCreate(
+		// 		party.orders,
+		// 		'order_number',
+		// 		order_number,
+		// 		() => ({
+		// 			order_number,
+		// 			count_lengths: [],
+		// 		})
+		// 	);
 
-			order.count_lengths.push({
-				count_length_name,
-				total_quantity,
-				total_coning_carton_quantity,
-			});
+		// 	order.count_lengths.push({
+		// 		count_length_name,
+		// 		total_quantity,
+		// 		total_coning_carton_quantity,
+		// 	});
 
-			return acc;
-		}, []);
+		// 	return acc;
+		// }, []);
 
 		const toast = {
 			status: 200,
@@ -934,7 +934,7 @@ export async function ProductionReportThreadDirector(req, res, next) {
 			message: 'Production Report Director Thread',
 		};
 
-		res.status(200).json({ toast, data: groupedData });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -997,73 +997,71 @@ export async function ProductionReportSnm(req, res, next) {
 
 		// row group using firstly item_name, secondly party_name, thirdly order_number, fourthly item_description, fifth size
 
-		const groupedData = data?.rows.reduce((acc, row) => {
-			const {
-				item_name,
-				party_name,
-				order_number,
-				item_description,
-				size,
-				total_close_end_quantity,
-				total_open_end_quantity,
-				total_quantity,
-			} = row;
+		// const groupedData = data?.rows.reduce((acc, row) => {
+		// 	const {
+		// 		item_name,
+		// 		party_name,
+		// 		order_number,
+		// 		item_description,
+		// 		size,
+		// 		total_close_end_quantity,
+		// 		total_open_end_quantity,
+		// 		total_quantity,
+		// 	} = row;
 
-			const findOrCreate = (array, key, value, createFn) => {
-				let index = array.findIndex((item) => item[key] === value);
-				if (index === -1) {
-					array.push(createFn());
-					index = array.length - 1;
-				}
-				return array[index];
-			};
+		// 	const findOrCreate = (array, key, value, createFn) => {
+		// 		let index = array.findIndex((item) => item[key] === value);
+		// 		if (index === -1) {
+		// 			array.push(createFn());
+		// 			index = array.length - 1;
+		// 		}
+		// 		return array[index];
+		// 	};
 
-			const item = findOrCreate(acc, 'item_name', item_name, () => ({
-				item_name,
-				parties: [],
-			}));
+		// 	const item = findOrCreate(acc, 'item_name', item_name, () => ({
+		// 		item_name,
+		// 		parties: [],
+		// 	}));
 
-			const party = findOrCreate(
-				item.parties,
-				'party_name',
-				party_name,
-				() => ({
-					party_name,
-					orders: [],
-				})
-			);
+		// 	const party = findOrCreate(
+		// 		item.parties,
+		// 		'party_name',
+		// 		party_name,
+		// 		() => ({
+		// 			party_name,
+		// 			orders: [],
+		// 		})
+		// 	);
 
-			const order = findOrCreate(
-				party.orders,
-				'order_number',
-				order_number,
-				() => ({
-					order_number,
-					items: [],
-				})
-			);
+		// 	const order = findOrCreate(
+		// 		party.orders,
+		// 		'order_number',
+		// 		order_number,
+		// 		() => ({
+		// 			order_number,
+		// 			items: [],
+		// 		})
+		// 	);
 
-			const itemEntry = findOrCreate(
-				order.items,
-				'item_description',
-				item_description,
-				() => ({
-					item_description,
-					sizes: [],
-				})
-			);
+		// 	const itemEntry = findOrCreate(
+		// 		order.items,
+		// 		'item_description',
+		// 		item_description,
+		// 		() => ({
+		// 			item_description,
+		// 			sizes: [],
+		// 		})
+		// 	);
 
-			itemEntry.sizes.push({
-				size,
-				total_close_end_quantity,
-				total_open_end_quantity,
-				total_quantity,
-			});
+		// 	itemEntry.sizes.push({
+		// 		size,
+		// 		total_close_end_quantity,
+		// 		total_open_end_quantity,
+		// 		total_quantity,
+		// 	});
 
-			return acc;
-		}, []);
-
-		console.log(groupedData);
+		// 	return acc;
+		// }, []);
 
 		const toast = {
 			status: 200,
@@ -1071,7 +1069,7 @@ export async function ProductionReportSnm(req, res, next) {
 			message: 'Production Report S&M',
 		};
 
-		res.status(200).json({ toast, data: groupedData });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -1121,69 +1119,69 @@ export async function ProductionReportThreadSnm(req, res, next) {
 		const data = await resultPromise;
 
 		// first group by item_name, then party_name, then order_number, then count_length_name
-		const groupedData = data?.rows.reduce((acc, row) => {
-			const {
-				item_name,
-				party_name,
-				order_number,
-				count_length_name,
-				count,
-				total_quantity,
-				total_coning_carton_quantity,
-			} = row;
+		// const groupedData = data?.rows.reduce((acc, row) => {
+		// 	const {
+		// 		item_name,
+		// 		party_name,
+		// 		order_number,
+		// 		count_length_name,
+		// 		count,
+		// 		total_quantity,
+		// 		total_coning_carton_quantity,
+		// 	} = row;
 
-			const findOrCreate = (array, key, value, createFn) => {
-				let index = array.findIndex((item) => item[key] === value);
-				if (index === -1) {
-					array.push(createFn());
-					index = array.length - 1;
-				}
-				return array[index];
-			};
+		// 	const findOrCreate = (array, key, value, createFn) => {
+		// 		let index = array.findIndex((item) => item[key] === value);
+		// 		if (index === -1) {
+		// 			array.push(createFn());
+		// 			index = array.length - 1;
+		// 		}
+		// 		return array[index];
+		// 	};
 
-			const item = findOrCreate(acc, 'item_name', item_name, () => ({
-				item_name,
-				parties: [],
-			}));
+		// 	const item = findOrCreate(acc, 'item_name', item_name, () => ({
+		// 		item_name,
+		// 		parties: [],
+		// 	}));
 
-			const party = findOrCreate(
-				item.parties,
-				'party_name',
-				party_name,
-				() => ({
-					party_name,
-					orders: [],
-				})
-			);
+		// 	const party = findOrCreate(
+		// 		item.parties,
+		// 		'party_name',
+		// 		party_name,
+		// 		() => ({
+		// 			party_name,
+		// 			orders: [],
+		// 		})
+		// 	);
 
-			const order = findOrCreate(
-				party.orders,
-				'order_number',
-				order_number,
-				() => ({
-					order_number,
-					count_lengths: [],
-				})
-			);
+		// 	const order = findOrCreate(
+		// 		party.orders,
+		// 		'order_number',
+		// 		order_number,
+		// 		() => ({
+		// 			order_number,
+		// 			count_lengths: [],
+		// 		})
+		// 	);
 
-			const count_length = findOrCreate(
-				order.count_lengths,
-				'count_length_name',
-				count_length_name,
-				() => ({
-					count_length_name,
-					count: [],
-				})
-			);
+		// 	const count_length = findOrCreate(
+		// 		order.count_lengths,
+		// 		'count_length_name',
+		// 		count_length_name,
+		// 		() => ({
+		// 			count_length_name,
+		// 			count: [],
+		// 		})
+		// 	);
 
-			count_length.count.push({
-				count,
-				total_quantity,
-				total_coning_carton_quantity,
-			});
+		// 	count_length.count.push({
+		// 		count,
+		// 		total_quantity,
+		// 		total_coning_carton_quantity,
+		// 	});
 
-			return acc;
-		}, []);
+		// 	return acc;
+		// }, []);
 
 		const toast = {
 			status: 200,
@@ -1191,7 +1189,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
 			message: 'Production Report Director Thread',
 		};
 
-		res.status(200).json({ toast, data: groupedData });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
