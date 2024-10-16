@@ -180,8 +180,8 @@ export const order_entry = zipper.table('order_entry', {
 		() => order_description.uuid
 	),
 	style: text('style').notNull(),
-	color: text('color').notNull(),
-	size: text('size').notNull(),
+	color: text('color').default(null),
+	size: text('size').default(null),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
