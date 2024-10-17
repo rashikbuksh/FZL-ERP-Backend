@@ -6,8 +6,6 @@ export async function selectChallanRegister(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { start_date, end_date } = req.query;
 
-	console.log(start_date, end_date);
-
 	const query = sql`
         WITH challan_data AS (
             SELECT 
@@ -46,10 +44,6 @@ export async function selectChallanRegister(req, res, next) {
         FROM challan_data;
         `;
 
-	if (start_date && end_date) {
-		// Execute the query with the date range
-		console.log(query);
-	}
 	const resultPromise = db.execute(query);
 
 	try {

@@ -7,8 +7,6 @@ export async function selectPiRegister(req, res, next) {
 
 	const { start_date, end_date } = req.query;
 
-	console.log(start_date, end_date);
-
 	const query = sql`
                 WITH pi_data as (
                 SELECT 
