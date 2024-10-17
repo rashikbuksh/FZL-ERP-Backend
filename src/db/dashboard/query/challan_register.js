@@ -28,7 +28,7 @@ export async function selectChallanRegister(req, res, next) {
             SELECT 
                 sum(ce.quantity)::float8 as amount,
                 count(*) as number_of_challan,
-                'sewing_thread' as item_name
+                'Sewing Thread' as item_name
             FROM
                 thread.challan c 
                 LEFT JOIN thread.order_info oi ON c.order_info_uuid = oi.uuid
