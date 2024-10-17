@@ -33,6 +33,7 @@ export const OrderDetailsView = `
       order_info.updated_at AS updated_at,
       order_info.remarks,
       order_description.is_inch,
+      order_description.is_meter,
       order_description.order_type
     FROM
       zipper.order_info
@@ -158,6 +159,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     op_teeth_type.name as teeth_type_name,
     op_teeth_type.short_name as teeth_type_short_name,
     order_description.is_inch,
+    order_description.is_meter,
     order_description.order_type
    FROM zipper.order_info
      LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
