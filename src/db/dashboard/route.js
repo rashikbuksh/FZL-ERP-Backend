@@ -79,10 +79,6 @@ const pathDashboard = {
 												type: 'string',
 												example: 'Vislon',
 											},
-											sewing_thread: {
-												type: 'string',
-												example: 'Sewing Thread',
-											},
 											number_of_challan: {
 												type: 'number',
 												example: 50,
