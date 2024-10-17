@@ -122,6 +122,7 @@ export const def_zipper_order_description = SED({
 		garments_remarks: SE.string(),
 		slider_finishing_stock: SE.number(),
 		is_inch: SE.integer(0),
+		is_meter: SE.integer(0),
 	},
 	xml: 'Zipper/Order-Description',
 });
