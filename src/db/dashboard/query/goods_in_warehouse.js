@@ -13,8 +13,7 @@ export async function selectGoodsInWarehouse(req, res, next) {
 		    WITH challan_data AS (
         SELECT
             sum(sfg.warehouse)::float8 as amount,
-            count(*) as number_of_challan,
-            null as sewing_thread,
+            count(*) as number_of_carton,
             CASE 
                 WHEN vodf.nylon_stopper_name = 'Metallic' THEN vodf.item_name || ' Metallic'
                 WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
@@ -27,33 +26,44 @@ export async function selectGoodsInWarehouse(req, res, next) {
             LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
         WHERE pl.challan_uuid IS NULL
         GROUP BY
-            item_name, sewing_thread, vodf.nylon_stopper_name, vodf.item_name
+            item_name, vodf.nylon_stopper_name, vodf.item_name
         UNION
         SELECT
             sum(toe.warehouse)::float8  as amount,
             sum(toe.carton_quantity) as number_of_carton,
-            'Sewing Thread' as sewing_thread,
-            null as item_name
+            'Sewing Thread' as item_name
         FROM
             thread.order_entry toe
             LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
     )
     SELECT
         *,
-        (SELECT SUM(number_of_challan) FROM challan_data) as total_number_of_challan
+        (SELECT SUM(number_of_carton) FROM challan_data) as total_number_of_carton
     FROM challan_data;
 	`;
 	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
+		const totalNumberOfCarton =
+			data.rows.length > 0 ? data.rows[0].total_number_of_carton : 0;
+		const chartData = data.rows.map((row) => {
+			const { total_number_of_carton, ...rest } = row;
+			return rest;
+		});
+
+		const response = {
+			total_number_of_carton: totalNumberOfCarton,
+			chart_data: chartData,
+		};
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'Goods in Warehouse',
 		};
 
-		return res.status(200).json({ toast, data: data.rows });
+		return res.status(200).json({ toast, data: response });
 	} catch (error) {
 		handleError({ error, res });
 	}
