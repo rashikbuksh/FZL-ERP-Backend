@@ -38,7 +38,7 @@ export async function selectGoodsInWarehouse(req, res, next) {
     )
     SELECT
         *,
-        (SELECT SUM(number_of_carton) FROM challan_data) as total_number_of_carton
+        (SELECT SUM(number_of_carton) FROM challan_data) as total_number
     FROM challan_data;
 	`;
 	const resultPromise = db.execute(query);
@@ -46,14 +46,14 @@ export async function selectGoodsInWarehouse(req, res, next) {
 	try {
 		const data = await resultPromise;
 		const totalNumberOfCarton =
-			data.rows.length > 0 ? data.rows[0].total_number_of_carton : 0;
+			data.rows.length > 0 ? data.rows[0].total_number : 0;
 		const chartData = data.rows.map((row) => {
-			const { total_number_of_carton, ...rest } = row;
+			const { total_number, ...rest } = row;
 			return rest;
 		});
 
 		const response = {
-			total_number_of_carton: totalNumberOfCarton,
+			total_number: totalNumberOfCarton,
 			chart_data: chartData,
 		};
 
