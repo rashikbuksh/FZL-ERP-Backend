@@ -4,6 +4,7 @@ import * as goodsInWarehouseOperations from './query/goods_in_warehouse.js';
 import * as workInHandOperations from './query/work_in_hand.js';
 import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
 import * as productionStatusOperations from './query/production_status.js';
+import * as orderEntryFeedOperations from './query/order_entry_feed.js';
 
 const dashBoardRouter = Router();
 
@@ -29,6 +30,11 @@ dashBoardRouter.get(
 dashBoardRouter.get(
 	'/production-status',
 	productionStatusOperations.selectProductionStatus
+);
+
+dashBoardRouter.get(
+	'/order-entry-feed',
+	orderEntryFeedOperations.selectOrderEntryFeed
 );
 
 const pathDashboard = {
@@ -291,6 +297,59 @@ const pathDashboard = {
 										example: 'Vislon',
 									},
 									total_quantity: {
+										type: 'number',
+										example: 50,
+									},
+								},
+							},
+						},
+					},
+				},
+				500: {
+					description: 'Internal server error',
+					content: {
+						'application/json': {
+							example: {
+								error: 'error message',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/dashboard/order-entry-feed': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get order entry feed summary',
+			description: 'Get order entry feed summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									order_no: {
+										type: 'string',
+										example: 'Z21-0001',
+									},
+									party_name: {
+										type: 'string',
+										example: 'ppp',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'mmm',
+									},
+									item: {
+										type: 'string',
+										example: 'V-3-OE-RP',
+									},
+									quantity: {
 										type: 'number',
 										example: 50,
 									},
