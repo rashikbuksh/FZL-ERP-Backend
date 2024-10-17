@@ -54,13 +54,24 @@ export async function selectChallanRegister(req, res, next) {
 
 	try {
 		const data = await resultPromise;
+		const totalNumberOfChallan =
+			data.rows.length > 0 ? data.rows[0].total_number_of_challan : 0;
+		const chartData = data.rows.map((row) => {
+			const { total_number_of_challan, ...rest } = row;
+			return rest;
+		});
+
+		const response = {
+			total_number_of_challan: totalNumberOfChallan,
+			chart_data: chartData,
+		};
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'challan register summary',
 		};
 
-		return res.status(200).json({ toast, data: data.rows });
+		return res.status(200).json({ toast, data: response });
 	} catch (error) {
 		handleError({ error, res });
 	}

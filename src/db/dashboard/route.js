@@ -66,25 +66,33 @@ const pathDashboard = {
 					content: {
 						'application/json': {
 							properties: {
-								item_name: {
-									type: 'string',
-									example: 'Vislon',
-								},
-								sewing_thread: {
-									type: 'string',
-									example: 'Sewing Thread',
-								},
-								number_of_challan: {
-									type: 'number',
-									example: 50,
-								},
-								amount: {
-									type: 'number',
-									example: 50,
-								},
 								total_number_of_challan: {
 									type: 'number',
 									example: 100,
+								},
+								chart_data: {
+									type: 'array',
+									items: {
+										type: 'object',
+										properties: {
+											item_name: {
+												type: 'string',
+												example: 'Vislon',
+											},
+											sewing_thread: {
+												type: 'string',
+												example: 'Sewing Thread',
+											},
+											number_of_challan: {
+												type: 'number',
+												example: 50,
+											},
+											amount: {
+												type: 'number',
+												example: 50,
+											},
+										},
+									},
 								},
 							},
 						},
