@@ -9,8 +9,7 @@ export async function selectProductionStatus(req, res, next) {
 
 	const query = sql`
                 SELECT 
-                        vodf.item_name,
-                        vodf.nylon_stopper_name,
+                        CONCAT(vodf.item_name, ' ', vodf.nylon_stopper_name ) as item_name,
                         SUM(
                             sfg_production_sum.teeth_molding_quantity::float8 + 
                             sfg_production_sum.teeth_coloring_quantity::float8 + 
@@ -48,7 +47,7 @@ export async function selectProductionStatus(req, res, next) {
                         zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     LEFT JOIN 
                         zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                    WHERE ${start_date ? sql`sfg_production.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    WHERE ${start_date ? sql`sfg_prod.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     GROUP BY 
                         vodf.item, vodf.nylon_stopper
                 ) sfg_production_sum ON sfg_production_sum.item = vodf.item AND (
@@ -63,7 +62,6 @@ export async function selectProductionStatus(req, res, next) {
 
                 SELECT
                         'Sewing Thread' as item_name,
-                        null as nylon_stopper_name,
                         SUM(prod_quantity.total_quantity) as total_quantity
                 FROM 
                     thread.order_info
@@ -79,7 +77,7 @@ export async function selectProductionStatus(req, res, next) {
                     GROUP BY
                         order_entry.order_info_uuid
                 ) prod_quantity ON order_info.uuid = prod_quantity.order_info_uuid
-                GROUP BY item_name, nylon_stopper_name;
+                GROUP BY item_name;
     `;
 	const resultPromise = db.execute(query);
 
