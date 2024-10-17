@@ -48,14 +48,14 @@ export async function selectProductionStatus(req, res, next) {
                         zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     LEFT JOIN 
                         zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    WHERE ${start_date ? sql`sfg_production.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     GROUP BY 
                         vodf.item, vodf.nylon_stopper
                 ) sfg_production_sum ON sfg_production_sum.item = vodf.item AND (
 						lower(vodf.item_name) != 'nylon' 
 						OR vodf.nylon_stopper = sfg_production_sum.nylon_stopper
 					)
-                WHERE vodf.order_description_uuid IS NOT NULL AND 
-                    ${start_date ? sql`sfg_production.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                WHERE vodf.order_description_uuid IS NOT NULL
                 GROUP BY 
                 vodf.item_name, vodf.nylon_stopper_name
 
@@ -75,11 +75,10 @@ export async function selectProductionStatus(req, res, next) {
                         thread.batch_entry_production
                     LEFT JOIN thread.batch_entry ON batch_entry_production.batch_entry_uuid = batch_entry.uuid
                     LEFT JOIN thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                    WHERE ${start_date ? sql`batch_entry.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     GROUP BY
                         order_entry.order_info_uuid
                 ) prod_quantity ON order_info.uuid = prod_quantity.order_info_uuid
-                WHERE 
-                    ${start_date ? sql`batch_entry.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 GROUP BY item_name, nylon_stopper_name;
     `;
 	const resultPromise = db.execute(query);
