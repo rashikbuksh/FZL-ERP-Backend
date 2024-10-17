@@ -10,6 +10,7 @@ export async function selectPiRegister(req, res, next) {
 	console.log(start_date, end_date);
 
 	const query = sql`
+                WITH pi_data as (
                 SELECT 
                     pi_cash.uuid,
                     CASE WHEN is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END AS pi_cash_number,
@@ -47,18 +48,36 @@ export async function selectPiRegister(req, res, next) {
                 ) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
                 WHERE 
                     ${start_date ? sql`pi_cash.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                )
+                SELECT
+                    *,
+                    (SELECT COUNT(*) FROM pi_data) as total_number
+                FROM pi_data;
     `;
 	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
+
+		const totalNumberOfPi =
+			data.rows.length > 0 ? data.rows[0].total_number : 0;
+		const chartData = data.rows.map((row) => {
+			const { total_number, ...rest } = row;
+			return rest;
+		});
+
+		const response = {
+			total_number: totalNumberOfPi,
+			chart_data: chartData,
+		};
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'Production Status',
 		};
 
-		return res.status(200).json({ toast, data: data.rows });
+		return res.status(200).json({ toast, data: response });
 	} catch (error) {
 		handleError({ error, res });
 	}

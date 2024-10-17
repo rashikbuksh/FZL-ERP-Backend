@@ -6,6 +6,8 @@ export async function selectChallanRegister(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { start_date, end_date } = req.query;
 
+	console.log(start_date, end_date);
+
 	const query = sql`
         WITH challan_data AS (
             SELECT 
