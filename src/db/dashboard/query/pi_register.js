@@ -21,8 +21,6 @@ export async function selectPiRegister(req, res, next) {
                     bank.name as bank_name
                 FROM
                     commercial.pi_cash
-                LEFT JOIN
-                    hr.users ON pi_cash.created_by = users.uuid
                 LEFT JOIN 
                     commercial.bank ON pi_cash.bank_uuid = bank.uuid
                 LEFT JOIN
