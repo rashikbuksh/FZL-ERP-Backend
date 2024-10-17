@@ -55,7 +55,7 @@ export async function selectProductionStatus(req, res, next) {
 						OR vodf.nylon_stopper = sfg_production_sum.nylon_stopper
 					)
                 WHERE vodf.order_description_uuid IS NOT NULL AND 
-                    ${start_date ? sql`oe.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    ${start_date ? sql`sfg_production.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 GROUP BY 
                 vodf.item_name, vodf.nylon_stopper_name
 
@@ -79,7 +79,7 @@ export async function selectProductionStatus(req, res, next) {
                         order_entry.order_info_uuid
                 ) prod_quantity ON order_info.uuid = prod_quantity.order_info_uuid
                 WHERE 
-                    ${start_date ? sql`oe.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    ${start_date ? sql`batch_entry.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 GROUP BY item_name, nylon_stopper_name;
     `;
 	const resultPromise = db.execute(query);
