@@ -1,10 +1,13 @@
 import { Router } from 'express';
+import SE, { SED } from '../../util/swagger_example.js';
+
 import * as challanRegistrationOperations from './query/challan_register.js';
 import * as goodsInWarehouseOperations from './query/goods_in_warehouse.js';
-import * as workInHandOperations from './query/work_in_hand.js';
-import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
-import * as productionStatusOperations from './query/production_status.js';
 import * as orderEntryFeedOperations from './query/order_entry_feed.js';
+import * as piRegisterOperations from './query/pi_register.js';
+import * as productionStatusOperations from './query/production_status.js';
+import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
+import * as workInHandOperations from './query/work_in_hand.js';
 
 const dashBoardRouter = Router();
 
@@ -36,6 +39,8 @@ dashBoardRouter.get(
 	'/order-entry-feed',
 	orderEntryFeedOperations.selectOrderEntryFeed
 );
+
+dashBoardRouter.get('/pi-register', piRegisterOperations.selectPiRegister);
 
 const pathDashboard = {
 	'/dashboard/challan-register': {
@@ -368,6 +373,39 @@ const pathDashboard = {
 						},
 					},
 				},
+			},
+		},
+	},
+	'/dashboard/pi-register': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get pi register summary',
+			description: 'Get pi register summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: SE.uuid(),
+									pi_cash_number: SE.string('PI24-0001'),
+									party_uuid: SE.uuid(),
+									party_name: SE.string('4F'),
+									lc_uuid: SE.uuid(),
+									lc_number: SE.string('2406-234-765'),
+									file_number: SE.string('LC24-0001'),
+									total_pi_value: SE.number(1000),
+									bank_name: SE.string('Bank 1'),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
 			},
 		},
 	},

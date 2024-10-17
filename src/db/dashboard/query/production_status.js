@@ -10,20 +10,49 @@ export async function selectProductionStatus(req, res, next) {
                         vodf.item_name,
                         vodf.nylon_stopper_name,
                         SUM(
-                            sfg.teeth_molding_stock::float8 + 
-                            sfg.teeth_molding_prod::float8 + 
-                            sfg.teeth_coloring_stock::float8 + 
-                            sfg.teeth_coloring_prod::float8 + 
-                            sfg.finishing_stock::float8 + 
-                            sfg.finishing_prod::float8
+                            sfg_production_sum.teeth_molding_quantity::float8 + 
+                            sfg_production_sum.teeth_coloring_quantity::float8 + 
+                            sfg_production_sum.finishing_quantity::float8
                         )::float8 AS total_quantity
                 FROM
                     zipper.v_order_details_full vodf
                 LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
                 LEFT JOIN zipper.sfg ON oe.uuid = sfg.order_entry_uuid
-
+                LEFT JOIN (
+                    SELECT 
+                        vodf.item,
+                        vodf.nylon_stopper,
+                        SUM(CASE 
+                            WHEN sfg_prod.section = 'teeth_molding' THEN 
+                                CASE 
+                                    WHEN sfg_prod.production_quantity > 0 THEN sfg_prod.production_quantity 
+                                    ELSE sfg_prod.production_quantity_in_kg 
+                                END 
+                            ELSE 0 
+                        END) AS teeth_molding_quantity,
+                        SUM(CASE 
+                            WHEN sfg_prod.section = 'teeth_coloring' THEN sfg_prod.production_quantity 
+                            ELSE 0 
+                        END) AS teeth_coloring_quantity,
+                        SUM(CASE 
+                            WHEN sfg_prod.section = 'finishing' THEN sfg_prod.production_quantity 
+                            ELSE 0 
+                        END) AS finishing_quantity
+                    FROM 
+                        zipper.sfg_production sfg_prod
+                    LEFT JOIN 
+                        zipper.sfg ON sfg_prod.sfg_uuid = sfg.uuid
+                    LEFT JOIN 
+                        zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN 
+                        zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    GROUP BY 
+                        vodf.item, vodf.nylon_stopper
+                ) sfg_production_sum ON sfg_production_sum.item = vodf.item AND (
+						lower(vodf.item_name) != 'nylon' 
+						OR vodf.nylon_stopper = sfg_production_sum.nylon_stopper
+					)
                 WHERE vodf.order_description_uuid IS NOT NULL
-
                 GROUP BY 
                 vodf.item_name, vodf.nylon_stopper_name
 

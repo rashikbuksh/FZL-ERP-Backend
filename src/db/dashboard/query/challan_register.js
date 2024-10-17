@@ -40,7 +40,7 @@ export async function selectChallanRegister(req, res, next) {
         )
         SELECT
             *,
-            (SELECT SUM(number_of_challan) FROM challan_data) as total_number_of_challan
+            (SELECT SUM(number_of_challan) FROM challan_data) as total_number
         FROM challan_data;
         `;
 

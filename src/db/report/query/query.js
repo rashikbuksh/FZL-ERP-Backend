@@ -337,7 +337,7 @@ export async function PiRegister(req, res, next) {
 	const query = sql`
             SELECT 
                 pi_cash.uuid,
-                concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS pi_cash_number,
+                CASE WHEN is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END AS pi_cash_number,
                 pi_cash.created_at AS pi_cash_created_date,
                 pi_cash_entry_order_numbers.order_numbers,
                 pi_cash_entry_order_numbers.thread_order_numbers,
@@ -376,7 +376,7 @@ export async function PiRegister(req, res, next) {
                     array_agg(DISTINCT CASE WHEN toi.uuid is NOT NULL THEN concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, 
                     pi_cash_uuid, 
                     SUM(pe.pi_cash_quantity)::float8 as total_pi_quantity,
-                    SUM(pe.pi_cash_quantity * oe.party_price)::float8 as total_zipper_pi_price, 
+                    SUM(pe.pi_cash_quantity * (oe.party_price/12))::float8 as total_zipper_pi_price, 
                     SUM(pe.pi_cash_quantity * toe.party_price)::float8 as total_thread_pi_price
 				FROM
 					commercial.pi_cash_entry pe 
@@ -387,7 +387,7 @@ export async function PiRegister(req, res, next) {
 					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 				GROUP BY pi_cash_uuid
 			) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
-            WHERE is_pi = 1
+            WHERE pi_cash_entry_order_numbers.order_numbers IS NOT NULL OR pi_cash_entry_order_numbers.thread_order_numbers IS NOT NULL
         `;
 
 	const resultPromise = db.execute(query);

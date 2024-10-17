@@ -13,7 +13,7 @@ export async function selectGoodsInWarehouse(req, res, next) {
 		    WITH challan_data AS (
         SELECT
             sum(sfg.warehouse)::float8 as amount,
-            count(*) as number_of_carton,
+            count(*) as total_number,
             CASE 
                 WHEN vodf.nylon_stopper_name = 'Metallic' THEN vodf.item_name || ' Metallic'
                 WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
@@ -30,7 +30,7 @@ export async function selectGoodsInWarehouse(req, res, next) {
         UNION
         SELECT
             sum(toe.warehouse)::float8  as amount,
-            sum(toe.carton_quantity) as number_of_carton,
+            sum(toe.carton_quantity) as total_number,
             'Sewing Thread' as item_name
         FROM
             thread.order_entry toe
