@@ -10,7 +10,6 @@ export async function selectChallanRegister(req, res, next) {
         WITH challan_data AS (
             SELECT 
                 sum(ple.quantity)::float8 as amount,
-                null as sewing_thread,
                 count(*) as number_of_challan,
                 CASE 
                     WHEN vodf.nylon_stopper_name = 'Metallic' THEN vodf.item_name || ' Metallic'
@@ -24,13 +23,12 @@ export async function selectChallanRegister(req, res, next) {
             WHERE
                 ${start_date ? sql`pl.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
             GROUP BY
-                item_name, sewing_thread, vodf.nylon_stopper_name, vodf.item_name
+                item_name, vodf.nylon_stopper_name, vodf.item_name
             UNION 
             SELECT 
                 sum(ce.quantity)::float8 as amount,
-                'Sewing Thread' AS sewing_thread,
                 count(*) as number_of_challan,
-                null as item_name
+                'sewing_thread' as item_name
             FROM
                 thread.challan c 
                 LEFT JOIN thread.order_info oi ON c.order_info_uuid = oi.uuid
@@ -38,7 +36,7 @@ export async function selectChallanRegister(req, res, next) {
             WHERE
                 ${start_date ? sql`ce.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
             GROUP BY
-                sewing_thread
+                item_name
         )
         SELECT
             *,
