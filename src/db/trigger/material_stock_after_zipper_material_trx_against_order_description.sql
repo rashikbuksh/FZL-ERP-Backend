@@ -45,12 +45,12 @@ AFTER INSERT ON zipper.material_trx_against_order_description
 FOR EACH ROW
 EXECUTE FUNCTION zipper.stock_after_material_trx_against_order_description_insert_funct();
 
-CREATE TRIGGER stock_after_material_trx_against_order_description_update
+CREATE OR REPLACE TRIGGER stock_after_material_trx_against_order_description_update
 AFTER UPDATE ON zipper.material_trx_against_order_description
 FOR EACH ROW
 EXECUTE FUNCTION zipper.stock_after_material_trx_against_order_description_update_funct();
 
-CREATE TRIGGER stock_after_material_trx_against_order_description_delete
+CREATE OR REPLACE TRIGGER stock_after_material_trx_against_order_description_delete
 AFTER DELETE ON zipper.material_trx_against_order_description
 FOR EACH ROW
 EXECUTE FUNCTION zipper.stock_after_material_trx_against_order_description_delete_funct();

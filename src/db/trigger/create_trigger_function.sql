@@ -126,17 +126,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER sfg_after_sfg_transaction_insert_trigger
+CREATE OR REPLACE TRIGGER sfg_after_sfg_transaction_insert_trigger
 AFTER INSERT ON zipper.sfg_transaction
 FOR EACH ROW
 EXECUTE FUNCTION zipper.sfg_after_sfg_transaction_insert_function();
 
-CREATE TRIGGER sfg_after_sfg_transaction_delete_trigger
+CREATE OR REPLACE TRIGGER sfg_after_sfg_transaction_delete_trigger
 AFTER DELETE ON zipper.sfg_transaction
 FOR EACH ROW
 EXECUTE FUNCTION zipper.sfg_after_sfg_transaction_delete_function();
 
-CREATE TRIGGER sfg_after_sfg_transaction_update_trigger
+CREATE OR REPLACE TRIGGER sfg_after_sfg_transaction_update_trigger
 AFTER UPDATE ON zipper.sfg_transaction
 FOR EACH ROW
 EXECUTE FUNCTION zipper.sfg_after_sfg_transaction_update_function();
@@ -224,12 +224,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER sfg_after_order_entry_insert
+CREATE OR REPLACE TRIGGER sfg_after_order_entry_insert
 AFTER INSERT ON zipper.order_entry
 FOR EACH ROW
 EXECUTE FUNCTION zipper.sfg_after_order_entry_insert();
 
-CREATE TRIGGER sfg_after_order_entry_delete
+CREATE OR REPLACE TRIGGER sfg_after_order_entry_delete
 AFTER DELETE ON zipper.order_entry
 FOR EACH ROW
 EXECUTE FUNCTION zipper.sfg_after_order_entry_delete();
@@ -280,17 +280,17 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER material_stock_after_purchase_entry_insert
+CREATE OR REPLACE TRIGGER material_stock_after_purchase_entry_insert
 AFTER INSERT ON purchase.entry
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_purchase_entry_insert();
 
-CREATE TRIGGER material_stock_after_purchase_entry_delete
+CREATE OR REPLACE TRIGGER material_stock_after_purchase_entry_delete
 AFTER DELETE ON purchase.entry
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_purchase_entry_delete();
 
-CREATE TRIGGER material_stock_after_purchase_entry_update
+CREATE OR REPLACE TRIGGER material_stock_after_purchase_entry_update
 AFTER UPDATE ON purchase.entry
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_purchase_entry_update();
@@ -491,17 +491,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER material_stock_after_material_used_insert
+CREATE OR REPLACE TRIGGER material_stock_after_material_used_insert
 AFTER INSERT ON material.used
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_material_used_insert();
 
-CREATE TRIGGER material_stock_after_material_used_delete
+CREATE OR REPLACE TRIGGER material_stock_after_material_used_delete
 AFTER DELETE ON material.used
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_material_used_delete();
 
-CREATE TRIGGER material_stock_after_material_used_update
+CREATE OR REPLACE TRIGGER material_stock_after_material_used_update
 AFTER UPDATE ON material.used
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_material_used_update();
@@ -620,17 +620,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER material_stock_after_material_trx_insert
+CREATE OR REPLACE TRIGGER material_stock_after_material_trx_insert
 AFTER INSERT ON material.trx
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_material_trx_insert();
 
-CREATE TRIGGER material_stock_after_material_trx_delete
+CREATE OR REPLACE TRIGGER material_stock_after_material_trx_delete
 AFTER DELETE ON material.trx
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_material_trx_delete();
 
-CREATE TRIGGER material_stock_after_material_trx_update
+CREATE OR REPLACE TRIGGER material_stock_after_material_trx_update
 AFTER UPDATE ON material.trx
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_material_trx_update();
@@ -767,17 +767,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER material_stock_sfg_after_stock_to_sfg_insert
+CREATE OR REPLACE TRIGGER material_stock_sfg_after_stock_to_sfg_insert
 AFTER INSERT ON material.stock_to_sfg
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_sfg_after_stock_to_sfg_insert();
 
-CREATE TRIGGER material_stock_sfg_after_stock_to_sfg_delete
+CREATE OR REPLACE TRIGGER material_stock_sfg_after_stock_to_sfg_delete
 AFTER DELETE ON material.stock_to_sfg
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_sfg_after_stock_to_sfg_delete();
 
-CREATE TRIGGER material_stock_sfg_after_stock_to_sfg_update
+CREATE OR REPLACE TRIGGER material_stock_sfg_after_stock_to_sfg_update
 AFTER UPDATE ON material.stock_to_sfg
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_sfg_after_stock_to_sfg_update();
@@ -805,12 +805,12 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE TRIGGER material_stock_after_material_info_insert
+CREATE OR REPLACE TRIGGER material_stock_after_material_info_insert
 AFTER INSERT ON material.info
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_material_info_insert();
 
-CREATE TRIGGER material_stock_after_material_info_delete
+CREATE OR REPLACE TRIGGER material_stock_after_material_info_delete
 AFTER DELETE ON material.info
 FOR EACH ROW
 EXECUTE FUNCTION material.material_stock_after_material_info_delete();

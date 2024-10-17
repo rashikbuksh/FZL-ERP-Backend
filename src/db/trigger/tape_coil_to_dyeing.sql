@@ -55,17 +55,17 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tape_coil_to_dyeing_after_insert
+CREATE OR REPLACE TRIGGER tape_coil_to_dyeing_after_insert
 AFTER INSERT ON zipper.tape_coil_to_dyeing
 FOR EACH ROW
 EXECUTE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_insert();
 
-CREATE TRIGGER tape_coil_to_dyeing_after_delete
+CREATE OR REPLACE TRIGGER tape_coil_to_dyeing_after_delete
 AFTER DELETE ON zipper.tape_coil_to_dyeing
 FOR EACH ROW
 EXECUTE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_delete();
 
-CREATE TRIGGER tape_coil_to_dyeing_after_update
+CREATE OR REPLACE TRIGGER tape_coil_to_dyeing_after_update
 AFTER UPDATE ON zipper.tape_coil_to_dyeing
 FOR EACH ROW
 EXECUTE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_update();
