@@ -115,6 +115,7 @@ export async function insert(req, res, next) {
 		garments_remarks,
 		is_inch,
 		is_meter,
+		is_cm,
 		order_type,
 	} = req.body;
 
@@ -157,6 +158,7 @@ export async function insert(req, res, next) {
 			garments_remarks,
 			is_inch,
 			is_meter,
+			is_cm,
 			order_type,
 		})
 		.returning({ insertedUuid: order_description.uuid });
@@ -215,6 +217,7 @@ export async function update(req, res, next) {
 		garments_remarks,
 		is_inch,
 		is_meter,
+		is_cm,
 		order_type,
 	} = req.body;
 
@@ -257,6 +260,7 @@ export async function update(req, res, next) {
 			garments_remarks,
 			is_inch,
 			is_meter,
+			is_cm,
 			order_type,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
@@ -383,6 +387,7 @@ export async function selectAll(req, res, next) {
 			tape_name: tape_coil.name,
 			is_inch: order_description.is_inch,
 			is_meter: order_description.is_meter,
+			is_cm: order_description.is_cm,
 			order_type: order_description.order_type,
 		})
 		.from(order_description)
@@ -586,6 +591,7 @@ export async function select(req, res, next) {
 			tape_name: tape_coil.name,
 			is_inch: order_description.is_inch,
 			is_meter: order_description.is_meter,
+			is_cm: order_description.is_cm,
 			order_type: order_description.order_type,
 		})
 		.from(order_description)

@@ -80,6 +80,8 @@ export const def_zipper_order_description = SED({
 		'created_by',
 		'slider_finishing_stock',
 		'is_inch',
+		'is_meter',
+		'order_type',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -123,6 +125,8 @@ export const def_zipper_order_description = SED({
 		slider_finishing_stock: SE.number(),
 		is_inch: SE.integer(0),
 		is_meter: SE.integer(0),
+		is_cm: SE.integer(0),
+		order_type: SE.string('full'),
 	},
 	xml: 'Zipper/Order-Description',
 });

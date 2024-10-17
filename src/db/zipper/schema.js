@@ -172,6 +172,7 @@ export const order_description = zipper.table('order_description', {
 	slider_finishing_stock: PG_DECIMAL('slider_finishing_stock').default(0),
 	is_inch: integer('is_inch').default(0),
 	is_meter: integer('is_meter').default(0),
+	is_cm: integer('is_cm').default(0),
 	order_type: order_type_enum('order_type').default('full'),
 });
 
