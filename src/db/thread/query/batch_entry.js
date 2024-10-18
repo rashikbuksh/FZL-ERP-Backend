@@ -323,8 +323,8 @@ export async function getBatchEntryDetails(req, res, next) {
 		thread.batch ON be.batch_uuid = batch.uuid
 )
 	SELECT * FROM calculated_balance
-WHERE balance_quantity > 0 AND is_drying_complete = 'true'
-ORDER BY created_at DESC
+WHERE transfer_quantity != batch_quantity AND is_drying_complete = 'true'
+ORDER BY created_at DESC, batch_entry_uuid ASC
 ;
 	`;
 
