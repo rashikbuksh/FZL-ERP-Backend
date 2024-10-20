@@ -137,7 +137,10 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { order_info_uuid } = req.body;
 	let updateData = { ...req.body };
+	updateData.order_info_uuid = null;
+	updateData.thread_order_info_uuid = null;
 
 	try {
 		if (await isZipperOrderInfo(order_info_uuid)) {
