@@ -7,6 +7,7 @@ import {
 } from '../../../util/index.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
+import * as hrSchema from '../../hr/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { die_casting } from '../schema.js';
 
@@ -149,6 +150,8 @@ export async function selectAll(req, res, next) {
 			quantity: decimalToNumber(die_casting.quantity),
 			weight: decimalToNumber(die_casting.weight),
 			pcs_per_kg: sql`coalesce(NULLIF(die_casting.weight,0) / die_casting.quantity,0)::float8`,
+			created_by: die_casting.created_by,
+			created_by_name: hrSchema.users.name,
 			created_at: die_casting.created_at,
 			updated_at: die_casting.updated_at,
 			remarks: die_casting.remarks,
@@ -181,6 +184,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			sliderLinkProperties,
 			eq(die_casting.slider_link, sliderLinkProperties.uuid)
+		)
+		.leftJoin(
+			hrSchema.users,
+			eq(die_casting.created_by, hrSchema.users.uuid)
 		)
 		.orderBy(desc(die_casting.created_at));
 
@@ -226,6 +233,8 @@ export async function select(req, res, next) {
 			quantity: decimalToNumber(die_casting.quantity),
 			weight: decimalToNumber(die_casting.weight),
 			pcs_per_kg: sql`coalesce(NULLIF(die_casting.weight,0) / die_casting.quantity,0)::float8`,
+			created_by: die_casting.created_by,
+			created_by_name: hrSchema.users.name,
 			created_at: die_casting.created_at,
 			updated_at: die_casting.updated_at,
 			remarks: die_casting.remarks,
@@ -258,6 +267,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			sliderLinkProperties,
 			eq(die_casting.slider_link, sliderLinkProperties.uuid)
+		)
+		.leftJoin(
+			hrSchema.users,
+			eq(die_casting.created_by, hrSchema.users.uuid)
 		)
 		.where(eq(die_casting.uuid, req.params.uuid));
 
