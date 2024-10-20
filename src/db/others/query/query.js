@@ -872,7 +872,7 @@ export async function selectLabDipRecipe(req, res, next) {
 	const recipePromise = db
 		.select({
 			value: labDipSchema.recipe.uuid,
-			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
+			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name)`,
 			approved: labDipSchema.recipe.approved,
 			status: labDipSchema.recipe.status,
 			info: labDipSchema.recipe.lab_dip_info_uuid,
@@ -904,17 +904,28 @@ export async function selectLabDipRecipe(req, res, next) {
 						)
 		);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Lab Dip Recipe list',
-	};
-	handleResponse({
-		promise: recipePromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await recipePromise;
+
+		// add a null value in the recipe list
+		data.push({
+			value: null,
+			label: '---',
+			approved: null,
+			status: null,
+			info: null,
+		});
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Lab Dip Recipe list',
+		};
+
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectLabDipShadeRecipe(req, res, next) {
