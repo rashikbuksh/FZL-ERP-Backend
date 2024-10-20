@@ -148,9 +148,9 @@ export async function selectAll(req, res, next) {
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: decimalToNumber(die_casting.quantity),
 			weight: decimalToNumber(die_casting.weight),
-			pcs_per_kg: decimalToNumber(
-				die_casting.quantity / die_casting.weight
-			),
+			pcs_per_kg: 
+				sql`die_casting.quantity / die_casting.weight`
+			,
 			created_at: die_casting.created_at,
 			updated_at: die_casting.updated_at,
 			remarks: die_casting.remarks,
