@@ -1,4 +1,4 @@
-import { and, eq, min, sql, sum } from 'drizzle-orm';
+import { and, eq, min, or, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
@@ -891,9 +891,23 @@ export async function selectLabDipRecipe(req, res, next) {
 							? eq(labDipSchema.recipe.bleaching, bleaching)
 							: null
 					)
-				: info_uuid
+				: info_uuid == 'false'
 					? sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
-					: null
+					: and(
+							or(
+								eq(
+									labDipSchema.info.order_info_uuid,
+									info_uuid
+								),
+								eq(
+									labDipSchema.info.thread_order_info_uuid,
+									info_uuid
+								)
+							),
+							bleaching
+								? eq(labDipSchema.recipe.bleaching, bleaching)
+								: null
+						)
 		);
 
 	const toast = {
