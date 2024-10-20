@@ -179,10 +179,15 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					vodf.special_requirement,
 					CONCAT(vodf.item_name, ' Zipper', '-', vodf.zipper_number_short_name, '-', vodf.end_type_short_name, '-', vodf.puller_type_short_name) as pi_item_description,
 					vodf.is_inch,
+					oe.size,
 					CASE 
-                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
-                    END as size,
+						WHEN vodf.is_inch = 1 THEN oe.size::numeric * 2.54 
+						ELSE 0
+					END as size_inch,
+					CASE WHEN 
+						vodf.is_meter = 1 THEN oe.size::numeric * 100
+						ELSE 0
+					END as size_meter,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity::float8 ELSE toe.quantity::float8 END as max_quantity,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as unit_price,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN ROUND(oe.party_price/12, 4)::float8 ELSE toe.party_price::float8 END as unit_price_pcs,
