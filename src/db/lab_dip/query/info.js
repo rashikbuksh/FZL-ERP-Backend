@@ -140,6 +140,14 @@ export async function update(req, res, next) {
 	let updateData = { ...req.body };
 
 	try {
+		if (await isZipperOrderInfo(order_info_uuid)) {
+			updateData.order_info_uuid = order_info_uuid;
+		} else if (await isThreadOrderInfo(order_info_uuid)) {
+			updateData.thread_order_info_uuid = order_info_uuid;
+		} else {
+			return res.status(400).json({ error: 'Invalid order_info_uuid' });
+		}
+
 		const infoPromise = db
 			.update(info)
 			.set(updateData)
