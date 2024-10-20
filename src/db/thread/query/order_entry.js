@@ -123,6 +123,11 @@ export async function selectAll(req, res, next) {
 			warehouse: decimalToNumber(order_entry.warehouse),
 			short_quantity: decimalToNumber(order_entry.short_quantity),
 			reject_quantity: decimalToNumber(order_entry.reject_quantity),
+			production_quantity_in_kg: decimalToNumber(
+				order_entry.production_quantity_in_kg
+			),
+			carton_quantity: order_entry.carton_quantity,
+			yarn_quantity: decimalToNumber(order_entry.yarn_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -183,6 +188,11 @@ export async function select(req, res, next) {
 			warehouse: decimalToNumber(order_entry.warehouse),
 			short_quantity: decimalToNumber(order_entry.short_quantity),
 			reject_quantity: decimalToNumber(order_entry.reject_quantity),
+			production_quantity_in_kg: decimalToNumber(
+				order_entry.production_quantity_in_kg
+			),
+			carton_quantity: order_entry.carton_quantity,
+			yarn_quantity: decimalToNumber(order_entry.yarn_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -249,6 +259,11 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			warehouse: decimalToNumber(order_entry.warehouse),
 			short_quantity: decimalToNumber(order_entry.short_quantity),
 			reject_quantity: decimalToNumber(order_entry.reject_quantity),
+			production_quantity_in_kg: decimalToNumber(
+				order_entry.production_quantity_in_kg
+			),
+			carton_quantity: order_entry.carton_quantity,
+			yarn_quantity: decimalToNumber(order_entry.yarn_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
