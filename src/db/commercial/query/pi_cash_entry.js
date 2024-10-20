@@ -303,10 +303,15 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             vod.item_description as item_description,
             oe.style as style,
             oe.color as color,
+			oe.size,
             CASE 
-                WHEN vod.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
-            END as size,
+                WHEN vod.is_inch = 1 THEN oe.size::numeric * 2.54 
+                ELSE 0
+            END as size_inch,
+			CASE WHEN 
+				vod.is_meter = 1 THEN oe.size::numeric * 100
+				ELSE 0
+			END as size_meter,
             oe.quantity::float8 as quantity,
             sfg.pi::float8 as given_pi_cash_quantity,
             (oe.quantity - sfg.pi)::float8 as max_quantity,
