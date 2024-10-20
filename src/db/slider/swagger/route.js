@@ -284,6 +284,11 @@ export const pathSliderDieCasting = {
 									quantity: SE.number(1),
 									weight: SE.number(1),
 									pcs_per_kg: SE.number(1),
+									created_by: SE.uuid(),
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
 									created_at: SE.date_time(),
 									updated_at: SE.date_time(),
 									remarks: SE.string('remarks'),
@@ -423,6 +428,11 @@ export const pathSliderDieCasting = {
 							quantity: SE.number(1),
 							weight: SE.number(1),
 							pcs_per_kg: SE.number(1),
+							created_by: SE.uuid(),
+							created_by_name: {
+								type: 'string',
+								example: 'John Doe',
+							},
 							created_at: SE.date_time(),
 							updated_at: SE.date_time(),
 							remarks: SE.string('remarks'),

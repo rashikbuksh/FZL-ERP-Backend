@@ -120,6 +120,9 @@ export const die_casting = slider.table('die_casting', {
 		precision: 20,
 		scale: 4,
 	}).default(0.0),
+	created_by: defaultUUID('created_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
