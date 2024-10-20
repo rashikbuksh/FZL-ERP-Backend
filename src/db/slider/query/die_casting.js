@@ -6,8 +6,8 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import * as publicSchema from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { die_casting } from '../schema.js';
 
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
@@ -226,7 +226,9 @@ export async function select(req, res, next) {
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: decimalToNumber(die_casting.quantity),
 			weight: decimalToNumber(die_casting.weight),
-			pcs_per_kg: decimalToNumber(die_casting.quantity / die_casting.weight),
+			pcs_per_kg: decimalToNumber(
+				die_casting.quantity / die_casting.weight
+			),
 			created_at: die_casting.created_at,
 			updated_at: die_casting.updated_at,
 			remarks: die_casting.remarks,

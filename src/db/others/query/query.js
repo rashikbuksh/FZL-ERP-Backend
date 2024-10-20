@@ -906,7 +906,7 @@ export async function selectLabDipRecipe(req, res, next) {
 							),
 							bleaching
 								? eq(labDipSchema.recipe.bleaching, bleaching)
-								: null
+								: sql`1=1`
 						)
 		);
 
