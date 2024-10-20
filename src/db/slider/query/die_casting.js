@@ -148,14 +148,13 @@ export async function selectAll(req, res, next) {
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: decimalToNumber(die_casting.quantity),
 			weight: decimalToNumber(die_casting.weight),
-			pcs_per_kg: decimalToNumber(
-				die_casting.quantity / die_casting.weight
-			),
+			pcs_per_kg: sql`coalesce(NULLIF(die_casting.weight,0) / die_casting.quantity,0)::float8`,
 			created_at: die_casting.created_at,
 			updated_at: die_casting.updated_at,
 			remarks: die_casting.remarks,
 			type: die_casting.type,
 			quantity_in_sa: decimalToNumber(die_casting.quantity_in_sa),
+			quantity_in_sa_weight: sql`((coalesce(NULLIF(die_casting.weight,0) / die_casting.quantity,0)::float8) * die_casting.quantity_in_sa)::float8`,
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))
