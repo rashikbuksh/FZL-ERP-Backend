@@ -253,7 +253,8 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		(oe.quantity - coalesce(be_given.total_quantity,0) + be.quantity)::float8 as can_trx_quantity,
 		be.created_at,
 		be.updated_at,
-		be.remarks as batch_remarks
+		be.remarks as batch_remarks,
+		oe.yarn_quantity::float8 as yarn_quantity
 	FROM
 		thread.batch_entry be
 	LEFT JOIN 
