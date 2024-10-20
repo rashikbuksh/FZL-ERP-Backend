@@ -6,7 +6,7 @@ import {
 } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { batch_entry } from '../schema.js';
+import { batch_entry, order_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -95,8 +95,13 @@ export async function selectAll(req, res, next) {
 			created_at: batch_entry.created_at,
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
+			yarn_quantity: decimalToNumber(order_entry.yarn_quantity),
 		})
 		.from(batch_entry)
+		.leftJoin(
+			order_entry,
+			eq(batch_entry.order_entry_uuid, order_entry.uuid)
+		)
 		.orderBy(desc(batch_entry.created_at));
 	const toast = {
 		status: 201,
@@ -126,8 +131,13 @@ export async function select(req, res, next) {
 			created_at: batch_entry.created_at,
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
+			yarn_quantity: decimalToNumber(order_entry.yarn_quantity),
 		})
 		.from(batch_entry)
+		.leftJoin(
+			order_entry,
+			eq(batch_entry.order_entry_uuid, order_entry.uuid)
+		)
 		.where(eq(batch_entry.uuid, req.params.uuid));
 
 	try {
