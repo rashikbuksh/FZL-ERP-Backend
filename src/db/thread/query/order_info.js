@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { asc, desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
@@ -320,7 +320,10 @@ export async function selectThreadSwatch(req, res, next) {
 			labDipSchema.recipe,
 			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		)
-		.orderBy(desc(order_entry.created_at, order_info.created_at));
+		.orderBy(
+			desc(order_entry.created_at, order_info.created_at),
+			asc(order_entry.uuid)
+		);
 
 	try {
 		const data = await resultPromise;

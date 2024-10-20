@@ -190,7 +190,8 @@ export async function selectSwatchInfo(req, res, next) {
 					LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
 					LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
 					ORDER BY 
-					od.created_at DESC`;
+					od.created_at DESC,
+					sfg.uuid ASC`;
 
 	const swatchPromise = db.execute(query);
 
