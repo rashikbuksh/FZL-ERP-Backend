@@ -8,9 +8,9 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import * as publicSchema from '../../public/schema.js';
 import * as threadSchema from '../../thread/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import { info } from '../schema.js';
 
@@ -188,15 +188,15 @@ export async function selectAll(req, res, next) {
 			id: info.id,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
-			order_info_uuid: info.order_info_uuid,
-			thread_order_info_uuid: info.thread_order_info_uuid,
+			order_info_uuid: sql`CASE WHEN info.order_info_uuid IS NOT NULL THEN info.order_info_uuid ELSE info.thread_order_info_uuid END`,
+			is_thread_order: sql`CASE WHEN info.thread_order_info_uuid IS NOT NULL THEN TRUE ELSE FALSE END`,
 			order_number: sql`
-        CASE 
-            WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.created_at, 'YY'), '-', LPAD(zipper.id::text, 4, '0'))
-            WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
-            ELSE NULL
-        END
-    `,
+				CASE 
+					WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.created_at, 'YY'), '-', LPAD(zipper.id::text, 4, '0'))
+					WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+					ELSE NULL
+				END
+			`,
 			buyer_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.buyer_uuid ELSE thread.buyer_uuid END`,
 			buyer_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper_buyer.name ELSE thread_buyer.name END`,
 			party_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN zipper.party_uuid ELSE thread.party_uuid END`,
@@ -259,8 +259,8 @@ export async function select(req, res, next) {
 			id: info.id,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			name: info.name,
-			order_info_uuid: info.order_info_uuid,
-			thread_order_info_uuid: info.thread_order_info_uuid,
+			order_info_uuid: sql`CASE WHEN info.order_info_uuid IS NOT NULL THEN info.order_info_uuid ELSE info.thread_order_info_uuid END`,
+			is_thread_order: sql`CASE WHEN info.thread_order_info_uuid IS NOT NULL THEN TRUE ELSE FALSE END`,
 			order_number: sql`
         CASE 
             WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.created_at, 'YY'), '-', LPAD(zipper.id::text, 4, '0'))
