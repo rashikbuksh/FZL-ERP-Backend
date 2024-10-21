@@ -431,11 +431,8 @@ const pathPublicMerchandiser = {
 			tags: ['public.merchandiser'],
 			operationId: 'getMerchandisers',
 			parameters: [
-				SE.parameter_query('search', 'q', []),
-				SE.parameter_query('page', 'page', []),
-				SE.parameter_query('limit', 'limit', []),
-				SE.parameter_query('sort', 'sort', []),
-				SE.parameter_query('orderby', 'orderby', []),
+				SE.parameter_query('start_date', 'start_date', []),
+				SE.parameter_query('end_date', 'end_date', []),
 			],
 			responses: {
 				200: {

@@ -1,4 +1,4 @@
-import { between, desc, eq } from 'drizzle-orm';
+import { between, desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -100,7 +100,11 @@ export async function selectAll(req, res, next) {
 			hrSchema.users,
 			eq(merchandiser.created_by, hrSchema.users.uuid)
 		)
-		.where(sql`created_at BETWEEN ${start_date} AND ${end_date}`)
+		.where(
+			start_date && end_date
+				? sql`merchandiser.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
+				: sql`1=1`
+		)
 		.orderBy(desc(merchandiser.created_at));
 
 	// const resultPromiseForCount = await resultPromise;
