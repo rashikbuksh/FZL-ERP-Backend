@@ -1,4 +1,4 @@
-import { asc, desc, eq, like, sql } from 'drizzle-orm';
+import { asc, desc, eq, like, or, sql } from 'drizzle-orm';
 import {
 	decimal,
 	integer,
@@ -37,22 +37,33 @@ export function constructSelectAllQuery(
 	params,
 	defaultSortField = 'created_at'
 ) {
-	let { q, _page, _sort, _order } = params;
+	let { q, page, limit, _sort, _order } = params;
 
-	const tableName = baseQuery.config.table[Symbol.for('drizzle:Name')];
+	// get search fields from table
+	const searchFields = Object.keys(baseQuery.config.table).filter(
+		(field) =>
+			field !== 'uuid' &&
+			field !== 'id' &&
+			field !== 'created_at' &&
+			field !== 'updated_at'
+	);
 
-	console.log(tableName);
+	console.log(searchFields);
 
 	// Apply search filter
 	if (q) {
-		baseQuery = baseQuery.where(
-			like(baseQuery.config.table.name, `%${q}%`)
+		const searchConditions = searchFields.map((field) =>
+			like(
+				baseQuery.config.table[Symbol.for('drizzle:Columns')][field],
+				`%${q}%`
+			)
 		);
+		baseQuery = baseQuery.where(or(...searchConditions));
 	}
 
 	// Apply sorting
 	if (_sort) {
-		const order = _order === 'asc' ? asc : desc;
+		const order = _order == 'asc' ? asc : desc;
 		baseQuery = baseQuery.orderBy(order(baseQuery.config.table[_sort]));
 	} else {
 		baseQuery = baseQuery.orderBy(
@@ -61,9 +72,8 @@ export function constructSelectAllQuery(
 	}
 
 	// Apply pagination
-	if (_page) {
-		const limit = 10; // Set your desired limit per page
-		const offset = (_page - 1) * limit;
+	if (page) {
+		const offset = (page - 1) * limit;
 		baseQuery = baseQuery.limit(limit).offset(offset);
 	}
 

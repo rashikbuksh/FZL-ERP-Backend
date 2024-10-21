@@ -433,6 +433,7 @@ const pathPublicMerchandiser = {
 			parameters: [
 				SE.parameter_query('search', 'q', []),
 				SE.parameter_query('_page', '_page', []),
+				SE.parameter_query('_limit', '_limit', []),
 				SE.parameter_query('_sort', '_sort', []),
 				SE.parameter_query('_order', '_order', []),
 			],

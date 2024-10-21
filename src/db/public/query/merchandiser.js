@@ -109,6 +109,18 @@ export async function selectAll(req, res, next) {
 	);
 
 	try {
+		const merchandiserCount = await resultPromise;
+
+		console.log(merchandiserCount.length);
+
+		const pagination = {
+			total_record: merchandiserCount.length,
+			current_page: req.query.page || 1,
+			total_page: Math.ceil(merchandiserCount.length / req.query.limit),
+			nextPage: req.query.page + 1,
+			prevPage: req.query.page - 1 <= 0 ? null : req.query.page - 1,
+		};
+
 		const data = await baseQuery;
 		const toast = {
 			status: 200,
@@ -116,7 +128,7 @@ export async function selectAll(req, res, next) {
 			message: 'Merchandisers List',
 		};
 
-		return await res.status(200).json({ toast, data });
+		return await res.status(200).json({ toast, data, pagination });
 	} catch (error) {
 		await handleError({ error, res });
 	}

@@ -89,8 +89,6 @@ export async function insert(req, res, next) {
 			insertData.order_info_uuid = order_info_uuid;
 		} else if (await isThreadOrderInfo(order_info_uuid)) {
 			insertData.thread_order_info_uuid = order_info_uuid;
-		} else {
-			return res.status(400).json({ error: 'Invalid order_info_uuid' });
 		}
 
 		const infoPromise = db
@@ -147,8 +145,6 @@ export async function update(req, res, next) {
 			updateData.order_info_uuid = order_info_uuid;
 		} else if (await isThreadOrderInfo(order_info_uuid)) {
 			updateData.thread_order_info_uuid = order_info_uuid;
-		} else {
-			return res.status(400).json({ error: 'Invalid order_info_uuid' });
 		}
 
 		const infoPromise = db
