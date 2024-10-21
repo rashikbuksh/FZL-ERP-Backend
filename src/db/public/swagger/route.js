@@ -1,3 +1,4 @@
+import SE from '../../../util/swagger_example.js';
 // * Public Buyer * //
 const pathPublicBuyer = {
 	'/public/public/buyer': {
@@ -429,7 +430,12 @@ const pathPublicMerchandiser = {
 			summary: 'Get all merchandisers',
 			tags: ['public.merchandiser'],
 			operationId: 'getMerchandisers',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('search', 'q', []),
+				SE.parameter_query('_page', '_page', []),
+				SE.parameter_query('_sort', '_sort', []),
+				SE.parameter_query('_order', '_order', []),
+			],
 			responses: {
 				200: {
 					description: 'OK',
@@ -753,7 +759,6 @@ const pathPublicProperties = {
 			summary: 'Get all properties',
 			tags: ['public.properties'],
 			operationId: 'getProperties',
-			parameters: [],
 			responses: {
 				200: {
 					description: 'OK',

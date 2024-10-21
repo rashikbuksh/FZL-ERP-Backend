@@ -6,7 +6,7 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
+import { constructSelectAllQuery, decimalToNumber } from '../../variables.js';
 import { merchandiser, party } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -77,6 +77,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	console.log(req.query);
+
 	const resultPromise = db
 		.select({
 			uuid: merchandiser.uuid,
@@ -97,20 +99,27 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(merchandiser.created_by, hrSchema.users.uuid)
-		)
-		.orderBy(desc(merchandiser.created_at));
+		);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Merchandiser list',
-	};
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+	const baseQuery = constructSelectAllQuery(
+		resultPromise,
+		req.query,
+		'created_at',
+		'merchandiser'
+	);
+
+	try {
+		const data = await baseQuery;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Merchandisers List',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
