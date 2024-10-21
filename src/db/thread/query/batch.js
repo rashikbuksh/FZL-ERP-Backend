@@ -422,6 +422,7 @@ export async function select(req, res, next) {
 						concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_id,
 						batch.machine_uuid,
 						pm.name as machine_name,
+						pm.water_capacity,
 						batch.slot,
 						batch.lab_created_by,
 						labCreated.name as lab_created_by_name,
