@@ -100,7 +100,6 @@ export const defThreadOrderEntry = {
 		'reject_quantity',
 		'production_quantity_in_kg',
 		'carton_quantity',
-		'yarn_quantity',
 	],
 
 	properties: {
@@ -130,7 +129,6 @@ export const defThreadOrderEntry = {
 		reject_quantity: SE.number(10),
 		production_quantity_in_kg: SE.number(10),
 		carton_quantity: SE.number(10),
-		yarn_quantity: SE.number(10),
 	},
 	xml: {
 		name: 'Thread/OrderEntry',
@@ -220,6 +218,7 @@ export const defThreadBatchEntry = {
 		'coning_carton_quantity',
 		'transfer_carton_quantity',
 		'created_at',
+		'yarn_quantity',
 	],
 
 	properties: {
@@ -227,7 +226,6 @@ export const defThreadBatchEntry = {
 		batch_uuid: SE.uuid(),
 		order_entry_uuid: SE.uuid(),
 		quantity: SE.number(10),
-
 		coning_production_quantity: SE.number(10),
 		coning_carton_quantity: SE.number(10),
 		coning_created_at: SE.date_time(),
@@ -237,6 +235,7 @@ export const defThreadBatchEntry = {
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		yarn_quantity: SE.number(10),
 	},
 	xml: {
 		name: 'Thread/BatchEntry',
