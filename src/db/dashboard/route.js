@@ -12,7 +12,7 @@ import * as productionStatusOperations from './query/production_status.js';
 import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
 import * as workInHandOperations from './query/work_in_hand.js';
 import * as stockStatusOperations from './query/stock_status.js';
-import { stock } from '../slider/schema.js';
+import * as orderEntryOperations from './query/order_entry.js';
 
 const dashBoardRouter = Router();
 
@@ -60,6 +60,8 @@ dashBoardRouter.get(
 dashBoardRouter.get('/lc-feed', lcFeedOperations.selectLcFeed);
 
 dashBoardRouter.get('/stock-status', stockStatusOperations.selectStockStatus);
+
+dashBoardRouter.get('/order-entry', orderEntryOperations.selectOrderEntry);
 
 const pathDashboard = {
 	'/dashboard/challan-register': {
@@ -574,6 +576,33 @@ const pathDashboard = {
 									unit: SE.string('kg'),
 									last_purchase_date: SE.string('2021-01-01'),
 									lead_time: SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/order-entry': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get order entry summary',
+			description: 'Get order entry summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									date: SE.string('2021-01-01'),
+									zipper: SE.integer(1000),
+									thread: SE.integer(1000),
 								},
 							},
 						},
