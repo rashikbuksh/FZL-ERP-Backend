@@ -9,6 +9,8 @@ import * as piToBeSubmittedOperations from './query/pi_to_be_submitted.js';
 import * as productionStatusOperations from './query/production_status.js';
 import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
 import * as workInHandOperations from './query/work_in_hand.js';
+import * as documentRcvLogOperations from './query/document_rcv_log.js';
+import * as lcFeedOperations from './query/lc_feed.js';
 
 const dashBoardRouter = Router();
 
@@ -48,6 +50,12 @@ dashBoardRouter.get(
 	piToBeSubmittedOperations.selectPiToBeSubmittedDashboard
 );
 
+dashBoardRouter.get(
+	'/document-rcv-log',
+	documentRcvLogOperations.selectDocumentRcvLog
+);
+
+dashBoardRouter.get('/lc-feed', lcFeedOperations.selectLcFeed);
 const pathDashboard = {
 	'/dashboard/challan-register': {
 		get: {
@@ -440,6 +448,97 @@ const pathDashboard = {
 									total_delivered: SE.string('LC24-0001'),
 									total_undelivered_balance_quantity:
 										SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/document-rcv-log': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get document receive log summary',
+			description: 'Get document receive log summary',
+			parameters: [
+				{
+					name: 'start_date',
+					in: 'query',
+					required: false,
+					description: 'Start date for the summary',
+					schema: {
+						type: 'string',
+						format: 'date',
+					},
+				},
+				{
+					name: 'end_date',
+					in: 'query',
+					required: false,
+					description: 'End date for the summary',
+					schema: {
+						type: 'string',
+						format: 'date',
+					},
+				},
+			],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									total_count: SE.number(100),
+									chart_data: {
+										type: 'array',
+										items: {
+											type: 'object',
+											properties: {
+												file_number:
+													SE.string('LC24-0001'),
+												party_name: SE.string('4F'),
+												marketing_name:
+													SE.string('Marketing 1'),
+												lc_value: SE.number(1000),
+												lc_date:
+													SE.string('2021-01-01'),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/lc-feed': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get lc feed summary',
+			description: 'Get lc feed summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									file_number: SE.string('LC24-0001'),
+									party_name: SE.string('4F'),
+									marketing_name: SE.string('Marketing 1'),
+									lc_value: SE.number(1000),
+									lc_date: SE.string('2021-01-01'),
 								},
 							},
 						},
