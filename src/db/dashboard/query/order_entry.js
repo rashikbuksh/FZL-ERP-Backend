@@ -8,8 +8,8 @@ export async function selectOrderEntry(req, res, next) {
 	const query = sql`
               SELECT 
                     COALESCE(z.date, t.date) as date,
-                    COALESCE(z.total_quantity, 0) as zipper,
-                    COALESCE(t.total_quantity, 0) as thread
+                    COALESCE(z.total_quantity, 0)::float8 as zipper,
+                    COALESCE(t.total_quantity, 0)::float8 as thread
                 FROM 
                     (SELECT DATE(created_at) as date, SUM(quantity) as total_quantity
                     FROM zipper.order_entry
