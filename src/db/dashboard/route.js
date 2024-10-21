@@ -2,15 +2,15 @@ import { Router } from 'express';
 import SE, { SED } from '../../util/swagger_example.js';
 
 import * as challanRegistrationOperations from './query/challan_register.js';
+import * as documentRcvLogOperations from './query/document_rcv_log.js';
 import * as goodsInWarehouseOperations from './query/goods_in_warehouse.js';
+import * as lcFeedOperations from './query/lc_feed.js';
 import * as orderEntryFeedOperations from './query/order_entry_feed.js';
 import * as piRegisterOperations from './query/pi_register.js';
 import * as piToBeSubmittedOperations from './query/pi_to_be_submitted.js';
 import * as productionStatusOperations from './query/production_status.js';
 import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
 import * as workInHandOperations from './query/work_in_hand.js';
-import * as documentRcvLogOperations from './query/document_rcv_log.js';
-import * as lcFeedOperations from './query/lc_feed.js';
 
 const dashBoardRouter = Router();
 
