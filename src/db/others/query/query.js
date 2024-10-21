@@ -949,6 +949,12 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	try {
 		const data = await RecipePromise;
 
+		// add a null value in the recipe list
+		data.rows.push({
+			value: null,
+			label: '---',
+		});
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
