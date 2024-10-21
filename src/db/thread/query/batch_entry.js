@@ -252,6 +252,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		be_given.total_quantity::float8 as total_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0) + be.quantity)::float8 as can_trx_quantity,
+		CEIL(be.quantity / cl.cone_per_carton)::float8 as total_carton,
 		be.created_at,
 		be.updated_at,
 		be.remarks as batch_remarks,
