@@ -8,6 +8,7 @@ import * as piRegisterOperations from './query/pi_register.js';
 import * as productionStatusOperations from './query/production_status.js';
 import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
 import * as workInHandOperations from './query/work_in_hand.js';
+import * as documentRcvLogOperations from './query/document_rcv_log.js';
 
 const dashBoardRouter = Router();
 
@@ -41,6 +42,11 @@ dashBoardRouter.get(
 );
 
 dashBoardRouter.get('/pi-register', piRegisterOperations.selectPiRegister);
+
+dashBoardRouter.get(
+	'/document-rcv-log',
+	documentRcvLogOperations.selectDocumentRcvLog
+);
 
 const pathDashboard = {
 	'/dashboard/challan-register': {
@@ -400,6 +406,47 @@ const pathDashboard = {
 									file_number: SE.string('LC24-0001'),
 									total_pi_value: SE.number(1000),
 									bank_name: SE.string('Bank 1'),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/document-rcv-log': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get document receive log summary',
+			description: 'Get document receive log summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									total_count: SE.number(100),
+									chart_data: {
+										type: 'array',
+										items: {
+											type: 'object',
+											properties: {
+												file_number:
+													SE.string('LC24-0001'),
+												party_name: SE.string('4F'),
+												marketing_name:
+													SE.string('Marketing 1'),
+												lc_value: SE.number(1000),
+												lc_date:
+													SE.string('2021-01-01'),
+											},
+										},
+									},
 								},
 							},
 						},
