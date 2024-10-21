@@ -4,6 +4,7 @@ import db from '../../index.js';
 
 export async function selectDocumentRcvLog(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+    
 	const { start_date, end_date } = req.query;
 
 	const query = sql`

@@ -422,7 +422,28 @@ const pathDashboard = {
 			tags: ['Dashboard'],
 			summary: 'Get document receive log summary',
 			description: 'Get document receive log summary',
-			parameters: [],
+			parameters: [
+				{
+					name: 'start_date',
+					in: 'query',
+					required: false,
+					description: 'Start date for the summary',
+					schema: {
+						type: 'string',
+						format: 'date',
+					},
+				},
+				{
+					name: 'end_date',
+					in: 'query',
+					required: false,
+					description: 'End date for the summary',
+					schema: {
+						type: 'string',
+						format: 'date',
+					},
+				},
+			],
 
 			responses: {
 				200: {
