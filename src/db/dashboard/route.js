@@ -11,6 +11,8 @@ import * as piToBeSubmittedOperations from './query/pi_to_be_submitted.js';
 import * as productionStatusOperations from './query/production_status.js';
 import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
 import * as workInHandOperations from './query/work_in_hand.js';
+import * as stockStatusOperations from './query/stock_status.js';
+import { stock } from '../slider/schema.js';
 
 const dashBoardRouter = Router();
 
@@ -56,6 +58,9 @@ dashBoardRouter.get(
 );
 
 dashBoardRouter.get('/lc-feed', lcFeedOperations.selectLcFeed);
+
+dashBoardRouter.get('/stock-status', stockStatusOperations.selectStockStatus);
+
 const pathDashboard = {
 	'/dashboard/challan-register': {
 		get: {
@@ -539,6 +544,36 @@ const pathDashboard = {
 									marketing_name: SE.string('Marketing 1'),
 									lc_value: SE.number(1000),
 									lc_date: SE.string('2021-01-01'),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/stock-status': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get stock status summary',
+			description: 'Get stock status summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									name: SE.string('Vislon'),
+									threshold: SE.number(1000),
+									stock: SE.number(1000),
+									unit: SE.string('kg'),
+									last_purchase_date: SE.string('2021-01-01'),
+									lead_time: SE.number(1000),
 								},
 							},
 						},
