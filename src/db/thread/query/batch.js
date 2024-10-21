@@ -295,13 +295,26 @@ export async function selectAll(req, res, next) {
 
 	const resultPromise = db.execute(query);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'batch list',
-	};
+	// const toast = {
+	// 	status: 200,
+	// 	type: 'select_all',
+	// 	message: 'batch list',
+	// };
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	// handleResponse({ promise: resultPromise, res, next, ...toast });
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'batch list',
+		};
+
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
