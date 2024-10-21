@@ -105,7 +105,7 @@ export async function selectAll(req, res, next) {
 		resultPromise,
 		req.query,
 		'created_at',
-		'merchandiser'
+		[party.name, hrSchema.users.name]
 	);
 
 	try {

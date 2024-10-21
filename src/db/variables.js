@@ -35,12 +35,15 @@ export const decimalToNumber = (column) => {
 export function constructSelectAllQuery(
 	baseQuery,
 	params,
-	defaultSortField = 'created_at'
+	defaultSortField = 'created_at',
+	additionalSearchFields = []
 ) {
 	let { q, page, limit, sort, orderby } = params;
 
-	// get search fields from table
-	const searchFields = Object.keys(baseQuery.config.table).filter(
+	// Get search fields from table
+	const searchFields = Object.keys(
+		baseQuery.config.table[Symbol.for('drizzle:Columns')]
+	).filter(
 		(field) =>
 			field !== 'uuid' &&
 			field !== 'id' &&
@@ -48,31 +51,38 @@ export function constructSelectAllQuery(
 			field !== 'updated_at'
 	);
 
+	// Include additional search fields from joined tables
+	const allSearchFields = [...searchFields, ...additionalSearchFields];
+
 	// Apply search filter
 	if (q) {
-		const searchConditions = searchFields.map((field) =>
-			like(
-				baseQuery.config.table[Symbol.for('drizzle:Columns')][field],
-				`%${q}%`
-			)
+		const searchConditions = allSearchFields.map((field) =>
+			like(sql`lower(${field})`, `%${q}%`)
 		);
 		baseQuery = baseQuery.where(or(...searchConditions));
 	}
 
 	// Apply sorting
 	if (sort) {
-		const order = orderby == 'asc' ? asc : desc;
-		baseQuery = baseQuery.orderBy(order(baseQuery.config.table[sort]));
+		const order = orderby === 'asc' ? asc : desc;
+		baseQuery = baseQuery.orderBy(
+			order(baseQuery.config.table[Symbol.for('drizzle:Columns')][sort])
+		);
 	} else {
 		baseQuery = baseQuery.orderBy(
-			desc(baseQuery.config.table[defaultSortField])
+			desc(
+				baseQuery.config.table[Symbol.for('drizzle:Columns')][
+					defaultSortField
+				]
+			)
 		); // Default sorting
 	}
 
 	// Apply pagination
 	if (page) {
-		const offset = (page - 1) * limit;
-		baseQuery = baseQuery.limit(limit).offset(offset);
+		const limitValue = limit || 10; // Set your desired limit per page
+		const offset = (page - 1) * limitValue;
+		baseQuery = baseQuery.limit(limitValue).offset(offset);
 	}
 
 	return baseQuery;
