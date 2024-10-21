@@ -9,6 +9,7 @@ import * as productionStatusOperations from './query/production_status.js';
 import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
 import * as workInHandOperations from './query/work_in_hand.js';
 import * as documentRcvLogOperations from './query/document_rcv_log.js';
+import * as lcFeedOperations from './query/lc_feed.js';
 
 const dashBoardRouter = Router();
 
@@ -48,6 +49,7 @@ dashBoardRouter.get(
 	documentRcvLogOperations.selectDocumentRcvLog
 );
 
+dashBoardRouter.get('/lc-feed', lcFeedOperations.selectLcFeed);
 const pathDashboard = {
 	'/dashboard/challan-register': {
 		get: {
@@ -447,6 +449,35 @@ const pathDashboard = {
 											},
 										},
 									},
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/lc-feed': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get lc feed summary',
+			description: 'Get lc feed summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									file_number: SE.string('LC24-0001'),
+									party_name: SE.string('4F'),
+									marketing_name: SE.string('Marketing 1'),
+									lc_value: SE.number(1000),
+									lc_date: SE.string('2021-01-01'),
 								},
 							},
 						},
