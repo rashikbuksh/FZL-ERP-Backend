@@ -1069,7 +1069,7 @@ export async function ProductionReportSnm(req, res, next) {
 			message: 'Production Report S&M',
 		};
 
-		res.status(200).json({ toast, data: data?.rows });
+		res.status(200).json({ toast, data: groupedData });
 	} catch (error) {
 		await handleError({ error, res });
 	}

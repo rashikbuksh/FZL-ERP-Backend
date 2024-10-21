@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { between, desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -77,6 +77,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { start_date, end_date } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: merchandiser.uuid,
@@ -97,33 +99,35 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(merchandiser.created_by, hrSchema.users.uuid)
-		);
+		)
+		.where(sql`created_at BETWEEN ${start_date} AND ${end_date}`)
+		.orderBy(desc(merchandiser.created_at));
 
-	const resultPromiseForCount = await resultPromise;
+	// const resultPromiseForCount = await resultPromise;
 
-	const baseQuery = constructSelectAllQuery(
-		resultPromise,
-		req.query,
-		'created_at',
-		[party.name, hrSchema.users.name]
-	);
+	// const baseQuery = constructSelectAllQuery(
+	// 	resultPromise,
+	// 	req.query,
+	// 	'created_at',
+	// 	[party.name, hrSchema.users.name]
+	// );
 
 	try {
-		const pagination = {
-			total_record: resultPromiseForCount.length,
-			current_page: Number(req.query.page) || 1,
-			total_page: Math.ceil(
-				resultPromiseForCount.length / req.query.limit
-			),
-			next_page:
-				Number(req.query.page) + 1 >
-				Math.ceil(resultPromiseForCount.length / req.query.limit)
-					? null
-					: Number(req.query.page) + 1,
-			prev_page: req.query.page - 1 <= 0 ? null : req.query.page - 1,
-		};
+		// const pagination = {
+		// 	total_record: resultPromiseForCount.length,
+		// 	current_page: Number(req.query.page) || 1,
+		// 	total_page: Math.ceil(
+		// 		resultPromiseForCount.length / req.query.limit
+		// 	),
+		// 	next_page:
+		// 		Number(req.query.page) + 1 >
+		// 		Math.ceil(resultPromiseForCount.length / req.query.limit)
+		// 			? null
+		// 			: Number(req.query.page) + 1,
+		// 	prev_page: req.query.page - 1 <= 0 ? null : req.query.page - 1,
+		// };
 
-		const data = await baseQuery;
+		const data = await resultPromise;
 
 		const toast = {
 			status: 200,
@@ -131,7 +135,7 @@ export async function selectAll(req, res, next) {
 			message: 'Merchandisers List',
 		};
 
-		return await res.status(200).json({ toast, data, pagination });
+		return await res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
