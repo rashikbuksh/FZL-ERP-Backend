@@ -482,6 +482,7 @@ export async function select(req, res, next) {
 						batch.uuid,
 						batch.id,
 						pm.name,
+						pm.water_capacity,
 						batch.slot,
 						labCreated.name,
 						batch.lab_created_at,
