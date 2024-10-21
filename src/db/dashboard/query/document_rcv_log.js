@@ -4,7 +4,7 @@ import db from '../../index.js';
 
 export async function selectDocumentRcvLog(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-    
+
 	const { start_date, end_date } = req.query;
 
 	const query = sql`
@@ -57,7 +57,7 @@ export async function selectDocumentRcvLog(req, res, next) {
 			lc_date: row.lc_date,
 		}));
 		const response = {
-			total_count: total_count,
+			total_number: total_count,
 			chart_data: chart_data,
 		};
 		const toast = {
@@ -65,7 +65,7 @@ export async function selectDocumentRcvLog(req, res, next) {
 			type: 'select',
 			message: 'Document Receive Log',
 		};
-		res.status(200).json({ toast, response });
+		res.status(200).json({ toast, data: response });
 	} catch (error) {
 		handleError({ error, res });
 	}
