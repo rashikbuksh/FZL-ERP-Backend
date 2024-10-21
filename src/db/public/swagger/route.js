@@ -432,10 +432,10 @@ const pathPublicMerchandiser = {
 			operationId: 'getMerchandisers',
 			parameters: [
 				SE.parameter_query('search', 'q', []),
-				SE.parameter_query('_page', '_page', []),
-				SE.parameter_query('_limit', '_limit', []),
-				SE.parameter_query('_sort', '_sort', []),
-				SE.parameter_query('_order', '_order', []),
+				SE.parameter_query('page', 'page', []),
+				SE.parameter_query('limit', 'limit', []),
+				SE.parameter_query('sort', 'sort', []),
+				SE.parameter_query('orderby', 'orderby', []),
 			],
 			responses: {
 				200: {

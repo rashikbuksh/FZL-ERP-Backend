@@ -115,9 +115,9 @@ export async function selectAll(req, res, next) {
 
 		const pagination = {
 			total_record: merchandiserCount.length,
-			current_page: req.query.page || 1,
+			current_page: Number(req.query.page) || 1,
 			total_page: Math.ceil(merchandiserCount.length / req.query.limit),
-			nextPage: req.query.page + 1,
+			nextPage: Number(req.query.page) + 1,
 			prevPage: req.query.page - 1 <= 0 ? null : req.query.page - 1,
 		};
 

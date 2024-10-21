@@ -37,15 +37,11 @@ export function constructSelectAllQuery(
 	params,
 	defaultSortField = 'created_at'
 ) {
-	let { q, page, limit, _sort, _order } = params;
+	let { q, page, limit, sort, orderby } = params;
 
 	// get search fields from table
 	const searchFields = Object.keys(baseQuery.config.table).filter(
-		(field) =>
-			field !== 'uuid' &&
-			field !== 'id' &&
-			field !== 'created_at' &&
-			field !== 'updated_at'
+		(field) => field !== 'uuid' && field !== 'id'
 	);
 
 	console.log(searchFields);
@@ -62,9 +58,9 @@ export function constructSelectAllQuery(
 	}
 
 	// Apply sorting
-	if (_sort) {
-		const order = _order == 'asc' ? asc : desc;
-		baseQuery = baseQuery.orderBy(order(baseQuery.config.table[_sort]));
+	if (sort) {
+		const order = orderby == 'asc' ? asc : desc;
+		baseQuery = baseQuery.orderBy(order(baseQuery.config.table[sort]));
 	} else {
 		baseQuery = baseQuery.orderBy(
 			desc(baseQuery.config.table[defaultSortField])
