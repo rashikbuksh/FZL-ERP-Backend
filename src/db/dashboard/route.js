@@ -5,6 +5,7 @@ import * as challanRegistrationOperations from './query/challan_register.js';
 import * as goodsInWarehouseOperations from './query/goods_in_warehouse.js';
 import * as orderEntryFeedOperations from './query/order_entry_feed.js';
 import * as piRegisterOperations from './query/pi_register.js';
+import * as piToBeSubmittedOperations from './query/pi_to_be_submitted.js';
 import * as productionStatusOperations from './query/production_status.js';
 import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
 import * as workInHandOperations from './query/work_in_hand.js';
@@ -41,6 +42,11 @@ dashBoardRouter.get(
 );
 
 dashBoardRouter.get('/pi-register', piRegisterOperations.selectPiRegister);
+
+dashBoardRouter.get(
+	'/pi-to-be-submitted',
+	piToBeSubmittedOperations.selectPiToBeSubmittedDashboard
+);
 
 const pathDashboard = {
 	'/dashboard/challan-register': {
@@ -400,6 +406,40 @@ const pathDashboard = {
 									file_number: SE.string('LC24-0001'),
 									total_pi_value: SE.number(1000),
 									bank_name: SE.string('Bank 1'),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/pi-to-be-submitted': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get pi to be submitted summary',
+			description: 'Get pi to be submitted summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: SE.uuid(),
+									name: SE.string('PI24-0001'),
+									total_quantity: SE.uuid(),
+									total_pi: SE.string('4F'),
+									total_balance_pi_quantity: SE.uuid(),
+									total_balance_pi_value:
+										SE.string('2406-234-765'),
+									total_delivered: SE.string('LC24-0001'),
+									total_undelivered_balance_quantity:
+										SE.number(1000),
 								},
 							},
 						},

@@ -41,9 +41,7 @@ export function constructSelectAllQuery(
 	let { q, page, limit, sort, orderby } = params;
 
 	// Get search fields from table
-	const searchFields = Object.keys(
-		baseQuery.config.table[Symbol.for('drizzle:Columns')]
-	).filter(
+	const searchFields = Object.keys(baseQuery.config.table).filter(
 		(field) =>
 			field !== 'uuid' &&
 			field !== 'id' &&
@@ -57,7 +55,7 @@ export function constructSelectAllQuery(
 	// Apply search filter
 	if (q) {
 		const searchConditions = allSearchFields.map((field) =>
-			like(sql`lower(${field})`, `%${q}%`)
+			like(sql`${field}`, `%${q}%`)
 		);
 		baseQuery = baseQuery.where(or(...searchConditions));
 	}
