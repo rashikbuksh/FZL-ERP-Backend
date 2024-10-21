@@ -254,7 +254,8 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		be.created_at,
 		be.updated_at,
 		be.remarks as batch_remarks,
-		oe.yarn_quantity::float8 as yarn_quantity
+		oe.yarn_quantity::float8 as yarn_quantity,
+		oe.carton_quantity
 	FROM
 		thread.batch_entry be
 	LEFT JOIN 
