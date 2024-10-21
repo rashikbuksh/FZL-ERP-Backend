@@ -872,7 +872,7 @@ export async function selectLabDipRecipe(req, res, next) {
 	const recipePromise = db
 		.select({
 			value: labDipSchema.recipe.uuid,
-			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name)`,
+			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name, ' - ', recipe.bleaching::text)`,
 			approved: labDipSchema.recipe.approved,
 			status: labDipSchema.recipe.status,
 			info: labDipSchema.recipe.lab_dip_info_uuid,
@@ -933,7 +933,7 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	const query = sql`
 	SELECT
 		recipe.uuid AS value,
-		recipe.name AS label
+		concat( recipe.name, '-', recipe.bleaching) AS label
 	FROM
 		lab_dip.recipe
 	LEFT JOIN
