@@ -95,7 +95,7 @@ export async function selectAll(req, res, next) {
 			created_at: batch_entry.created_at,
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
-			yarn_quantity: decimalToNumber(order_entry.yarn_quantity),
+			yarn_quantity: decimalToNumber(batch_entry.yarn_quantity),
 		})
 		.from(batch_entry)
 		.leftJoin(
@@ -131,7 +131,7 @@ export async function select(req, res, next) {
 			created_at: batch_entry.created_at,
 			updated_at: batch_entry.updated_at,
 			remarks: batch_entry.remarks,
-			yarn_quantity: decimalToNumber(order_entry.yarn_quantity),
+			yarn_quantity: decimalToNumber(batch_entry.yarn_quantity),
 		})
 		.from(batch_entry)
 		.leftJoin(
@@ -176,6 +176,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		be_given.total_quantity::float8 as total_trx_quantity,
 		be.transfer_quantity::float8 as transfer_quantity,
 		be.transfer_carton_quantity::float8,
+		be.yarn_quantity::float8 as yarn_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity
 	FROM
 		thread.order_entry oe
@@ -254,7 +255,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		be.created_at,
 		be.updated_at,
 		be.remarks as batch_remarks,
-		oe.yarn_quantity::float8 as yarn_quantity,
+		be.yarn_quantity::float8 as yarn_quantity,
 		oe.carton_quantity
 	FROM
 		thread.batch_entry be
@@ -322,6 +323,7 @@ export async function getBatchEntryDetails(req, res, next) {
 		be.created_at,
 		be.updated_at,
 		be.remarks as batch_remarks,
+		be.yarn_quantity::float8 as yarn_quantity,
 		batch.is_drying_complete
 	FROM
 		thread.batch_entry be
