@@ -115,7 +115,11 @@ export async function selectAll(req, res, next) {
 			total_page: Math.ceil(
 				resultPromiseForCount.length / req.query.limit
 			),
-			nextPage: Number(req.query.page) + 1,
+			nextPage:
+				Number(req.query.page) + 1 >
+				Math.ceil(resultPromiseForCount.length / req.query.limit)
+					? null
+					: Number(req.query.page) + 1,
 			prevPage: req.query.page - 1 <= 0 ? null : req.query.page - 1,
 		};
 
