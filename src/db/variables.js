@@ -41,10 +41,12 @@ export function constructSelectAllQuery(
 
 	// get search fields from table
 	const searchFields = Object.keys(baseQuery.config.table).filter(
-		(field) => field !== 'uuid' && field !== 'id'
+		(field) =>
+			field !== 'uuid' &&
+			field !== 'id' &&
+			field !== 'created_at' &&
+			field !== 'updated_at'
 	);
-
-	console.log(searchFields);
 
 	// Apply search filter
 	if (q) {
