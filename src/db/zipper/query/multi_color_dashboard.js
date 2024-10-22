@@ -83,6 +83,7 @@ export async function selectAll(req, res, next) {
 		SELECT
 			mcd.uuid,
 			mcd.order_description_uuid,
+			vodf.order_info_uuid,
 			vodf.order_number,
 			vodf.item_description,
 			mcd.expected_tape_quantity::float8 AS expected_tape_quantity,
@@ -90,6 +91,7 @@ export async function selectAll(req, res, next) {
 			vodf.tape_coil_uuid,
 			vodf.tape_name,
 			mcd.tape_quantity::float8,
+			vodf.tape_received::float8 AS tape_received,
 			mcd.coil_uuid,
 			mi.name AS coil_name,
 			mcd.coil_quantity::float8 AS coil_quantity,
@@ -126,6 +128,7 @@ export async function select(req, res, next) {
 		SELECT
 			mcd.uuid,
 			mcd.order_description_uuid,
+			vodf.order_info_uuid,
 			vodf.order_number,
 			vodf.item_description,
 			mcd.expected_tape_quantity::float8 AS expected_tape_quantity,
@@ -133,6 +136,7 @@ export async function select(req, res, next) {
 			vodf.tape_coil_uuid,
 			vodf.tape_name,
 			mcd.tape_quantity::float8,
+			vodf.tape_received::float8 AS tape_received,
 			mcd.coil_uuid,
 			mi.name AS coil_name,
 			mcd.coil_quantity::float8 AS coil_quantity,
