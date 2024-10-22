@@ -127,7 +127,7 @@ export async function selectAll(req, res, next) {
 			lc.created_at,
 			lc.updated_at,
 			lc.remarks,
-			lc.payment_value
+			lc.payment_value::float8
 		FROM
 			commercial.lc
 		LEFT JOIN
@@ -210,7 +210,7 @@ export async function select(req, res, next) {
 			lc.created_at,
 			lc.updated_at,
 			lc.remarks,
-			lc.payment_value
+			lc.payment_value::float8
 		FROM
 			commercial.lc
 		LEFT JOIN
@@ -323,7 +323,7 @@ export async function selectLcByLcNumber(req, res, next) {
 			lc.created_at,
 			lc.updated_at,
 			lc.remarks,
-			lc.payment_value
+			lc.payment_value::float8
 		FROM
 			commercial.lc
 		LEFT JOIN
