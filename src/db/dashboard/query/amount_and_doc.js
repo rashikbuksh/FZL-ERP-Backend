@@ -354,13 +354,24 @@ export async function selectPaymentDue(req, res, next) {
 
 		const response = data.rows[0];
 
+		const chart_data = [
+			{
+				label: 'Payment Due',
+				value: response.total_payment_due,
+			},
+			{
+				label: 'Number of Pending Payment',
+				value: response.number_of_pending_payment_due,
+			},
+		];
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'Payment Due',
 		};
 
-		return res.status(200).json({ toast, data: response });
+		return res.status(200).json({ toast, data: chart_data });
 	} catch (error) {
 		handleError({ error, res });
 	}
