@@ -663,10 +663,6 @@ const pathZipper = {
 			summary: 'get all tape coils',
 			description: 'All tape coils',
 			operationId: 'getAllTapeCoils',
-			parameters: [
-				SE.parameter_query('item', 'item', ''),
-				SE.parameter_query('zipper_number', 'zipper_number', ''),
-			],
 			responses: {
 				200: {
 					description: 'Returns a all tape coils.',
