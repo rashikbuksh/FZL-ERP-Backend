@@ -232,12 +232,25 @@ export function selectOrderProperties(req, res, next) {
 export async function selectTapeCoil(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
+	const { item, zipper_number } = req.query;
+
 	const tapeCoilPromise = db
 		.select({
 			value: zipperSchema.tape_coil.uuid,
 			label: zipperSchema.tape_coil.name,
 		})
-		.from(zipperSchema.tape_coil);
+		.from(zipperSchema.tape_coil)
+		.where(
+			and(
+				item ? eq(zipperSchema.tape_coil.item_uuid, item) : null,
+				zipper_number
+					? eq(
+							zipperSchema.tape_coil.zipper_number_uuid,
+							zipper_number
+						)
+					: null
+			)
+		);
 	try {
 		const data = await tapeCoilPromise;
 		const toast = {
