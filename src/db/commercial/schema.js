@@ -65,6 +65,7 @@ export const lc = commercial.table('lc', {
 	is_old_pi: integer('is_old_pi').default(0),
 	pi_number: text('pi_number').default(null),
 	lc_value: PG_DECIMAL('lc_value').default(0),
+	payment_value: PG_DECIMAL('payment_value').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
