@@ -651,6 +651,26 @@ export const def_multi_color_dashboard = SED({
 	xml: 'Zipper/Multi-Color-Dashboard',
 });
 
+export const def_multi_color_tape_receive = SED({
+	required: [
+		'uuid',
+		'order_description_uuid',
+		'quantity',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		order_description_uuid: SE.uuid(),
+		quantity: SE.number(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
+	},
+	xml: 'Zipper/Multi-Color-Tape-Receive',
+});
+
 //....................FOR TESTING.......................
 export const defZipper = {
 	order_info: def_zipper_order_info,
@@ -677,6 +697,7 @@ export const defZipper = {
 	batch_production: def_zipper_batch_production,
 	tape_coil_required: def_zipper_tape_coil_required,
 	multi_color_dashboard: def_multi_color_dashboard,
+	multi_color_tape_receive: def_multi_color_tape_receive,
 };
 
 // * Zipper Tag * //
@@ -768,5 +789,9 @@ export const tagZipper = [
 	{
 		name: 'zipper.multi_color_dashboard',
 		description: 'Zipper Multi Color Dashboard',
+	},
+	{
+		name: 'zipper.multi_color_tape_receive',
+		description: 'Zipper Multi Color Tape Receive',
 	},
 ];

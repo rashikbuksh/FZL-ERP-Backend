@@ -21,6 +21,8 @@ import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
+import * as multiColorTapeReceiveOperations from './query/multi_color_tape_receive.js';
+
 const zipperRouter = Router();
 
 // --------------------- ORDER INFO ROUTES ---------------------
@@ -478,6 +480,28 @@ zipperRouter.put(
 zipperRouter.delete(
 	'/multi-color-dashboard/:uuid',
 	multiColorDashboardOperations.remove
+);
+
+// --------------------- MULTI COLOR TAPES RECEIVE ROUTES ---------------------
+zipperRouter.get(
+	'/multi-color-tape-receive',
+	multiColorTapeReceiveOperations.selectAll
+);
+zipperRouter.get(
+	'/multi-color-tape-receive/:uuid',
+	multiColorTapeReceiveOperations.select
+);
+zipperRouter.post(
+	'/multi-color-tape-receive',
+	multiColorTapeReceiveOperations.insert
+);
+zipperRouter.put(
+	'/multi-color-tape-receive/:uuid',
+	multiColorTapeReceiveOperations.update
+);
+zipperRouter.delete(
+	'/multi-color-tape-receive/:uuid',
+	multiColorTapeReceiveOperations.remove
 );
 
 export { zipperRouter };
