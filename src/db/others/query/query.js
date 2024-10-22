@@ -228,6 +228,29 @@ export function selectOrderProperties(req, res, next) {
 }
 
 // zipper
+
+export async function selectTapeCoil(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const tapeCoilPromise = db
+		.select({
+			value: zipperSchema.tape_coil.uuid,
+			label: zipperSchema.tape_coil.name,
+		})
+		.from(zipperSchema.tape_coil);
+	try {
+		const data = await tapeCoilPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Tape Coil list',
+		};
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export function selectOrderInfo(req, res, next) {
 	if (!validateRequest(req, next)) return;
 

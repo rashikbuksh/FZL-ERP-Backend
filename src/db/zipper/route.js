@@ -77,6 +77,10 @@ zipperRouter.get(
 	'/order/details/single-order/by/:order_number',
 	orderDescriptionOperations.selectOrderNumberToGetOrderDescriptionAndOrderEntry
 );
+zipperRouter.put(
+	'/order/description/update/by/:tape_coil_uuid',
+	orderDescriptionOperations.updateOrderDescriptionByTapeCoil
+);
 
 // --------------------- ORDER ENTRY ROUTES ---------------------
 

@@ -30,6 +30,7 @@ otherRouter.get(
 // thread
 
 // zipper
+otherRouter.get('/tape-coil/value/label', otherOperations.selectTapeCoil);
 otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
 otherRouter.get(
 	'/order/zipper-thread/value/label',
@@ -656,6 +657,30 @@ const pathCommercial = {
 };
 
 const pathZipper = {
+	'/other/tape-coil/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all tape coils',
+			description: 'All tape coils',
+			operationId: 'getAllTapeCoils',
+			responses: {
+				200: {
+					description: 'Returns a all tape coils.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: { type: 'string' },
+									label: { type: 'string' },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 	'/other/order/order_description_uuid/by/{order_number}': {
 		get: {
 			tags: ['others'],

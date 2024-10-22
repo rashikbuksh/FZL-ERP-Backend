@@ -863,3 +863,28 @@ export async function selectOrderNumberToGetOrderDescriptionAndOrderEntry(
 		await handleError({ error, res });
 	}
 }
+
+export async function updateOrderDescriptionByTapeCoil(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const { tape_coil_uuid } = req.params;
+
+	const orderDescriptionPromise = db
+		.update(order_description)
+		.set({ tape_coil_uuid })
+		.where(eq(order_description.uuid, req.body.order_description_uuid))
+		.returning({ updatedUuid: order_description.uuid });
+
+	try {
+		const data = await orderDescriptionPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data[0].updatedUuid} updated`,
+		};
+
+		res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

@@ -575,6 +575,31 @@ export const pathZipperOrderDescription = {
 			},
 		},
 	},
+	'/zipper/order/description/update/by/{tape_coil_uuid}': {
+		put: {
+			tags: ['zipper.order_description'],
+			summary: 'Update an existing order description',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'order description to update',
+					'tape_coil_uuid'
+				),
+			],
+			requestBody: SE.requestBody({
+				order_description_uuid: SE.uuid(),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/order_description'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 const order_entry_fields = {
