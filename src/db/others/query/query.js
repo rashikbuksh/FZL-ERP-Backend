@@ -236,8 +236,21 @@ export async function selectTapeCoil(req, res, next) {
 		.select({
 			value: zipperSchema.tape_coil.uuid,
 			label: zipperSchema.tape_coil.name,
+			item: itemProperties.item_uuid,
+			item_name: itemProperties.name,
+			zipper_number: zipperProperties.item_uuid,
+			zipper_number_name: zipperProperties.name,
 		})
 		.from(zipperSchema.tape_coil)
+		.leftJoin(
+			itemProperties,
+			eq(zipperSchema.tape_coil.item_uuid, itemProperties.uuid)
+		)
+		.leftJoin(
+			zipperProperties,
+			eq(zipperSchema.tape_coil.zipper_number_uuid, zipperProperties.uuid)
+		);
+
 	try {
 		const data = await tapeCoilPromise;
 		const toast = {
