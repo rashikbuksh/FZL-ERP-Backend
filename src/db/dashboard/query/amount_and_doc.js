@@ -146,6 +146,16 @@ export async function selectDocumentRcvDue(req, res, next) {
 		const data = await resultPromise;
 
 		const response = data.rows[0];
+		const chart_data = [
+			{
+				label: 'Document Receive Due',
+				value: response.total_doc_rcv_due,
+			},
+			{
+				label: 'Number of Pending Document Receive',
+				value: response.number_of_pending_doc_rcv,
+			},
+		];
 
 		const toast = {
 			status: 200,
@@ -153,7 +163,7 @@ export async function selectDocumentRcvDue(req, res, next) {
 			message: 'Document Receive Due',
 		};
 
-		return res.status(200).json({ toast, data: response });
+		return res.status(200).json({ toast, data: chart_data });
 	} catch (error) {
 		handleError({ error, res });
 	}
@@ -205,6 +215,16 @@ export async function selectAcceptanceDue(req, res, next) {
 		const data = await resultPromise;
 
 		const response = data.rows[0];
+		const chart_data = [
+			{
+				label: 'Acceptance Due',
+				value: response.total_acceptance_due,
+			},
+			{
+				label: 'Number of Pending Acceptance',
+				value: response.number_of_pending_acceptance_due,
+			},
+		];
 
 		const toast = {
 			status: 200,
@@ -212,7 +232,7 @@ export async function selectAcceptanceDue(req, res, next) {
 			message: 'Acceptance Due',
 		};
 
-		return res.status(200).json({ toast, data: response });
+		return res.status(200).json({ toast, data: chart_data });
 	} catch (error) {
 		handleError({ error, res });
 	}
@@ -264,13 +284,24 @@ export async function selectMaturityDue(req, res, next) {
 
 		const response = data.rows[0];
 
+		const chart_data = [
+			{
+				label: 'Maturity Due',
+				value: response.total_maturity_due,
+			},
+			{
+				label: 'Number of Pending Maturity',
+				value: response.number_of_pending_maturity_due,
+			},
+		];
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'Maturity Due',
 		};
 
-		return res.status(200).json({ toast, data: response });
+		return res.status(200).json({ toast, data: chart_data });
 	} catch (error) {
 		handleError({ error, res });
 	}
