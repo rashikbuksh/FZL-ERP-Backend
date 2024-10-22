@@ -236,9 +236,9 @@ export async function selectTapeCoil(req, res, next) {
 		.select({
 			value: zipperSchema.tape_coil.uuid,
 			label: zipperSchema.tape_coil.name,
-			item: itemProperties.item_uuid,
+			item: itemProperties.uuid,
 			item_name: itemProperties.name,
-			zipper_number: zipperProperties.item_uuid,
+			zipper_number: zipperProperties.uuid,
 			zipper_number_name: zipperProperties.name,
 		})
 		.from(zipperSchema.tape_coil)
