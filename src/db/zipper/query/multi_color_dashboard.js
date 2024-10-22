@@ -8,6 +8,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { multi_color_dashboard } from '../schema.js';
+import * as materialSchema from '../../material/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -105,16 +106,16 @@ export async function selectAll(req, res, next) {
 		.from(multi_color_dashboard)
 		.leftJoin(
 			materialSchema.info,
-			eq(multi_color_dashboard.created_by, materialSchema.info.uuid)
+			eq(multi_color_dashboard.coil_uuid, materialSchema.info.uuid)
 		)
+
 		.leftJoin(
 			sql`zipper.v_order_details`,
 			eq(
 				multi_color_dashboard.order_description_uuid,
 				sql`v_order_details.order_description_uuid`
 			)
-		)
-		.orderBy(desc(multi_color_dashboard.created_at));
+		);
 
 	try {
 		const data = await resultPromise;
@@ -157,7 +158,7 @@ export async function select(req, res, next) {
 		.from(multi_color_dashboard)
 		.leftJoin(
 			materialSchema.info,
-			eq(multi_color_dashboard.created_by, materialSchema.info.uuid)
+			eq(multi_color_dashboard.coil_uuid, materialSchema.info.uuid)
 		)
 		.leftJoin(
 			sql`zipper.v_order_details`,

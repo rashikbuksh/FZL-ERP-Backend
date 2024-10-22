@@ -637,4 +637,25 @@ export const multi_color_dashboard = zipper.table('multi_color_dashboard', {
 	remarks: text('remarks').default(null),
 });
 
+export const multi_color_tape_receive = zipper.table(
+	'multi_color_tape_receive',
+	{
+		uuid: uuid_primary,
+		order_description_uuid: defaultUUID(
+			'order_description_uuid'
+		).references(() => order_description.uuid),
+		quantity: decimal('quantity', {
+			precision: 20,
+			scale: 4,
+		}).notNull(),
+
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		remarks: text('remarks').default(null),
+	}
+);
+
 export default zipper;

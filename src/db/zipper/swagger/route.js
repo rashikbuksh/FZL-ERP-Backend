@@ -1,6 +1,4 @@
-import { param } from 'express-validator';
-import SE from '../../../util/swagger_example.js';
-import { tape_coil } from '../schema.js';
+import SE, { SED } from '../../../util/swagger_example.js';
 
 const order_info_extra_schema = SE.response_schema(200, {
 	uuid: SE.uuid(),
@@ -3317,6 +3315,246 @@ export const pathZipperBatchProduction = {
 	},
 };
 
+// * Zipper Multi  Color Dashboard * //
+
+export const pathMultiColorDashboard = {
+	'/zipper/multi-color-dashboard': {
+		get: {
+			tags: ['zipper.multi_color_dashboard'],
+			summary: 'Get all Multi Color Dashboard',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					expected_tape_quantity: SE.number(100),
+					production_quantity_in_kg: SE.number(100),
+					is_swatch_approved: SE.integer(0),
+					tape_quantity: SE.number(100),
+					coil_uuid: SE.uuid(),
+					coil_name: SE.string('Coil 1'),
+					coil_quantity: SE.number(100),
+					thread_name: SE.string('Thread 1'),
+					thread_quantity: SE.number(100),
+					is_coil_received_sewing: SE.integer(0),
+					is_thread_received_sewing: SE.integer(0),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['zipper.multi_color_dashboard'],
+			summary: 'create a multi color dashboard',
+			description: '',
+			// operationId: "add
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/multi_color_dashboard'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/multi_color_dashboard'
+				),
+				405: SE.response(405),
+			},
+		},
+	},
+
+	'/zipper/multi-color-dashboard/{uuid}': {
+		get: {
+			tags: ['zipper.multi_color_dashboard'],
+			summary: 'Gets a multi color dashboard',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('multi color dashboard to get', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					expected_tape_quantity: SE.number(100),
+					production_quantity_in_kg: SE.number(100),
+					is_swatch_approved: SE.integer(0),
+					tape_quantity: SE.number(100),
+					coil_uuid: SE.uuid(),
+					coil_name: SE.string('Coil 1'),
+					coil_quantity: SE.number(100),
+					thread_name: SE.string('Thread 1'),
+					thread_quantity: SE.number(100),
+					is_coil_received_sewing: SE.integer(0),
+					is_thread_received_sewing: SE.integer(0),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['zipper.multi_color_dashboard'],
+			summary: 'Update an existing multi color dashboard',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_schema_ref(
+					'multi color dashboard to update',
+					'uuid'
+				),
+			],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/multi_color_dashboard'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/multi_color_dashboard'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['zipper.multi_color_dashboard'],
+			summary: 'Deletes a multi color dashboard',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('multi color dashboard to delete', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
+// * Zipper Multi Color Tape Receive * //
+
+export const pathZipperMultiColorTapeReceive = {
+	'/zipper/multi-color-tape-receive': {
+		get: {
+			tags: ['zipper.multi_color_tape_receive'],
+			summary: 'Get all Multi Color Tape Receive',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					quantity: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		post: {
+			tags: ['zipper.multi_color_tape_receive'],
+			summary: 'create a multi color tape receive',
+			description: '',
+			// operationId: "add
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/multi_color_tape_receive'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/multi_color_tape_receive'
+				),
+				405: SE.response(405),
+			},
+		},
+	},
+
+	'/zipper/multi-color-tape-receive/{uuid}': {
+		get: {
+			tags: ['zipper.multi_color_tape_receive'],
+			summary: 'Gets a multi color tape receive',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('multi color tape receive to get', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					quantity: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+
+		put: {
+			tags: ['zipper.multi_color_tape_receive'],
+			summary: 'Update an existing multi color tape receive',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_schema_ref(
+					'multi color tape receive to update',
+					'uuid'
+				),
+			],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/multi_color_tape_receive'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/multi_color_tape_receive'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+
+		delete: {
+			tags: ['zipper.multi_color_tape_receive'],
+			summary: 'Deletes a multi color tape receive',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'multi color tape receive to delete',
+					'uuid'
+				),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
 // * Zipper Path Zipper * //
 export const pathZipper = {
 	...pathZipperOrderInfo,
@@ -3340,4 +3578,6 @@ export const pathZipper = {
 	...pathZipperBatchProduction,
 	...pathZipperDyedTapeTransaction,
 	...pathZipperDyedTapeTransactionFromStock,
+	...pathMultiColorDashboard,
+	...pathZipperMultiColorTapeReceive,
 };
