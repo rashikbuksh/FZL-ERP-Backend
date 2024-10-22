@@ -35,7 +35,8 @@ export const OrderDetailsView = `
       order_description.is_inch,
       order_description.is_meter,
       order_description.is_cm,
-      order_description.order_type
+      order_description.order_type,
+      order_description.is_multi_color
     FROM
       zipper.order_info
       LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
@@ -162,7 +163,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.is_inch,
     order_description.is_meter,
     order_description.is_cm,
-    order_description.order_type
+    order_description.order_type,
+    order_description.is_multi_color
    FROM zipper.order_info
      LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
      LEFT JOIN marketing ON marketing.uuid = order_info.marketing_uuid

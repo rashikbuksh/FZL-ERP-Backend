@@ -174,6 +174,7 @@ export const order_description = zipper.table('order_description', {
 	is_meter: integer('is_meter').default(0),
 	is_cm: integer('is_cm').default(0),
 	order_type: order_type_enum('order_type').default('full'),
+	is_multi_color: integer('is_multi_color').default(0),
 });
 
 export const order_entry = zipper.table('order_entry', {
