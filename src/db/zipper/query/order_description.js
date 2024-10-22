@@ -868,6 +868,7 @@ export async function updateOrderDescriptionByTapeCoil(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const { tape_coil_uuid } = req.params;
+	console.log('tape_coil_uuid', tape_coil_uuid);
 
 	const orderDescriptionPromise = db
 		.update(order_description)
@@ -877,6 +878,11 @@ export async function updateOrderDescriptionByTapeCoil(req, res, next) {
 
 	try {
 		const data = await orderDescriptionPromise;
+		
+		if (data.length === 0 || !data[0].updatedUuid) {
+			throw new Error('Update failed, no data returned');
+		}
+
 		const toast = {
 			status: 200,
 			type: 'update',
