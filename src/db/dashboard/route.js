@@ -72,6 +72,20 @@ dashBoardRouter.get(
 
 dashBoardRouter.get('/top-sales', topSalesOperations.selectTopSales);
 
+dashBoardRouter.get(
+	'/document-rcv-due',
+	amountAndDocOperations.selectDocumentRcvDue
+);
+
+dashBoardRouter.get(
+	'/acceptance-due',
+	amountAndDocOperations.selectAcceptanceDue
+);
+
+dashBoardRouter.get('/maturity-due', amountAndDocOperations.selectMaturityDue);
+
+dashBoardRouter.get('/payment-due', amountAndDocOperations.selectPaymentDue);
+
 const pathDashboard = {
 	'/dashboard/challan-register': {
 		get: {
@@ -673,6 +687,113 @@ const pathDashboard = {
 								properties: {
 									name: SE.string('Vislon'),
 									sales: SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/document-rcv-due': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get document receive due summary',
+			description: 'Get document receive due summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									total_doc_rcv_due: SE.number(1000),
+									number_of_pending_doc_rcv: SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/acceptance-due': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get acceptance due summary',
+			description: 'Get acceptance due summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									total_acceptance_due: SE.number(1000),
+									number_of_pending_acceptance_due:
+										SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/maturity-due': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get maturity due summary',
+			description: 'Get maturity due summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									total_maturity_due: SE.number(1000),
+									number_of_pending_maturity_due:
+										SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/payment-due': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get payment due summary',
+			description: 'Get payment due summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									total_payment_due: SE.number(1000),
+									number_of_pending_payment_due:
+										SE.number(1000),
 								},
 							},
 						},
