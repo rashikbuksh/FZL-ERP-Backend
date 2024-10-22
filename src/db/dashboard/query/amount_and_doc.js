@@ -533,7 +533,7 @@ export async function selectNoOfDoc(req, res, next) {
 			message: 'Number of Doc',
 		};
 
-		return res.status(200).json({ toast, data: chart_data });
+		return res.status(200).json({ toast, chart_data });
 	} catch (error) {
 		handleError({ error, res });
 	}
