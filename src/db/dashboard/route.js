@@ -86,6 +86,13 @@ dashBoardRouter.get('/maturity-due', amountAndDocOperations.selectMaturityDue);
 
 dashBoardRouter.get('/payment-due', amountAndDocOperations.selectPaymentDue);
 
+dashBoardRouter.get(
+	'/amount-percentage',
+	amountAndDocOperations.selectAmountPercentage
+);
+
+dashBoardRouter.get('/no-of-doc', amountAndDocOperations.selectNoOfDoc);
+
 const pathDashboard = {
 	'/dashboard/challan-register': {
 		get: {
@@ -794,6 +801,59 @@ const pathDashboard = {
 									total_payment_due: SE.number(1000),
 									number_of_pending_payment_due:
 										SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/amount-percentage': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get amount percentage summary',
+			description: 'Get amount percentage summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									name: SE.string('Vislon'),
+									Amount: SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+
+	'/dashboard/no-of-doc': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get number of doc summary',
+			description: 'Get number of doc summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									name: SE.string('Vislon'),
+									no_of_doc: SE.number(1000),
 								},
 							},
 						},
