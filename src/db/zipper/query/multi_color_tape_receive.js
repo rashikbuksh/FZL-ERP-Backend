@@ -94,9 +94,9 @@ export async function selectAll(req, res, next) {
 			mctr.updated_at,
 			mctr.remarks
 		FROM
-			multi_color_tape_receive mctr
-		LEFT JOIN users u ON mctr.created_by = u.uuid
-		LEFT JOIN v_order_details_full vodf ON mctr.order_description_uuid = vodf.order_description_uuid
+			zipper.multi_color_tape_receive mctr
+		LEFT JOIN hr.users u ON mctr.created_by = u.uuid
+		LEFT JOIN zipper.v_order_details_full vodf ON mctr.order_description_uuid = vodf.order_description_uuid
 		ORDER BY
 			created_at DESC
 	`;
@@ -134,9 +134,9 @@ export async function select(req, res, next) {
 			mctr.updated_at,
 			mctr.remarks
 		FROM
-			multi_color_tape_receive mctr
-		LEFT JOIN users u ON mctr.created_by = u.uuid
-		LEFT JOIN v_order_details_full vodf ON mctr.order_description_uuid = vodf.order_description_uuid
+			zipper.multi_color_tape_receive mctr
+		LEFT JOIN hr.users u ON mctr.created_by = u.uuid
+		LEFT JOIN zipper.v_order_details_full vodf ON mctr.order_description_uuid = vodf.order_description_uuid
 		WHERE
 			mctr.uuid = ${req.params.uuid}
 	`;
