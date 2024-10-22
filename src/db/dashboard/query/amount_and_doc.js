@@ -70,6 +70,24 @@ export async function selectAmountAndDoc(req, res, next) {
 
 		const response = data.rows[0];
 
+		response.chart_data = [
+			{
+				name: 'Acceptance Due',
+				Amount: response.total_acceptance_due,
+				no_of_doc: response.number_of_pending_acceptance_due,
+			},
+			{
+				name: 'Maturity Due',
+				Amount: response.total_maturity_due,
+				no_of_doc: response.number_of_pending_maturity_due,
+			},
+			{
+				name: 'Payment Due',
+				Amount: response.total_payment_due,
+				no_of_doc: response.number_of_pending_payment_due,
+			},
+		];
+
 		const toast = {
 			status: 200,
 			type: 'select',
