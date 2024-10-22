@@ -444,15 +444,15 @@ export async function selectAmountPercentage(req, res, next) {
 
 		const amounts = [
 			{
-				name: 'Acceptance Due',
+				name: 'total_acceptance_due',
 				amount: response.total_acceptance_due,
 			},
 			{
-				name: 'Maturity Due',
+				name: 'total_maturity_due',
 				amount: response.total_maturity_due,
 			},
 			{
-				name: 'Payment Due',
+				name: 'total_payment_due',
 				amount: response.total_payment_due,
 			},
 		];
@@ -473,7 +473,7 @@ export async function selectAmountPercentage(req, res, next) {
 			message: 'Amount and Doc',
 		};
 
-		return res.status(200).json({ toast, chart_data });
+		return res.status(200).json({ toast, data: chart_data });
 	} catch (error) {
 		handleError({ error, res });
 	}
@@ -545,16 +545,16 @@ export async function selectNoOfDoc(req, res, next) {
 		const response = data.rows[0];
 		const chart_data = [
 			{
-				name: 'Acceptance Due',
-				no_of_doc: response.number_of_pending_acceptance_due,
+				name: 'total_acceptance_due',
+				amount: response.number_of_pending_acceptance_due,
 			},
 			{
-				name: 'Maturity Due',
-				no_of_doc: response.number_of_pending_maturity_due,
+				name: 'total_maturity_due',
+				amount: response.number_of_pending_maturity_due,
 			},
 			{
-				name: 'Payment Due',
-				no_of_doc: response.number_of_pending_payment_due,
+				name: 'total_payment_due',
+				amount: response.number_of_pending_payment_due,
 			},
 		];
 
@@ -564,7 +564,7 @@ export async function selectNoOfDoc(req, res, next) {
 			message: 'Number of Doc',
 		};
 
-		return res.status(200).json({ toast, chart_data });
+		return res.status(200).json({ toast, data: chart_data });
 	} catch (error) {
 		handleError({ error, res });
 	}
