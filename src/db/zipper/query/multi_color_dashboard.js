@@ -87,7 +87,9 @@ export async function selectAll(req, res, next) {
 			vodf.item_description,
 			mcd.expected_tape_quantity::float8 AS expected_tape_quantity,
 			mcd.is_swatch_approved,
-			mcd.tape_quantity,
+			vodf.tape_coil_uuid,
+			vodf.tape_name,
+			mcd.tape_quantity::float8,
 			mcd.coil_uuid,
 			mi.name AS coil_name,
 			mcd.coil_quantity::float8 AS coil_quantity,
@@ -95,6 +97,7 @@ export async function selectAll(req, res, next) {
 			mcd.thread_quantity::float8,
 			mcd.is_coil_received_sewing,
 			mcd.is_thread_received_sewing,
+			(mcd.tape_quantity::float8 + mcd.coil_quantity::float8 + mcd.thread_quantity::float8)::float8 AS actual_tape_quantity,
 			mcd.remarks
 		FROM
 			zipper.multi_color_dashboard mcd
@@ -127,7 +130,9 @@ export async function select(req, res, next) {
 			vodf.item_description,
 			mcd.expected_tape_quantity::float8 AS expected_tape_quantity,
 			mcd.is_swatch_approved,
-			mcd.tape_quantity,
+			vodf.tape_coil_uuid,
+			vodf.tape_name,
+			mcd.tape_quantity::float8,
 			mcd.coil_uuid,
 			mi.name AS coil_name,
 			mcd.coil_quantity::float8 AS coil_quantity,
@@ -135,6 +140,7 @@ export async function select(req, res, next) {
 			mcd.thread_quantity::float8,
 			mcd.is_coil_received_sewing,
 			mcd.is_thread_received_sewing,
+			(mcd.tape_quantity::float8 + mcd.coil_quantity::float8 + mcd.thread_quantity::float8)::float8 AS actual_tape_quantity,
 			mcd.remarks
 		FROM
 			zipper.multi_color_dashboard mcd
