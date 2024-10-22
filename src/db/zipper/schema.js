@@ -606,4 +606,35 @@ export const batch_production = zipper.table('batch_production', {
 	remarks: text('remarks').default(null),
 });
 
+export const multi_color_dashboard = zipper.table('multi_color_dashboard', {
+	uuid: uuid_primary,
+	order_description_uuid: defaultUUID('order_description_uuid').references(
+		() => order_description.uuid
+	),
+	expected_tape_quantity: decimal('expected_tape_quantity', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	is_swatch_approved: integer('is_swatch_approved').default(0),
+	tape_quantity: decimal('tape_quantity', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	coil_uuid: defaultUUID('coil_uuid').references(
+		() => materialSchema.info.uuid
+	),
+	coil_quantity: decimal('coil_quantity', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	thread_name: text('thread_name').default(null),
+	thread_quantity: decimal('thread_quantity', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	is_coil_received_sewing: integer('is_coil_received_sewing').default(0),
+	is_thread_received_sewing: integer('is_thread_received_sewing').default(0),
+	remarks: text('remarks').default(null),
+});
+
 export default zipper;
