@@ -25,6 +25,8 @@ export async function selectSampleLeadTime(req, res, next) {
             LEFT JOIN zipper.order_entry oe ON od.uuid = oe.order_description_uuid
         WHERE
             oi.is_sample = 1 
+        GROUP BY
+            oi.created_at,  pl.challan_uuid, sample_order_no, oe.quantity, ple.quantity
 
         UNION
         SELECT DISTINCT
@@ -43,6 +45,8 @@ export async function selectSampleLeadTime(req, res, next) {
             LEFT JOIN thread.challan tc ON tce.challan_uuid = tc.uuid
         WHERE 
             toi.is_sample = 1
+        GROUP BY
+            toi.created_at, tce.challan_uuid, sample_order_no, toe.quantity, tce.quantity
         )
     SELECT *, (SELECT COUNT(*) FROM combined_results) as total_number
     FROM combined_results
