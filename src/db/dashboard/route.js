@@ -13,6 +13,8 @@ import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
 import * as workInHandOperations from './query/work_in_hand.js';
 import * as stockStatusOperations from './query/stock_status.js';
 import * as orderEntryOperations from './query/order_entry.js';
+import * as amountAndDocOperations from './query/amount_and_doc.js';
+import * as topSalesOperations from './query/top_sales.js';
 
 const dashBoardRouter = Router();
 
@@ -62,6 +64,13 @@ dashBoardRouter.get('/lc-feed', lcFeedOperations.selectLcFeed);
 dashBoardRouter.get('/stock-status', stockStatusOperations.selectStockStatus);
 
 dashBoardRouter.get('/order-entry', orderEntryOperations.selectOrderEntry);
+
+dashBoardRouter.get(
+	'/amount-and-doc',
+	amountAndDocOperations.selectAmountAndDoc
+);
+
+dashBoardRouter.get('/top-sales', topSalesOperations.selectTopSales);
 
 const pathDashboard = {
 	'/dashboard/challan-register': {
@@ -603,6 +612,67 @@ const pathDashboard = {
 									date: SE.string('2021-01-01'),
 									zipper: SE.integer(1000),
 									thread: SE.integer(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/amount-and-doc': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get amount and doc summary',
+			description: 'Get amount and doc summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									total_doc_rcv_due: SE.number(1000),
+									number_of_pending_doc_rcv: SE.number(1000),
+									total_acceptance_due: SE.number(1000),
+									number_of_pending_acceptance_due:
+										SE.number(1000),
+									total_maturity_due: SE.number(1000),
+									number_of_pending_maturity_due:
+										SE.number(1000),
+									total_payment_due: SE.number(1000),
+									number_of_pending_payment_due:
+										SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/top-sales': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get top sales summary',
+			description: 'Get top sales summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									name: SE.string('Vislon'),
+									sales: SE.number(1000),
 								},
 							},
 						},
