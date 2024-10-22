@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
-import { marketing } from '../public/schema.js';
 import * as reportOperations from './query/query.js';
+import { order_description, order_info } from '../zipper/schema.js';
 
 const reportRouter = Router();
 
@@ -58,6 +58,12 @@ reportRouter.get(
 reportRouter.get(
 	'/production-report-thread-sales-marketing',
 	reportOperations.ProductionReportThreadSnm
+);
+
+//* Delivery Statement Report
+reportRouter.get(
+	'/delivery-statement-report',
+	reportOperations.deliveryStatementReport
 );
 
 export const pathReport = {
@@ -318,6 +324,34 @@ export const pathReport = {
 					production_remarks: SE.string('Production Remarks'),
 					created_at: SE.date_time(),
 					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/delivery-statement-report': {
+		get: {
+			summary: 'Delivery Statement Report',
+			description: 'Delivery Statement Report',
+			tags: ['report'],
+			operationId: 'deliveryStatementReport',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					item: SE.uuid(),
+					item_name: SE.string('Item Name'),
+					order_number: SE.string('Order Number'),
+					party_uuid: SE.uuid(),
+					party_name: SE.string('Party Name'),
+					order_description_uuid: SE.uuid(),
+					item_description: SE.string('Item Description'),
+					end_type: SE.uuid(),
+					end_type_name: SE.string('End Type Name'),
+					order_entry_uuid: SE.uuid(),
+					size: SE.string('Size'),
+					total_close_end_quantity: SE.number(610),
+					total_open_end_quantity: SE.number(610),
+					total_quantity: SE.number(610),
 				}),
 			},
 		},
