@@ -1198,52 +1198,46 @@ export async function ProductionReportThreadSnm(req, res, next) {
 export async function deliveryStatementReport(req, res, next) {
 	const query = sql`
             SELECT 
-                vpl.order_info_uuid,
+                vodf.order_info_uuid,
                 vodf.item,
                 vodf.item_name,
-                vpl.order_number,
+                vodf.order_number,
                 vodf.party_uuid,
                 vodf.party_name,
-                vpl.order_description_uuid,
-                vpl.item_description,
+                vodf.order_description_uuid,
+                vodf.item_description,
                 vodf.end_type,
                 vodf.end_type_name,
-                vpl.order_entry_uuid,
-                vpl.size,
+                oe.uuid as order_entry_uuid,
+                oe.size,
                 coalesce(close_end_sum.total_close_end_quantity,0) as total_close_end_quantity,
                 coalesce(open_end_sum.total_open_end_quantity,0) as total_open_end_quantity,
                 coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity
             FROM
-              delivery.v_packing_list vpl
-            LEFT JOIN
-                zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
+                zipper.v_order_details_full vodf 
             LEFT JOIN 
                 zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
             LEFT JOIN (
                 SELECT 
-                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
-                    oe.uuid as order_entry_uuid
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
+                    vpl.order_entry_uuid
                 FROM
-                    zipper.sfg_production
-                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
-                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    delivery.v_packing_list vpl
+                    LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
                 GROUP BY
-                    oe.uuid
+                    vpl.order_entry_uuid
             ) close_end_sum ON oe.uuid = close_end_sum.order_entry_uuid
             LEFT JOIN (
                 SELECT 
-                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
-                    oe.uuid as order_entry_uuid
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
+                    vpl.order_entry_uuid
                 FROM
-                    zipper.sfg_production
-                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
-                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    delivery.v_packing_list vpl
+                    LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
                 GROUP BY
-                    oe.uuid
+                    vpl.order_entry_uuid
             ) open_end_sum ON oe.uuid = open_end_sum.order_entry_uuid
-            WHERE vpl.challan_uuid IS NOT NULL
+            WHERE close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity > 0
             ORDER BY vodf.item_name DESC
 
     `;
