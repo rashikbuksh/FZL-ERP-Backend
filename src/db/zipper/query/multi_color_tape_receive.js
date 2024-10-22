@@ -81,24 +81,27 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const resultPromise = db
-		.select({
-			uuid: multi_color_tape_receive.uuid,
-			order_description_uuid:
-				multi_color_tape_receive.order_description_uuid,
-			quantity: decimalToNumber(multi_color_tape_receive.quantity),
-			created_by: multi_color_tape_receive.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: multi_color_tape_receive.created_at,
-			updated_at: multi_color_tape_receive.updated_at,
-			remarks: multi_color_tape_receive.remarks,
-		})
-		.from(multi_color_tape_receive)
-		.leftJoin(
-			hrSchema.users,
-			eq(multi_color_tape_receive.created_by, hrSchema.users.uuid)
-		)
-		.orderBy(desc(multi_color_tape_receive.created_at));
+	const query = sql`
+		SELECT
+			mctr.uuid,
+			vodf.order_info_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			mctr.order_description_uuid,
+			mctr.quantity::float8 AS quantity,
+			mctr.created_by,
+			mctr.created_at,
+			mctr.updated_at,
+			mctr.remarks
+		FROM
+			multi_color_tape_receive mctr
+		LEFT JOIN users u ON mctr.created_by = u.uuid
+		LEFT JOIN v_order_details_full vodf ON mctr.order_description_uuid = vodf.order_description_uuid
+		ORDER BY
+			created_at DESC
+	`;
+
+	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
@@ -109,7 +112,7 @@ export async function selectAll(req, res, next) {
 			message: 'Multi color tape receive',
 		};
 
-		res.status(200).json({ toast, data });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -118,24 +121,27 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const resultPromise = db
-		.select({
-			uuid: multi_color_tape_receive.uuid,
-			order_description_uuid:
-				multi_color_tape_receive.order_description_uuid,
-			quantity: decimalToNumber(multi_color_tape_receive.quantity),
-			created_by: multi_color_tape_receive.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: multi_color_tape_receive.created_at,
-			updated_at: multi_color_tape_receive.updated_at,
-			remarks: multi_color_tape_receive.remarks,
-		})
-		.from(multi_color_tape_receive)
-		.leftJoin(
-			hrSchema.users,
-			eq(multi_color_tape_receive.created_by, hrSchema.users.uuid)
-		)
-		.where(eq(multi_color_tape_receive.uuid, req.params.uuid));
+	const query = sql`
+		SELECT
+			mctr.uuid,
+			vodf.order_info_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			mctr.order_description_uuid,
+			mctr.quantity::float8 AS quantity,
+			mctr.created_by,
+			mctr.created_at,
+			mctr.updated_at,
+			mctr.remarks
+		FROM
+			multi_color_tape_receive mctr
+		LEFT JOIN users u ON mctr.created_by = u.uuid
+		LEFT JOIN v_order_details_full vodf ON mctr.order_description_uuid = vodf.order_description_uuid
+		WHERE
+			mctr.uuid = ${req.params.uuid}
+	`;
+
+	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
@@ -146,7 +152,7 @@ export async function select(req, res, next) {
 			message: 'Multi color tape receive selected',
 		};
 
-		res.status(200).json({ toast, data: data[0] });
+		res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
