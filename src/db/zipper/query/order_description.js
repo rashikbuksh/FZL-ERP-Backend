@@ -117,6 +117,7 @@ export async function insert(req, res, next) {
 		is_meter,
 		is_cm,
 		order_type,
+		is_multi_color,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -160,6 +161,7 @@ export async function insert(req, res, next) {
 			is_meter,
 			is_cm,
 			order_type,
+			is_multi_color,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -219,6 +221,7 @@ export async function update(req, res, next) {
 		is_meter,
 		is_cm,
 		order_type,
+		is_multi_color,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -262,6 +265,7 @@ export async function update(req, res, next) {
 			is_meter,
 			is_cm,
 			order_type,
+			is_multi_color,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
@@ -389,6 +393,7 @@ export async function selectAll(req, res, next) {
 			is_meter: order_description.is_meter,
 			is_cm: order_description.is_cm,
 			order_type: order_description.order_type,
+			is_multi_color: order_description.is_multi_color,
 		})
 		.from(order_description)
 		.where(
@@ -593,6 +598,7 @@ export async function select(req, res, next) {
 			is_meter: order_description.is_meter,
 			is_cm: order_description.is_cm,
 			order_type: order_description.order_type,
+			is_multi_color: order_description.is_multi_color,
 		})
 		.from(order_description)
 		.where(

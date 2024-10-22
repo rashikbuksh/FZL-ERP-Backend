@@ -43,7 +43,6 @@ export const def_zipper_order_info = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('Remarks'),
 		print_in: SE.string('portrait'),
-		order_type: SE.string('full'),
 	},
 	xml: 'Zipper/Order-Info',
 });
@@ -127,6 +126,7 @@ export const def_zipper_order_description = SED({
 		is_meter: SE.integer(0),
 		is_cm: SE.integer(0),
 		order_type: SE.string('full'),
+		is_multi_color: SE.integer(0),
 	},
 	xml: 'Zipper/Order-Description',
 });
