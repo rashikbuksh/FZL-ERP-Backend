@@ -614,7 +614,7 @@ export const multi_color_dashboard = zipper.table('multi_color_dashboard', {
 	expected_tape_quantity: decimal('expected_tape_quantity', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0),
 	is_swatch_approved: integer('is_swatch_approved').default(0),
 	tape_quantity: decimal('tape_quantity', {
 		precision: 20,
