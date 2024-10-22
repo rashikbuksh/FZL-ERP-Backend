@@ -651,27 +651,6 @@ export const def_multi_color_dashboard = SED({
 	xml: 'Zipper/Multi-Color-Dashboard',
 });
 
-export const def_multi_color_tape_transfer = SED({
-	required: [
-		'uuid',
-		'multi_color_dashboard_uuid',
-		'quantity',
-		'created_by',
-		'created_at',
-	],
-	properties: {
-		uuid: SE.uuid(),
-		multi_color_dashboard_uuid: SE.uuid(),
-		quantity: SE.number(),
-		is_received_in_sewing: SE.integer(),
-		created_by: SE.uuid(),
-		created_at: SE.date_time(),
-		updated_at: SE.date_time(),
-		remarks: SE.string(),
-	},
-	xml: 'Zipper/Multi-Color-Tape-Transfer',
-});
-
 //....................FOR TESTING.......................
 export const defZipper = {
 	order_info: def_zipper_order_info,
@@ -697,6 +676,7 @@ export const defZipper = {
 	tape_coil_to_dyeing: def_zipper_tape_coil_to_dyeing,
 	batch_production: def_zipper_batch_production,
 	tape_coil_required: def_zipper_tape_coil_required,
+	multi_color_dashboard: def_multi_color_dashboard,
 };
 
 // * Zipper Tag * //
@@ -784,5 +764,9 @@ export const tagZipper = [
 	{
 		name: 'zipper.batch_production',
 		description: 'Zipper Batch Production',
+	},
+	{
+		name: 'zipper.multi_color_dashboard',
+		description: 'Zipper Multi Color Dashboard',
 	},
 ];

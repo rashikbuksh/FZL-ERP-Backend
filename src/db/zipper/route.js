@@ -2,9 +2,12 @@ import { Router } from 'express';
 import * as batchOperations from './query/batch.js';
 import * as batchEntryOperations from './query/batch_entry.js';
 import * as batchProductionOperations from './query/batch_production.js';
+import * as dyedTapeTransactionOperations from './query/dyed_tape_transaction.js';
+import * as dyedTapeTransactionFromStockOperations from './query/dyed_tape_transaction_from_stock.js';
 import * as dyingBatchOperations from './query/dying_batch.js';
 import * as dyingBatchEntryOperations from './query/dying_batch_entry.js';
 import * as materialTrxAgainstOrderOperations from './query/material_trx_against_order_description.js';
+import * as multiColorDashboardOperations from './query/multi_color_dashboard.js';
 import * as orderDescriptionOperations from './query/order_description.js';
 import * as orderEntryOperations from './query/order_entry.js';
 import * as orderInfoOperations from './query/order_info.js';
@@ -15,11 +18,9 @@ import * as sfgProductionOperations from './query/sfg_production.js';
 import * as sfgTransactionOperations from './query/sfg_transaction.js';
 import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
+import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
-import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
-import * as dyedTapeTransactionOperations from './query/dyed_tape_transaction.js';
-import * as dyedTapeTransactionFromStockOperations from './query/dyed_tape_transaction_from_stock.js';
 const zipperRouter = Router();
 
 // --------------------- ORDER INFO ROUTES ---------------------
@@ -455,6 +456,28 @@ zipperRouter.delete(
 	'/batch-production/:uuid',
 	// validateUuidParam(),
 	batchProductionOperations.remove
+);
+
+// --------------------- MULTI COLOR DASHBOARD ROUTES ---------------------
+zipperRouter.get(
+	'/multi-color-dashboard',
+	multiColorDashboardOperations.selectAll
+);
+zipperRouter.get(
+	'/multi-color-dashboard/:uuid',
+	multiColorDashboardOperations.select
+);
+zipperRouter.post(
+	'/multi-color-dashboard',
+	multiColorDashboardOperations.insert
+);
+zipperRouter.put(
+	'/multi-color-dashboard/:uuid',
+	multiColorDashboardOperations.update
+);
+zipperRouter.delete(
+	'/multi-color-dashboard/:uuid',
+	multiColorDashboardOperations.remove
 );
 
 export { zipperRouter };
