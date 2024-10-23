@@ -474,7 +474,7 @@ export async function selectAmountPercentage(req, res, next) {
 		// Calculate the percentage for each amount and update the Amount field
 		const amountsWithPercentage = amounts.map((item) => ({
 			...item,
-			amount: ((item.amount / totalAmount) * 100).toFixed(2) + '%',
+			amount: ((item.amount / totalAmount) * 100).toFixed(2),
 		}));
 
 		const chart_data = amountsWithPercentage;
