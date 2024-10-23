@@ -9,7 +9,6 @@ BEGIN
 
     RETURN NEW;
 END;
-
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper_batch_entry_after_batch_production_update() RETURNS TRIGGER AS $$
@@ -22,7 +21,6 @@ BEGIN
 
     RETURN NEW;
 END;
-
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper_batch_entry_after_batch_production_delete() RETURNS TRIGGER AS $$
@@ -35,22 +33,20 @@ BEGIN
 
     RETURN OLD;
 END;
-
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER zipper_batch_entry_after_batch_production_insert
+-- Trigger definitions
+CREATE TRIGGER zipper_batch_entry_after_batch_production_insert
 AFTER INSERT ON zipper.batch_production
 FOR EACH ROW
 EXECUTE FUNCTION zipper_batch_entry_after_batch_production_insert();
 
-CREATE OR REPLACE TRIGGER zipper_batch_entry_after_batch_production_update
+CREATE TRIGGER zipper_batch_entry_after_batch_production_update
 AFTER UPDATE ON zipper.batch_production
 FOR EACH ROW
 EXECUTE FUNCTION zipper_batch_entry_after_batch_production_update();
 
-CREATE OR REPLACE TRIGGER zipper_batch_entry_after_batch_production_delete
+CREATE TRIGGER zipper_batch_entry_after_batch_production_delete
 AFTER DELETE ON zipper.batch_production
 FOR EACH ROW
 EXECUTE FUNCTION zipper_batch_entry_after_batch_production_delete();
-
-
