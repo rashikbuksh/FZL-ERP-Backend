@@ -264,7 +264,7 @@ export async function selectOrderDetailsByOrderInfoUuid(req, res, next) {
 		const api = await createApi(req);
 
 		const fetchData = async (endpoint) =>
-			await api.get(`/thread/${endpoint}/${order_info_uuid}`);
+			await api.get(`v2/thread/${endpoint}/${order_info_uuid}`);
 
 		const [order_info, order_info_entry] = await Promise.all([
 			fetchData('order-info'),
