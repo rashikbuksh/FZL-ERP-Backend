@@ -105,6 +105,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { multi_color_tape } = req.query;
+
 	const query = sql`
 		SELECT
 			tape_coil_to_dyeing.uuid,
@@ -134,6 +136,11 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
 		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
+		${
+			multi_color_tape === 'true'
+				? sql`WHERE vodf.is_multi_color = 1`
+				: sql`WHERE vodf.is_multi_color = 0`
+		}
 		ORDER BY
 			tape_coil_to_dyeing.created_at DESC
 	`;
@@ -215,8 +222,6 @@ export async function select(req, res, next) {
 export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { multi_color_tape } = req.query;
-
 	const query = sql`
 		SELECT
 			tape_coil_to_dyeing.uuid,
@@ -249,11 +254,6 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid 
 		WHERE 
 			lower(item_properties.name) = 'nylon'
-			${
-				multi_color_tape === 'true'
-					? sql`AND vodf.is_multi_color = 1`
-					: sql`AND vodf.is_multi_color = 0`
-			}
 		ORDER BY
 			tape_coil_to_dyeing.created_at DESC
 	`;
@@ -277,8 +277,6 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 
 export async function selectTapeCoilToDyeingForTape(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
-	const { multi_color_tape } = req.query;
 
 	const query = sql`
 		SELECT
@@ -312,11 +310,6 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
 			lower(item_properties.name) != 'nylon'
-		${
-			multi_color_tape === 'true'
-				? sql`AND vodf.is_multi_color = 1`
-				: sql`AND vodf.is_multi_color = 0`
-		}
 		ORDER BY
 			tape_coil_to_dyeing.created_at DESC
 	`;

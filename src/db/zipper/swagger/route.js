@@ -3090,6 +3090,12 @@ export const pathZipperTapeCoilToDyeing = {
 		get: {
 			tags: ['zipper.tape_coil_to_dyeing'],
 			summary: 'Get all Tape Coil To Dyeing',
+			parameters: [
+				SE.parameter_query('multi_color_tape', 'multi_color_tape', [
+					'true',
+					'false',
+				]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -3198,12 +3204,6 @@ export const pathZipperTapeCoilToDyeing = {
 		get: {
 			tags: ['zipper.tape_coil_to_dyeing'],
 			summary: 'Get all Tape Coil To Dyeing by type nylon',
-			parameters: [
-				SE.parameter_query('multi_color_tape', 'multi_color_tape', [
-					'true',
-					'false',
-				]),
-			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -3228,12 +3228,6 @@ export const pathZipperTapeCoilToDyeing = {
 		get: {
 			tags: ['zipper.tape_coil_to_dyeing'],
 			summary: 'Get all Tape Coil To Dyeing by type tape',
-			parameters: [
-				SE.parameter_query('multi_color_tape', 'multi_color_tape', [
-					'true',
-					'false',
-				]),
-			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
