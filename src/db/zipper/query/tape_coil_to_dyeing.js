@@ -126,7 +126,8 @@ export async function selectAll(req, res, next) {
 			tape_coil.zipper_number_uuid,
 			zipper_number_properties.name AS zipper_number_name,
 			tape_coil.quantity::float8 as tape_prod,
-			(coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 AS max_trf_qty
+			(coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 AS max_trf_qty,
+			tape_coil_to_dyeing.is_received_in_sewing
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -186,7 +187,8 @@ export async function select(req, res, next) {
 			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
 			tape_coil.quantity::float8 as tape_prod,
 			CASE WHEN lower(item_properties.name) = 'nylon' THEN (coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 
-			ELSE (coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 END AS max_trf_qty
+			ELSE (coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 END AS max_trf_qty,
+			tape_coil_to_dyeing.is_received_in_sewing
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -242,7 +244,8 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 			zipper_number_properties.name AS zipper_number_name,
 			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
 			tape_coil.quantity::float8 as tape_prod,
-			(coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 AS max_trf_qty
+			(coalesce(tape_coil.quantity_in_coil, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 AS max_trf_qty,
+			tape_coil_to_dyeing.is_received_in_sewing
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
@@ -298,7 +301,8 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 			zipper_number_properties.name AS zipper_number_name,
 			concat(item_properties.name, ' - ', zipper_number_properties.name) as type_of_zipper,
 			tape_coil.quantity::float8 as tape_prod,
-			(coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 AS max_trf_qty
+			(coalesce(tape_coil.quantity, 0) + coalesce(tape_coil_to_dyeing.trx_quantity, 0))::float8 AS max_trf_qty,
+			tape_coil_to_dyeing.is_received_in_sewing
 		FROM
 			zipper.tape_coil_to_dyeing
 		LEFT JOIN
