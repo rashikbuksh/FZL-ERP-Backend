@@ -84,9 +84,12 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: batch_entry_production.uuid,
 			batch_entry_uuid: batch_entry_production.batch_entry_uuid,
-			production_quantity: decimalToNumber(batch_entry_production.production_quantity),
-			coning_carton_quantity:
-				decimalToNumber(batch_entry_production.coning_carton_quantity),
+			production_quantity: decimalToNumber(
+				batch_entry_production.production_quantity
+			),
+			coning_carton_quantity: decimalToNumber(
+				batch_entry_production.coning_carton_quantity
+			),
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
@@ -114,9 +117,12 @@ export async function select(req, res, next) {
 		.select({
 			uuid: batch_entry_production.uuid,
 			batch_entry_uuid: batch_entry_production.batch_entry_uuid,
-			production_quantity: decimalToNumber(batch_entry_production.production_quantity),
-			coning_carton_quantity:
-				decimalToNumber(batch_entry_production.coning_carton_quantity),
+			production_quantity: decimalToNumber(
+				batch_entry_production.production_quantity
+			),
+			coning_carton_quantity: decimalToNumber(
+				batch_entry_production.coning_carton_quantity
+			),
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
@@ -163,7 +169,7 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		cl.cone_per_carton,
 		be.quantity::float8 as batch_quantity,
 		be.coning_production_quantity::float8,
-		be.coning_carton_quantity::float8,
+		be.coning_carton_quantity::float8 as be_coning_carton_quantity,
 		be.transfer_quantity::float8 as transfer_quantity,
 		(be.quantity - be.coning_production_quantity)::float8 as coning_balance_quantity,
 		(be.quantity - be.transfer_quantity)::float8 as balance_quantity,
