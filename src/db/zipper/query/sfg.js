@@ -306,7 +306,8 @@ export async function selectSfgBySection(req, res, next) {
 			COALESCE(ss.coloring_prod,0)::float8 as coloring_prod,
 			COALESCE(od.tape_received,0)::float8 as tape_received,
 			COALESCE(od.tape_transferred,0)::float8 as tape_transferred,
-			COALESCE(od.slider_finishing_stock,0)::float8 as slider_finishing_stock
+			COALESCE(od.slider_finishing_stock,0)::float8 as slider_finishing_stock,
+			od.is_multi_color
 		FROM
 			zipper.sfg sfg
 			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
@@ -317,7 +318,7 @@ export async function selectSfgBySection(req, res, next) {
 			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
 			LEFT JOIN slider.stock ss ON od.uuid = ss.order_description_uuid
 			WHERE
-				sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != ''
+				CASE WHEN od.is_multi_color = 0 THEN sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != '' ELSE TRUE END
 				${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
 				${nylon_stopper ? sql`AND lower(vod.nylon_stopper_name) = lower(${nylon_stopper})` : sql``}
 			ORDER BY oe.created_at, sfg.uuid DESC
