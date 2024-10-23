@@ -519,7 +519,8 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				tcr.top::float8,
 				tcr.bottom::float8,
 				vodf.tape_received::float8,
-				vodf.tape_transferred::float8
+				CASE WHEN vodf.is_multi_color = 0 THEN vodf.tape_transferred::float8 ELSE coalesce(multi_tape.total_multi_tape_quantity::float8, 0) END as tape_transferred,
+				vodf.is_multi_color
 			FROM
 				zipper.v_order_details_full vodf
 			LEFT JOIN (
@@ -544,6 +545,13 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				)
 			LEFT JOIN 
 				public.properties item_properties ON vodf.item = item_properties.uuid
+			LEFT JOIN (
+				SELECT od.uuid as order_description_uuid, SUM(trx_quantity) as total_multi_tape_quantity
+				FROM zipper.order_description od
+				LEFT JOIN zipper.tape_coil_to_dyeing tctd ON od.uuid = tctd.order_description_uuid
+				WHERE od.is_multi_color = 1
+				GROUP BY od.uuid
+			) multi_tape ON vodf.order_description_uuid = multi_tape.order_description_uuid
 			WHERE
 				(vodf.tape_coil_uuid = ${coil_uuid} OR (vodf.item = ${item_uuid} AND vodf.zipper_number = ${zipper_number_uuid} AND vodf.tape_coil_uuid IS NULL)) AND vodf.order_description_uuid IS NOT NULL
 		`;
