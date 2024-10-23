@@ -15,7 +15,7 @@ import { count_length, order_entry, order_info } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const {
+	let {
 		uuid,
 		party_uuid,
 		marketing_uuid,
@@ -76,7 +76,7 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const {
+	let {
 		uuid,
 		party_uuid,
 		marketing_uuid,
