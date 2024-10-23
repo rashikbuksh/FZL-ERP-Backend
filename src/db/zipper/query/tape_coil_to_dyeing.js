@@ -118,8 +118,8 @@ export async function selectAll(req, res, next) {
 			tape_coil_to_dyeing.created_at,
 			tape_coil_to_dyeing.updated_at,
 			tape_coil_to_dyeing.remarks,
-			vod.order_number,
-			vod.item_description,
+			vodf.order_number,
+			vodf.item_description,
 			tape_coil.item_uuid,
 			tape_coil.name,
 			item_properties.name AS item_name,
@@ -132,7 +132,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			hr.users ON tape_coil_to_dyeing.created_by = users.uuid
 		LEFT JOIN 
-			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
+			zipper.v_order_details_full vodf ON tape_coil_to_dyeing.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
 		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
@@ -176,8 +176,8 @@ export async function select(req, res, next) {
 			tape_coil_to_dyeing.created_at,
 			tape_coil_to_dyeing.updated_at,
 			tape_coil_to_dyeing.remarks,
-			vod.order_number,
-			vod.item_description,
+			vodf.order_number,
+			vodf.item_description,
 			tape_coil.item_uuid,
 			tape_coil.name,
 			item_properties.name AS item_name,
@@ -192,7 +192,7 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			hr.users ON tape_coil_to_dyeing.created_by = users.uuid
 		LEFT JOIN 
-			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
+			zipper.v_order_details_full vodf ON tape_coil_to_dyeing.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
 		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
@@ -233,8 +233,8 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 			tape_coil_to_dyeing.created_at,
 			tape_coil_to_dyeing.updated_at,
 			tape_coil_to_dyeing.remarks,
-			vod.order_number,
-			vod.item_description,
+			vodf.order_number,
+			vodf.item_description,
 			tape_coil.item_uuid,
 			tape_coil.name,
 			item_properties.name AS item_name,
@@ -248,7 +248,7 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 		LEFT JOIN
 			hr.users ON tape_coil_to_dyeing.created_by = users.uuid
 		LEFT JOIN 
-			zipper.v_order_details vod ON tape_coil_to_dyeing.order_description_uuid = vod.order_description_uuid
+			zipper.v_order_details_full vodf ON tape_coil_to_dyeing.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN zipper.tape_coil ON tape_coil_to_dyeing.tape_coil_uuid = tape_coil.uuid
 		LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid 
