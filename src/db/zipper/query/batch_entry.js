@@ -176,7 +176,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			vodf.item_description,
 			bp_given.given_production_quantity::float8,
 			bp_given.given_production_quantity_in_kg::float8,
-			COALESCE(oe.quantity::float8 - be.quantity::float8,0),0) as balance_quantity,
+			COALESCE(oe.quantity::float8 - be.quantity::float8,0) as balance_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
