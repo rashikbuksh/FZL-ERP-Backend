@@ -1,7 +1,6 @@
--- * Inserted * -- 
+-- * Inserted * -- CHANGED
 CREATE OR REPLACE FUNCTION zipper.order_description_after_tape_coil_to_dyeing_insert() returns TRIGGER AS $$
 BEGIN
-
     UPDATE zipper.tape_coil
     SET
         quantity_in_coil = CASE WHEN lower(properties.name) = 'nylon' THEN quantity_in_coil - NEW.trx_quantity ELSE quantity_in_coil END,
@@ -12,7 +11,7 @@ BEGIN
     UPDATE zipper.order_description
     SET
         tape_received = tape_received + NEW.trx_quantity
-    WHERE uuid = NEW.order_description_uuid;
+    WHERE uuid = NEW.order_description_uuid AND is_multi_color = 0;
 
     RETURN NEW;
 END;
@@ -30,7 +29,7 @@ BEGIN
         UPDATE zipper.order_description
         SET
             tape_received = tape_received - OLD.trx_quantity
-        WHERE uuid = OLD.order_description_uuid;
+        WHERE uuid = OLD.order_description_uuid AND is_multi_color = 0;
 
         RETURN OLD;
     END;
@@ -48,7 +47,7 @@ BEGIN
     UPDATE zipper.order_description
     SET
         tape_received = tape_received - OLD.trx_quantity + NEW.trx_quantity
-    WHERE uuid = NEW.order_description_uuid;
+    WHERE uuid = NEW.order_description_uuid AND is_multi_color = 0;
 
     RETURN NEW;
 END;
