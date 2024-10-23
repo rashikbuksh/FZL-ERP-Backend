@@ -99,7 +99,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN hr.users u ON mctr.created_by = u.uuid
 		LEFT JOIN zipper.v_order_details_full vodf ON mctr.order_description_uuid = vodf.order_description_uuid
 		ORDER BY
-			created_at DESC
+			mctr.created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);

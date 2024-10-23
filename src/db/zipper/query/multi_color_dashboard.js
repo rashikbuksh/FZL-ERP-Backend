@@ -110,7 +110,9 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			material.info mi ON mcd.coil_uuid = mi.uuid
 		LEFT JOIN
-			zipper.v_order_details_full vodf ON mcd.order_description_uuid = vodf.order_description_uuid;
+			zipper.v_order_details_full vodf ON mcd.order_description_uuid = vodf.order_description_uuid
+		ORDER BY 
+			mcd.created_at DESC;
 	`;
 	const resultPromise = db.execute(query);
 
