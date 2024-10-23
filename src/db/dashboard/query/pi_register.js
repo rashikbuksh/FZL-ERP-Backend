@@ -16,6 +16,7 @@ export async function selectPiRegister(req, res, next) {
                     party.name as party_name,
                     pi_cash.lc_uuid,
                     lc.lc_number,
+                    lc.lc_date,
                     CASE WHEN lc.uuid IS NOT NULL THEN concat('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) ELSE NULL END as file_number,
                     ROUND(coalesce(pi_cash_entry_order_numbers.total_zipper_pi_price, 0)::numeric + coalesce(pi_cash_entry_order_numbers.total_thread_pi_price, 0)::numeric, 4)::float8 as total_pi_value,
                     bank.name as bank_name
