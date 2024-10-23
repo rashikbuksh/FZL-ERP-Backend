@@ -82,8 +82,8 @@ export async function selectAll(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-			concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
-			)) as pi_ids,
+			CASE WHEN is_old_pi = 0 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE lc.pi_number END
+			) as pi_ids,
 			party.name AS party_name,
 			CASE WHEN is_old_pi = 0 THEN(	
 				SELECT 
