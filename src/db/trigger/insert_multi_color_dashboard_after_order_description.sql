@@ -16,7 +16,8 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper.multi_color_dashboard_after_order_description_update() RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.is_multi_color = 1 THEN
+    -- if is_multi_color is updated to 1 then insert into multi_color_dashboard table
+    IF NEW.is_multi_color = 1 AND OLD.is_multi_color = 0 THEN
         INSERT INTO zipper.multi_color_dashboard (
             uuid, 
             order_description_uuid
@@ -24,7 +25,8 @@ BEGIN
             NEW.uuid, 
             NEW.uuid
         );
-    ELSE
+    -- if is_multi_color is updated to 0 then delete from multi_color_dashboard table
+    ELSIF NEW.is_multi_color = 0 AND OLD.is_multi_color = 1 THEN
         DELETE FROM zipper.multi_color_dashboard
         WHERE order_description_uuid = NEW.uuid;
     END IF;

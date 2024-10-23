@@ -505,6 +505,7 @@ export const tape_coil_to_dyeing = zipper.table('tape_coil_to_dyeing', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	is_received_in_sewing: integer('is_received_in_sewing').default(0),
 });
 
 export const tape_coil_required = zipper.table('tape_coil_required', {
