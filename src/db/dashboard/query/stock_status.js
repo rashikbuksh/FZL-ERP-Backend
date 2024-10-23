@@ -8,8 +8,8 @@ export async function selectStockStatus(req, res, next) {
 	const query = sql`
             SELECT
                     mi.name,
-                    mi.threshold,
-                    ms.stock,
+                    mi.threshold::float8,
+                    ms.stock::float8,
                     mi.unit,
                      ( SELECT pd.created_at FROM purchase.description as pd
                         LEFT JOIN purchase.entry as pe ON pd.uuid = pe.purchase_description_uuid
