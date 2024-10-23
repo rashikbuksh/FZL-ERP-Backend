@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
+import { decimalToNumber } from '../../variables.js';
 
 export async function selectAmountAndDoc(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -474,7 +475,7 @@ export async function selectAmountPercentage(req, res, next) {
 		// Calculate the percentage for each amount and update the Amount field
 		const amountsWithPercentage = amounts.map((item) => ({
 			...item,
-			amount: ((item.amount / totalAmount) * 100).toFixed(2) + '%',
+			amount: parseFloat(((item.amount / totalAmount) * 100).toFixed(2)),
 		}));
 
 		const chart_data = amountsWithPercentage;
