@@ -219,7 +219,7 @@ export async function selectAcceptanceDue(req, res, next) {
 		const chart_data = [
 			{
 				label: 'Acceptance Due',
-				value: response.total_acceptance_due,
+				value: parseFloat(response.total_acceptance_due).toFixed(2),
 			},
 			{
 				label: 'Number of Pending Acceptance',
