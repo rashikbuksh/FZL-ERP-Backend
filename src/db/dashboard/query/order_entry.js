@@ -19,7 +19,7 @@ export async function selectOrderEntry(req, res, next) {
                     FROM thread.order_entry
                     GROUP BY DATE(created_at)) t
                 ON z.date = t.date
-				ORDER BY date DESC LIMIT 30;
+				ORDER BY date ASC LIMIT 30;
 
                     `;
 	const resultPromise = db.execute(query);
