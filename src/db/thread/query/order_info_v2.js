@@ -15,9 +15,45 @@ import { count_length, order_entry, order_info } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const {
+		uuid,
+		party_uuid,
+		marketing_uuid,
+		factory_uuid,
+		merchandiser_uuid,
+		buyer_uuid,
+		is_sample,
+		is_bill,
+		is_cash,
+		delivery_date,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
+	} = req.body;
+
+	is_sample = is_sample == true ? 1 : 0;
+	is_bill = is_bill == true ? 1 : 0;
+	is_cash = is_cash == true ? 1 : 0;
+
 	const resultPromise = db
 		.insert(order_info)
-		.values(req.body)
+		.values({
+			uuid,
+			party_uuid,
+			marketing_uuid,
+			factory_uuid,
+			merchandiser_uuid,
+			buyer_uuid,
+			is_sample,
+			is_bill,
+			is_cash,
+			delivery_date,
+			created_by,
+			created_at,
+			updated_at,
+			remarks,
+		})
 		.returning({
 			insertedId: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
@@ -40,9 +76,45 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const {
+		uuid,
+		party_uuid,
+		marketing_uuid,
+		factory_uuid,
+		merchandiser_uuid,
+		buyer_uuid,
+		is_sample,
+		is_bill,
+		is_cash,
+		delivery_date,
+		created_by,
+		created_at,
+		updated_at,
+		remarks,
+	} = req.body;
+
+	is_sample = is_sample == true ? 1 : 0;
+	is_bill = is_bill == true ? 1 : 0;
+	is_cash = is_cash == true ? 1 : 0;
+
 	const resultPromise = db
 		.update(order_info)
-		.set(req.body)
+		.set({
+			uuid,
+			party_uuid,
+			marketing_uuid,
+			factory_uuid,
+			merchandiser_uuid,
+			buyer_uuid,
+			is_sample,
+			is_bill,
+			is_cash,
+			delivery_date,
+			created_by,
+			created_at,
+			updated_at,
+			remarks,
+		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
 			updatedId: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
