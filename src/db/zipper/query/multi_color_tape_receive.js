@@ -90,6 +90,7 @@ export async function selectAll(req, res, next) {
 			mctr.order_description_uuid,
 			mctr.quantity::float8 AS quantity,
 			mctr.created_by,
+			u.name AS created_by_name,
 			mctr.created_at,
 			mctr.updated_at,
 			mctr.remarks
@@ -130,6 +131,7 @@ export async function select(req, res, next) {
 			mctr.order_description_uuid,
 			mctr.quantity::float8 AS quantity,
 			mctr.created_by,
+			u.name AS created_by_name,
 			mctr.created_at,
 			mctr.updated_at,
 			mctr.remarks
