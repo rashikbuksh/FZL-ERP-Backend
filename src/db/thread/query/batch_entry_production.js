@@ -178,7 +178,6 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		bep.created_at,
 		bep.updated_at,
 		bep.remarks as production_remarks
-		
 	FROM
 		thread.batch_entry_production bep
 	LEFT JOIN
@@ -193,9 +192,10 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		thread.order_info ON oe.order_info_uuid = order_info.uuid
 	LEFT JOIN
 		thread.batch ON be.batch_uuid = batch.uuid
-)
+	)
 	SELECT * FROM calculated_balance
-WHERE balance_quantity >= 0;
+	WHERE balance_quantity >= 0
+	ORDER BY created_at DESC;
 	`;
 
 	const resultPromise = db.execute(query);
