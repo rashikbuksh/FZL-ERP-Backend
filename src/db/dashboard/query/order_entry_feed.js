@@ -41,6 +41,9 @@ export async function selectOrderEntryFeed(req, res, next) {
                 LEFT JOIN public.marketing pm ON toi.marketing_uuid = pm.uuid
             GROUP BY
                 order_no, pp.name, pm.name
+            ORDER BY
+                    order_no DESC
+                LIMIT 10;
         `;
 
 	const resultPromise = db.execute(query);
