@@ -8,10 +8,8 @@ BEGIN
     FROM zipper.batch_entry be
     WHERE
          zipper.sfg.uuid = be.sfg_uuid AND be.batch_uuid = NEW.uuid;
-    RETURN NEW;
 
-RETURN NEW;
-      
+    RETURN NEW;
 END;
 
 $$ LANGUAGE plpgsql;

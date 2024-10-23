@@ -6,6 +6,8 @@ BEGIN
         production_quantity_in_kg = production_quantity_in_kg + NEW.production_quantity_in_kg
     WHERE
         uuid = NEW.batch_entry_uuid;
+
+    RETURN NEW;
 END;
 
 $$ LANGUAGE plpgsql;
@@ -17,8 +19,8 @@ BEGIN
         production_quantity_in_kg = production_quantity_in_kg + NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
     WHERE
         uuid = NEW.batch_entry_uuid;
-RETURN NEW;
-      
+
+    RETURN NEW;
 END;
 
 $$ LANGUAGE plpgsql;
@@ -30,6 +32,8 @@ BEGIN
         production_quantity_in_kg = production_quantity_in_kg - OLD.production_quantity_in_kg
     WHERE
         uuid = OLD.batch_entry_uuid;
+
+    RETURN OLD;
 END;
 
 $$ LANGUAGE plpgsql;

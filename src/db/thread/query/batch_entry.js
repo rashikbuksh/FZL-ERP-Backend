@@ -11,9 +11,50 @@ import { batch_entry, order_entry } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	let {
+		uuid,
+		batch_uuid,
+		order_entry_uuid,
+		quantity,
+		coning_production_quantity,
+		coning_carton_quantity,
+		coning_created_at,
+		coning_updated_at,
+		transfer_quantity,
+		transfer_carton_quantity,
+		created_at,
+		updated_at,
+		remarks,
+		yarn_quantity,
+	} = req.body;
+
+	quantity = quantity ? Number(quantity) : 0;
+	coning_production_quantity = coning_production_quantity
+		? Number(coning_production_quantity)
+		: 0;
+	coning_carton_quantity = coning_carton_quantity
+		? Number(coning_carton_quantity)
+		: 0;
+	yarn_quantity = yarn_quantity ? Number(yarn_quantity) : 0;
+
 	const resultPromise = db
 		.insert(batch_entry)
-		.values(req.body)
+		.values({
+			uuid,
+			batch_uuid,
+			order_entry_uuid,
+			quantity,
+			coning_production_quantity,
+			coning_carton_quantity,
+			coning_created_at,
+			coning_updated_at,
+			transfer_quantity,
+			transfer_carton_quantity,
+			created_at,
+			updated_at,
+			remarks,
+			yarn_quantity,
+		})
 		.returning({ insertedId: batch_entry.uuid });
 
 	try {
@@ -34,9 +75,50 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	let {
+		uuid,
+		batch_uuid,
+		order_entry_uuid,
+		quantity,
+		coning_production_quantity,
+		coning_carton_quantity,
+		coning_created_at,
+		coning_updated_at,
+		transfer_quantity,
+		transfer_carton_quantity,
+		created_at,
+		updated_at,
+		remarks,
+		yarn_quantity,
+	} = req.body;
+
+	quantity = quantity ? Number(quantity) : 0;
+	coning_production_quantity = coning_production_quantity
+		? Number(coning_production_quantity)
+		: 0;
+	coning_carton_quantity = coning_carton_quantity
+		? Number(coning_carton_quantity)
+		: 0;
+	yarn_quantity = yarn_quantity ? Number(yarn_quantity) : 0;
+
 	const resultPromise = db
 		.update(batch_entry)
-		.set(req.body)
+		.set({
+			uuid,
+			batch_uuid,
+			order_entry_uuid,
+			quantity,
+			coning_production_quantity,
+			coning_carton_quantity,
+			coning_created_at,
+			coning_updated_at,
+			transfer_quantity,
+			transfer_carton_quantity,
+			created_at,
+			updated_at,
+			remarks,
+			yarn_quantity,
+		})
 		.where(eq(batch_entry.uuid, req.params.uuid))
 		.returning({ updatedId: batch_entry.uuid });
 
