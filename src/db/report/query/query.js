@@ -666,7 +666,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 LEFT JOIN thread.count_length ON order_entry.count_length_uuid = count_length.uuid
                 GROUP BY
                     batch_entry.batch_uuid
-            ) batch_entry_quantity_length ON batch.uuid = batch_entry.batch_uuid
+            ) batch_entry_quantity_length ON batch.uuid = batch_entry_quantity_length.batch_uuid
             LEFT JOIN (
                 SELECT 
                     SUM(coning_production_quantity) as total_coning_production_quantity,
