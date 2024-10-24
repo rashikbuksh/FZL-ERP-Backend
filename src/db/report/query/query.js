@@ -764,60 +764,60 @@ export async function ProductionReportDirector(req, res, next) {
 		const data = await resultPromise;
 
 		// row group using item_name, then party_name, then order_number, then item_description
-		const groupedData = data?.rows.reduce((acc, row) => {
-			const {
-				item_name,
-				party_name,
-				order_number,
-				item_description,
-				total_close_end_quantity,
-				total_open_end_quantity,
-				total_quantity,
-			} = row;
+		// const groupedData = data?.rows.reduce((acc, row) => {
+		// 	const {
+		// 		item_name,
+		// 		party_name,
+		// 		order_number,
+		// 		item_description,
+		// 		total_close_end_quantity,
+		// 		total_open_end_quantity,
+		// 		total_quantity,
+		// 	} = row;
 
-			const findOrCreate = (array, key, value, createFn) => {
-				let index = array.findIndex((item) => item[key] === value);
-				if (index === -1) {
-					array.push(createFn());
-					index = array.length - 1;
-				}
-				return array[index];
-			};
+		// 	const findOrCreate = (array, key, value, createFn) => {
+		// 		let index = array.findIndex((item) => item[key] === value);
+		// 		if (index === -1) {
+		// 			array.push(createFn());
+		// 			index = array.length - 1;
+		// 		}
+		// 		return array[index];
+		// 	};
 
-			const item = findOrCreate(acc, 'item_name', item_name, () => ({
-				item_name,
-				parties: [],
-			}));
+		// 	const item = findOrCreate(acc, 'item_name', item_name, () => ({
+		// 		item_name,
+		// 		parties: [],
+		// 	}));
 
-			const party = findOrCreate(
-				item.parties,
-				'party_name',
-				party_name,
-				() => ({
-					party_name,
-					orders: [],
-				})
-			);
+		// 	const party = findOrCreate(
+		// 		item.parties,
+		// 		'party_name',
+		// 		party_name,
+		// 		() => ({
+		// 			party_name,
+		// 			orders: [],
+		// 		})
+		// 	);
 
-			const order = findOrCreate(
-				party.orders,
-				'order_number',
-				order_number,
-				() => ({
-					order_number,
-					descriptions: [],
-				})
-			);
+		// 	const order = findOrCreate(
+		// 		party.orders,
+		// 		'order_number',
+		// 		order_number,
+		// 		() => ({
+		// 			order_number,
+		// 			descriptions: [],
+		// 		})
+		// 	);
 
-			order.descriptions.push({
-				item_description,
-				total_close_end_quantity,
-				total_open_end_quantity,
-				total_quantity,
-			});
+		// 	order.descriptions.push({
+		// 		item_description,
+		// 		total_close_end_quantity,
+		// 		total_open_end_quantity,
+		// 		total_quantity,
+		// 	});
 
-			return acc;
-		}, []);
+		// 	return acc;
+		// }, []);
 
 		const toast = {
 			status: 200,
@@ -825,7 +825,7 @@ export async function ProductionReportDirector(req, res, next) {
 			message: 'Production Report Director',
 		};
 
-		res.status(200).json({ toast, data: groupedData });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
