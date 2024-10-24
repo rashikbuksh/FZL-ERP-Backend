@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -82,6 +82,7 @@ export async function selectAll(req, res, next) {
 			type: properties.type,
 			name: properties.name,
 			short_name: properties.short_name,
+			order_sheet_name: properties.order_sheet_name,
 			created_by: properties.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: properties.created_at,
@@ -118,6 +119,7 @@ export async function select(req, res, next) {
 			type: properties.type,
 			name: properties.name,
 			short_name: properties.short_name,
+			order_sheet_name: properties.order_sheet_name,
 			created_by: properties.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: properties.created_at,

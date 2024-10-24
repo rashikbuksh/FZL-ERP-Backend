@@ -185,10 +185,7 @@ export const order_entry = zipper.table('order_entry', {
 	style: text('style').notNull(),
 	color: text('color').default(null),
 	size: text('size').default(null),
-	quantity: decimal('quantity', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
+	quantity: integer('quantity').notNull(),
 	company_price: PG_DECIMAL('company_price').default(0.0),
 	party_price: PG_DECIMAL('party_price').default(0.0),
 	status: integer('status').default(1),

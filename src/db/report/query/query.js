@@ -41,6 +41,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 stock.uuid as stock_uuid,
                 COALESCE(production_sum.assembly_production_quantity, 0)::float8 AS assembly_production_quantity,
                 COALESCE(production_sum.coloring_production_quantity, 0)::float8 AS coloring_production_quantity,
+                COALESCE(tape_coil_to_dyeing_sum.total_tape_coil_to_dyeing_quantity, 0)::float8 AS total_tape_coil_to_dyeing_quantity,
                 (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0))::float8 AS total_dyeing_transaction_quantity,
                 COALESCE(sfg_production_sum.teeth_molding_quantity, 0)::float8 AS teeth_molding_quantity,
                 CASE WHEN lower(vodf.item_name) = 'vislon' THEN 'KG' ELSE 'PCS' END AS teeth_molding_unit,
@@ -84,6 +85,11 @@ export async function zipperProductionStatusReport(req, res, next) {
                 FROM zipper.dyed_tape_transaction_from_stock dttfs
                 GROUP BY dttfs.order_description_uuid
             ) dyed_tape_transaction_from_stock_sum ON dyed_tape_transaction_from_stock_sum.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN (
+                SELECT tape_coil_to_dyeing.order_description_uuid, SUM(tape_coil_to_dyeing.trx_quantity) as total_tape_coil_to_dyeing_quantity
+                FROM zipper.tape_coil_to_dyeing
+                GROUP BY order_description_uuid
+            ) tape_coil_to_dyeing_sum ON tape_coil_to_dyeing_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
                 SELECT 
                     sfg_prod.sfg_uuid AS sfg_uuid,
@@ -160,6 +166,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 stock.uuid,
                 production_sum.assembly_production_quantity,
                 production_sum.coloring_production_quantity,
+                tape_coil_to_dyeing_sum.total_tape_coil_to_dyeing_quantity,
                 dyed_tape_transaction_sum.total_trx_quantity,
                 dyed_tape_transaction_from_stock_sum.total_trx_quantity,
                 sfg_production_sum.teeth_molding_quantity,
@@ -631,15 +638,16 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 order_entry.count_length_uuid,
                 count_length.count,
                 count_length.length,
-                batch_entry_quantity_length.total_quantity,
-                batch_entry_quantity_length.total_weight,
-                batch.yarn_quantity,
+                batch_entry_quantity_length.total_quantity::float8,
+                batch_entry_quantity_length.total_weight::float8,
+                batch_entry_quantity_length.yarn_quantity::float8,
                 batch.is_drying_complete,
-                batch_entry_coning.total_coning_production_quantity,
-                coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) as total_delivery_delivered_quantity,
-                coalesce(thread_challan_sum.total_delivery_balance_quantity,0) as total_delivery_balance_quantity,
-                coalesce(thread_challan_sum.total_short_quantity,0) as total_short_quantity,
-                coalesce(thread_challan_sum.total_reject_quantity,0) as total_reject_quantity,
+                batch_entry_coning.total_coning_production_quantity::float8,
+                order_entry.warehouse::float8,
+                coalesce(thread_challan_sum.total_delivery_delivered_quantity,0)::float8 as total_delivery_delivered_quantity,
+                coalesce(thread_challan_sum.total_delivery_balance_quantity,0)::float8 as total_delivery_balance_quantity,
+                coalesce(thread_challan_sum.total_short_quantity,0)::float8 as total_short_quantity,
+                coalesce(thread_challan_sum.total_reject_quantity,0)::float8 as total_reject_quantity,
                 batch.remarks
             FROM
                 thread.order_entry
@@ -658,6 +666,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     SUM(batch_entry.quantity) as total_quantity,
+                    SUM(batch_entry.yarn_quantity) as yarn_quantity,
                     SUM(count_length.max_weight * batch_entry.quantity) as total_weight,
                     batch_entry.batch_uuid
                 FROM
@@ -666,7 +675,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 LEFT JOIN thread.count_length ON order_entry.count_length_uuid = count_length.uuid
                 GROUP BY
                     batch_entry.batch_uuid
-            ) batch_entry_quantity_length ON batch.uuid = batch_entry.batch_uuid
+            ) batch_entry_quantity_length ON batch.uuid = batch_entry_quantity_length.batch_uuid
             LEFT JOIN (
                 SELECT 
                     SUM(coning_production_quantity) as total_coning_production_quantity,
@@ -764,60 +773,60 @@ export async function ProductionReportDirector(req, res, next) {
 		const data = await resultPromise;
 
 		// row group using item_name, then party_name, then order_number, then item_description
-		const groupedData = data?.rows.reduce((acc, row) => {
-			const {
-				item_name,
-				party_name,
-				order_number,
-				item_description,
-				total_close_end_quantity,
-				total_open_end_quantity,
-				total_quantity,
-			} = row;
+		// const groupedData = data?.rows.reduce((acc, row) => {
+		// 	const {
+		// 		item_name,
+		// 		party_name,
+		// 		order_number,
+		// 		item_description,
+		// 		total_close_end_quantity,
+		// 		total_open_end_quantity,
+		// 		total_quantity,
+		// 	} = row;
 
-			const findOrCreate = (array, key, value, createFn) => {
-				let index = array.findIndex((item) => item[key] === value);
-				if (index === -1) {
-					array.push(createFn());
-					index = array.length - 1;
-				}
-				return array[index];
-			};
+		// 	const findOrCreate = (array, key, value, createFn) => {
+		// 		let index = array.findIndex((item) => item[key] === value);
+		// 		if (index === -1) {
+		// 			array.push(createFn());
+		// 			index = array.length - 1;
+		// 		}
+		// 		return array[index];
+		// 	};
 
-			const item = findOrCreate(acc, 'item_name', item_name, () => ({
-				item_name,
-				parties: [],
-			}));
+		// 	const item = findOrCreate(acc, 'item_name', item_name, () => ({
+		// 		item_name,
+		// 		parties: [],
+		// 	}));
 
-			const party = findOrCreate(
-				item.parties,
-				'party_name',
-				party_name,
-				() => ({
-					party_name,
-					orders: [],
-				})
-			);
+		// 	const party = findOrCreate(
+		// 		item.parties,
+		// 		'party_name',
+		// 		party_name,
+		// 		() => ({
+		// 			party_name,
+		// 			orders: [],
+		// 		})
+		// 	);
 
-			const order = findOrCreate(
-				party.orders,
-				'order_number',
-				order_number,
-				() => ({
-					order_number,
-					descriptions: [],
-				})
-			);
+		// 	const order = findOrCreate(
+		// 		party.orders,
+		// 		'order_number',
+		// 		order_number,
+		// 		() => ({
+		// 			order_number,
+		// 			descriptions: [],
+		// 		})
+		// 	);
 
-			order.descriptions.push({
-				item_description,
-				total_close_end_quantity,
-				total_open_end_quantity,
-				total_quantity,
-			});
+		// 	order.descriptions.push({
+		// 		item_description,
+		// 		total_close_end_quantity,
+		// 		total_open_end_quantity,
+		// 		total_quantity,
+		// 	});
 
-			return acc;
-		}, []);
+		// 	return acc;
+		// }, []);
 
 		const toast = {
 			status: 200,
@@ -825,7 +834,7 @@ export async function ProductionReportDirector(req, res, next) {
 			message: 'Production Report Director',
 		};
 
-		res.status(200).json({ toast, data: groupedData });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}

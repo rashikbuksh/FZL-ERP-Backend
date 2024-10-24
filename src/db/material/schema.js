@@ -44,6 +44,7 @@ export const info = material.table('info', {
 	})
 		.notNull()
 		.default(0.0),
+	is_priority_material: integer('is_priority_material').default(0),
 	average_lead_time: integer('average_lead_time').default(0),
 	description: text('description').default(null),
 	created_at: DateTime('created_at').notNull(),

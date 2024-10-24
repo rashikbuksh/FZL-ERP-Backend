@@ -75,6 +75,7 @@ export const defPublicSection = SED({
 		uuid: SE.uuid(),
 		name: SE.string('John Doe'),
 		short_name: SE.string('JD'),
+		order_sheet_name: SE.string('JD (JD)'),
 		remarks: SE.string('Remarks'),
 	},
 	xml: 'Public/Section',
