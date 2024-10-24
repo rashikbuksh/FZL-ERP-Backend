@@ -633,7 +633,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 count_length.length,
                 batch_entry_quantity_length.total_quantity,
                 batch_entry_quantity_length.total_weight,
-                batch.yarn_quantity,
+                batch_entry_quantity_length.yarn_quantity,
                 batch.is_drying_complete,
                 batch_entry_coning.total_coning_production_quantity,
                 coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) as total_delivery_delivered_quantity,
@@ -658,6 +658,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     SUM(batch_entry.quantity) as total_quantity,
+                    SUM(batch_entry.yarn_quantity) as yarn_quantity,
                     SUM(count_length.max_weight * batch_entry.quantity) as total_weight,
                     batch_entry.batch_uuid
                 FROM
