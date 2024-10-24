@@ -41,6 +41,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 stock.uuid as stock_uuid,
                 COALESCE(production_sum.assembly_production_quantity, 0)::float8 AS assembly_production_quantity,
                 COALESCE(production_sum.coloring_production_quantity, 0)::float8 AS coloring_production_quantity,
+                COALESCE(tape_coil_to_dyeing_sum.total_tape_coil_to_dyeing_quantity, 0)::float8 AS total_tape_coil_to_dyeing_quantity,
                 (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0))::float8 AS total_dyeing_transaction_quantity,
                 COALESCE(sfg_production_sum.teeth_molding_quantity, 0)::float8 AS teeth_molding_quantity,
                 CASE WHEN lower(vodf.item_name) = 'vislon' THEN 'KG' ELSE 'PCS' END AS teeth_molding_unit,
@@ -84,6 +85,11 @@ export async function zipperProductionStatusReport(req, res, next) {
                 FROM zipper.dyed_tape_transaction_from_stock dttfs
                 GROUP BY dttfs.order_description_uuid
             ) dyed_tape_transaction_from_stock_sum ON dyed_tape_transaction_from_stock_sum.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN (
+                SELECT tape_coil_to_dyeing.order_description_uuid, SUM(tape_coil_to_dyeing.trx_quantity) as total_tape_coil_to_dyeing_quantity
+                FROM zipper.tape_coil_to_dyeing
+                GROUP BY order_description_uuid
+            ) tape_coil_to_dyeing_sum ON tape_coil_to_dyeing_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
                 SELECT 
                     sfg_prod.sfg_uuid AS sfg_uuid,
@@ -160,6 +166,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 stock.uuid,
                 production_sum.assembly_production_quantity,
                 production_sum.coloring_production_quantity,
+                tape_coil_to_dyeing_sum.total_tape_coil_to_dyeing_quantity,
                 dyed_tape_transaction_sum.total_trx_quantity,
                 dyed_tape_transaction_from_stock_sum.total_trx_quantity,
                 sfg_production_sum.teeth_molding_quantity,
