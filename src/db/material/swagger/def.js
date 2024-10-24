@@ -48,6 +48,8 @@ export const defMaterialInfo = SED({
 		short_name: SE.string('M1'),
 		unit: SE.string('kg'),
 		threshold: SE.number(100),
+		is_priority_material: SE.number(1),
+		average_lead_time: SE.number(10),
 		description: SE.string('description'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
