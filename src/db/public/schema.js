@@ -78,6 +78,7 @@ export const properties = pgTable('properties', {
 	type: text('type').notNull(),
 	name: text('name').notNull(),
 	short_name: text('short_name').notNull(),
+	order_sheet_name: text('order_sheet_name'),
 	created_by: defaultUUID('created_by'),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
