@@ -776,6 +776,18 @@ export const pathDeliveryChallan = {
 										type: 'string',
 										example: '123456',
 									},
+									name: {
+										type: 'string',
+										example: 'Challan 1',
+									},
+									delivery_cost: {
+										type: 'number',
+										example: 100,
+									},
+									is_hand_delivery: {
+										type: 'boolean',
+										example: false,
+									},
 									created_by: {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
@@ -1040,6 +1052,18 @@ export const pathDeliveryChallan = {
 									gate_pass: {
 										type: 'string',
 										example: '123456',
+									},
+									name: {
+										type: 'string',
+										example: 'Challan 1',
+									},
+									delivery_cost: {
+										type: 'number',
+										example: 100,
+									},
+									is_hand_delivery: {
+										type: 'boolean',
+										example: false,
 									},
 									created_by: {
 										type: 'string',
@@ -1829,5 +1853,4 @@ export const pathDelivery = {
 	...pathDeliveryChallanEntry,
 	...pathDeliveryVehicle,
 	...pathDeliveryCarton,
-	
 };

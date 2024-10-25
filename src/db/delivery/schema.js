@@ -1,7 +1,12 @@
 import { sql } from 'drizzle-orm';
 import { boolean, decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
+import {
+	DateTime,
+	defaultUUID,
+	PG_DECIMAL,
+	uuid_primary,
+} from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const delivery = pgSchema('delivery');
@@ -22,7 +27,9 @@ export const packing_list = delivery.table('packing_list', {
 	order_info_uuid: defaultUUID('order_info_uuid').references(
 		() => zipperSchema.order_info.uuid
 	),
-	challan_uuid: defaultUUID('challan_uuid').references(() => challan.uuid).default(null),
+	challan_uuid: defaultUUID('challan_uuid')
+		.references(() => challan.uuid)
+		.default(null),
 	carton_uuid: defaultUUID('carton_uuid').references(() => carton.uuid),
 	is_warehouse_received: boolean('is_warehouse_received').default(false),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
@@ -59,11 +66,16 @@ export const challan = delivery.table('challan', {
 	order_info_uuid: defaultUUID('order_info_uuid').references(
 		() => zipperSchema.order_info.uuid
 	),
-	vehicle_uuid: defaultUUID('vehicle_uuid').references(() => vehicle.uuid).default(null),
+	vehicle_uuid: defaultUUID('vehicle_uuid')
+		.references(() => vehicle.uuid)
+		.default(null),
 	carton_quantity: integer('carton_quantity').notNull(),
 	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
 	gate_pass: integer('gate_pass').default(0),
 	receive_status: integer('receive_status').default(0),
+	name: text('name').default(null),
+	delivery_cost: PG_DECIMAL('delivery_cost').default(0),
+	is_hand_delivery: boolean('is_hand_delivery').default(false),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
