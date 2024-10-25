@@ -1365,7 +1365,7 @@ export async function selectCarton(req, res, next) {
 	const cartonPromise = db
 		.select({
 			value: deliverySchema.carton.uuid,
-			label: deliverySchema.carton.name,
+			label: deliverySchema.carton.size,
 		})
 		.from(deliverySchema.carton);
 
