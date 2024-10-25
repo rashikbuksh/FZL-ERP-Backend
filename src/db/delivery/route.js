@@ -3,6 +3,8 @@ import * as challanOperations from './query/challan.js';
 import * as challanEntryOperations from './query/challan_entry.js';
 import * as packingListOperations from './query/packing_list.js';
 import * as packingListEntryOperations from './query/packing_list_entry.js';
+import * as vehicleOperations from './query/vehicle.js';
+import * as cartonOperations from './query/carton.js';
 import delivery from './schema.js';
 
 const deliveryRouter = Router();
@@ -103,6 +105,39 @@ deliveryRouter.get(
 deliveryRouter.get(
 	'/challan-entry-for-packing-list-multi/by/:packing_list_uuids',
 	challanEntryOperations.selectPackingListForChallanMulti
+);
+
+// vehicle routes
+
+deliveryRouter.get('/vehicle', vehicleOperations.selectAll);
+deliveryRouter.get(
+	'/vehicle/:uuid',
+
+	vehicleOperations.select
+);
+
+deliveryRouter.post('/vehicle', vehicleOperations.insert);
+deliveryRouter.put('/vehicle/:uuid', vehicleOperations.update);
+deliveryRouter.delete(
+	'/vehicle/:uuid',
+
+	vehicleOperations.remove
+);
+
+// carton routes
+
+deliveryRouter.get('/carton', cartonOperations.selectAll);
+deliveryRouter.get(
+	'/carton/:uuid',
+
+	cartonOperations.select
+);
+deliveryRouter.post('/carton', cartonOperations.insert);
+deliveryRouter.put('/carton/:uuid', cartonOperations.update);
+deliveryRouter.delete(
+	'/carton/:uuid',
+
+	cartonOperations.remove
 );
 
 export { deliveryRouter };

@@ -9,8 +9,10 @@ export const defPackingList = SED({
 		'carton_weight',
 		'order_info_uuid',
 		'challan_uuid',
+		'carton_uuid',
 		'created_by',
 		'created_at',
+		'is_warehouse_received',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -18,10 +20,12 @@ export const defPackingList = SED({
 		carton_weight: SE.string('10kg'),
 		order_info_uuid: SE.uuid(),
 		challan_uuid: SE.uuid(),
+		carton_uuid: SE.uuid(),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		is_warehouse_received: SE.boolean(false),
 	},
 	xml: 'Delivery/PackingList',
 });
@@ -56,6 +60,7 @@ export const defChallan = SED({
 	required: [
 		'uuid',
 		'order_info_uuid',
+		'vehicle_uuid',
 		'carton_quantity',
 		'assign_to',
 		'get_pass',
@@ -65,6 +70,7 @@ export const defChallan = SED({
 	properties: {
 		uuid: SE.uuid(),
 		order_info_uuid: SE.uuid(),
+		vehicle_uuid: SE.uuid(),
 		carton_quantity: SE.number(100),
 		assign_to: SE.uuid(),
 		get_pass: SE.number(0),
@@ -91,6 +97,49 @@ export const defChallanEntry = SED({
 	xml: 'Delivery/ChallanEntry',
 });
 
+export const defVehicle = SED({
+	// type: 'object',
+	required: [
+		'uuid',
+		'type',
+		'name',
+		'number',
+		'driver_name',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		type: SE.string('type'),
+		name: SE.string('name'),
+		number: SE.string('number'),
+		driver_name: SE.string('driver_name'),
+		active: SE.number(1),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Delivery/Vehicle',
+});
+
+export const defCarton = SED({
+	// type: 'object',
+	required: ['uuid', 'size', 'name', 'used_for', 'created_by', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		size: SE.string('size'),
+		name: SE.string('name'),
+		used_for: SE.string('used_for'),
+		active: SE.number(1),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Delivery/Carton',
+});
+
 // * Marge All
 
 export const defDelivery = {
@@ -98,6 +147,8 @@ export const defDelivery = {
 	packing_list_entry: defPackingListEntry,
 	challan: defChallan,
 	challan_entry: defChallanEntry,
+	vehicle: defVehicle,
+	carton: defCarton,
 };
 
 // * Tag
@@ -129,6 +180,22 @@ export const tagDelivery = [
 	{
 		name: 'delivery.challan-entry',
 		description: 'Operations about Challan Entry',
+		externalDocs: {
+			description: 'Find out more',
+			url: 'http://swagger.io',
+		},
+	},
+	{
+		name: 'delivery.vehicle',
+		description: 'Operations about Vehicle',
+		externalDocs: {
+			description: 'Find out more',
+			url: 'http://swagger.io',
+		},
+	},
+	{
+		name: 'delivery.carton',
+		description: 'Operations about Carton',
 		externalDocs: {
 			description: 'Find out more',
 			url: 'http://swagger.io',
