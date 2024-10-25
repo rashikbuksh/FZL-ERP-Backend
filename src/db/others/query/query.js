@@ -1339,3 +1339,45 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectVehicle(req, res, next) {
+	const vehiclePromise = db
+		.select({
+			value: deliverySchema.vehicle.uuid,
+			label: deliverySchema.vehicle.name,
+		})
+		.from(deliverySchema.vehicle);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Vehicle list',
+	};
+	handleResponse({
+		promise: vehiclePromise,
+		res,
+		next,
+		...toast,
+	});
+}
+
+export async function selectCarton(req, res, next) {
+	const cartonPromise = db
+		.select({
+			value: deliverySchema.carton.uuid,
+			label: deliverySchema.carton.name,
+		})
+		.from(deliverySchema.carton);
+
+	const toast = {
+		status: 200,
+		type: 'select_all',
+		message: 'Carton list',
+	};
+	handleResponse({
+		promise: cartonPromise,
+		res,
+		next,
+		...toast,
+	});
+}

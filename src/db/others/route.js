@@ -142,6 +142,12 @@ otherRouter.get(
 	otherOperations.selectPackingListByOrderInfoUuid
 );
 
+// vehicle
+otherRouter.get('/delivery/vehicle/value/label', otherOperations.selectVehicle);
+
+// carton
+otherRouter.get('/delivery/carton/value/label', otherOperations.selectCarton);
+
 const pathPublic = {
 	'/other/machine/value/label': {
 		get: {
@@ -1401,6 +1407,54 @@ const pathDelivery = {
 				},
 			},
 		},
+	'/other/delivery/vehicle/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all vehicles',
+			description: 'All vehicles',
+			operationId: 'getAllVehicles',
+			responses: {
+				200: {
+					description: 'Returns a all vehicles.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('Vehicle 1'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/delivery/carton/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all cartons',
+			description: 'All cartons',
+			operationId: 'getAllCartons',
+			responses: {
+				200: {
+					description: 'Returns a all cartons.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('Carton 1'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 export const pathOthers = {
