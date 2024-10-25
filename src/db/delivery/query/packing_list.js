@@ -9,7 +9,12 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { challan, packing_list, packing_list_entry } from '../schema.js';
+import {
+	carton,
+	challan,
+	packing_list,
+	packing_list_entry,
+} from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -94,6 +99,8 @@ export async function selectAll(req, res, next) {
 			challan_number: sql`CONCAT('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
+			carton_uuid: packing_list.carton_uuid,
+			carton_name: carton.name,
 			created_by: packing_list.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: packing_list.created_at,
@@ -110,6 +117,7 @@ export async function selectAll(req, res, next) {
 			eq(packing_list.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
+		.leftJoin(carton, eq(packing_list.carton_uuid, carton.uuid))
 		.orderBy(desc(packing_list.created_at));
 	const toast = {
 		status: 200,
@@ -132,6 +140,8 @@ export async function select(req, res, next) {
 			challan_number: sql`CONCAT('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			carton_size: packing_list.carton_size,
 			carton_weight: packing_list.carton_weight,
+			carton_uuid: packing_list.carton_uuid,
+			carton_name: carton.name,
 			created_by: packing_list.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: packing_list.created_at,
@@ -148,6 +158,7 @@ export async function select(req, res, next) {
 			eq(packing_list.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
+		.leftJoin(carton, eq(packing_list.carton_uuid, carton.uuid))
 		.where(eq(packing_list.uuid, req.params.uuid));
 
 	try {
@@ -195,8 +206,8 @@ export async function selectPackingListDetailsByPackingListUuid(
 					ple.packing_list_uuid,
 					ple.sfg_uuid,
 					ple.quantity::float8,
-					ple.short_quantity::float8,
-					ple.reject_quantity::float8,
+					coalesce(ple.short_quantity::float8, 0) as short_quantity,
+					coalesce(ple.reject_quantity::float8, 0) as reject_quantity,
 					ple.created_at,
 					ple.updated_at,
 					ple.remarks,
@@ -218,7 +229,7 @@ export async function selectPackingListDetailsByPackingListUuid(
 					sfg.uuid as sfg_uuid,
 					sfg.warehouse::float8 as warehouse,
 					sfg.delivered::float8 as delivered,
-					(oe.quantity - sfg.delivered)::float8  as balance_quantity,
+					(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
 					false as is_checked
 				FROM
 					zipper.v_order_details_full vodf
@@ -280,7 +291,9 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
-			(oe.quantity - sfg.delivered)::float8  as balance_quantity
+			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
+			0 as short_quantity,
+			0 as reject_quantity
 		FROM
 			zipper.v_order_details_full vodf
 		LEFT JOIN
@@ -288,7 +301,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN
 			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 		WHERE
-			(oe.quantity - sfg.delivered) > 0 AND vodf.order_info_uuid = ${req.params.order_info_uuid}
+			(oe.quantity - sfg.delivered - sfg.delivered) > 0 AND vodf.order_info_uuid = ${req.params.order_info_uuid}
 		ORDER BY
 			oe.created_at, oe.uuid DESC
 		`;

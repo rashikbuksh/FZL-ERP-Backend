@@ -1,6 +1,7 @@
 // * Delivery PackingList * //
 
 import SE from '../../../util/swagger_example.js';
+import { challan } from '../schema.js';
 
 export const pathDeliveryPackingList = {
 	'/delivery/packing-list': {
@@ -28,6 +29,14 @@ export const pathDeliveryPackingList = {
 									carton_weight: {
 										type: 'string',
 										example: '10kg',
+									},
+									carton_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									carton_name: {
+										type: 'string',
+										example: 'Carton 1',
 									},
 									created_by: {
 										type: 'string',
@@ -687,6 +696,66 @@ export const pathDeliveryChallan = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									challan_number: {
+										type: 'string',
+										example: 'ZC24-0001',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									buyer_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buyer_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									factory_address: {
+										type: 'string',
+										example: 'Dhaka, Bangladesh',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									vehicle_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									vehicle_name: {
+										type: 'string',
+										example: 'DHK-1234',
+									},
+									vehicle_driver_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
 									carton_quantity: {
 										type: 'number',
 										example: 100,
@@ -702,6 +771,10 @@ export const pathDeliveryChallan = {
 									receive_status: {
 										type: 'number',
 										example: 0,
+									},
+									gate_pass: {
+										type: 'string',
+										example: '123456',
 									},
 									created_by: {
 										type: 'string',
@@ -888,6 +961,66 @@ export const pathDeliveryChallan = {
 										type: 'string',
 										example: 'igD0v9DIJQhJeet',
 									},
+									challan_number: {
+										type: 'string',
+										example: 'ZC24-0001',
+									},
+									order_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									order_number: {
+										type: 'string',
+										example: 'Z24-0001',
+									},
+									buyer_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									buyer_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									party_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									party_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									merchandiser_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									merchandiser_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									factory_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									factory_address: {
+										type: 'string',
+										example: 'Dhaka, Bangladesh',
+									},
+									factory_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									vehicle_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									vehicle_name: {
+										type: 'string',
+										example: 'DHK-1234',
+									},
+									vehicle_driver_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
 									carton_quantity: {
 										type: 'number',
 										example: 100,
@@ -903,6 +1036,10 @@ export const pathDeliveryChallan = {
 									receive_status: {
 										type: 'number',
 										example: 0,
+									},
+									gate_pass: {
+										type: 'string',
+										example: '123456',
 									},
 									created_by: {
 										type: 'string',
@@ -1299,9 +1436,398 @@ export const pathDeliveryChallanEntry = {
 	},
 };
 
+export const pathDeliveryVehicle = {
+	'/delivery/vehicle': {
+		get: {
+			tags: ['delivery.vehicle'],
+			summary: 'Get all vehicles',
+			description: 'Get all vehicles',
+			// operationId: "getVehicle",
+			responses: {
+				200: {
+					description: 'Return list of vehicles',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									type: {
+										type: 'string',
+										example: 'Truck',
+									},
+									number: {
+										type: 'string',
+										example: 'KA-01-AB-1234',
+									},
+									driver_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									active: {
+										type: 'number',
+										example: 1,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['delivery.vehicle'],
+			summary: 'Create a new vehicle',
+			description: 'Create a new vehicle',
+			// operationId: "createVehicle",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/vehicle',
+						},
+					},
+				},
+			},
+
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/delivery/vehicle',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+
+	'/delivery/vehicle/{uuid}': {
+		get: {
+			tags: ['delivery.vehicle'],
+			summary: 'Get a vehicle by uuid',
+			description: 'Get a vehicle by uuid',
+			// operationId: "getVehicleByUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' vehicle to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Vehicle not found',
+				},
+			},
+		},
+		put: {
+			tags: ['delivery.vehicle'],
+			summary: 'Update a vehicle by uuid',
+			description: 'Update a vehicle by uuid',
+			// operationId: "updateVehicleByUuid",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' vehicle to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/vehicle',
+						},
+					},
+				},
+			},
+
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Vehicle not found',
+				},
+				405: { description: 'Validation exception' },
+			},
+		},
+		delete: {
+			tags: ['delivery.vehicle'],
+			summary: 'Delete a vehicle by uuid',
+			description: 'Delete a vehicle by uuid',
+			// operationId: "deleteVehicleByUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'vehicle to delete',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Vehicle not found',
+				},
+			},
+		},
+	},
+};
+
+export const pathDeliveryCarton = {
+	'/delivery/carton': {
+		get: {
+			tags: ['delivery.carton'],
+			summary: 'Get all cartons',
+			description: 'Get all cartons',
+			// operationId: "getCarton",
+			responses: {
+				200: {
+					description: 'Return list of cartons',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									size: {
+										type: 'string',
+										example: 'Small',
+									},
+									name: {
+										type: 'string',
+										example: 'Carton 1',
+									},
+									used_for: {
+										type: 'string',
+										example: 'Packing',
+									},
+									active: {
+										type: 'number',
+										example: 1,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['delivery.carton'],
+			summary: 'Create a new carton',
+			description: 'Create a new carton',
+			// operationId: "createCarton",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/carton',
+						},
+					},
+				},
+			},
+
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/delivery/carton',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+
+	'/delivery/carton/{uuid}': {
+		get: {
+			tags: ['delivery.carton'],
+			summary: 'Get a carton by uuid',
+			description: 'Get a carton by uuid',
+			// operationId: "getCartonByUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' carton to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Carton not found',
+				},
+			},
+		},
+		put: {
+			tags: ['delivery.carton'],
+			summary: 'Update a carton by uuid',
+			description: 'Update a carton by uuid',
+			// operationId: "updateCartonByUuid",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' carton to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/carton',
+						},
+					},
+				},
+			},
+
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Carton not found',
+				},
+				405: { description: 'Validation exception' },
+			},
+		},
+		delete: {
+			tags: ['delivery.carton'],
+			summary: 'Delete a carton by uuid',
+			description: 'Delete a carton by uuid',
+			// operationId: "deleteCartonByUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'carton to delete',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Carton not found',
+				},
+			},
+		},
+	},
+};
+
 export const pathDelivery = {
 	...pathDeliveryPackingList,
 	...pathDeliveryPackingListEntry,
 	...pathDeliveryChallan,
 	...pathDeliveryChallanEntry,
+	...pathDeliveryVehicle,
+	...pathDeliveryCarton,
+	
 };

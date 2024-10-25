@@ -12,7 +12,7 @@ import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
 
-import { challan, challan_entry, packing_list } from '../schema.js';
+import { challan, challan_entry, packing_list, vehicle } from '../schema.js';
 
 const assignToUser = alias(hrSchema.users, 'assignToUser');
 const createdByUser = alias(hrSchema.users, 'createdByUser');
@@ -104,6 +104,9 @@ export async function selectAll(req, res, next) {
 			factory_uuid: zipperSchema.order_info.factory_uuid,
 			factory_name: publicSchema.factory.name,
 			factory_address: publicSchema.factory.address,
+			vehicle_uuid: challan.vehicle_uuid,
+			vehicle_name: vehicle.name,
+			vehicle_driver_name: vehicle.driver_name,
 			carton_quantity: decimalToNumber(challan.carton_quantity),
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
@@ -141,6 +144,7 @@ export async function selectAll(req, res, next) {
 			publicSchema.factory,
 			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
 		)
+		.leftJoin(vehicle, eq(challan.vehicle_uuid, vehicle.uuid))
 		.orderBy(desc(challan.created_at));
 
 	try {
@@ -181,6 +185,9 @@ export async function select(req, res, next) {
 			factory_uuid: zipperSchema.order_info.factory_uuid,
 			factory_name: publicSchema.factory.name,
 			factory_address: publicSchema.factory.address,
+			vehicle_uuid: challan.vehicle_uuid,
+			vehicle_name: vehicle.name,
+			vehicle_driver_name: vehicle.driver_name,
 			carton_quantity: decimalToNumber(challan.carton_quantity),
 			assign_to: challan.assign_to,
 			assign_to_name: assignToUser.name,
@@ -223,6 +230,7 @@ export async function select(req, res, next) {
 			publicSchema.factory,
 			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
 		)
+		.leftJoin(vehicle, eq(challan.vehicle_uuid, vehicle.uuid))
 		.where(eq(challan.uuid, req.params.uuid))
 		.groupBy(
 			challan.uuid,
