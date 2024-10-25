@@ -1446,7 +1446,7 @@ const pathDelivery = {
 								type: 'object',
 								properties: {
 									value: SE.uuid(),
-									label: SE.string('Carton 1'),
+									label: SE.string('10*10*10'),
 								},
 							},
 						},
