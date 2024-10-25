@@ -1827,4 +1827,7 @@ export const pathDelivery = {
 	...pathDeliveryPackingListEntry,
 	...pathDeliveryChallan,
 	...pathDeliveryChallanEntry,
+	...pathDeliveryVehicle,
+	...pathDeliveryCarton,
+	
 };
