@@ -336,9 +336,10 @@ export const pathCommercialLc = {
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params(
-					'Get data using uuid',
+					'LC number to get data',
 					'lc_number',
-					'string'
+					'string',
+					'77'
 				),
 			],
 			responses: {
