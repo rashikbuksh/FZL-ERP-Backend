@@ -86,6 +86,12 @@ export const order_info = zipper.table('order_info', {
 	print_in: print_in_enum('print_in').default('portrait'),
 });
 
+export const slider_provided_enum = zipper.enum('slider_provided_enum', [
+	'completely_provided',
+	'partial_provided',
+	'not_provided',
+]);
+
 export const order_description = zipper.table('order_description', {
 	uuid: uuid_primary,
 	order_info_uuid: defaultUUID('order_info_uuid').references(
@@ -120,13 +126,14 @@ export const order_description = zipper.table('order_description', {
 	),
 	puller_color: defaultUUID('puller_color').references(
 		() => publicSchema.properties.uuid
-	),
+	), // NOTE: using this field as slider_color
 	special_requirement: text('special_requirement').default(null),
 	hand: defaultUUID('hand').references(() => publicSchema.properties.uuid),
 	coloring_type: defaultUUID('coloring_type')
 		.references(() => publicSchema.properties.uuid)
 		.default(null),
-	is_slider_provided: integer('is_slider_provided').default(0),
+	slider_provided:
+		slider_provided_enum('slider_provided').default('not_provided'),
 	slider: defaultUUID('slider')
 		.references(() => publicSchema.properties.uuid)
 		.default(null),

@@ -69,7 +69,7 @@ export const challan = delivery.table('challan', {
 	vehicle_uuid: defaultUUID('vehicle_uuid')
 		.references(() => vehicle.uuid)
 		.default(null),
-	carton_quantity: integer('carton_quantity').notNull(),
+	carton_quantity: integer('carton_quantity').default(0),
 	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
 	gate_pass: integer('gate_pass').default(0),
 	receive_status: integer('receive_status').default(0),

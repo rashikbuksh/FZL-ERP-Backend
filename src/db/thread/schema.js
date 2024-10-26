@@ -275,7 +275,7 @@ export const challan = thread.table('challan', {
 		() => order_info.uuid
 	),
 	id: integer('id').default(sql`nextval('thread.thread_challan_sequence')`),
-	carton_quantity: integer('carton_quantity').notNull(),
+	carton_quantity: integer('carton_quantity').default(0),
 	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
 	gate_pass: integer('gate_pass').default(0),
 	received: integer('received').default(0),

@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import { boolean, decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -72,8 +72,64 @@ export const lc = commercial.table('lc', {
 	remarks: text('remarks').default(null),
 });
 
-// export const manual_pi = commercial.table('manual_pi', {
-// 	uuid: uuid_primary,
+export const manual_pi_sequence = commercial.sequence('manual_pi_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
+export const manual_pi = commercial.table('manual_pi', {
+	uuid: uuid_primary,
+	id: integer('id').default(sql`nextval('commercial.manual_pi_sequence')`),
+	pi_uuids: text('pi_uuids')
+		.array()
+		.notNull()
+		.default(sql`ARRAY[]::text[]`),
+	marketing_uuid: defaultUUID('marketing_uuid').references(
+		() => publicSchema.marketing.uuid
+	),
+	party_uuid: defaultUUID('party_uuid').references(
+		() => publicSchema.party.uuid
+	),
+	buyer_uuid: defaultUUID('buyer_uuid').references(
+		() => publicSchema.buyer.uuid
+	),
+	merchandiser_uuid: defaultUUID('merchandiser_uuid').references(
+		() => publicSchema.merchandiser.uuid
+	),
+	factory_uuid: defaultUUID('factory_uuid').references(
+		() => publicSchema.factory.uuid
+	),
+	bank_uuid: defaultUUID('bank_uuid').references(() => bank.uuid),
+	validity: integer('validity').default(0),
+	payment: integer('payment').default(0),
+	remarks: text('remarks').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	receive_amount: PG_DECIMAL('receive_amount').default(0),
+	weight: PG_DECIMAL('weight').default(0),
+	date: DateTime('date').default(null),
+	pi_number: text('pi_number').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+});
+
+export const manual_pi_entry = commercial.table('manual_pi_entry', {
+	uuid: uuid_primary,
+	manual_pi_uuid: defaultUUID('manual_pi_uuid').references(
+		() => manual_pi.uuid
+	),
+	order_number: text('order_number').notNull(),
+	po: text('po').default(null),
+	style: text('style').default(null),
+	item: text('item').default(null),
+	specification: text('specification').default(null),
+	size: text('size').default(null),
+	quantity: PG_DECIMAL('quantity').default(0),
+	unit_price: PG_DECIMAL('unit_price').default(0),
+	is_zipper: boolean('is_zipper').default(false),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
 
 export const order_info_sequence = commercial.sequence('pi_sequence', {
 	startWith: 1,

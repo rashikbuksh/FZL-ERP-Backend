@@ -77,6 +77,74 @@ export const defCommercialLc = SED({
 	xml: 'Commercial/Lc',
 });
 
+export const defCommercialManualPi = SED({
+	type: 'object',
+	required: [
+		'uuid',
+		'pi_uuids',
+		'marketing_uuid',
+		'party_uuid',
+		'buyer_uuid',
+		'merchandiser_uuid',
+		'factory_uuid',
+		'bank_uuid',
+		'validity',
+		'payment',
+		'created_by',
+		'receive_amount',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		id: SE.integer(1),
+		pi_uuids: SE.array([SE.uuid()]),
+		marketing_uuid: SE.uuid(),
+		party_uuid: SE.uuid(),
+		buyer_uuid: SE.uuid(),
+		merchandiser_uuid: SE.uuid(),
+		factory_uuid: SE.uuid(),
+		bank_uuid: SE.uuid(),
+		validity: SE.integer(0),
+		payment: SE.integer(0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+		receive_amount: SE.number(1000.0),
+		weight: SE.number(1000.0),
+		date: SE.date_time(),
+		pi_number: SE.string('1234/2024'),
+	},
+	xml: 'Commercial/ManualPi',
+});
+
+export const defCommercialManualPiEntry = SED({
+	type: 'object',
+	required: [
+		'uuid',
+		'manual_pi_uuid',
+		'order_number',
+		'quantity',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		manual_pi_uuid: SE.uuid(),
+		order_number: SE.string('1234/2024'),
+		po: SE.string('PO'),
+		style: SE.string('Style'),
+		item: SE.string('Item'),
+		specification: SE.string('Specification'),
+		size: SE.string('Size'),
+		quantity: SE.number(1000.0),
+		unit_price: SE.number(1000.0),
+		is_zipper: SE.integer(0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Commercial/ManualPiEntry',
+});
+
 export const defCommercialPiCash = SED({
 	type: 'object',
 	required: [

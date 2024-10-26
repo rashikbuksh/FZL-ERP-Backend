@@ -1,4 +1,5 @@
 import { is } from 'drizzle-orm';
+import { response } from 'express';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Commercial Bank * //
@@ -376,6 +377,170 @@ export const pathCommercialLc = {
 					update_at: SE.date_time(),
 					remarks: SE.string('remarks'),
 				}),
+			},
+		},
+	},
+};
+
+// * Commercial Manual Pi * //
+
+export const pathCommercialManualPi = {
+	'/commercial/manual-pi': {
+		get: {
+			tags: ['commercial.manual_pi'],
+			summary: 'Get all manual pis',
+			description: 'All manual pis',
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/pi_cash'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		post: {
+			tags: ['commercial.manual_pi'],
+			summary: 'Create a manual pi',
+			description: 'Create a manual pi',
+			requestBody: SE.requestBody_schema_ref('commercial/pi_cash'),
+			responses: {
+				201: SE.response_schema_ref(201, 'commercial/pi_cash'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+	'/commercial/manual-pi/{uuid}': {
+		get: {
+			tags: ['commercial.manual_pi'],
+			summary: 'Get a manual pi',
+			description: ' Get a manual pi by uuid',
+			//operationId: "getManualPiByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Get data using uuid', 'uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/pi_cash'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['commercial.manual_pi'],
+			summary: 'Update a manual pi',
+			description: 'Update a manual pi by uuid',
+			//operationId: "updateManualPiByUuid",
+			consume: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Update data using uuid', 'uuid', 'uuid'),
+			],
+			requestBody: SE.requestBody_schema_ref('commercial/pi_cash'),
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/pi_cash'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		delete: {
+			tags: ['commercial.manual_pi'],
+			summary: 'Delete a manual pi',
+			description: 'Delete a manual pi by uuid',
+			//operationId: "deleteManualPiByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Delete data using uuid', 'uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
+// * Commercial Manual Pi Entry * //
+
+export const pathCommercialManualPiEntry = {
+	'/commercial/manual-pi-entry': {
+		get: {
+			tags: ['commercial.manual_pi_entry'],
+			summary: 'Get all manual pi entries',
+			description: 'All manual pi entries',
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/pi_cash_entry'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		post: {
+			tags: ['commercial.manual_pi_entry'],
+			summary: 'Create a manual pi entry',
+			description: 'Create a manual pi entry',
+			requestBody: SE.requestBody_schema_ref('commercial/pi_cash_entry'),
+			responses: {
+				201: SE.response_schema_ref(201, 'commercial/pi_cash_entry'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+	'/commercial/manual-pi-entry/{uuid}': {
+		get: {
+			tags: ['commercial.manual_pi_entry'],
+			summary: 'Get a manual pi entry',
+			description: ' Get a manual pi entry by uuid',
+			//operationId: "getManualPiEntryByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Get data using uuid', 'uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/pi_cash_entry'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['commercial.manual_pi_entry'],
+			summary: 'Update a manual pi entry',
+			description: 'Update a manual pi entry by uuid',
+			//operationId: "updateManualPiEntryByUuid",
+			consume: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Update data using uuid', 'uuid', 'uuid'),
+			],
+			requestBody: SE.requestBody_schema_ref('commercial/pi_cash_entry'),
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/pi_cash_entry'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		delete: {
+			tags: ['commercial.manual_pi_entry'],
+			summary: 'Delete a manual pi entry',
+			description: 'Delete a manual pi entry by uuid',
+			//operationId: "deleteManualPiEntryByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Delete data using uuid', 'uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
