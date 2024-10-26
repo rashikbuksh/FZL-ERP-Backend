@@ -3960,7 +3960,7 @@ CREATE TABLE zipper.order_description (
     special_requirement text,
     hand text,
     coloring_type text,
-    is_slider_provided integer DEFAULT 0,
+    slider_provided integer DEFAULT 0,
     slider text,
     slider_starting_section_enum zipper.slider_starting_section_enum,
     top_stopper text,
@@ -4177,7 +4177,7 @@ CREATE VIEW zipper.v_order_details_full AS
     order_description.coloring_type,
     op_coloring.name AS coloring_type_name,
     op_coloring.short_name AS coloring_type_short_name,
-    order_description.is_slider_provided,
+    order_description.slider_provided,
     order_description.slider,
     op_slider.name AS slider_name,
     op_slider.short_name AS slider_short_name,
@@ -9223,7 +9223,7 @@ COPY zipper.material_trx_against_order_description (uuid, order_description_uuid
 -- Data for Name: order_description; Type: TABLE DATA; Schema: zipper; Owner: postgres
 --
 
-COPY zipper.order_description (uuid, order_info_uuid, item, zipper_number, end_type, lock_type, puller_type, teeth_color, puller_color, special_requirement, hand, coloring_type, is_slider_provided, slider, slider_starting_section_enum, top_stopper, bottom_stopper, logo_type, is_logo_body, is_logo_puller, description, status, created_at, updated_at, remarks, slider_body_shape, slider_link, end_user, garment, light_preference, garments_wash, created_by, garments_remarks, tape_received, tape_transferred, slider_finishing_stock, nylon_stopper, tape_coil_uuid, teeth_type) FROM stdin;
+COPY zipper.order_description (uuid, order_info_uuid, item, zipper_number, end_type, lock_type, puller_type, teeth_color, puller_color, special_requirement, hand, coloring_type, slider_provided, slider, slider_starting_section_enum, top_stopper, bottom_stopper, logo_type, is_logo_body, is_logo_puller, description, status, created_at, updated_at, remarks, slider_body_shape, slider_link, end_user, garment, light_preference, garments_wash, created_by, garments_remarks, tape_received, tape_transferred, slider_finishing_stock, nylon_stopper, tape_coil_uuid, teeth_type) FROM stdin;
 \.
 
 

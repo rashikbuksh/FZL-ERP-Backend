@@ -114,7 +114,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full
     order_description.coloring_type,
     op_coloring.name AS coloring_type_name,
     op_coloring.short_name AS coloring_type_short_name,
-    order_description.is_slider_provided,
+    order_description.slider_provided,
     order_description.slider,
     op_slider.name AS slider_name,
     op_slider.short_name AS slider_short_name,
@@ -244,18 +244,4 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         LEFT JOIN zipper.sfg ON sfg.uuid = ple.sfg_uuid
         LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
         LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid;
-`;
-
-export const ProductionView = `
-CREATE OR REPLACE VIEW zipper.v_production AS
-SELECT 
-	od.uuid as order_description_uuid,
-	ROUND(SUM(sfg.finishing_prod)/SUM(oe.quantity)*100.0, 0)::float8 as production_percentage,
-	SUM(CASE WHEN oe.company_price > 0 AND oe.party_price > 0 THEN 1 ELSE 0 END) as price_given
-FROM
-	zipper.order_description od
-	LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid
-	LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
-GROUP BY
-	od.uuid
 `;

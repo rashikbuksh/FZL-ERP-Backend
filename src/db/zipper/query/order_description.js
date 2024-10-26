@@ -93,7 +93,7 @@ export async function insert(req, res, next) {
 		special_requirement,
 		hand,
 		coloring_type,
-		is_slider_provided,
+		slider_provided,
 		slider,
 		slider_starting_section,
 		top_stopper,
@@ -137,7 +137,7 @@ export async function insert(req, res, next) {
 			special_requirement,
 			hand,
 			coloring_type,
-			is_slider_provided,
+			slider_provided,
 			slider,
 			slider_starting_section,
 			top_stopper,
@@ -196,7 +196,7 @@ export async function update(req, res, next) {
 		special_requirement,
 		hand,
 		coloring_type,
-		is_slider_provided,
+		slider_provided,
 		slider,
 		slider_starting_section,
 		top_stopper,
@@ -240,7 +240,7 @@ export async function update(req, res, next) {
 			special_requirement,
 			hand,
 			coloring_type,
-			is_slider_provided,
+			slider_provided,
 			slider,
 			slider_starting_section,
 			top_stopper,
@@ -349,7 +349,7 @@ export async function selectAll(req, res, next) {
 			coloring_type: order_description.coloring_type,
 			coloring_type_name: coloringProperties.name,
 			coloring_type_short_name: coloringProperties.short_name,
-			is_slider_provided: order_description.is_slider_provided,
+			slider_provided: order_description.slider_provided,
 			slider: order_description.slider,
 			slider_name: sliderProperties.name,
 			slider_short_name: sliderProperties.short_name,
@@ -554,7 +554,7 @@ export async function select(req, res, next) {
 			coloring_type: order_description.coloring_type,
 			coloring_type_name: coloringProperties.name,
 			coloring_type_short_name: coloringProperties.short_name,
-			is_slider_provided: order_description.is_slider_provided,
+			slider_provided: order_description.slider_provided,
 			slider: order_description.slider,
 			slider_name: sliderProperties.name,
 			slider_short_name: sliderProperties.short_name,
@@ -878,7 +878,7 @@ export async function updateOrderDescriptionByTapeCoil(req, res, next) {
 
 	try {
 		const data = await orderDescriptionPromise;
-		
+
 		if (data.length === 0 || !data[0].updatedUuid) {
 			throw new Error('Update failed, no data returned');
 		}
