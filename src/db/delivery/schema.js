@@ -83,7 +83,9 @@ export const challan = delivery.table('challan', {
 
 export const challan_entry = delivery.table('challan_entry', {
 	uuid: uuid_primary,
-	challan_uuid: defaultUUID('challan_uuid').references(() => challan.uuid),
+	challan_uuid: defaultUUID('challan_uuid').references(() => challan.uuid, {
+		onDelete: 'CASCADE',
+	}),
 	packing_list_uuid: defaultUUID('packing_list_uuid').references(
 		() => packing_list.uuid
 	),

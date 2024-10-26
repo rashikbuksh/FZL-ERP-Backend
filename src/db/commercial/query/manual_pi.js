@@ -119,8 +119,16 @@ export async function selectAll(req, res, next) {
 			eq(manual_pi.merchandiser_uuid, publicSchema.merchandiser.uuid)
 		)
 		.leftJoin(
-			factory,
+			publicSchema.factory,
 			eq(manual_pi.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(manual_pi.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(manual_pi.buyer_uuid, publicSchema.buyer.uuid)
 		)
 		.leftJoin(bank, eq(manual_pi.bank_uuid, bank.uuid))
 		.orderBy(asc(manual_pi.created_at));
@@ -185,8 +193,16 @@ export async function select(req, res, next) {
 			eq(manual_pi.merchandiser_uuid, publicSchema.merchandiser.uuid)
 		)
 		.leftJoin(
-			factory,
+			publicSchema.factory,
 			eq(manual_pi.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(manual_pi.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(manual_pi.buyer_uuid, publicSchema.buyer.uuid)
 		)
 		.leftJoin(bank, eq(manual_pi.bank_uuid, bank.uuid))
 		.where(eq(manual_pi.uuid, req.params.uuid));
@@ -218,13 +234,13 @@ export async function selectManualPiByManualPiUuid(req, res, next) {
 				.then((response) => response);
 
 		const [manual_pi, manual_pi_entry] = await Promise.all([
-			fetchData('/commercial/manual-pi/'),
+			fetchData('/commercial/manual-pi'),
 			fetchData('/commercial/manual-pi-entry/by'),
 		]);
 
 		const response = {
 			...manual_pi?.data?.data,
-			manual_pi_entry: manual_pi_entry || [],
+			manual_pi_entry: manual_pi_entry?.data?.data || [],
 		};
 
 		const toast = {

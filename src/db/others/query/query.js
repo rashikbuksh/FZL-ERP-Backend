@@ -792,11 +792,11 @@ export async function selectLCByPartyUuid(req, res, next) {
 }
 
 export async function selectPi(req, res, next) {
-	const { is_update, manual_pi } = req.query;
+	const { is_update } = req.query;
 
 	const query = sql`
 	SELECT
-		DISTINCT pi_cash.uuid AS value,
+		pi_cash.uuid AS value,
 		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
 		bank.name AS pi_bank,
 		SUM(pi_cash_entry.pi_cash_quantity * zipper.order_entry.party_price)::float8 AS pi_value,
@@ -815,17 +815,45 @@ export async function selectPi(req, res, next) {
 	LEFT JOIN
 		zipper.v_order_details ON v_order_details.order_description_uuid = order_entry.order_description_uuid
 	WHERE
-		${
-			manual_pi == 'true'
-				? `${is_update == 'true' ? sql`1=1` : sql`lc_uuid IS NULL`}`
-				: sql`pi_cash.is_pi = 1`
-		}
-		${is_update == 'true' && manual_pi != 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
+		pi_cash.is_pi = 1
+		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
+		AND v_order_details.marketing_name is not null
 	GROUP BY
 		pi_cash.uuid,
+		pi_cash.created_at,
+		pi_cash.id,
 		bank.name,
-		v_order_details.party_name,
-		v_order_details.marketing_name;
+		v_order_details.marketing_name
+	UNION 
+	(SELECT
+		pi_cash.uuid AS value,
+		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
+		bank.name AS pi_bank,
+		SUM(pi_cash_entry.pi_cash_quantity * order_entry.party_price)::float8 AS pi_value,
+		ARRAY_AGG(DISTINCT concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))) AS order_numbers,
+		marketing.name as marketing_name
+	FROM
+		commercial.pi_cash
+	LEFT JOIN
+		commercial.bank ON pi_cash.bank_uuid = bank.uuid
+	LEFT JOIN
+		commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+	LEFT JOIN
+		thread.order_entry ON order_entry.uuid = pi_cash_entry.thread_order_entry_uuid
+	LEFT JOIN
+		thread.order_info ON order_entry.order_info_uuid = order_info.uuid
+	LEFT JOIN
+		public.marketing ON order_info.marketing_uuid = marketing.uuid
+	WHERE
+		pi_cash.is_pi = 1
+		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
+		AND order_info.marketing_uuid is not null
+	GROUP BY
+		pi_cash.uuid,
+		pi_cash.created_at,
+		pi_cash.id,
+		bank.name,
+		marketing.name);
 	`;
 
 	const piPromise = db.execute(query);

@@ -87,7 +87,7 @@ export async function selectAll(req, res, next) {
 			party.name AS party_name,
 			CASE WHEN is_old_pi = 0 THEN(	
 				SELECT 
-					SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12)
+					(SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12))::float8
 				FROM commercial.pi_cash 
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
@@ -316,17 +316,47 @@ export async function selectLcByLcNumber(req, res, next) {
 		WHERE lc.lc_number = ${req.params.lc_number}
 		GROUP BY lc.uuid, party.name, users.name`;
 
+	const lc_entry_query = sql`
+		SELECT
+			lc_entry.uuid,
+            lc_entry.lc_uuid,
+			lc_entry.payment_date,
+			lc_entry.ldbc_fdbc,
+			lc_entry.acceptance_date,
+			lc_entry.maturity_date,
+			lc_entry.handover_date,
+			lc_entry.document_receive_date,
+			lc_entry.payment_value::float8,
+            lc_entry.amount::float8,
+            lc_entry.created_at,
+			lc_entry.updated_at,
+			lc_entry.remarks
+		FROM
+			commercial.lc_entry
+		LEFT JOIN 
+			commercial.lc ON lc_entry.lc_uuid = lc.uuid
+		WHERE lc.lc_number = ${req.params.lc_number}
+		GROUP BY lc_entry.uuid`;
+
 	const lcPromise = db.execute(query);
+	const lcEntryPromise = db.execute(lc_entry_query);
 
 	try {
 		const data = await lcPromise;
+		const lcEntryData = await lcEntryPromise;
+
+		const response = {
+			...data?.rows[0],
+			lc_entry: lcEntryData?.rows || [],
+		};
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'lc',
 		};
 
-		return await res.status(200).json({ toast, data: data?.rows[0] });
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}
