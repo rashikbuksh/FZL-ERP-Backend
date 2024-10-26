@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
+import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -71,6 +71,9 @@ export const lc = commercial.table('lc', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
+
+// export const manual_pi = commercial.table('manual_pi', {
+// 	uuid: uuid_primary,
 
 export const order_info_sequence = commercial.sequence('pi_sequence', {
 	startWith: 1,
