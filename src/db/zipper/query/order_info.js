@@ -369,6 +369,65 @@ export async function getOrderDetails(req, res, next) {
 	}
 }
 
+export async function getTapeAssigned(req, res, next) {
+	const query = sql`
+					SELECT 
+						vodf.order_number,
+						vodf.party_uuid,
+						vodf.party_name,
+						vodf.item_description,
+						vodf.item,
+						vodf.item_name,
+						vodf.zipper_number,
+						vodf.zipper_number_name,
+						vodf.is_multi_color,
+						vodf.tape_coil_uuid,
+						ROW_NUMBER() OVER (
+							PARTITION BY vodf.order_number
+							ORDER BY vodf.order_info_uuid
+						) AS order_number_wise_rank, 
+						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
+						swatch_approval_counts.swatch_approval_count,
+						order_entry_counts.order_entry_count,
+						CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
+					FROM zipper.v_order_details_full vodf
+					LEFT JOIN (
+						SELECT order_number, COUNT(*) AS order_number_wise_count
+						FROM zipper.v_order_details_full
+						GROUP BY order_number
+					) order_number_wise_counts
+					ON vodf.order_number = order_number_wise_counts.order_number
+					LEFT JOIN zipper.order_info oi ON vodf.order_info_uuid = oi.uuid
+					LEFT JOIN (
+						SELECT COUNT(oe.swatch_approval_date) AS swatch_approval_count, oe.order_description_uuid
+						FROM zipper.order_entry oe
+						GROUP BY oe.order_description_uuid
+					) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
+					 LEFT JOIN (
+						SELECT COUNT(*) AS order_entry_count, oe.order_description_uuid
+						FROM zipper.order_entry oe
+						GROUP BY oe.order_description_uuid
+					) order_entry_counts ON vodf.order_description_uuid = order_entry_counts.order_description_uuid
+					WHERE vodf.order_description_uuid IS NOT NULL 
+					ORDER BY vodf.created_at DESC;`;
+
+	const tapeAssignedPromise = db.execute(query);
+
+	try {
+		const data = await tapeAssignedPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Tape Assigned list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function getOrderDetailsByOwnUuid(req, res, next) {
 	const { own_uuid } = req.params;
 	const { approved } = req.query;
