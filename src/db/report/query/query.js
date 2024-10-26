@@ -530,7 +530,7 @@ export async function PiToBeRegisterThread(req, res, next) {
 export async function LCReport(req, res, next) {
 	const { document_receiving, acceptance, maturity, payment } = req.query;
 
-	console.log(document_receiving, acceptance, maturity, payment);
+	// console.log(document_receiving, acceptance, maturity, payment);
 
 	const query = sql`
             SELECT 

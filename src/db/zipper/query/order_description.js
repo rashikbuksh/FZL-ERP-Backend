@@ -868,7 +868,7 @@ export async function updateOrderDescriptionByTapeCoil(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const { tape_coil_uuid } = req.params;
-	console.log('tape_coil_uuid', tape_coil_uuid);
+	// console.log('tape_coil_uuid', tape_coil_uuid);
 
 	const orderDescriptionPromise = db
 		.update(order_description)

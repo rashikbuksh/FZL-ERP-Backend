@@ -312,7 +312,7 @@ export async function select(req, res, next) {
 export async function getOrderDetails(req, res, next) {
 	const { all, approved } = req.query;
 
-	console.log(all, '- all', approved, '- approved');
+	// console.log(all, '- all', approved, '- approved');
 
 	const query = sql`
 					SELECT 
