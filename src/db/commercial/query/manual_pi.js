@@ -126,6 +126,10 @@ export async function selectAll(req, res, next) {
 			publicSchema.party,
 			eq(manual_pi.party_uuid, publicSchema.party.uuid)
 		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(manual_pi.buyer_uuid, publicSchema.buyer.uuid)
+		)
 		.leftJoin(bank, eq(manual_pi.bank_uuid, bank.uuid))
 		.orderBy(asc(manual_pi.created_at));
 
@@ -195,6 +199,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			publicSchema.party,
 			eq(manual_pi.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(manual_pi.buyer_uuid, publicSchema.buyer.uuid)
 		)
 		.leftJoin(bank, eq(manual_pi.bank_uuid, bank.uuid))
 		.where(eq(manual_pi.uuid, req.params.uuid));
