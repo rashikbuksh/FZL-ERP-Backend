@@ -103,8 +103,8 @@ export async function selectAll(req, res, next) {
 			challan.carton_quantity::float8,
 			challan.gate_pass,
 			challan.received,
-			challan.assign_to,
-			assign_to_user.name AS assign_to_name,
+			challan.vehicle_uuid,
+			vehicle.name AS vehicle_name,
 			challan.created_by,
 			users.name AS created_by_name,
 			challan.created_at,
@@ -116,7 +116,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN 
 			hr.users users ON challan.created_by = users.uuid
 		LEFT JOIN 
-			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
+			delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
 		LEFT JOIN 
 			thread.order_info toi ON challan.order_info_uuid = toi.uuid
 		LEFT JOIN
@@ -166,8 +166,8 @@ export async function select(req, res, next) {
 			challan.carton_quantity::float8,
 			challan.gate_pass,
 			challan.received,
-			challan.assign_to,
-			assign_to_user.name AS assign_to_name,
+			challan.vehicle_uuid,
+			vehicle.name AS vehicle_name,
 			challan.created_by,
 			users.name AS created_by_name,
 			challan.created_at,
@@ -179,7 +179,7 @@ export async function select(req, res, next) {
 		LEFT JOIN 
 			hr.users users ON challan.created_by = users.uuid
 		LEFT JOIN 
-			hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
+			delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
 		LEFT JOIN 
 			thread.order_info toi ON challan.order_info_uuid = toi.uuid
 		LEFT JOIN

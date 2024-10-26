@@ -9,6 +9,7 @@ import {
 	text,
 	uuid,
 } from 'drizzle-orm/pg-core';
+import * as deliverySchema from '../delivery/schema.js';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
 import * as materialSchema from '../material/schema.js';
@@ -276,7 +277,9 @@ export const challan = thread.table('challan', {
 	),
 	id: integer('id').default(sql`nextval('thread.thread_challan_sequence')`),
 	carton_quantity: integer('carton_quantity').default(0),
-	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
+	vehicle_uuid: defaultUUID('vehicle_uuid').references(
+		() => deliverySchema.vehicle.uuid
+	),
 	gate_pass: integer('gate_pass').default(0),
 	received: integer('received').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

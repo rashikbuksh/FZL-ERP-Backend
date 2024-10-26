@@ -202,7 +202,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         pl.id as packing_list_id,
         pl.uuid as packing_list_uuid,
         CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
-        pl.carton_size,
+        carton.name as carton_name,
+        carton.size as carton_size,
         pl.carton_weight,
         pl.order_info_uuid,
         pl.challan_uuid,
@@ -240,6 +241,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
     FROM 
         delivery.packing_list pl
         LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
+        LEFT JOIN delivery.carton ON carton.uuid = pl.carton_uuid
         LEFT JOIN hr.users ON users.uuid = pl.created_by
         LEFT JOIN zipper.sfg ON sfg.uuid = ple.sfg_uuid
         LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
