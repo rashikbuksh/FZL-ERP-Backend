@@ -122,6 +122,10 @@ export async function selectAll(req, res, next) {
 			publicSchema.factory,
 			eq(manual_pi.factory_uuid, publicSchema.factory.uuid)
 		)
+		.leftJoin(
+			publicSchema.party,
+			eq(manual_pi.party_uuid, publicSchema.party.uuid)
+		)
 		.leftJoin(bank, eq(manual_pi.bank_uuid, bank.uuid))
 		.orderBy(asc(manual_pi.created_at));
 
