@@ -806,11 +806,17 @@ export async function selectPi(req, res, next) {
 		zipper.v_order_details ON v_order_details.order_description_uuid = order_entry.order_description_uuid
 	WHERE
 		${
-			manual_pi == 'true'
-				? `${is_update == 'true' ? sql`1=1` : sql`lc_uuid IS NULL`}`
+			manual_pi === 'true'
+				? is_update === 'true'
+					? sql`1=1`
+					: sql`lc_uuid IS NULL`
 				: sql`pi_cash.is_pi = 1`
 		}
-		${is_update == 'true' && manual_pi != 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
+		${
+			is_update === 'true' && manual_pi !== 'true'
+				? sql``
+				: sql`AND lc_uuid IS NULL`
+		}
 	GROUP BY
 		pi_cash.uuid,
 		bank.name,
