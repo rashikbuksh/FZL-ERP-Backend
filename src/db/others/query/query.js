@@ -786,7 +786,7 @@ export async function selectPi(req, res, next) {
 
 	const query = sql`
 	SELECT
-		DISTINCT pi_cash.uuid AS value,
+		pi_cash.uuid AS value,
 		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
 		bank.name AS pi_bank,
 		SUM(pi_cash_entry.pi_cash_quantity * zipper.order_entry.party_price)::float8 AS pi_value,
@@ -807,10 +807,12 @@ export async function selectPi(req, res, next) {
 	WHERE
 		pi_cash.is_pi = 1
 		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
+		AND v_order_details.marketing_name is not null
 	GROUP BY
 		pi_cash.uuid,
+		pi_cash.created_at,
+		pi_cash.id,
 		bank.name,
-		v_order_details.party_name,
 		v_order_details.marketing_name;
 	`;
 
