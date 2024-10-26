@@ -1,5 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
 import {
+	boolean,
 	decimal,
 	integer,
 	numeric,
@@ -285,6 +286,9 @@ export const challan = thread.table('challan', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	is_hand_delivery: boolean('is_hand_delivery').default(false),
+	name: text('name').default(null),
+	delivery_cost: PG_DECIMAL('delivery_cost').default(0),
 	remarks: text('remarks').default(null),
 });
 

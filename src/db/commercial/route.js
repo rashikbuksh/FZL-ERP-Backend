@@ -8,6 +8,8 @@ import {
 
 import * as bankOperations from './query/bank.js';
 import * as lcOperations from './query/lc.js';
+import * as manualPiOperations from './query/manual_pi.js';
+import * as manualPiEntryOperations from './query/manual_pi_entry.js';
 import * as piCashOperations from './query/pi_cash.js';
 import * as piCashEntryOperations from './query/pi_cash_entry.js';
 import commercial from './schema.js';
@@ -34,6 +36,31 @@ commercialRouter.get(
 commercialRouter.get(
 	'/lc/by/lc-number/:lc_number',
 	lcOperations.selectLcByLcNumber
+);
+
+// * Manual Pi routes
+commercialRouter.get('/manual-pi', manualPiOperations.selectAll);
+commercialRouter.get('/manual-pi/:uuid', manualPiOperations.select);
+commercialRouter.post('/manual-pi', manualPiOperations.insert);
+commercialRouter.put('/manual-pi/:uuid', manualPiOperations.update);
+commercialRouter.delete('/manual-pi/:uuid', manualPiOperations.remove);
+commercialRouter.get(
+	'/manual-pi/details/by/:manual_pi_uuid',
+	manualPiOperations.selectManualPiByManualPiUuid
+);
+
+// * Manual Pi Entry routes
+commercialRouter.get('/manual-pi-entry', manualPiEntryOperations.selectAll);
+commercialRouter.get('/manual-pi-entry/:uuid', manualPiEntryOperations.select);
+commercialRouter.post('/manual-pi-entry', manualPiEntryOperations.insert);
+commercialRouter.put('/manual-pi-entry/:uuid', manualPiEntryOperations.update);
+commercialRouter.delete(
+	'/manual-pi-entry/:uuid',
+	manualPiEntryOperations.remove
+);
+commercialRouter.get(
+	'/manual-pi-entry/by/:manual_pi_uuid',
+	manualPiEntryOperations.selectByManualPiUuid
 );
 
 // pi_cash routes

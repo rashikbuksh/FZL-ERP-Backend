@@ -1,4 +1,5 @@
 import { asc, desc, eq } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
@@ -199,6 +200,40 @@ export async function select(req, res, next) {
 		};
 
 		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectManualPiByManualPiUuid(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const { manual_pi_uuid } = req.params;
+
+	try {
+		const api = await createApi(req);
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/${manual_pi_uuid}`)
+				.then((response) => response);
+
+		const [manual_pi, manual_pi_entry] = await Promise.all([
+			fetchData('/commercial/manual-pi/'),
+			fetchData('/commercial/manual-pi-entry/by'),
+		]);
+
+		const response = {
+			...manual_pi?.data?.data,
+			manual_pi_entry: manual_pi_entry || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			msg: 'Manual Pi Details Full',
+		};
+
+		res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}

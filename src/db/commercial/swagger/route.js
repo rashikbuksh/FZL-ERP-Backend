@@ -462,6 +462,28 @@ export const pathCommercialManualPi = {
 			},
 		},
 	},
+	'/commercial/manual-pi/details/by/{manual_pi_uuid}': {
+		get: {
+			tags: ['commercial.manual_pi'],
+			summary: 'Get a manual pi by manual_pi_uuid',
+			description: ' Get a manual pi by manual_pi_uuid',
+			//operationId: "getManualPiByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Get data using uuid',
+					'manual_pi_uuid',
+					'uuid'
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/pi_cash_entry'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
 };
 
 // * Commercial Manual Pi Entry * //
@@ -538,6 +560,28 @@ export const pathCommercialManualPiEntry = {
 			],
 			responses: {
 				200: SE.response(200),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+	'/commercial/manual-pi-entry/by/{manual_pi_uuid}': {
+		get: {
+			tags: ['commercial.manual_pi_entry'],
+			summary: 'Get a manual pi entry by manual_pi_uuid',
+			description: ' Get a manual pi entry by manual_pi_uuid',
+			//operationId: "getManualPiEntryByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Get data using uuid',
+					'manual_pi_uuid',
+					'uuid'
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/pi_cash_entry'),
 				405: SE.response(405),
 				400: SE.response(400),
 				404: SE.response(404),

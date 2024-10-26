@@ -83,6 +83,8 @@ export async function selectAll(req, res, next) {
 			challan_uuid: challan_entry.challan_uuid,
 			order_entry_uuid: challan_entry.order_entry_uuid,
 			quantity: decimalToNumber(challan_entry.quantity),
+			short_quantity: decimalToNumber(challan_entry.short_quantity),
+			reject_quantity: decimalToNumber(challan_entry.reject_quantity),
 			created_by: challan_entry.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: challan_entry.created_at,
@@ -112,6 +114,8 @@ export async function select(req, res, next) {
 			challan_uuid: challan_entry.challan_uuid,
 			order_entry_uuid: challan_entry.order_entry_uuid,
 			quantity: decimalToNumber(challan_entry.quantity),
+			short_quantity: decimalToNumber(challan_entry.short_quantity),
+			reject_quantity: decimalToNumber(challan_entry.reject_quantity),
 			created_by: challan_entry.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: challan_entry.created_at,
@@ -141,7 +145,13 @@ export async function select(req, res, next) {
 export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 	const query = sql`
 		SELECT
-			challan_entry.*,
+			challan_entry.uuid,
+			challan_entry.order_entry_uuid,
+			challan_entry.quantity::float8,
+			challan_entry.short_quantity::float8,
+			challan_entry.reject_quantity::float8,
+			challan_entry.created_at,
+			challan_entry.updated_at,
 			order_entry.count_length_uuid,
 			concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 			count_length.count,
