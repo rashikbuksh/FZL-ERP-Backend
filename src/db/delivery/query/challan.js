@@ -14,7 +14,6 @@ import * as zipperSchema from '../../zipper/schema.js';
 
 import { challan, challan_entry, packing_list, vehicle } from '../schema.js';
 
-const assignToUser = alias(hrSchema.users, 'assignToUser');
 const createdByUser = alias(hrSchema.users, 'createdByUser');
 
 export async function insert(req, res, next) {
@@ -108,8 +107,6 @@ export async function selectAll(req, res, next) {
 			vehicle_name: vehicle.name,
 			vehicle_driver_name: vehicle.driver_name,
 			carton_quantity: decimalToNumber(challan.carton_quantity),
-			assign_to: challan.assign_to,
-			assign_to_name: assignToUser.name,
 			receive_status: challan.receive_status,
 			gate_pass: challan.gate_pass,
 			name: challan.name,
@@ -122,7 +119,6 @@ export async function selectAll(req, res, next) {
 			remarks: challan.remarks,
 		})
 		.from(challan)
-		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
 		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
 		.leftJoin(
 			zipperSchema.order_info,
@@ -192,8 +188,6 @@ export async function select(req, res, next) {
 			vehicle_name: vehicle.name,
 			vehicle_driver_name: vehicle.driver_name,
 			carton_quantity: decimalToNumber(challan.carton_quantity),
-			assign_to: challan.assign_to,
-			assign_to_name: assignToUser.name,
 			receive_status: challan.receive_status,
 			gate_pass: challan.gate_pass,
 			name: challan.name,
@@ -206,7 +200,6 @@ export async function select(req, res, next) {
 			remarks: challan.remarks,
 		})
 		.from(challan)
-		.leftJoin(assignToUser, eq(challan.assign_to, assignToUser.uuid))
 		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
 		.leftJoin(
 			zipperSchema.order_info,
@@ -243,7 +236,6 @@ export async function select(req, res, next) {
 			challan.order_info_uuid,
 			zipperSchema.order_info.created_at,
 			zipperSchema.order_info.id,
-			assignToUser.name,
 			createdByUser.name,
 			zipperSchema.order_info.buyer_uuid,
 			publicSchema.buyer.name,
@@ -253,7 +245,13 @@ export async function select(req, res, next) {
 			publicSchema.merchandiser.name,
 			zipperSchema.order_info.factory_uuid,
 			publicSchema.factory.address,
-			publicSchema.factory.name
+			publicSchema.factory.name,
+			challan.vehicle_uuid,
+			vehicle.name,
+			vehicle.driver_name,
+			challan.carton_quantity,
+			challan.receive_status,
+			challan.gate_pass
 		);
 
 	try {
