@@ -119,7 +119,7 @@ export async function selectAll(req, res, next) {
 			eq(manual_pi.merchandiser_uuid, publicSchema.merchandiser.uuid)
 		)
 		.leftJoin(
-			factory,
+			publicSchema.factory,
 			eq(manual_pi.factory_uuid, publicSchema.factory.uuid)
 		)
 		.leftJoin(bank, eq(manual_pi.bank_uuid, bank.uuid))
@@ -185,7 +185,7 @@ export async function select(req, res, next) {
 			eq(manual_pi.merchandiser_uuid, publicSchema.merchandiser.uuid)
 		)
 		.leftJoin(
-			factory,
+			publicSchema.factory,
 			eq(manual_pi.factory_uuid, publicSchema.factory.uuid)
 		)
 		.leftJoin(bank, eq(manual_pi.bank_uuid, bank.uuid))
