@@ -112,7 +112,7 @@ export async function selectAll(req, res, next) {
 			challan.remarks,
 			challan.is_hand_delivery,
 			challan.name,
-			challan.delivery_cost,
+			challan.delivery_cost::float8,
 			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number
 		FROM 
 			thread.challan
@@ -178,7 +178,7 @@ export async function select(req, res, next) {
 			challan.remarks,
 			challan.is_hand_delivery,
 			challan.name,
-			challan.delivery_cost,
+			challan.delivery_cost::float8,
 			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number
 		FROM 
 			thread.challan
