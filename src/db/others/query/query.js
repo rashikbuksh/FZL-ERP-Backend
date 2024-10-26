@@ -33,7 +33,7 @@ export async function selectMachine(req, res, next) {
 	const machinePromise = db
 		.select({
 			value: publicSchema.machine.uuid,
-			label: publicSchema.machine.name,
+			label: sql`concat(machine.name, ' - ', 'Max-', machine.max_capacity::float8, ' - ','Min-', machine.min_capacity::float8)`,
 			max_capacity: decimalToNumber(publicSchema.machine.max_capacity),
 			min_capacity: decimalToNumber(publicSchema.machine.min_capacity),
 		})
