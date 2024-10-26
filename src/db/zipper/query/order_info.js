@@ -382,6 +382,7 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.zipper_number_name,
 						vodf.is_multi_color,
 						vodf.tape_coil_uuid,
+						vodf.order_description_uuid,
 						ROW_NUMBER() OVER (
 							PARTITION BY vodf.order_number
 							ORDER BY vodf.order_info_uuid
