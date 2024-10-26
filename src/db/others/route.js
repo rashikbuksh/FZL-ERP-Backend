@@ -638,7 +638,6 @@ const pathCommercial = {
 			operationId: 'getAllPIs',
 			parameters: [
 				SE.parameter_query('is_update', 'is_update', [true, false]),
-				SE.parameter_query('manual_pi', 'manual_pi', [true, false]),
 			],
 			responses: {
 				200: {
