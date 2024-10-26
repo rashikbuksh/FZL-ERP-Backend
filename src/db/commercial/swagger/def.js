@@ -45,17 +45,10 @@ export const defCommercialLc = SED({
 		id: SE.integer(1),
 		lc_number: SE.string('1234/2024'),
 		lc_date: SE.date_time(),
-		payment_value: SE.number(1000.0),
-		payment_date: SE.date_time(),
-		ldbc_fdbc: SE.string('LDBC'),
-		acceptance_date: SE.date_time(),
-		maturity_date: SE.date_time(),
 		commercial_executive: SE.string('John Doe'),
 		party_bank: SE.string('Bangladesh Bank'),
 		production_complete: SE.integer(0),
 		lc_cancel: SE.integer(0),
-		handover_date: SE.date_time(),
-		document_receive_date: SE.date_time(),
 		shipment_date: SE.date_time(),
 		expiry_date: SE.date_time(),
 		ud_no: SE.string('1234/2024'),
@@ -75,6 +68,27 @@ export const defCommercialLc = SED({
 		remarks: SE.string('remarks'),
 	},
 	xml: 'Commercial/Lc',
+});
+
+export const defCommercialLcEntry = SED({
+	type: 'object',
+	required: ['uuid', 'lc_uuid', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		lc_uuid: SE.uuid(),
+		ldbc_fdbc: SE.string('LDBC'),
+		handover_date: SE.date_time(),
+		document_receive_date: SE.date_time(),
+		acceptance_date: SE.date_time(),
+		maturity_date: SE.date_time(),
+		payment_date: SE.date_time(),
+		payment_value: SE.number(1000.0),
+		amount: SE.number(1000.0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Commercial/LcEntry',
 });
 
 export const defCommercialManualPi = SED({
@@ -217,6 +231,9 @@ export const defCommercial = {
 	lc: defCommercialLc,
 	pi_cash: defCommercialPiCash,
 	pi_cash_entry: defCommercialPiCashEntry,
+	manual_pi: defCommercialManualPi,
+	manual_pi_entry: defCommercialManualPiEntry,
+	lc_entry: defCommercialLcEntry,
 };
 
 // * Tag
@@ -248,6 +265,30 @@ export const tagCommercial = [
 	{
 		name: 'commercial.pi_cash_entry',
 		description: 'Operations about commercial pi_entry',
+		externalDocs: {
+			description: 'Find out more',
+			url: 'http://swagger.io',
+		},
+	},
+	{
+		name: 'commercial.manual_pi',
+		description: 'Operations about commercial manual_pi',
+		externalDocs: {
+			description: 'Find out more',
+			url: 'http://swagger.io',
+		},
+	},
+	{
+		name: 'commercial.manual_pi_entry',
+		description: 'Operations about commercial manual_pi_entry',
+		externalDocs: {
+			description: 'Find out more',
+			url: 'http://swagger.io',
+		},
+	},
+	{
+		name: 'commercial.lc_entry',
+		description: 'Operations about commercial lc_entry',
 		externalDocs: {
 			description: 'Find out more',
 			url: 'http://swagger.io',

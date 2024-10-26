@@ -100,16 +100,10 @@ export async function selectAll(req, res, next) {
 			lc.lc_number,
 			lc.lc_date,
 			lc.lc_value::float8,
-			lc.payment_date,
-			lc.ldbc_fdbc,
-			lc.acceptance_date,
-			lc.maturity_date,
 			lc.commercial_executive,
 			lc.party_bank,
 			lc.production_complete,
 			lc.lc_cancel,
-			lc.handover_date,
-			lc.document_receive_date,
 			lc.shipment_date,
 			lc.expiry_date,
 			lc.ud_no,
@@ -126,8 +120,7 @@ export async function selectAll(req, res, next) {
 			users.name AS created_by_name,
 			lc.created_at,
 			lc.updated_at,
-			lc.remarks,
-			lc.payment_value::float8
+			lc.remarks
 		FROM
 			commercial.lc
 		LEFT JOIN
@@ -183,16 +176,10 @@ export async function select(req, res, next) {
 			lc.lc_number,
 			lc.lc_date,
 			lc.lc_value::float8,
-			lc.payment_date,
-			lc.ldbc_fdbc,
-			lc.acceptance_date,
-			lc.maturity_date,
 			lc.commercial_executive,
 			lc.party_bank,
 			lc.production_complete,
 			lc.lc_cancel,
-			lc.handover_date,
-			lc.document_receive_date,
 			lc.shipment_date,
 			lc.expiry_date,
 			lc.ud_no,
@@ -209,8 +196,7 @@ export async function select(req, res, next) {
 			users.name AS created_by_name,
 			lc.created_at,
 			lc.updated_at,
-			lc.remarks,
-			lc.payment_value::float8
+			lc.remarks
 		FROM
 			commercial.lc
 		LEFT JOIN
@@ -248,13 +234,15 @@ export async function selectLcPiByLcUuid(req, res, next) {
 		const fetchData = async (endpoint) =>
 			await api.get(`/commercial/${endpoint}/${lc_uuid}`);
 
-		const [lc, pi_cash] = await Promise.all([
+		const [lc, lc_entry, pi_cash] = await Promise.all([
 			fetchData('lc'),
+			fetchData('lc-entry/by'),
 			fetchData('pi-cash-lc'),
 		]);
 
 		const response = {
 			...lc?.data?.data,
+			lc_entry: lc_entry?.data?.data || [],
 			pi: pi_cash?.data?.data || [],
 		};
 
@@ -295,16 +283,10 @@ export async function selectLcByLcNumber(req, res, next) {
 			) as file_number,
 			lc.lc_number,
 			lc.lc_date,
-			lc.payment_date,
-			lc.ldbc_fdbc,
-			lc.acceptance_date,
-			lc.maturity_date,
 			lc.commercial_executive,
 			lc.party_bank,
 			lc.production_complete,
 			lc.lc_cancel,
-			lc.handover_date,
-			lc.document_receive_date,
 			lc.shipment_date,
 			lc.expiry_date,
 			lc.ud_no,
@@ -322,8 +304,7 @@ export async function selectLcByLcNumber(req, res, next) {
 			users.name AS created_by_name,
 			lc.created_at,
 			lc.updated_at,
-			lc.remarks,
-			lc.payment_value::float8
+			lc.remarks
 		FROM
 			commercial.lc
 		LEFT JOIN
