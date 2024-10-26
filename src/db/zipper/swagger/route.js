@@ -159,6 +159,31 @@ export const pathZipperOrderInfo = {
 			},
 		},
 	},
+	'/zipper/tape-assigned': {
+		get: {
+			tags: ['zipper.order_info'],
+			summary: 'Get Tape Assigned',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					order_number: SE.string('Z24-0010'),
+					item: SE.string('nylon'),
+					party_uuid: SE.uuid(),
+					party_name: SE.string('John'),
+					item_description: SE.string('N-5-OE-SP'),
+					item: SE.uuid(),
+					item_name: SE.string('nylon'),
+					zipper_number: SE.uuid(),
+					zipper_number_name: SE.string('3'),
+					is_multi_color: SE.number(0),
+					tape_coil_uuid: SE.uuid(),
+					order_number_wise_rank: SE.number(1),
+					order_number_wise_count: SE.number(1),
+				}),
+			},
+		},
+	},
+
 	'/zipper/order/details/by/{own_uuid}': {
 		get: {
 			tags: ['zipper.order_info'],

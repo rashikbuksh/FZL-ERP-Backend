@@ -49,6 +49,7 @@ zipperRouter.put(
 	'/order-info/print-in/update/by/:uuid',
 	orderInfoOperations.updatePrintIn
 );
+zipperRouter.get('/tape-assigned', orderInfoOperations.getTapeAssigned);
 
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------
 

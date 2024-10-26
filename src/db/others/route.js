@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { param } from 'express-validator';
 import SE, { SED } from '../../util/swagger_example.js';
 import * as otherOperations from './query/query.js';
+import zipper from '../zipper/schema.js';
 
 const otherRouter = Router();
 
@@ -669,6 +670,15 @@ const pathZipper = {
 			summary: 'get all tape coils',
 			description: 'All tape coils',
 			operationId: 'getAllTapeCoils',
+			parameters: [
+				SE.parameter_query('item', 'item', '2ggcphnwHGzEUGy'),
+				SE.parameter_query(
+					'zipper_number',
+					'zipper_number',
+					'2ggcphnwHGzEUGy'
+				),
+			],
+
 			responses: {
 				200: {
 					description: 'Returns a all tape coils.',
