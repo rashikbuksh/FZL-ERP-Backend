@@ -234,13 +234,13 @@ export async function selectManualPiByManualPiUuid(req, res, next) {
 				.then((response) => response);
 
 		const [manual_pi, manual_pi_entry] = await Promise.all([
-			fetchData('/commercial/manual-pi/'),
+			fetchData('/commercial/manual-pi'),
 			fetchData('/commercial/manual-pi-entry/by'),
 		]);
 
 		const response = {
 			...manual_pi?.data?.data,
-			manual_pi_entry: manual_pi_entry || [],
+			manual_pi_entry: manual_pi_entry?.data?.data || [],
 		};
 
 		const toast = {
