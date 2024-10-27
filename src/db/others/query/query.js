@@ -236,7 +236,7 @@ export async function selectTapeCoil(req, res, next) {
 	const tapeCoilPromise = db
 		.select({
 			value: zipperSchema.tape_coil.uuid,
-			label: zipperSchema.tape_coil.name,
+			label: `${zipperSchema.tape_coil.name} - (${itemProperties.name === 'Nylon' ? zipperSchema.tape_coil.quantity_in_coil : zipperSchema.tape_coil.quantity})`,
 			item: itemProperties.uuid,
 			item_name: itemProperties.name,
 			zipper_number: zipperProperties.uuid,
