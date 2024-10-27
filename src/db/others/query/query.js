@@ -403,7 +403,7 @@ export async function selectOrderDescription(req, res, next) {
 	const query = sql`
 				SELECT
 					vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received) AS label,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label,
 					vodf.item_name,
 					vodf.tape_received::float8,
 					vodf.tape_transferred::float8,
@@ -458,6 +458,8 @@ export async function selectOrderDescription(req, res, next) {
 	if (tape_received == 'true') {
 		query.append(sql` AND vodf.tape_received > 0`);
 	}
+
+	// , ' ⇾ ',  vodf.tape_received
 
 	const orderEntryPromise = db.execute(query);
 
