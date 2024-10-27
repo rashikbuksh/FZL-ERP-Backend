@@ -242,8 +242,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
+                        ELSE oe.size::numeric
             END as size,
 			oe.quantity::float8 as order_quantity,
 			oe.bleaching,
@@ -291,9 +291,10 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			vodf.tape_coil_uuid IS NOT NULL AND 
 				sfg.recipe_uuid IS NOT NULL AND 
 					coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0) > 0 AND
-					 CASE WHEN lower(vodf.item_name) = 'nylon' 
-					 	THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid 
-						ELSE TRUE END `;
+					(
+						lower(vodf.item_name) != 'nylon' 
+						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+					) `;
 
 	const batchEntryPromise = db.execute(query);
 
