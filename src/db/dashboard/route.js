@@ -15,6 +15,7 @@ import * as stockStatusOperations from './query/stock_status.js';
 import * as orderEntryOperations from './query/order_entry.js';
 import * as amountAndDocOperations from './query/amount_and_doc.js';
 import * as topSalesOperations from './query/top_sales.js';
+import * as deliveryOperations from './query/delivery.js';
 
 const dashBoardRouter = Router();
 
@@ -92,6 +93,8 @@ dashBoardRouter.get(
 );
 
 dashBoardRouter.get('/no-of-doc', amountAndDocOperations.selectNoOfDoc);
+
+dashBoardRouter.get('/delivery', deliveryOperations.selectDelivery);
 
 const pathDashboard = {
 	'/dashboard/challan-register': {
@@ -854,6 +857,38 @@ const pathDashboard = {
 								properties: {
 									name: SE.string('Vislon'),
 									no_of_doc: SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/delivery': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get delivery summary',
+			description: 'Get delivery summary',
+			parameters: [],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									challan_number: SE.string('Challan 1'),
+									packing_list_number: SE.string('Packing 1'),
+									order_number: SE.string('Order 1'),
+									item_description: SE.string('Item 1'),
+									style: SE.string('Style 1'),
+									size: SE.string('Size 1'),
+									packing_list_quantity: SE.number(1000),
+									status: SE.string('In Warehouse'),
 								},
 							},
 						},

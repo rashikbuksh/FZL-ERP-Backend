@@ -212,6 +212,10 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         pl.created_at,
         pl.updated_at,
         pl.remarks,
+        pl.is_warehouse_received,
+        CONCAT('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) as challan_number,
+        ch.gate_pass,
+        ch.receive_status,
         ple.uuid as packing_list_entry_uuid,
         ple.sfg_uuid,
         ple.quantity::float8,
@@ -245,5 +249,6 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         LEFT JOIN hr.users ON users.uuid = pl.created_by
         LEFT JOIN zipper.sfg ON sfg.uuid = ple.sfg_uuid
         LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
-        LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid;
+        LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+        LEFT JOIN delivery.challan ch ON ch.uuid = pl.challan_uuid;
 `;
