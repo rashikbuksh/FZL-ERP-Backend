@@ -243,8 +243,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
 		    sfg.delivered::float8 as delivered,
 		    (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity
     FROM 
-        delivery.packing_list pl
-        LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
+        delivery.packing_list_entry ple
+        LEFT JOIN delivery.packing_list pl ON pl.uuid = ple.packing_list_uuid
         LEFT JOIN delivery.carton ON carton.uuid = pl.carton_uuid
         LEFT JOIN hr.users ON users.uuid = pl.created_by
         LEFT JOIN zipper.sfg ON sfg.uuid = ple.sfg_uuid
