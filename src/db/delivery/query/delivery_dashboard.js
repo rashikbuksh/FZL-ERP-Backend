@@ -46,6 +46,7 @@ export async function selectDeliveryThread(req, res, next) {
 	const query = sql`
                 SELECT 
                     CONCAT('TC' ,to_char(tc.created_at, 'YY'), '-', LPAD(tc.id::text, 4, '0')) as challan_number,
+                    CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
                     tce.challan_uuid,
                     CONCAT(tcl.count, '-', tcl.length) as count_length,
                     toe.style,
@@ -63,7 +64,9 @@ export async function selectDeliveryThread(req, res, next) {
                 LEFT JOIN
                     thread.order_entry toe ON tce.order_entry_uuid = toe.uuid
                 LEFT JOIN
-                    thread.count_length tcl ON toe.count_length_uuid = tcl.uuid`;
+                    thread.count_length tcl ON toe.count_length_uuid = tcl.uuid
+                LEFT JOIN
+                    thread.order_info toi ON toe.order_info_uuid = toi.uuid`;
 
 	try {
 		const data = await db.execute(query);
