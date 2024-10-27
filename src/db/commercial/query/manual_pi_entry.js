@@ -90,6 +90,10 @@ export async function selectAll(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
+			value: decimalToNumber(
+				(decimalToNumber(manual_pi_entry.unit_price) / 12) *
+					decimalToNumber(manual_pi_entry.quantity)
+			),
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
@@ -126,6 +130,10 @@ export async function select(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
+			value: decimalToNumber(
+				(decimalToNumber(manual_pi_entry.unit_price) / 12) *
+					decimalToNumber(manual_pi_entry.quantity)
+			),
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
@@ -162,6 +170,10 @@ export async function selectByManualPiUuid(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
+			value: decimalToNumber(
+				(decimalToNumber(manual_pi_entry.unit_price) / 12) *
+					decimalToNumber(manual_pi_entry.quantity)
+			),
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
