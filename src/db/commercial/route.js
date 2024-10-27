@@ -8,6 +8,7 @@ import {
 
 import * as bankOperations from './query/bank.js';
 import * as lcOperations from './query/lc.js';
+import * as lcEntryOperations from './query/lc_entry.js';
 import * as manualPiOperations from './query/manual_pi.js';
 import * as manualPiEntryOperations from './query/manual_pi_entry.js';
 import * as piCashOperations from './query/pi_cash.js';
@@ -36,6 +37,17 @@ commercialRouter.get(
 commercialRouter.get(
 	'/lc/by/lc-number/:lc_number',
 	lcOperations.selectLcByLcNumber
+);
+
+// * LC Entry
+commercialRouter.get('/lc-entry', lcEntryOperations.selectAll);
+commercialRouter.get('/lc-entry/:uuid', lcEntryOperations.select);
+commercialRouter.post('/lc-entry', lcEntryOperations.insert);
+commercialRouter.put('/lc-entry/:uuid', lcEntryOperations.update);
+commercialRouter.delete('/lc-entry/:uuid', lcEntryOperations.remove);
+commercialRouter.get(
+	'/lc-entry/by/:lc_uuid',
+	lcEntryOperations.selectLcEntryByLcUuid
 );
 
 // * Manual Pi routes

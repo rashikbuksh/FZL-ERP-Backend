@@ -172,7 +172,7 @@ export async function selectLcEntryByLcUuid(req, res, next) {
 			lc_entry.remarks
 		FROM
 			commercial.lc_entry
-		WHERE lc_entry.uuid = ${req.params.uuid}
+		WHERE lc_entry.lc_uuid = ${req.params.lc_uuid}
 		GROUP BY lc_entry.uuid`;
 
 	const lcPromise = db.execute(query);
