@@ -5,7 +5,7 @@ import * as packingListOperations from './query/packing_list.js';
 import * as packingListEntryOperations from './query/packing_list_entry.js';
 import * as vehicleOperations from './query/vehicle.js';
 import * as cartonOperations from './query/carton.js';
-import delivery from './schema.js';
+import * as deliveryOperations from './query/delivery_dashboard.js';
 
 const deliveryRouter = Router();
 
@@ -138,6 +138,13 @@ deliveryRouter.delete(
 	'/carton/:uuid',
 
 	cartonOperations.remove
+);
+
+// delivery_dashboard routes
+deliveryRouter.get('/dashboard', deliveryOperations.selectDelivery);
+deliveryRouter.get(
+	'/dashboard-thread',
+	deliveryOperations.selectDeliveryThread
 );
 
 export { deliveryRouter };
