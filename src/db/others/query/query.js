@@ -795,9 +795,9 @@ export async function selectPi(req, res, next) {
 		pi_cash.uuid AS value,
 		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
 		bank.name AS pi_bank,
-		SUM(pi_cash_entry.pi_cash_quantity * zipper.order_entry.party_price)::float8 AS pi_value,
-		ARRAY_AGG(DISTINCT v_order_details.order_number) AS order_numbers,
-		v_order_details.marketing_name
+		SUM(pi_cash_entry.pi_cash_quantity * order_entry.party_price)::float8 AS pi_value,
+		ARRAY_AGG(DISTINCT CASE WHEN pi_cash_entry.sfg_uuid IS NOT NULL THEN v_order_details.order_number ELSE concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END) AS order_number,
+		marketing.name AS marketing_name
 	FROM
 		commercial.pi_cash
 	LEFT JOIN
@@ -810,46 +810,22 @@ export async function selectPi(req, res, next) {
 		zipper.order_entry ON order_entry.uuid = sfg.order_entry_uuid
 	LEFT JOIN
 		zipper.v_order_details ON v_order_details.order_description_uuid = order_entry.order_description_uuid
+	LEFT JOIN 
+		thread.order_entry toe ON toe.uuid = pi_cash_entry.thread_order_entry_uuid
+	LEFT JOIN 
+		thread.order_info toi ON toi.uuid = toe.order_info_uuid
+	LEFT JOIN 
+		public.marketing ON toi.marketing_uuid = marketing.uuid OR v_order_details.marketing_uuid = marketing.uuid
 	WHERE
 		pi_cash.is_pi = 1
 		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
-		AND v_order_details.marketing_name is not null
+		AND (marketing.name is not null)
 	GROUP BY
 		pi_cash.uuid,
 		pi_cash.created_at,
 		pi_cash.id,
 		bank.name,
-		v_order_details.marketing_name
-	UNION 
-	(SELECT
-		pi_cash.uuid AS value,
-		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
-		bank.name AS pi_bank,
-		SUM(pi_cash_entry.pi_cash_quantity * order_entry.party_price)::float8 AS pi_value,
-		ARRAY_AGG(DISTINCT concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))) AS order_numbers,
-		marketing.name as marketing_name
-	FROM
-		commercial.pi_cash
-	LEFT JOIN
-		commercial.bank ON pi_cash.bank_uuid = bank.uuid
-	LEFT JOIN
-		commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
-	LEFT JOIN
-		thread.order_entry ON order_entry.uuid = pi_cash_entry.thread_order_entry_uuid
-	LEFT JOIN
-		thread.order_info ON order_entry.order_info_uuid = order_info.uuid
-	LEFT JOIN
-		public.marketing ON order_info.marketing_uuid = marketing.uuid
-	WHERE
-		pi_cash.is_pi = 1
-		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
-		AND order_info.marketing_uuid is not null
-	GROUP BY
-		pi_cash.uuid,
-		pi_cash.created_at,
-		pi_cash.id,
-		bank.name,
-		marketing.name);
+		marketing.name
 	`;
 
 	const piPromise = db.execute(query);
