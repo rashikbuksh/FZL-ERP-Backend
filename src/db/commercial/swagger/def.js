@@ -255,6 +255,14 @@ export const tagCommercial = [
 		},
 	},
 	{
+		name: 'commercial.lc_entry',
+		description: 'Operations about commercial lc_entry',
+		externalDocs: {
+			description: 'Find out more',
+			url: 'http://swagger.io',
+		},
+	},
+	{
 		name: 'commercial.pi_cash',
 		description: 'Operations about commercial pi',
 		externalDocs: {
@@ -281,14 +289,6 @@ export const tagCommercial = [
 	{
 		name: 'commercial.manual_pi_entry',
 		description: 'Operations about commercial manual_pi_entry',
-		externalDocs: {
-			description: 'Find out more',
-			url: 'http://swagger.io',
-		},
-	},
-	{
-		name: 'commercial.lc_entry',
-		description: 'Operations about commercial lc_entry',
 		externalDocs: {
 			description: 'Find out more',
 			url: 'http://swagger.io',

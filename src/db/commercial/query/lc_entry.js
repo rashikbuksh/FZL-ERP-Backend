@@ -8,17 +8,17 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import { lc, pi_cash } from '../schema.js';
+import { lc_entry, pi_cash } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const lcPromise = db
-		.insert(lc)
+	const lc_entryPromise = db
+		.insert(lc_entry)
 		.values(req.body)
-		.returning({ insertedId: lc.lc_number });
+		.returning({ insertedId: lc_entry.uuid });
 	try {
-		const data = await lcPromise;
+		const data = await lc_entryPromise;
 		const toast = {
 			status: 201,
 			type: 'create',
@@ -34,13 +34,13 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const lcPromise = db
-		.update(lc)
+	const lc_entryPromise = db
+		.update(lc_entry)
 		.set(req.body)
-		.where(eq(lc.uuid, req.params.uuid))
-		.returning({ updatedId: lc.lc_number });
+		.where(eq(lc_entry.uuid, req.params.uuid))
+		.returning({ updatedId: lc_entry.uuid });
 	try {
-		const data = await lcPromise;
+		const data = await lc_entryPromise;
 		const toast = {
 			status: 201,
 			type: 'update',
@@ -56,12 +56,12 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const lcPromise = db
-		.delete(lc)
-		.where(eq(lc.uuid, req.params.uuid))
-		.returning({ deletedId: lc.lc_number });
+	const lc_entryPromise = db
+		.delete(lc_entry)
+		.where(eq(lc_entry.uuid, req.params.uuid))
+		.returning({ deletedId: lc_entry.uuid });
 	try {
-		const data = await lcPromise;
+		const data = await lc_entryPromise;
 		const toast = {
 			status: 201,
 			type: 'delete',
@@ -75,8 +75,6 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { own_uuid } = req?.query;
-
 	const query = sql`
 		SELECT
 			lc_entry.uuid,
@@ -104,7 +102,7 @@ export async function selectAll(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			message: 'lc list',
+			message: 'lc_entry list',
 		};
 
 		return await res.status(200).json({ toast, data: data?.rows });
@@ -136,14 +134,14 @@ export async function select(req, res, next) {
 		WHERE lc_entry.uuid = ${req.params.uuid}
 		GROUP BY lc_entry.uuid`;
 
-	const lcPromise = db.execute(query);
+	const lc_entryPromise = db.execute(query);
 
 	try {
-		const data = await lcPromise;
+		const data = await lc_entryPromise;
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'lc',
+			message: 'lc_entry',
 		};
 
 		return await res.status(200).json({ toast, data: data?.rows[0] });
@@ -175,17 +173,17 @@ export async function selectLcEntryByLcUuid(req, res, next) {
 		WHERE lc_entry.lc_uuid = ${req.params.lc_uuid}
 		GROUP BY lc_entry.uuid`;
 
-	const lcPromise = db.execute(query);
+	const lc_entryPromise = db.execute(query);
 
 	try {
-		const data = await lcPromise;
+		const data = await lc_entryPromise;
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'lc entry',
+			message: 'lc_entry entry',
 		};
 
-		return await res.status(200).json({ toast, data: data?.rows[0] });
+		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
