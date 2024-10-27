@@ -1,7 +1,6 @@
 // * Delivery PackingList * //
 
 import SE from '../../../util/swagger_example.js';
-import { challan } from '../schema.js';
 
 export const pathDeliveryPackingList = {
 	'/delivery/packing-list': {
@@ -1648,6 +1647,67 @@ export const pathDeliveryVehicle = {
 				404: {
 					description: 'Vehicle not found',
 				},
+			},
+		},
+	},
+	'/delivery/dashboard': {
+		get: {
+			tags: ['delivery.vehicle'],
+			summary: 'Get delivery summary',
+			description: 'Get delivery summary',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									challan_number: SE.string('Challan 1'),
+									packing_list_number: SE.string('Packing 1'),
+									order_number: SE.string('Order 1'),
+									item_description: SE.string('Item 1'),
+									style: SE.string('Style 1'),
+									size: SE.string('Size 1'),
+									packing_list_quantity: SE.number(1000),
+									status: SE.string('In Warehouse'),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/delivery/dashboard-thread': {
+		get: {
+			tags: ['delivery.vehicle'],
+			summary: 'Get delivery summary thread',
+			description: 'Get delivery summary thread',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									challan_number: SE.string('Challan 1'),
+									order_number: SE.string('Order 1'),
+									count_length: SE.number(1000),
+									style: SE.string('Style 1'),
+									color: SE.string('Color 1'),
+									challan_quantity: SE.number(1000),
+									status: SE.string('In Warehouse'),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
 			},
 		},
 	},
