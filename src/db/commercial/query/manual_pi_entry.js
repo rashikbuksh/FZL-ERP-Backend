@@ -7,6 +7,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { bank, manual_pi_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -87,8 +88,8 @@ export async function selectAll(req, res, next) {
 			item: manual_pi_entry.item,
 			specification: manual_pi_entry.specification,
 			size: manual_pi_entry.size,
-			quantity: manual_pi_entry.quantity,
-			unit_price: manual_pi_entry.unit_price,
+			quantity: decimalToNumber(manual_pi_entry.quantity),
+			unit_price: decimalToNumber(manual_pi_entry.unit_price),
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
@@ -123,8 +124,8 @@ export async function select(req, res, next) {
 			item: manual_pi_entry.item,
 			specification: manual_pi_entry.specification,
 			size: manual_pi_entry.size,
-			quantity: manual_pi_entry.quantity,
-			unit_price: manual_pi_entry.unit_price,
+			quantity: decimalToNumber(manual_pi_entry.quantity),
+			unit_price: decimalToNumber(manual_pi_entry.unit_price),
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
@@ -159,8 +160,8 @@ export async function selectByManualPiUuid(req, res, next) {
 			item: manual_pi_entry.item,
 			specification: manual_pi_entry.specification,
 			size: manual_pi_entry.size,
-			quantity: manual_pi_entry.quantity,
-			unit_price: manual_pi_entry.unit_price,
+			quantity: decimalToNumber(manual_pi_entry.quantity),
+			unit_price: decimalToNumber(manual_pi_entry.unit_price),
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,

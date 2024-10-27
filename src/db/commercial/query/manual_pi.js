@@ -8,6 +8,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { bank, manual_pi } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -101,8 +102,8 @@ export async function selectAll(req, res, next) {
 			remarks: manual_pi.remarks,
 			created_by: manual_pi.created_by,
 			created_by_name: hrSchema.users.name,
-			receive_amount: manual_pi.receive_amount,
-			weight: manual_pi.weight,
+			receive_amount: decimalToNumber(manual_pi.receive_amount),
+			weight: decimalToNumber(manual_pi.weight),
 			date: manual_pi.date,
 			pi_number: manual_pi.pi_number,
 			created_at: manual_pi.created_at,
@@ -175,8 +176,8 @@ export async function select(req, res, next) {
 			remarks: manual_pi.remarks,
 			created_by: manual_pi.created_by,
 			created_by_name: hrSchema.users.name,
-			receive_amount: manual_pi.receive_amount,
-			weight: manual_pi.weight,
+			receive_amount: decimalToNumber(manual_pi.receive_amount),
+			weight: decimalToNumber(manual_pi.weight),
 			date: manual_pi.date,
 			pi_number: manual_pi.pi_number,
 			created_at: manual_pi.created_at,
