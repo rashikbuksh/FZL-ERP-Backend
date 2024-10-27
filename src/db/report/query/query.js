@@ -544,14 +544,15 @@ export async function LCReport(req, res, next) {
                 lc.updated_at,
                 lc.remarks,
                 lc.commercial_executive,
-                lc.handover_date,
-                lc.document_receive_date,
-                lc.acceptance_date,
-                lc.maturity_date,
-                lc.payment_date,
-                lc.ldbc_fdbc,
+                lc_entry.handover_date,
+                lc_entry.document_receive_date,
+                lc_entry.acceptance_date,
+                lc_entry.maturity_date,
+                lc_entry.payment_date,
+                lc_entry.ldbc_fdbc,
                 lc.shipment_date,
                 lc.expiry_date,
+                lc_entry.amount::float8,
                 lc.ud_no,
                 lc.ud_received,
                 pi_cash.marketing_uuid,
@@ -567,9 +568,11 @@ export async function LCReport(req, res, next) {
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
 				WHERE pi_cash.lc_uuid = lc.uuid
-			) ELSE lc.lc_value::float8 END AS total_value
+			)::float8 ELSE lc.lc_value::float8 END AS total_value
             FROM
                 commercial.lc
+            LEFT JOIN 
+                commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
             LEFT JOIN
                 public.party ON lc.party_uuid = party.uuid
             LEFT JOIN 
@@ -581,22 +584,22 @@ export async function LCReport(req, res, next) {
             LEFT JOIN
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             WHERE
-                lc.handover_date IS NOT NULL
+                lc_entry.handover_date IS NOT NULL
         `;
 
 	if (document_receiving) {
-		query.append(sql`AND lc.document_receive_date IS NULL`);
+		query.append(sql`AND lc_entry.document_receive_date IS NULL`);
 	} else if (acceptance) {
 		query.append(
-			sql`AND lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NULL`
+			sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NULL`
 		);
 	} else if (maturity) {
 		query.append(
-			sql`AND lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NULL`
+			sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NOT NULL AND lc_entry.maturity_date IS NULL`
 		);
 	} else if (payment) {
 		query.append(
-			sql`AND lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NOT NULL AND lc.payment_date IS NULL`
+			sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NOT NULL AND lc_entry.maturity_date IS NOT NULL AND lc_entry.payment_date IS NULL`
 		);
 	}
 
