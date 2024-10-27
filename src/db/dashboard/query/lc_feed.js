@@ -6,7 +6,7 @@ export async function selectLcFeed(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-     SELECT
+     		SELECT
                 CONCAT('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) AS file_number,
                 party.name as party_name,
                 marketing.name as marketing_name,
@@ -23,6 +23,8 @@ export async function selectLcFeed(req, res, next) {
              lc.lc_date
             FROM
                 commercial.lc
+			LEFT JOIN 
+				commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
             LEFT JOIN
                 public.party ON lc.party_uuid = party.uuid
             LEFT JOIN 
@@ -34,10 +36,9 @@ export async function selectLcFeed(req, res, next) {
             LEFT JOIN
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             WHERE
-                lc.handover_date IS NOT NULL AND lc.document_receive_date IS NULL
+                lc_entry.handover_date IS NOT NULL AND lc_entry.document_receive_date IS NULL
             GROUP BY
                 lc.created_at, lc.id, party.name, marketing.name, lc.lc_value, lc.lc_date, lc.is_old_pi, lc.uuid
-
             ORDER BY lc.lc_date DESC
     `;
 
