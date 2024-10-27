@@ -7,6 +7,7 @@ export async function selectDelivery(req, res, next) {
 
 	const query = sql`
         SELECT
+            vpl.packing_list_uuid,
             vpl.challan_uuid,
             vpl.challan_number,
             vpl.packing_number as packing_list_number,
