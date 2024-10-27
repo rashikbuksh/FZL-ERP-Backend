@@ -291,12 +291,13 @@ export async function selectSfgBySection(req, res, next) {
 			sfg.short_quantity::float8,
 			sfg.reject_quantity::float8,
 			sfg.remarks as remarks,
-			CASE WHEN sfg.finishing_prod != 0 
+			CASE 
+			WHEN ${section} = 'finishing_prod'
 			THEN (oe.quantity - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0) - COALESCE(sfg.delivered, 0))::float8 
-			WHEN teeth_coloring_prod != 0
-			THEN (oe.quantity - COALESCE(sfg.teeth_coloring_prod, 0) - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.delivered, 0))::float8
-			WHEN teeth_molding_prod != 0
-			THEN (oe.quantity - COALESCE(sfg.teeth_molding_prod, 0) - COALESCE(sfg.warehouse, 0) - COALESCE(sfg.delivered, 0))::float8
+			WHEN ${section} = 'teeth_coloring_prod'
+			THEN (oe.quantity - COALESCE(sfg.teeth_coloring_prod, 0) - COALESCE(sfg.finishing_stock, 0) - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.delivered, 0))::float8
+			WHEN ${section} = 'teeth_molding_prod'
+			THEN (oe.quantity - COALESCE(sfg.teeth_molding_prod, 0) - COALESCE(sfg.teeth_coloring_stock, 0) - COALESCE(sfg.teeth_coloring_prod, 0) - COALESCE(sfg.finishing_stock, 0) - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0) - COALESCE(sfg.delivered, 0))::float8
 			ELSE (oe.quantity - COALESCE(sfg.warehouse, 0) - COALESCE(sfg.delivered, 0))::float8 END as balance_quantity,
 			COALESCE((
 				SELECT 
