@@ -53,24 +53,35 @@ export async function selectMachine(req, res, next) {
 }
 
 export async function selectParty(req, res, next) {
-	const partyPromise = db
-		.select({
-			value: publicSchema.party.uuid,
-			label: publicSchema.party.name,
-		})
-		.from(publicSchema.party);
+	const { marketing } = req.query;
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Party list',
-	};
-	handleResponse({
-		promise: partyPromise,
-		res,
-		next,
-		...toast,
-	});
+	const query = sql`
+		SELECT
+			DISTINCT party.uuid AS value,
+			party.name AS label
+		FROM
+			public.party
+		LEFT JOIN 
+			zipper.v_order_details vod ON party.uuid = vod.party_uuid
+		WHERE
+			${marketing ? sql`vod.marketing_uuid = ${marketing}` : sql`1=1`}
+	`;
+
+	const partyPromise = db.execute(query);
+
+	try {
+		const data = await partyPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Party list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectMarketingUser(req, res, next) {

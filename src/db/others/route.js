@@ -2,8 +2,8 @@ import { Router } from 'express';
 
 import { param } from 'express-validator';
 import SE, { SED } from '../../util/swagger_example.js';
-import * as otherOperations from './query/query.js';
 import zipper from '../zipper/schema.js';
+import * as otherOperations from './query/query.js';
 
 const otherRouter = Router();
 
@@ -194,6 +194,9 @@ const pathPublic = {
 			summary: 'get all parties',
 			description: 'All parties',
 			operationId: 'getAllParties',
+			parameters: [
+				SE.parameter_query('marketing', 'marketing', [SE.uuid()]),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all parties.',
