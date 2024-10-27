@@ -1331,9 +1331,9 @@ export const pathCommercialPiCashEntry = {
 export const pathCommercial = {
 	...pathCommercialBank,
 	...pathCommercialLc,
+	...pathCommercialLcEntry,
 	...pathCommercialPiCash,
 	...pathCommercialPiCashEntry,
-	...pathCommercialLcEntry,
 	...pathCommercialManualPi,
 	...pathCommercialManualPiEntry,
 };
