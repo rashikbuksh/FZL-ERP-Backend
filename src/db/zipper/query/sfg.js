@@ -318,7 +318,7 @@ export async function selectSfgBySection(req, res, next) {
 			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
 			LEFT JOIN slider.stock ss ON od.uuid = ss.order_description_uuid
 			WHERE
-				CASE WHEN od.is_multi_color = 0 THEN sfg.recipe_uuid IS NOT NULL AND sfg.recipe_uuid != '' ELSE TRUE END
+				od.tape_coil_uuid IS NOT NULL
 				${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
 				${nylon_stopper ? sql`AND lower(vod.nylon_stopper_name) = lower(${nylon_stopper})` : sql``}
 			ORDER BY oe.created_at, sfg.uuid DESC
