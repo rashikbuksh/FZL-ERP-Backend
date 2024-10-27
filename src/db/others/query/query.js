@@ -231,16 +231,21 @@ export function selectOrderProperties(req, res, next) {
 
 export async function selectTapeCoil(req, res, next) {
 	if (!validateRequest(req, next)) return;
-	const { item, zipper_number } = req.query;
 
 	const tapeCoilPromise = db
 		.select({
 			value: zipperSchema.tape_coil.uuid,
-			label: `${zipperSchema.tape_coil.name} - (${itemProperties.name === 'Nylon' ? zipperSchema.tape_coil.quantity_in_coil : zipperSchema.tape_coil.quantity})`,
+			label: sql`CONCAT(${zipperSchema.tape_coil.name}, ' - (', 
+                CASE WHEN LOWER(${itemProperties.name}) = 'nylon' 
+                    THEN ${decimalToNumber(zipperSchema.tape_coil.quantity_in_coil)} 
+                    ELSE ${decimalToNumber(zipperSchema.tape_coil.quantity)} 
+                END, 
+                ')'
+            )`,
 			item: itemProperties.uuid,
-			item_name: itemProperties.name,
+			item_name: sql`LOWER(${itemProperties.name})`,
 			zipper_number: zipperProperties.uuid,
-			zipper_number_name: zipperProperties.name,
+			zipper_number_name: sql`LOWER(${zipperProperties.name})`,
 		})
 		.from(zipperSchema.tape_coil)
 		.leftJoin(
@@ -251,15 +256,6 @@ export async function selectTapeCoil(req, res, next) {
 			zipperProperties,
 			eq(zipperSchema.tape_coil.zipper_number_uuid, zipperProperties.uuid)
 		);
-
-	if (item && zipper_number) {
-		tapeCoilPromise.where(
-			and(
-				eq(itemProperties.uuid, item),
-				eq(zipperProperties.uuid, zipper_number)
-			)
-		);
-	}
 
 	try {
 		const data = await tapeCoilPromise;
