@@ -383,6 +383,7 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.is_multi_color,
 						vodf.tape_coil_uuid,
 						vodf.order_description_uuid,
+						vodf.is_sample,
 						ROW_NUMBER() OVER (
 							PARTITION BY vodf.order_number
 							ORDER BY vodf.order_info_uuid
