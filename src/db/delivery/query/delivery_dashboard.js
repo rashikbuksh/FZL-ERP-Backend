@@ -47,6 +47,7 @@ export async function selectDeliveryThread(req, res, next) {
                 SELECT 
                     CONCAT('TC' ,to_char(tc.created_at, 'YY'), '-', LPAD(tc.id::text, 4, '0')) as challan_number,
                     CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+                    toi.uuid as order_info_uuid,
                     tce.challan_uuid,
                     CONCAT(tcl.count, '-', tcl.length) as count_length,
                     toe.style,
