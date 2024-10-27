@@ -183,7 +183,7 @@ export async function selectLcEntryByLcUuid(req, res, next) {
 			message: 'lc_entry entry',
 		};
 
-		return await res.status(200).json({ toast, data: data?.rows[0] });
+		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
