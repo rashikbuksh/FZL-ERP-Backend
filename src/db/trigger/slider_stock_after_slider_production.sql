@@ -1,4 +1,4 @@
--- * NOT UPDATED IN VPS
+-- * UPDATED IN VPS
 
 CREATE OR REPLACE FUNCTION slider.slider_stock_after_slider_production_insert () RETURNS TRIGGER AS $$
 BEGIN
