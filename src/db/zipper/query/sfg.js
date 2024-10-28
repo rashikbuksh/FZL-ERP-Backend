@@ -332,6 +332,24 @@ export async function selectSfgBySection(req, res, next) {
 				FROM zipper.sfg_transaction sfgt
 				WHERE sfgt.sfg_uuid = sfg.uuid AND sfgt.trx_from = ${section}
 			), 0)::float8 as total_trx_quantity,
+			COALESCE((
+				SELECT 
+					CASE 
+						WHEN SUM(production_quantity)::float8 > 0 
+							THEN SUM(production_quantity)::float8
+						ELSE SUM(production_quantity_in_kg)::float8
+					END
+				FROM zipper.sfg_production sfgp
+				WHERE sfgp.sfg_uuid = sfg.uuid AND 
+					CASE 
+						WHEN ${section} = 'finishing_prod' 
+							THEN sfgp.section = 'finishing' 
+						WHEN ${section} = 'teeth_coloring_prod'
+							THEN sfgp.section = 'teeth_coloring'
+						WHEN ${section} = 'teeth_molding_prod'
+							THEN sfgp.section = 'teeth_molding'
+						ELSE sfgp.section = ${section} END
+			), 0)::float8 as total_production_quantity,
 			COALESCE(ss.coloring_prod,0)::float8 as coloring_prod,
 			COALESCE(od.tape_received,0)::float8 as tape_received,
 			COALESCE(od.tape_transferred,0)::float8 as tape_transferred,
