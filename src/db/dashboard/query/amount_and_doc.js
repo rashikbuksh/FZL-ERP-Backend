@@ -38,6 +38,10 @@ export async function selectAmountAndDoc(req, res, next) {
                         FROM (
                             SELECT 
                                 lc.*,
+                                lc_entry.document_receive_date,
+                                lc_entry.acceptance_date,
+                                lc_entry.maturity_date,
+                                lc_entry.payment_date,
                                 CASE WHEN is_old_pi = 0 THEN(	
                                     SELECT 
                                         SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12)
@@ -49,6 +53,8 @@ export async function selectAmountAndDoc(req, res, next) {
                                 ) ELSE lc.lc_value::float8 END AS total_value
                             FROM
                                 commercial.lc
+                            LEFT JOIN 
+                                commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
                             LEFT JOIN
                                 public.party ON lc.party_uuid = party.uuid
                             LEFT JOIN 
@@ -60,7 +66,7 @@ export async function selectAmountAndDoc(req, res, next) {
                             LEFT JOIN
                                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
                             WHERE
-                                lc.handover_date IS NOT NULL
+                                lc_entry.handover_date IS NOT NULL
                         ) AS lc
                     `;
 

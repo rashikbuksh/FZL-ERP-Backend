@@ -40,7 +40,7 @@ export async function insert(req, res, next) {
 		if (result.length > 0) {
 			const toast = {
 				status: 400,
-				type: 'insert',
+				type: 'ERROR',
 				message: 'Material already exists in die_casting',
 			};
 			return await res.status(400).json({ toast });
@@ -86,7 +86,7 @@ export async function update(req, res, next) {
 			if (result.length > 0) {
 				const toast = {
 					status: 400,
-					type: 'insert',
+					type: 'ERROR',
 					message: 'Material already exists in die_casting',
 				};
 				return await res.status(400).json({ toast });
