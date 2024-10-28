@@ -262,6 +262,7 @@ export async function selectPackingListForChallan(req, res, next) {
 			ple.uuid as packing_list_entry_uuid,
 			ple.sfg_uuid,
 			ple.quantity::float8,
+			ple.poli_quantity,
 			ple.short_quantity::float8,
 			ple.reject_quantity::float8,
 			ple.remarks as remarks,

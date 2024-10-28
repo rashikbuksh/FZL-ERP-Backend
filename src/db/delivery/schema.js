@@ -47,6 +47,7 @@ export const packing_list_entry = delivery.table('packing_list_entry', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	poli_quantity: integer('poli_quantity').default(0),
 	short_quantity: integer('short_quantity').default(0),
 	reject_quantity: integer('reject_quantity').default(0),
 	created_at: DateTime('created_at').notNull(),

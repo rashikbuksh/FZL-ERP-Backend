@@ -208,6 +208,7 @@ export async function selectPackingListDetailsByPackingListUuid(
 					ple.packing_list_uuid,
 					ple.sfg_uuid,
 					ple.quantity::float8,
+					ple.poli_quantity,
 					coalesce(ple.short_quantity::float8, 0) as short_quantity,
 					coalesce(ple.reject_quantity::float8, 0) as reject_quantity,
 					ple.created_at,

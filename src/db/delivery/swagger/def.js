@@ -46,6 +46,7 @@ export const defPackingListEntry = SED({
 		packing_list_uuid: SE.uuid(),
 		sfg_uuid: SE.uuid(),
 		quantity: SE.number(100),
+		poli_quantity: SE.number(0),
 		short_quantity: SE.number(0),
 		reject_quantity: SE.number(0),
 		created_at: SE.date_time(),
