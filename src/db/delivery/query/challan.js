@@ -150,15 +150,6 @@ export async function selectAll(req, res, next) {
 			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
 		)
 		.leftJoin(vehicle, eq(challan.vehicle_uuid, vehicle.uuid))
-		.leftJoin(challan_entry, eq(challan.uuid, challan_entry.challan_uuid))
-		.leftJoin(
-			packing_list,
-			eq(challan_entry.packing_list_uuid, packing_list.uuid)
-		)
-		.leftJoin(
-			packing_list_entry,
-			eq(packing_list.uuid, packing_list_entry.packing_list_uuid)
-		)
 		.orderBy(desc(challan.created_at));
 
 	try {
@@ -245,10 +236,6 @@ export async function select(req, res, next) {
 			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
 		)
 		.leftJoin(vehicle, eq(challan.vehicle_uuid, vehicle.uuid))
-		.leftJoin(
-			packing_list_entry,
-			eq(packing_list.uuid, packing_list_entry.packing_list_uuid)
-		)
 		.where(eq(challan.uuid, req.params.uuid))
 		.groupBy(
 			challan.uuid,
@@ -270,7 +257,7 @@ export async function select(req, res, next) {
 			vehicle.driver_name,
 			challan.carton_quantity,
 			challan.receive_status,
-			challan.gate_pass,
+			challan.gate_pass
 		);
 
 	try {
