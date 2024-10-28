@@ -296,6 +296,7 @@ export async function selectOrderInfo(req, res, next) {
 					order_info.uuid IN (
 						SELECT pl.order_info_uuid
 						FROM delivery.packing_list pl
+						WHERE pl.challan_uuid IS NULL
 					)`
 				: null
 		);
