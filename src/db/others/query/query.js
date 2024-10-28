@@ -135,7 +135,7 @@ export async function selectBuyer(req, res, next) {
 	});
 }
 
-export function selectSpecificMerchandiser(req, res, next) {
+export async function selectSpecificMerchandiser(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const merchandiserPromise = db
@@ -150,21 +150,20 @@ export function selectSpecificMerchandiser(req, res, next) {
 		)
 		.where(eq(publicSchema.party.uuid, req.params.party_uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Merchandiser',
-	};
-
-	handleResponse({
-		promise: merchandiserPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await merchandiserPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Merchandiser',
+		};
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
-export function selectSpecificFactory(req, res, next) {
+export async function selectSpecificFactory(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const factoryPromise = db
@@ -179,21 +178,20 @@ export function selectSpecificFactory(req, res, next) {
 		)
 		.where(eq(publicSchema.party.uuid, req.params.party_uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Factory',
-	};
-
-	handleResponse({
-		promise: factoryPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await factoryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Factory',
+		};
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
-export function selectMarketing(req, res, next) {
+export async function selectMarketing(req, res, next) {
 	const marketingPromise = db
 		.select({
 			value: publicSchema.marketing.uuid,
@@ -201,20 +199,20 @@ export function selectMarketing(req, res, next) {
 		})
 		.from(publicSchema.marketing);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Marketing list',
-	};
-	handleResponse({
-		promise: marketingPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await marketingPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Marketing',
+		};
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
-export function selectOrderProperties(req, res, next) {
+export async function selectOrderProperties(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const orderPropertiesPromise = db
@@ -225,17 +223,17 @@ export function selectOrderProperties(req, res, next) {
 		.from(publicSchema.properties)
 		.where(eq(publicSchema.properties.type, req.params.type_name));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Order Properties list',
-	};
-	handleResponse({
-		promise: orderPropertiesPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await orderPropertiesPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Properties',
+		};
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 // zipper
@@ -281,28 +279,38 @@ export async function selectTapeCoil(req, res, next) {
 	}
 }
 
-export function selectOrderInfo(req, res, next) {
+export async function selectOrderInfo(req, res, next) {
 	if (!validateRequest(req, next)) return;
+
+	const { page } = req.query;
 
 	const orderInfoPromise = db
 		.select({
 			value: zipperSchema.order_info.uuid,
 			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		})
-		.from(zipperSchema.order_info);
+		.from(zipperSchema.order_info)
+		.where(
+			page == 'packing_list'
+				? sql`
+					order_info.uuid IN (
+						SELECT pl.order_info_uuid
+						FROM delivery.packing_list pl
+					)`
+				: null
+		);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Order Info list',
-	};
-
-	handleResponse({
-		promise: orderInfoPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Info list',
+		};
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectOrderZipperThread(req, res, next) {
