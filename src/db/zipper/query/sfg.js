@@ -296,6 +296,12 @@ export async function selectSfgBySection(req, res, next) {
 			sfg.reject_quantity::float8,
 			sfg.remarks as remarks,
 			CASE 
+				WHEN lower(${item_name}) = 'vislon'
+					THEN (oe.quantity - (
+						COALESCE(sfg.finishing_prod, 0) + 
+						COALESCE(sfg.warehouse, 0) + 
+						COALESCE(sfg.delivered, 0)
+					))::float8 
 				WHEN ${section} = 'finishing_prod'
 					THEN (oe.quantity - (
 						COALESCE(sfg.finishing_prod, 0) + 
