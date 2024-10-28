@@ -16,6 +16,13 @@ BEGIN
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
+    IF (NEW.trx_to = 'tape_making') THEN
+        UPDATE zipper.tape_coil
+        SET
+            quantity = quantity + NEW.trx_quantity
+        WHERE material_uuid = NEW.material_uuid;
+    END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -43,6 +50,15 @@ BEGIN
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
+    IF (NEW.trx_to = 'tape_making') THEN
+        UPDATE zipper.tape_coil
+        SET
+            quantity = quantity 
+                + NEW.trx_quantity
+                - OLD.trx_quantity
+        WHERE material_uuid = NEW.material_uuid;
+    END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -61,6 +77,13 @@ BEGIN
         SET
             quantity = quantity - OLD.trx_quantity,
             weight = weight - OLD.weight
+        WHERE material_uuid = OLD.material_uuid;
+    END IF;
+
+    IF (OLD.trx_to = 'tape_making') THEN
+        UPDATE zipper.tape_coil
+        SET
+            quantity = quantity - OLD.trx_quantity
         WHERE material_uuid = OLD.material_uuid;
     END IF;
 
