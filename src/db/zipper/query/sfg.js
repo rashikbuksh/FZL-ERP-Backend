@@ -172,8 +172,9 @@ export async function selectSwatchInfo(req, res, next) {
 					oe.color as color,
 					od.is_inch,
 					CASE 
-                        WHEN od.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
+                        WHEN od.is_inch = 1 
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                        ELSE CAST(oe.size AS NUMERIC)
                     END as size,
 					oe.bleaching,
 					oe.quantity::float8 as quantity,
@@ -261,14 +262,14 @@ export async function selectSfgBySection(req, res, next) {
 			oe.color as color,
 			CASE 
                 WHEN vod.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END as size,
 			concat(oe.style, '/', oe.color, '/', 
 					CASE 
                         WHEN vod.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                        ELSE CAST(oe.size AS NUMERIC)
                     END
 			) as style_color_size,
 			oe.quantity::float8 as order_quantity,

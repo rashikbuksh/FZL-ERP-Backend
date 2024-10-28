@@ -11,7 +11,8 @@ BEGIN
     IF (NEW.trx_to = 'die_casting') THEN
         UPDATE slider.die_casting
         SET
-            quantity = quantity + NEW.trx_quantity
+            quantity = quantity + NEW.trx_quantity,
+            weight = weight + NEW.weight
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
@@ -35,7 +36,10 @@ BEGIN
         SET
             quantity = quantity 
                 + NEW.trx_quantity
-                - OLD.trx_quantity
+                - OLD.trx_quantity,
+            weight = weight
+                + NEW.weight
+                - OLD.weight
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
@@ -55,7 +59,8 @@ BEGIN
     IF (OLD.trx_to = 'die_casting') THEN
         UPDATE slider.die_casting
         SET
-            quantity = quantity - OLD.trx_quantity
+            quantity = quantity - OLD.trx_quantity,
+            weight = weight - OLD.weight
         WHERE material_uuid = OLD.material_uuid;
     END IF;
 

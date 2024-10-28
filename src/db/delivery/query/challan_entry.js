@@ -270,8 +270,9 @@ export async function selectPackingListForChallan(req, res, next) {
 			vodf.item_description,
 			vodf.order_description_uuid,
 			concat(oe.style, ' / ', oe.color, ' / ', CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END) as style_color_size,
 			oe.quantity::float8 as order_quantity,
 			sfg.warehouse::float8 as warehouse,

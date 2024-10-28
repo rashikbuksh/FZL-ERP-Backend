@@ -234,8 +234,9 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END as size,,
 			oe.quantity::float8 as order_quantity,
 			vod.order_number,
@@ -321,8 +322,9 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END as size,,
 			oe.quantity::float8 as order_quantity,
 			vod.order_number,

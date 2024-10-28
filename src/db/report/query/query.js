@@ -30,12 +30,15 @@ export async function zipperProductionStatusReport(req, res, next) {
 				order_entry_counts.order_entry_count) AS swatch_approval_count,
                 ARRAY_AGG(DISTINCT oe.style) AS styles,
                 CONCAT(MIN(CASE 
-                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
-                    END), ' - ', MAX(CASE 
-                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
-                    END)) AS sizes,
+                    WHEN vodf.is_inch = 1 
+                        THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                    ELSE CAST(oe.size AS NUMERIC)
+                END), ' - ', 
+                MAX(CASE 
+                    WHEN vodf.is_inch = 1 
+                        THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                    ELSE CAST(oe.size AS NUMERIC)
+                END)) AS sizes,
                 COUNT(DISTINCT oe.size) AS size_count,
                 SUM(oe.quantity)::float8 AS total_quantity,
                 stock.uuid as stock_uuid,
@@ -221,8 +224,9 @@ export async function dailyChallanReport(req, res, next) {
                 oe.uuid as order_entry_uuid,
                 CONCAT(oe.style, ' - ', oe.color, ' - ', 
                     CASE 
-                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
+                        WHEN vodf.is_inch = 1 
+                            THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                        ELSE CAST(oe.size AS NUMERIC)
                     END) AS style_color_size,
                 null as count_length_name,
                 packing_list_grouped.total_quantity::float8,
@@ -1221,10 +1225,16 @@ export async function deliveryStatementReport(req, res, next) {
                 vodf.end_type,
                 vodf.end_type_name,
                 oe.uuid as order_entry_uuid,
-                oe.size,
-                coalesce(close_end_sum.total_close_end_quantity,0) as total_close_end_quantity,
-                coalesce(open_end_sum.total_open_end_quantity,0) as total_open_end_quantity,
-                coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity
+                oe.size::float8,
+                coalesce(all_sum.total_close_end_quantity,0)::float8 as total_close_end_quantity,
+                coalesce(all_sum.total_open_end_quantity,0)::float8 as total_open_end_quantity,
+                coalesce(all_sum.total_close_end_quantity + all_sum.total_open_end_quantity,0)::float8 as total_quantity,
+                (coalesce(all_sum.total_close_end_quantity + all_sum.total_open_end_quantity,0)/12)::float8 as total_quantity_dzn,
+                all_sum.unit_price_dzn::float8,
+                all_sum.unit_price_pcs::float8,
+                coalesce(all_sum.total_close_end_value,0)::float8 as total_close_end_value,
+                coalesce(all_sum.total_open_end_value,0)::float8 as total_open_end_value,
+                coalesce(all_sum.total_close_end_value + all_sum.total_open_end_value,0)::float8 as total_value
             FROM
                 zipper.v_order_details_full vodf 
             LEFT JOIN 
@@ -1232,26 +1242,21 @@ export async function deliveryStatementReport(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
-                    vpl.order_entry_uuid
-                FROM
-                    delivery.v_packing_list vpl
-                    LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
-                GROUP BY
-                    vpl.order_entry_uuid
-            ) close_end_sum ON oe.uuid = close_end_sum.order_entry_uuid
-            LEFT JOIN (
-                SELECT 
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
+                    oe.company_price as unit_price_dzn,
+                    (oe.company_price/12) as unit_price_pcs,
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_close_end_value,
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_open_end_value,
                     vpl.order_entry_uuid
                 FROM
                     delivery.v_packing_list vpl
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
+                    LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid AND oe.order_description_uuid = vodf.order_description_uuid
                 GROUP BY
-                    vpl.order_entry_uuid
-            ) open_end_sum ON oe.uuid = open_end_sum.order_entry_uuid
-            WHERE close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity > 0
+                    vpl.order_entry_uuid, oe.company_price
+            ) all_sum ON oe.uuid = all_sum.order_entry_uuid
+            WHERE all_sum.total_close_end_quantity + all_sum.total_open_end_quantity > 0
             ORDER BY vodf.item_name DESC
-
     `;
 	const resultPromise = db.execute(query);
 

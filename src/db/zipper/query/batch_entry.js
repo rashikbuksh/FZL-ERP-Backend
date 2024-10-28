@@ -169,7 +169,9 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT) ELSE oe.size
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC) 
+				ELSE CAST(oe.size AS NUMERIC)
             END as size,
 			oe.quantity::float8 as order_quantity,
 			vodf.order_number,
@@ -242,8 +244,9 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
-                        ELSE oe.size::numeric
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END as size,
 			oe.quantity::float8 as order_quantity,
 			oe.bleaching,
@@ -252,7 +255,9 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			be_given.given_quantity::float8,
 			be_given.given_production_quantity::float8,
 			be_given.given_production_quantity_in_kg::float8,
-			coalesce(coalesce(oe.quantity::float8,0) - coalesce(be_given.given_quantity::float8,0),0) as balance_quantity,
+			coalesce(
+				coalesce(oe.quantity::float8,0) - coalesce(be_given.given_quantity::float8,0)
+			,0) as balance_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,

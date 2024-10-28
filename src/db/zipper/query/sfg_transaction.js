@@ -218,8 +218,8 @@ export async function selectByTrxFrom(req, res, next) {
 			oe.color,
 			oe.size,
 			concat(oe.style, '-', oe.color, '-', CASE 
-                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                        ELSE oe.size
+                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                        ELSE CAST(oe.size AS NUMERIC)
                     END) AS style_color_size, 
 			oe.quantity::float8 as order_quantity,
 			sfg_transaction.trx_from,

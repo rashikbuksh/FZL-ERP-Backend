@@ -366,9 +366,10 @@ export async function selectOrderEntry(req, res, next) {
 					oe.uuid AS value,
 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', oe.style, '/', oe.color, '/', 
 					CASE 
-					WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-					ELSE oe.size END
-					) AS label,
+						WHEN vodf.is_inch = 1 
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+						ELSE CAST(oe.size AS NUMERIC)
+					END) AS label,
 					oe.quantity::float8 AS quantity,
 					oe.quantity - (
 						COALESCE(sfg.coloring_prod, 0) + COALESCE(sfg.finishing_prod, 0)
@@ -419,8 +420,9 @@ export async function selectOrderDescription(req, res, next) {
 					(
 						SELECT oe.order_description_uuid, 
 						SUM(CASE 
-							WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
-							ELSE oe.size::numeric
+							WHEN vodf.is_inch = 1 
+								THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+							ELSE CAST(oe.size AS NUMERIC)
 						END * oe.quantity::numeric) as total_size, 
 						SUM(oe.quantity::numeric) as total_quantity
 						FROM zipper.order_entry oe 
@@ -546,8 +548,8 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				SELECT oe.order_description_uuid, 
 					SUM(
 					CASE 
-						WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)::numeric
-						ELSE oe.size::numeric
+						WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+						ELSE CAST(oe.size AS NUMERIC)
 					END * oe.quantity::numeric) as total_size, 
 					SUM(oe.quantity::numeric) as total_quantity
 				FROM zipper.order_entry oe

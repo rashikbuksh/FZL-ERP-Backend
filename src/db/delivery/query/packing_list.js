@@ -220,12 +220,14 @@ export async function selectPackingListDetailsByPackingListUuid(
 					oe.style,
 					oe.color,
 					CASE 
-						WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-						ELSE oe.size
+						WHEN vodf.is_inch = 1 
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+						ELSE CAST(oe.size AS NUMERIC)
 					END as size,
 					concat(oe.style, ' / ', oe.color, ' / ', CASE 
-						WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-						ELSE oe.size
+						WHEN vodf.is_inch = 1 
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+						ELSE CAST(oe.size AS NUMERIC)
 					END) as style_color_size,
 					oe.quantity::float8 as order_quantity,
 					sfg.uuid as sfg_uuid,
@@ -284,9 +286,10 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
-                END as size,
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
+            END as size,
 			vodf.is_inch,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			oe.quantity::float8  as order_quantity,

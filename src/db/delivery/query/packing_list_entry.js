@@ -92,12 +92,14 @@ export async function selectAll(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END as size,
 			concat(oe.style, ' / ', oe.color, ' / ', CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END) as style_color_size,
 			oe.quantity::float8 as order_quantity,
 			sfg.uuid as sfg_uuid,
@@ -152,14 +154,16 @@ export async function select(req, res, next) {
 			vodf.item_description,
 			vodf.order_description_uuid,
 			concat(oe.style, ' / ', oe.color, ' / ', CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END) as style_color_size,
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END as size,
 			oe.quantity::float8 as order_quantity,
 			sfg.uuid as sfg_uuid,
@@ -218,14 +222,15 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			vodf.item_description,
 			vodf.order_description_uuid,
 			concat(oe.style, ' / ', oe.color, ' / ', CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END) as style_color_size,
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS TEXT)
-                ELSE oe.size
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
             END as size,
 			oe.quantity::float8 as order_quantity,
 			sfg.uuid as sfg_uuid,

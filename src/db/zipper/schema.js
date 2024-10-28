@@ -583,6 +583,7 @@ export const material_trx_against_order_description = zipper.table(
 			precision: 20,
 			scale: 4,
 		}).notNull(),
+		weight: PG_DECIMAL('weight').default(0),
 		created_by: defaultUUID('created_by').references(
 			() => hrSchema.users.uuid
 		),
