@@ -291,7 +291,7 @@ export async function selectOrderInfo(req, res, next) {
 		})
 		.from(zipperSchema.order_info)
 		.where(
-			page == 'packing_list'
+			page == 'challan'
 				? sql`
 					order_info.uuid IN (
 						SELECT pl.order_info_uuid
