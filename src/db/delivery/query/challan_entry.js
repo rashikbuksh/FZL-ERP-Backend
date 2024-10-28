@@ -220,7 +220,7 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 			FROM 
 				delivery.challan
 			LEFT JOIN 
-				delivery.v_packing_list vpl ON challan.uuid = vpl.challan_uuid
+				delivery.v_packing_list_details vpl ON challan.uuid = vpl.challan_uuid
 			LEFT JOIN
 				hr.users assign_to_user ON challan.assign_to = assign_to_user.uuid
 			LEFT JOIN

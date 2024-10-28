@@ -25,7 +25,7 @@ export async function selectDelivery(req, res, next) {
                 ELSE 'in floor'
             END as status
         FROM
-            delivery.v_packing_list vpl`;
+            delivery.v_packing_list_details vpl`;
 
 	try {
 		const data = await db.execute(query);

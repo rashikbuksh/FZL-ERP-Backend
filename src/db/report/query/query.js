@@ -1253,7 +1253,7 @@ export async function deliveryStatementReport(req, res, next) {
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_open_end_value,
                     vpl.order_entry_uuid
                 FROM
-                    delivery.v_packing_list vpl
+                    delivery.v_packing_list_details vpl
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
                     LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid AND oe.order_description_uuid = vodf.order_description_uuid
                 GROUP BY

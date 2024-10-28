@@ -7,9 +7,9 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import * as publicSchema from '../../public/schema.js';
 import {
 	carton,
 	challan,
@@ -90,103 +90,38 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: packing_list.uuid,
-			order_info_uuid: packing_list.order_info_uuid,
-			packing_number: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
-			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
-			challan_uuid: packing_list.challan_uuid,
-			challan_number: sql`CASE WHEN challan_uuid IS NOT NULL THEN CONCAT('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE NULL END`,
-			carton_size: carton.size,
-			carton_weight: packing_list.carton_weight,
-			carton_uuid: packing_list.carton_uuid,
-			carton_name: carton.name,
-			is_warehouse_received: packing_list.is_warehouse_received,
-			factory_uuid: zipperSchema.order_info.factory_uuid,
-			factory_name: publicSchema.factory.name,
-			buyer_uuid: zipperSchema.order_info.buyer_uuid,
-			buyer_name: publicSchema.buyer.name,
-			created_by: packing_list.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: packing_list.created_at,
-			updated_at: packing_list.updated_at,
-			remarks: packing_list.remarks,
-		})
-		.from(packing_list)
-		.leftJoin(
-			hrSchema.users,
-			eq(packing_list.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			zipperSchema.order_info,
-			eq(packing_list.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
-		.leftJoin(carton, eq(packing_list.carton_uuid, carton.uuid))
-		.leftJoin(
-			publicSchema.factory,
-			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
-		)
-		.leftJoin(
-			publicSchema.buyer,
-			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
-		)
-		.orderBy(desc(packing_list.created_at));
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Packing list',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	const query = sql`
+		SELECT * 
+		FROM delivery.v_packing_list
+		ORDER BY created_at DESC
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Packing list',
+		};
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const packing_listPromise = db
-		.select({
-			uuid: packing_list.uuid,
-			order_info_uuid: packing_list.order_info_uuid,
-			packing_number: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
-			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
-			challan_uuid: packing_list.challan_uuid,
-			challan_number: sql`CASE WHEN challan_uuid IS NOT NULL THEN CONCAT('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE NULL END`,
-			carton_size: carton.size,
-			carton_weight: packing_list.carton_weight,
-			carton_uuid: packing_list.carton_uuid,
-			carton_name: carton.name,
-			is_warehouse_received: packing_list.is_warehouse_received,
-			factory_uuid: zipperSchema.order_info.factory_uuid,
-			factory_name: publicSchema.factory.name,
-			buyer_uuid: zipperSchema.order_info.buyer_uuid,
-			buyer_name: publicSchema.buyer.name,
-			created_by: packing_list.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: packing_list.created_at,
-			updated_at: packing_list.updated_at,
-			remarks: packing_list.remarks,
-		})
-		.from(packing_list)
-		.leftJoin(
-			hrSchema.users,
-			eq(packing_list.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			zipperSchema.order_info,
-			eq(packing_list.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
-		.leftJoin(carton, eq(packing_list.carton_uuid, carton.uuid))
-		.leftJoin(
-			publicSchema.factory,
-			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
-		)
-		.leftJoin(
-			publicSchema.buyer,
-			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
-		)
-		.where(eq(packing_list.uuid, req.params.uuid));
+	const query = sql`
+		SELECT * 
+		FROM delivery.v_packing_list
+		WHERE uuid = ${req.params.uuid}
+		ORDER BY created_at DESC
+	`;
+
+	const packing_listPromise = db.execute(query);
 
 	try {
 		const data = await packing_listPromise;
@@ -195,7 +130,7 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: 'Packing list',
 		};
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data.rows[0] });
 	} catch (error) {
 		handleError({ error, res });
 	}
