@@ -1,3 +1,5 @@
+-- * NOT UPDATED IN VPS
+
 CREATE OR REPLACE FUNCTION slider.slider_stock_after_slider_production_insert () RETURNS TRIGGER AS $$
 BEGIN
     -- Update slider.stock table for 'sa_prod' section
@@ -20,7 +22,6 @@ BEGIN
         UPDATE slider.stock
             SET
                 coloring_stock = coloring_stock - NEW.production_quantity,
-                link_quantity = link_quantity - NEW.production_quantity,
                 box_pin_quantity = box_pin_quantity - CASE WHEN lower(vodf.end_type_name) = 'open end' THEN NEW.production_quantity ELSE 0 END,
                 h_bottom_quantity = h_bottom_quantity - CASE WHEN lower(vodf.end_type_name) = 'close end' THEN NEW.production_quantity ELSE 0 END,
                 u_top_quantity = u_top_quantity - (2 * NEW.production_quantity),
@@ -41,7 +42,6 @@ BEGIN
         UPDATE slider.stock
         SET
             sa_prod = sa_prod + NEW.production_quantity - OLD.production_quantity,
-            body_quantity =  body_quantity - NEW.production_quantity + OLD.production_quantity,
             cap_quantity = cap_quantity - NEW.production_quantity + OLD.production_quantity,
             puller_quantity = puller_quantity - NEW.production_quantity + OLD.production_quantity,
             link_quantity = link_quantity - CASE WHEN NEW.with_link = 1 THEN NEW.production_quantity ELSE 0 END + CASE WHEN OLD.with_link = 1 THEN OLD.production_quantity ELSE 0 END
@@ -53,7 +53,6 @@ BEGIN
         UPDATE slider.stock
         SET
             coloring_stock = coloring_stock - NEW.production_quantity + OLD.production_quantity,
-            link_quantity = link_quantity - NEW.production_quantity + OLD.production_quantity,
             box_pin_quantity = box_pin_quantity - CASE WHEN lower(vodf.end_type_name) = 'open end' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END,
             h_bottom_quantity = h_bottom_quantity - CASE WHEN lower(vodf.end_type_name) = 'close end' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END,
             u_top_quantity = u_top_quantity - (2 * (NEW.production_quantity - OLD.production_quantity)),
@@ -87,7 +86,6 @@ BEGIN
         UPDATE slider.stock
         SET
             coloring_stock = coloring_stock + OLD.production_quantity,
-            link_quantity = link_quantity + OLD.production_quantity,
             box_pin_quantity = box_pin_quantity + CASE WHEN lower(vodf.end_type_name) = 'open end' THEN OLD.production_quantity ELSE 0 END,
             h_bottom_quantity = h_bottom_quantity + CASE WHEN lower(vodf.end_type_name) = 'close end' THEN OLD.production_quantity ELSE 0 END,
             u_top_quantity = u_top_quantity + (2 * OLD.production_quantity),
