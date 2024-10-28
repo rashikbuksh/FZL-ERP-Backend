@@ -10,6 +10,7 @@ import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
+import * as zipperSchema from '../../zipper/schema.js';
 import { die_casting } from '../schema.js';
 
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
@@ -61,12 +62,35 @@ const garmentsWashProperties = alias(
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const dieCastingPromise = db
-		.insert(die_casting)
-		.values(req.body)
-		.returning({ insertedName: die_casting.name });
-
 	try {
+		const resultPromise = db
+			.select(1)
+			.from(zipperSchema.tape_coil)
+			.where(
+				and(
+					eq(
+						zipperSchema.tape_coil.material_uuid,
+						req.body.material_uuid
+					)
+				)
+			);
+
+		const result = await resultPromise;
+
+		if (result.length > 0) {
+			const toast = {
+				status: 400,
+				type: 'insert',
+				message: 'Material already exists in tape_coil',
+			};
+			return await res.status(400).json({ toast });
+		}
+
+		const dieCastingPromise = db
+			.insert(die_casting)
+			.values(req.body)
+			.returning({ insertedName: die_casting.name });
+
 		const data = await dieCastingPromise;
 		const toast = {
 			status: 201,
@@ -82,12 +106,39 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const dieCastingPromise = db
-		.update(die_casting)
-		.set(req.body)
-		.where(eq(die_casting.uuid, req.params.uuid))
-		.returning({ updatedName: die_casting.name });
 	try {
+		// check if the material_uuid is exists in slider.die_casting table then dont update the record
+		if (req.body.material_uuid) {
+			const resultPromise = db
+				.select(1)
+				.from(zipperSchema.tape_coil)
+				.where(
+					and(
+						eq(
+							zipperSchema.tape_coil.material_uuid,
+							req.body.material_uuid
+						)
+					)
+				);
+
+			const result = await resultPromise;
+
+			if (result.length > 0) {
+				const toast = {
+					status: 400,
+					type: 'insert',
+					message: 'Material already exists in tape_coil',
+				};
+				return await res.status(400).json({ toast });
+			}
+		}
+
+		const dieCastingPromise = db
+			.update(die_casting)
+			.set(req.body)
+			.where(eq(die_casting.uuid, req.params.uuid))
+			.returning({ updatedName: die_casting.name });
+
 		const data = await dieCastingPromise;
 		const toast = {
 			status: 201,

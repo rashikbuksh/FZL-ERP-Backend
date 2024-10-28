@@ -1225,7 +1225,11 @@ export async function deliveryStatementReport(req, res, next) {
                 vodf.end_type,
                 vodf.end_type_name,
                 oe.uuid as order_entry_uuid,
-                oe.size::float8,
+                CASE 
+					WHEN vodf.is_inch = 1 
+						THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+					ELSE CAST(oe.size AS NUMERIC)
+				END as size,
                 coalesce(all_sum.total_close_end_quantity,0)::float8 as total_close_end_quantity,
                 coalesce(all_sum.total_open_end_quantity,0)::float8 as total_open_end_quantity,
                 coalesce(all_sum.total_close_end_quantity + all_sum.total_open_end_quantity,0)::float8 as total_quantity,

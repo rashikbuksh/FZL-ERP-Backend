@@ -7,7 +7,9 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
+import * as sliderSchema from '../../slider/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { tape_coil } from '../schema.js';
 
@@ -19,13 +21,36 @@ const zipper_number_properties = alias(
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
-	const tapeCoilPromise = db
-		.insert(tape_coil)
-		.values(req.body)
-		.returning({ insertedId: tape_coil.uuid });
-
 	try {
+		// check if the material_uuid is exists in slider.die_casting table then dont insert the record
+		const resultPromise = db
+			.select(1)
+			.from(sliderSchema.die_casting)
+			.where(
+				and(
+					eq(
+						sliderSchema.die_casting.material_uuid,
+						req.body.material_uuid
+					)
+				)
+			);
+
+		const result = await resultPromise;
+
+		if (result.length > 0) {
+			const toast = {
+				status: 400,
+				type: 'insert',
+				message: 'Material already exists in die_casting',
+			};
+			return await res.status(400).json({ toast });
+		}
+
+		const tapeCoilPromise = db
+			.insert(tape_coil)
+			.values(req.body)
+			.returning({ insertedId: tape_coil.uuid });
+
 		const data = await tapeCoilPromise;
 		const toast = {
 			status: 201,
@@ -41,13 +66,39 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const tapeCoilPromise = db
-		.update(tape_coil)
-		.set(req.body)
-		.where(eq(tape_coil.uuid, req.params.uuid))
-		.returning({ updatedId: tape_coil.uuid });
-
 	try {
+		// check if the material_uuid is exists in slider.die_casting table then dont update the record
+		if (req.body.material_uuid) {
+			const resultPromise = db
+				.select(1)
+				.from(sliderSchema.die_casting)
+				.where(
+					and(
+						eq(
+							sliderSchema.die_casting.material_uuid,
+							req.body.material_uuid
+						)
+					)
+				);
+
+			const result = await resultPromise;
+
+			if (result.length > 0) {
+				const toast = {
+					status: 400,
+					type: 'insert',
+					message: 'Material already exists in die_casting',
+				};
+				return await res.status(400).json({ toast });
+			}
+		}
+
+		const tapeCoilPromise = db
+			.update(tape_coil)
+			.set(req.body)
+			.where(eq(tape_coil.uuid, req.params.uuid))
+			.returning({ updatedId: tape_coil.uuid });
+
 		const data = await tapeCoilPromise;
 		const toast = {
 			status: 201,
@@ -108,6 +159,8 @@ export async function selectAll(req, res, next) {
 			created_at: tape_coil.created_at,
 			updated_at: tape_coil.updated_at,
 			remarks: tape_coil.remarks,
+			material_uuid: tape_coil.material_uuid,
+			material_name: materialSchema.info.name,
 		})
 		.from(tape_coil)
 		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
@@ -118,6 +171,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
+		)
+		.leftJoin(
+			materialSchema.info,
+			eq(tape_coil.material_uuid, materialSchema.info.uuid)
 		)
 		.orderBy(tape_coil.created_at, desc);
 
@@ -159,6 +216,8 @@ export async function select(req, res, next) {
 			created_at: tape_coil.created_at,
 			updated_at: tape_coil.updated_at,
 			remarks: tape_coil.remarks,
+			material_uuid: tape_coil.material_uuid,
+			material_name: materialSchema.info.name,
 		})
 		.from(tape_coil)
 		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
@@ -169,6 +228,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
+		)
+		.leftJoin(
+			materialSchema.info,
+			eq(tape_coil.material_uuid, materialSchema.info.uuid)
 		)
 		.where(eq(tape_coil.uuid, req.params.uuid));
 
@@ -215,6 +278,8 @@ export async function selectByNylon(req, res, next) {
 			created_at: tape_coil.created_at,
 			updated_at: tape_coil.updated_at,
 			remarks: tape_coil.remarks,
+			material_uuid: tape_coil.material_uuid,
+			material_name: materialSchema.info.name,
 		})
 		.from(tape_coil)
 		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
@@ -225,6 +290,10 @@ export async function selectByNylon(req, res, next) {
 		.leftJoin(
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
+		)
+		.leftJoin(
+			materialSchema.info,
+			eq(tape_coil.material_uuid, materialSchema.info.uuid)
 		)
 		.where(eq(sql`lower(item_properties.name)`, 'nylon'));
 

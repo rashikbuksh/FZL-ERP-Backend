@@ -453,6 +453,10 @@ export const tape_coil = zipper.table('tape_coil', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	material_uuid: defaultUUID('material_uuid')
+		.references(() => materialSchema.info.uuid)
+		.unique()
+		.default(null),
 });
 
 export const tape_trx = zipper.table('tape_trx', {
