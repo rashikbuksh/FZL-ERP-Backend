@@ -118,7 +118,6 @@ export async function selectAll(req, res, next) {
 			name: challan.name,
 			delivery_cost: decimalToNumber(challan.delivery_cost),
 			is_hand_delivery: challan.is_hand_delivery,
-			poly_quantity: packing_list_entry.poli_quantity,
 			created_by: challan.created_by,
 			created_by_name: createdByUser.name,
 			created_at: challan.created_at,
@@ -209,7 +208,6 @@ export async function select(req, res, next) {
 			name: challan.name,
 			delivery_cost: decimalToNumber(challan.delivery_cost),
 			is_hand_delivery: challan.is_hand_delivery,
-			poly_quantity: packing_list_entry.poli_quantity,
 			created_by: challan.created_by,
 			created_by_name: createdByUser.name,
 			created_at: challan.created_at,
@@ -273,7 +271,6 @@ export async function select(req, res, next) {
 			challan.carton_quantity,
 			challan.receive_status,
 			challan.gate_pass,
-			packing_list_entry.poli_quantity
 		);
 
 	try {
