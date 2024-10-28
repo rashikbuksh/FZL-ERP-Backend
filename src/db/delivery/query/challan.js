@@ -272,7 +272,8 @@ export async function select(req, res, next) {
 			vehicle.driver_name,
 			challan.carton_quantity,
 			challan.receive_status,
-			challan.gate_pass
+			challan.gate_pass,
+			packing_list_entry.poli_quantity
 		);
 
 	try {
