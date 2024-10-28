@@ -80,7 +80,7 @@ export async function insert(req, res, next) {
 		if (result.length > 0) {
 			const toast = {
 				status: 400,
-				type: 'insert',
+				type: 'ERROR',
 				message: 'Material already exists in tape_coil',
 			};
 			return await res.status(400).json({ toast });
@@ -94,7 +94,7 @@ export async function insert(req, res, next) {
 		const data = await dieCastingPromise;
 		const toast = {
 			status: 201,
-			type: 'ERROR',
+			type: 'insert',
 			message: `${data[0].insertedName} inserted`,
 		};
 		return await res.status(201).json({ toast, data });
