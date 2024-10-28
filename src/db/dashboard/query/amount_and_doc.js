@@ -461,6 +461,8 @@ export async function selectAmountPercentage(req, res, next) {
                             FROM
                                 commercial.lc
                             LEFT JOIN
+                                commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
+                            LEFT JOIN
                                 public.party ON lc.party_uuid = party.uuid
                             LEFT JOIN
                                 commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid

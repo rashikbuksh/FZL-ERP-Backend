@@ -213,7 +213,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         pl.updated_at,
         pl.remarks,
         pl.is_warehouse_received,
-        CONCAT('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) as challan_number,
+        CASE WHEN pl.challan_uuid IS NOT NULL THEN CONCAT('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) ELSE NULL END as challan_number,
         ch.gate_pass,
         ch.receive_status,
         ple.uuid as packing_list_entry_uuid,
@@ -232,10 +232,11 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
               THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
             ELSE CAST(oe.size AS NUMERIC)
         END as size,
-        CONCAT(oe.style, ' / ', oe.color, ' / ', CASE 
-                        WHEN vodf.is_inch = 1 
-                          THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                        ELSE CAST(oe.size AS NUMERIC)
+        CONCAT(oe.style, ' / ', oe.color, ' / ', 
+                    CASE 
+                      WHEN vodf.is_inch = 1 
+                        THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                      ELSE CAST(oe.size AS NUMERIC)
                     END) as style_color_size,
         oe.quantity::float8 as order_quantity,
         vodf.order_description_uuid,
