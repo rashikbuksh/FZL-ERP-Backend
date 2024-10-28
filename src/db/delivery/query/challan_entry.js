@@ -217,7 +217,7 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 				vpl.warehouse::float8,
 				vpl.delivered::float8,
 				vpl.balance_quantity::float8,
-				vpl.poli_quantity as poli_quantity
+				vpl.poli_quantity as poly_quantity
 			FROM 
 				delivery.challan
 			LEFT JOIN 
