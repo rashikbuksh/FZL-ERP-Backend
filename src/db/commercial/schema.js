@@ -49,7 +49,7 @@ export const lc = commercial.table('lc', {
 	shipment_date: DateTime('shipment_date').default(null),
 	expiry_date: DateTime('expiry_date').default(null),
 	ud_no: text('ud_no').default(null),
-	ud_received: text('ud_received').default(null),
+	ud_received: DateTime('ud_received').default(null),
 	at_sight: text('at_sight').default(null),
 	amd_date: DateTime('amd_date').default(null),
 	amd_count: integer('amd_count').default(0),
