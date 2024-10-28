@@ -12,7 +12,13 @@ import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
 
-import { challan, challan_entry, packing_list, vehicle } from '../schema.js';
+import {
+	challan,
+	challan_entry,
+	packing_list,
+	packing_list_entry,
+	vehicle,
+} from '../schema.js';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
 
@@ -112,6 +118,7 @@ export async function selectAll(req, res, next) {
 			name: challan.name,
 			delivery_cost: decimalToNumber(challan.delivery_cost),
 			is_hand_delivery: challan.is_hand_delivery,
+			poly_quantity: packing_list_entry.poli_quantity,
 			created_by: challan.created_by,
 			created_by_name: createdByUser.name,
 			created_at: challan.created_at,
@@ -144,6 +151,15 @@ export async function selectAll(req, res, next) {
 			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
 		)
 		.leftJoin(vehicle, eq(challan.vehicle_uuid, vehicle.uuid))
+		.leftJoin(challan_entry, eq(challan.uuid, challan_entry.challan_uuid))
+		.leftJoin(
+			packing_list,
+			eq(challan_entry.packing_list_uuid, packing_list.uuid)
+		)
+		.leftJoin(
+			packing_list_entry,
+			eq(packing_list.uuid, packing_list_entry.packing_list_uuid)
+		)
 		.orderBy(desc(challan.created_at));
 
 	try {
@@ -193,6 +209,7 @@ export async function select(req, res, next) {
 			name: challan.name,
 			delivery_cost: decimalToNumber(challan.delivery_cost),
 			is_hand_delivery: challan.is_hand_delivery,
+			poly_quantity: packing_list_entry.poli_quantity,
 			created_by: challan.created_by,
 			created_by_name: createdByUser.name,
 			created_at: challan.created_at,
@@ -230,6 +247,10 @@ export async function select(req, res, next) {
 			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
 		)
 		.leftJoin(vehicle, eq(challan.vehicle_uuid, vehicle.uuid))
+		.leftJoin(
+			packing_list_entry,
+			eq(packing_list.uuid, packing_list_entry.packing_list_uuid)
+		)
 		.where(eq(challan.uuid, req.params.uuid))
 		.groupBy(
 			challan.uuid,
