@@ -1,3 +1,4 @@
+-- * INSERTED IN BOTH DATABASES
 CREATE OR REPLACE FUNCTION zipper.stock_after_material_trx_against_order_description_insert_funct() RETURNS TRIGGER AS $$
 BEGIN
     -- Update material,stock
@@ -5,6 +6,14 @@ BEGIN
     SET
         stock = stock - NEW.trx_quantity
     WHERE material_uuid = NEW.material_uuid;
+
+    -- update slider.die_casting if material is present in die casting
+    IF (NEW.trx_to = 'die_casting') THEN
+        UPDATE slider.die_casting
+        SET
+            quantity = quantity + NEW.trx_quantity
+        WHERE material_uuid = NEW.material_uuid;
+    END IF;
 
     RETURN NEW;
 END;
@@ -20,6 +29,16 @@ BEGIN
             + OLD.trx_quantity
     WHERE material_uuid = NEW.material_uuid;
 
+    -- update slider.die_casting if material is present in die casting
+    IF (NEW.trx_to = 'die_casting') THEN
+        UPDATE slider.die_casting
+        SET
+            quantity = quantity 
+                + NEW.trx_quantity
+                - OLD.trx_quantity
+        WHERE material_uuid = NEW.material_uuid;
+    END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -32,12 +51,17 @@ BEGIN
         stock = stock + OLD.trx_quantity
     WHERE material_uuid = OLD.material_uuid;
 
+    -- update slider.die_casting if material is present in die casting
+    IF (OLD.trx_to = 'die_casting') THEN
+        UPDATE slider.die_casting
+        SET
+            quantity = quantity - OLD.trx_quantity
+        WHERE material_uuid = OLD.material_uuid;
+    END IF;
+
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
-
-
-
 
 
 CREATE OR REPLACE TRIGGER stock_after_material_trx_against_order_description_insert
@@ -54,6 +78,3 @@ CREATE OR REPLACE TRIGGER stock_after_material_trx_against_order_description_del
 AFTER DELETE ON zipper.material_trx_against_order_description
 FOR EACH ROW
 EXECUTE FUNCTION zipper.stock_after_material_trx_against_order_description_delete_funct();
-
-
-

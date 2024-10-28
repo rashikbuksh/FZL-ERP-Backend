@@ -1,5 +1,6 @@
 import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
+import * as materialSchema from '../material/schema.js';
 import * as publicSchema from '../public/schema.js';
 import {
 	DateTime,
@@ -131,6 +132,10 @@ export const die_casting = slider.table('die_casting', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+	material_uuid: defaultUUID('material_uuid')
+		.references(() => materialSchema.info.uuid)
+		.unique()
+		.default(null),
 });
 
 export const assembly_stock = slider.table('assembly_stock', {
