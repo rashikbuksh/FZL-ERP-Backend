@@ -9,6 +9,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
+import * as publicSchema from '../../public/schema.js';
 import {
 	carton,
 	challan,
@@ -102,6 +103,10 @@ export async function selectAll(req, res, next) {
 			carton_uuid: packing_list.carton_uuid,
 			carton_name: carton.name,
 			is_warehouse_received: packing_list.is_warehouse_received,
+			factory_uuid: zipperSchema.order_info.factory_uuid,
+			factory_name: publicSchema.factory.name,
+			buyer_uuid: zipperSchema.order_info.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
 			created_by: packing_list.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: packing_list.created_at,
@@ -119,6 +124,14 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
 		.leftJoin(carton, eq(packing_list.carton_uuid, carton.uuid))
+		.leftJoin(
+			publicSchema.factory,
+			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
+		)
 		.orderBy(desc(packing_list.created_at));
 	const toast = {
 		status: 200,
@@ -144,6 +157,10 @@ export async function select(req, res, next) {
 			carton_uuid: packing_list.carton_uuid,
 			carton_name: carton.name,
 			is_warehouse_received: packing_list.is_warehouse_received,
+			factory_uuid: zipperSchema.order_info.factory_uuid,
+			factory_name: publicSchema.factory.name,
+			buyer_uuid: zipperSchema.order_info.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
 			created_by: packing_list.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: packing_list.created_at,
@@ -161,6 +178,14 @@ export async function select(req, res, next) {
 		)
 		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
 		.leftJoin(carton, eq(packing_list.carton_uuid, carton.uuid))
+		.leftJoin(
+			publicSchema.factory,
+			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
+		)
 		.where(eq(packing_list.uuid, req.params.uuid));
 
 	try {
