@@ -35,7 +35,7 @@ export const info = material.table('info', {
 	uuid: uuid_primary,
 	section_uuid: defaultUUID('section_uuid').references(() => section.uuid),
 	type_uuid: defaultUUID('type_uuid').references(() => type.uuid),
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	short_name: text('short_name').default(null),
 	unit: text('unit').notNull(),
 	threshold: decimal('threshold', {

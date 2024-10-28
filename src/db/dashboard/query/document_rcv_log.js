@@ -25,6 +25,8 @@ export async function selectDocumentRcvLog(req, res, next) {
              lc.lc_date
             FROM
                 commercial.lc
+			LEFT JOIN 
+				commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
             LEFT JOIN
                 public.party ON lc.party_uuid = party.uuid
             LEFT JOIN 
@@ -36,10 +38,9 @@ export async function selectDocumentRcvLog(req, res, next) {
             LEFT JOIN
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             WHERE
-                lc.handover_date IS NOT NULL AND lc.document_receive_date IS NULL AND  ${start_date ? sql`lc.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                lc_entry.handover_date IS NOT NULL AND lc.document_receive_date IS NULL AND  ${start_date ? sql`lc.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
             GROUP BY
                 lc.created_at, lc.id, party.name, marketing.name, lc.lc_value, lc.lc_date, lc.is_old_pi, lc.uuid
-
             ORDER BY lc.lc_date DESC LIMIT 10
             
         `;
