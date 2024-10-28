@@ -13,7 +13,7 @@ const material = pgSchema('material');
 
 export const section = material.table('section', {
 	uuid: uuid_primary,
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	short_name: text('short_name').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
@@ -23,7 +23,7 @@ export const section = material.table('section', {
 
 export const type = material.table('type', {
 	uuid: uuid_primary,
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	short_name: text('short_name').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
