@@ -359,11 +359,12 @@ export async function selectLcByLcNumber(req, res, next) {
 	try {
 		const data = await lcPromise;
 		const lcEntryData = await lcEntryPromise;
+		const lcEntryOthersData = await lcEntryOthersPromise;
 
 		const response = {
 			...data?.rows[0],
 			lc_entry: lcEntryData?.rows || [],
-			lc_entry_others: lcEntryOthersPromise?.rows || [],
+			lc_entry_others: lcEntryOthersData?.rows || [],
 		};
 
 		const toast = {
