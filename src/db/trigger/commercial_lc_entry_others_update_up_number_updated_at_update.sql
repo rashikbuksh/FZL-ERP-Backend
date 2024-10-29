@@ -1,8 +1,8 @@
-
+-- * UPDATED IN LOCAL SERVER
 CREATE OR REPLACE FUNCTION commercial.update_up_number_updated_at()
 RETURNS TRIGGER AS $$
 	BEGIN
-		NEW.up_number_updated_at = now();
+		NEW.up_number_updated_at = to_char(now(), 'YYYY-MM-DD HH24:MI:SS');
 		RETURN NEW;
 	END;
 $$ LANGUAGE plpgsql;

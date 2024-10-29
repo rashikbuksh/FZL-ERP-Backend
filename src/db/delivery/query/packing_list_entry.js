@@ -240,6 +240,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			sfg.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
 			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
+			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 + ple.quantity::float8 as max_quantity,
 			true as is_checked
 		FROM 
 			delivery.packing_list_entry ple
