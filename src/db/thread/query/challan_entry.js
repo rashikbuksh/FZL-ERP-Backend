@@ -165,6 +165,7 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 			order_entry.delivered::float8,
 			order_entry.warehouse::float8,
 			(order_entry.quantity::float8 - order_entry.warehouse::float8 - order_entry.delivered::float8) as balance_quantity,
+			(order_entry.quantity::float8 - order_entry.warehouse::float8 - order_entry.delivered::float8)::float8 + challan_entry.quantity::float8 as max_quantity,
 			true AS is_checked
 		FROM
 			thread.challan_entry

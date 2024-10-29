@@ -258,6 +258,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			sfg.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
 			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
+			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as max_quantity,
 			0 as short_quantity,
 			0 as reject_quantity
 		FROM
