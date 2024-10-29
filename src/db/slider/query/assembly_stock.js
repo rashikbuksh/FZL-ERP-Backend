@@ -1,6 +1,7 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
+import * as zipperSchema from '../../zipper/schema.js';
 import { assembly_stock } from '../schema.js';
 
 export async function insert(req, res, next) {
