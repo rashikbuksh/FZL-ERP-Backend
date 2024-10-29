@@ -1,9 +1,9 @@
 import { and, eq, min, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
-    handleError,
-    handleResponse,
-    validateRequest,
+	handleError,
+	handleResponse,
+	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
 
@@ -557,8 +557,8 @@ export async function LCReport(req, res, next) {
                 lc.shipment_date,
                 lc.expiry_date,
                 lc_entry.amount::float8,
-                lc.ud_no,
-                lc.ud_received,
+                lc_entry_others.ud_no,
+                lc_entry_others.ud_received,
                 pi_cash.marketing_uuid,
                 marketing.name as marketing_name,
                 pi_cash.bank_uuid,
@@ -577,6 +577,8 @@ export async function LCReport(req, res, next) {
                 commercial.lc
             LEFT JOIN 
                 commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
+            LEFT JOIN
+                commercial.lc_entry_others ON lc.uuid = lc_entry_others.lc_uuid
             LEFT JOIN
                 public.party ON lc.party_uuid = party.uuid
             LEFT JOIN 
