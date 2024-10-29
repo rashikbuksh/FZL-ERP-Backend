@@ -1232,22 +1232,24 @@ export async function deliveryStatementReport(req, res, next) {
 						THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
 					ELSE CAST(oe.size AS NUMERIC)
 				END as size,
+                opening_all_sum.challan_numbers,
                 coalesce(opening_all_sum.total_close_end_quantity,0)::float8 as opening_total_close_end_quantity,
                 coalesce(opening_all_sum.total_open_end_quantity,0)::float8 as opening_total_open_end_quantity,
                 coalesce(opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity,0)::float8 as opening_total_quantity,
                 (coalesce(opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity,0)/12)::float8 as opening_total_quantity_dzn,
-                opening_all_sum.unit_price_dzn::float8 as opening_unit_price_dzn,
-                opening_all_sum.unit_price_pcs::float8 as opening_unit_price_pcs,
+                coalesce(opening_all_sum.unit_price_dzn::float8,0) as opening_unit_price_dzn,
+                coalesce(opening_all_sum.unit_price_pcs::float8,0) as opening_unit_price_pcs,
                 coalesce(opening_all_sum.total_close_end_value,0)::float8 as opening_total_close_end_value,
                 coalesce(opening_all_sum.total_open_end_value,0)::float8 as opening_total_open_end_value,
                 coalesce(opening_all_sum.total_close_end_value + opening_all_sum.total_open_end_value,0)::float8 as opening_total_value,
                 CONCAT('2024-09-01'::TIMESTAMP, ' to ', '2024-09-30'::TIMESTAMP + interval '23 hours 59 minutes 59 seconds') as running_period,
+                running_all_sum.challan_numbers,
                 coalesce(running_all_sum.total_close_end_quantity,0)::float8 as running_total_close_end_quantity,
                 coalesce(running_all_sum.total_open_end_quantity,0)::float8 as running_total_open_end_quantity,
                 coalesce(running_all_sum.total_close_end_quantity + running_all_sum.total_open_end_quantity,0)::float8 as running_total_quantity,
                 (coalesce(running_all_sum.total_close_end_quantity + running_all_sum.total_open_end_quantity,0)/12)::float8 as running_total_quantity_dzn,
-                running_all_sum.unit_price_dzn::float8 as running_unit_price_dzn,
-                running_all_sum.unit_price_pcs::float8 as running_unit_price_pcs,
+                coalesce(running_all_sum.unit_price_dzn::float8,0) as running_unit_price_dzn,
+                coalesce(running_all_sum.unit_price_pcs::float8,0) as running_unit_price_pcs,
                 coalesce(running_all_sum.total_close_end_value,0)::float8 as running_total_close_end_value,
                 coalesce(running_all_sum.total_open_end_value,0)::float8 as running_total_open_end_value,
                 coalesce(running_all_sum.total_close_end_value + running_all_sum.total_open_end_value,0)::float8 as running_total_value
@@ -1263,6 +1265,7 @@ export async function deliveryStatementReport(req, res, next) {
                     (oe.company_price/12) as unit_price_pcs,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_close_end_value,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_open_end_value,
+                    ARRAY_AGG(DISTINCT CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0'))) as challan_numbers,
                     vpl.order_entry_uuid
                 FROM
                     delivery.v_packing_list_details vpl
@@ -1282,6 +1285,7 @@ export async function deliveryStatementReport(req, res, next) {
                     (oe.company_price/12) as unit_price_pcs,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_close_end_value,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_open_end_value,
+                    ARRAY_AGG(DISTINCT CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0'))) as challan_numbers,
                     vpl.order_entry_uuid
                 FROM
                     delivery.v_packing_list_details vpl
