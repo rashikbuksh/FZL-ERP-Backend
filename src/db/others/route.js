@@ -1031,6 +1031,7 @@ const pathLabDip = {
 				),
 				SE.parameter_query('info_uuid', 'info_uuid', 'false'),
 				SE.parameter_query('bleaching', 'bleaching', [1, 0]),
+				SE.parameter_query('approved', 'approved', [1, 0]),
 			],
 			responses: {
 				200: {
