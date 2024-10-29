@@ -132,10 +132,6 @@ export const die_casting = slider.table('die_casting', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
-	material_uuid: defaultUUID('material_uuid')
-		.references(() => materialSchema.info.uuid)
-		.unique()
-		.default(null),
 });
 
 export const assembly_stock = slider.table('assembly_stock', {
@@ -159,6 +155,10 @@ export const assembly_stock = slider.table('assembly_stock', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	material_uuid: defaultUUID('material_uuid')
+		.references(() => materialSchema.info.uuid)
+		.unique()
+		.default(null),
 });
 
 export const die_casting_to_assembly_stock = slider.table(

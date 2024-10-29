@@ -1,3 +1,4 @@
+import { material } from '@/db/schema.js';
 import SE, { SED } from '../../../util/swagger_example.js';
 // * ./schema.js#stock
 export const defStock = SED({
@@ -128,6 +129,7 @@ export const defDieCastingToAssemblyStock = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		material_uuid: SE.uuid(),
 	},
 	xml: 'Slider/DieCastingToAssemblyStock',
 });

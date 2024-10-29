@@ -210,8 +210,6 @@ export async function selectAll(req, res, next) {
 			type: die_casting.type,
 			quantity_in_sa: decimalToNumber(die_casting.quantity_in_sa),
 			quantity_in_sa_weight: sql`((coalesce(NULLIF(die_casting.weight,0) / die_casting.quantity,0)::float8) * die_casting.quantity_in_sa)::float8`,
-			material_uuid: die_casting.material_uuid,
-			material_name: materialSchema.info.name,
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))
@@ -242,10 +240,6 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(die_casting.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			materialSchema.info,
-			eq(die_casting.material_uuid, materialSchema.info.uuid)
 		)
 		.orderBy(desc(die_casting.created_at));
 
@@ -299,8 +293,6 @@ export async function select(req, res, next) {
 			type: die_casting.type,
 			quantity_in_sa: decimalToNumber(die_casting.quantity_in_sa),
 			quantity_in_sa_weight: sql`((coalesce(NULLIF(die_casting.weight,0) / die_casting.quantity,0)::float8) * die_casting.quantity_in_sa)::float8`,
-			material_uuid: die_casting.material_uuid,
-			material_name: materialSchema.info.name,
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))
@@ -331,10 +323,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(die_casting.created_by, hrSchema.users.uuid)
-		)
-		.leftJoin(
-			materialSchema.info,
-			eq(die_casting.material_uuid, materialSchema.info.uuid)
 		)
 		.where(eq(die_casting.uuid, req.params.uuid));
 
@@ -400,15 +388,11 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				trx_against_stock.remarks,
 				(die_casting.quantity::float8 + trx_against_stock.quantity::float8) as max_quantity,
 				null as order_number,
-				null as item_description,
-				die_casting.material_uuid,
-				material.name as material_name
+				null as item_description
 			FROM 
 				slider.trx_against_stock
 			LEFT JOIN
 				slider.die_casting ON die_casting.uuid = trx_against_stock.die_casting_uuid
-			LEFT JOIN 
-				material.info material ON die_casting.material_uuid = material.uuid
 			LEFT JOIN 
 				public.properties item_properties ON die_casting.item = item_properties.uuid
 			LEFT JOIN 
@@ -472,15 +456,11 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				die_casting_transaction.remarks,
 				(die_casting.quantity::float8 + die_casting_transaction.trx_quantity::float8) as max_quantity,
 				vod.order_number,
-				vod.item_description,
-				die_casting.material_uuid,
-				material.name as material_name
+				vod.item_description
 			FROM 
 				slider.die_casting_transaction
 			LEFT JOIN
 				slider.die_casting ON die_casting.uuid = die_casting_transaction.die_casting_uuid
-			LEFT JOIN
-				material.info material ON die_casting.material_uuid = material.uuid
 			LEFT JOIN 
 				public.properties item_properties ON die_casting.item = item_properties.uuid
 			LEFT JOIN 

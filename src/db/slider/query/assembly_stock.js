@@ -91,7 +91,9 @@ export async function selectAll(req, res, next) {
 			assembly_stock.created_at,
 			assembly_stock.updated_at,
 			assembly_stock.remarks,
-			transaction_total_trx.total_transaction_quantity::float8
+			transaction_total_trx.total_transaction_quantity::float8,
+			assembly_stock.material_uuid,
+			info.name AS material_name
 		FROM 
 			slider.assembly_stock
 		LEFT JOIN 
@@ -104,6 +106,8 @@ export async function selectAll(req, res, next) {
 			slider.die_casting diecastingcap ON assembly_stock.die_casting_cap_uuid = diecastingcap.uuid
 		LEFT JOIN 
 			slider.die_casting diecastinglink ON assembly_stock.die_casting_link_uuid = diecastinglink.uuid
+		LEFT JOIN
+			material.info ON assembly_stock.material_uuid = info.uuid
 		LEFT JOIN (
 			SELECT
 				assembly_stock.uuid AS assembly_stock_uuid,
@@ -160,7 +164,9 @@ export async function select(req, res, next) {
 			assembly_stock.created_at,
 			assembly_stock.updated_at,
 			assembly_stock.remarks,
-			transaction_total_trx.total_transaction_quantity::float8
+			transaction_total_trx.total_transaction_quantity::float8,
+			assembly_stock.material_uuid,
+			info.name AS material_name
 		FROM 
 			slider.assembly_stock
 		LEFT JOIN 
@@ -173,6 +179,8 @@ export async function select(req, res, next) {
 			slider.die_casting diecastingcap ON assembly_stock.die_casting_cap_uuid = diecastingcap.uuid
 		LEFT JOIN 
 			slider.die_casting diecastinglink ON assembly_stock.die_casting_link_uuid = diecastinglink.uuid
+		LEFT JOIN 
+			material.info ON assembly_stock.material_uuid = info.uuid
 		LEFT JOIN (
 			SELECT
 				assembly_stock.uuid AS assembly_stock_uuid,
@@ -281,7 +289,9 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			AS DOUBLE PRECISION) + production.production_quantity::float8 AS max_sa_quantity,
 			0 as max_production_quantity_with_link,
 			0 as max_production_quantity_without_link,
-			TRUE as against_order
+			TRUE as against_order,
+			null as material_uuid,
+			null as material_name
 		FROM
 			slider.production
 		LEFT JOIN
@@ -355,7 +365,9 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			0 as max_sa_quantity,
 			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa)::float8 + die_casting_to_assembly_stock.production_quantity::float8 as max_production_quantity_with_link,
 			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa)::float8 + die_casting_to_assembly_stock.production_quantity::float8 as max_production_quantity_without_link,
-			FALSE as against_order
+			FALSE as against_order,
+			assembly_stock.material_uuid,
+			info.name as material_name
 		FROM
 			slider.die_casting_to_assembly_stock
 		LEFT JOIN 
@@ -370,6 +382,8 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			slider.die_casting diecastingcap ON assembly_stock.die_casting_cap_uuid = diecastingcap.uuid
 		LEFT JOIN
 			slider.die_casting diecastinglink ON assembly_stock.die_casting_link_uuid = diecastinglink.uuid
+		LEFT JOIN
+			material.info ON assembly_stock.material_uuid = info.uuid
 		ORDER BY
 			created_at DESC;
 	`;
