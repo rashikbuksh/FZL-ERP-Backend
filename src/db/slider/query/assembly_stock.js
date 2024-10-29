@@ -5,13 +5,35 @@ import { assembly_stock } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
-	const assemblyStockPromise = db
-		.insert(assembly_stock)
-		.values(req.body)
-		.returning({ insertedId: assembly_stock.uuid });
-
 	try {
+		const resultPromise = db
+			.select(1)
+			.from(zipperSchema.tape_coil)
+			.where(
+				and(
+					eq(
+						zipperSchema.tape_coil.material_uuid,
+						req.body.material_uuid
+					)
+				)
+			);
+
+		const result = await resultPromise;
+
+		if (result.length > 0) {
+			const toast = {
+				status: 400,
+				type: 'ERROR',
+				message: 'Material already exists in tape_coil',
+			};
+			return await res.status(400).json({ toast });
+		}
+
+		const assemblyStockPromise = db
+			.insert(assembly_stock)
+			.values(req.body)
+			.returning({ insertedId: assembly_stock.uuid });
+
 		const data = await assemblyStockPromise;
 		const toast = {
 			status: 201,
@@ -26,13 +48,39 @@ export async function insert(req, res, next) {
 
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
-	const assemblyStockPromise = db
-		.update(assembly_stock)
-		.set(req.body)
-		.where(eq(assembly_stock.uuid, req.params.uuid))
-		.returning({ updatedId: assembly_stock.uuid });
 	try {
+		// check if the material_uuid is exists in slider.die_casting table then dont update the record
+		if (req.body.material_uuid) {
+			const resultPromise = db
+				.select(1)
+				.from(zipperSchema.tape_coil)
+				.where(
+					and(
+						eq(
+							zipperSchema.tape_coil.material_uuid,
+							req.body.material_uuid
+						)
+					)
+				);
+
+			const result = await resultPromise;
+
+			if (result.length > 0) {
+				const toast = {
+					status: 400,
+					type: 'ERROR',
+					message: 'Material already exists in tape_coil',
+				};
+				return await res.status(400).json({ toast });
+			}
+		}
+
+		const assemblyStockPromise = db
+			.update(assembly_stock)
+			.set(req.body)
+			.where(eq(assembly_stock.uuid, req.params.uuid))
+			.returning({ updatedId: assembly_stock.uuid });
+
 		const data = await assemblyStockPromise;
 		const toast = {
 			status: 201,

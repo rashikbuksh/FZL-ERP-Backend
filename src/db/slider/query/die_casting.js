@@ -63,29 +63,6 @@ export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	try {
-		const resultPromise = db
-			.select(1)
-			.from(zipperSchema.tape_coil)
-			.where(
-				and(
-					eq(
-						zipperSchema.tape_coil.material_uuid,
-						req.body.material_uuid
-					)
-				)
-			);
-
-		const result = await resultPromise;
-
-		if (result.length > 0) {
-			const toast = {
-				status: 400,
-				type: 'ERROR',
-				message: 'Material already exists in tape_coil',
-			};
-			return await res.status(400).json({ toast });
-		}
-
 		const dieCastingPromise = db
 			.insert(die_casting)
 			.values(req.body)
@@ -107,32 +84,6 @@ export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	try {
-		// check if the material_uuid is exists in slider.die_casting table then dont update the record
-		if (req.body.material_uuid) {
-			const resultPromise = db
-				.select(1)
-				.from(zipperSchema.tape_coil)
-				.where(
-					and(
-						eq(
-							zipperSchema.tape_coil.material_uuid,
-							req.body.material_uuid
-						)
-					)
-				);
-
-			const result = await resultPromise;
-
-			if (result.length > 0) {
-				const toast = {
-					status: 400,
-					type: 'ERROR',
-					message: 'Material already exists in tape_coil',
-				};
-				return await res.status(400).json({ toast });
-			}
-		}
-
 		const dieCastingPromise = db
 			.update(die_casting)
 			.set(req.body)

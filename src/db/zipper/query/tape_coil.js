@@ -25,11 +25,11 @@ export async function insert(req, res, next) {
 		// check if the material_uuid is exists in slider.die_casting table then dont insert the record
 		const resultPromise = db
 			.select(1)
-			.from(sliderSchema.die_casting)
+			.from(sliderSchema.assembly_stock)
 			.where(
 				and(
 					eq(
-						sliderSchema.die_casting.material_uuid,
+						sliderSchema.assembly_stock.material_uuid,
 						req.body.material_uuid
 					)
 				)
@@ -71,11 +71,11 @@ export async function update(req, res, next) {
 		if (req.body.material_uuid) {
 			const resultPromise = db
 				.select(1)
-				.from(sliderSchema.die_casting)
+				.from(sliderSchema.assembly_stock)
 				.where(
 					and(
 						eq(
-							sliderSchema.die_casting.material_uuid,
+							sliderSchema.assembly_stock.material_uuid,
 							req.body.material_uuid
 						)
 					)
