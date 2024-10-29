@@ -958,6 +958,8 @@ export async function selectLabDipRecipe(req, res, next) {
 			approved: labDipSchema.recipe.approved,
 			status: labDipSchema.recipe.status,
 			info: labDipSchema.recipe.lab_dip_info_uuid,
+			bleaching: labDipSchema.recipe.bleaching,
+			order_info_uuid: labDipSchema.info.order_info_uuid,
 		})
 		.from(labDipSchema.recipe)
 		.leftJoin(
@@ -1022,7 +1024,8 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 		lab_dip.recipe
 	LEFT JOIN
 		lab_dip.info ON recipe.lab_dip_info_uuid = lab_dip.info.uuid
-	WHERE
+	WHERE 
+	  lab_dip.recipe.approved = 1 AND
 	  ${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.recipe.approved = 1 ` : sql`1=1`}
 	  AND
 	  ${bleaching ? sql` recipe.bleaching = ${bleaching}` : sql`1=1`}
@@ -1037,6 +1040,8 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 		data.rows.push({
 			value: null,
 			label: '---',
+			thread_order_info_uuid: null,
+			bleaching: null,
 		});
 
 		const toast = {
