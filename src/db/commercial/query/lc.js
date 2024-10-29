@@ -234,15 +234,17 @@ export async function selectLcPiByLcUuid(req, res, next) {
 		const fetchData = async (endpoint) =>
 			await api.get(`/commercial/${endpoint}/${lc_uuid}`);
 
-		const [lc, lc_entry, pi_cash] = await Promise.all([
+		const [lc, lc_entry, lc_entry_others, pi_cash] = await Promise.all([
 			fetchData('lc'),
 			fetchData('lc-entry/by'),
+			fetchData('lc-entry-others/by'),
 			fetchData('pi-cash-lc'),
 		]);
 
 		const response = {
 			...lc?.data?.data,
 			lc_entry: lc_entry?.data?.data || [],
+			lc_entry_others: lc_entry_others?.data?.data || [],
 			pi: pi_cash?.data?.data || [],
 		};
 
@@ -336,10 +338,27 @@ export async function selectLcByLcNumber(req, res, next) {
 		LEFT JOIN 
 			commercial.lc ON lc_entry.lc_uuid = lc.uuid
 		WHERE lc.lc_number = ${req.params.lc_number}
-		GROUP BY lc_entry.uuid`;
+		ORDER BY lc_entry.created_at ASC`;
+
+	const lc_entry_other_query = sql`
+		SELECT
+			lc_entry_others.uuid,
+            lc_entry_others.lc_uuid,
+			lc_entry_others.ud_no,
+			lc_entry_others.ud_received,
+			lc_entry_others.up_number,
+			lc_entry_others.up_number_updated_at,
+            lc_entry_others.created_at,
+			lc_entry_others.updated_at,
+			lc_entry_others.remarks
+		FROM
+			commercial.lc_entry_others
+		WHERE lc_entry_others.lc_uuid = ${req.params.lc_uuid}
+		ORDER BY lc_entry_others.created_at ASC`;
 
 	const lcPromise = db.execute(query);
 	const lcEntryPromise = db.execute(lc_entry_query);
+	const lcEntryOthersPromise = db.execute(lc_entry_other_query);
 
 	try {
 		const data = await lcPromise;
@@ -348,6 +367,7 @@ export async function selectLcByLcNumber(req, res, next) {
 		const response = {
 			...data?.rows[0],
 			lc_entry: lcEntryData?.rows || [],
+			lc_entry_others: lcEntryOthersPromise?.rows || [],
 		};
 
 		const toast = {

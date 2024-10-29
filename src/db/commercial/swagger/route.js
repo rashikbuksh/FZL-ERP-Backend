@@ -1,6 +1,7 @@
 import { is } from 'drizzle-orm';
 import { response } from 'express';
 import SE, { SED } from '../../../util/swagger_example.js';
+import { lc_entry_others } from '../schema.js';
 
 // * Commercial Bank * //
 export const pathCommercialBank = {
@@ -117,8 +118,6 @@ export const pathCommercialLc = {
 					document_receive_date: SE.date_time(),
 					shipment_date: SE.date_time(),
 					expiry_date: SE.date_time(),
-					ud_no: SE.string('ud_no'),
-					ud_received: SE.string('ud_received'),
 					at_sight: SE.string('at_sight'),
 					amd_date: SE.date_time(),
 					amd_count: SE.integer(1),
@@ -179,8 +178,6 @@ export const pathCommercialLc = {
 					lc_cancel: SE.integer(1),
 					shipment_date: SE.date_time(),
 					expiry_date: SE.date_time(),
-					ud_no: SE.string('ud_no'),
-					ud_received: SE.string('ud_received'),
 					at_sight: SE.string('at_sight'),
 					amd_date: SE.date_time(),
 					amd_count: SE.integer(1),
@@ -262,8 +259,6 @@ export const pathCommercialLc = {
 					lc_cancel: SE.integer(1),
 					shipment_date: SE.date_time(),
 					expiry_date: SE.date_time(),
-					ud_no: SE.string('ud_no'),
-					ud_received: SE.integer(1),
 					at_sight: SE.string('at_sight'),
 					amd_date: SE.date_time(),
 					amd_count: SE.integer(1),
@@ -289,6 +284,17 @@ export const pathCommercialLc = {
 						payment_date: SE.date_time(),
 						payment_value: SE.number(12.3456),
 						amount: SE.number(12.3456),
+						created_at: SE.date_time(),
+						update_at: SE.date_time(),
+						remarks: SE.string('remarks'),
+					}),
+					lc_entry_others: SE.sub_response_schema({
+						uuid: SE.uuid(),
+						lc_uuid: SE.uuid(),
+						ud_no: SE.string('ud_no'),
+						ud_received: SE.date_time(),
+						up_number: SE.string('up_number'),
+						up_number_updated_at: SE.date_time(),
 						created_at: SE.date_time(),
 						update_at: SE.date_time(),
 						remarks: SE.string('remarks'),
@@ -366,8 +372,6 @@ export const pathCommercialLc = {
 					document_receive_date: SE.date_time(),
 					shipment_date: SE.date_time(),
 					expiry_date: SE.date_time(),
-					ud_no: SE.string('ud_no'),
-					ud_received: SE.integer(1),
 					at_sight: SE.string('at_sight'),
 					amd_date: SE.date_time(),
 					amd_count: SE.integer(1),
@@ -476,6 +480,110 @@ export const pathCommercialLcEntry = {
 			],
 			responses: {
 				200: SE.response_schema_ref(200, 'commercial/lc_entry'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
+// * Commercial LC Entry Others * //
+
+export const pathCommercialLcEntryOthers = {
+	'/commercial/lc-entry-others': {
+		get: {
+			tags: ['commercial.lc_entry_others'],
+			summary: 'Get all lc entry others',
+			description: 'All lc entry others',
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/lc_entry_others'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		post: {
+			tags: ['commercial.lc_entry_others'],
+			summary: 'Create a lc entry others',
+			description: 'Create a lc entry others',
+			requestBody: SE.requestBody_schema_ref(
+				'commercial/lc_entry_others'
+			),
+			responses: {
+				201: SE.response_schema_ref(201, 'commercial/lc_entry_others'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+	'/commercial/lc-entry-others/{uuid}': {
+		get: {
+			tags: ['commercial.lc_entry_others'],
+			summary: 'Get a lc entry others',
+			description: ' Get a lc entry others by uuid',
+			//operationId: "getLcEntryOthersByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Get data using uuid', 'uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/lc_entry_others'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['commercial.lc_entry_others'],
+			summary: 'Update a lc entry others',
+			description: 'Update a lc entry others by uuid',
+			//operationId: "updateLcEntryOthersByUuid",
+			consume: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Update data using uuid', 'uuid', 'uuid'),
+			],
+			requestBody: SE.requestBody_schema_ref(
+				'commercial/lc_entry_others'
+			),
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/lc_entry_others'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		delete: {
+			tags: ['commercial.lc_entry_others'],
+			summary: 'Delete a lc entry others',
+			description: 'Delete a lc entry others by uuid',
+			//operationId: "deleteLcEntryOthersByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Delete data using uuid', 'uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+	'/commercial/lc-entry-others/by/{lc_uuid}': {
+		get: {
+			tags: ['commercial.lc_entry_others'],
+			summary: 'Get a lc entry others by lc_uuid',
+			description: ' Get a lc entry others by lc_uuid',
+			//operationId: "getLcEntryOthersByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Get data using uuid', 'lc_uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/lc_entry_others'),
 				405: SE.response(405),
 				400: SE.response(400),
 				404: SE.response(404),
@@ -1332,6 +1440,7 @@ export const pathCommercial = {
 	...pathCommercialBank,
 	...pathCommercialLc,
 	...pathCommercialLcEntry,
+	...pathCommercialLcEntryOthers,
 	...pathCommercialPiCash,
 	...pathCommercialPiCashEntry,
 	...pathCommercialManualPi,

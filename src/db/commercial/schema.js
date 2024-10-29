@@ -48,8 +48,6 @@ export const lc = commercial.table('lc', {
 	lc_cancel: integer('lc_cancel').default(0),
 	shipment_date: DateTime('shipment_date').default(null),
 	expiry_date: DateTime('expiry_date').default(null),
-	ud_no: text('ud_no').default(null),
-	ud_received: DateTime('ud_received').default(null),
 	at_sight: text('at_sight').default(null),
 	amd_date: DateTime('amd_date').default(null),
 	amd_count: integer('amd_count').default(0),
@@ -76,6 +74,18 @@ export const lc_entry = commercial.table('lc_entry', {
 	payment_date: DateTime('payment_date').default(null),
 	payment_value: PG_DECIMAL('payment_value').default(0),
 	amount: PG_DECIMAL('amount').default(0),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const lc_entry_others = commercial.table('lc_entry_others', {
+	uuid: uuid_primary,
+	lc_uuid: defaultUUID('lc_uuid').references(() => lc.uuid),
+	ud_no: text('ud_no').default(null),
+	ud_received: DateTime('ud_received').default(null),
+	up_number: text('up_number').default(null),
+	up_number_updated_at: DateTime('up_number_updated_at').default(null), // will update in trigger
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

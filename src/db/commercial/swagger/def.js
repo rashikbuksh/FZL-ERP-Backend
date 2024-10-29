@@ -91,6 +91,23 @@ export const defCommercialLcEntry = SED({
 	xml: 'Commercial/LcEntry',
 });
 
+export const defCommercialLcEntryOthers = SED({
+	type: 'object',
+	required: ['uuid', 'lc_uuid', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		lc_uuid: SE.uuid(),
+		ud_no: SE.string('12346gdfh'),
+		ud_received: SE.date_time(),
+		up_number: SE.string('dsab13'),
+		up_number_updated_at: SE.date_time(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Commercial/LcEntryOthers',
+});
+
 export const defCommercialManualPi = SED({
 	type: 'object',
 	required: [
@@ -229,11 +246,12 @@ export const defCommercialPiCashEntry = SED({
 export const defCommercial = {
 	bank: defCommercialBank,
 	lc: defCommercialLc,
+	lc_entry: defCommercialLcEntry,
+	lc_entry_others: defCommercialLcEntryOthers,
 	pi_cash: defCommercialPiCash,
 	pi_cash_entry: defCommercialPiCashEntry,
 	manual_pi: defCommercialManualPi,
 	manual_pi_entry: defCommercialManualPiEntry,
-	lc_entry: defCommercialLcEntry,
 };
 
 // * Tag
@@ -257,6 +275,14 @@ export const tagCommercial = [
 	{
 		name: 'commercial.lc_entry',
 		description: 'Operations about commercial lc_entry',
+		externalDocs: {
+			description: 'Find out more',
+			url: 'http://swagger.io',
+		},
+	},
+	{
+		name: 'commercial.lc_entry_others',
+		description: 'Operations about commercial lc_entry_others',
 		externalDocs: {
 			description: 'Find out more',
 			url: 'http://swagger.io',
