@@ -347,7 +347,9 @@ export async function selectLcByLcNumber(req, res, next) {
 			lc_entry_others.remarks
 		FROM
 			commercial.lc_entry_others
-		WHERE lc_entry_others.lc_uuid = ${req.params.lc_uuid}
+		LEFT JOIN 
+			commercial.lc ON lc_entry.lc_uuid = lc.uuid
+		WHERE lc.lc_number = ${req.params.lc_number}
 		ORDER BY lc_entry_others.created_at ASC`;
 
 	const lcPromise = db.execute(query);
