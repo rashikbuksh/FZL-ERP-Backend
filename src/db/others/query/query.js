@@ -1180,12 +1180,26 @@ export async function selectDieCastingUsingType(req, res, next) {
 export async function selectThreadOrder(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
+	const { page } = req.query;
+
 	const query = sql`
 						SELECT
 							ot.uuid AS value,
 							CONCAT('TO', to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
 						FROM
-							thread.order_info ot`;
+							thread.order_info ot
+						WHERE 
+							${
+								page == 'challan'
+									? sql`ot.uuid IN (
+								SELECT
+									oe.order_info_uuid
+								FROM
+									thread.order_entry oe
+								WHERE
+									oe.warehouse > 0)`
+									: sql`1=1`
+							}`;
 
 	const orderThreadPromise = db.execute(query);
 

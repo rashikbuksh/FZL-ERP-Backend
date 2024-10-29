@@ -1185,6 +1185,7 @@ const pathThread = {
 			summary: 'get all threads',
 			description: 'All threads',
 			operationId: 'getAllThreads',
+			parameters: [SE.parameter_query('page', 'page', ['challan'])],
 			responses: {
 				200: {
 					description: 'Returns a all threads.',
