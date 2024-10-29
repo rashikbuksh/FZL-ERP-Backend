@@ -1,4 +1,16 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import {
+	and,
+	asc,
+	desc,
+	eq,
+	gt,
+	gte,
+	lt,
+	lte,
+	not,
+	or,
+	sql,
+} from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
