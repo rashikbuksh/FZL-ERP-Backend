@@ -1015,7 +1015,9 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	const query = sql`
 	SELECT
 		recipe.uuid AS value,
-		concat( recipe.name, '-', recipe.bleaching) AS label
+		concat( recipe.name, '-', recipe.bleaching) AS label,
+		lab_dip.info.thread_order_info_uuid,
+		recipe.bleaching
 	FROM
 		lab_dip.recipe
 	LEFT JOIN
