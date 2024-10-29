@@ -348,7 +348,7 @@ export async function selectLcByLcNumber(req, res, next) {
 		FROM
 			commercial.lc_entry_others
 		LEFT JOIN 
-			commercial.lc ON lc_entry.lc_uuid = lc.uuid
+			commercial.lc ON lc_entry_others.lc_uuid = lc.uuid
 		WHERE lc.lc_number = ${req.params.lc_number}
 		ORDER BY lc_entry_others.created_at ASC`;
 
