@@ -949,7 +949,7 @@ export async function selectDesignation(req, res, next) {
 
 // * Lab Dip * //
 export async function selectLabDipRecipe(req, res, next) {
-	const { order_info_uuid, bleaching, info_uuid } = req.query;
+	const { order_info_uuid, bleaching, info_uuid, approved } = req.query;
 
 	const recipePromise = db
 		.select({
@@ -967,23 +967,25 @@ export async function selectLabDipRecipe(req, res, next) {
 			eq(labDipSchema.recipe.lab_dip_info_uuid, labDipSchema.info.uuid)
 		)
 		.where(
-			and(
-				eq(labDipSchema.recipe.approved, 1),
-				order_info_uuid
-					? eq(labDipSchema.info.order_info_uuid, order_info_uuid)
-					: sql`1=1`,
-				info_uuid === 'false'
+			order_info_uuid
+				? and(
+						eq(labDipSchema.info.order_info_uuid, order_info_uuid),
+						eq(labDipSchema.recipe.approved, 1),
+						bleaching
+							? eq(labDipSchema.recipe.bleaching, bleaching)
+							: null
+					)
+				: info_uuid == 'false'
 					? sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
-					: info_uuid
-						? or(
+					: and(
+							or(
 								eq(labDipSchema.info.uuid, info_uuid),
 								sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
-							)
-						: sql`1=1`,
-				bleaching
-					? eq(labDipSchema.recipe.bleaching, bleaching)
-					: sql`1=1`
-			)
+							),
+							bleaching
+								? eq(labDipSchema.recipe.bleaching, bleaching)
+								: sql`1=1`
+						)
 		);
 
 	try {
