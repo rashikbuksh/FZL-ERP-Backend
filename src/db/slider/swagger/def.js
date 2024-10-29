@@ -1,4 +1,3 @@
-import { material } from '@/db/schema.js';
 import SE, { SED } from '../../../util/swagger_example.js';
 // * ./schema.js#stock
 export const defStock = SED({
