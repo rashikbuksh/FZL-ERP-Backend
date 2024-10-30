@@ -308,7 +308,6 @@ export async function selectStockByFromSection(req, res, next) {
 		stock.puller_quantity::float8,
 		stock.link_quantity::float8,
 		stock.sa_prod::float8,
-		stock.sa_prod::float8 * avg_slider_production.avg_weight::float8 AS sa_prod_avg_weight,
 		stock.coloring_stock::float8,
 		stock.coloring_prod::float8,
 		stock.trx_to_finishing::float8,
@@ -333,7 +332,9 @@ export async function selectStockByFromSection(req, res, next) {
 		stock.updated_at,
 		stock.remarks,
 		slider_transaction_given.trx_quantity::float8 as total_trx_quantity,
-		slider_transaction_given.trx_weight::float8 as trx_weight
+		slider_transaction_given.trx_weight::float8 as trx_weight,
+		slider_production_given.total_production_quantity::float8 as total_production_quantity,
+		slider_production_given.total_production_weight::float8 as total_production_weight
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -363,7 +364,8 @@ export async function selectStockByFromSection(req, res, next) {
     (
         SELECT
             stock.uuid AS stock_uuid,
-            coalesce(SUM(production.production_quantity)::float8 / NULLIF(SUM(production.weight)::float8,0),0) AS avg_weight
+            SUM(production.production_quantity)::float8 AS total_production_quantity,
+			SUM(production.weight)::float8 AS total_production_weight
         FROM
             slider.production
         LEFT JOIN
@@ -372,7 +374,7 @@ export async function selectStockByFromSection(req, res, next) {
             production.section = ${from_section}
         GROUP BY
             stock.uuid
-    ) AS avg_slider_production ON stock.uuid = avg_slider_production.stock_uuid;`;
+    ) AS slider_production_given ON stock.uuid = slider_production_given.stock_uuid;`;
 
 	try {
 		const data = await db.execute(query);
