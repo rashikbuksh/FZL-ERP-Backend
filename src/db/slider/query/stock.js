@@ -334,7 +334,8 @@ export async function selectStockByFromSection(req, res, next) {
 		slider_transaction_given.trx_quantity::float8 as total_trx_quantity,
 		slider_transaction_given.trx_weight::float8 as trx_weight,
 		slider_production_given.total_production_quantity::float8 as total_production_quantity,
-		slider_production_given.total_production_weight::float8 as total_production_weight
+		slider_production_given.total_production_weight::float8 as total_production_weight,
+		stock.order_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0) - stock.sa_prod::float8 as balance_quantity
 	FROM
 		slider.stock
 	LEFT JOIN
