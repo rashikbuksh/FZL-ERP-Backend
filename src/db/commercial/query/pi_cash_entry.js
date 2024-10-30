@@ -192,7 +192,8 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					CONCAT(count_length.count,' ', count_length.length) as count_length_name,
 					count_length.count,
 					count_length.length,
-					CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked
+					CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked,
+					vodf.order_type
 	            FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
