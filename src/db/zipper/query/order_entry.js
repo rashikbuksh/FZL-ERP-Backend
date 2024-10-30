@@ -237,13 +237,18 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 				CASE WHEN sfg_production.section = 'teeth_coloring' THEN sfg_production.production_quantity ELSE 0 END
 				)::float8`,
 			finishing_stock: decimalToNumber(sfg.finishing_stock),
-			finishing_prod: sfg.finishing_prod,
+			finishing_prod: decimalToNumber(sfg.finishing_prod),
 			total_finishing: sql`SUM(
 				CASE WHEN sfg_production.section = 'finishing' THEN sfg_production.production_quantity ELSE 0 END
 				)::float8`,
 			coloring_prod: decimalToNumber(sfg.coloring_prod),
 			total_pi_quantity: decimalToNumber(sfg.pi),
-			total_delivery_quantity: decimalToNumber(sfg.delivered),
+			total_warehouse_quantity: sql`SUM(
+				CASE WHEN packing_list.challan_uuid IS NULL THEN coalesce(packing_list_entry.quantity,0) ELSE 0 END
+				)::float8`,
+			total_delivery_quantity: sql`SUM(
+				CASE WHEN packing_list.challan_uuid IS NOT NULL THEN coalesce(packing_list_entry.quantity,0) ELSE 0 END
+				)::float8`,
 			total_reject_quantity: decimalToNumber(sfg.reject_quantity),
 			total_short_quantity: decimalToNumber(sfg.short_quantity),
 		})

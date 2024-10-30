@@ -967,25 +967,36 @@ export async function selectLabDipRecipe(req, res, next) {
 			eq(labDipSchema.recipe.lab_dip_info_uuid, labDipSchema.info.uuid)
 		)
 		.where(
-			order_info_uuid
-				? and(
-						eq(labDipSchema.info.order_info_uuid, order_info_uuid),
-						eq(labDipSchema.recipe.approved, 1),
-						bleaching
-							? eq(labDipSchema.recipe.bleaching, bleaching)
-							: null
-					)
-				: info_uuid == 'false'
-					? sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
-					: and(
-							or(
-								eq(labDipSchema.info.uuid, info_uuid),
-								sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
+			or(
+				order_info_uuid
+					? and(
+							eq(
+								labDipSchema.info.order_info_uuid,
+								order_info_uuid
 							),
+							eq(labDipSchema.recipe.approved, 1),
 							bleaching
 								? eq(labDipSchema.recipe.bleaching, bleaching)
-								: sql`1=1`
+								: null
 						)
+					: info_uuid == 'false'
+						? sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
+						: and(
+								or(
+									eq(labDipSchema.info.uuid, info_uuid),
+									sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
+								),
+								bleaching
+									? eq(
+											labDipSchema.recipe.bleaching,
+											bleaching
+										)
+									: sql`1=1`
+							),
+				(approved = 'true'
+					? eq(labDipSchema.recipe.approved, 1)
+					: eq(labDipSchema.recipe.approved, 0))
+			)
 		);
 
 	try {
