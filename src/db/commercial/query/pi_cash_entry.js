@@ -301,12 +301,14 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             oe.style as style,
             oe.color as color,
 			oe.size,
+			vod.is_inch,
+			vod.is_meter,
             CASE 
-                WHEN vod.is_inch = 1 THEN oe.size::numeric * 2.54 
+                WHEN vod.is_inch = 1 THEN (oe.size::numeric * 2.54)::float8 
                 ELSE 0
             END as size_inch,
 			CASE WHEN 
-				vod.is_meter = 1 THEN oe.size::numeric * 100
+				vod.is_meter = 1 THEN (oe.size::numeric * 100)::float8
 				ELSE 0
 			END as size_meter,
             oe.quantity::float8 as quantity,

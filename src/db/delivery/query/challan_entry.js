@@ -213,6 +213,7 @@ export async function selectChallanEntryByChallanUuid(req, res, next) {
 				vpl.style,
 				vpl.color,
 				vpl.size,
+				vpl.is_inch,
 				vpl.order_quantity::float8,
 				vpl.warehouse::float8,
 				vpl.delivered::float8,
