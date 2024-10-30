@@ -349,7 +349,7 @@ export async function selectStockByFromSection(req, res, next) {
         SELECT
             stock.uuid AS stock_uuid,
             SUM(transaction.trx_quantity)::float8 AS trx_quantity,
-			SUM(transaction.weight)::float8 AS trx_weight,
+			SUM(transaction.weight)::float8 AS trx_weight
         FROM
             slider.transaction
         LEFT JOIN
