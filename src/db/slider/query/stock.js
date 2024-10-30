@@ -363,7 +363,7 @@ export async function selectStockByFromSection(req, res, next) {
     (
         SELECT
             stock.uuid AS stock_uuid,
-            SUM(production.production_quantity)::float8 / SUM(production.weight)::float8 AS avg_weight
+            coalesce(SUM(production.production_quantity)::float8 / SUM(coalesce(production.weight,0))::float8,0) AS avg_weight
         FROM
             slider.production
         LEFT JOIN
