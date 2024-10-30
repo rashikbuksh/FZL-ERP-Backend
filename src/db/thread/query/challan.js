@@ -241,8 +241,8 @@ export async function selectByOrderInfoUuid(req, res, next) {
 		FROM thread.order_entry toe
 		LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 		LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
-		LEFT JOIN thread.challan_entry ON toe.uuid = challan_entry.order_entry_uuid
-		WHERE toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.delivered) > 0 AND challan_entry.uuid IS NULL
+		WHERE toe.order_info_uuid = ${req.params.order_info_uuid} AND (toe.quantity - toe.delivered) > 0
+		ORDER BY cl.count ASC
 	`;
 
 	const resultPromise = db.execute(query);
