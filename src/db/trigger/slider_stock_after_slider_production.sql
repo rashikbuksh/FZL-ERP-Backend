@@ -32,7 +32,6 @@ BEGIN
             FROM zipper.v_order_details_full vodf
         WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = NEW.stock_uuid;
     END IF;
-Q
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
