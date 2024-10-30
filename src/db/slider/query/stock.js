@@ -372,7 +372,7 @@ export async function selectStockByFromSection(req, res, next) {
         LEFT JOIN
             slider.stock ON production.stock_uuid = stock.uuid
         WHERE
-            production.section = ${from_section}
+            production.section = CASE WHEN ${from_section} = 'coloring_prod' THEN 'coloring' ELSE ${from_section} END
         GROUP BY
             stock.uuid
     ) AS slider_production_given ON stock.uuid = slider_production_given.stock_uuid;`;
