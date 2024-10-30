@@ -951,6 +951,42 @@ export async function selectDesignation(req, res, next) {
 export async function selectLabDipRecipe(req, res, next) {
 	const { order_info_uuid, bleaching, info_uuid, approved } = req.query;
 
+	const conditions = [];
+
+	if (order_info_uuid) {
+		conditions.push(
+			and(
+				eq(labDipSchema.info.order_info_uuid, order_info_uuid),
+				eq(labDipSchema.recipe.approved, 1),
+				bleaching
+					? eq(labDipSchema.recipe.bleaching, bleaching)
+					: sql`1=1`
+			)
+		);
+	} else if (info_uuid === 'false') {
+		conditions.push(sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`);
+	} else {
+		conditions.push(
+			and(
+				or(
+					eq(labDipSchema.info.uuid, info_uuid),
+					sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
+				),
+				bleaching
+					? eq(labDipSchema.recipe.bleaching, bleaching)
+					: sql`1=1`
+			)
+		);
+	}
+
+	conditions.push(
+		approved === 'true'
+			? eq(labDipSchema.recipe.approved, 1)
+			: eq(labDipSchema.recipe.approved, 0)
+	);
+
+	const finalCondition = or(...conditions);
+
 	const recipePromise = db
 		.select({
 			value: labDipSchema.recipe.uuid,
@@ -966,38 +1002,7 @@ export async function selectLabDipRecipe(req, res, next) {
 			labDipSchema.info,
 			eq(labDipSchema.recipe.lab_dip_info_uuid, labDipSchema.info.uuid)
 		)
-		.where(
-			or(
-				order_info_uuid
-					? and(
-							eq(
-								labDipSchema.info.order_info_uuid,
-								order_info_uuid
-							),
-							eq(labDipSchema.recipe.approved, 1),
-							bleaching
-								? eq(labDipSchema.recipe.bleaching, bleaching)
-								: null
-						)
-					: info_uuid == 'false'
-						? sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
-						: and(
-								or(
-									eq(labDipSchema.info.uuid, info_uuid),
-									sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
-								),
-								bleaching
-									? eq(
-											labDipSchema.recipe.bleaching,
-											bleaching
-										)
-									: sql`1=1`
-							),
-				(approved = 'true'
-					? eq(labDipSchema.recipe.approved, 1)
-					: eq(labDipSchema.recipe.approved, 0))
-			)
-		);
+		.where(finalCondition);
 
 	try {
 		const data = await recipePromise;
