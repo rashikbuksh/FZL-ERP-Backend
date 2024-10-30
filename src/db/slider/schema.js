@@ -42,7 +42,15 @@ export const stock = slider.table('stock', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+	sa_prod_weight: decimal('sa_prod_weight', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
 	coloring_stock: decimal('coloring_stock', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	coloring_stock_weight: decimal('coloring_stock_weight', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
@@ -50,11 +58,23 @@ export const stock = slider.table('stock', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+	coloring_prod_weight: decimal('coloring_prod_weight', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
 	finishing_stock: decimal('finishing_stock', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+	finishing_stock_weight: decimal('finishing_stock_weight', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
 	trx_to_finishing: decimal('trx_to_finishing', {
+		precision: 20,
+		scale: 4,
+	}).default(0),
+	trx_to_finishing_weight: decimal('trx_to_finishing_weight', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
