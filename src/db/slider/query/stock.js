@@ -332,7 +332,8 @@ export async function selectStockByFromSection(req, res, next) {
 		stock.updated_at,
 		stock.remarks,
 		slider_transaction_given.trx_quantity::float8 as total_trx_quantity,
-		slider_transaction_given.trx_weight::float8 as trx_weight
+		slider_transaction_given.trx_weight::float8 as trx_weight,
+		slider_transaction_given.production_weight::float8 as production_weight
 	FROM
 		slider.stock
 
@@ -349,11 +350,14 @@ export async function selectStockByFromSection(req, res, next) {
         SELECT
             stock.uuid AS stock_uuid,
             SUM(transaction.trx_quantity)::float8 AS trx_quantity,
-			SUM(transaction.weight)::float8 AS trx_weight
+			SUM(transaction.weight)::float8 AS trx_weight,
+			SUM(production.weight)::float8 AS production_weight
         FROM
             slider.transaction
         LEFT JOIN
             slider.stock ON transaction.stock_uuid = stock.uuid
+		LEFT JOIN
+			slider.production ON transaction.stock_uuid = production.stock_uuid
         WHERE
             transaction.from_section = ${from_section}
         GROUP BY
