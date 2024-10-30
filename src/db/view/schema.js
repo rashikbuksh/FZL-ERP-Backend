@@ -227,6 +227,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         oe.uuid as order_entry_uuid,
         oe.style,
         oe.color,
+        oe.size as order_size,
         CASE 
             WHEN vodf.is_inch = 1 
               THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
