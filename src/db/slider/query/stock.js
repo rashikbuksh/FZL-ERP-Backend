@@ -308,6 +308,7 @@ export async function selectStockByFromSection(req, res, next) {
 		stock.puller_quantity::float8,
 		stock.link_quantity::float8,
 		stock.sa_prod::float8,
+		stock.sa_prod::float8 / avg_slider_production.avg_weight::float8 AS sa_prod_avg_weight,
 		stock.coloring_stock::float8,
 		stock.coloring_prod::float8,
 		stock.trx_to_finishing::float8,
@@ -335,7 +336,6 @@ export async function selectStockByFromSection(req, res, next) {
 		slider_transaction_given.trx_weight::float8 as trx_weight
 	FROM
 		slider.stock
-
 	LEFT JOIN
 		zipper.order_description ON stock.order_description_uuid = order_description.uuid
 	LEFT JOIN 
@@ -358,7 +358,21 @@ export async function selectStockByFromSection(req, res, next) {
             transaction.from_section = ${from_section}
         GROUP BY
             stock.uuid
-    ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid;`;
+    ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
+	 LEFT JOIN
+    (
+        SELECT
+            stock.uuid AS stock_uuid,
+            SUM(production.production_quantity)::float8 / SUM(production.weight)::float8 AS avg_weight
+        FROM
+            slider.production
+        LEFT JOIN
+            slider.stock ON production.stock_uuid = stock.uuid
+        WHERE
+            production.from_section = ${from_section}
+        GROUP BY
+            stock.uuid
+    ) AS avg_slider_production ON stock.uuid = avg_slider_production.stock_uuid;`;
 
 	try {
 		const data = await db.execute(query);
