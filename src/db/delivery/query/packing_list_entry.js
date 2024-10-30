@@ -231,10 +231,11 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
             END) as style_color_size,
 			oe.style,
 			oe.color,
+			oe.size,
 			CASE 
                 WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)::float8
                 ELSE CAST(oe.size AS NUMERIC)::float8
-            END as size,
+            END as inch_size,
 			vodf.is_inch,
 			oe.quantity::float8 as order_quantity,
 			sfg.uuid as sfg_uuid,
