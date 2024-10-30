@@ -232,6 +232,9 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
               THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
             ELSE CAST(oe.size AS NUMERIC)
         END as size,
+        vodf.is_inch,
+        vodf.is_meter,
+        vodf.is_cm,
         CONCAT(oe.style, ' / ', oe.color, ' / ', 
                     CASE 
                       WHEN vodf.is_inch = 1 
