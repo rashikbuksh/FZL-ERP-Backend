@@ -308,7 +308,7 @@ export async function selectStockByFromSection(req, res, next) {
 		stock.puller_quantity::float8,
 		stock.link_quantity::float8,
 		stock.sa_prod::float8,
-		stock.sa_prod::float8 / avg_slider_production.avg_weight::float8 AS sa_prod_avg_weight,
+		stock.sa_prod::float8 * avg_slider_production.avg_weight::float8 AS sa_prod_avg_weight,
 		stock.coloring_stock::float8,
 		stock.coloring_prod::float8,
 		stock.trx_to_finishing::float8,
