@@ -369,7 +369,7 @@ export async function selectStockByFromSection(req, res, next) {
         LEFT JOIN
             slider.stock ON production.stock_uuid = stock.uuid
         WHERE
-            production.from_section = ${from_section}
+            production.section = ${from_section}
         GROUP BY
             stock.uuid
     ) AS avg_slider_production ON stock.uuid = avg_slider_production.stock_uuid;`;
