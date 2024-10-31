@@ -16,13 +16,18 @@ BEGIN
 
     -- Update order_description based on item_name
     IF lower(item_name) = 'metal' THEN
+
+        UPDATE zipper.sfg sfg
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
+                CASE 
+                    WHEN NEW.section = 'teeth_molding' THEN NEW.dyed_tape_used_in_kg
+                    ELSE 0
+                END
+        WHERE sfg.uuid = NEW.sfg_uuid;
+    
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred - 
-                CASE 
-                    WHEN NEW.section = 'teeth_molding' THEN NEW.production_quantity_in_kg + NEW.wastage 
-                    ELSE 0
-                END,
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity
@@ -31,17 +36,18 @@ BEGIN
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'vislon' THEN
+        UPDATE zipper.sfg sfg
+        SET
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
+                CASE 
+                    WHEN NEW.section = 'teeth_molding' 
+                        THEN NEW.dyed_tape_used_in_kg
+                    ELSE 0
+                END
+        WHERE sfg.uuid = NEW.sfg_uuid;
+
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred - 
-                CASE 
-                    WHEN NEW.section = 'teeth_molding' THEN 
-                        CASE
-                            WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
-                            ELSE NEW.production_quantity_in_kg + NEW.wastage 
-                        END
-                    ELSE 0
-                END,
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
@@ -50,36 +56,39 @@ BEGIN
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
+
+        UPDATE zipper.sfg sfg
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
+                CASE 
+                    WHEN NEW.section = 'finishing' 
+                    THEN NEW.dyed_tape_used_in_kg
+                END
+        WHERE sfg.uuid = NEW.sfg_uuid;
+
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred - 
-                CASE 
-                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity_in_kg + NEW.wastage 
-                    ELSE 
-                        CASE
-                            WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
-                            ELSE NEW.production_quantity_in_kg + NEW.wastage 
-                        END 
-                END,
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity
+                    WHEN NEW.section = 'finishing' 
+                        THEN NEW.production_quantity
                     ELSE 0
                 END
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
+
+        UPDATE zipper.sfg sfg
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
+                CASE 
+                    WHEN NEW.section = 'finishing' 
+                    THEN NEW.dyed_tape_used_in_kg
+                END
+        WHERE sfg.uuid = NEW.sfg_uuid;
+
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred - 
-                CASE 
-                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity_in_kg + NEW.wastage 
-                    ELSE 
-                        CASE
-                            WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
-                            ELSE NEW.production_quantity_in_kg + NEW.wastage 
-                        END 
-                END,
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
@@ -108,8 +117,8 @@ BEGIN
             CASE 
                 WHEN NEW.section = 'finishing' THEN 
                     CASE
-                        WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
-                        ELSE NEW.production_quantity_in_kg + NEW.wastage 
+                        WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity
+                        ELSE NEW.production_quantity_in_kg
                     END 
                 ELSE 0
             END 
@@ -127,8 +136,8 @@ BEGIN
             CASE 
                 WHEN NEW.section = 'teeth_coloring' THEN 
                     CASE 
-                        WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity + NEW.wastage 
-                        ELSE NEW.production_quantity_in_kg + NEW.wastage 
+                        WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity
+                        ELSE NEW.production_quantity_in_kg
                     END 
                 ELSE 0 
             END,
@@ -180,13 +189,18 @@ BEGIN
 
     -- Update order_description based on item_name
     IF lower(item_name) = 'metal' THEN
+
+        UPDATE zipper.sfg sfg
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
+                CASE 
+                    WHEN NEW.section = 'teeth_molding' THEN (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
+                    ELSE 0
+                END
+        WHERE sfg.uuid = NEW.sfg_uuid;
+    
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred - 
-                CASE 
-                    WHEN NEW.section = 'teeth_molding' THEN (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
-                    ELSE 0
-                END,
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
@@ -195,17 +209,19 @@ BEGIN
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'vislon' THEN
-        UPDATE zipper.order_description od
+
+        UPDATE zipper.sfg sfg
         SET 
-            tape_transferred = tape_transferred - 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN 
-                        CASE
-                            WHEN NEW.production_quantity_in_kg = 0 THEN (NEW.production_quantity + NEW.wastage) - (OLD.production_quantity + OLD.wastage)
-                            ELSE (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
-                        END
+                        (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
                     ELSE 0
-                END,
+                END
+        WHERE sfg.uuid = NEW.sfg_uuid;
+    
+        UPDATE zipper.order_description od
+        SET 
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
@@ -214,17 +230,18 @@ BEGIN
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
+
+        UPDATE zipper.sfg sfg
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
+                CASE 
+                    WHEN NEW.section = 'finishing' THEN (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
+                    ELSE 0
+                END
+        WHERE sfg.uuid = NEW.sfg_uuid;
+
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred - 
-                CASE 
-                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
-                    ELSE 
-                        CASE
-                            WHEN NEW.production_quantity_in_kg = 0 THEN (NEW.production_quantity + NEW.wastage) - (OLD.production_quantity + OLD.wastage)
-                            ELSE (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
-                        END 
-                END,
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
@@ -233,17 +250,18 @@ BEGIN
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
+
+        UPDATE zipper.sfg sfg
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
+                CASE 
+                    WHEN NEW.section = 'finishing' THEN (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
+                    ELSE 0
+                END
+        WHERE sfg.uuid = NEW.sfg_uuid;
+
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred - 
-                CASE 
-                    WHEN NEW.section = 'finishing' THEN (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
-                    ELSE 
-                        CASE
-                            WHEN NEW.production_quantity_in_kg = 0 THEN (NEW.production_quantity + NEW.wastage) - (OLD.production_quantity + OLD.wastage)
-                            ELSE (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
-                        END 
-                END,
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
@@ -272,8 +290,8 @@ BEGIN
             CASE 
                 WHEN NEW.section = 'finishing' THEN 
                     CASE
-                        WHEN NEW.production_quantity_in_kg = 0 THEN (NEW.production_quantity + NEW.wastage) - (OLD.production_quantity + OLD.wastage)
-                        ELSE (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
+                        WHEN NEW.production_quantity_in_kg = 0 THEN (NEW.production_quantity) - (OLD.production_quantity)
+                        ELSE (NEW.production_quantity_in_kg) - (OLD.production_quantity_in_kg)
                     END 
                 ELSE 0
             END 
@@ -291,8 +309,8 @@ BEGIN
             CASE 
                 WHEN NEW.section = 'teeth_coloring' THEN 
                     CASE 
-                        WHEN NEW.production_quantity_in_kg = 0 THEN (NEW.production_quantity + NEW.wastage) - (OLD.production_quantity + OLD.wastage)
-                        ELSE (NEW.production_quantity_in_kg + NEW.wastage) - (OLD.production_quantity_in_kg + OLD.wastage)
+                        WHEN NEW.production_quantity_in_kg = 0 THEN (NEW.production_quantity) - (OLD.production_quantity)
+                        ELSE (NEW.production_quantity_in_kg) - (OLD.production_quantity_in_kg)
                     END 
                 ELSE 0 
             END,
@@ -342,13 +360,18 @@ BEGIN
 
     -- Update order_description based on item_name
     IF lower(item_name) = 'metal' THEN
+
+        UPDATE zipper.sfg sfg
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
+                CASE 
+                    WHEN OLD.section = 'teeth_molding' THEN OLD.dyed_tape_used_in_kg
+                    ELSE 0
+                END
+        WHERE sfg.uuid = OLD.sfg_uuid;
+
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred + 
-                CASE 
-                    WHEN OLD.section = 'teeth_molding' THEN OLD.production_quantity_in_kg + OLD.wastage 
-                    ELSE 0
-                END,
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity
@@ -357,17 +380,18 @@ BEGIN
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'vislon' THEN
+
+        UPDATE zipper.sfg sfg
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
+                CASE 
+                    WHEN OLD.section = 'teeth_molding' THEN OLD.dyed_tape_used_in_kg 
+                    ELSE 0
+                END
+        WHERE sfg.uuid = OLD.sfg_uuid;
+
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred + 
-                CASE 
-                    WHEN OLD.section = 'teeth_molding' THEN 
-                        CASE
-                            WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage 
-                            ELSE OLD.production_quantity_in_kg + OLD.wastage 
-                        END
-                    ELSE 0
-                END,
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity
@@ -376,17 +400,18 @@ BEGIN
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
+
+        UPDATE zipper.sfg sfg 
+        SET
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
+                CASE 
+                    WHEN OLD.section = 'finishing' THEN OLD.dyed_tape_used_in_kg
+                    ELSE 0
+                END
+        WHERE sfg.uuid = OLD.sfg_uuid;
+
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred + 
-                CASE 
-                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity_in_kg + OLD.wastage 
-                    ELSE 
-                        CASE
-                            WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage 
-                            ELSE OLD.production_quantity_in_kg + OLD.wastage 
-                        END 
-                END,
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity
@@ -395,17 +420,18 @@ BEGIN
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
+        
+        UPDATE zipper.sfg sfg
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
+                CASE 
+                    WHEN OLD.section = 'finishing' THEN OLD.dyed_tape_used_in_kg
+                    ELSE 0
+                END
+        WHERE sfg.uuid = OLD.sfg_uuid;
+        
         UPDATE zipper.order_description od
         SET 
-            tape_transferred = tape_transferred + 
-                CASE 
-                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity_in_kg + OLD.wastage 
-                    ELSE 
-                        CASE
-                            WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage 
-                            ELSE OLD.production_quantity_in_kg + OLD.wastage 
-                        END 
-                END,
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity 
@@ -434,8 +460,8 @@ BEGIN
             CASE 
                 WHEN OLD.section = 'finishing' THEN 
                     CASE
-                        WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage 
-                        ELSE OLD.production_quantity_in_kg + OLD.wastage 
+                        WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity 
+                        ELSE OLD.production_quantity_in_kg 
                     END 
                 ELSE 0
             END 
@@ -453,8 +479,8 @@ BEGIN
             CASE 
                 WHEN OLD.section = 'teeth_coloring' THEN 
                     CASE 
-                        WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity + OLD.wastage 
-                        ELSE OLD.production_quantity_in_kg + OLD.wastage 
+                        WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity 
+                        ELSE OLD.production_quantity_in_kg 
                     END 
                 ELSE 0 
             END,
