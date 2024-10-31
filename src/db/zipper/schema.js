@@ -218,6 +218,7 @@ export const sfg = zipper.table('sfg', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+	dyed_tape_used_in_kg: PG_DECIMAL('dyed_tape_used_in_kg').default(0.0),
 	teeth_molding_stock: decimal('teeth_molding_stock', {
 		precision: 20,
 		scale: 4,
@@ -277,6 +278,7 @@ export const sfg_production = zipper.table('sfg_production', {
 	uuid: uuid_primary,
 	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
 	section: text('section').notNull(),
+	dyed_tape_used_in_kg: PG_DECIMAL('dyed_tape_used_in_kg').default(0.0),
 	production_quantity_in_kg: decimal('production_quantity_in_kg', {
 		precision: 20,
 		scale: 4,

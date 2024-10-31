@@ -356,9 +356,11 @@ export async function selectSfgBySection(req, res, next) {
 							THEN sfgp.section = 'teeth_molding'
 						ELSE sfgp.section = ${section} END
 			), 0)::float8 as total_production_quantity,
+			od.tape_transferred,
+			sfg.dyed_tape_used_in_kg,
 			COALESCE(ss.coloring_prod,0)::float8 as coloring_prod,
 			COALESCE(od.tape_received,0)::float8 as tape_received,
-			COALESCE(od.tape_transferred,0)::float8 as tape_transferred,
+			COALESCE(od.tape_transferred,0)::float8 - COALESCE(sfg.dyed_tape_used_in_kg,0) as tape_stock,
 			COALESCE(od.slider_finishing_stock,0)::float8 as slider_finishing_stock,
 			od.is_multi_color
 		FROM

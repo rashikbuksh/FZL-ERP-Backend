@@ -250,6 +250,8 @@ export async function selectBySection(req, res, next) {
 			COALESCE(sfg.reject_quantity,0)::float8 as reject_quantity,
 			COALESCE(vodf.tape_received,0)::float8 as tape_received,
 			COALESCE(vodf.tape_transferred,0)::float8 as tape_transferred,
+			COALESCE(sfg.dyed_tape_used_in_kg,0)::float8 as dyed_tape_used_in_kg,
+			(COALESCE(tape_transferred,0)::float8 - COALESCE(dyed_tape_used_in_kg,0)::float8)::float8 as tape_stock,
 			COALESCE(vodf.slider_finishing_stock,0)::float8 as slider_finishing_stock
 		FROM
 			zipper.sfg_production
