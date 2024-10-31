@@ -414,7 +414,6 @@ export async function select(req, res, next) {
 	// } catch (error) {
 	// 	await handleError({ error, res });
 	// }
-
 	const query = sql`
 					SELECT
 						batch.uuid,
@@ -462,7 +461,8 @@ export async function select(req, res, next) {
 						batch.created_at,
 						batch.updated_at,
 						batch.remarks,
-						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity
+						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity,
+						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight
 					FROM
 						thread.batch
 					LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
@@ -476,6 +476,8 @@ export async function select(req, res, next) {
 					LEFT JOIN hr.users as createdBy ON batch.created_by = createdBy.uuid
 					LEFT JOIN public.machine pm ON batch.machine_uuid = pm.uuid
 					LEFT JOIN thread.batch_entry ON batch.uuid = batch_entry.batch_uuid
+					LEFT JOIN thread.order_entry oe ON batch_entry.order_entry_uuid = oe.uuid
+					LEFT JOIN thread.count_length cl ON oe.count_length_uuid = cl.uuid
 					WHERE
 						batch.uuid = ${req.params.uuid}
 					GROUP BY
