@@ -731,6 +731,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 }
 
 export async function ProductionReportDirector(req, res, next) {
+	// OKAY
 	const query = sql`
             SELECT 
                 vodf.order_info_uuid,
@@ -1217,8 +1218,6 @@ export async function deliveryStatementReport(req, res, next) {
 	const query = sql`
             SELECT 
                 vodf.order_info_uuid,
-                vodf.item,
-                vodf.item_name,
                 vodf.order_number,
                 vodf.party_uuid,
                 vodf.party_name,
@@ -1226,13 +1225,7 @@ export async function deliveryStatementReport(req, res, next) {
                 vodf.item_description,
                 vodf.end_type,
                 vodf.end_type_name,
-                oe.uuid as order_entry_uuid,
-                CASE 
-					WHEN vodf.is_inch = 1 
-						THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-					ELSE CAST(oe.size AS NUMERIC)
-				END as size,
-                opening_all_sum.challan_numbers,
+                CONCAT(MIN(oe.size), ' - ', MAX(oe.size)) as size,
                 coalesce(opening_all_sum.total_close_end_quantity,0)::float8 as opening_total_close_end_quantity,
                 coalesce(opening_all_sum.total_open_end_quantity,0)::float8 as opening_total_open_end_quantity,
                 coalesce(opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity,0)::float8 as opening_total_quantity,
@@ -1244,6 +1237,7 @@ export async function deliveryStatementReport(req, res, next) {
                 coalesce(opening_all_sum.total_close_end_value + opening_all_sum.total_open_end_value,0)::float8 as opening_total_value,
                 CONCAT('2024-09-01'::TIMESTAMP, ' to ', '2024-09-30'::TIMESTAMP + interval '23 hours 59 minutes 59 seconds') as running_period,
                 running_all_sum.challan_numbers,
+                running_all_sum.created_at as challan_date,
                 coalesce(running_all_sum.total_close_end_quantity,0)::float8 as running_total_close_end_quantity,
                 coalesce(running_all_sum.total_open_end_quantity,0)::float8 as running_total_open_end_quantity,
                 coalesce(running_all_sum.total_close_end_quantity + running_all_sum.total_open_end_quantity,0)::float8 as running_total_quantity,
@@ -1265,8 +1259,7 @@ export async function deliveryStatementReport(req, res, next) {
                     (oe.company_price/12) as unit_price_pcs,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_close_end_value,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_open_end_value,
-                    ARRAY_AGG(DISTINCT CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0'))) as challan_numbers,
-                    vpl.order_entry_uuid
+                    vpl.order_description_uuid
                 FROM
                     delivery.v_packing_list_details vpl
                     LEFT JOIN delivery.challan ch ON vpl.challan_uuid = ch.uuid
@@ -1275,8 +1268,8 @@ export async function deliveryStatementReport(req, res, next) {
                 WHERE 
                     vpl.challan_uuid IS NOT NULL AND ch.created_at < '2024-10-01'::TIMESTAMP
                 GROUP BY
-                    vpl.order_entry_uuid, oe.company_price
-            ) opening_all_sum ON oe.uuid = opening_all_sum.order_entry_uuid
+                    vpl.order_description_uuid, oe.company_price
+            ) opening_all_sum ON vodf.order_description_uuid = opening_all_sum.order_description_uuid
             LEFT JOIN (
                 SELECT 
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
@@ -1285,8 +1278,9 @@ export async function deliveryStatementReport(req, res, next) {
                     (oe.company_price/12) as unit_price_pcs,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_close_end_value,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_open_end_value,
-                    ARRAY_AGG(DISTINCT CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0'))) as challan_numbers,
-                    vpl.order_entry_uuid
+                    CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) as challan_numbers,
+                    ch.created_at,
+                    vpl.order_description_uuid
                 FROM
                     delivery.v_packing_list_details vpl
                     LEFT JOIN delivery.challan ch ON vpl.challan_uuid = ch.uuid
@@ -1295,10 +1289,33 @@ export async function deliveryStatementReport(req, res, next) {
                 WHERE 
                     vpl.challan_uuid IS NOT NULL AND ch.created_at between '2024-10-01'::TIMESTAMP and '2024-10-30'::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
                 GROUP BY
-                    vpl.order_entry_uuid, oe.company_price
-            ) running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid
+                    vpl.order_description_uuid, oe.company_price, ch.id, ch.created_at
+            ) running_all_sum ON vodf.order_description_uuid = running_all_sum.order_description_uuid
             WHERE (running_all_sum.total_close_end_quantity + running_all_sum.total_open_end_quantity > 0 OR opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity > 0)
-            ORDER BY vodf.item_name DESC
+            GROUP BY 
+                vodf.order_info_uuid,
+                vodf.order_number,
+                vodf.party_uuid,
+                vodf.party_name,
+                vodf.order_description_uuid,
+                vodf.item_description,
+                vodf.end_type,
+                vodf.end_type_name,
+                opening_all_sum.total_close_end_quantity,
+                opening_all_sum.total_open_end_quantity,
+                opening_all_sum.unit_price_dzn,
+                opening_all_sum.unit_price_pcs,
+                opening_all_sum.total_close_end_value,
+                opening_all_sum.total_open_end_value,
+                running_all_sum.challan_numbers,
+                running_all_sum.total_close_end_quantity,
+                running_all_sum.total_open_end_quantity,
+                running_all_sum.unit_price_dzn,
+                running_all_sum.unit_price_pcs,
+                running_all_sum.total_close_end_value,
+                running_all_sum.total_open_end_value,
+                running_all_sum.created_at
+            ORDER BY vodf.party_name DESC
     `;
 	const resultPromise = db.execute(query);
 

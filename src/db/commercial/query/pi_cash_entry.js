@@ -187,7 +187,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					CASE WHEN pe.thread_order_entry_uuid IS NULL 
 						THEN CASE 
 							WHEN vodf.order_type = 'tape' 
-								THEN ROUND(pe.pi_cash_quantity * (oe.party_price), 4)::float8 
+								THEN ROUND(oe.size * (oe.party_price), 4)::float8 
 								ELSE ROUND(pe.pi_cash_quantity * oe.party_price/12, 4)::float8 
 							END 
 						ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 4)::float8 
