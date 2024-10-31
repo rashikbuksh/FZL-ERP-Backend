@@ -124,6 +124,9 @@ export async function selectAll(req, res, next) {
 			uuid: sfg_production.uuid,
 			sfg_uuid: sfg_production.sfg_uuid,
 			section: sfg_production.section,
+			dyed_tape_used_in_kg: decimalToNumber(
+				sfg_production.dyed_tape_used_in_kg
+			),
 			production_quantity_in_kg: decimalToNumber(
 				sfg_production.production_quantity_in_kg
 			),
@@ -170,6 +173,9 @@ export async function select(req, res, next) {
 			),
 			production_quantity: decimalToNumber(
 				sfg_production.production_quantity
+			),
+			dyed_tape_used_in_kg: decimalToNumber(
+				sfg_production.dyed_tape_used_in_kg
 			),
 			wastage: decimalToNumber(sfg_production.wastage),
 			created_by: sfg_production.created_by,
