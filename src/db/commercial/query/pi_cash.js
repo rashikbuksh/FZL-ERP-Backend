@@ -182,7 +182,7 @@ export async function selectAll(req, res, next) {
 			pi_cash.conversion_rate::float8,
 			pi_cash.weight::float8,
 			pi_cash.receive_amount::float8,
-			SUM(pi_cash_entry.pi_cash_quantity)::float8 AS total_pi_cash_quantity
+			total_pi_amount.total_amount::float8 + total_pi_amount_thread.total_amount::float8 as total_amount
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
@@ -229,6 +229,25 @@ export async function selectAll(req, res, next) {
 					FROM jsonb_array_elements_text(pi_cash.thread_order_info_uuids::jsonb) AS elem
 					WHERE elem IS NOT NULL AND elem != 'null'
 				)
+		LEFT JOIN 
+			(
+				SELECT 
+					(SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12))::float8 as total_amount, pi_cash.uuid as pi_cash_uuid
+				FROM commercial.pi_cash 
+					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+				GROUP BY pi_cash.uuid
+		) total_pi_amount ON total_pi_amount.pi_cash_uuid = pi_cash.uuid
+		LEFT JOIN 
+			(
+				SELECT 
+					(SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)))::float8 as total_amount, pi_cash.uuid as pi_cash_uuid
+				FROM commercial.pi_cash 
+					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+					LEFT JOIN thread.order_entry ON pi_cash_entry.thread_order_entry_uuid = order_entry.uuid 
+				GROUP BY pi_cash.uuid
+		) total_pi_amount_thread ON total_pi_amount_thread.pi_cash_uuid = pi_cash.uuid
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${own_uuid}` : sql`TRUE`}
@@ -266,7 +285,9 @@ export async function selectAll(req, res, next) {
 			pi_cash.factory_uuid,
 			pi_cash.bank_uuid,
 			pi_cash.created_by,
-			pi_cash.id
+			pi_cash.id,
+			total_pi_amount.total_amount,
+			total_pi_amount_thread.total_amount
 		ORDER BY 
 			pi_cash.created_at DESC;`;
 

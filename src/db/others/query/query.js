@@ -322,6 +322,9 @@ export async function selectOrderZipperThread(req, res, next) {
 							CONCAT('Z', to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label
 						FROM
 							zipper.order_info oz
+						LEFT JOIN zipper.v_order_details vodf ON oz.uuid = vodf.order_info_uuid
+						WHERE 
+							vodf.item_description != '---' AND vodf.item_description != ''
 						UNION 
 						SELECT
 							ot.uuid AS value,
