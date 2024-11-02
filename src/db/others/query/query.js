@@ -1150,7 +1150,7 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
 	LEFT JOIN
 		zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
 	WHERE 
-		stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity + COALESCE(slider_transaction_given.trx_quantity, 0)) <= stock.order_quantity;
+		stock.swatch_approved_quantity > 0;
 		`;
 
 	const stockPromise = db.execute(query);
