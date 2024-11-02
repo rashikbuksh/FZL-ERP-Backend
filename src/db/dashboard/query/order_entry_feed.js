@@ -1,8 +1,8 @@
 import { sql } from 'drizzle-orm';
 import {
 	handleError,
-	validateRequest,
 	handleResponse,
+	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
 
@@ -24,6 +24,7 @@ export async function selectOrderEntryFeed(req, res, next) {
                 LEFT JOIN zipper.v_order_details_full vodf ON od.uuid = vodf.order_description_uuid
                 LEFT JOIN public.party pp ON oi.party_uuid = pp.uuid
                 LEFT JOIN public.marketing pm ON oi.marketing_uuid = pm.uuid
+            WHERE od.uuid IS NOT NULL
             GROUP BY
                 order_no, pp.name , vodf.item_description, pm.name
             
