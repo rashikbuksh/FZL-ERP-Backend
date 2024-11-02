@@ -414,7 +414,7 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			null as coloring_type_name,
 			null as coloring_type_short_name,
 			null as order_quantity,
-			null a swatch_approved_quantity,
+			null as swatch_approved_quantity,
 			null as order_info_uuid,
 			null as party_name,
 			'Assembly Stock' as order_number,
