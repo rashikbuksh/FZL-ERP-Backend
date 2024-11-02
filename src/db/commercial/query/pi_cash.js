@@ -182,7 +182,7 @@ export async function selectAll(req, res, next) {
 			pi_cash.conversion_rate::float8,
 			pi_cash.weight::float8,
 			pi_cash.receive_amount::float8,
-			CASE WHEN pi_cash.is_pi = 0 THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 END AS total_amount
+			CASE WHEN pi_cash.is_pi = 1 THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 END AS total_amount
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
