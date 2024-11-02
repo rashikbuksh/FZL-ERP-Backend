@@ -401,7 +401,7 @@ export async function selectStockByFromSection(req, res, next) {
             stock.uuid
     ) AS slider_production_given ON stock.uuid = slider_production_given.stock_uuid
 	 WHERE 
-	 	stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) <= stock.order_quantity
+	 	stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) <= stock.swatch_approved_quantity
 	 ;`;
 
 	try {
