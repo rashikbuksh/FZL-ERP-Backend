@@ -296,11 +296,15 @@ export async function selectAll(req, res, next) {
 	try {
 		const data = await resultPromise;
 
-		// filter order_numbers and thread_order_numbers to remove null values
+		// Filter order_numbers and thread_order_numbers to remove null values
 
 		data.rows.forEach((item) => {
-			item.order_numbers.filter((x) => x !== null && x !== 'null');
-			item.thread_order_numbers.filter((x) => x !== null && x !== 'null');
+			item.order_numbers = item.order_numbers.filter(
+				(x) => x !== null && x !== 'null'
+			);
+			item.thread_order_numbers = item.thread_order_numbers.filter(
+				(x) => x !== null && x !== 'null'
+			);
 		});
 
 		data?.rows?.forEach((item) => {
