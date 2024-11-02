@@ -149,7 +149,21 @@ export async function selectAll(req, res, next) {
 		zipper.order_info ON order_description.order_info_uuid = order_info.uuid
 	LEFT JOIN 
 		zipper.v_order_details_full vodf ON order_description.uuid = vodf.order_description_uuid
-		ORDER BY stock.created_at DESC;
+	LEFT JOIN (
+        SELECT
+            stock.uuid AS stock_uuid,
+            SUM(transaction.trx_quantity)::float8 AS trx_quantity
+        FROM
+            slider.transaction
+        LEFT JOIN
+            slider.stock ON transaction.stock_uuid = stock.uuid
+        GROUP BY
+            stock.uuid
+    ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
+	WHERE 
+		stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity + COALESCE(slider_transaction_given.trx_quantity, 0)) <= stock.order_quantity
+	ORDER BY stock.created_at DESC
+	;
 	`;
 
 	const resultPromise = db.execute(query);
@@ -396,7 +410,10 @@ export async function selectStockByFromSection(req, res, next) {
             production.section = CASE WHEN ${from_section} = 'coloring_prod' THEN 'coloring' ELSE ${from_section} END
         GROUP BY
             stock.uuid
-    ) AS slider_production_given ON stock.uuid = slider_production_given.stock_uuid;`;
+    ) AS slider_production_given ON stock.uuid = slider_production_given.stock_uuid
+	 WHERE 
+	 	stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity + COALESCE(slider_transaction_given.trx_quantity, 0)) <= stock.order_quantity
+	 ;`;
 
 	try {
 		const data = await db.execute(query);
