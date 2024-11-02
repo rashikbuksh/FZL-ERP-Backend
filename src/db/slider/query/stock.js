@@ -396,7 +396,7 @@ export async function selectStockByFromSection(req, res, next) {
         GROUP BY
             stock.uuid
     ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
-	 LEFT JOIN
+	LEFT JOIN
     (
         SELECT
             stock.uuid AS stock_uuid,
