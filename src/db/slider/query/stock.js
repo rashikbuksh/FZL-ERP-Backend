@@ -149,20 +149,23 @@ export async function selectAll(req, res, next) {
 		zipper.order_info ON order_description.order_info_uuid = order_info.uuid
 	LEFT JOIN 
 		zipper.v_order_details_full vodf ON order_description.uuid = vodf.order_description_uuid
-	LEFT JOIN 
-		(
-			SELECT
-				stock.uuid AS stock_uuid,
-				SUM(transaction.trx_quantity)::float8 AS trx_quantity
-			FROM
-				slider.transaction
-			LEFT JOIN
-				slider.stock ON transaction.stock_uuid = stock.uuid
-			GROUP BY
-				stock.uuid
-		) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
+	LEFT JOIN
+    (
+        SELECT
+            stock.uuid AS stock_uuid,
+            SUM(transaction.trx_quantity)::float8 AS trx_quantity,
+			SUM(transaction.weight)::float8 AS trx_weight
+        FROM
+            slider.transaction
+        LEFT JOIN
+            slider.stock ON transaction.stock_uuid = stock.uuid
+        WHERE
+            transaction.from_section = 'coloring_prod'
+        GROUP BY
+            stock.uuid
+    ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
 	WHERE 
-		stock.swatch_approved_quantity > 0
+		stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0
 	ORDER BY stock.created_at DESC
 	;
 	`;
