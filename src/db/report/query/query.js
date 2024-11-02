@@ -1225,7 +1225,7 @@ export async function deliveryStatementReport(req, res, next) {
                 vodf.item_description,
                 vodf.end_type,
                 vodf.end_type_name,
-                CONCAT(MIN(oe.size), ' - ', MAX(oe.size)) as size,
+                CASE WHEN MIN(oe.size) = MAX(oe.size) THEN MAX(oe.size) ELSE CONCAT(MIN(oe.size), ' - ', MAX(oe.size)) END as size,
                 coalesce(opening_all_sum.total_close_end_quantity,0)::float8 as opening_total_close_end_quantity,
                 coalesce(opening_all_sum.total_open_end_quantity,0)::float8 as opening_total_open_end_quantity,
                 coalesce(opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity,0)::float8 as opening_total_quantity,

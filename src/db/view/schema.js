@@ -154,6 +154,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
       order_description.garments_remarks,
       stock.uuid as stock_uuid,
       stock.order_quantity::float8 as stock_order_quantity,
+      stock.swatch_approved_quantity::float8 as stock_swatch_approved_quantity,
       order_description.tape_coil_uuid,
       tc.name as tape_name,
       order_description.teeth_type,

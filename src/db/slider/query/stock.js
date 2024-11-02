@@ -80,6 +80,7 @@ export async function selectAll(req, res, next) {
 		CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 		vodf.item_description,
 		CAST(stock.order_quantity::float8 AS DOUBLE PRECISION),
+		CAST(stock.swatch_approved_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.body_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.cap_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.puller_quantity::float8 AS DOUBLE PRECISION),
@@ -177,6 +178,7 @@ export async function select(req, res, next) {
 		CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 		vodf.item_description,
 		CAST(stock.order_quantity::float8 AS DOUBLE PRECISION),
+		CAST(stock.swatch_approved_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.body_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.cap_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.puller_quantity::float8 AS DOUBLE PRECISION),
@@ -315,6 +317,7 @@ export async function selectStockByFromSection(req, res, next) {
 		vodf.is_logo_puller as logo_is_puller,
 		vodf.order_type,
 		stock.order_quantity::float8,
+		stock.swatch_approved_quantity::float8,
 		stock.body_quantity::float8,
 		stock.cap_quantity::float8,
 		stock.puller_quantity::float8,
@@ -353,7 +356,7 @@ export async function selectStockByFromSection(req, res, next) {
 		slider_transaction_given.trx_weight::float8 as trx_weight,
 		slider_production_given.total_production_quantity::float8 as total_production_quantity,
 		slider_production_given.total_production_weight::float8 as total_production_weight,
-		stock.order_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0) as balance_quantity
+		stock.swatch_approved_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0) as balance_quantity
 	FROM
 		slider.stock
 	LEFT JOIN

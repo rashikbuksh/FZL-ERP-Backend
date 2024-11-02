@@ -22,6 +22,7 @@ export const stock = slider.table('stock', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
+	swatch_approved_quantity: PG_DECIMAL('swatch_approved_quantity').default(0),
 	body_quantity: decimal('body_quantity', {
 		precision: 20,
 		scale: 4,

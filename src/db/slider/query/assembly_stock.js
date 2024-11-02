@@ -320,6 +320,7 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			vodf.coloring_type_name,
 			vodf.coloring_type_short_name,
 			stock.order_quantity::float8,
+			stock.swatch_approved_quantity::float8,
 			vodf.order_info_uuid,
 			pp.name as party_name,
 			vodf.order_number,
