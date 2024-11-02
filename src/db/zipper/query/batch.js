@@ -90,7 +90,7 @@ export async function selectAll(req, res, next) {
 			batch_id: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
 			batch_status: batch.batch_status,
 			machine_uuid: batch.machine_uuid,
-			machine_name: publicSchema.machine.name,
+			machine_name: sql`concat(public.machine.name, '(', public.machine.min_capacity::float8, '-', public.machine.max_capacity::float8, ')')`,
 			slot: batch.slot,
 			received: batch.received,
 			created_by: batch.created_by,
