@@ -117,6 +117,7 @@ export async function selectAll(req, res, next) {
 			order_info.remarks,
 			swatch_approval_counts.swatch_approval_count,
 			order_entry_counts.order_entry_count,
+			CASE WHEN price_approval_counts.price_approval_count IS NULL THEN 0 ELSE price_approval_counts.price_approval_count END AS price_approval_count,
 			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved
 		FROM 
 			thread.order_info
@@ -137,6 +138,12 @@ export async function selectAll(req, res, next) {
 					FROM thread.order_entry toe
 					GROUP BY toe.order_info_uuid
 		) swatch_approval_counts ON order_info.uuid = swatch_approval_counts.order_info_uuid
+		 LEFT JOIN (
+					SELECT COUNT(*) AS price_approval_count, toe.order_info_uuid as order_info_uuid
+					FROM thread.order_entry toe
+					WHERE toe.party_price > 0 AND toe.company_price > 0
+					GROUP BY toe.order_info_uuid
+		) price_approval_counts ON order_info.uuid = price_approval_counts.order_info_uuid
 		LEFT JOIN (
 					SELECT COUNT(*) AS order_entry_count, toe.order_info_uuid as order_info_uuid
 					FROM thread.order_entry toe

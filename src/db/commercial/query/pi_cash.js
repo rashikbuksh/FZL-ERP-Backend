@@ -152,7 +152,9 @@ export async function selectAll(req, res, next) {
 			pi_cash.lc_uuid,
 			lc.lc_number,
 			pi_cash.order_info_uuids,
+			jsonb_agg(DISTINCT zipper_order_numbers.order_number) AS order_numbers,
 			pi_cash.thread_order_info_uuids,
+			jsonb_agg(DISTINCT thread_order_numbers.thread_order_number) AS thread_order_numbers,
 			pi_cash.marketing_uuid,
 			public.marketing.name AS marketing_name,
 			pi_cash.party_uuid,
@@ -179,7 +181,8 @@ export async function selectAll(req, res, next) {
 			pi_cash.is_pi::float8,
 			pi_cash.conversion_rate::float8,
 			pi_cash.weight::float8,
-			pi_cash.receive_amount::float8
+			pi_cash.receive_amount::float8,
+			SUM(pi_cash_entry.pi_cash_quantity)::float8 AS total_pi_cash_quantity
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
@@ -196,12 +199,76 @@ export async function selectAll(req, res, next) {
 			commercial.bank ON pi_cash.bank_uuid = bank.uuid
 		LEFT JOIN 
 			commercial.lc ON pi_cash.lc_uuid = lc.uuid
+		LEFT JOIN
+			commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+		LEFT JOIN
+				(
+					SELECT
+						oi.uuid::text AS order_info_uuid,
+						vodf.order_number
+					FROM
+						zipper.order_info oi
+					LEFT JOIN
+						zipper.v_order_details_full vodf ON oi.uuid = vodf.order_info_uuid::text
+				) AS zipper_order_numbers 
+				ON zipper_order_numbers.order_info_uuid = ANY(
+					SELECT DISTINCT elem
+					FROM jsonb_array_elements_text(pi_cash.order_info_uuids::jsonb) AS elem
+					WHERE elem IS NOT NULL AND elem != 'null'
+				)
+		LEFT JOIN
+				(
+					SELECT
+						toi.uuid::text AS order_info_uuid,
+						CONCAT('TO', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS thread_order_number
+					FROM
+						thread.order_info toi
+				) AS thread_order_numbers 
+				ON thread_order_numbers.order_info_uuid = ANY(
+					SELECT DISTINCT elem
+					FROM jsonb_array_elements_text(pi_cash.thread_order_info_uuids::jsonb) AS elem
+					WHERE elem IS NOT NULL AND elem != 'null'
+				)
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${own_uuid}` : sql`TRUE`}
+		
+		GROUP BY
+			pi_cash.uuid, 
+			lc.lc_number, 
+			public.marketing.name, 
+			public.party.name, 
+			public.party.address, 
+			public.merchandiser.name, 
+			public.factory.name, 
+			bank.name, 
+			bank.swift_code, 
+			bank.address, 
+			bank.policy, 
+			bank.routing_no, 
+			public.factory.address, 
+			hr.users.name,
+			pi_cash.validity,
+			pi_cash.payment,
+			pi_cash.created_at,
+			pi_cash.updated_at,
+			pi_cash.remarks,
+			pi_cash.is_pi,
+			pi_cash.conversion_rate,
+			pi_cash.weight,
+			pi_cash.receive_amount,
+			pi_cash.order_info_uuids,
+			pi_cash.thread_order_info_uuids,
+			pi_cash.lc_uuid,
+			pi_cash.marketing_uuid,
+			pi_cash.party_uuid,
+			pi_cash.merchandiser_uuid,
+			pi_cash.factory_uuid,
+			pi_cash.bank_uuid,
+			pi_cash.created_by,
+			pi_cash.id
 		ORDER BY 
-			pi_cash.created_at DESC;
-	`;
+			pi_cash.created_at DESC;`;
 
 	const resultPromise = db.execute(query);
 
@@ -232,7 +299,9 @@ export async function select(req, res, next) {
 				pi_cash.lc_uuid,
 				lc.lc_number,
 				pi_cash_entry_order_numbers.order_info_uuids,
+				pi_cash_entry_order_numbers.order_numbers,
 				pi_cash_entry_order_numbers.thread_order_info_uuids,
+				pi_cash_entry_order_numbers.thread_order_numbers,
 				pi_cash.marketing_uuid,
 				public.marketing.name AS marketing_name,
 				pi_cash.party_uuid,
@@ -256,12 +325,10 @@ export async function select(req, res, next) {
 				pi_cash.created_at,
 				pi_cash.updated_at,
 				pi_cash.remarks,
-
 				pi_cash.is_pi::float8,
 				pi_cash.conversion_rate::float8,
 				pi_cash.weight::float8,
 				pi_cash.receive_amount::float8
-
 			FROM 
 				commercial.pi_cash
 			LEFT JOIN 
@@ -280,7 +347,7 @@ export async function select(req, res, next) {
 				commercial.lc ON pi_cash.lc_uuid = lc.uuid
 			LEFT JOIN 
 			(
-				SELECT array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, pi_cash_uuid
+				SELECT array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, jsonb_agg(DISTINCT vodf.order_number) AS order_numbers, array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, jsonb_agg(DISTINCT CONCAT('TO', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0'))) as thread_order_numbers, pi_cash_uuid
 				FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
@@ -291,7 +358,7 @@ export async function select(req, res, next) {
 				GROUP BY pi_cash_uuid
 			) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
 			WHERE 
-				pi_cash.uuid = ${req.params.uuid}
+				pi_cash.uuid = ${req.params.uuid};
 	`;
 
 	const piPromise = db.execute(query);
