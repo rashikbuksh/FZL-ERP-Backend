@@ -324,7 +324,7 @@ export async function getOrderDetails(req, res, next) {
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
 						order_entry_counts.order_entry_count,
-						price_approval_counts.price_approval_count,
+						CASE WHEN price_approval_counts.price_approval_count IS NULL THEN 0 ELSE price_approval_counts.price_approval_count END AS price_approval_count,
 						CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
 					FROM zipper.v_order_details vod
 					LEFT JOIN (
