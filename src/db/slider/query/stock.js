@@ -162,7 +162,7 @@ export async function selectAll(req, res, next) {
 				stock.uuid
 		) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
 	WHERE 
-		stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) <= stock.swatch_approved_quantity
+		stock.swatch_approved_quantity > 0
 	ORDER BY stock.created_at DESC
 	;
 	`;
@@ -413,7 +413,7 @@ export async function selectStockByFromSection(req, res, next) {
             stock.uuid
     ) AS slider_production_given ON stock.uuid = slider_production_given.stock_uuid
 	 WHERE 
-	 	stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) <= stock.swatch_approved_quantity
+	 	stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0
 	 ;`;
 
 	try {
