@@ -113,7 +113,8 @@ export async function selectAll(req, res, next) {
 			challan.is_hand_delivery,
 			challan.name,
 			challan.delivery_cost::float8,
-			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number
+			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
+			SUM(tce.quantity) AS total_quantity
 		FROM 
 			thread.challan
 		LEFT JOIN 
@@ -130,6 +131,35 @@ export async function selectAll(req, res, next) {
 			public.merchandiser pm ON toi.merchandiser_uuid = pm.uuid
 		LEFT JOIN
 			public.factory pf ON toi.factory_uuid = pf.uuid
+		LEFT JOIN
+			thread.challan_entry tce ON challan.uuid = tce.challan_uuid
+		GROUP BY
+			challan.uuid,
+			challan.id,
+			toi.buyer_uuid,
+			pb.name,
+			toi.party_uuid,
+			pp.name,
+			toi.merchandiser_uuid,
+			pm.name,
+			toi.factory_uuid,
+			pf.name,
+			pf.address,
+			challan.carton_quantity,
+			challan.gate_pass,
+			challan.received,
+			challan.vehicle_uuid,
+			vehicle.name,
+			challan.created_by,
+			users.name,
+			challan.created_at,
+			challan.updated_at,
+			challan.remarks,
+			challan.is_hand_delivery,
+			challan.name,
+			challan.delivery_cost,
+			toi.created_at,
+			toi.id
 		ORDER BY
 			challan.created_at DESC
 	`;
