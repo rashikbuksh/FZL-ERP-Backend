@@ -182,7 +182,7 @@ export async function selectAll(req, res, next) {
 			pi_cash.conversion_rate::float8,
 			pi_cash.weight::float8,
 			pi_cash.receive_amount::float8,
-			total_pi_amount.total_amount::float8 + total_pi_amount_thread.total_amount::float8 as total_amount
+			CASE WHEN pi_cash.is_pi = 0 THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 END AS total_amount
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
@@ -204,7 +204,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 				(
 					SELECT
-						oi.uuid::text AS order_info_uuid,
+						DISTINCT oi.uuid::text AS order_info_uuid,
 						vodf.order_number
 					FROM
 						zipper.order_info oi
@@ -219,7 +219,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 				(
 					SELECT
-						toi.uuid::text AS order_info_uuid,
+						DISTINCT toi.uuid::text AS order_info_uuid,
 						CONCAT('TO', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS thread_order_number
 					FROM
 						thread.order_info toi
@@ -295,6 +295,22 @@ export async function selectAll(req, res, next) {
 
 	try {
 		const data = await resultPromise;
+
+		// filter order_numbers and thread_order_numbers to remove null values
+		data?.rows?.forEach((item) => {
+			item.order_info_uuids = JSON.parse(item.order_info_uuids).filter(
+				(x) => x !== null && x !== 'null'
+			);
+			item.thread_order_info_uuids = JSON.parse(
+				item.thread_order_info_uuids
+			).filter((x) => x !== null && x !== 'null');
+
+			// Convert back to JSON strings if needed
+			item.order_info_uuids = JSON.stringify(item.order_info_uuids);
+			item.thread_order_info_uuids = JSON.stringify(
+				item.thread_order_info_uuids
+			);
+		});
 
 		const toast = {
 			status: 200,
