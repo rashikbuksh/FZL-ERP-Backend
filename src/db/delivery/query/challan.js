@@ -208,6 +208,9 @@ export async function select(req, res, next) {
 			CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 			ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
 			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
+			SUM(packing_list_entry.quantity)::float8 AS total_quantity,
+			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
+			COUNT(packing_list.uuid) AS total_carton_quantity,
 			zipper.order_info.buyer_uuid,
 			public.buyer.name AS buyer_name,
 			zipper.order_info.party_uuid,
@@ -227,20 +230,21 @@ export async function select(req, res, next) {
 			CAST(challan.delivery_cost AS NUMERIC) AS delivery_cost,
 			challan.is_hand_delivery,
 			challan.created_by,
-			createdByUser.name AS created_by_name,
+			hr.users.name AS created_by_name,
 			challan.created_at,
 			challan.updated_at,
 			challan.remarks
 		FROM
 			delivery.challan
 		LEFT JOIN
-			createdByUser ON challan.created_by = createdByUser.uuid
+			hr.users ON challan.created_by = hr.users.uuid
 		LEFT JOIN
 			zipper.order_info ON challan.order_info_uuid = zipper.order_info.uuid
 		LEFT JOIN
 			delivery.challan_entry ON challan.uuid = challan_entry.challan_uuid
 		LEFT JOIN
 			delivery.packing_list ON challan_entry.packing_list_uuid = packing_list.uuid
+		LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
 		LEFT JOIN
 			public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
 		LEFT JOIN
@@ -258,7 +262,7 @@ export async function select(req, res, next) {
 			challan.order_info_uuid,
 			zipper.order_info.created_at,
 			zipper.order_info.id,
-			user.name,
+			users.name,
 			zipper.order_info.buyer_uuid,
 			public.buyer.name,
 			zipper.order_info.party_uuid,
