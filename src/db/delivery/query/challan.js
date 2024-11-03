@@ -104,7 +104,7 @@ export async function selectAll(req, res, next) {
 			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
 			SUM(packing_list_entry.quantity)::float8 AS total_quantity,
 			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
-			COUNT(packing_list.uuid) AS total_carton_quantity,
+			COUNT(DISTINCT packing_list.uuid) AS total_carton_quantity,
 			zipper.order_info.buyer_uuid,
 			public.buyer.name AS buyer_name,
 			zipper.order_info.party_uuid,
