@@ -140,9 +140,9 @@ export async function selectAll(req, res, next) {
 						SELECT
 							cmp.uuid,
 							cmp.pi_uuids,
-							cmpe.order_number,
-							CASE WHEN cmpe.is_zipper = true THEN (cmpe.unit_price/12)*cmpe.quantity::float8 ELSE (cmpe.unit_price*cmpe.quantity)::float8 END AS total_value,
-							jsonb_agg(pi_cash_id.id) AS pi_ids,
+							jsonb_agg(DISTINCT concat('PI', to_char(pi_cash_id.created_at, 'YY'), '-', LPAD(pi_cash_id.id::text, 4, '0'))) AS pi_ids,
+							cmpe_total_value.total_value AS total_value,
+							cmpe_total_value.order_number AS order_number,
 							cmp.marketing_uuid,
 							pm.name AS marketing_name,
 							cmp.party_uuid,
@@ -174,8 +174,6 @@ export async function selectAll(req, res, next) {
 						FROM
 							commercial.manual_pi cmp
 						LEFT JOIN
-							commercial.manual_pi_entry cmpe ON cmp.uuid = cmpe.manual_pi_uuid
-						LEFT JOIN
 							hr.users hs ON cmp.created_by = hs.uuid
 						LEFT JOIN
 							public.marketing pm ON cmp.marketing_uuid = pm.uuid
@@ -192,13 +190,18 @@ export async function selectAll(req, res, next) {
 						LEFT JOIN (
 									SELECT 
 										cpc.id,
-										cpc.uuid
+										cpc.uuid,
+										cpc.created_at
 									FROM
 										commercial.pi_cash cpc
 								) AS pi_cash_id ON pi_cash_id.uuid = ANY(cmp.pi_uuids)
+						LEFT JOIN (
+							SELECT cmpe.manual_pi_uuid, SUM(CASE WHEN cmpe.is_zipper = true THEN (cmpe.unit_price/12)*cmpe.quantity::float8 ELSE (cmpe.unit_price*cmpe.quantity::float8) END) AS total_value, jsonb_agg(DISTINCT order_number) AS order_number
+							FROM commercial.manual_pi_entry cmpe
+							GROUP BY cmpe.manual_pi_uuid
+						) AS cmpe_total_value ON cmpe_total_value.manual_pi_uuid = cmp.uuid
 						GROUP BY
 							cmp.uuid,
-							cmpe.order_number,
 							cmp.pi_uuids,
 							cmp.marketing_uuid,
 							pm.name,
@@ -228,9 +231,8 @@ export async function selectAll(req, res, next) {
 							cmp.pi_number,
 							cmp.created_at,
 							cmp.updated_at,
-							cmpe.is_zipper,
-							cmpe.unit_price,
-							cmpe.quantity
+							cmpe_total_value.total_value,
+							cmpe_total_value.order_number
 						ORDER BY
 							cmp.created_at ASC`;
 
