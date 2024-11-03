@@ -102,6 +102,7 @@ export async function selectAll(req, res, next) {
 			CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 			ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
 			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
+			jsonb_agg(DISTINCT jsonb_build_object('packing_list_uuid', packing_list.uuid, 'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')))) AS packing_list_numbers,
 			SUM(packing_list_entry.quantity)::float8 AS total_quantity,
 			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
 			packing_list_count.packing_list_count AS total_carton_quantity,
