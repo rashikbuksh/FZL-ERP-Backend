@@ -534,8 +534,6 @@ export async function PiToBeRegisterThread(req, res, next) {
 export async function LCReport(req, res, next) {
 	const { document_receiving, acceptance, maturity, payment } = req.query;
 
-	// console.log(document_receiving, acceptance, maturity, payment);
-
 	const query = sql`
             SELECT 
                 CONCAT('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) AS file_number,
@@ -557,6 +555,7 @@ export async function LCReport(req, res, next) {
                 lc.shipment_date,
                 lc.expiry_date,
                 lc_entry.amount::float8,
+                lc_entry.payment_value,
                 lc_entry_others.ud_no,
                 lc_entry_others.ud_received,
                 pi_cash.marketing_uuid,
