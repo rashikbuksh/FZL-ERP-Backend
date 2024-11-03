@@ -94,97 +94,94 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: challan.uuid,
-			challan_number: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
-			order_info_uuid: challan.order_info_uuid,
-			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
-			packing_list_uuids: sql`array_agg(DISTINCT packing_list.uuid)`,
-			packing_numbers: sql`
-				array_agg(
-					DISTINCT (concat('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')))
-				)
-			`,
-			buyer_uuid: zipperSchema.order_info.buyer_uuid,
-			buyer_name: publicSchema.buyer.name,
-			party_uuid: zipperSchema.order_info.party_uuid,
-			party_name: publicSchema.party.name,
-			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
-			merchandiser_name: publicSchema.merchandiser.name,
-			factory_uuid: zipperSchema.order_info.factory_uuid,
-			factory_name: publicSchema.factory.name,
-			factory_address: publicSchema.factory.address,
-			vehicle_uuid: challan.vehicle_uuid,
-			vehicle_name: vehicle.name,
-			vehicle_driver_name: vehicle.driver_name,
-			carton_quantity: decimalToNumber(challan.carton_quantity),
-			receive_status: challan.receive_status,
-			gate_pass: challan.gate_pass,
-			name: challan.name,
-			delivery_cost: decimalToNumber(challan.delivery_cost),
-			is_hand_delivery: challan.is_hand_delivery,
-			created_by: challan.created_by,
-			created_by_name: createdByUser.name,
-			created_at: challan.created_at,
-			updated_at: challan.updated_at,
-			remarks: challan.remarks,
-		})
-		.from(challan)
-		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
-		.leftJoin(
-			zipperSchema.order_info,
-			eq(challan.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.leftJoin(challan_entry, eq(challan.uuid, challan_entry.challan_uuid))
-		.leftJoin(
-			packing_list,
-			eq(challan_entry.packing_list_uuid, packing_list.uuid)
-		)
-		.leftJoin(
-			publicSchema.buyer,
-			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
-		)
-		.leftJoin(
-			publicSchema.party,
-			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
-		)
-		.leftJoin(
-			publicSchema.merchandiser,
-			eq(
-				zipperSchema.order_info.merchandiser_uuid,
-				publicSchema.merchandiser.uuid
-			)
-		)
-		.leftJoin(
-			publicSchema.factory,
-			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
-		)
-		.leftJoin(vehicle, eq(challan.vehicle_uuid, vehicle.uuid))
-		.groupBy(
+	const query = sql`
+		SELECT
+			challan.uuid,
+			CONCAT('ZC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_number,
+			challan.order_info_uuid,
+			CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+			ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
+			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
+			SUM(packing_list_entry.quantity)::float8 AS total_quantity,
+			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
+			COUNT(packing_list.uuid) AS total_carton_quantity,
+			zipper.order_info.buyer_uuid,
+			public.buyer.name AS buyer_name,
+			zipper.order_info.party_uuid,
+			public.party.name AS party_name,
+			zipper.order_info.merchandiser_uuid,
+			public.merchandiser.name AS merchandiser_name,
+			zipper.order_info.factory_uuid,
+			public.factory.name AS factory_name,
+			public.factory.address AS factory_address,
+			challan.vehicle_uuid,
+			vehicle.name AS vehicle_name,
+			vehicle.driver_name AS vehicle_driver_name,
+			CAST(challan.carton_quantity AS NUMERIC) AS carton_quantity,
+			challan.receive_status,
+			challan.gate_pass,
+			challan.name,
+			CAST(challan.delivery_cost AS NUMERIC) AS delivery_cost,
+			challan.is_hand_delivery,
+			challan.created_by,
+			hr.users.name AS created_by_name,
+			challan.created_at,
+			challan.updated_at,
+			challan.remarks
+		FROM
+			delivery.challan
+		LEFT JOIN
+			hr.users ON challan.created_by = hr.users.uuid
+		LEFT JOIN
+			zipper.order_info ON challan.order_info_uuid = zipper.order_info.uuid
+		LEFT JOIN
+			delivery.challan_entry ON challan.uuid = challan_entry.challan_uuid
+		LEFT JOIN
+			delivery.packing_list ON challan_entry.packing_list_uuid = packing_list.uuid
+		LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+		LEFT JOIN
+			public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
+		LEFT JOIN
+			public.party ON zipper.order_info.party_uuid = public.party.uuid
+		LEFT JOIN
+			public.merchandiser ON zipper.order_info.merchandiser_uuid = public.merchandiser.uuid
+		LEFT JOIN
+			public.factory ON zipper.order_info.factory_uuid = public.factory.uuid
+		LEFT JOIN
+			delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
+		GROUP BY
 			challan.uuid,
 			challan.order_info_uuid,
+			zipper.order_info.created_at,
+			zipper.order_info.id,
+			users.name,
+			zipper.order_info.buyer_uuid,
+			public.buyer.name,
+			zipper.order_info.party_uuid,
+			public.party.name,
+			zipper.order_info.merchandiser_uuid,
+			public.merchandiser.name,
+			zipper.order_info.factory_uuid,
+			public.factory.address,
+			public.factory.name,
 			challan.vehicle_uuid,
+			vehicle.name,
+			vehicle.driver_name,
+			challan.carton_quantity,
+			challan.receive_status,
+			challan.gate_pass,
+			challan.name,
+			challan.delivery_cost,
+			challan.is_hand_delivery,
 			challan.created_by,
 			challan.created_at,
 			challan.updated_at,
-			challan.remarks,
-			zipperSchema.order_info.created_at,
-			zipperSchema.order_info.id,
-			zipperSchema.order_info.buyer_uuid,
-			publicSchema.buyer.name,
-			zipperSchema.order_info.party_uuid,
-			publicSchema.party.name,
-			zipperSchema.order_info.merchandiser_uuid,
-			publicSchema.merchandiser.name,
-			zipperSchema.order_info.factory_uuid,
-			publicSchema.factory.name,
-			publicSchema.factory.address,
-			vehicle.name,
-			vehicle.driver_name,
-			createdByUser.name
-		)
-		.orderBy(desc(challan.created_at));
+			challan.remarks
+		ORDER BY
+			challan.created_at DESC;
+	`;
+
+	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
@@ -194,7 +191,7 @@ export async function selectAll(req, res, next) {
 			message: 'challan',
 		};
 
-		return await res.status(200).json({ toast, data });
+		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -203,96 +200,92 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const challanPromise = db
-		.select({
-			uuid: challan.uuid,
-			challan_number: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
-			order_info_uuid: challan.order_info_uuid,
-			order_number: sql`concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
-			packing_list_uuids: sql`array_agg(DISTINCT packing_list.uuid)`,
-			packing_numbers: sql`
-				array_agg(
-					DISTINCT (concat('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')))
-				)
-			`,
-			buyer_uuid: zipperSchema.order_info.buyer_uuid,
-			buyer_name: publicSchema.buyer.name,
-			party_uuid: zipperSchema.order_info.party_uuid,
-			party_name: publicSchema.party.name,
-			merchandiser_uuid: zipperSchema.order_info.merchandiser_uuid,
-			merchandiser_name: publicSchema.merchandiser.name,
-			factory_uuid: zipperSchema.order_info.factory_uuid,
-			factory_name: publicSchema.factory.name,
-			factory_address: publicSchema.factory.address,
-			vehicle_uuid: challan.vehicle_uuid,
-			vehicle_name: vehicle.name,
-			vehicle_driver_name: vehicle.driver_name,
-			carton_quantity: decimalToNumber(challan.carton_quantity),
-			receive_status: challan.receive_status,
-			gate_pass: challan.gate_pass,
-			name: challan.name,
-			delivery_cost: decimalToNumber(challan.delivery_cost),
-			is_hand_delivery: challan.is_hand_delivery,
-			created_by: challan.created_by,
-			created_by_name: createdByUser.name,
-			created_at: challan.created_at,
-			updated_at: challan.updated_at,
-			remarks: challan.remarks,
-		})
-		.from(challan)
-		.leftJoin(createdByUser, eq(challan.created_by, createdByUser.uuid))
-		.leftJoin(
-			zipperSchema.order_info,
-			eq(challan.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.leftJoin(challan_entry, eq(challan.uuid, challan_entry.challan_uuid))
-		.leftJoin(
-			packing_list,
-			eq(challan_entry.packing_list_uuid, packing_list.uuid)
-		)
-		.leftJoin(
-			publicSchema.buyer,
-			eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
-		)
-		.leftJoin(
-			publicSchema.party,
-			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
-		)
-		.leftJoin(
-			publicSchema.merchandiser,
-			eq(
-				zipperSchema.order_info.merchandiser_uuid,
-				publicSchema.merchandiser.uuid
-			)
-		)
-		.leftJoin(
-			publicSchema.factory,
-			eq(zipperSchema.order_info.factory_uuid, publicSchema.factory.uuid)
-		)
-		.leftJoin(vehicle, eq(challan.vehicle_uuid, vehicle.uuid))
-		.where(eq(challan.uuid, req.params.uuid))
-		.groupBy(
+	const query = sql`
+		SELECT
+			challan.uuid,
+			CONCAT('ZC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_number,
+			challan.order_info_uuid,
+			CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+			ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
+			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
+			zipper.order_info.buyer_uuid,
+			public.buyer.name AS buyer_name,
+			zipper.order_info.party_uuid,
+			public.party.name AS party_name,
+			zipper.order_info.merchandiser_uuid,
+			public.merchandiser.name AS merchandiser_name,
+			zipper.order_info.factory_uuid,
+			public.factory.name AS factory_name,
+			public.factory.address AS factory_address,
+			challan.vehicle_uuid,
+			vehicle.name AS vehicle_name,
+			vehicle.driver_name AS vehicle_driver_name,
+			CAST(challan.carton_quantity AS NUMERIC) AS carton_quantity,
+			challan.receive_status,
+			challan.gate_pass,
+			challan.name,
+			CAST(challan.delivery_cost AS NUMERIC) AS delivery_cost,
+			challan.is_hand_delivery,
+			challan.created_by,
+			createdByUser.name AS created_by_name,
+			challan.created_at,
+			challan.updated_at,
+			challan.remarks
+		FROM
+			delivery.challan
+		LEFT JOIN
+			createdByUser ON challan.created_by = createdByUser.uuid
+		LEFT JOIN
+			zipper.order_info ON challan.order_info_uuid = zipper.order_info.uuid
+		LEFT JOIN
+			delivery.challan_entry ON challan.uuid = challan_entry.challan_uuid
+		LEFT JOIN
+			delivery.packing_list ON challan_entry.packing_list_uuid = packing_list.uuid
+		LEFT JOIN
+			public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
+		LEFT JOIN
+			public.party ON zipper.order_info.party_uuid = public.party.uuid
+		LEFT JOIN
+			public.merchandiser ON zipper.order_info.merchandiser_uuid = public.merchandiser.uuid
+		LEFT JOIN
+			public.factory ON zipper.order_info.factory_uuid = public.factory.uuid
+		LEFT JOIN
+			delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
+		WHERE
+			challan.uuid = ${req.params.uuid}
+		GROUP BY
 			challan.uuid,
 			challan.order_info_uuid,
-			zipperSchema.order_info.created_at,
-			zipperSchema.order_info.id,
-			createdByUser.name,
-			zipperSchema.order_info.buyer_uuid,
-			publicSchema.buyer.name,
-			zipperSchema.order_info.party_uuid,
-			publicSchema.party.name,
-			zipperSchema.order_info.merchandiser_uuid,
-			publicSchema.merchandiser.name,
-			zipperSchema.order_info.factory_uuid,
-			publicSchema.factory.address,
-			publicSchema.factory.name,
+			zipper.order_info.created_at,
+			zipper.order_info.id,
+			user.name,
+			zipper.order_info.buyer_uuid,
+			public.buyer.name,
+			zipper.order_info.party_uuid,
+			public.party.name,
+			zipper.order_info.merchandiser_uuid,
+			public.merchandiser.name,
+			zipper.order_info.factory_uuid,
+			public.factory.address,
+			public.factory.name,
 			challan.vehicle_uuid,
 			vehicle.name,
 			vehicle.driver_name,
 			challan.carton_quantity,
 			challan.receive_status,
-			challan.gate_pass
-		);
+			challan.gate_pass,
+			challan.name,
+			challan.delivery_cost,
+			challan.is_hand_delivery,
+			challan.created_by,
+			challan.created_at,
+			challan.updated_at,
+			challan.remarks
+		ORDER BY
+			challan.created_at DESC;
+	`;
+
+	const challanPromise = db.execute(query);
 
 	try {
 		const data = await challanPromise;
@@ -302,7 +295,7 @@ export async function select(req, res, next) {
 			message: 'challan',
 		};
 
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}

@@ -1,4 +1,4 @@
-import { eq, sql, desc } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import {
@@ -8,8 +8,8 @@ import {
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import * as publicSchema from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { batch } from '../schema.js';
 
 const labCreated = alias(hrSchema.users, 'labCreated');
@@ -201,7 +201,7 @@ export async function selectAll(req, res, next) {
 						batch.id,
 						concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_id,
 						batch.machine_uuid,
-						pm.name as machine_name,
+						CONCAT(pm.name, ' (', pm.min_capacity::float8, '-', pm.max_capacity::float8, ')') as machine_name,
 						batch.slot,
 						batch.lab_created_by,
 						labCreated.name as lab_created_by_name,
@@ -241,24 +241,34 @@ export async function selectAll(req, res, next) {
 						batch.created_at,
 						batch.updated_at,
 						batch.remarks,
-						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity
+						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity,
+						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight,
+						SUM(batch_entry.quantity)::float8 as total_cone,
+						jsonb_agg(
+							DISTINCT concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))
+						) as order_numbers
 					FROM
 						thread.batch
-					LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
-					LEFT JOIN hr.users as dyeingOperator ON batch.dyeing_operator = dyeingOperator.uuid
-					LEFT JOIN hr.users as passBy ON batch.pass_by = passBy.uuid
-					LEFT JOIN hr.users as dyeingSupervisor ON batch.dyeing_supervisor = dyeingSupervisor.uuid
-					LEFT JOIN hr.users as yarnIssueCreated ON batch.yarn_issue_created_by = yarnIssueCreated.uuid
-					LEFT JOIN hr.users as coningSupervisor ON batch.coning_supervisor = coningSupervisor.uuid
-					LEFT JOIN hr.users as coningCreatedBy ON batch.coning_created_by = coningCreatedBy.uuid
-					LEFT JOIN hr.users as coningOperator ON batch.coning_operator = coningOperator.uuid
-					LEFT JOIN hr.users as createdBy ON batch.created_by = createdBy.uuid
-					LEFT JOIN public.machine pm ON batch.machine_uuid = pm.uuid
-					LEFT JOIN thread.batch_entry ON batch.uuid = batch_entry.batch_uuid
+						LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
+						LEFT JOIN hr.users as dyeingOperator ON batch.dyeing_operator = dyeingOperator.uuid
+						LEFT JOIN hr.users as passBy ON batch.pass_by = passBy.uuid
+						LEFT JOIN hr.users as dyeingSupervisor ON batch.dyeing_supervisor = dyeingSupervisor.uuid
+						LEFT JOIN hr.users as yarnIssueCreated ON batch.yarn_issue_created_by = yarnIssueCreated.uuid
+						LEFT JOIN hr.users as coningSupervisor ON batch.coning_supervisor = coningSupervisor.uuid
+						LEFT JOIN hr.users as coningCreatedBy ON batch.coning_created_by = coningCreatedBy.uuid
+						LEFT JOIN hr.users as coningOperator ON batch.coning_operator = coningOperator.uuid
+						LEFT JOIN hr.users as createdBy ON batch.created_by = createdBy.uuid
+						LEFT JOIN public.machine pm ON batch.machine_uuid = pm.uuid
+						LEFT JOIN thread.batch_entry ON batch.uuid = batch_entry.batch_uuid
+						LEFT JOIN thread.order_entry oe ON batch_entry.order_entry_uuid = oe.uuid
+						LEFT JOIN thread.count_length cl ON oe.count_length_uuid = cl.uuid
+						LEFT JOIN thread.order_info order_info ON oe.order_info_uuid = order_info.uuid
 					GROUP BY
 						batch.uuid,
 						batch.id,
 						pm.name,
+						pm.min_capacity,
+						pm.max_capacity,
 						batch.slot,
 						labCreated.name,
 						batch.lab_created_at,
@@ -295,14 +305,6 @@ export async function selectAll(req, res, next) {
 
 	const resultPromise = db.execute(query);
 
-	// const toast = {
-	// 	status: 200,
-	// 	type: 'select_all',
-	// 	message: 'batch list',
-	// };
-
-	// handleResponse({ promise: resultPromise, res, next, ...toast });
-
 	try {
 		const data = await resultPromise;
 		const toast = {
@@ -311,7 +313,7 @@ export async function selectAll(req, res, next) {
 			message: 'batch list',
 		};
 
-		return await res.status(200).json({ toast, data: data.rows });
+		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -320,100 +322,6 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	// const resultPromise = db
-	// 	.select({
-	// 		uuid: batch.uuid,
-	// 		id: batch.id,
-	// 		batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
-	// 		machine_uuid: batch.machine_uuid,
-	// 		machine_name: publicSchema.machine.name,
-	// 		water_capacity: publicSchema.machine.water_capacity,
-	// 		slot: batch.slot,
-	// 		lab_created_by: batch.lab_created_by,
-	// 		lab_created_by_name: labCreated.name,
-	// 		lab_created_at: batch.lab_created_at,
-	// 		lab_updated_at: batch.lab_updated_at,
-	// 		dyeing_operator: batch.dyeing_operator,
-	// 		dyeing_operator_name: dyeingOperator.name,
-	// 		reason: batch.reason,
-	// 		category: batch.category,
-	// 		status: batch.status,
-	// 		pass_by: batch.pass_by,
-	// 		pass_by_name: passBy.name,
-	// 		shift: batch.shift,
-	// 		dyeing_supervisor: batch.dyeing_supervisor,
-	// 		dyeing_supervisor_name: dyeingSupervisor.name,
-	// 		dyeing_created_at: batch.dyeing_created_at,
-	// 		dyeing_updated_at: batch.dyeing_updated_at,
-	// 		yarn_quantity: decimalToNumber(batch.yarn_quantity),
-	// 		yarn_issue_created_by: batch.yarn_issue_created_by,
-	// 		yarn_issue_created_by_name: yarnIssueCreated.name,
-	// 		yarn_issue_created_at: batch.yarn_issue_created_at,
-	// 		yarn_issue_updated_at: batch.yarn_issue_updated_at,
-	// 		is_drying_complete: batch.is_drying_complete,
-	// 		drying_created_at: batch.drying_created_at,
-	// 		drying_updated_at: batch.drying_updated_at,
-	// 		coning_operator: batch.coning_operator,
-	// 		coning_operator_name: coningOperator.name,
-	// 		coning_supervisor: batch.coning_supervisor,
-	// 		coning_supervisor_name: coningSupervisor.name,
-	// 		coning_machines: batch.coning_machines,
-	// 		coning_created_by: batch.coning_created_by,
-	// 		coning_created_by_name: coningCreatedBy.name,
-	// 		coning_created_at: batch.coning_created_at,
-	// 		coning_updated_at: batch.coning_updated_at,
-	// 		created_by: batch.created_by,
-	// 		created_by_name: hrSchema.users.name,
-	// 		created_at: batch.created_at,
-	// 		updated_at: batch.updated_at,
-	// 		remarks: batch.remarks,
-	// 	})
-	// 	.from(batch)
-	// 	.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
-	// 	.leftJoin(
-	// 		publicSchema.machine,
-	// 		eq(batch.machine_uuid, publicSchema.machine.uuid)
-	// 	)
-	// 	.leftJoin(labCreated, eq(batch.lab_created_by, labCreated.uuid))
-	// 	.leftJoin(
-	// 		yarnIssueCreated,
-	// 		eq(batch.yarn_issue_created_by, yarnIssueCreated.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		dyeingOperator,
-	// 		eq(batch.dyeing_operator, dyeingOperator.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		dyeingSupervisor,
-	// 		eq(batch.dyeing_supervisor, dyeingSupervisor.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		coningCreatedBy,
-	// 		eq(batch.coning_created_by, coningCreatedBy.uuid)
-	// 	)
-	// 	.leftJoin(passBy, eq(batch.pass_by, passBy.uuid))
-	// 	.leftJoin(
-	// 		coningOperator,
-	// 		eq(batch.coning_operator, coningOperator.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		coningSupervisor,
-	// 		eq(batch.coning_supervisor, coningSupervisor.uuid)
-	// 	)
-	// 	.where(eq(batch.uuid, req.params.uuid));
-
-	// try {
-	// 	const data = await resultPromise;
-	// 	const toast = {
-	// 		status: 200,
-	// 		type: 'select',
-	// 		message: 'batch',
-	// 	};
-
-	// 	return await res.status(200).json({ toast, data: data[0] });
-	// } catch (error) {
-	// 	await handleError({ error, res });
-	// }
 	const query = sql`
 					SELECT
 						batch.uuid,
