@@ -32,7 +32,7 @@ export async function selectSampleLeadTime(req, res, next) {
             CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS sample_order_no,
             toi.created_at AS issue_date,
             CASE WHEN MAX(tc.uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
-            MAX(tcs.created_at) AS delivery_last_date,
+            MAX(tc.created_at) AS delivery_last_date,
             SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE tce.quantity::float8 END) AS delivery_quantity,
             SUM(toe.quantity::float8) AS order_quantity,
             CONCAT(SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE tce.quantity::float8 END), '/', SUM(toe.quantity::float8)) AS delivery_order_quantity
@@ -41,7 +41,6 @@ export async function selectSampleLeadTime(req, res, next) {
             LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
             LEFT JOIN thread.challan_entry tce ON tce.order_entry_uuid = toe.uuid
             LEFT JOIN thread.challan tc ON tce.challan_uuid = tc.uuid
-            LEFT JOIN thread.challan tcs ON tc.uuid = tcs.uuid
         WHERE 
             toi.is_sample = 1
         GROUP BY
