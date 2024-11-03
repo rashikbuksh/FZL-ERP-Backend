@@ -135,10 +135,9 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			zipper.order_info ON challan.order_info_uuid = zipper.order_info.uuid
 		LEFT JOIN
-			delivery.challan_entry ON challan.uuid = challan_entry.challan_uuid
-		LEFT JOIN
-			delivery.packing_list ON challan_entry.packing_list_uuid = packing_list.uuid
-		LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+			delivery.packing_list ON challan.uuid = packing_list.challan_uuid
+		LEFT JOIN 
+			delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
 		LEFT JOIN
 			public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
 		LEFT JOIN
@@ -241,10 +240,9 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			zipper.order_info ON challan.order_info_uuid = zipper.order_info.uuid
 		LEFT JOIN
-			delivery.challan_entry ON challan.uuid = challan_entry.challan_uuid
-		LEFT JOIN
-			delivery.packing_list ON challan_entry.packing_list_uuid = packing_list.uuid
-		LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+			delivery.packing_list ON challan.uuid = packing_list.challan_uuid
+		LEFT JOIN 
+			delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
 		LEFT JOIN
 			public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
 		LEFT JOIN

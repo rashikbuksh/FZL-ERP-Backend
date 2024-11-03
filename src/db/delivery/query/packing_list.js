@@ -146,7 +146,6 @@ export async function select(req, res, next) {
 		SELECT * 
 		FROM delivery.v_packing_list
 		WHERE uuid = ${req.params.uuid}
-		ORDER BY created_at DESC
 	`;
 
 	const packing_listPromise = db.execute(query);
@@ -192,16 +191,16 @@ export async function selectPackingListDetailsByPackingListUuid(
 			const order_info_uuid = packing_list?.data?.data?.order_info_uuid;
 			const query = sql`
 				SELECT 
-					ple.uuid,
-					ple.packing_list_uuid,
-					ple.sfg_uuid,
-					ple.quantity::float8,
-					ple.poli_quantity,
-					coalesce(ple.short_quantity::float8, 0) as short_quantity,
-					coalesce(ple.reject_quantity::float8, 0) as reject_quantity,
-					ple.created_at,
-					ple.updated_at,
-					ple.remarks,
+					null as uuid,
+					null as packing_list_uuid,
+					null as sfg_uuid,
+					null as quantity,
+					null as poli_quantity,
+					null as short_quantity,
+					null as reject_quantity,
+					null as created_at,
+					null as updated_at,
+					null as remarks,
 					vodf.order_info_uuid as order_info_uuid,
 					vodf.order_number,
 					vodf.item_description,
@@ -230,11 +229,12 @@ export async function selectPackingListDetailsByPackingListUuid(
 					zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN
 					zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-				LEFT JOIN delivery.packing_list_entry ple ON ple.sfg_uuid = sfg.uuid
+				LEFT JOIN 
+					delivery.packing_list_entry ple ON ple.sfg_uuid = sfg.uuid
 				WHERE 
 					vodf.order_info_uuid = ${order_info_uuid} AND ple.uuid IS NULL
 				ORDER BY
-					ple.created_at, ple.uuid DESC
+					ple.created_at DESC, ple.uuid DESC;
 			`;
 			query_data = await db.execute(query);
 		}
