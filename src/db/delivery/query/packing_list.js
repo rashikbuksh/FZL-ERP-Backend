@@ -91,7 +91,7 @@ export async function remove(req, res, next) {
 
 export async function selectAll(req, res, next) {
 	const query = sql`
-		SELECT *,
+		SELECT dvl.*,
 		SUM(ple.quantity)::float8 as total_quantity,
 		SUM(ple.poli_quantity)::float8 as total_poly_quantity
 		FROM delivery.v_packing_list dvl
@@ -118,8 +118,7 @@ export async function selectAll(req, res, next) {
 			dvl.created_by_name,
 			dvl.created_at,
 			dvl.updated_at,
-			dvl.remarks,
-			ple.uuid
+			dvl.remarks
 		ORDER BY 
 			dvl.created_at DESC
 	`;
@@ -143,7 +142,7 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-		SELECT * 
+		SELECT v_packing_list.* 
 		FROM delivery.v_packing_list
 		WHERE uuid = ${req.params.uuid}
 	`;
