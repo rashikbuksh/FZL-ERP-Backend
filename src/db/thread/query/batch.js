@@ -244,10 +244,8 @@ export async function selectAll(req, res, next) {
 						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity,
 						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight,
 						SUM(batch_entry.quantity)::float8 as total_cone,
+						jsonb_agg(DISTINCT jsonb_build_object('order_info_uuid', order_info.uuid, 'order_number', concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')))) AS order_numbers,
 						jsonb_agg(
-							DISTINCT concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))
-						) as order_numbers,
-						 jsonb_agg(
 							DISTINCT order_info.uuid ) as order_uuids
 					FROM
 						thread.batch
