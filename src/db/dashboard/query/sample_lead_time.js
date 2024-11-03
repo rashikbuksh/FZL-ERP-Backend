@@ -6,16 +6,15 @@ export async function selectSampleLeadTime(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-    WITH combined_results AS (
-        SELECT DISTINCT
-            CONCAT('Z', to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')) as sample_order_no,
-            oi.created_at as issue_date,
-            CASE WHEN pl.challan_uuid = NULL THEN 'Pending' ELSE 'Processing' END as status,
-            (SELECT c.created_at FROM delivery.challan c WHERE pl.challan_uuid = c.uuid ORDER BY 
-            c.created_at DESC LIMIT 1) as delivery_last_date,
-            CASE WHEN ple.quantity is NULL THEN 0 ELSE ple.quantity::float8 END as delivery_quantity,
-            CASE WHEN oe.quantity is NULL THEN 0 ELSE oe.quantity::float8 END as order_quantity,
-            CONCAT(CASE WHEN ple.quantity is NULL THEN 0 ELSE ple.quantity::float8 END, '/', CASE WHEN oe.quantity is NULL THEN 0 ELSE oe.quantity::float8 END) as delivery_order_quantity
+    WITH zipper_results AS (
+        SELECT
+            CONCAT('Z', to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')) AS sample_order_no,
+            oi.created_at AS issue_date,
+            CASE WHEN MAX(pl.challan_uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
+            MAX(c.created_at) AS delivery_last_date,
+            SUM(CASE WHEN pl.challan_uuid IS NOT NULL THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) AS delivery_quantity,
+            SUM(COALESCE(oe.quantity::float8, 0)) AS order_quantity,
+            CONCAT(SUM(CASE WHEN pl.challan_uuid IS NOT NULL THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END), '/', SUM(COALESCE(oe.quantity::float8, 0))) AS delivery_order_quantity
         FROM
             zipper.order_info oi
             LEFT JOIN delivery.packing_list pl ON oi.uuid = pl.order_info_uuid
@@ -24,33 +23,37 @@ export async function selectSampleLeadTime(req, res, next) {
             LEFT JOIN zipper.order_description od ON oi.uuid = od.order_info_uuid
             LEFT JOIN zipper.order_entry oe ON od.uuid = oe.order_description_uuid
         WHERE
-            oi.is_sample = 1 
+            oi.is_sample = 1 AND od.uuid IS NOT NULL
         GROUP BY
-            oi.created_at,  pl.challan_uuid, sample_order_no, oe.quantity, ple.quantity
-
-        UNION
-        SELECT DISTINCT
-            CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as sample_order_no,
-            toi.created_at as issue_date,
-            CASE WHEN tce.challan_uuid = NULL THEN 'Pending' ELSE 'Processing' END as status,
-            (SELECT tc.created_at FROM thread.challan tc WHERE tce.challan_uuid = tc.uuid ORDER BY
-            tc.created_at DESC LIMIT 1) as delivery_last_date,
-            CASE WHEN tce.quantity is NULL THEN 0 ELSE tce.quantity::float8 END as delivery_quantity,
-            CASE WHEN toe.quantity is NULL THEN 0 ELSE toe.quantity::float8 END as order_quantity,
-            CONCAT(CASE WHEN tce.quantity is NULL THEN 0 ELSE tce.quantity::float8 END, '/', CASE WHEN toe.quantity is NULL THEN 0 ELSE toe.quantity::float8 END) as delivery_order_quantity
+            oi.id, oi.created_at
+    ),
+    thread_results AS (
+        SELECT
+            CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS sample_order_no,
+            toi.created_at AS issue_date,
+            CASE WHEN MAX(tc.uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
+            MAX(tcs.created_at) AS delivery_last_date,
+            SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE tce.quantity::float8 END) AS delivery_quantity,
+            SUM(toe.quantity::float8) AS order_quantity,
+            CONCAT(SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE tce.quantity::float8 END), '/', SUM(toe.quantity::float8)) AS delivery_order_quantity
         FROM
             thread.order_info toi
             LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
             LEFT JOIN thread.challan_entry tce ON tce.order_entry_uuid = toe.uuid
             LEFT JOIN thread.challan tc ON tce.challan_uuid = tc.uuid
+            LEFT JOIN thread.challan tcs ON tc.uuid = tcs.uuid
         WHERE 
             toi.is_sample = 1
         GROUP BY
-            toi.created_at, tce.challan_uuid, sample_order_no, toe.quantity, tce.quantity
-        )
-    SELECT *, (SELECT COUNT(*) FROM combined_results) as total_number
-    FROM combined_results
-    ORDER BY issue_date DESC
+            toi.id, toi.created_at
+    )
+    SELECT *, (SELECT COUNT(*) FROM (SELECT * FROM zipper_results UNION ALL SELECT * FROM thread_results) AS combined) AS total_number
+    FROM (
+        SELECT * FROM zipper_results
+        UNION ALL
+        SELECT * FROM thread_results
+    ) AS combined_results
+    ORDER BY issue_date DESC;
     `;
 
 	const resultPromise = db.execute(query);
