@@ -104,7 +104,7 @@ export async function selectAll(req, res, next) {
 			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
 			SUM(packing_list_entry.quantity)::float8 AS total_quantity,
 			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
-			COUNT(DISTINCT packing_list.uuid) AS total_carton_quantity,
+			packing_list_count.packing_list_count AS total_carton_quantity,
 			zipper.order_info.buyer_uuid,
 			public.buyer.name AS buyer_name,
 			zipper.order_info.party_uuid,
@@ -148,6 +148,15 @@ export async function selectAll(req, res, next) {
 			public.factory ON zipper.order_info.factory_uuid = public.factory.uuid
 		LEFT JOIN
 			delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
+		LEFT JOIN (
+			SELECT
+				COUNT(packing_list.uuid) AS packing_list_count,
+				packing_list.challan_uuid
+			FROM
+				delivery.packing_list
+			GROUP BY
+				packing_list.challan_uuid
+		) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
 		GROUP BY
 			challan.uuid,
 			challan.order_info_uuid,
@@ -175,7 +184,8 @@ export async function selectAll(req, res, next) {
 			challan.created_by,
 			challan.created_at,
 			challan.updated_at,
-			challan.remarks
+			challan.remarks,
+			packing_list_count.packing_list_count
 		ORDER BY
 			challan.created_at DESC;
 	`;
@@ -209,7 +219,7 @@ export async function select(req, res, next) {
 			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
 			SUM(packing_list_entry.quantity)::float8 AS total_quantity,
 			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
-			COUNT(packing_list.uuid) AS total_carton_quantity,
+			packing_list_count.packing_list_count AS total_carton_quantity,
 			zipper.order_info.buyer_uuid,
 			public.buyer.name AS buyer_name,
 			zipper.order_info.party_uuid,
@@ -253,6 +263,15 @@ export async function select(req, res, next) {
 			public.factory ON zipper.order_info.factory_uuid = public.factory.uuid
 		LEFT JOIN
 			delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
+		LEFT JOIN (
+			SELECT
+				COUNT(packing_list.uuid) AS packing_list_count,
+				packing_list.challan_uuid
+			FROM
+				delivery.packing_list
+			GROUP BY
+				packing_list.challan_uuid
+		) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
 		WHERE
 			challan.uuid = ${req.params.uuid}
 		GROUP BY
@@ -282,7 +301,8 @@ export async function select(req, res, next) {
 			challan.created_by,
 			challan.created_at,
 			challan.updated_at,
-			challan.remarks
+			challan.remarks,
+			packing_list_count.packing_list_count
 		ORDER BY
 			challan.created_at DESC;
 	`;
