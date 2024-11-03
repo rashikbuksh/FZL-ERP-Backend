@@ -114,7 +114,7 @@ export async function selectAll(req, res, next) {
 			challan.name,
 			challan.delivery_cost::float8,
 			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
-			SUM(tce.quantity) AS total_quantity
+			SUM(tce.quantity)::float8 AS total_quantity
 		FROM 
 			thread.challan
 		LEFT JOIN 

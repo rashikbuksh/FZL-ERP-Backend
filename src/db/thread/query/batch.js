@@ -246,7 +246,9 @@ export async function selectAll(req, res, next) {
 						SUM(batch_entry.quantity)::float8 as total_cone,
 						jsonb_agg(
 							DISTINCT concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))
-						) as order_numbers
+						) as order_numbers,
+						 jsonb_agg(
+							DISTINCT order_info.uuid ) as order_uuids
 					FROM
 						thread.batch
 						LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
