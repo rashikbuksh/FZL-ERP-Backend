@@ -10,32 +10,39 @@ export async function selectGoodsInWarehouse(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-		    WITH challan_data AS (
-        SELECT
-            sum(sfg.warehouse)::float8 as amount,
-            count(*)::float8 as number_of_carton,
-            CASE 
-                WHEN vodf.nylon_stopper_name = 'Metallic' THEN vodf.item_name || ' Metallic'
-                WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
-                ELSE vodf.item_name
-            END as item_name
-        FROM
-            delivery.packing_list pl
-            LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
-            LEFT JOIN zipper.v_order_details_full vodf ON pl.order_info_uuid = vodf.order_info_uuid
-            LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
-        WHERE pl.challan_uuid IS NULL
-        GROUP BY
-            item_name, vodf.nylon_stopper_name, vodf.item_name
-        UNION
-        SELECT
-            sum(toe.warehouse)::float8  as amount,
-            sum(toe.carton_quantity)::float8 as number_of_carton,
-            'Sewing Thread' as item_name
-        FROM
-            thread.order_entry toe
-            LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-    )
+		WITH challan_data AS (
+            SELECT
+                sum(sfg.warehouse)::float8 as amount,
+                pl_count.count as number_of_carton,
+                CASE 
+                    WHEN vodf.nylon_stopper_name = 'Metallic' THEN vodf.item_name || ' Metallic'
+                    WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                    ELSE vodf.item_name
+                END as item_name
+            FROM
+                delivery.packing_list pl
+                LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
+                LEFT JOIN zipper.sfg ON ple.sfg_uuid = sfg.uuid
+                LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                LEFT JOIN (
+                    SELECT COUNT(*) as count, packing_list.order_info_uuid
+                    FROM delivery.packing_list 
+					WHERE packing_list.challan_uuid IS NULL
+                    GROUP BY packing_list.order_info_uuid
+                ) AS pl_count ON pl.order_info_uuid = pl_count.order_info_uuid
+            WHERE pl.challan_uuid IS NULL
+            GROUP BY
+                item_name, vodf.nylon_stopper_name, vodf.item_name, pl_count.count
+            UNION
+            SELECT
+                sum(toe.warehouse)::float8  as amount,
+                sum(toe.carton_quantity)::float8 as number_of_carton,
+                'Sewing Thread' as item_name
+            FROM
+                thread.order_entry toe
+                LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+        )
     SELECT
         *,
         (SELECT SUM(number_of_carton) FROM challan_data)::float8 as total_number

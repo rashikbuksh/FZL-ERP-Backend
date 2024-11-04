@@ -8,10 +8,13 @@ export async function selectPiRegister(req, res, next) {
 	const { start_date, end_date } = req.query;
 
 	const query = sql`
-                WITH pi_data as (
+            WITH pi_data as (
                 SELECT 
                     pi_cash.uuid,
-                    CASE WHEN is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END AS pi_cash_number,
+                    CASE WHEN is_pi = 1 
+                        THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+                        ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+                    END AS pi_cash_number,
                     pi_cash.party_uuid,
                     party.name as party_name,
                     pi_cash.lc_uuid,
@@ -32,7 +35,7 @@ export async function selectPiRegister(req, res, next) {
                     SELECT 
                         pi_cash_uuid, 
                         SUM(pe.pi_cash_quantity)::float8 as total_pi_quantity,
-                        SUM(pe.pi_cash_quantity * coalesce(oe.party_price/12, 0))::float8 as total_zipper_pi_price, 
+                        SUM(pe.pi_cash_quantity * coalesce(CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE oe.party_price/12 END, 0))::float8 as total_zipper_pi_price, 
                         SUM(pe.pi_cash_quantity * coalesce(toe.party_price, 0))::float8 as total_thread_pi_price
                     FROM
                         commercial.pi_cash_entry pe 
@@ -45,11 +48,11 @@ export async function selectPiRegister(req, res, next) {
                 ) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
                 WHERE 
                     ${start_date ? sql`pi_cash.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
-                )
-                SELECT
-                    *,
-                    (SELECT COUNT(*) FROM pi_data) as total_number
-                FROM pi_data;
+            )
+            SELECT
+                *,
+                (SELECT COUNT(*) FROM pi_data) as total_number
+            FROM pi_data;
     `;
 	const resultPromise = db.execute(query);
 

@@ -11,6 +11,8 @@ export async function selectTopSales(req, res, next) {
                         SUM(ple.quantity * oe.company_price)::float8 AS sales
                     FROM 
                         delivery.packing_list_entry ple
+                    LEFT JOIN 
+                        delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
                     LEFT JOIN
                         zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
                     LEFT JOIN
@@ -21,6 +23,7 @@ export async function selectTopSales(req, res, next) {
                         zipper.order_info oi ON od.order_info_uuid = oi.uuid
                     LEFT JOIN
                         public.marketing pm ON oi.marketing_uuid = pm.uuid
+                    WHERE pl.challan_uuid IS NOT NULL
                     GROUP BY 
                         pm.name
                     ORDER BY 

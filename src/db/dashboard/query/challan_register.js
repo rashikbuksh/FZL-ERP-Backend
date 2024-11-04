@@ -10,7 +10,7 @@ export async function selectChallanRegister(req, res, next) {
         WITH challan_data AS (
             SELECT 
                 sum(ple.quantity)::float8 as amount,
-                count(*) as number_of_challan,
+                pl_count.count as number_of_challan,
                 CASE 
                     WHEN vodf.nylon_stopper_name = 'Metallic' THEN vodf.item_name || ' Metallic'
                     WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
@@ -19,11 +19,19 @@ export async function selectChallanRegister(req, res, next) {
             FROM
                 delivery.packing_list pl
                 LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
-                LEFT JOIN zipper.v_order_details_full vodf ON pl.order_info_uuid = vodf.order_info_uuid
+				LEFT JOIN zipper.sfg ON ple.sfg_uuid = sfg.uuid
+				LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                LEFT JOIN (
+                    SELECT COUNT(*) as count, packing_list.order_info_uuid
+                    FROM delivery.packing_list 
+					WHERE packing_list.challan_uuid IS NOT NULL
+                    GROUP BY packing_list.order_info_uuid
+                ) AS pl_count ON pl.order_info_uuid = pl_count.order_info_uuid
             WHERE
-                ${start_date ? sql`pl.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                ${start_date ? sql`pl.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} AND pl.challan_uuid IS NOT NULL
             GROUP BY
-                item_name, vodf.nylon_stopper_name, vodf.item_name
+                item_name, vodf.nylon_stopper_name, vodf.item_name, pl_count.count
             UNION 
             SELECT 
                 sum(ce.quantity)::float8 as amount,

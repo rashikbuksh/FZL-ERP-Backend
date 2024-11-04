@@ -9,28 +9,28 @@ export async function selectAmountAndDoc(req, res, next) {
 	const query = sql`
                         SELECT 
                             SUM(CASE 
-                                WHEN lc.document_receive_date IS NULL THEN total_value
+                                WHEN lc.document_receive_date IS NULL THEN total_value - paid_value
                                 ELSE 0 END)::float8 AS total_doc_rcv_due,
                             COUNT(CASE 
                                 WHEN lc.document_receive_date IS NULL THEN 1 
                                 ELSE NULL END)::float8 AS number_of_pending_doc_rcv,
                             
                             SUM(CASE 
-                                WHEN lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NULL THEN total_value
+                                WHEN lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NULL THEN total_value - paid_value
                                 ELSE 0 END)::float8 AS total_acceptance_due,
                             COUNT(CASE 
                                 WHEN lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NULL THEN 1 
                                 ELSE NULL END)::float8 AS number_of_pending_acceptance_due,
                             
                             SUM(CASE 
-                                WHEN lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NULL THEN total_value
+                                WHEN lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NULL THEN total_value - paid_value
                                 ELSE 0 END)::float8 AS total_maturity_due,
                             COUNT(CASE 
                                 WHEN lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NULL THEN 1 
                                 ELSE NULL END)::float8 AS number_of_pending_maturity_due,
                             
                             SUM(CASE 
-                                WHEN lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NOT NULL AND lc.payment_date IS NULL THEN total_value
+                                WHEN lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NOT NULL AND lc.payment_date IS NULL THEN total_value - paid_value
                                 ELSE 0 END)::float8 AS total_payment_due,
                             COUNT(CASE 
                                 WHEN lc.document_receive_date IS NOT NULL AND lc.acceptance_date IS NOT NULL AND lc.maturity_date IS NOT NULL AND lc.payment_date IS NULL THEN 1 
@@ -50,7 +50,12 @@ export async function selectAmountAndDoc(req, res, next) {
                                         LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
                                         LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
                                     WHERE pi_cash.lc_uuid = lc.uuid
-                                ) ELSE lc.lc_value::float8 END AS total_value
+                                ) ELSE lc.lc_value::float8 END AS total_value,
+                                (
+                                    SELECT SUM(coalesce(lc_entry.payment_value, 0))
+                                    FROM commercial.lc_entry
+                                    WHERE lc_entry.lc_uuid = lc.uuid 
+                                ) as paid_value
                             FROM
                                 commercial.lc
                             LEFT JOIN 
