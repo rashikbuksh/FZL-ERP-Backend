@@ -672,6 +672,70 @@ export const def_multi_color_tape_receive = SED({
 	xml: 'Zipper/Multi-Color-Tape-Receive',
 });
 
+export const def_finishing_batch = SED({
+	required: [
+		'uuid',
+		'id',
+		'order_description_uuid',
+		'slider_lead_time',
+		'dyeing_lead_time',
+		'status',
+		'slider_finishing_stock',
+		'created_by',
+		'created_at',
+		'remarks',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		id: SE.integer(),
+		order_description_uuid: SE.uuid(),
+		slider_lead_time: SE.number(),
+		dyeing_lead_time: SE.number(),
+		status: SE.integer(),
+		slider_finishing_stock: SE.number(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
+	},
+	xml: 'Zipper/Finishing-Batch',
+});
+
+export const def_finishing_batch_entry = SED({
+	required: [
+		'uuid',
+		'finishing_batch_uuid',
+		'sfg_uuid',
+		'quantity',
+		'dyed_tape_used_in_kg',
+		'teeth_molding_prod',
+		'teeth_coloring_stock',
+		'finishing_stock',
+		'finishing_prod',
+		'warehouse',
+		'created_by',
+		'created_at',
+		'remarks',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		finishing_batch_uuid: SE.uuid(),
+		sfg_uuid: SE.uuid(),
+		quantity: SE.number(),
+		dyed_tape_used_in_kg: SE.number(),
+		teeth_molding_prod: SE.number(),
+		teeth_coloring_stock: SE.number(),
+		finishing_stock: SE.number(),
+		finishing_prod: SE.number(),
+		warehouse: SE.number(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string(),
+	},
+	xml: 'Zipper/Finishing-Batch-Entry',
+});
+
 //....................FOR TESTING.......................
 export const defZipper = {
 	order_info: def_zipper_order_info,
@@ -699,6 +763,8 @@ export const defZipper = {
 	tape_coil_required: def_zipper_tape_coil_required,
 	multi_color_dashboard: def_multi_color_dashboard,
 	multi_color_tape_receive: def_multi_color_tape_receive,
+	finishing_batch: def_finishing_batch,
+	finishing_batch_entry: def_finishing_batch_entry,
 };
 
 // * Zipper Tag * //
@@ -794,5 +860,13 @@ export const tagZipper = [
 	{
 		name: 'zipper.multi_color_tape_receive',
 		description: 'Zipper Multi Color Tape Receive',
+	},
+	{
+		name: 'zipper.finishing_batch',
+		description: 'Zipper Finishing Batch',
+	},
+	{
+		name: 'zipper.finishing_batch_entry',
+		description: 'Zipper Finishing Batch Entry',
 	},
 ];

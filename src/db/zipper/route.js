@@ -20,6 +20,8 @@ import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
+import * as finishingBatchOperations from './query/finishing_batch.js';
+import * as finishingBatchEntryOperations from './query/finishing_batch_entry.js';
 
 const zipperRouter = Router();
 
@@ -473,6 +475,47 @@ zipperRouter.put(
 zipperRouter.delete(
 	'/multi-color-tape-receive/:uuid',
 	multiColorTapeReceiveOperations.remove
+);
+
+// --------------------- FINISHING BATCH ROUTES ---------------------
+
+zipperRouter.get('/finishing-batch', finishingBatchOperations.selectAll);
+zipperRouter.get(
+	'/finishing-batch/:uuid',
+	// validateUuidParam(),
+	finishingBatchOperations.select
+);
+zipperRouter.post('/finishing-batch', finishingBatchOperations.insert);
+zipperRouter.put('/finishing-batch/:uuid', finishingBatchOperations.update);
+zipperRouter.delete(
+	'/finishing-batch/:uuid',
+	// validateUuidParam(),
+	finishingBatchOperations.remove
+);
+
+// --------------------- FINISHING BATCH ENTRY ROUTES ---------------------
+
+zipperRouter.get(
+	'/finishing-batch-entry',
+	finishingBatchEntryOperations.selectAll
+);
+zipperRouter.get(
+	'/finishing-batch-entry/:uuid',
+	// validateUuidParam(),
+	finishingBatchEntryOperations.select
+);
+zipperRouter.post(
+	'/finishing-batch-entry',
+	finishingBatchEntryOperations.insert
+);
+zipperRouter.put(
+	'/finishing-batch-entry/:uuid',
+	finishingBatchEntryOperations.update
+);
+zipperRouter.delete(
+	'/finishing-batch-entry/:uuid',
+	// validateUuidParam(),
+	finishingBatchEntryOperations.remove
 );
 
 export { zipperRouter };
