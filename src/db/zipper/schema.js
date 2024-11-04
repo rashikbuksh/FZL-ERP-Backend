@@ -6,6 +6,7 @@ import {
 	pgSchema,
 	serial,
 	text,
+	uuid,
 } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
@@ -635,5 +636,43 @@ export const multi_color_tape_receive = zipper.table(
 		remarks: text('remarks').default(null),
 	}
 );
+
+export const finishing_batch = zipper.table('finishing_batch', {
+	uuid: uuid_primary,
+	id: serial('id').notNull(),
+	order_description_uuid: defaultUUID('order_description_uuid').references(
+		() => order_description.uuid
+	),
+	slider_lead_time: integer('slider_lead_time').notNull(),
+	dyeing_lead_time: integer('dyeing_lead_time').notNull(),
+	status: text('status').notNull(),
+	slider_finishing_stock: decimal('slider_finishing_stock', {
+		precision: 20,
+		scale: 4,
+	}).notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const finishing_batch_entry = zipper.table('finishing_batch_entry', {
+	uuid: uuid_primary,
+	finishing_batch_uuid: defaultUUID('finishing_batch_uuid').references(
+		() => finishing_batch.uuid
+	),
+	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	dyed_tape_used_in_kg: PG_DECIMAL('dyed_tape_used_in_kg').default(0.0),
+	teeth_molding_prod: PG_DECIMAL('teeth_molding_prod').default(0.0),
+	teeth_coloring_stock: PG_DECIMAL('teeth_coloring_stock').default(0.0),
+	finishing_stock: PG_DECIMAL('finishing_stock').default(0.0),
+	finishing_prod: PG_DECIMAL('finishing_prod').default(0.0),
+	warehouse: PG_DECIMAL('warehouse').notNull().default(0.0),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
 
 export default zipper;

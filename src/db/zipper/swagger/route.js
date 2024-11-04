@@ -1,5 +1,6 @@
 import { param } from 'express-validator';
 import SE, { SED } from '../../../util/swagger_example.js';
+import { order_description } from '../schema.js';
 
 const order_info_extra_schema = SE.response_schema(200, {
 	uuid: SE.uuid(),
@@ -3612,6 +3613,233 @@ export const pathZipperMultiColorTapeReceive = {
 	},
 };
 
+export const pathZipperFinishingBatch = {
+	'/zipper/finishing-batch': {
+		get: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'Get all Finishing Batch',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.string('1'),
+					order_description_uuid: SE.uuid(),
+					slider_lead_time: SE.number(100),
+					dyeing_lead_time: SE.number(100),
+					status: SE.string('pending'),
+					slider_finishing_stock: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'create a finishing batch',
+			description: '',
+			// operationId: "add
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref('zipper/finishing_batch'),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/finishing_batch'),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/finishing-batch/{uuid}': {
+		get: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'Gets a finishing batch',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('finishing batch to get', 'uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.string('1'),
+					order_description_uuid: SE.uuid(),
+					slider_lead_time: SE.number(100),
+					dyeing_lead_time: SE.number(100),
+					status: SE.string('pending'),
+					slider_finishing_stock: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'Update an existing finishing batch',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_schema_ref(
+					'finishing batch to update',
+					'uuid',
+					'uuid'
+				),
+			],
+			requestBody: SE.requestBody_schema_ref('zipper/finishing_batch'),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/finishing_batch'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'Deletes a finishing batch',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('finishing batch to delete', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
+// * Zipper Finishing Batch Entry * //
+
+export const pathZipperFinishingBatchEntry = {
+	'/zipper/finishing-batch-entry': {
+		get: {
+			tags: ['zipper.finishing_batch_entry'],
+			summary: 'Get all Finishing Batch Entry',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					finishing_batch_uuid: SE.uuid(),
+					sfg_uuid: SE.uuid(),
+					quantity: SE.number(100),
+					dyed_tape_used_in_kg: SE.number(100),
+					teeth_molding_prod: SE.number(100),
+					teeth_coloring_stock: SE.number(100),
+					finishing_stock: SE.number(100),
+					finishing_prod: SE.number(100),
+					warehouse: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['zipper.finishing_batch_entry'],
+			summary: 'create a finishing batch entry',
+			description: '',
+			// operationId: "add
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/finishing_batch_entry'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/finishing_batch_entry'
+				),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/finishing-batch-entry/{uuid}': {
+		get: {
+			tags: ['zipper.finishing_batch_entry'],
+			summary: 'Gets a finishing batch entry',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('finishing batch entry to get', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					finishing_batch_uuid: SE.uuid(),
+					sfg_uuid: SE.uuid(),
+					quantity: SE.number(100),
+					dyed_tape_used_in_kg: SE.number(100),
+					teeth_molding_prod: SE.number(100),
+					teeth_coloring_stock: SE.number(100),
+					finishing_stock: SE.number(100),
+					finishing_prod: SE.number(100),
+					warehouse: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['zipper.finishing_batch_entry'],
+			summary: 'Update an existing finishing batch entry',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_schema_ref(
+					'finishing batch entry to update',
+					'uuid'
+				),
+			],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/finishing_batch_entry'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/finishing_batch_entry'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['zipper.finishing_batch_entry'],
+			summary: 'Deletes a finishing batch entry',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('finishing batch entry to delete', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
 // * Zipper Path Zipper * //
 export const pathZipper = {
 	...pathZipperOrderInfo,
@@ -3637,4 +3865,6 @@ export const pathZipper = {
 	...pathZipperDyedTapeTransactionFromStock,
 	...pathMultiColorDashboard,
 	...pathZipperMultiColorTapeReceive,
+	...pathZipperFinishingBatch,
+	...pathZipperFinishingBatchEntry,
 };
