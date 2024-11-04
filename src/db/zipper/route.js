@@ -4,10 +4,9 @@ import * as batchEntryOperations from './query/batch_entry.js';
 import * as batchProductionOperations from './query/batch_production.js';
 import * as dyedTapeTransactionOperations from './query/dyed_tape_transaction.js';
 import * as dyedTapeTransactionFromStockOperations from './query/dyed_tape_transaction_from_stock.js';
-import * as dyingBatchOperations from './query/dying_batch.js';
-import * as dyingBatchEntryOperations from './query/dying_batch_entry.js';
 import * as materialTrxAgainstOrderOperations from './query/material_trx_against_order_description.js';
 import * as multiColorDashboardOperations from './query/multi_color_dashboard.js';
+import * as multiColorTapeReceiveOperations from './query/multi_color_tape_receive.js';
 import * as orderDescriptionOperations from './query/order_description.js';
 import * as orderEntryOperations from './query/order_entry.js';
 import * as orderInfoOperations from './query/order_info.js';
@@ -21,7 +20,6 @@ import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
-import * as multiColorTapeReceiveOperations from './query/multi_color_tape_receive.js';
 
 const zipperRouter = Router();
 
@@ -244,38 +242,6 @@ zipperRouter.get(
 zipperRouter.get(
 	'/order-batch',
 	batchEntryOperations.getOrderDetailsForBatchEntry
-);
-
-// --------------------- DYING BATCH ROUTES ---------------------
-
-zipperRouter.get('/dying-batch', dyingBatchOperations.selectAll);
-zipperRouter.get(
-	'/dying-batch/:uuid',
-	// validateUuidParam(),
-	dyingBatchOperations.select
-);
-zipperRouter.post('/dying-batch', dyingBatchOperations.insert);
-zipperRouter.put('/dying-batch/:uuid', dyingBatchOperations.update);
-zipperRouter.delete(
-	'/dying-batch/:uuid',
-	// validateUuidParam(),
-	dyingBatchOperations.remove
-);
-
-// --------------------- DYING BATCH ENTRY ROUTES ---------------------
-
-zipperRouter.get('/dying-batch-entry', dyingBatchEntryOperations.selectAll);
-zipperRouter.get(
-	'/dying-batch-entry/:uuid',
-	// validateUuidParam(),
-	dyingBatchEntryOperations.select
-);
-zipperRouter.post('/dying-batch-entry', dyingBatchEntryOperations.insert);
-zipperRouter.put('/dying-batch-entry/:uuid', dyingBatchEntryOperations.update);
-zipperRouter.delete(
-	'/dying-batch-entry/:uuid',
-	// validateUuidParam(),
-	dyingBatchEntryOperations.remove
 );
 
 // --------------------- TAPE COIL ROUTES ---------------------

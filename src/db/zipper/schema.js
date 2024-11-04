@@ -359,6 +359,7 @@ export const batchStatusEnum = zipper.enum('batch_status', [
 
 // zipper batch
 export const batch = zipper.table('batch', {
+	// rename to dyeing batch
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
 	batch_status: batchStatusEnum('batch_status').default('pending'),
@@ -374,6 +375,7 @@ export const batch = zipper.table('batch', {
 });
 
 export const batch_entry = zipper.table('batch_entry', {
+	// rename to dyeing batch entry
 	uuid: uuid_primary,
 	batch_uuid: defaultUUID('batch_uuid').references(() => batch.uuid),
 	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
@@ -391,42 +393,6 @@ export const batch_entry = zipper.table('batch_entry', {
 		precision: 20,
 		scale: 4,
 	}).default(0.0),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});
-
-// dying batch
-export const dying_batch = zipper.table('dying_batch', {
-	uuid: uuid_primary,
-	id: serial('id').notNull(),
-	mc_no: integer('mc_no').notNull(),
-	created_by: defaultUUID('created_by'),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});
-
-export const dying_batch_entry = zipper.table('dying_batch_entry', {
-	uuid: uuid_primary,
-	dying_batch_uuid: defaultUUID('dying_batch_uuid').references(
-		() => dying_batch.uuid
-	),
-	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
-		() => batch_entry.uuid
-	),
-	quantity: decimal('quantity', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
-	production_quantity: decimal('production_quantity', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
-	production_quantity_in_kg: decimal('production_quantity_in_kg', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
