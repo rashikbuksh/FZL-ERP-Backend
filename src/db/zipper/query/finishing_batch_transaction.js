@@ -7,18 +7,23 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { order_entry, sfg, sfg_transaction } from '../schema.js';
+import {
+	order_entry,
+	sfg,
+	finishing_batch_transaction,
+	finishing_batch_entry,
+} from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgTransactionPromise = db
-		.insert(sfg_transaction)
+	const finishingBatchTransactionPromise = db
+		.insert(finishing_batch_transaction)
 		.values(req.body)
-		.returning({ insertedId: sfg_transaction.sfg_uuid });
+		.returning({ insertedId: finishing_batch_transaction.uuid });
 
 	try {
-		const data = await sfgTransactionPromise;
+		const data = await finishingBatchTransactionPromise;
 		const orderDescription = sql`
 			SELECT
 				concat(vodf.order_number, ' - ', vodf.item_description) as inserted_id
@@ -46,14 +51,14 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgTransactionPromise = db
-		.update(sfg_transaction)
+	const finishingBatchTransactionPromise = db
+		.update(finishing_batch_transaction)
 		.set(req.body)
-		.where(eq(sfg_transaction.uuid, req.params.uuid))
-		.returning({ updatedId: sfg_transaction.sfg_uuid });
+		.where(eq(finishing_batch_transaction.uuid, req.params.uuid))
+		.returning({ updatedId: finishing_batch_transaction.uuid });
 
 	try {
-		const data = await sfgTransactionPromise;
+		const data = await finishingBatchTransactionPromise;
 
 		const orderDescription = sql`
 			SELECT
@@ -82,13 +87,13 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgTransactionPromise = db
-		.delete(sfg_transaction)
-		.where(eq(sfg_transaction.uuid, req.params.uuid))
-		.returning({ deletedId: sfg_transaction.sfg_uuid });
+	const finishingBatchTransactionPromise = db
+		.delete(finishing_batch_transaction)
+		.where(eq(finishing_batch_transaction.uuid, req.params.uuid))
+		.returning({ deletedId: finishing_batch_transaction.sfg_uuid });
 
 	try {
-		const data = await sfgTransactionPromise;
+		const data = await finishingBatchTransactionPromise;
 
 		const orderDescription = sql`
 			SELECT
@@ -117,36 +122,46 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
-			uuid: sfg_transaction.uuid,
-			sfg_uuid: sfg_transaction.sfg_uuid,
+			uuid: finishing_batch_transaction.uuid,
+			finishing_batch_entry_uuid:
+				finishing_batch_transaction.finishing_batch_entry_uuid,
 			order_description_uuid: order_entry.order_description_uuid,
 			order_quantity: decimalToNumber(order_entry.quantity),
-			trx_from: sfg_transaction.trx_from,
-			trx_to: sfg_transaction.trx_to,
-			trx_quantity: decimalToNumber(sfg_transaction.trx_quantity),
-			trx_quantity_in_kg: decimalToNumber(
-				sfg_transaction.trx_quantity_in_kg
+			trx_from: finishing_batch_transaction.trx_from,
+			trx_to: finishing_batch_transaction.trx_to,
+			trx_quantity: decimalToNumber(
+				finishing_batch_transaction.trx_quantity
 			),
-			slider_item_uuid: sfg_transaction.slider_item_uuid,
-			created_by: sfg_transaction.created_by,
+			trx_quantity_in_kg: decimalToNumber(
+				finishing_batch_transaction.trx_quantity_in_kg
+			),
+			slider_item_uuid: finishing_batch_transaction.slider_item_uuid,
+			created_by: finishing_batch_transaction.created_by,
 			created_by_name: hrSchema.users.name,
-			created_at: sfg_transaction.created_at,
-			updated_at: sfg_transaction.updated_at,
-			remarks: sfg_transaction.remarks,
+			created_at: finishing_batch_transaction.created_at,
+			updated_at: finishing_batch_transaction.updated_at,
+			remarks: finishing_batch_transaction.remarks,
 		})
-		.from(sfg_transaction)
-		.leftJoin(sfg, eq(sfg_transaction.sfg_uuid, sfg.uuid))
+		.from(finishing_batch_transaction)
+		.leftJoin(
+			finishing_batch_entry,
+			eq(
+				finishing_batch_transaction.finishing_batch_entry_uuid,
+				finishing_batch_entry.uuid
+			)
+		)
+		.leftJoin(sfg, eq(finishing_batch_entry.sfg_uuid, sfg.uuid))
 		.leftJoin(order_entry, eq(sfg.order_entry_uuid, order_entry.uuid))
 		.leftJoin(
 			hrSchema.users,
-			eq(sfg_transaction.created_by, hrSchema.users.uuid)
+			eq(finishing_batch_transaction.created_by, hrSchema.users.uuid)
 		)
-		.orderBy(desc(sfg_transaction.created_at));
+		.orderBy(desc(finishing_batch_transaction.created_at));
 
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		message: 'SFG transaction list',
+		message: 'Finishing Batch Transaction list',
 	};
 	handleResponse({
 		promise: resultPromise,
@@ -158,41 +173,51 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgTransactionPromise = db
+	const finishingBatchTransactionPromise = db
 		.select({
-			uuid: sfg_transaction.uuid,
-			sfg_uuid: sfg_transaction.sfg_uuid,
+			uuid: finishing_batch_transaction.uuid,
+			finishing_batch_entry_uuid:
+				finishing_batch_transaction.finishing_batch_entry_uuid,
 			order_description_uuid: order_entry.order_description_uuid,
 			order_quantity: decimalToNumber(order_entry.quantity),
-			trx_from: sfg_transaction.trx_from,
-			trx_to: sfg_transaction.trx_to,
-			trx_quantity: decimalToNumber(sfg_transaction.trx_quantity),
-			trx_quantity_in_kg: decimalToNumber(
-				sfg_transaction.trx_quantity_in_kg
+			trx_from: finishing_batch_transaction.trx_from,
+			trx_to: finishing_batch_transaction.trx_to,
+			trx_quantity: decimalToNumber(
+				finishing_batch_transaction.trx_quantity
 			),
-			slider_item_uuid: sfg_transaction.slider_item_uuid,
-			created_by: sfg_transaction.created_by,
+			trx_quantity_in_kg: decimalToNumber(
+				finishing_batch_transaction.trx_quantity_in_kg
+			),
+			slider_item_uuid: finishing_batch_transaction.slider_item_uuid,
+			created_by: finishing_batch_transaction.created_by,
 			created_by_name: hrSchema.users.name,
-			created_at: sfg_transaction.created_at,
-			updated_at: sfg_transaction.updated_at,
-			remarks: sfg_transaction.remarks,
+			created_at: finishing_batch_transaction.created_at,
+			updated_at: finishing_batch_transaction.updated_at,
+			remarks: finishing_batch_transaction.remarks,
 		})
-		.from(sfg_transaction)
-		.leftJoin(sfg, eq(sfg_transaction.sfg_uuid, sfg.uuid))
+		.from(finishing_batch_transaction)
+		.leftJoin(
+			finishing_batch_entry,
+			eq(
+				finishing_batch_transaction.finishing_batch_entry_uuid,
+				finishing_batch_entry.uuid
+			)
+		)
+		.leftJoin(sfg, eq(finishing_batch_entry.sfg_uuid, sfg.uuid))
 		.leftJoin(order_entry, eq(sfg.order_entry_uuid, order_entry.uuid))
 		.leftJoin(
 			hrSchema.users,
-			eq(sfg_transaction.created_by, hrSchema.users.uuid)
+			eq(finishing_batch_transaction.created_by, hrSchema.users.uuid)
 		)
-		.where(eq(sfg_transaction.uuid, req.params.uuid));
+		.where(eq(finishing_batch_transaction.uuid, req.params.uuid));
 
 	try {
-		const data = await sfgTransactionPromise;
+		const data = await finishingBatchTransactionPromise;
 
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'SFG Transaction',
+			message: 'Finishing Batch Transaction ',
 		};
 
 		return await res.status(200).json({ toast, data: data[0] });
@@ -208,8 +233,8 @@ export async function selectByTrxFrom(req, res, next) {
 
 	const query = sql`
 		SELECT
-			sfg_transaction.uuid,
-			sfg_transaction.sfg_uuid,
+			finishing_batch_transaction.uuid,
+			finishing_batch_transaction.finishing_batch_entry_uuid,
 			sfg.order_entry_uuid,
 			vodf.order_description_uuid,
 			vodf.order_number, 
@@ -222,15 +247,15 @@ export async function selectByTrxFrom(req, res, next) {
                         ELSE CAST(oe.size AS NUMERIC)
                     END) AS style_color_size, 
 			oe.quantity::float8 as order_quantity,
-			sfg_transaction.trx_from,
-			sfg_transaction.trx_to,
-			coalesce(sfg_transaction.trx_quantity_in_kg::numeric,0)::float8 as trx_quantity_in_kg,
-			coalesce(sfg_transaction.trx_quantity::numeric,0)::float8 as trx_quantity,
-			sfg_transaction.created_by,
+			finishing_batch_transaction.trx_from,
+			finishing_batch_transaction.trx_to,
+			coalesce(finishing_batch_transaction.trx_quantity_in_kg::numeric,0)::float8 as trx_quantity_in_kg,
+			coalesce(finishing_batch_transaction.trx_quantity::numeric,0)::float8 as trx_quantity,
+			finishing_batch_transaction.created_by,
 			users.name AS created_by_name,
-			sfg_transaction.created_at,
-			sfg_transaction.updated_at,
-			sfg_transaction.remarks,
+			finishing_batch_transaction.created_at,
+			finishing_batch_transaction.updated_at,
+			finishing_batch_transaction.remarks,
 			coalesce(sfg.dying_and_iron_prod::numeric,0)::float8 as dying_and_iron_prod,
 			coalesce(sfg.teeth_molding_stock::numeric,0)::float8 as teeth_molding_stock,
 			coalesce(sfg.teeth_molding_prod::numeric,0)::float8 as teeth_molding_prod,
@@ -245,17 +270,19 @@ export async function selectByTrxFrom(req, res, next) {
 			coalesce(sfg.short_quantity,0)::float8 as short_quantity,
 			coalesce(sfg.reject_quantity,0)::float8 as reject_quantity
 		FROM
-			zipper.sfg_transaction
+			zipper.finishing_batch_transaction
 		LEFT JOIN
-			hr.users ON sfg_transaction.created_by = users.uuid
+			hr.users ON finishing_batch_transaction.created_by = users.uuid
 		LEFT JOIN
-			zipper.sfg ON sfg_transaction.sfg_uuid = sfg.uuid
+			zipper.finishing_batch_entry ON finishing_batch_transaction.finishing_batch_entry_uuid = finishing_batch_entry.uuid
+		LEFT JOIN
+			zipper.sfg ON finishing_batch_entry.sfg_uuid = sfg.uuid
 		LEFT JOIN
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		WHERE
-			sfg_transaction.trx_from = ${req.params.trx_from} ${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
+			finishing_batch_transaction.trx_from = ${req.params.trx_from} ${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? sql`AND lower(vodf.nylon_stopper_name) = lower(${nylon_stopper})` : sql``}
 	`;
 

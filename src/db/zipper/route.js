@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import * as batchOperations from './query/batch.js';
-import * as batchEntryOperations from './query/batch_entry.js';
+import * as dyeingBatchOperations from './query/dyeing_batch.js';
+import * as dyeingBatchEntryOperations from './query/dyeing_batch_entry.js';
 import * as batchProductionOperations from './query/batch_production.js';
 import * as dyedTapeTransactionOperations from './query/dyed_tape_transaction.js';
 import * as dyedTapeTransactionFromStockOperations from './query/dyed_tape_transaction_from_stock.js';
@@ -13,8 +13,7 @@ import * as orderInfoOperations from './query/order_info.js';
 import * as planningOperations from './query/planning.js';
 import * as planningEntryOperations from './query/planning_entry.js';
 import * as sfgOperations from './query/sfg.js';
-import * as sfgProductionOperations from './query/sfg_production.js';
-import * as sfgTransactionOperations from './query/sfg_transaction.js';
+import * as finishingBatchTransactionOperations from './query/finishing_batch_transaction.js';
 import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
@@ -22,6 +21,7 @@ import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
 import * as finishingBatchOperations from './query/finishing_batch.js';
 import * as finishingBatchEntryOperations from './query/finishing_batch_entry.js';
+import * as finishingBatchProductionOperations from './query/finishing_batch_production.js';
 
 const zipperRouter = Router();
 
@@ -106,45 +106,63 @@ zipperRouter.get('/sfg-swatch', sfgOperations.selectSwatchInfo);
 zipperRouter.put('/sfg-swatch/:uuid', sfgOperations.updateSwatchBySfgUuid);
 zipperRouter.get('/sfg/by/:section', sfgOperations.selectSfgBySection);
 
-// --------------------- SFG PRODUCTION ROUTES ---------------------
+// --------------------- Finishing Batch Production ---------------------
 
-zipperRouter.get('/sfg-production', sfgProductionOperations.selectAll);
 zipperRouter.get(
-	'/sfg-production/:uuid',
-	// validateUuidParam(),
-	sfgProductionOperations.select
+	'/finishing-batch-production',
+	finishingBatchProductionOperations.selectAll
 );
-zipperRouter.post('/sfg-production', sfgProductionOperations.insert);
-zipperRouter.put('/sfg-production/:uuid', sfgProductionOperations.update);
+zipperRouter.get(
+	'/finishing-batch-production/:uuid',
+	// validateUuidParam(),
+	finishingBatchProductionOperations.select
+);
+zipperRouter.post(
+	'/finishing-batch-production',
+	finishingBatchProductionOperations.insert
+);
+zipperRouter.put(
+	'/finishing-batch-production/:uuid',
+	finishingBatchProductionOperations.update
+);
 zipperRouter.delete(
-	'/sfg-production/:uuid',
+	'/finishing-batch-production/:uuid',
 	// validateUuidParam(),
-	sfgProductionOperations.remove
+	finishingBatchProductionOperations.remove
 );
 zipperRouter.get(
-	'/sfg-production/by/:section',
-	sfgProductionOperations.selectBySection
+	'/finishing-batch-production/by/:section',
+	finishingBatchProductionOperations.selectBySection
 );
 
-// --------------------- SFG TRANSACTION ROUTES ---------------------
+// --------------------- FINISHING BATCH TRANSACTION ROUTES ---------------------
 
-zipperRouter.get('/sfg-transaction', sfgTransactionOperations.selectAll);
 zipperRouter.get(
-	'/sfg-transaction/:uuid',
-	// validateUuidParam(),
-	sfgTransactionOperations.select
+	'/finishing-batch-transaction',
+	finishingBatchTransactionOperations.selectAll
 );
-zipperRouter.post('/sfg-transaction', sfgTransactionOperations.insert);
-zipperRouter.put('/sfg-transaction/:uuid', sfgTransactionOperations.update);
+zipperRouter.get(
+	'/finishing-batch-transaction/:uuid',
+	// validateUuidParam(),
+	finishingBatchTransactionOperations.select
+);
+zipperRouter.post(
+	'/finishing-batch-transaction',
+	finishingBatchTransactionOperations.insert
+);
+zipperRouter.put(
+	'/finishing-batch-transaction/:uuid',
+	finishingBatchTransactionOperations.update
+);
 zipperRouter.delete(
-	'/sfg-transaction/:uuid',
+	'/finishing-batch-transaction/:uuid',
 	// validateUuidParam(),
-	sfgTransactionOperations.remove
+	finishingBatchTransactionOperations.remove
 );
 zipperRouter.get(
-	'/sfg-transaction/by/:trx_from',
+	'/finishing-batch-transaction/by/:trx_from',
 	// validateUuidParam(),
-	sfgTransactionOperations.selectByTrxFrom
+	finishingBatchTransactionOperations.selectByTrxFrom
 );
 
 // --------------------- DYED TAPE TRANSACTION ROUTES ---------------------
@@ -206,44 +224,47 @@ zipperRouter.delete(
 	dyedTapeTransactionFromStockOperations.remove
 );
 
-// --------------------- BATCH ROUTES ---------------------
+// ---------------------DYEING  BATCH ROUTES ---------------------
 
-zipperRouter.get('/batch', batchOperations.selectAll);
-zipperRouter.get('/batch/:uuid', batchOperations.select);
-zipperRouter.post('/batch', batchOperations.insert);
-zipperRouter.put('/batch/:uuid', batchOperations.update);
+zipperRouter.get('/dyeing-batch', dyeingBatchOperations.selectAll);
+zipperRouter.get('/dyeing-batch/:uuid', dyeingBatchOperations.select);
+zipperRouter.post('/dyeing-batch', dyeingBatchOperations.insert);
+zipperRouter.put('/dyeing-batch/:uuid', dyeingBatchOperations.update);
 zipperRouter.delete(
-	'/batch/:uuid',
+	'/dyeing-batch/:uuid',
 	// validateUuidParam(),
-	batchOperations.remove
+	dyeingBatchOperations.remove
 );
 zipperRouter.get(
-	'/batch-details/:batch_uuid',
-	batchOperations.selectBatchDetailsByBatchUuid
+	'/dyeing-batch-details/:dyeing-batch_uuid',
+	dyeingBatchOperations.selectBatchDetailsByBatchUuid
 );
 
-// --------------------- BATCH ENTRY ROUTES ---------------------
+// --------------------- DYEING BATCH ENTRY ROUTES ---------------------
 
-zipperRouter.get('/batch-entry', batchEntryOperations.selectAll);
+zipperRouter.get('/dyeing-batch-entry', dyeingBatchEntryOperations.selectAll);
 zipperRouter.get(
-	'/batch-entry/:uuid',
+	'/dyeing-batch-entry/:uuid',
 	// validateUuidParam(),
-	batchEntryOperations.select
+	dyeingBatchEntryOperations.select
 );
-zipperRouter.post('/batch-entry', batchEntryOperations.insert);
-zipperRouter.put('/batch-entry/:uuid', batchEntryOperations.update);
+zipperRouter.post('/dyeing-batch-entry', dyeingBatchEntryOperations.insert);
+zipperRouter.put(
+	'/dyeing-batch-entry/:uuid',
+	dyeingBatchEntryOperations.update
+);
 zipperRouter.delete(
-	'/batch-entry/:uuid',
+	'/dyeing-batch-entry/:uuid',
 	// validateUuidParam(),
-	batchEntryOperations.remove
+	dyeingBatchEntryOperations.remove
 );
 zipperRouter.get(
-	'/batch-entry/by/batch-uuid/:batch_uuid',
-	batchEntryOperations.selectBatchEntryByBatchUuid
+	'/dyeing-batch-entry/by/dyeing-batch-uuid/:dyeing_batch_uuid',
+	dyeingBatchEntryOperations.selectBatchEntryByBatchUuid
 );
 zipperRouter.get(
 	'/order-batch',
-	batchEntryOperations.getOrderDetailsForBatchEntry
+	dyeingBatchEntryOperations.getOrderDetailsForBatchEntry
 );
 
 // --------------------- TAPE COIL ROUTES ---------------------

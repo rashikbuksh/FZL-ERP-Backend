@@ -272,51 +272,64 @@ export const sfg = zipper.table('sfg', {
 		.default(0.0),
 	short_quantity: integer('short_quantity').default(0),
 	reject_quantity: integer('reject_quantity').default(0),
+	batch_quantity: PG_DECIMAL('batch_quantity').default(0),
 	remarks: text('remarks').default(null),
 });
 
-export const sfg_production = zipper.table('sfg_production', {
-	uuid: uuid_primary,
-	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
-	section: text('section').notNull(),
-	dyed_tape_used_in_kg: PG_DECIMAL('dyed_tape_used_in_kg').default(0.0),
-	production_quantity_in_kg: decimal('production_quantity_in_kg', {
-		precision: 20,
-		scale: 4,
-	}).default(0.0),
-	production_quantity: decimal('production_quantity', {
-		precision: 20,
-		scale: 4,
-	}).default(0.0),
-	wastage: decimal('wastage', {
-		precision: 20,
-		scale: 4,
-	}).default(0.0),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});
+export const finishing_batch_production = zipper.table(
+	'finishing_batch_production',
+	{
+		uuid: uuid_primary,
+		finishing_batch_entry_uuid: defaultUUID('finishing_batch_entry_uuid')
+			.references(() => finishing_batch_entry.uuid)
+			.default(null),
+		section: text('section').notNull(),
+		dyed_tape_used_in_kg: PG_DECIMAL('dyed_tape_used_in_kg').default(0.0),
+		production_quantity_in_kg: decimal('production_quantity_in_kg', {
+			precision: 20,
+			scale: 4,
+		}).default(0.0),
+		production_quantity: decimal('production_quantity', {
+			precision: 20,
+			scale: 4,
+		}).default(0.0),
+		wastage: decimal('wastage', {
+			precision: 20,
+			scale: 4,
+		}).default(0.0),
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		remarks: text('remarks').default(null),
+	}
+);
 
-export const sfg_transaction = zipper.table('sfg_transaction', {
-	uuid: uuid_primary,
-	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
-	trx_from: text('trx_from').notNull(),
-	trx_to: text('trx_to').notNull(),
-	trx_quantity: decimal('trx_quantity', {
-		precision: 20,
-		scale: 4,
-	}).default(0.0),
-	trx_quantity_in_kg: PG_DECIMAL('trx_quantity_in_kg').default(0.0),
-	slider_item_uuid: defaultUUID('slider_item_uuid').references(
-		() => sliderSchema.stock.uuid
-	),
-	//	slider_item_uuid: uuid('slider_item_uuid').references(() => sliderSchema.stock.uuid),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});
+export const finishing_batch_transaction = zipper.table(
+	'finishing_batch_transaction',
+	{
+		uuid: uuid_primary,
+		finishing_batch_entry_uuid: defaultUUID('finishing_batch_entry_uuid'),
+		trx_from: text('trx_from').notNull(),
+		trx_to: text('trx_to').notNull(),
+		trx_quantity: decimal('trx_quantity', {
+			precision: 20,
+			scale: 4,
+		}).default(0.0),
+		trx_quantity_in_kg: PG_DECIMAL('trx_quantity_in_kg').default(0.0),
+		slider_item_uuid: defaultUUID('slider_item_uuid').references(
+			() => sliderSchema.stock.uuid
+		),
+		//	slider_item_uuid: uuid('slider_item_uuid').references(() => sliderSchema.stock.uuid),
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		remarks: text('remarks').default(null),
+	}
+);
 
 export const dyed_tape_transaction = zipper.table('dyed_tape_transaction', {
 	uuid: uuid_primary,
@@ -359,7 +372,7 @@ export const batchStatusEnum = zipper.enum('batch_status', [
 ]);
 
 // zipper batch
-export const batch = zipper.table('batch', {
+export const dyeing_batch = zipper.table('dyeing_batch', {
 	// rename to dyeing batch
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
@@ -375,10 +388,12 @@ export const batch = zipper.table('batch', {
 	remarks: text('remarks').default(null),
 });
 
-export const batch_entry = zipper.table('batch_entry', {
+export const dyeing_batch_entry = zipper.table('dyeing_batch_entry', {
 	// rename to dyeing batch entry
 	uuid: uuid_primary,
-	batch_uuid: defaultUUID('batch_uuid').references(() => batch.uuid),
+	dyeing_batch_uuid: defaultUUID('dyeing_batch_uuid').references(
+		() => dyeing_batch.uuid
+	),
 	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
 	quantity: decimal('quantity', {
 		precision: 20,
@@ -568,8 +583,8 @@ export const material_trx_against_order_description = zipper.table(
 
 export const batch_production = zipper.table('batch_production', {
 	uuid: uuid_primary,
-	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
-		() => batch_entry.uuid
+	dyeing_batch_entry_uuid: defaultUUID('dyeing_batch_entry_uuid').references(
+		() => dyeing_batch_entry.uuid
 	),
 	production_quantity: decimal('production_quantity', {
 		precision: 20,

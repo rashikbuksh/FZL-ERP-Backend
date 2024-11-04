@@ -81,10 +81,13 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: batch_production.uuid,
-			batch_entry_uuid: batch_production.batch_entry_uuid,
-			production_quantity: decimalToNumber(batch_production.production_quantity),
-			production_quantity_in_kg:
-				decimalToNumber(batch_production.production_quantity_in_kg),
+			dyeing_batch_entry_uuid: batch_production.dyeing_batch_entry_uuid,
+			production_quantity: decimalToNumber(
+				batch_production.production_quantity
+			),
+			production_quantity_in_kg: decimalToNumber(
+				batch_production.production_quantity_in_kg
+			),
 			created_by: batch_production.created_by,
 			created_name: hrSchema.users.name,
 			created_at: batch_production.created_at,
@@ -115,10 +118,13 @@ export async function select(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: batch_production.uuid,
-			batch_entry_uuid: batch_production.batch_entry_uuid,
-			production_quantity: decimalToNumber(batch_production.production_quantity),
-			production_quantity_in_kg:
-				decimalToNumber(batch_production.production_quantity_in_kg),
+			dyeing_batch_entry_uuid: batch_production.dyeing_batch_entry_uuid,
+			production_quantity: decimalToNumber(
+				batch_production.production_quantity
+			),
+			production_quantity_in_kg: decimalToNumber(
+				batch_production.production_quantity_in_kg
+			),
 			created_by: batch_production.created_by,
 			created_name: hrSchema.users.name,
 			created_at: batch_production.created_at,

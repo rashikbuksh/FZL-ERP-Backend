@@ -12,7 +12,8 @@ import {
 	order_description,
 	order_entry,
 	sfg,
-	sfg_production,
+	finishing_batch_production,
+	finishing_batch_entry,
 } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -229,17 +230,17 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			teeth_molding_prod: decimalToNumber(sfg.teeth_molding_prod),
 			dying_and_iron_prod: decimalToNumber(sfg.dying_and_iron_prod),
 			total_teeth_molding: sql`SUM(
-				CASE WHEN sfg_production.section = 'teeth_molding' THEN sfg_production.production_quantity ELSE 0 END
+				CASE WHEN finishing_batch_production.section = 'teeth_molding' THEN finishing_batch_production.production_quantity ELSE 0 END
 				)::float8`,
 			teeth_coloring_stock: decimalToNumber(sfg.teeth_coloring_stock),
 			teeth_coloring_prod: decimalToNumber(sfg.teeth_coloring_prod),
 			total_teeth_coloring: sql`SUM(
-				CASE WHEN sfg_production.section = 'teeth_coloring' THEN sfg_production.production_quantity ELSE 0 END
+				CASE WHEN finishing_batch_production.section = 'teeth_coloring' THEN finishing_batch_production.production_quantity ELSE 0 END
 				)::float8`,
 			finishing_stock: decimalToNumber(sfg.finishing_stock),
 			finishing_prod: decimalToNumber(sfg.finishing_prod),
 			total_finishing: sql`SUM(
-				CASE WHEN sfg_production.section = 'finishing' THEN sfg_production.production_quantity ELSE 0 END
+				CASE WHEN finishing_batch_production.section = 'finishing' THEN finishing_batch_production.production_quantity ELSE 0 END
 				)::float8`,
 			coloring_prod: decimalToNumber(sfg.coloring_prod),
 			total_pi_quantity: decimalToNumber(sfg.pi),
@@ -258,7 +259,17 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			eq(order_entry.order_description_uuid, order_description.uuid)
 		)
 		.leftJoin(sfg, eq(order_entry.uuid, sfg.order_entry_uuid))
-		.leftJoin(sfg_production, eq(sfg.uuid, sfg_production.sfg_uuid))
+		.leftJoin(
+			finishing_batch_production,
+			eq(
+				finishing_batch_entry.uuid,
+				finishing_batch_production.finishing_batch_entry_uuid
+			)
+		)
+		.leftJoin(
+			finishing_batch_entry,
+			eq(sfg.uuid, finishing_batch_entry.sfg_uuid)
+		)
 		.leftJoin(
 			deliverySchema.packing_list_entry,
 			eq(deliverySchema.packing_list_entry.sfg_uuid, sfg.uuid)
