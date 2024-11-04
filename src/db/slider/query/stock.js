@@ -75,7 +75,8 @@ export async function selectAll(req, res, next) {
 	const query = sql`
 	SELECT
 		stock.uuid,
-		stock.order_description_uuid,
+		stock.finishing_batch_uuid,
+		finishing_batch.order_description_uuid,
 		order_description.order_info_uuid,
 		CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 		vodf.item_description,
@@ -144,7 +145,9 @@ export async function selectAll(req, res, next) {
 	FROM
 		slider.stock
 	LEFT JOIN
-		zipper.order_description ON stock.order_description_uuid = order_description.uuid
+		zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
+	LEFT JOIN
+		zipper.order_description ON finishing_batch.order_description_uuid = order_description.uuid
 	LEFT JOIN
 		zipper.order_info ON order_description.order_info_uuid = order_info.uuid
 	LEFT JOIN 
@@ -191,6 +194,7 @@ export async function select(req, res, next) {
 	const query = sql`
 	SELECT
 		stock.uuid,
+		finishing_batch.order_description_uuid,
 		stock.order_description_uuid,
 		order_description.order_info_uuid,
 		CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
@@ -260,7 +264,9 @@ export async function select(req, res, next) {
 	FROM
 		slider.stock
 	LEFT JOIN
-		zipper.order_description ON stock.order_description_uuid = order_description.uuid
+		zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
+	LEFT JOIN
+		zipper.order_description ON finishing_batch.order_description_uuid = order_description.uuid
 	LEFT JOIN
 		zipper.order_info ON order_description.order_info_uuid = order_info.uuid
 	LEFT JOIN 
@@ -290,7 +296,8 @@ export async function selectStockByFromSection(req, res, next) {
 	const query = sql`
 	SELECT
 		stock.uuid,
-		stock.order_description_uuid,
+		stock.finishing_batch_uuid,
+		finishing_batch.order_description_uuid,
 		order_description.order_info_uuid,
 		pp.name AS party_name,
 		vodf.order_number,
@@ -378,7 +385,9 @@ export async function selectStockByFromSection(req, res, next) {
 	FROM
 		slider.stock
 	LEFT JOIN
-		zipper.order_description ON stock.order_description_uuid = order_description.uuid
+		zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
+	LEFT JOIN
+		zipper.order_description ON finishing_batch.order_description_uuid = order_description.uuid
 	LEFT JOIN 
 		zipper.order_info ON order_description.order_info_uuid = order_info.uuid
 	LEFT JOIN 
