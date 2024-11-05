@@ -247,15 +247,13 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 	try {
 		const data = await batchEntryPromise;
 
-		const batch_data = { dyeing_batch_entry: data?.rows };
-
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'dyeing_batch_entry By batch_entry_uuid',
 		};
 
-		return res.status(200).json({ toast, data: batch_data });
+		return res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
