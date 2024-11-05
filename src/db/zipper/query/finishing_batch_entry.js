@@ -271,7 +271,6 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 		SELECT
 			fbe.uuid as fbe_uuid,
 			sfg.recipe_uuid as recipe_uuid,
-			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
 			oe.style,
 			oe.color,
 			CASE 
