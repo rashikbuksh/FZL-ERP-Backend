@@ -195,13 +195,15 @@ export async function select(req, res, next) {
 export async function selectBatchDetailsByBatchUuid(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { batch_uuid } = req.params;
+	const { dyeing_batch_uuid } = req.params;
+
+	console.log('dyeing_batch_uuid', dyeing_batch_uuid);
 
 	try {
 		const api = await createApi(req);
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/${batch_uuid}`)
+				.get(`${endpoint}/${dyeing_batch_uuid}`)
 				.then((response) => response);
 
 		const [dyeing_batch, dyeing_batch_entry] = await Promise.all([

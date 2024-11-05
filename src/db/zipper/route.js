@@ -223,7 +223,7 @@ zipperRouter.delete(
 	dyeingBatchOperations.remove
 );
 zipperRouter.get(
-	'/dyeing-batch-details/:dyeing-batch_uuid',
+	'/dyeing-batch-details/:dyeing_batch_uuid',
 	dyeingBatchOperations.selectBatchDetailsByBatchUuid
 );
 
