@@ -294,7 +294,10 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			users.name as created_by_name,
 			fbe.created_at,
 			fbe.updated_at,
-			fbe.remarks
+			fbe.remarks,
+			coalesce(
+				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+			,0) as balance_quantity
 		FROM
 			zipper.finishing_batch_entry fbe
 		LEFT JOIN 
@@ -305,6 +308,18 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN
 			hr.users ON fbe.created_by = users.uuid
+		LEFT JOIN
+			(
+				SELECT
+					sfg.uuid as sfg_uuid,
+					SUM(fbe.quantity::float8) AS given_quantity
+				FROM
+					zipper.finishing_batch_entry fbe
+				LEFT JOIN 
+					zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+				GROUP BY
+					sfg.uuid
+			) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
 		WHERE
 			fbe.finishing_batch_uuid = ${req.params.finishing_batch_uuid}
 		ORDER BY
