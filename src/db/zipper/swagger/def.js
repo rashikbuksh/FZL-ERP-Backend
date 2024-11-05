@@ -574,7 +574,7 @@ export const def_zipper_material_trx_against_order_description = SED({
 	xml: 'Zipper/Material_trx_against_order_description',
 });
 
-export const def_zipper_batch_production = SED({
+export const def_zipper_dyeing_batch_production = SED({
 	required: [
 		'uuid',
 		'dyeing_batch_entry_uuid',
@@ -720,7 +720,7 @@ export const defZipper = {
 	material_trx_against_order_description:
 		def_zipper_material_trx_against_order_description,
 	tape_coil_to_dyeing: def_zipper_tape_coil_to_dyeing,
-	batch_production: def_zipper_batch_production,
+	dyeing_batch_production: def_zipper_dyeing_batch_production,
 	tape_coil_required: def_zipper_tape_coil_required,
 	multi_color_dashboard: def_multi_color_dashboard,
 	multi_color_tape_receive: def_multi_color_tape_receive,
@@ -811,8 +811,8 @@ export const tagZipper = [
 		description: 'Zipper Tape Coil To Dyeing',
 	},
 	{
-		name: 'zipper.batch_production',
-		description: 'Zipper Batch Production',
+		name: 'zipper.dyeing_batch_production',
+		description: 'Zipper Dyeing Batch Production',
 	},
 	{
 		name: 'zipper.multi_color_dashboard',
