@@ -3149,7 +3149,7 @@ export const pathZipperDyeingBatchProduction = {
 	'/zipper/dyeing-batch-production': {
 		get: {
 			tags: ['zipper.dyeing_batch_production'],
-			summary: 'Get all Batch Production',
+			summary: 'Get all Dyeing Batch Production',
 			responses: {
 				200: {
 					uuid: SE.uuid(),
@@ -3186,12 +3186,12 @@ export const pathZipperDyeingBatchProduction = {
 	'/zipper/dyeing-batch-production/{uuid}': {
 		get: {
 			tags: ['zipper.dyeing_batch_production'],
-			summary: 'Gets a batch production',
+			summary: 'Gets a dyeing batch production',
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('batch production to get', 'uuid'),
+				SE.parameter_params('dyeing batch production to get', 'uuid'),
 			],
 			responses: {
 				200: {
@@ -3211,13 +3211,16 @@ export const pathZipperDyeingBatchProduction = {
 		},
 		put: {
 			tags: ['zipper.dyeing_batch_production'],
-			summary: 'Update an existing batch production',
+			summary: 'Update an existing dyeing batch production',
 			description: '',
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_schema_ref('batch production to update', 'uuid'),
+				SE.parameter_schema_ref(
+					'dyeing batch production to update',
+					'uuid'
+				),
 			],
 			requestBody: SE.requestBody_schema_ref(
 				'zipper/dyeing_batch_production'
@@ -3234,7 +3237,7 @@ export const pathZipperDyeingBatchProduction = {
 		},
 		delete: {
 			tags: ['zipper.dyeing_batch_production'],
-			summary: 'Deletes a batch production',
+			summary: 'Deletes a dyeing batch production',
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
