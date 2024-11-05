@@ -6,15 +6,15 @@ import {
 } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { batch_entry, sfg } from '../schema.js';
+import { dyeing_batch_entry, sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const batchEntryPromise = db
-		.insert(batch_entry)
+		.insert(dyeing_batch_entry)
 		.values(req.body)
-		.returning({ insertedUuid: batch_entry.uuid });
+		.returning({ insertedUuid: dyeing_batch_entry.uuid });
 
 	try {
 		const data = await batchEntryPromise;
@@ -35,10 +35,10 @@ export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const batchEntryPromise = db
-		.update(batch_entry)
+		.update(dyeing_batch_entry)
 		.set(req.body)
-		.where(eq(batch_entry.uuid, req.params.uuid))
-		.returning({ updatedUuid: batch_entry.uuid });
+		.where(eq(dyeing_batch_entry.uuid, req.params.uuid))
+		.returning({ updatedUuid: dyeing_batch_entry.uuid });
 
 	try {
 		const data = await batchEntryPromise;
@@ -58,9 +58,9 @@ export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const batchEntryPromise = db
-		.delete(batch_entry)
-		.where(eq(batch_entry.uuid, req.params.uuid))
-		.returning({ deletedUuid: batch_entry.uuid });
+		.delete(dyeing_batch_entry)
+		.where(eq(dyeing_batch_entry.uuid, req.params.uuid))
+		.returning({ deletedUuid: dyeing_batch_entry.uuid });
 
 	try {
 		const data = await batchEntryPromise;
@@ -79,24 +79,24 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
-			uuid: batch_entry.uuid,
-			batch_uuid: batch_entry.batch_uuid,
-			sfg_uuid: batch_entry.sfg_uuid,
-			quantity: decimalToNumber(batch_entry.quantity),
+			uuid: dyeing_batch_entry.uuid,
+			batch_uuid: dyeing_batch_entry.batch_uuid,
+			sfg_uuid: dyeing_batch_entry.sfg_uuid,
+			quantity: decimalToNumber(dyeing_batch_entry.quantity),
 			production_quantity: decimalToNumber(
-				batch_entry.production_quantity
+				dyeing_batch_entry.production_quantity
 			),
 			production_quantity_in_kg: decimalToNumber(
-				batch_entry.production_quantity_in_kg
+				dyeing_batch_entry.production_quantity_in_kg
 			),
-			created_at: batch_entry.created_at,
-			updated_at: batch_entry.updated_at,
-			remarks: batch_entry.remarks,
+			created_at: dyeing_batch_entry.created_at,
+			updated_at: dyeing_batch_entry.updated_at,
+			remarks: dyeing_batch_entry.remarks,
 		})
-		.from(batch_entry)
-		.leftJoin(batch, eq(batch.uuid, batch_entry.batch_uuid))
-		.leftJoin(sfg, eq(sfg.uuid, batch_entry.sfg_uuid))
-		.orderBy(desc(batch_entry.created_at));
+		.from(dyeing_batch_entry)
+		.leftJoin(batch, eq(batch.uuid, dyeing_batch_entry.batch_uuid))
+		.leftJoin(sfg, eq(sfg.uuid, dyeing_batch_entry.sfg_uuid))
+		.orderBy(desc(dyeing_batch_entry.created_at));
 
 	const toast = {
 		status: 200,
@@ -116,24 +116,24 @@ export async function select(req, res, next) {
 
 	const batchEntryPromise = db
 		.select({
-			uuid: batch_entry.uuid,
-			batch_uuid: batch_entry.batch_uuid,
-			sfg_uuid: batch_entry.sfg_uuid,
-			quantity: decimalToNumber(batch_entry.quantity),
+			uuid: dyeing_batch_entry.uuid,
+			batch_uuid: dyeing_batch_entry.batch_uuid,
+			sfg_uuid: dyeing_batch_entry.sfg_uuid,
+			quantity: decimalToNumber(dyeing_batch_entry.quantity),
 			production_quantity: decimalToNumber(
-				batch_entry.production_quantity
+				dyeing_batch_entry.production_quantity
 			),
 			production_quantity_in_kg: decimalToNumber(
-				batch_entry.production_quantity_in_kg
+				dyeing_batch_entry.production_quantity_in_kg
 			),
-			created_at: batch_entry.created_at,
-			updated_at: batch_entry.updated_at,
-			remarks: batch_entry.remarks,
+			created_at: dyeing_batch_entry.created_at,
+			updated_at: dyeing_batch_entry.updated_at,
+			remarks: dyeing_batch_entry.remarks,
 		})
-		.from(batch_entry)
-		.leftJoin(batch, eq(batch.uuid, batch_entry.batch_uuid))
-		.leftJoin(sfg, eq(sfg.uuid, batch_entry.sfg_uuid))
-		.where(eq(batch_entry.uuid, req.params.uuid));
+		.from(dyeing_batch_entry)
+		.leftJoin(batch, eq(batch.uuid, dyeing_batch_entry.batch_uuid))
+		.leftJoin(sfg, eq(sfg.uuid, dyeing_batch_entry.sfg_uuid))
+		.where(eq(dyeing_batch_entry.uuid, req.params.uuid));
 
 	try {
 		const data = await batchEntryPromise;
@@ -184,7 +184,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
 			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
 		FROM
-			zipper.batch_entry be
+			zipper.dyeing_batch_entry be
 		LEFT JOIN
 			zipper.batch b ON be.batch_uuid = b.uuid
 		LEFT JOIN 
@@ -203,16 +203,16 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 		LEFT JOIN
 			(
 				SELECT
-					batch_entry.uuid as batch_entry_uuid,
+					dyeing_batch_entry.uuid as batch_entry_uuid,
 					bp.uuid as batch_production_uuid,
 					SUM(bp.production_quantity::float8) AS given_production_quantity,
 					SUM(bp.production_quantity_in_kg::float8) AS given_production_quantity_in_kg
 				FROM
 					zipper.batch_production bp
 				LEFT JOIN 
-					zipper.batch_entry ON bp.batch_entry_uuid = batch_entry.uuid
+					zipper.dyeing_batch_entry ON bp.batch_entry_uuid = dyeing_batch_entry.uuid
 				GROUP BY
-					batch_entry.uuid, bp.uuid
+					dyeing_batch_entry.uuid, bp.uuid
 			) AS bp_given ON be.uuid = bp_given.batch_entry_uuid
 		WHERE
 			be.batch_uuid = ${batch_uuid} AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END`;
@@ -224,7 +224,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'batch_entry By batch_entry_uuid',
+			message: 'dyeing_batch_entry By batch_entry_uuid',
 		};
 
 		return res.status(200).json({ toast, data: data?.rows });
@@ -286,7 +286,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 					SUM(be.production_quantity::float8) AS given_production_quantity,
 					SUM(be.production_quantity_in_kg::float8) AS given_production_quantity_in_kg
 				FROM
-					zipper.batch_entry be
+					zipper.dyeing_batch_entry be
 				LEFT JOIN 
 					zipper.sfg sfg ON be.sfg_uuid = sfg.uuid
 				GROUP BY
@@ -306,12 +306,12 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	try {
 		const data = await batchEntryPromise;
 
-		const batch_data = { batch_entry: data?.rows };
+		const batch_data = { dyeing_batch_entry: data?.rows };
 
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'batch_entry By batch_entry_uuid',
+			message: 'dyeing_batch_entry By batch_entry_uuid',
 		};
 
 		return res.status(200).json({ toast, data: batch_data });

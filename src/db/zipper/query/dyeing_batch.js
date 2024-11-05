@@ -9,16 +9,16 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { batch } from '../schema.js';
+import { dyeing_batch } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const batchPromise = db
-		.insert(batch)
+		.insert(dyeing_batch)
 		.values(req.body)
 		.returning({
-			insertedUuid: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+			insertedUuid: sql`concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0'))`,
 		});
 	try {
 		const data = await batchPromise;
@@ -39,10 +39,10 @@ export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const batchPromise = db
-		.update(batch)
+		.update(dyeing_batch)
 		.set(req.body)
-		.where(eq(batch.uuid, req.params.uuid))
-		.returning({ updatedUuid: batch.uuid });
+		.where(eq(dyeing_batch.uuid, req.params.uuid))
+		.returning({ updatedUuid: dyeing_batch.uuid });
 
 	try {
 		const data = await batchPromise;
@@ -62,10 +62,10 @@ export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const batchPromise = db
-		.delete(batch)
-		.where(eq(batch.uuid, req.params.uuid))
+		.delete(dyeing_batch)
+		.where(eq(dyeing_batch.uuid, req.params.uuid))
 		.returning({
-			deletedUuid: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+			deletedUuid: sql`concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -85,26 +85,26 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const query = sql`
 		SELECT 
-			batch.uuid,
-			batch.id,
-			concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_id,
-			batch.batch_status,
-			batch.machine_uuid,
+			dyeing_batch.uuid,
+			dyeing_batch.id,
+			concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as batch_id,
+			dyeing_batch.batch_status,
+			dyeing_batch.machine_uuid,
 			concat(public.machine.name, ' (', public.machine.min_capacity::float8, '-', public.machine.max_capacity::float8, ')') as machine_name,
-			batch.slot,
-			batch.received,
-			batch.created_by,
+			dyeing_batch.slot,
+			dyeing_batch.received,
+			dyeing_batch.created_by,
 			users.name as created_by_name,
-			batch.created_at,
-			batch.updated_at,
-			batch.remarks,
+			dyeing_batch.created_at,
+			dyeing_batch.updated_at,
+			dyeing_batch.remarks,
 			expected.total_quantity,
 			expected.expected_kg,
 			expected.order_numbers,
 			expected.total_actual_production_quantity
-		FROM zipper.batch
-		LEFT JOIN hr.users ON batch.created_by = users.uuid
-		LEFT JOIN public.machine ON batch.machine_uuid = public.machine.uuid
+		FROM zipper.dyeing_batch
+		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
+		LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
 		LEFT JOIN (
 			SELECT 
 				ROUND(
@@ -131,8 +131,8 @@ export async function selectAll(req, res, next) {
 					zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid AND vodf.zipper_number = tc.zipper_number_uuid 
 			WHERE CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END
 			GROUP BY be.batch_uuid
-		) AS expected ON batch.uuid = expected.batch_uuid
-		ORDER BY batch.created_at DESC
+		) AS expected ON dyeing_batch.uuid = expected.batch_uuid
+		ORDER BY dyeing_batch.created_at DESC
 	`;
 	const resultPromise = db.execute(query);
 
@@ -141,7 +141,7 @@ export async function selectAll(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'batch list',
+			message: 'dyeing_batch list',
 		};
 		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
@@ -154,34 +154,37 @@ export async function select(req, res, next) {
 
 	const batchPromise = db
 		.select({
-			uuid: batch.uuid,
-			id: batch.id,
-			batch_id: sql`concat('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
-			batch_status: batch.batch_status,
-			machine_uuid: batch.machine_uuid,
+			uuid: dyeing_batch.uuid,
+			id: dyeing_batch.id,
+			batch_id: sql`concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0'))`,
+			batch_status: dyeing_batch.batch_status,
+			machine_uuid: dyeing_batch.machine_uuid,
 			machine_name: publicSchema.machine.name,
-			slot: batch.slot,
-			received: batch.received,
-			created_by: batch.created_by,
+			slot: dyeing_batch.slot,
+			received: dyeing_batch.received,
+			created_by: dyeing_batch.created_by,
 			created_by_name: hrSchema.users.name,
-			created_at: batch.created_at,
-			updated_at: batch.updated_at,
-			remarks: batch.remarks,
+			created_at: dyeing_batch.created_at,
+			updated_at: dyeing_batch.updated_at,
+			remarks: dyeing_batch.remarks,
 		})
-		.from(batch)
-		.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
+		.from(dyeing_batch)
+		.leftJoin(
+			hrSchema.users,
+			eq(dyeing_batch.created_by, hrSchema.users.uuid)
+		)
 		.leftJoin(
 			publicSchema.machine,
-			eq(batch.machine_uuid, publicSchema.machine.uuid)
+			eq(dyeing_batch.machine_uuid, publicSchema.machine.uuid)
 		)
-		.where(eq(batch.uuid, req.params.uuid));
+		.where(eq(dyeing_batch.uuid, req.params.uuid));
 
 	try {
 		const data = await batchPromise;
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'batch detail',
+			message: 'dyeing_batch detail',
 		};
 		res.status(200).json({ toast, data: data[0] });
 	} catch (error) {
@@ -201,14 +204,14 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 				.get(`${endpoint}/${batch_uuid}`)
 				.then((response) => response);
 
-		const [batch, batch_entry] = await Promise.all([
-			fetchData('/zipper/batch'),
-			fetchData('/zipper/batch-entry/by/batch-uuid'),
+		const [dyeing_batch, dyeing_batch_entry] = await Promise.all([
+			fetchData('/zipper/dyeing-batch'),
+			fetchData('/zipper/dyeing-batch-entry/by/dyeing-batch-uuid'),
 		]);
 
 		const response = {
-			...batch?.data?.data,
-			batch_entry: batch_entry?.data?.data || [],
+			...dyeing_batch?.data?.data,
+			dyeing_batch_entry: dyeing_batch_entry?.data?.data || [],
 		};
 
 		const toast = {

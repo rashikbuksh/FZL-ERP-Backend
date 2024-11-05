@@ -314,7 +314,7 @@ export const def_zipper_dyed_tape_transaction_from_stock = SED({
 });
 
 // * Zipper Batch * //
-export const def_zipper_batch = SED({
+export const def_zipper_dyeing_batch = SED({
 	required: [
 		'uuid',
 		'created_by',
@@ -342,10 +342,10 @@ export const def_zipper_batch = SED({
 });
 
 // * Zipper Dyeing Batch Entry * //
-export const def_zipper_batch_entry = SED({
+export const def_zipper_dyeing_batch_entry = SED({
 	required: [
 		'uuid',
-		'batch_uuid',
+		'dyeing_batch_uuid',
 		'sfg_uuid',
 		'quantity',
 		'production_quantity',
@@ -354,7 +354,7 @@ export const def_zipper_batch_entry = SED({
 	],
 	properties: {
 		uuid: SE.uuid(),
-		batch_uuid: SE.uuid(),
+		dyeing_batch_uuid: SE.uuid(),
 		sfg_uuid: SE.uuid(),
 		quantity: SE.number(10.0),
 		production_quantity: SE.number(10.0),
@@ -364,46 +364,6 @@ export const def_zipper_batch_entry = SED({
 		remarks: SE.string(),
 	},
 	xml: 'Zipper/Batch-Entry',
-});
-
-// * Zipper Dyeing Batch * //
-export const def_zipper_dying_batch = SED({
-	required: ['uuid', 'mc_no', 'created_by', 'created_at'],
-	properties: {
-		uuid: SE.uuid(),
-		id: SE.integer(),
-		mc_no: SE.string(),
-		created_by: SE.uuid(),
-		created_at: SE.date_time(),
-		updated_at: SE.date_time(),
-		remarks: SE.string(),
-	},
-	xml: 'Zipper/Dying-Batch',
-});
-
-// * Zipper Dyeing Batch Entry * //
-export const def_zipper_dying_batch_entry = SED({
-	required: [
-		'uuid',
-		'dying_batch_uuid',
-		'batch_entry_uuid',
-		'quantity',
-		'production_quantity',
-		'production_quantity_in_kg',
-		'created_at',
-	],
-	properties: {
-		uuid: SE.uuid(),
-		dying_batch_uuid: SE.uuid(),
-		batch_entry_uuid: SE.uuid(),
-		quantity: SE.number(10.0),
-		production_quantity: SE.number(10.0),
-		production_quantity_in_kg: SE.number(10.0),
-		created_at: SE.date_time(),
-		updated_at: SE.date_time(),
-		remarks: SE.string(),
-	},
-	xml: 'Zipper/Dying-Batch-Entry',
 });
 
 // * Zipper Tape Coil * //
@@ -747,10 +707,8 @@ export const defZipper = {
 	dyed_tape_transaction: def_zipper_dyed_tape_transaction,
 	dyed_tape_transaction_from_stock:
 		def_zipper_dyed_tape_transaction_from_stock,
-	batch: def_zipper_batch,
-	batch_entry: def_zipper_batch_entry,
-	dying_batch: def_zipper_dying_batch,
-	dying_batch_entry: def_zipper_dying_batch_entry,
+	dyeing_batch: def_zipper_dyeing_batch,
+	dyeing_batch_entry: def_zipper_dyeing_batch_entry,
 	tape_coil: def_zipper_tape_coil,
 	tape_trx: def_zipper_tape_trx,
 	tape_coil_production: def_zipper_tape_coil_production,

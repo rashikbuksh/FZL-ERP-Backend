@@ -359,7 +359,7 @@ export const batchStatusEnum = zipper.enum('batch_status', [
 ]);
 
 // zipper batch
-export const batch = zipper.table('batch', {
+export const dyeing_batch = zipper.table('dyeing_batch', {
 	// rename to dyeing batch
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
@@ -375,10 +375,12 @@ export const batch = zipper.table('batch', {
 	remarks: text('remarks').default(null),
 });
 
-export const batch_entry = zipper.table('batch_entry', {
+export const dyeing_batch_entry = zipper.table('dyeing_batch_entry', {
 	// rename to dyeing batch entry
 	uuid: uuid_primary,
-	batch_uuid: defaultUUID('batch_uuid').references(() => batch.uuid),
+	dyeing_batch_uuid: defaultUUID('dyeing_batch_uuid').references(
+		() => dyeing_batch.uuid
+	),
 	sfg_uuid: defaultUUID('sfg_uuid').references(() => sfg.uuid),
 	quantity: decimal('quantity', {
 		precision: 20,
@@ -566,10 +568,10 @@ export const material_trx_against_order_description = zipper.table(
 	}
 );
 
-export const batch_production = zipper.table('batch_production', {
+export const dyeing_batch_production = zipper.table('dyeing_batch_production', {
 	uuid: uuid_primary,
-	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
-		() => batch_entry.uuid
+	dyeing_batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
+		() => dyeing_batch_entry.uuid
 	),
 	production_quantity: decimal('production_quantity', {
 		precision: 20,

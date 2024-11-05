@@ -1,6 +1,4 @@
-import { param } from 'express-validator';
-import SE, { SED } from '../../../util/swagger_example.js';
-import { order_description } from '../schema.js';
+import SE from '../../../util/swagger_example.js';
 
 const order_info_extra_schema = SE.response_schema(200, {
 	uuid: SE.uuid(),
@@ -1600,10 +1598,10 @@ export const pathZipperDyedTapeTransactionFromStock = {
 };
 
 // * Zipper Batch * //
-export const pathZipperBatch = {
-	'/zipper/batch': {
+export const pathZipperDyeingBatch = {
+	'/zipper/dyeing-batch': {
 		get: {
-			tags: ['zipper.batch'],
+			tags: ['zipper.dyeing_batch'],
 			summary: 'Get all Batch',
 			responses: {
 				200: SE.response_schema(200, {
@@ -1626,29 +1624,29 @@ export const pathZipperBatch = {
 			},
 		},
 		post: {
-			tags: ['zipper.batch'],
-			summary: 'create a batch',
+			tags: ['zipper.dyeing_batch'],
+			summary: 'create a dyeing-batch',
 			description: '',
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: SE.requestBody_schema_ref('zipper/batch'),
+			requestBody: SE.requestBody_schema_ref('zipper/dyeing_batch'),
 			responses: {
-				200: SE.response_schema_ref(200, 'zipper/batch'),
+				200: SE.response_schema_ref(200, 'zipper/dyeing_batch'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 	},
-	'/zipper/batch/{uuid}': {
+	'/zipper/dyeing-batch/{uuid}': {
 		get: {
-			tags: ['zipper.batch'],
+			tags: ['zipper.dyeing_batch'],
 			summary: 'Gets a Batch',
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_params('batch to get', 'uuid')],
+			parameters: [SE.parameter_params('dyeing batch to get', 'uuid')],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -1670,29 +1668,31 @@ export const pathZipperBatch = {
 			},
 		},
 		put: {
-			tags: ['zipper.batch'],
-			summary: 'Update an existing batch',
+			tags: ['zipper.dyeing_batch'],
+			summary: 'Update an existing dyeing batch',
 			description: '',
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [SE.parameter_params('batch to update', 'uuid')],
-			requestBody: SE.requestBody_schema_ref('zipper/batch'),
+			parameters: [SE.parameter_params('dyeing batch to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('zipper/dyeing_batch'),
 			responses: {
-				200: SE.response_schema_ref(200, 'zipper/batch'),
+				200: SE.response_schema_ref(200, 'zipper/dyeing_batch'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 	},
-	'/zipper/batch-details/{batch_uuid}': {
+	'/zipper/dyeing-batch-details/{dyeing_batch_uuid}': {
 		get: {
-			tags: ['zipper.batch'],
+			tags: ['zipper.dyeing_batch'],
 			summary: 'Get a Batch by Batch UUID',
 			description: '',
 			produces: ['application/json'],
-			parameters: [SE.parameter_params('batch to get', 'batch_uuid')],
+			parameters: [
+				SE.parameter_params('dyeing-batch to get', 'dyeing_batch_uuid'),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -1717,10 +1717,10 @@ export const pathZipperBatch = {
 };
 
 // * Zipper Batch Entry * //
-export const pathZipperBatchEntry = {
-	'/zipper/batch-entry': {
+export const pathZipperDyeingBatchEntry = {
+	'/zipper/dyeing-batch-entry': {
 		get: {
-			tags: ['zipper.batch_entry'],
+			tags: ['zipper.dyeing_batch_entry'],
 			summary: 'Get all Batch Entry',
 			responses: {
 				200: SE.response_schema(200, {
@@ -1736,24 +1736,24 @@ export const pathZipperBatchEntry = {
 			},
 		},
 		post: {
-			tags: ['zipper.batch_entry'],
+			tags: ['zipper.dyeing_batch_entry'],
 			summary: 'create a batch entry',
 			description: '',
 			// operationId: "addPet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: SE.requestBody_schema_ref('zipper/batch_entry'),
+			requestBody: SE.requestBody_schema_ref('zipper/dyeing_batch_entry'),
 			responses: {
-				200: SE.response_schema_ref(200, 'zipper/batch_entry'),
+				200: SE.response_schema_ref(200, 'zipper/dyeing_batch_entry'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 	},
-	'/zipper/batch-entry/{uuid}': {
+	'/zipper/dyeing-batch-entry/{uuid}': {
 		get: {
-			tags: ['zipper.batch_entry'],
+			tags: ['zipper.dyeing_batch_entry'],
 			summary: 'Gets a Batch Entry',
 			description: '',
 			// operationId: "deletePet",
@@ -1776,23 +1776,23 @@ export const pathZipperBatchEntry = {
 			},
 		},
 		put: {
-			tags: ['zipper.batch_entry'],
+			tags: ['zipper.dyeing_batch_entry'],
 			summary: 'Update an existing batch entry',
 			description: '',
 			// operationId: "updatePet",
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [SE.parameter_params('batch entry to update', 'uuid')],
-			requestBody: SE.requestBody_schema_ref('zipper/batch_entry'),
+			requestBody: SE.requestBody_schema_ref('zipper/dyeing_batch_entry'),
 			responses: {
-				200: SE.response_schema_ref(200, 'zipper/batch_entry'),
+				200: SE.response_schema_ref(200, 'zipper/dyeing_batch_entry'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 		delete: {
-			tags: ['zipper.batch_entry'],
+			tags: ['zipper.dyeing_batch_entry'],
 			summary: 'Deletes a batch entry',
 			description: '',
 			// operationId: "deletePet",
@@ -1806,19 +1806,19 @@ export const pathZipperBatchEntry = {
 			},
 		},
 	},
-	'/zipper/batch-entry/by/batch-uuid/{batch_uuid}': {
+	'/zipper/dyeing-batch-entry/by/dyeing-batch-uuid/{dyeing_batch_uuid}': {
 		get: {
-			tags: ['zipper.batch_entry'],
+			tags: ['zipper.dyeing_batch_entry'],
 			summary: 'Get a Batch Entry by Batch Entry UUID',
 			description: '',
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('batch entry to get', 'batch_uuid'),
+				SE.parameter_params('batch entry to get', 'dyeing_batch_uuid'),
 			],
 			responses: {
 				200: SE.response_schema(200, {
-					batch_entry_uuid: SE.uuid(),
-					batch_uuid: SE.uuid(),
+					dyeing_batch_entry_uuid: SE.uuid(),
+					dyeing_batch_uuid: SE.uuid(),
 					sfg_uuid: SE.uuid(),
 					quantity: SE.number(10),
 					production_quantity: SE.number(10),
@@ -1841,9 +1841,9 @@ export const pathZipperBatchEntry = {
 			},
 		},
 	},
-	'/zipper/order-batch': {
+	'/zipper/dyeing-order-batch': {
 		get: {
-			tags: ['zipper.batch_entry'],
+			tags: ['zipper.dyeing_batch_entry'],
 			summary: 'Get Order Details for Batch Entry',
 			description: '',
 			produces: ['application/json'],
@@ -1862,169 +1862,6 @@ export const pathZipperBatchEntry = {
 						given_production_quantity_in_kg: SE.number(10),
 					}),
 				}),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
-			},
-		},
-	},
-};
-
-// * Zipper Dying Batch * //
-export const pathZipperDyingBatch = {
-	'/zipper/dying-batch': {
-		get: {
-			tags: ['zipper.dying_batch'],
-			summary: 'Get all Dying Batch',
-			responses: {
-				200: SE.response_schema(200, {
-					uuid: SE.uuid(),
-					id: SE.integer(1),
-					mc_no: SE.string('MC-001'),
-					created_by: SE.uuid(),
-					created_by_name: SE.string('John Doe'),
-					created_at: SE.date_time(),
-					updated_at: SE.date_time(),
-					remarks: SE.string('Remarks'),
-				}),
-			},
-		},
-		post: {
-			tags: ['zipper.dying_batch'],
-			summary: 'create a dying batch',
-			description: '',
-			// operationId: "addPet",
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			requestBody: SE.requestBody_schema_ref('zipper/dying_batch'),
-			responses: {
-				200: SE.response_schema_ref(200, 'zipper/dying_batch'),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
-			},
-		},
-	},
-	'/zipper/dying-batch/{uuid}': {
-		get: {
-			tags: ['zipper.dying_batch'],
-			summary: 'Gets a Dying Batch',
-			description: '',
-			// operationId: "deletePet",
-			produces: ['application/json'],
-			parameters: [SE.parameter_params('dying batch to get', 'uuid')],
-			responses: {
-				200: SE.response_schema_ref(200, 'zipper/dying_batch'),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
-			},
-		},
-		put: {
-			tags: ['zipper.dying_batch'],
-			summary: 'Update an existing dying batch',
-			description: '',
-			// operationId: "updatePet",
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [SE.parameter_params('dying batch to update', 'uuid')],
-			requestBody: SE.requestBody_schema_ref('zipper/dying_batch'),
-			responses: {
-				200: SE.response_schema_ref(200, 'zipper/dying_batch'),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
-			},
-		},
-		delete: {
-			tags: ['zipper.dying_batch'],
-			summary: 'Deletes a dying batch',
-			description: '',
-			// operationId: "deletePet",
-			produces: ['application/json'],
-			parameters: [SE.parameter_params('dying batch to delete', 'uuid')],
-			responses: {
-				200: SE.response(200),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
-			},
-		},
-	},
-};
-
-// * Zipper Dying Batch Entry * //
-export const pathZipperDyingBatchEntry = {
-	'/zipper/dying-batch-entry': {
-		get: {
-			tags: ['zipper.dying_batch_entry'],
-			summary: 'Get all Dying Batch',
-			responses: {
-				200: SE.response_schema_ref(200, 'zipper/dying_batch_entry'),
-			},
-		},
-		post: {
-			tags: ['zipper.dying_batch_entry'],
-			summary: 'create a dying batch entry',
-			description: '',
-			// operationId: "addPet",
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			requestBody: SE.requestBody_schema_ref('zipper/dying_batch_entry'),
-			responses: {
-				200: SE.response_schema_ref(200, 'zipper/dying_batch_entry'),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
-			},
-		},
-	},
-	'/zipper/dying-batch-entry/{uuid}': {
-		get: {
-			tags: ['zipper.dying_batch_entry'],
-			summary: 'Gets a Dying Batch Entry',
-			description: '',
-			// operationId: "deletePet",
-			produces: ['application/json'],
-			parameters: [
-				SE.parameter_params('dying batch entry to get', 'uuid'),
-			],
-			responses: {
-				200: SE.response_schema_ref(200, 'zipper/dying_batch_entry'),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
-			},
-		},
-		put: {
-			tags: ['zipper.dying_batch_entry'],
-			summary: 'Update an existing dying batch entry',
-			description: '',
-			// operationId: "updatePet",
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [
-				SE.parameter_params('dying batch entry to update', 'uuid'),
-			],
-			requestBody: SE.requestBody_schema_ref('zipper/dying_batch_entry'),
-			responses: {
-				200: SE.response_schema_ref(200, 'zipper/dying_batch_entry'),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
-			},
-		},
-		delete: {
-			tags: ['zipper.dying_batch_entry'],
-			summary: 'Deletes a dying batch entry',
-			description: '',
-			// operationId: "deletePet",
-			produces: ['application/json'],
-			parameters: [
-				SE.parameter_params('dying batch entry to delete', 'uuid'),
-			],
-			responses: {
-				200: SE.response(200),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
@@ -3278,15 +3115,15 @@ export const pathZipperTapeCoilToDyeing = {
 
 // * Zipper Batch Production * //
 
-export const pathZipperBatchProduction = {
-	'/zipper/batch-production': {
+export const pathZipperDyeingBatchProduction = {
+	'/zipper/dyeing-batch-production': {
 		get: {
-			tags: ['zipper.batch_production'],
+			tags: ['zipper.dyeing_batch_production'],
 			summary: 'Get all Batch Production',
 			responses: {
 				200: {
 					uuid: SE.uuid(),
-					batch_entry_uuid: SE.uuid(),
+					dyeing_batch_entry_uuid: SE.uuid(),
 					production_quantity: SE.number(100),
 					production_quantity_in_kg: SE.number(100),
 					created_by: SE.uuid(),
@@ -3297,23 +3134,28 @@ export const pathZipperBatchProduction = {
 			},
 		},
 		post: {
-			tags: ['zipper.batch_production'],
+			tags: ['zipper.dyeing_batch_production'],
 			summary: 'create a batch production',
 			description: '',
 			// operationId: "add
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [],
-			requestBody: SE.requestBody_schema_ref('zipper/batch_production'),
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/dyeing_batch_production'
+			),
 			responses: {
-				200: SE.response_schema_ref(200, 'zipper/batch_production'),
+				200: SE.response_schema_ref(
+					200,
+					'zipper/dyeing_batch_production'
+				),
 				405: SE.response(405),
 			},
 		},
 	},
-	'/zipper/batch-production/{uuid}': {
+	'/zipper/dyeing-batch-production/{uuid}': {
 		get: {
-			tags: ['zipper.batch_production'],
+			tags: ['zipper.dyeing_batch_production'],
 			summary: 'Gets a batch production',
 			description: '',
 			// operationId: "deletePet",
@@ -3324,7 +3166,7 @@ export const pathZipperBatchProduction = {
 			responses: {
 				200: {
 					uuid: SE.uuid(),
-					batch_entry_uuid: SE.uuid(),
+					dyeing_batch_entry_uuid: SE.uuid(),
 					production_quantity: SE.number(100),
 					production_quantity_in_kg: SE.number(100),
 					created_by: SE.uuid(),
@@ -3338,7 +3180,7 @@ export const pathZipperBatchProduction = {
 			},
 		},
 		put: {
-			tags: ['zipper.batch_production'],
+			tags: ['zipper.dyeing_batch_production'],
 			summary: 'Update an existing batch production',
 			description: '',
 			// operationId: "updatePet",
@@ -3347,16 +3189,21 @@ export const pathZipperBatchProduction = {
 			parameters: [
 				SE.parameter_schema_ref('batch production to update', 'uuid'),
 			],
-			requestBody: SE.requestBody_schema_ref('zipper/batch_production'),
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/dyeing_batch_production'
+			),
 			responses: {
-				200: SE.response_schema_ref(200, 'zipper/batch_production'),
+				200: SE.response_schema_ref(
+					200,
+					'zipper/dyeing_batch_production'
+				),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
 			},
 		},
 		delete: {
-			tags: ['zipper.batch_production'],
+			tags: ['zipper.dyeing_batch_production'],
 			summary: 'Deletes a batch production',
 			description: '',
 			// operationId: "deletePet",
@@ -3848,10 +3695,8 @@ export const pathZipper = {
 	...pathZipperSfg,
 	...pathZipperSfgProduction,
 	...pathZipperSfgTransaction,
-	...pathZipperBatch,
-	...pathZipperBatchEntry,
-	...pathZipperDyingBatch,
-	...pathZipperDyingBatchEntry,
+	...pathZipperDyeingBatch,
+	...pathZipperDyeingBatchEntry,
 	...pathZipperTapeCoil,
 	...pathZipperTapeCoilProduction,
 	...pathZipperTapeTrx,
@@ -3860,7 +3705,7 @@ export const pathZipper = {
 	...pathZipperPlanningEntry,
 	...pathZipperMaterialTrxAgainstOrderDescription,
 	...pathZipperTapeCoilToDyeing,
-	...pathZipperBatchProduction,
+	...pathZipperDyeingBatchProduction,
 	...pathZipperDyedTapeTransaction,
 	...pathZipperDyedTapeTransactionFromStock,
 	...pathMultiColorDashboard,
