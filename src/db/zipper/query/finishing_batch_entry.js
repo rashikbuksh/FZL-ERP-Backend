@@ -269,7 +269,7 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 
 	const query = sql`
 		SELECT
-			fbe.uuid as fbe_uuid,
+			fbe.uuid as uuid,
 			sfg.recipe_uuid as recipe_uuid,
 			oe.style,
 			oe.color,
