@@ -215,7 +215,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 					SUM(bp.production_quantity::float8) AS given_production_quantity,
 					SUM(bp.production_quantity_in_kg::float8) AS given_production_quantity_in_kg
 				FROM
-					zipper.batch_production bp
+					zipper.dyeing_batch_production bp
 				LEFT JOIN 
 					zipper.dyeing_batch_entry ON bp.batch_entry_uuid = dyeing_batch_entry.uuid
 				GROUP BY
