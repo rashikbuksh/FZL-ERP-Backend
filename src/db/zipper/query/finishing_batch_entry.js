@@ -178,3 +178,89 @@ export async function select(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT
+			sfg.uuid as sfg_uuid,
+			sfg.recipe_uuid as recipe_uuid,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+			oe.style,
+			oe.color,
+			CASE 
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
+            END as size,
+			oe.quantity::float8 as order_quantity,
+			oe.bleaching,
+			vodf.order_number,
+			vodf.item_description,
+			fbe_given.given_quantity::float8,
+			fbe_given.given_production_quantity::float8,
+			fbe_given.given_production_quantity_in_kg::float8,
+			coalesce(
+				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+			,0) as balance_quantity,
+			tcr.top::float8,
+			tcr.bottom::float8,
+			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
+			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
+		FROM
+			zipper.sfg sfg
+		LEFT JOIN 
+			lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
+		LEFT JOIN
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN
+			zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid 
+		AND vodf.item = tcr.item_uuid 
+        AND vodf.zipper_number = tcr.zipper_number_uuid 
+        AND vodf.end_type = tcr.end_type_uuid 
+		LEFT JOIN
+			zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid 
+		AND vodf.zipper_number = tc.zipper_number_uuid 
+		LEFT JOIN
+			(
+				SELECT
+					sfg.uuid as sfg_uuid,
+					SUM(fbe.quantity::float8) AS given_quantity,
+					SUM(fbe.production_quantity::float8) AS given_production_quantity,
+					SUM(fbe.production_quantity_in_kg::float8) AS given_production_quantity_in_kg
+				FROM
+					zipper.finishing_batch_entry fbe
+				LEFT JOIN 
+					zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+				GROUP BY
+					sfg.uuid
+			) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
+		WHERE sfg.recipe_uuid IS NOT NULL AND 
+					coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0 AND
+					(
+						lower(vodf.item_name) != 'nylon' 
+						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+					)
+				AND vodf.order_description_uuid = ${req.params.order_description_uuid}`;
+
+	const batchEntryPromise = db.execute(query);
+
+	try {
+		const data = await batchEntryPromise;
+
+		const batch_data = { dyeing_batch_entry: data?.rows };
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'dyeing_batch_entry By batch_entry_uuid',
+		};
+
+		return res.status(200).json({ toast, data: batch_data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

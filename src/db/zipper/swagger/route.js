@@ -3715,6 +3715,40 @@ export const pathZipperFinishingBatchEntry = {
 			},
 		},
 	},
+	'/zipper/finishing-order-batch/:order_description_uuid': {
+		get: {
+			tags: ['zipper.finishing_batch_entry'],
+			summary: 'Get all Finishing Batch Entry by order description uuid',
+			parameters: [
+				SE.parameter_params(
+					'finishing batch entry to get',
+					'order_description_uuid'
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					sfg_uuid: SE.uuid(),
+					recipe_uuid: SE.uuid(),
+					recipe_id: SE.string('LDR24-0001'),
+					style: SE.string('LDR'),
+					color: SE.string('black'),
+					size: SE.number(10),
+					order_quantity: SE.number(100),
+					bleaching: SE.string('bleaching'),
+					order_number: SE.string('Z24-0001'),
+					item_description: SE.string('N-3-OE-SP'),
+					given_quantity: SE.number(100),
+					given_production_quantity: SE.number(100),
+					given_production_quantity_in_kg: SE.number(100),
+					balance_quantity: SE.number(100),
+					top: SE.number(100),
+					bottom: SE.number(100),
+					raw_per_kg_meter: SE.number(100),
+					dyed_per_kg_meter: SE.number(100),
+				}),
+			},
+		},
+	},
 };
 
 // * Zipper Path Zipper * //
