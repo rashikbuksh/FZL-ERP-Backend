@@ -252,21 +252,22 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			oe.color,
 			CASE 
                 WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)::float8
+                ELSE CAST(oe.size AS NUMERIC)::float8
             END as size,
 			oe.quantity::float8 as order_quantity,
 			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
-			be_given.given_quantity::float8,
-			be_given.given_production_quantity::float8,
-			be_given.given_production_quantity_in_kg::float8,
+			coalesce(be_given.given_quantity, 0)::float8,
+			coalesce(be_given.given_production_quantity, 0)::float8,
+			coalesce(be_given.given_production_quantity_in_kg, 0)::float8,
 			coalesce(
 				coalesce(oe.quantity::float8,0) - coalesce(be_given.given_quantity::float8,0)
 			,0) as balance_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
+			0 as quantity,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
 			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
 		FROM
