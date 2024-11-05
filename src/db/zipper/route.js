@@ -250,7 +250,7 @@ zipperRouter.get(
 	dyeingBatchEntryOperations.selectBatchEntryByBatchUuid
 );
 zipperRouter.get(
-	'/order-batch',
+	'/dyeing-order-batch',
 	dyeingBatchEntryOperations.getOrderDetailsForBatchEntry
 );
 
