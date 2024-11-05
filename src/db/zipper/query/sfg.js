@@ -358,7 +358,6 @@ export async function selectSfgBySection(req, res, next) {
 			), 0)::float8 as total_production_quantity,
 			od.tape_transferred,
 			sfg.dyed_tape_used_in_kg,
-			COALESCE(ss.coloring_prod,0)::float8 as coloring_prod,
 			COALESCE(od.tape_received,0)::float8 as tape_received,
 			COALESCE(od.tape_transferred,0)::float8 - COALESCE(sfg.dyed_tape_used_in_kg,0) as tape_stock,
 			COALESCE(od.slider_finishing_stock,0)::float8 as slider_finishing_stock,
@@ -371,7 +370,6 @@ export async function selectSfgBySection(req, res, next) {
 			LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
 			LEFT JOIN public.properties op_item ON od.item = op_item.uuid
 			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
-			LEFT JOIN slider.stock ss ON od.uuid = ss.order_description_uuid
 			WHERE
 				od.tape_coil_uuid IS NOT NULL
 				${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}

@@ -29,7 +29,7 @@ export const PG_DECIMAL = (column) =>
 	}).notNull();
 
 export const decimalToNumber = (column) => {
-	return sql`${column}::float8`;
+	return sql`coalesce(${column},0)::float8`;
 };
 
 export function constructSelectAllQuery(

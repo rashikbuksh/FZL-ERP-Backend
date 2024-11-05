@@ -9,11 +9,11 @@ import * as deliverySchema from '../../delivery/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import {
+	finishing_batch_entry,
+	finishing_batch_production,
 	order_description,
 	order_entry,
 	sfg,
-	finishing_batch_production,
-	finishing_batch_entry,
 } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -260,15 +260,15 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 		)
 		.leftJoin(sfg, eq(order_entry.uuid, sfg.order_entry_uuid))
 		.leftJoin(
+			finishing_batch_entry,
+			eq(sfg.uuid, finishing_batch_entry.sfg_uuid)
+		)
+		.leftJoin(
 			finishing_batch_production,
 			eq(
 				finishing_batch_entry.uuid,
 				finishing_batch_production.finishing_batch_entry_uuid
 			)
-		)
-		.leftJoin(
-			finishing_batch_entry,
-			eq(sfg.uuid, finishing_batch_entry.sfg_uuid)
 		)
 		.leftJoin(
 			deliverySchema.packing_list_entry,
@@ -296,16 +296,16 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			asc(order_entry.size)
 		);
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Order Entry Full',
-	};
+	try {
+		const data = await orderEntryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Entry Full',
+		};
 
-	handleResponse({
-		promise: orderEntryPromise,
-		res,
-		next,
-		...toast,
-	});
+		res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
