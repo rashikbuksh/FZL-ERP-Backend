@@ -454,8 +454,8 @@ export async function selectOrderDescription(req, res, next) {
 					SELECT oe.order_description_uuid, SUM(be.production_quantity_in_kg) as stock
 					FROM zipper.order_entry oe
 						LEFT JOIN zipper.sfg ON oe.uuid = sfg.order_entry_uuid
-						LEFT JOIN zipper.batch_entry be ON be.sfg_uuid = sfg.uuid
-						LEFT JOIN zipper.batch b ON b.uuid = be.batch_uuid
+						LEFT JOIN zipper.dyeing_batch_entry be ON be.sfg_uuid = sfg.uuid
+						LEFT JOIN zipper.dyeing_batch b ON b.uuid = be.dyeing_batch_uuid
 					WHERE b.received = 1
 					GROUP BY oe.order_description_uuid
 				) batch_stock ON vodf.order_description_uuid = batch_stock.order_description_uuid

@@ -498,5 +498,9 @@ zipperRouter.delete(
 	'/finishing-batch-entry/:uuid',
 	finishingBatchEntryOperations.remove
 );
+zipperRouter.get(
+	'/finishing-order-batch/:order_description_uuid',
+	finishingBatchEntryOperations.getOrderDetailsForFinishingBatchEntry
+);
 
 export { zipperRouter };
