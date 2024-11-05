@@ -4,9 +4,9 @@ import {
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import * as hrSchema from '../../hr/schema.js';
 
 import { finishing_batch_entry } from '../schema.js';
 
@@ -198,10 +198,11 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
-			fbe_given.given_quantity::float8 as given_quantity,
+			coalesce(fbe_given.given_quantity::float8, 0) as given_quantity,
 			coalesce(
 				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
 			,0) as balance_quantity,
+			0 as quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
