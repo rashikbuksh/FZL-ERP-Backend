@@ -3727,8 +3727,6 @@ export const pathZipper = {
 	...pathZipperFinishingBatchTransaction,
 	...pathZipperDyeingBatch,
 	...pathZipperDyeingBatchEntry,
-	...pathZipperDyingBatch,
-	...pathZipperDyingBatchEntry,
 	...pathZipperTapeCoil,
 	...pathZipperTapeCoilProduction,
 	...pathZipperTapeTrx,

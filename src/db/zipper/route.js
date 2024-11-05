@@ -1,7 +1,4 @@
 import { Router } from 'express';
-import * as dyeingBatchOperations from './query/dyeing_batch.js';
-import * as dyeingBatchEntryOperations from './query/dyeing_batch_entry.js';
-import * as batchProductionOperations from './query/batch_production.js';
 import * as dyedTapeTransactionOperations from './query/dyed_tape_transaction.js';
 import * as dyedTapeTransactionFromStockOperations from './query/dyed_tape_transaction_from_stock.js';
 import * as dyeingBatchOperations from './query/dyeing_batch.js';
@@ -9,6 +6,8 @@ import * as dyeingBatchEntryOperations from './query/dyeing_batch_entry.js';
 import * as dyeingBatchProductionOperations from './query/dyeing_batch_production.js';
 import * as finishingBatchOperations from './query/finishing_batch.js';
 import * as finishingBatchEntryOperations from './query/finishing_batch_entry.js';
+import * as finishingBatchProductionOperations from './query/finishing_batch_production.js';
+import * as finishingBatchTransactionOperations from './query/finishing_batch_transaction.js';
 import * as materialTrxAgainstOrderOperations from './query/material_trx_against_order_description.js';
 import * as multiColorDashboardOperations from './query/multi_color_dashboard.js';
 import * as multiColorTapeReceiveOperations from './query/multi_color_tape_receive.js';
@@ -18,15 +17,11 @@ import * as orderInfoOperations from './query/order_info.js';
 import * as planningOperations from './query/planning.js';
 import * as planningEntryOperations from './query/planning_entry.js';
 import * as sfgOperations from './query/sfg.js';
-import * as finishingBatchTransactionOperations from './query/finishing_batch_transaction.js';
 import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
-import * as finishingBatchOperations from './query/finishing_batch.js';
-import * as finishingBatchEntryOperations from './query/finishing_batch_entry.js';
-import * as finishingBatchProductionOperations from './query/finishing_batch_production.js';
 
 const zipperRouter = Router();
 
