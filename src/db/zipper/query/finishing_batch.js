@@ -182,7 +182,7 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 			await api.get(`/zipper/${endpoint}/${finishing_batch_uuid}`);
 
 		const [finishing_batch, finishing_batch_entry] = await Promise.all([
-			fetchData('finishing_batch'),
+			fetchData('finishing-batch'),
 			fetchData('finishing-batch-entry/by/finishing-batch-uuid'),
 		]);
 
