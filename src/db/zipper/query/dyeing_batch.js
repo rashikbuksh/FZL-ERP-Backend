@@ -115,11 +115,11 @@ export async function selectAll(req, res, next) {
 						ELSE CAST(oe.size AS NUMERIC)
 						END) * be.quantity::float8) /100) / tc.dyed_per_kg_meter::float8)::numeric
 				, 3) as expected_kg, 
-				be.batch_uuid, 
+				be.dyeing_batch_uuid, 
 				jsonb_agg(DISTINCT vodf.order_number) as order_numbers, 
 				SUM(be.quantity::float8) as total_quantity, 
 				SUM(be.production_quantity_in_kg::float8) as total_actual_production_quantity
-			FROM zipper.batch_entry be
+			FROM zipper.dyeing_batch_entry be
 				LEFT JOIN zipper.sfg ON be.sfg_uuid = zipper.sfg.uuid
 				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
@@ -130,8 +130,8 @@ export async function selectAll(req, res, next) {
 				LEFT JOIN
 					zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid AND vodf.zipper_number = tc.zipper_number_uuid 
 			WHERE CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END
-			GROUP BY be.batch_uuid
-		) AS expected ON dyeing_batch.uuid = expected.batch_uuid
+			GROUP BY be.dyeing_batch_uuid
+		) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
 		ORDER BY dyeing_batch.created_at DESC
 	`;
 	const resultPromise = db.execute(query);
