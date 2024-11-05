@@ -171,14 +171,10 @@ export async function select(req, res, next) {
 	}
 }
 
-export async function getFinishingBatchByFinishingBatchUuid(
-	req,
-	res,
-	next
-) {
+export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	try {
-		const api = createApi(req);
+		const api = await createApi(req);
 
 		const { finishing_batch_uuid } = req.params;
 
