@@ -1,6 +1,6 @@
 -- //* Inserted
 -- Function for INSERT trigger
-CREATE OR REPLACE FUNCTION zipper.sfg_after_finishing_batch_production_insert_function() 
+CREATE OR REPLACE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_production_insert_function() 
 RETURNS TRIGGER AS $$
 DECLARE 
     item_name TEXT;
@@ -9,22 +9,23 @@ DECLARE
 BEGIN
     -- Fetch item_name and order_description_uuid once
     SELECT vodf.item_name, oe.order_description_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
-    FROM zipper.sfg sfg
+    FROM zipper.finishing_batch_entry finishing_batch_entry
+    LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-    WHERE sfg.uuid = NEW.sfg_uuid;
+    WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
     -- Update order_description based on item_name
     IF lower(item_name) = 'metal' THEN
 
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN NEW.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE sfg.uuid = NEW.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
     
         UPDATE zipper.order_description od
         SET 
@@ -36,7 +37,7 @@ BEGIN
         WHERE od.uuid = od_uuid;
 
     ELSIF lower(item_name) = 'vislon' THEN
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
@@ -44,7 +45,7 @@ BEGIN
                         THEN NEW.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE sfg.uuid = NEW.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
         UPDATE zipper.order_description od
         SET 
@@ -57,14 +58,14 @@ BEGIN
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
 
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'finishing' 
                     THEN NEW.dyed_tape_used_in_kg
                 END
-        WHERE sfg.uuid = NEW.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
         UPDATE zipper.order_description od
         SET 
@@ -78,14 +79,14 @@ BEGIN
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
 
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'finishing' 
                     THEN NEW.dyed_tape_used_in_kg
                 END
-        WHERE sfg.uuid = NEW.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
         UPDATE zipper.order_description od
         SET 
@@ -97,8 +98,8 @@ BEGIN
         WHERE od.uuid = od_uuid;
     END IF;
 
-    -- Update sfg table
-    UPDATE zipper.sfg sfg
+    -- Update finishing_batch_entry table
+    UPDATE zipper.finishing_batch_entry finishing_batch_entry
     SET 
         teeth_molding_prod = teeth_molding_prod + 
             CASE 
@@ -158,22 +159,22 @@ BEGIN
             END
     FROM zipper.order_entry oe
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-    WHERE sfg.uuid = NEW.sfg_uuid AND sfg.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
+    WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid AND finishing_batch_entry.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger for INSERT
-CREATE OR REPLACE TRIGGER sfg_after_finishing_batch_production_insert_trigger
+CREATE OR REPLACE TRIGGER finishing_batch_entry_after_finishing_batch_production_insert_trigger
 AFTER INSERT ON zipper.finishing_batch_production
 FOR EACH ROW
-EXECUTE FUNCTION zipper.sfg_after_finishing_batch_production_insert_function();
+EXECUTE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_production_insert_function();
 
 
 
 -- Function for UPDATE trigger
-CREATE OR REPLACE FUNCTION zipper.sfg_after_finishing_batch_production_update_function() 
+CREATE OR REPLACE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_production_update_function() 
 RETURNS TRIGGER AS $$
 DECLARE 
     item_name TEXT;
@@ -182,22 +183,22 @@ DECLARE
 BEGIN
     -- Fetch item_name and order_description_uuid once
     SELECT vodf.item_name, oe.order_description_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
-    FROM zipper.sfg sfg
-    LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
+    FROM zipper.finishing_batch_entry finishing_batch_entry
+    LEFT JOIN zipper.order_entry oe ON oe.uuid = finishing_batch_entry.order_entry_uuid
     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-    WHERE sfg.uuid = NEW.sfg_uuid;
+    WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
     -- Update order_description based on item_name
     IF lower(item_name) = 'metal' THEN
 
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
                     ELSE 0
                 END
-        WHERE sfg.uuid = NEW.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
     
         UPDATE zipper.order_description od
         SET 
@@ -210,7 +211,7 @@ BEGIN
 
     ELSIF lower(item_name) = 'vislon' THEN
 
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
@@ -218,7 +219,7 @@ BEGIN
                         (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
                     ELSE 0
                 END
-        WHERE sfg.uuid = NEW.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
     
         UPDATE zipper.order_description od
         SET 
@@ -231,14 +232,14 @@ BEGIN
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
 
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
                     ELSE 0
                 END
-        WHERE sfg.uuid = NEW.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
         UPDATE zipper.order_description od
         SET 
@@ -251,14 +252,14 @@ BEGIN
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
 
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
                     ELSE 0
                 END
-        WHERE sfg.uuid = NEW.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
         UPDATE zipper.order_description od
         SET 
@@ -270,8 +271,8 @@ BEGIN
         WHERE od.uuid = od_uuid;
     END IF;
 
-    -- Update sfg table
-    UPDATE zipper.sfg sfg
+    -- Update finishing_batch_entry table
+    UPDATE zipper.finishing_batch_entry finishing_batch_entry
     SET 
         teeth_molding_prod = teeth_molding_prod + 
             CASE 
@@ -331,20 +332,20 @@ BEGIN
             END
     FROM zipper.order_entry oe
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-    WHERE sfg.uuid = NEW.sfg_uuid AND sfg.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
+    WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid AND finishing_batch_entry.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger for UPDATE
-CREATE OR REPLACE TRIGGER sfg_after_finishing_batch_production_update_trigger
+CREATE OR REPLACE TRIGGER finishing_batch_entry_after_finishing_batch_production_update_trigger
 AFTER UPDATE ON zipper.finishing_batch_production
 FOR EACH ROW
-EXECUTE FUNCTION zipper.sfg_after_finishing_batch_production_update_function();
+EXECUTE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_production_update_function();
 
 -- Function for DELETE trigger
-CREATE OR REPLACE FUNCTION zipper.sfg_after_finishing_batch_production_delete_function() 
+CREATE OR REPLACE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_production_delete_function() 
 RETURNS TRIGGER AS $$
 DECLARE 
     item_name TEXT;
@@ -353,22 +354,22 @@ DECLARE
 BEGIN
     -- Fetch item_name and order_description_uuid once
     SELECT vodf.item_name, oe.order_description_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
-    FROM zipper.sfg sfg
-    LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
+    FROM zipper.finishing_batch_entry finishing_batch_entry
+    LEFT JOIN zipper.order_entry oe ON oe.uuid = finishing_batch_entry.order_entry_uuid
     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-    WHERE sfg.uuid = OLD.sfg_uuid;
+    WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
 
     -- Update order_description based on item_name
     IF lower(item_name) = 'metal' THEN
 
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
                 CASE 
                     WHEN OLD.section = 'teeth_molding' THEN OLD.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE sfg.uuid = OLD.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
 
         UPDATE zipper.order_description od
         SET 
@@ -381,14 +382,14 @@ BEGIN
 
     ELSIF lower(item_name) = 'vislon' THEN
 
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
                 CASE 
                     WHEN OLD.section = 'teeth_molding' THEN OLD.dyed_tape_used_in_kg 
                     ELSE 0
                 END
-        WHERE sfg.uuid = OLD.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
 
         UPDATE zipper.order_description od
         SET 
@@ -401,14 +402,14 @@ BEGIN
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
 
-        UPDATE zipper.sfg sfg 
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry 
         SET
             dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE sfg.uuid = OLD.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
 
         UPDATE zipper.order_description od
         SET 
@@ -421,14 +422,14 @@ BEGIN
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
         
-        UPDATE zipper.sfg sfg
+        UPDATE zipper.finishing_batch_entry finishing_batch_entry
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE sfg.uuid = OLD.sfg_uuid;
+        WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
         
         UPDATE zipper.order_description od
         SET 
@@ -440,8 +441,8 @@ BEGIN
         WHERE od.uuid = od_uuid;
     END IF;
 
-    -- Update sfg table
-    UPDATE zipper.sfg sfg
+    -- Update finishing_batch_entry table
+    UPDATE zipper.finishing_batch_entry finishing_batch_entry
     SET 
         teeth_molding_prod = teeth_molding_prod - 
             CASE 
@@ -501,15 +502,15 @@ BEGIN
             END
     FROM zipper.order_entry oe
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-    WHERE sfg.uuid = OLD.sfg_uuid AND sfg.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
+    WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid AND finishing_batch_entry.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
 
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger for DELETE
-CREATE OR REPLACE TRIGGER sfg_after_finishing_batch_production_delete_trigger
+CREATE OR REPLACE TRIGGER finishing_batch_entry_after_finishing_batch_production_delete_trigger
 AFTER DELETE ON zipper.finishing_batch_production
 FOR EACH ROW
-EXECUTE FUNCTION zipper.sfg_after_finishing_batch_production_delete_function();
+EXECUTE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_production_delete_function();
 
