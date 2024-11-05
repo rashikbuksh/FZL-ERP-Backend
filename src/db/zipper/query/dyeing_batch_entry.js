@@ -6,7 +6,7 @@ import {
 } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { dyeing_batch_entry, sfg } from '../schema.js';
+import { dyeing_batch, dyeing_batch_entry, sfg } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -80,7 +80,7 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: dyeing_batch_entry.uuid,
-			batch_uuid: dyeing_batch_entry.batch_uuid,
+			dyeing_batch_uuid: dyeing_batch_entry.dyeing_batch_uuid,
 			sfg_uuid: dyeing_batch_entry.sfg_uuid,
 			quantity: decimalToNumber(dyeing_batch_entry.quantity),
 			production_quantity: decimalToNumber(
@@ -94,21 +94,25 @@ export async function selectAll(req, res, next) {
 			remarks: dyeing_batch_entry.remarks,
 		})
 		.from(dyeing_batch_entry)
-		.leftJoin(batch, eq(batch.uuid, dyeing_batch_entry.batch_uuid))
+		.leftJoin(
+			dyeing_batch,
+			eq(dyeing_batch.uuid, dyeing_batch_entry.dyeing_batch_uuid)
+		)
 		.leftJoin(sfg, eq(sfg.uuid, dyeing_batch_entry.sfg_uuid))
 		.orderBy(desc(dyeing_batch_entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'batch entry list',
-	};
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'dyeing_batch entry',
+		};
+
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -117,7 +121,7 @@ export async function select(req, res, next) {
 	const batchEntryPromise = db
 		.select({
 			uuid: dyeing_batch_entry.uuid,
-			batch_uuid: dyeing_batch_entry.batch_uuid,
+			dyeing_batch_uuid: dyeing_batch_entry.dyeing_batch_uuid,
 			sfg_uuid: dyeing_batch_entry.sfg_uuid,
 			quantity: decimalToNumber(dyeing_batch_entry.quantity),
 			production_quantity: decimalToNumber(
@@ -131,7 +135,10 @@ export async function select(req, res, next) {
 			remarks: dyeing_batch_entry.remarks,
 		})
 		.from(dyeing_batch_entry)
-		.leftJoin(batch, eq(batch.uuid, dyeing_batch_entry.batch_uuid))
+		.leftJoin(
+			dyeing_batch,
+			eq(dyeing_batch.uuid, dyeing_batch_entry.dyeing_batch_uuid)
+		)
 		.leftJoin(sfg, eq(sfg.uuid, dyeing_batch_entry.sfg_uuid))
 		.where(eq(dyeing_batch_entry.uuid, req.params.uuid));
 
@@ -140,7 +147,7 @@ export async function select(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'batch entry',
+			message: 'dyeing_batch entry',
 		};
 
 		return res.status(200).json({ toast, data: data[0] });
@@ -152,13 +159,13 @@ export async function select(req, res, next) {
 export async function selectBatchEntryByBatchUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { batch_uuid } = req.params;
+	const { dyeing_batch_uuid } = req.params;
 
 	const query = sql`
 		SELECT
 			be.uuid as batch_entry_uuid,
 			bp_given.batch_production_uuid,
-			be.batch_uuid,
+			be.dyeing_batch_uuid,
 			be.sfg_uuid,
 			be.quantity::float8,
 			be.production_quantity::float8,
@@ -186,7 +193,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 		FROM
 			zipper.dyeing_batch_entry be
 		LEFT JOIN
-			zipper.batch b ON be.batch_uuid = b.uuid
+			zipper.dyeing_batch b ON be.dyeing_batch_uuid = b.uuid
 		LEFT JOIN 
 			zipper.sfg sfg ON be.sfg_uuid = sfg.uuid
 		LEFT JOIN
@@ -215,7 +222,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 					dyeing_batch_entry.uuid, bp.uuid
 			) AS bp_given ON be.uuid = bp_given.batch_entry_uuid
 		WHERE
-			be.batch_uuid = ${batch_uuid} AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END`;
+			be.dyeing_batch_uuid = ${dyeing_batch_uuid} AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END`;
 
 	const batchEntryPromise = db.execute(query);
 
