@@ -3592,6 +3592,34 @@ export const pathZipperFinishingBatch = {
 			},
 		},
 	},
+	'/zipper/finishing-batch/by/{finishing_batch_uuid}': {
+		get: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'Get all Finishing Batch by finishing batch uuid',
+			parameters: [
+				SE.parameter_params(
+					'finishing batch to get',
+					'finishing_batch_uuid'
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.string('1'),
+					order_description_uuid: SE.uuid(),
+					slider_lead_time: SE.number(100),
+					dyeing_lead_time: SE.number(100),
+					status: SE.string('pending'),
+					slider_finishing_stock: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+	},
 };
 
 // * Zipper Finishing Batch Entry * //
@@ -3749,6 +3777,39 @@ export const pathZipperFinishingBatchEntry = {
 			},
 		},
 	},
+	'/zipper/finishing-batch-entry/by/finishing-batch-uuid/{finishing_batch_uuid}':
+		{
+			get: {
+				tags: ['zipper.finishing_batch_entry'],
+				summary:
+					'Get all Finishing Batch Entry by finishing batch uuid',
+				parameters: [
+					SE.parameter_params(
+						'finishing batch entry to get',
+						'finishing_batch_uuid'
+					),
+				],
+				responses: {
+					200: SE.response_schema(200, {
+						uuid: SE.uuid(),
+						finishing_batch_uuid: SE.uuid(),
+						sfg_uuid: SE.uuid(),
+						quantity: SE.number(100),
+						dyed_tape_used_in_kg: SE.number(100),
+						teeth_molding_prod: SE.number(100),
+						teeth_coloring_stock: SE.number(100),
+						finishing_stock: SE.number(100),
+						finishing_prod: SE.number(100),
+						warehouse: SE.number(100),
+						created_by: SE.uuid(),
+						created_by_name: SE.string('John Doe'),
+						created_at: SE.date_time(),
+						updated_at: SE.date_time(),
+						remarks: SE.string('Remarks'),
+					}),
+				},
+			},
+		},
 };
 
 // * Zipper Path Zipper * //

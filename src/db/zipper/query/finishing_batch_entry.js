@@ -259,3 +259,71 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function getFinishingBatchEntryByFinishingBatchUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT
+			fbe.uuid as fbe_uuid,
+			sfg.recipe_uuid as recipe_uuid,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+			oe.style,
+			oe.color,
+			CASE 
+				WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+				ELSE CAST(oe.size AS NUMERIC)
+			END as size,
+			oe.quantity::float8 as order_quantity,
+			oe.bleaching,
+			vodf.order_number,
+			vodf.item_description,
+			fbe.sfg_uuid,
+			fbe.quantity::float8 as quantity,
+			fbe.dyed_tape_used_in_kg::float8 as dyed_tape_used_in_kg,
+			fbe.teeth_molding_prod::float8 as teeth_molding_prod,
+			fbe.teeth_coloring_stock::float8 as teeth_coloring_stock,
+			fbe.finishing_stock::float8 as finishing_stock,
+			fbe.finishing_prod::float8 as finishing_prod,
+			fbe.warehouse::float8 as warehouse,
+			fbe.created_by,
+			users.name as created_by_name,
+			fbe.created_at,
+			fbe.updated_at,
+			fbe.remarks
+		FROM
+			zipper.finishing_batch_entry fbe
+		LEFT JOIN 
+			zipper.sfg ON fbe.sfg_uuid = sfg.uuid
+		LEFT JOIN 
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN 
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN
+			hr.users ON fbe.created_by = users.uuid
+		WHERE
+			fbe.finishing_batch_uuid = ${req.params.finishing_batch_uuid}
+		ORDER BY
+			fbe.created_at DESC`;
+
+	const batchEntryPromise = db.execute(query);
+
+	try {
+		const data = await batchEntryPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'finishing_batch_entry By finishing_batch_uuid',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

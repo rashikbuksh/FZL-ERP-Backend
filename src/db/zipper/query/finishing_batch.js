@@ -1,12 +1,13 @@
 import { desc, eq, sql } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import {
 	handleError,
 	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import * as hrSchema from '../../hr/schema.js';
 import { finishing_batch } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -15,7 +16,9 @@ export async function insert(req, res, next) {
 	const finishingBatchPromise = db
 		.insert(finishing_batch)
 		.values(req.body)
-		.returning({ insertedUuid: finishing_batch.uuid });
+		.returning({
+			insertedUuid: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+		});
 
 	try {
 		const data = await finishingBatchPromise;
@@ -39,9 +42,9 @@ export async function update(req, res, next) {
 		.update(finishing_batch)
 		.set(req.body)
 		.where(eq(finishing_batch.uuid, req.params.uuid))
-		.returning({ updatedUuid: finishing_batch.uuid });
-
-	console.log('finishingBatchPromise', await finishingBatchPromise);
+		.returning({
+			updatedUuid: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+		});
 
 	try {
 		const data = await finishingBatchPromise;
@@ -64,7 +67,9 @@ export async function remove(req, res, next) {
 	const finishingBatchPromise = db
 		.delete(finishing_batch)
 		.where(eq(finishing_batch.uuid, req.params.uuid))
-		.returning({ deletedUuid: finishing_batch.uuid });
+		.returning({
+			deletedUuid: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+		});
 
 	try {
 		const data = await finishingBatchPromise;
@@ -81,67 +86,31 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
+	const query = sql`
+		SELECT 
+			finishing_batch.uuid,
+			finishing_batch.id,
+			concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)) as batch_number,
+			vodf.order_info_uuid,
+			vodf.order_number,
+			finishing_batch.order_description_uuid,
+			vodf.item_description,
+			finishing_batch.slider_lead_time,
+			finishing_batch.dyeing_lead_time,
+			finishing_batch.status,
+			finishing_batch.slider_finishing_stock,
+			finishing_batch.created_by,
+			users.name as created_by_name,
+			finishing_batch.created_at,
+			finishing_batch.updated_at,
+			finishing_batch.remarks
+		FROM zipper.finishing_batch
+		LEFT JOIN zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN hr.users ON finishing_batch.created_by = users.uuid
+		ORDER BY finishing_batch.created_at DESC
+	`;
 
-	const finishingBatchPromise = db
-		.select({
-			uuid: finishing_batch.uuid,
-			id: finishing_batch.id,
-			order_description_uuid: finishing_batch.order_description_uuid,
-			slider_lead_time: finishing_batch.slider_lead_time,
-			dyeing_lead_time: finishing_batch.dyeing_lead_time,
-			status: finishing_batch.status,
-			slider_finishing_stock: decimalToNumber(
-				finishing_batch.slider_finishing_stock
-			),
-			created_by: finishing_batch.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: finishing_batch.created_at,
-			updated_at: finishing_batch.updated_at,
-			remarks: finishing_batch.remarks,
-		})
-		.from(finishing_batch)
-		.leftJoin(
-			hrSchema.users,
-			eq(finishing_batch.created_by, hrSchema.users.uuid)
-		)
-		.orderBy(desc(finishing_batch.created_at));
-
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'finishing_batch list',
-	};
-
-	handleResponse({ promise: finishingBatchPromise, res, next, ...toast });
-}
-
-export async function select(req, res, next) {
-	if (!(await validateRequest(req, next))) return;
-
-	const finishingBatchPromise = db
-		.select({
-			uuid: finishing_batch.uuid,
-			id: finishing_batch.id,
-			order_description_uuid: finishing_batch.order_description_uuid,
-			slider_lead_time: finishing_batch.slider_lead_time,
-			dyeing_lead_time: finishing_batch.dyeing_lead_time,
-			status: finishing_batch.status,
-			slider_finishing_stock: decimalToNumber(
-				finishing_batch.slider_finishing_stock
-			),
-			created_by: finishing_batch.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: finishing_batch.created_at,
-			updated_at: finishing_batch.updated_at,
-			remarks: finishing_batch.remarks,
-		})
-		.from(finishing_batch)
-		.leftJoin(
-			hrSchema.users,
-			eq(finishing_batch.created_by, hrSchema.users.uuid)
-		)
-		.where(eq(finishing_batch.uuid, req.params.uuid));
+	const finishingBatchPromise = db.execute(query);
 
 	try {
 		const data = await finishingBatchPromise;
@@ -151,7 +120,88 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: 'finishing_batch',
 		};
-		return res.status(200).json({ toast, data: data[0] });
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function select(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT 
+			finishing_batch.uuid,
+			finishing_batch.id,
+			concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)) as batch_number,
+			vodf.order_info_uuid,
+			vodf.order_number,
+			finishing_batch.order_description_uuid,
+			vodf.item_description,
+			finishing_batch.slider_lead_time,
+			finishing_batch.dyeing_lead_time,
+			finishing_batch.status,
+			finishing_batch.slider_finishing_stock,
+			finishing_batch.created_by,
+			users.name as created_by_name,
+			finishing_batch.created_at,
+			finishing_batch.updated_at,
+			finishing_batch.remarks
+		FROM zipper.finishing_batch
+		LEFT JOIN zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN hr.users ON finishing_batch.created_by = users.uuid
+		WHERE finishing_batch.uuid = ${req.params.uuid}
+		ORDER BY finishing_batch.created_at DESC
+	`;
+
+	const finishingBatchPromise = db.execute(query);
+
+	try {
+		const data = await finishingBatchPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'finishing_batch',
+		};
+		return res.status(200).json({ toast, data: data.rows[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function getFinishingBatchByFinishingBatchUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+	try {
+		const api = createApi(req);
+
+		const { finishing_batch_uuid } = req.params;
+
+		const fetchData = async (endpoint) =>
+			await api.get(`/zipper/${endpoint}/${finishing_batch_uuid}`);
+
+		const [finishing_batch, finishing_batch_entry] = await Promise.all([
+			fetchData('finishing_batch'),
+			fetchData('finishing-batch-entry/by/finishing-batch-uuid'),
+		]);
+
+		const response = {
+			...finishing_batch?.data?.data,
+			finishing_batch_entry: finishing_batch_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'finishing_batch',
+		};
+
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}

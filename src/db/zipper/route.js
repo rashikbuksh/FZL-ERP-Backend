@@ -475,6 +475,10 @@ zipperRouter.get('/finishing-batch/:uuid', finishingBatchOperations.select);
 zipperRouter.post('/finishing-batch', finishingBatchOperations.insert);
 zipperRouter.put('/finishing-batch/:uuid', finishingBatchOperations.update);
 zipperRouter.delete('/finishing-batch/:uuid', finishingBatchOperations.remove);
+zipperRouter.get(
+	'/finishing-batch/by/:finishing_batch_uuid',
+	finishingBatchOperations.getFinishingBatchByFinishingBatchUuid
+);
 
 // --------------------- FINISHING BATCH ENTRY ROUTES ---------------------
 
@@ -501,6 +505,10 @@ zipperRouter.delete(
 zipperRouter.get(
 	'/finishing-order-batch/:order_description_uuid',
 	finishingBatchEntryOperations.getOrderDetailsForFinishingBatchEntry
+);
+zipperRouter.get(
+	'/finishing-batch-entry/by/finishing-batch-uuid/:finishing_batch_uuid',
+	finishingBatchEntryOperations.getFinishingBatchEntryByFinishingBatchUuid
 );
 
 export { zipperRouter };
