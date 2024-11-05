@@ -15,13 +15,10 @@ const slider = pgSchema('slider');
 // * ./swagger.js#defStock
 export const stock = slider.table('stock', {
 	uuid: uuid_primary,
-	order_description_uuid: defaultUUID('order_description_uuid')
-		.references(() => zipperSchema.order_description.uuid)
+	finishing_batch_uuid: defaultUUID('finishing_batch_uuid')
+		.references(() => zipperSchema.finishing_batch.uuid)
 		.default(null),
-	order_quantity: decimal('order_quantity', {
-		precision: 20,
-		scale: 4,
-	}).default(0),
+	batch_quantity: PG_DECIMAL('batch_quantity').default(0),
 	swatch_approved_quantity: PG_DECIMAL('swatch_approved_quantity').default(0),
 	body_quantity: decimal('body_quantity', {
 		precision: 20,

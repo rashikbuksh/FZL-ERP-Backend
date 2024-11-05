@@ -3,7 +3,7 @@ import SE, { SED } from '../../../util/swagger_example.js';
 export const defStock = SED({
 	required: [
 		'uuid',
-		'order_description_uuid',
+		'finishing_batch_uuid',
 		'item',
 		'zipper_number',
 		'end_type',
@@ -13,8 +13,8 @@ export const defStock = SED({
 	],
 	properties: {
 		uuid: SE.uuid(),
-		order_description_uuid: SE.uuid(),
-		order_quantity: SE.number(0.0),
+		finishing_batch_uuid: SE.uuid(),
+		batch_quantity: SE.number(0.0),
 		body_quantity: SE.number(0.0),
 		cap_quantity: SE.number(0.0),
 		puller_quantity: SE.number(0.0),

@@ -7,19 +7,22 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { sfg_production } from '../schema.js';
+import {
+	finishing_batch_entry,
+	finishing_batch_production,
+} from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgProductionPromise = db
-		.insert(sfg_production)
+	const finishingBatchProductionPromise = db
+		.insert(finishing_batch_production)
 		.values(req.body)
 		.returning({
-			insertedId: sfg_production.sfg_uuid,
+			insertedId: finishing_batch_production.uuid,
 		});
 	try {
-		const data = await sfgProductionPromise;
+		const data = await finishingBatchProductionPromise;
 
 		const orderDescription = sql`
 			SELECT
@@ -48,16 +51,16 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgProductionPromise = db
-		.update(sfg_production)
+	const finishingBatchProductionPromise = db
+		.update(finishing_batch_production)
 		.set(req.body)
-		.where(eq(sfg_production.uuid, req.params.uuid))
+		.where(eq(finishing_batch_production.uuid, req.params.uuid))
 		.returning({
-			updatedId: sfg_production.sfg_uuid,
+			updatedId: finishing_batch_production.uuid,
 		});
 
 	try {
-		const data = await sfgProductionPromise;
+		const data = await finishingBatchProductionPromise;
 		const orderDescription = sql`
 			SELECT
 				concat(vodf.order_number, ' - ', vodf.item_description) as updated_id
@@ -85,15 +88,15 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgProductionPromise = db
-		.delete(sfg_production)
-		.where(eq(sfg_production.uuid, req.params.uuid))
+	const finishingBatchProductionPromise = db
+		.delete(finishing_batch_production)
+		.where(eq(finishing_batch_production.uuid, req.params.uuid))
 		.returning({
-			deletedId: sfg_production.sfg_uuid,
+			deletedId: finishing_batch_production.uuid,
 		});
 
 	try {
-		const data = await sfgProductionPromise;
+		const data = await finishingBatchProductionPromise;
 		const orderDescription = sql`
 			SELECT
 				concat(vodf.order_number, ' - ', vodf.item_description) as deleted_id
@@ -121,36 +124,37 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
-			uuid: sfg_production.uuid,
-			sfg_uuid: sfg_production.sfg_uuid,
-			section: sfg_production.section,
+			uuid: finishing_batch_production.uuid,
+			finishing_batch_entry_uuid:
+				finishing_batch_production.finishing_batch_entry_uuid,
+			section: finishing_batch_production.section,
 			dyed_tape_used_in_kg: decimalToNumber(
-				sfg_production.dyed_tape_used_in_kg
+				finishing_batch_production.dyed_tape_used_in_kg
 			),
 			production_quantity_in_kg: decimalToNumber(
-				sfg_production.production_quantity_in_kg
+				finishing_batch_production.production_quantity_in_kg
 			),
 			production_quantity: decimalToNumber(
-				sfg_production.production_quantity
+				finishing_batch_production.production_quantity
 			),
-			wastage: decimalToNumber(sfg_production.wastage),
-			created_by: sfg_production.created_by,
+			wastage: decimalToNumber(finishing_batch_production.wastage),
+			created_by: finishing_batch_production.created_by,
 			created_by_name: hrSchema.users.name,
-			created_at: sfg_production.created_at,
-			updated_at: sfg_production.updated_at,
-			remarks: sfg_production.remarks,
+			created_at: finishing_batch_production.created_at,
+			updated_at: finishing_batch_production.updated_at,
+			remarks: finishing_batch_production.remarks,
 		})
-		.from(sfg_production)
+		.from(finishing_batch_production)
 		.leftJoin(
 			hrSchema.users,
-			eq(sfg_production.created_by, hrSchema.users.uuid)
+			eq(finishing_batch_production.created_by, hrSchema.users.uuid)
 		)
-		.orderBy(desc(sfg_production.created_at));
+		.orderBy(desc(finishing_batch_production.created_at));
 
 	const toast = {
 		status: 200,
 		type: 'select_all',
-		message: 'SFG Production list',
+		message: 'Finishing Batch Production list',
 	};
 	handleResponse({
 		promise: resultPromise,
@@ -163,41 +167,42 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const sfgProductionPromise = db
+	const finishingBatchProductionPromise = db
 		.select({
-			uuid: sfg_production.uuid,
-			sfg_uuid: sfg_production.sfg_uuid,
-			section: sfg_production.section,
+			uuid: finishing_batch_production.uuid,
+			finishing_batch_entry_uuid:
+				finishing_batch_production.finishing_batch_entry_uuid,
+			section: finishing_batch_production.section,
 			production_quantity_in_kg: decimalToNumber(
-				sfg_production.production_quantity_in_kg
+				finishing_batch_production.production_quantity_in_kg
 			),
 			production_quantity: decimalToNumber(
-				sfg_production.production_quantity
+				finishing_batch_production.production_quantity
 			),
 			dyed_tape_used_in_kg: decimalToNumber(
-				sfg_production.dyed_tape_used_in_kg
+				finishing_batch_production.dyed_tape_used_in_kg
 			),
-			wastage: decimalToNumber(sfg_production.wastage),
-			created_by: sfg_production.created_by,
+			wastage: decimalToNumber(finishing_batch_production.wastage),
+			created_by: finishing_batch_production.created_by,
 			created_by_name: hrSchema.users.name,
-			created_at: sfg_production.created_at,
-			updated_at: sfg_production.updated_at,
-			remarks: sfg_production.remarks,
+			created_at: finishing_batch_production.created_at,
+			updated_at: finishing_batch_production.updated_at,
+			remarks: finishing_batch_production.remarks,
 		})
-		.from(sfg_production)
+		.from(finishing_batch_production)
 		.leftJoin(
 			hrSchema.users,
-			eq(sfg_production.created_by, hrSchema.users.uuid)
+			eq(finishing_batch_production.created_by, hrSchema.users.uuid)
 		)
-		.where(eq(sfg_production.uuid, req.params.uuid));
+		.where(eq(finishing_batch_production.uuid, req.params.uuid));
 
 	try {
-		const data = await sfgProductionPromise;
+		const data = await finishingBatchProductionPromise;
 
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'SFG Production',
+			message: 'Finishing Batch Production',
 		};
 
 		return await res.status(200).json({ toast, data: data[0] });
@@ -213,8 +218,8 @@ export async function selectBySection(req, res, next) {
 
 	const query = sql`
 		SELECT
-			sfg_production.uuid,
-			sfg_production.sfg_uuid,
+			finishing_batch_production.uuid,
+			finishing_batch_production.finishing_batch_entry_uuid,
 			sfg.order_entry_uuid,
 			vodf.order_description_uuid,
 			vodf.order_number,
@@ -229,16 +234,16 @@ export async function selectBySection(req, res, next) {
                         ELSE CAST(oe.size AS NUMERIC)
                     END) AS style_color_size,
 			oe.quantity::float8 as order_quantity,
-			sfg_production.section,
-			COALESCE(sfg_production.dyed_tape_used_in_kg,0)::float8 as dyed_tape_used_in_kg,
-			COALESCE(sfg_production.production_quantity_in_kg,0)::float8 as production_quantity_in_kg,
-			COALESCE(sfg_production.production_quantity,0)::float8 as production_quantity,
-			COALESCE(sfg_production.wastage,0)::float8 as wastage,
-			sfg_production.created_by,
+			finishing_batch_production.section,
+			COALESCE(finishing_batch_production.dyed_tape_used_in_kg,0)::float8 as dyed_tape_used_in_kg,
+			COALESCE(finishing_batch_production.production_quantity_in_kg,0)::float8 as production_quantity_in_kg,
+			COALESCE(finishing_batch_production.production_quantity,0)::float8 as production_quantity,
+			COALESCE(finishing_batch_production.wastage,0)::float8 as wastage,
+			finishing_batch_production.created_by,
 			users.name AS created_by_name,
-			sfg_production.created_at,
-			sfg_production.updated_at,
-			sfg_production.remarks,
+			finishing_batch_production.created_at,
+			finishing_batch_production.updated_at,
+			finishing_batch_production.remarks,
 			CASE WHEN sfg.finishing_prod != 0 
 			THEN (oe.quantity - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0)) 
 			ELSE (oe.quantity - COALESCE(sfg.warehouse, 0))::float8 END as balance_quantity,
@@ -261,24 +266,26 @@ export async function selectBySection(req, res, next) {
 			(COALESCE(tape_transferred,0)::float8 - COALESCE(sfg.dyed_tape_used_in_kg,0)::float8)::float8 as tape_stock,
 			COALESCE(vodf.slider_finishing_stock,0)::float8 as slider_finishing_stock
 		FROM
-			zipper.sfg_production
+			zipper.finishing_batch_production
 		LEFT JOIN
-			hr.users ON sfg_production.created_by = users.uuid
+			hr.users ON finishing_batch_production.created_by = users.uuid
+		LEFT JOIN 
+			zipper.finishing_batch_entry fbe ON finishing_batch_production.finishing_batch_entry_uuid = fbe.uuid
 		LEFT JOIN
-			zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+			zipper.sfg ON fbe.sfg_uuid = sfg.uuid
 		LEFT JOIN
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		WHERE
-			sfg_production.section = ${req.params.section} ${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
+			finishing_batch_production.section = ${req.params.section} ${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? sql`AND lower(vodf.nylon_stopper_name) = lower(${nylon_stopper})` : sql``}
 	`;
 
-	const sfgProductionPromise = db.execute(query);
+	const finishingBatchProductionPromise = db.execute(query);
 
 	try {
-		const data = await sfgProductionPromise;
+		const data = await finishingBatchProductionPromise;
 		const toast = {
 			status: 200,
 			type: 'select',

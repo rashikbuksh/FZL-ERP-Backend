@@ -1,4 +1,5 @@
 import SE, { SED } from '../../../util/swagger_example.js';
+import { finishing_batch_entry } from '../schema.js';
 
 // * Zipper Order Info * //
 export const def_zipper_order_info = SED({
@@ -183,6 +184,7 @@ export const def_zipper_sfg = SED({
 		'pi',
 		'short_quantity',
 		'reject_quantity',
+		'batch_quantity',
 		'created_at',
 		'remarks',
 	],
@@ -204,16 +206,17 @@ export const def_zipper_sfg = SED({
 		pi: SE.number(),
 		short_quantity: SE.number(),
 		reject_quantity: SE.number(),
+		batch_quantity: SE.number(),
 		remarks: SE.string(),
 	},
 	xml: 'Zipper/Sfg',
 });
 
 // * Zipper Sfg production * //
-export const def_zipper_sfg_production = SED({
+export const def_zipper_finishing_batch_production = SED({
 	required: [
 		'uuid',
-		'sfg_uuid',
+		'finishing_batch_entry_uuid',
 		'section',
 		'production_quantity',
 		'wastage',
@@ -222,7 +225,7 @@ export const def_zipper_sfg_production = SED({
 	],
 	properties: {
 		uuid: SE.uuid(),
-		sfg_uuid: SE.uuid(),
+		finishing_batch_entry_uuid: SE.uuid(),
 		section: SE.string(),
 		dyed_tape_used_in_kg: SE.number(),
 		production_quantity_in_kg: SE.number(),
@@ -233,14 +236,14 @@ export const def_zipper_sfg_production = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
 	},
-	xml: 'Zipper/Sfg-Production',
+	xml: 'Zipper/Finishing-Batch-Production',
 });
 
-// * Zipper sfg transaction * //
-export const def_zipper_sfg_transaction = SED({
+// * Zipper finishing batch transaction * //
+export const def_zipper_finishing_batch_transaction = SED({
 	required: [
 		'uuid',
-		'sfg_uuid',
+		'finishing_batch_entry_uuid',
 		'section',
 		'trx_from',
 		'trx_to',
@@ -252,7 +255,7 @@ export const def_zipper_sfg_transaction = SED({
 	],
 	properties: {
 		uuid: SE.uuid(),
-		sfg_uuid: SE.uuid(),
+		finishing_batch_entry_uuid: SE.uuid(),
 		section: SE.string(),
 		trx_from: SE.string(),
 		trx_to: SE.string(),
@@ -264,7 +267,7 @@ export const def_zipper_sfg_transaction = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
 	},
-	xml: 'Zipper/Sfg-Transaction',
+	xml: 'Zipper/Finishing-Batch-Transaction',
 });
 
 // * Dyed Tape Transaction * //
@@ -338,7 +341,7 @@ export const def_zipper_dyeing_batch = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
 	},
-	xml: 'Zipper/Batch',
+	xml: 'Zipper/Dyeing-Batch',
 });
 
 // * Zipper Dyeing Batch Entry * //
@@ -574,7 +577,7 @@ export const def_zipper_material_trx_against_order_description = SED({
 export const def_zipper_batch_production = SED({
 	required: [
 		'uuid',
-		'batch_entry_uuid',
+		'dyeing_batch_entry_uuid',
 		'production_quantity',
 		'production_quantity_in_kg',
 		'created_by',
@@ -582,7 +585,7 @@ export const def_zipper_batch_production = SED({
 	],
 	properties: {
 		uuid: SE.uuid(),
-		batch_entry_uuid: SE.uuid(),
+		dyeing_batch_entry_uuid: SE.uuid(),
 		production_quantity: SE.number(),
 		production_quantity_in_kg: SE.number(),
 		created_by: SE.uuid(),
@@ -702,8 +705,8 @@ export const defZipper = {
 	order_description: def_zipper_order_description,
 	order_entry: def_zipper_order_entry,
 	sfg: def_zipper_sfg,
-	sfg_production: def_zipper_sfg_production,
-	sfg_transaction: def_zipper_sfg_transaction,
+	finishing_batch_production: def_zipper_finishing_batch_production,
+	finishing_batch_transaction: def_zipper_finishing_batch_transaction,
 	dyed_tape_transaction: def_zipper_dyed_tape_transaction,
 	dyed_tape_transaction_from_stock:
 		def_zipper_dyed_tape_transaction_from_stock,
@@ -744,12 +747,12 @@ export const tagZipper = [
 		description: 'Zipper SFG',
 	},
 	{
-		name: 'zipper.sfg_production',
-		description: 'Zipper SFG Production',
+		name: 'zipper.finishing_batch_production',
+		description: 'Zipper Finishing Batch Production',
 	},
 	{
-		name: 'zipper.sfg_transaction',
-		description: 'Zipper SFG Transaction',
+		name: 'zipper.finishing_batch_transaction',
+		description: 'Zipper Finishing Batch Transaction',
 	},
 	{
 		name: 'zipper.dyed_tape_transaction',
@@ -760,12 +763,12 @@ export const tagZipper = [
 		description: 'Zipper Dyed Tape Transaction From Stock',
 	},
 	{
-		name: 'zipper.batch',
-		description: 'Zipper Batch',
+		name: 'zipper.dyeing_batch',
+		description: 'Zipper Dyeing Batch',
 	},
 	{
-		name: 'zipper.batch_entry',
-		description: 'Zipper Batch Entry',
+		name: 'zipper.dyeing_batch_entry',
+		description: 'Zipper Dyeing Batch Entry',
 	},
 	{
 		name: 'zipper.dying_batch',
