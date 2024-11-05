@@ -259,12 +259,12 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
-			coalesce(be_given.given_quantity, 0)::float8,
-			coalesce(be_given.given_production_quantity, 0)::float8,
-			coalesce(be_given.given_production_quantity_in_kg, 0)::float8,
+			coalesce(be_given.given_quantity, 0)::float8 as given_quantity,
+			coalesce(be_given.given_production_quantity, 0)::float8 as given_production_quantity,
+			coalesce(be_given.given_production_quantity_in_kg, 0)::float8 as given_production_quantity_in_kg,
 			coalesce(
 				coalesce(oe.quantity::float8,0) - coalesce(be_given.given_quantity::float8,0)
-			,0) as balance_quantity,
+			,0)::float8 as balance_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			0 as quantity,
