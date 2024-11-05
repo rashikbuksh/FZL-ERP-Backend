@@ -583,7 +583,7 @@ export const material_trx_against_order_description = zipper.table(
 
 export const dyeing_batch_production = zipper.table('dyeing_batch_production', {
 	uuid: uuid_primary,
-	dyeing_batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
+	dyeing_batch_entry_uuid: defaultUUID('dyeing_batch_entry_uuid').references(
 		() => dyeing_batch_entry.uuid
 	),
 	production_quantity: decimal('production_quantity', {
