@@ -101,7 +101,7 @@ export async function selectAll(req, res, next) {
 			expected.total_quantity::float8,
 			expected.expected_kg::float8,
 			expected.order_numbers,
-			expected.total_actual_production_quantity::float8
+			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
 		LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
