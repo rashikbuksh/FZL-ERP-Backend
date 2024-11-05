@@ -198,9 +198,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
-			fbe_given.given_quantity::float8,
-			fbe_given.given_production_quantity::float8,
-			fbe_given.given_production_quantity_in_kg::float8,
+			fbe_given.given_quantity::float8 as given_quantity,
 			coalesce(
 				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
 			,0) as balance_quantity,
@@ -228,9 +226,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			(
 				SELECT
 					sfg.uuid as sfg_uuid,
-					SUM(fbe.quantity::float8) AS given_quantity,
-					SUM(fbe.production_quantity::float8) AS given_production_quantity,
-					SUM(fbe.production_quantity_in_kg::float8) AS given_production_quantity_in_kg
+					SUM(fbe.quantity::float8) AS given_quantity
 				FROM
 					zipper.finishing_batch_entry fbe
 				LEFT JOIN 
