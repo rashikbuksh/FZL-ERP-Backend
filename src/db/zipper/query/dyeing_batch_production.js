@@ -81,7 +81,8 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: dyeing_batch_production.uuid,
-			batch_entry_uuid: dyeing_batch_production.batch_entry_uuid,
+			dyeing_batch_entry_uuid:
+				dyeing_batch_production.dyeing_batch_entry_uuid,
 			production_quantity: decimalToNumber(
 				dyeing_batch_production.production_quantity
 			),
@@ -118,7 +119,8 @@ export async function select(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: dyeing_batch_production.uuid,
-			batch_entry_uuid: dyeing_batch_production.batch_entry_uuid,
+			dyeing_batch_entry_uuid:
+				dyeing_batch_production.dyeing_batch_entry_uuid,
 			production_quantity: decimalToNumber(
 				dyeing_batch_production.production_quantity
 			),
