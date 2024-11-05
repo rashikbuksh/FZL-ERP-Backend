@@ -98,10 +98,10 @@ export async function selectAll(req, res, next) {
 			dyeing_batch.created_at,
 			dyeing_batch.updated_at,
 			dyeing_batch.remarks,
-			expected.total_quantity,
-			expected.expected_kg,
+			expected.total_quantity::float8,
+			expected.expected_kg::float8,
 			expected.order_numbers,
-			expected.total_actual_production_quantity
+			expected.total_actual_production_quantity::float8
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
 		LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
