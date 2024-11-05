@@ -164,7 +164,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 	const query = sql`
 		SELECT
 			be.uuid as dyeing_batch_entry_uuid,
-			bp_given.batch_production_uuid,
+			bp_given.dyeing_batch_production_uuid,
 			be.dyeing_batch_uuid,
 			be.sfg_uuid,
 			be.quantity::float8,
@@ -210,17 +210,17 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 		LEFT JOIN
 			(
 				SELECT
-					dyeing_batch_entry.uuid as batch_entry_uuid,
-					bp.uuid as batch_production_uuid,
+					dyeing_batch_entry.uuid as dyeing_batch_entry_uuid,
+					bp.uuid as dyeing_batch_production_uuid,
 					SUM(bp.production_quantity::float8) AS given_production_quantity,
 					SUM(bp.production_quantity_in_kg::float8) AS given_production_quantity_in_kg
 				FROM
 					zipper.dyeing_batch_production bp
 				LEFT JOIN 
-					zipper.dyeing_batch_entry ON bp.batch_entry_uuid = dyeing_batch_entry.uuid
+					zipper.dyeing_batch_entry ON bp.dyeing_batch_entry_uuid = dyeing_batch_entry.uuid
 				GROUP BY
 					dyeing_batch_entry.uuid, bp.uuid
-			) AS bp_given ON be.uuid = bp_given.batch_entry_uuid
+			) AS bp_given ON be.uuid = bp_given.dyeing_batch_entry_uuid
 		WHERE
 			be.dyeing_batch_uuid = ${dyeing_batch_uuid} AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END`;
 
