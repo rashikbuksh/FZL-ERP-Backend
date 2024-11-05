@@ -652,6 +652,13 @@ export const multi_color_tape_receive = zipper.table(
 	}
 );
 
+export const finishBatchStatusEnum = zipper.enum('finishing_batch_status', [
+	'running',
+	'hold',
+	'completed',
+	'rejected',
+]);
+
 export const finishing_batch = zipper.table('finishing_batch', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
@@ -660,11 +667,11 @@ export const finishing_batch = zipper.table('finishing_batch', {
 	),
 	slider_lead_time: integer('slider_lead_time').notNull(),
 	dyeing_lead_time: integer('dyeing_lead_time').notNull(),
-	status: text('status').notNull(),
+	status: finishBatchStatusEnum('status').default('running'),
 	slider_finishing_stock: decimal('slider_finishing_stock', {
 		precision: 20,
 		scale: 4,
-	}).notNull(),
+	}).default(0.0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
