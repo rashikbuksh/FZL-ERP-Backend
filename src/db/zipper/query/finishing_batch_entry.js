@@ -203,6 +203,9 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
 			,0) as balance_quantity,
 			0 as quantity,
+			coalesce(
+				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+			,0) as max_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
@@ -298,7 +301,10 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			fbe.remarks,
 			coalesce(
 				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
-			,0) as balance_quantity
+			,0) as balance_quantity,
+			coalesce(
+				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+			,0) + coalesce(fbe.quantity::float8,0) as max_quantity
 		FROM
 			zipper.finishing_batch_entry fbe
 		LEFT JOIN 
