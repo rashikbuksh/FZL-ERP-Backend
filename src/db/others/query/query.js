@@ -411,7 +411,7 @@ export async function selectOrderEntry(req, res, next) {
 }
 
 export async function selectOrderDescription(req, res, next) {
-	const { item, tape_received } = req.query;
+	const { item, tape_received, dyed_tape_required } = req.query;
 
 	const query = sql`
 				SELECT
@@ -460,8 +460,13 @@ export async function selectOrderDescription(req, res, next) {
 					GROUP BY oe.order_description_uuid
 				) batch_stock ON vodf.order_description_uuid = batch_stock.order_description_uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != '' AND tape_coil.dyed_per_kg_meter IS NOT NULL
+					vodf.item_description != '---' AND vodf.item_description != ''
 				`;
+
+	if (dyed_tape_required == 'false') {
+	} else {
+		query.append(sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`);
+	}
 
 	if (item == 'nylon') {
 		query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`);

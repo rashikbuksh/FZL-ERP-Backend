@@ -271,6 +271,7 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 		SELECT
 			fbe.uuid as uuid,
 			sfg.recipe_uuid as recipe_uuid,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
 			oe.style,
 			oe.color,
 			CASE 
@@ -302,6 +303,8 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			zipper.finishing_batch_entry fbe
 		LEFT JOIN 
 			zipper.sfg ON fbe.sfg_uuid = sfg.uuid
+		LEFT JOIN 
+			lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
 		LEFT JOIN 
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN 
