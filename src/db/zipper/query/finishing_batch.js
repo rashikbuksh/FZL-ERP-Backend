@@ -178,6 +178,8 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 
 		const { finishing_batch_uuid } = req.params;
 
+		const { is_update } = req.query;
+
 		const fetchData = async (endpoint) =>
 			await api.get(`/zipper/${endpoint}/${finishing_batch_uuid}`);
 
@@ -186,10 +188,40 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 			fetchData('finishing-batch-entry/by/finishing-batch-uuid'),
 		]);
 
+		let order_description_data = null;
+
+		if (is_update === 'true') {
+			// get order_description_uuid from finishing_batch
+			const order_description_uuid =
+				finishing_batch?.data?.data?.order_description_uuid;
+
+			const order_description = await api.get(
+				`/zipper/finishing-order-batch/${order_description_uuid}`
+			);
+
+			// remove the sfg_uuid from the order_description if that exists in the finishing_batch_entry
+			const sfg_uuid = finishing_batch_entry?.data?.data?.map(
+				(entry) => entry.sfg_uuid
+			);
+
+			order_description_data = order_description?.data?.data;
+
+			if (sfg_uuid) {
+				order_description_data.sfg_uuid =
+					order_description_data.sfg_uuid.filter(
+						(uuid) => !sfg_uuid.includes(uuid)
+					);
+			}
+		}
+
 		const response = {
 			...finishing_batch?.data?.data,
 			finishing_batch_entry: finishing_batch_entry?.data?.data || [],
 		};
+
+		if (is_update === 'true') {
+			response.order_description_data = order_description_data;
+		}
 
 		const toast = {
 			status: 200,

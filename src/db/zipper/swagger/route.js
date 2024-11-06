@@ -3604,6 +3604,7 @@ export const pathZipperFinishingBatch = {
 					'finishing batch to get',
 					'finishing_batch_uuid'
 				),
+				SE.parameter_query('is_update', 'is_update', ['true', 'false']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
