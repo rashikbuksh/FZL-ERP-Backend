@@ -172,7 +172,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			be.production_quantity_in_kg::float8,
 			be.created_at,
 			be.updated_at,
-			be.remarks as batch_remarks,
+			be.remarks,
 			oe.style,
 			oe.color,
 			CASE 
