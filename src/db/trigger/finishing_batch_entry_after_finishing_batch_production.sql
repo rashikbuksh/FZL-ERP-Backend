@@ -7,37 +7,38 @@ DECLARE
     od_uuid TEXT;
     nylon_stopper_name TEXT;
 BEGIN
-    -- Fetch item_name and order_description_uuid once
-    SELECT vodf.item_name, oe.order_description_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
+    -- Fetch item_name and finishing_batch_uuid once
+    SELECT vodf.item_name, oe.finishing_batch_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
     FROM zipper.finishing_batch_entry finishing_batch_entry
     LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
-    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+    LEFT JOIN zipper.v_order_details_full vodf ON oe.finishing_batch_uuid = vodf.finishing_batch_uuid
     WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
-    -- Update order_description based on item_name
+    -- Update finishing_batch based on item_name
     IF lower(item_name) = 'metal' THEN
 
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN NEW.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
     
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
-            slider_finishing_stock = slider_finishing_stock - 
+            slider_finishing_stock = slider_finishing_stock -
                 CASE 
-                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity
+                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid;
 
     ELSIF lower(item_name) = 'vislon' THEN
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
@@ -45,61 +46,63 @@ BEGIN
                         THEN NEW.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
 
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'finishing' 
                     THEN NEW.dyed_tape_used_in_kg
                 END
-        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
-        UPDATE zipper.order_description od
-        SET 
-            slider_finishing_stock = slider_finishing_stock -
-                CASE 
-                    WHEN NEW.section = 'finishing' 
-                        THEN NEW.production_quantity
-                    ELSE 0
-                END
-        WHERE od.uuid = od_uuid;
-
-    ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
-
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
-        SET 
-            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
-                CASE 
-                    WHEN NEW.section = 'finishing' 
-                    THEN NEW.dyed_tape_used_in_kg
-                END
-        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
-
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid;
+
+    ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
+
+        UPDATE zipper.finishing_batch_entry fbe
+        SET 
+            dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
+                CASE 
+                    WHEN NEW.section = 'finishing' 
+                    THEN NEW.dyed_tape_used_in_kg
+                END
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
+
+        UPDATE zipper.finishing_batch fb
+        SET 
+            slider_finishing_stock = slider_finishing_stock -
+                CASE 
+                    WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
+                    ELSE 0
+                END
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid;
     END IF;
 
     -- Update finishing_batch_entry table
-    UPDATE zipper.finishing_batch_entry finishing_batch_entry
+    UPDATE zipper.finishing_batch_entry fbe
     SET 
         teeth_molding_prod = teeth_molding_prod + 
             CASE 
@@ -142,11 +145,12 @@ BEGIN
                     END 
                 ELSE 0 
             END,
-        dying_and_iron_prod = dying_and_iron_prod + 
-            CASE 
-                WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity 
-                ELSE 0 
-            END,
+        -- dying_and_iron_prod = dying_and_iron_prod + 
+        --     CASE 
+        --         WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity 
+        --         ELSE 0 
+        --     END,
+        
         -- teeth_coloring_prod = teeth_coloring_prod + 
         --     CASE 
         --         WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity 
@@ -157,9 +161,7 @@ BEGIN
                 WHEN NEW.section = 'coloring' THEN NEW.production_quantity
                 ELSE 0 
             END
-    FROM zipper.order_entry oe
-    LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-    WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid AND finishing_batch_entry.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
+    WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
     RETURN NEW;
 END;
@@ -181,37 +183,38 @@ DECLARE
     od_uuid TEXT;
     nylon_stopper_name TEXT;
 BEGIN
-    -- Fetch item_name and order_description_uuid once
-    SELECT vodf.item_name, oe.order_description_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
+    -- Fetch item_name and finishing_batch_uuid once
+    SELECT vodf.item_name, oe.finishing_batch_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
     FROM zipper.finishing_batch_entry finishing_batch_entry
     LEFT JOIN zipper.order_entry oe ON oe.uuid = finishing_batch_entry.order_entry_uuid
-    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+    LEFT JOIN zipper.v_order_details_full vodf ON oe.finishing_batch_uuid = vodf.finishing_batch_uuid
     WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
-    -- Update order_description based on item_name
+    -- Update finishing_batch based on item_name
     IF lower(item_name) = 'metal' THEN
 
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'teeth_molding' THEN (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
     
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid;
 
     ELSIF lower(item_name) = 'vislon' THEN
 
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
@@ -219,60 +222,63 @@ BEGIN
                         (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
     
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
 
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
 
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg + 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.dyed_tape_used_in_kg) - (OLD.dyed_tape_used_in_kg)
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock - 
                 CASE 
                     WHEN NEW.section = 'finishing' THEN (NEW.production_quantity) - (OLD.production_quantity)
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid;
     END IF;
 
     -- Update finishing_batch_entry table
-    UPDATE zipper.finishing_batch_entry finishing_batch_entry
+    UPDATE zipper.finishing_batch_entry fbe
     SET 
         teeth_molding_prod = teeth_molding_prod + 
             CASE 
@@ -315,11 +321,12 @@ BEGIN
                     END 
                 ELSE 0 
             END,
-        dying_and_iron_prod = dying_and_iron_prod + 
-            CASE 
-                WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity - OLD.production_quantity
-                ELSE 0 
-            END,
+        -- dying_and_iron_prod = dying_and_iron_prod + 
+        --     CASE 
+        --         WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity - OLD.production_quantity
+        --         ELSE 0 
+        --     END,
+
         -- teeth_coloring_prod = teeth_coloring_prod + 
         --     CASE 
         --         WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity - OLD.production_quantity
@@ -330,9 +337,7 @@ BEGIN
                 WHEN NEW.section = 'coloring' THEN NEW.production_quantity - OLD.production_quantity
                 ELSE 0 
             END
-    FROM zipper.order_entry oe
-    LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-    WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid AND finishing_batch_entry.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
+    WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
     RETURN NEW;
 END;
@@ -352,97 +357,101 @@ DECLARE
     od_uuid TEXT;
     nylon_stopper_name TEXT;
 BEGIN
-    -- Fetch item_name and order_description_uuid once
-    SELECT vodf.item_name, oe.order_description_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
+    -- Fetch item_name and finishing_batch_uuid once
+    SELECT vodf.item_name, oe.finishing_batch_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
     FROM zipper.finishing_batch_entry finishing_batch_entry
     LEFT JOIN zipper.order_entry oe ON oe.uuid = finishing_batch_entry.order_entry_uuid
-    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+    LEFT JOIN zipper.v_order_details_full vodf ON oe.finishing_batch_uuid = vodf.finishing_batch_uuid
     WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
 
-    -- Update order_description based on item_name
+    -- Update finishing_batch based on item_name
     IF lower(item_name) = 'metal' THEN
 
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
                 CASE 
                     WHEN OLD.section = 'teeth_molding' THEN OLD.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = OLD.finishing_batch_entry_uuid;
 
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = OLD.finishing_batch_entry_uuid;
 
     ELSIF lower(item_name) = 'vislon' THEN
 
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
                 CASE 
                     WHEN OLD.section = 'teeth_molding' THEN OLD.dyed_tape_used_in_kg 
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = OLD.finishing_batch_entry_uuid;
 
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = OLD.finishing_batch_entry_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'plastic' THEN
 
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry 
+        UPDATE zipper.finishing_batch_entry fbe 
         SET
             dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = OLD.finishing_batch_entry_uuid;
 
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = OLD.finishing_batch_entry_uuid;
 
     ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
         
-        UPDATE zipper.finishing_batch_entry finishing_batch_entry
+        UPDATE zipper.finishing_batch_entry fbe
         SET 
             dyed_tape_used_in_kg = dyed_tape_used_in_kg - 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.dyed_tape_used_in_kg
                     ELSE 0
                 END
-        WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
+        WHERE fbe.uuid = OLD.finishing_batch_entry_uuid;
         
-        UPDATE zipper.order_description od
+        UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
-                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity 
+                    WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END
-        WHERE od.uuid = od_uuid;
+        FROM zipper.finishing_batch_entry fbe
+        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = OLD.finishing_batch_entry_uuid;
     END IF;
 
     -- Update finishing_batch_entry table
-    UPDATE zipper.finishing_batch_entry finishing_batch_entry
+    UPDATE zipper.finishing_batch_entry fbe
     SET 
         teeth_molding_prod = teeth_molding_prod - 
             CASE 
@@ -485,11 +494,12 @@ BEGIN
                     END 
                 ELSE 0 
             END,
-        dying_and_iron_prod = dying_and_iron_prod - 
-            CASE 
-                WHEN OLD.section = 'dying_and_iron' THEN OLD.production_quantity 
-                ELSE 0 
-            END,
+        -- dying_and_iron_prod = dying_and_iron_prod - 
+        --     CASE 
+        --         WHEN OLD.section = 'dying_and_iron' THEN OLD.production_quantity 
+        --         ELSE 0 
+        --     END,
+        
         -- teeth_coloring_prod = teeth_coloring_prod - 
         --     CASE 
         --         WHEN OLD.section = 'teeth_coloring' THEN OLD.production_quantity 
@@ -500,9 +510,7 @@ BEGIN
                 WHEN OLD.section = 'coloring' THEN OLD.production_quantity
                 ELSE 0 
             END
-    FROM zipper.order_entry oe
-    LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-    WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid AND finishing_batch_entry.order_entry_uuid = oe.uuid AND oe.order_description_uuid = od_uuid;
+    WHERE fbe.uuid = OLD.finishing_batch_entry_uuid;
 
     RETURN OLD;
 END;
