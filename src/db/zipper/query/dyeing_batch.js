@@ -195,12 +195,11 @@ export async function select(req, res, next) {
 export async function selectBatchDetailsByBatchUuid(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { dyeing_batch_uuid } = req.params;
-
-	console.log('dyeing_batch_uuid', dyeing_batch_uuid);
-
 	try {
 		const api = await createApi(req);
+		const { dyeing_batch_uuid } = req.params;
+		const { is_update } = req.query;
+		console.log(is_update);
 		const fetchData = async (endpoint) =>
 			await api
 				.get(`${endpoint}/${dyeing_batch_uuid}`)
@@ -211,10 +210,44 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 			fetchData('/zipper/dyeing-batch-entry/by/dyeing-batch-uuid'),
 		]);
 
+		let new_dyeing_batch_entry = null;
+
+		if (is_update === 'true') {
+			const dyeing_order_batch = await api.get(
+				`/zipper/dyeing-order-batch`
+			);
+
+			const sfg_uuid = dyeing_batch_entry?.data?.data?.map(
+				(entry) => entry.sfg_uuid
+			);
+
+			new_dyeing_batch_entry = dyeing_order_batch?.data?.data;
+			console.log(new_dyeing_batch_entry);
+
+			if (sfg_uuid) {
+				if (!Array.isArray(new_dyeing_batch_entry)) {
+					new_dyeing_batch_entry = [];
+				}
+				new_dyeing_batch_entry = new_dyeing_batch_entry.filter(
+					(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
+				);
+			}
+
+			// if (sfg_uuid) {
+			// 	new_dyeing_batch_entry = new_dyeing_batch_entry.filter(
+			// 		(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
+			// 	);
+			// }
+		}
+
 		const response = {
 			...dyeing_batch?.data?.data,
 			dyeing_batch_entry: dyeing_batch_entry?.data?.data || [],
 		};
+
+		if (is_update === 'true') {
+			response.dyeing_batch_entry = new_dyeing_batch_entry;
+		}
 
 		const toast = {
 			status: 200,
@@ -222,7 +255,7 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 			msg: 'Batch Details Full',
 		};
 
-		res.status(200).json({ toast, data: response });
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}

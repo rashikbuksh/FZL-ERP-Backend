@@ -1720,6 +1720,7 @@ export const pathZipperDyeingBatch = {
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params('batch to get', 'dyeing_batch_uuid'),
+				SE.parameter_query('is_update', 'is_update', ['true', 'false']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
