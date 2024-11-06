@@ -188,7 +188,7 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 			fetchData('finishing-batch-entry/by/finishing-batch-uuid'),
 		]);
 
-		let order_description_data = null;
+		let new_finishing_batch_entry = null;
 
 		if (is_update === 'true') {
 			// get order_description_uuid from finishing_batch
@@ -204,13 +204,13 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 				(entry) => entry.sfg_uuid
 			);
 
-			order_description_data = order_description?.data?.data;
+			new_finishing_batch_entry = order_description?.data?.data;
+			console.log(new_finishing_batch_entry);
 
 			if (sfg_uuid) {
-				order_description_data.sfg_uuid =
-					order_description_data.sfg_uuid.filter(
-						(uuid) => !sfg_uuid.includes(uuid)
-					);
+				new_finishing_batch_entry = new_finishing_batch_entry.filter(
+					(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
+				);
 			}
 		}
 
@@ -220,7 +220,7 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 		};
 
 		if (is_update === 'true') {
-			response.order_description_data = order_description_data;
+			response.new_finishing_batch_entry = new_finishing_batch_entry;
 		}
 
 		const toast = {
