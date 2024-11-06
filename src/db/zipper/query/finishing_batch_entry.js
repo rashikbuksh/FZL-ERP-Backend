@@ -209,7 +209,9 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
-			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
+			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
+			vodf.order_type,
+			vodf.slider_provided
 		FROM
 			zipper.sfg sfg
 		LEFT JOIN 
@@ -237,9 +239,9 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 					zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
 				GROUP BY
 					sfg.uuid
-			) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
-		WHERE sfg.recipe_uuid IS NOT NULL AND 
-					coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0 AND
+		) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
+		WHERE sfg.recipe_uuid IS NOT NULL 
+				AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0 AND
 					(
 						lower(vodf.item_name) != 'nylon' 
 						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
