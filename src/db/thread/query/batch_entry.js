@@ -259,7 +259,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		be.transfer_quantity::float8 as transfer_quantity,
 		be.transfer_carton_quantity::float8,
 		be.yarn_quantity::float8 as yarn_quantity,
-		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity
+		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
+		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as max_quantity
 	FROM
 		thread.order_entry oe
 	LEFT JOIN
@@ -333,6 +334,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		be.transfer_carton_quantity::float8,
 		be_given.total_quantity::float8 as total_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
+		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 + be.quantity::float8 as max_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0) + be.quantity)::float8 as can_trx_quantity,
 		CEIL(be.quantity / cl.cone_per_carton)::float8 as total_carton,
 		be.created_at,
