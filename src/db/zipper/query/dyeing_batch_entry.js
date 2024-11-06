@@ -186,6 +186,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			bp_given.given_production_quantity::float8,
 			bp_given.given_production_quantity_in_kg::float8,
 			COALESCE(oe.quantity::float8 - be_total.total_quantity ,0) as balance_quantity,
+			COALESCE(oe.quantity::float8 - be_total.total_quantity ,0)+be.quantity::float8 as max_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
@@ -272,6 +273,9 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			coalesce(
 				coalesce(oe.quantity::float8,0) - coalesce(be_given.given_quantity::float8,0)
 			,0)::float8 as balance_quantity,
+				coalesce(
+				coalesce(oe.quantity::float8,0) - coalesce(be_given.given_quantity::float8,0)
+			,0)::float8 as max_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			0 as quantity,
