@@ -23,10 +23,10 @@ BEGIN
         trx_to_finishing_weight = trx_to_finishing_weight + NEW.weight
         WHERE uuid = NEW.stock_uuid;
 
-        UPDATE zipper.order_description
+        UPDATE zipper.finishing_batch
         SET
         slider_finishing_stock = slider_finishing_stock + NEW.trx_quantity
-        WHERE uuid = (SELECT order_description_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
+        WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
     END IF;
 
     IF NEW.assembly_stock_uuid IS NOT NULL
@@ -78,10 +78,10 @@ BEGIN
         trx_to_finishing_weight = trx_to_finishing_weight - OLD.weight
         WHERE uuid = OLD.stock_uuid;
 
-        UPDATE zipper.order_description
+        UPDATE zipper.finishing_batch
         SET
         slider_finishing_stock = slider_finishing_stock - OLD.trx_quantity
-        WHERE uuid = (SELECT order_description_uuid FROM slider.stock WHERE uuid = OLD.stock_uuid);
+        WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = OLD.stock_uuid);
         
     END IF;
 
@@ -142,10 +142,10 @@ BEGIN
         trx_to_finishing_weight = trx_to_finishing_weight + NEW.weight - OLD.weight
         WHERE uuid = NEW.stock_uuid;
 
-        UPDATE zipper.order_description
+        UPDATE zipper.finishing_batch
         SET
         slider_finishing_stock = slider_finishing_stock + NEW.trx_quantity - OLD.trx_quantity
-        WHERE uuid = (SELECT order_description_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
+        WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
         
     END IF;
 
