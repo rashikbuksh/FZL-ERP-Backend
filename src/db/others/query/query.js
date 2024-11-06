@@ -411,7 +411,8 @@ export async function selectOrderEntry(req, res, next) {
 }
 
 export async function selectOrderDescription(req, res, next) {
-	const { item, tape_received, dyed_tape_required } = req.query;
+	const { item, tape_received, dyed_tape_required, swatch_approved } =
+		req.query;
 
 	const query = sql`
 				SELECT
@@ -459,8 +460,13 @@ export async function selectOrderDescription(req, res, next) {
 					WHERE b.received = 1
 					GROUP BY oe.order_description_uuid
 				) batch_stock ON vodf.order_description_uuid = batch_stock.order_description_uuid
+				LEFT JOIN (
+						SELECT COUNT(oe.swatch_approval_date) AS swatch_approval_count, oe.order_description_uuid
+						FROM zipper.order_entry oe
+						GROUP BY oe.order_description_uuid
+				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != ''
+					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL
 				`;
 
 	if (dyed_tape_required == 'false') {
@@ -468,6 +474,11 @@ export async function selectOrderDescription(req, res, next) {
 		query.append(sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`);
 	}
 
+	if (swatch_approved === 'true') {
+		query.append(
+			sql` AND swatch_approval_counts.swatch_approval_count > 0`
+		);
+	}
 	if (item == 'nylon') {
 		query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`);
 	} else if (item == 'without-nylon') {

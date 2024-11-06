@@ -828,6 +828,10 @@ const pathZipper = {
 					'false',
 					'true',
 				]),
+				SE.parameter_query('swatch_approved', 'swatch_approved', [
+					'false',
+					'true',
+				]),
 			],
 			responses: {
 				200: {
