@@ -185,7 +185,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			vodf.item_description,
 			bp_given.given_production_quantity::float8,
 			bp_given.given_production_quantity_in_kg::float8,
-			COALESCE(oe.quantity::float8 - be.quantity::float8,0) as balance_quantity,
+			COALESCE(oe.quantity::float8 - be_total.total_quantity ,0) as balance_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
@@ -221,6 +221,13 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 				GROUP BY
 					dyeing_batch_entry.uuid, bp.uuid
 			) AS bp_given ON be.uuid = bp_given.dyeing_batch_entry_uuid
+		LEFT JOIN 
+			(
+				SELECT sfg.order_entry_uuid, SUM(be.quantity::float8) as total_quantity
+				FROM zipper.dyeing_batch_entry be
+				LEFT JOIN zipper.sfg ON be.sfg_uuid = sfg.uuid
+				GROUP BY sfg.order_entry_uuid
+			) AS be_total ON oe.uuid = be_total.order_entry_uuid
 		WHERE
 			be.dyeing_batch_uuid = ${dyeing_batch_uuid} AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END`;
 
