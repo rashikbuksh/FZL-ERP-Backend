@@ -970,8 +970,6 @@ export async function selectDesignation(req, res, next) {
 export async function selectLabDipRecipe(req, res, next) {
 	const { order_info_uuid, bleaching, info_uuid, approved } = req.query;
 
-	console.log('req.query', req.query);
-
 	const conditions = [];
 
 	if (info_uuid === 'false') {
