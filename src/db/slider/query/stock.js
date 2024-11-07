@@ -13,10 +13,18 @@ import slider, { stock, transaction } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { uuid, finishing_batch_uuid, batch_quantity, created_at } = req.body;
+
 	const stockPromise = db
 		.insert(stock)
-		.values(req.body)
-		.returning({ insertedId: stock.order_description_uuid });
+		.values({
+			uuid,
+			finishing_batch_uuid,
+			batch_quantity,
+			created_at,
+		})
+		.returning({ insertedId: stock.uuid });
+
 	try {
 		const data = await stockPromise;
 		const toast = {
@@ -33,11 +41,13 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { uuid, finishing_batch_uuid, batch_quantity, created_at } = req.body;
+
 	const stockPromise = db
 		.update(stock)
-		.set(req.body)
+		.set({ uuid, finishing_batch_uuid, batch_quantity, created_at })
 		.where(eq(stock.uuid, req.params.uuid))
-		.returning({ updatedId: stock.order_description_uuid });
+		.returning({ updatedId: stock.uuid });
 	try {
 		const data = await stockPromise;
 		const toast = {
@@ -57,7 +67,7 @@ export async function remove(req, res, next) {
 	const stockPromise = db
 		.delete(stock)
 		.where(eq(stock.uuid, req.params.uuid))
-		.returning({ deletedId: stock.order_description_uuid });
+		.returning({ deletedId: stock.uuid });
 	try {
 		const data = await stockPromise;
 		const toast = {
@@ -78,9 +88,9 @@ export async function selectAll(req, res, next) {
 		stock.finishing_batch_uuid,
 		finishing_batch.order_description_uuid,
 		order_description.order_info_uuid,
-		CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+		vodf.order_number,
 		vodf.item_description,
-		CAST(stock.order_quantity::float8 AS DOUBLE PRECISION),
+		CAST(stock.batch_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.swatch_approved_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.body_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.cap_quantity::float8 AS DOUBLE PRECISION),
@@ -148,8 +158,6 @@ export async function selectAll(req, res, next) {
 		zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
 	LEFT JOIN
 		zipper.order_description ON finishing_batch.order_description_uuid = order_description.uuid
-	LEFT JOIN
-		zipper.order_info ON order_description.order_info_uuid = order_info.uuid
 	LEFT JOIN 
 		zipper.v_order_details_full vodf ON order_description.uuid = vodf.order_description_uuid
 	LEFT JOIN
