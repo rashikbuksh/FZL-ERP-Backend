@@ -1711,6 +1711,20 @@ export const pathZipperDyeingBatch = {
 				405: SE.response(405),
 			},
 		},
+		delete: {
+			tags: ['zipper.dyeing_batch'],
+			summary: 'Deletes a dyeing batch',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('batch to delete', 'uuid')],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
 	},
 	'/zipper/dyeing-batch-details/{dyeing_batch_uuid}': {
 		get: {
