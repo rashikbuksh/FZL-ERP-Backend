@@ -575,7 +575,10 @@ export const pathThreadBatch = {
 			tags: ['thread.batch'],
 			summary: 'Get Batch Details by Batch UUID',
 			description: 'Get Batch Details by Batch UUID',
-			parameters: [SE.parameter_params('batch_uuid', 'batch_uuid')],
+			parameters: [
+				SE.parameter_params('batch_uuid', 'batch_uuid'),
+				SE.parameter_query('is_update', 'is_update', ['true', 'false']),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),

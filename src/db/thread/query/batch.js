@@ -448,6 +448,8 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 
 		const { batch_uuid } = req.params;
 
+		const { is_update } = req.query;
+
 		const fetchData = async (endpoint) =>
 			await api.get(`/thread/${endpoint}/${batch_uuid}`);
 
@@ -456,10 +458,35 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 			fetchData('batch-entry/by'),
 		]);
 
+		let new_batch_entry = null;
+
+		if (is_update === 'true') {
+			const order_entry = await api.get(`/thread/order-batch`);
+
+			new_batch_entry = order_entry?.data?.data?.batch_entry || [];
+
+			const order_entry_uuid = batch_entry?.data?.data?.map(
+				(entry) => entry.order_entry_uuid
+			);
+
+			if (order_entry_uuid) {
+				if (!Array.isArray(new_batch_entry)) {
+					new_batch_entry = [];
+				}
+				new_batch_entry = new_batch_entry.filter(
+					(uuid) => !order_entry_uuid.includes(uuid.order_entry_uuid)
+				);
+			}
+		}
+
 		const response = {
 			...batch?.data?.data,
 			batch_entry: batch_entry?.data?.data || [],
 		};
+
+		if (is_update === 'true') {
+			response.new_batch_entry = new_batch_entry;
+		}
 
 		const toast = {
 			status: 200,

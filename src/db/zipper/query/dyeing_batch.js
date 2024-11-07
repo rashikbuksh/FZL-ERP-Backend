@@ -199,7 +199,7 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 		const api = await createApi(req);
 		const { dyeing_batch_uuid } = req.params;
 		const { is_update } = req.query;
-		console.log(is_update);
+
 		const fetchData = async (endpoint) =>
 			await api
 				.get(`${endpoint}/${dyeing_batch_uuid}`)
@@ -221,8 +221,8 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 				(entry) => entry.sfg_uuid
 			);
 
-			new_dyeing_batch_entry = dyeing_order_batch?.data?.data;
-			console.log(new_dyeing_batch_entry);
+			new_dyeing_batch_entry =
+				dyeing_order_batch?.data?.data?.dyeing_batch_entry || [];
 
 			if (sfg_uuid) {
 				if (!Array.isArray(new_dyeing_batch_entry)) {
@@ -246,7 +246,7 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 		};
 
 		if (is_update === 'true') {
-			response.dyeing_batch_entry = new_dyeing_batch_entry;
+			response.new_dyeing_batch_entry = new_dyeing_batch_entry;
 		}
 
 		const toast = {
