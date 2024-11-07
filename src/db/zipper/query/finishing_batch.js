@@ -93,6 +93,9 @@ export async function selectAll(req, res, next) {
 			concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)) as batch_number,
 			vodf.order_info_uuid,
 			vodf.order_number,
+			vodf.item_description,
+			vodf.order_type,
+			vodf.slider_provided,
 			finishing_batch.order_description_uuid,
 			vodf.item_description,
 			finishing_batch.slider_lead_time,
@@ -103,9 +106,12 @@ export async function selectAll(req, res, next) {
 			users.name as created_by_name,
 			finishing_batch.created_at,
 			finishing_batch.updated_at,
-			finishing_batch.remarks
+			finishing_batch.remarks,
+			ss.uuid as stock_uuid,
+			ss.batch_quantity as stock_batch_quantity
 		FROM zipper.finishing_batch
 		LEFT JOIN zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN slider.stock ss ON finishing_batch.uuid = ss.finishing_batch_uuid
 		LEFT JOIN hr.users ON finishing_batch.created_by = users.uuid
 		ORDER BY finishing_batch.created_at DESC
 	`;
@@ -137,6 +143,9 @@ export async function select(req, res, next) {
 			concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)) as batch_number,
 			vodf.order_info_uuid,
 			vodf.order_number,
+			vodf.item_description,
+			vodf.order_type,
+			vodf.slider_provided,
 			finishing_batch.order_description_uuid,
 			vodf.item_description,
 			finishing_batch.slider_lead_time,
@@ -147,9 +156,12 @@ export async function select(req, res, next) {
 			users.name as created_by_name,
 			finishing_batch.created_at,
 			finishing_batch.updated_at,
-			finishing_batch.remarks
+			finishing_batch.remarks,
+			ss.uuid as stock_uuid,
+			ss.batch_quantity as stock_batch_quantity
 		FROM zipper.finishing_batch
 		LEFT JOIN zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN slider.stock ss ON finishing_batch.uuid = ss.finishing_batch_uuid
 		LEFT JOIN hr.users ON finishing_batch.created_by = users.uuid
 		WHERE finishing_batch.uuid = ${req.params.uuid}
 		ORDER BY finishing_batch.created_at DESC
