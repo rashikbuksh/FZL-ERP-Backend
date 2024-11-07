@@ -771,14 +771,6 @@ export const tagZipper = [
 		description: 'Zipper Dyeing Batch Entry',
 	},
 	{
-		name: 'zipper.dying_batch',
-		description: 'Zipper Dying Batch',
-	},
-	{
-		name: 'zipper.dying_batch_entry',
-		description: 'Zipper Dying Batch Entry',
-	},
-	{
 		name: 'zipper.tape_coil',
 		description: 'Zipper Tape Coil',
 	},
