@@ -330,8 +330,8 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		be.quantity::float8 as quantity,
 		be.coning_production_quantity::float8,
 		be.coning_carton_quantity::float8,
-		be.transfer_quantity::float8 as transfer_quantity,
-		be.transfer_carton_quantity::float8,
+		CASE WHEN be.transfer_quantity IS NULL THEN 0 ELSE be.transfer_quantity::float8 END as transfer_quantity,
+		CASE WHEN be.transfer_carton_quantity IS NULL THEN 0 ELSE be.transfer_carton_quantity::float8 END as transfer_carton_quantity,
 		be_given.total_quantity::float8 as total_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 + be.quantity::float8 as max_quantity,
@@ -340,7 +340,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		be.created_at,
 		be.updated_at,
 		be.remarks as batch_remarks,
-		be.yarn_quantity::float8 as yarn_quantity,
+		CASE WHEN be.yarn_quantity IS NULL THEN 0 ELSE be.yarn_quantity::float8 END as yarn_quantity,
 		oe.carton_quantity
 	FROM
 		thread.batch_entry be
