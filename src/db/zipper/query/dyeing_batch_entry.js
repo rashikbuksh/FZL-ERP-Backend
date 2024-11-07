@@ -181,6 +181,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 				ELSE CAST(oe.size AS NUMERIC)
             END as size,
 			oe.quantity::float8 as order_quantity,
+			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
 			bp_given.given_production_quantity::float8,
