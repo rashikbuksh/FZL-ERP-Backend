@@ -207,6 +207,9 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 			new_finishing_batch_entry = order_description?.data?.data;
 
 			if (sfg_uuid) {
+				if (!Array.isArray(new_finishing_batch_entry)) {
+					new_finishing_batch_entry = [];
+				}
 				new_finishing_batch_entry = new_finishing_batch_entry.filter(
 					(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
 				);
