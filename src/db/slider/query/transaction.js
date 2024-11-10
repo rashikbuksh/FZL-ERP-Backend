@@ -124,12 +124,14 @@ export async function selectAll(req, res, next) {
 			vodf.logo_type_short_name,
 			vodf.is_logo_body as logo_is_body,
 			vodf.is_logo_puller as logo_is_puller,
-			stock.order_quantity::float8,
+			stock.batch_quantity::float8,
 			stock.swatch_approved_quantity::float8,
 			vodf.order_info_uuid,
 			vodf.order_number,
 			vodf.item_description,
 			vodf.order_type,
+			zfb.uuid as finishing_batch_uuid,
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			stock.sa_prod::float8,
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
@@ -145,8 +147,11 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN 
 			hr.users ON transaction.created_by = users.uuid
 		LEFT JOIN 
-			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
-		LEFT JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
+			zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
+		LEFT JOIN 
+			zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN 
+			slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
     ORDER BY transaction.created_at DESC
 	`;
 
@@ -221,12 +226,14 @@ export async function select(req, res, next) {
 			vodf.coloring_type,
 			vodf.coloring_type_name,
 			vodf.coloring_type_short_name,
-			stock.order_quantity::float8,
+			stock.batch_quantity::float8,
 			stock.swatch_approved_quantity::float8,
 			vodf.order_info_uuid,
 			vodf.order_number,
 			vodf.item_description,
 			vodf.order_type,
+			zfb.uuid as finishing_batch_uuid,
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			stock.sa_prod::float8,
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
@@ -242,8 +249,11 @@ export async function select(req, res, next) {
 		LEFT JOIN 
 			hr.users ON transaction.created_by = users.uuid
 		LEFT JOIN 
-			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
-		LEFT JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
+			zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
+		LEFT JOIN 
+			zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN 
+			slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
 		WHERE
 			transaction.uuid = ${req.params.uuid}
 	`;
@@ -315,11 +325,13 @@ export async function selectTransactionByFromSection(req, res, next) {
 			vodf.coloring_type,
 			vodf.coloring_type_name,
 			vodf.coloring_type_short_name,
-			stock.order_quantity::float8,
+			stock.batch_quantity::float8,
 			stock.swatch_approved_quantity::float8,
 			vodf.order_info_uuid,
 			vodf.order_number,
 			vodf.item_description,
+			zfb.uuid as finishing_batch_uuid,
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			vodf.order_type,
 			stock.sa_prod::float8,
 			stock.coloring_stock::float8,
@@ -339,7 +351,9 @@ export async function selectTransactionByFromSection(req, res, next) {
 		LEFT JOIN 
 			hr.users ON transaction.created_by = users.uuid
 		LEFT JOIN 
-			zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
+			zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
+		LEFT JOIN 
+			zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN 
 			(
 				SELECT stock.uuid, SUM(trx_quantity)::float8 as trx_quantity

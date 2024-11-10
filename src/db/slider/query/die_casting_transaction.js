@@ -82,6 +82,8 @@ export async function selectAll(req, res, next) {
 			vod.order_info_uuid,
 			vod.order_number,
 			vod.order_description_uuid,
+			zfb.uuid as finishing_batch_uuid,
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			dc.item,
 			op_item.name as item_name,
 			op_item.short_name as item_short_name,
@@ -131,7 +133,9 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN 
 			slider.stock ON dct.stock_uuid = stock.uuid
 		LEFT JOIN 
-			zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
+			zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
+		LEFT JOIN 
+			zipper.v_order_details vod ON zfb.order_description_uuid = vod.order_description_uuid
 		ORDER BY
 			dct.created_at DESC
 	`;
@@ -164,6 +168,8 @@ export async function select(req, res, next) {
 			vod.order_info_uuid,
 			vod.order_number,
 			vod.order_description_uuid,
+			zfb.uuid as finishing_batch_uuid,
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			dc.item,
 			op_item.name as item_name,
 			op_item.short_name as item_short_name,
@@ -213,7 +219,9 @@ export async function select(req, res, next) {
 		LEFT JOIN 
 			slider.stock ON dct.stock_uuid = stock.uuid
 		LEFT JOIN 
-			zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
+			zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
+		LEFT JOIN 
+			zipper.v_order_details vod ON zfb.order_description_uuid = vod.order_description_uuid
 		WHERE dct.uuid = ${req.params.uuid}
 	`;
 
@@ -248,7 +256,8 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			vod.order_number,
 			vod.item_description,
 			vod.order_info_uuid,
-			stock.order_description_uuid,
+			zfb.uuid as finishing_batch_uuid,
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			stock.item,
 			item_properties.name as item_name,
 			item_properties.short_name as item_short_name,
@@ -273,7 +282,7 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			stock.slider_link,
 			slider_slider_link_properties.name as slider_link_name,
 			slider_slider_link_properties.short_name as slider_link_short_name,
-			coalesce(stock.order_quantity, 0)::float8 as order_quantity,
+			coalesce(stock.batch_quantity, 0)::float8 as batch_quantity,
 			coalesce(stock.stock.swatch_approved_quantity::float8, 0) as swatch_approved_quantity,
 			coalesce(die_casting_transaction_given.quantity,0)::float8 as provided_quantity,
 			coalesce(stock.swatch_approved_quantity::float8,, 0)::float8 - coalesce(die_casting_transaction_given.quantity, 0)::float8 as balance_quantity
@@ -295,8 +304,10 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			public.properties slider_body_shape_properties ON stock.slider_body_shape = slider_body_shape_properties.uuid
 		LEFT JOIN
 			public.properties slider_slider_link_properties ON stock.slider_link = slider_slider_link_properties.uuid
+		LEFT JOIN
+			zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
 		LEFT JOIN 
-			zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
+			zipper.v_order_details vod ON zfb.order_description_uuid = vod.order_description_uuid
 		LEFT JOIN
 			(
 				SELECT
@@ -320,7 +331,7 @@ export async function selectDieCastingForSliderStockByOrderInfoUuid(
 			dc.slider_body_shape = stock.slider_body_shape AND
 			dc.slider_link = stock.slider_link)
 		WHERE
-			stock.order_description_uuid = ${order_info_uuid}
+			zfb.order_description_uuid = ${order_info_uuid}
 		`;
 
 	const results = db.execute(fetchData);

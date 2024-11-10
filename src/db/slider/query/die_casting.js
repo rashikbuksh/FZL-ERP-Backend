@@ -339,7 +339,9 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				trx_against_stock.remarks,
 				(die_casting.quantity::float8 + trx_against_stock.quantity::float8) as max_quantity,
 				null as order_number,
-				null as item_description
+				null as item_description,
+				null as finishing_batch_uuid,
+				null as batch_number
 			FROM 
 				slider.trx_against_stock
 			LEFT JOIN
@@ -407,7 +409,9 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				die_casting_transaction.remarks,
 				(die_casting.quantity::float8 + die_casting_transaction.trx_quantity::float8) as max_quantity,
 				vod.order_number,
-				vod.item_description
+				vod.item_description,
+				zfb.uuid as finishing_batch_uuid,
+				concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number
 			FROM 
 				slider.die_casting_transaction
 			LEFT JOIN
@@ -431,7 +435,9 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 			LEFT JOIN 
 				slider.stock ON die_casting_transaction.stock_uuid = stock.uuid
 			LEFT JOIN 
-				zipper.v_order_details vod ON stock.order_description_uuid = vod.order_description_uuid
+				zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
+			LEFT JOIN 
+				zipper.v_order_details vod ON zfb.order_description_uuid = vod.order_description_uuid
 	`;
 
 	const resultPromise = db.execute(query);

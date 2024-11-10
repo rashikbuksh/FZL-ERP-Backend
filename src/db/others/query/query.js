@@ -1159,13 +1159,16 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
 	SELECT
 		stock.uuid AS value,
 		concat(
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) , ' ⇾ ',
 			vodf.order_number, ' ⇾ ',
 			vodf.item_description
 		) AS label
 	FROM
 		slider.stock
 	LEFT JOIN
-		zipper.v_order_details_full vodf ON stock.order_description_uuid = vodf.order_description_uuid
+		zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
+	LEFT JOIN
+		zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
 	LEFT JOIN
     (
         SELECT
@@ -1182,7 +1185,7 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
             stock.uuid
     ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
 	WHERE 
-		stock.swatch_approved_quantity > 0 AND (stock.swatch_approved_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0;`;
+		(stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0;`;
 
 	const stockPromise = db.execute(query);
 

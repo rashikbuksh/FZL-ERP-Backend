@@ -200,12 +200,12 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-	SELECT
+SELECT
 		stock.uuid,
+		stock.finishing_batch_uuid,
 		finishing_batch.order_description_uuid,
-		stock.order_description_uuid,
 		order_description.order_info_uuid,
-		CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+		vodf.order_number,
 		vodf.item_description,
 		CAST(stock.batch_quantity::float8 AS DOUBLE PRECISION),
 		CAST(stock.swatch_approved_quantity::float8 AS DOUBLE PRECISION),

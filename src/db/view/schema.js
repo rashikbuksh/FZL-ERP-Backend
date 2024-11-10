@@ -191,7 +191,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
       LEFT JOIN properties op_slider_link ON op_slider_link.uuid = order_description.slider_link
       LEFT JOIN properties op_end_user ON op_end_user.uuid = order_description.end_user
       LEFT JOIN properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
-      LEFT JOIN slider.stock ON stock.order_description_uuid = order_description.uuid
+      LEFT JOIN zipper.finishing_batch ON finishing_batch.order_description_uuid = order_description.uuid
+      LEFT JOIN slider.stock ON stock.finishing_batch_uuid = finishing_batch.uuid
       LEFT JOIN zipper.tape_coil tc ON tc.uuid = order_description.tape_coil_uuid
       LEFT JOIN properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type;
 	`; // required order_description changes

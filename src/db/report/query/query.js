@@ -68,7 +68,8 @@ export async function zipperProductionStatusReport(req, res, next) {
 						FROM zipper.order_entry oe
 						GROUP BY oe.order_description_uuid
 			) order_entry_counts ON vodf.order_description_uuid = order_entry_counts.order_description_uuid
-            LEFT JOIN slider.stock ON stock.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN zipper.finishing_batch fb ON vodf.order_description_uuid = fb.order_description_uuid
+            LEFT JOIN slider.stock ON stock.finishing_batch_uuid = fb.uuid
             LEFT JOIN (
                 SELECT 
                     stock_uuid,
