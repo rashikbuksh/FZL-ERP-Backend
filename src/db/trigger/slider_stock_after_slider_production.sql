@@ -29,8 +29,9 @@ BEGIN
                 u_top_quantity = u_top_quantity - (2 * NEW.production_quantity),
                 coloring_prod = coloring_prod + NEW.production_quantity,
                 coloring_prod_weight = coloring_prod_weight + NEW.weight
-            FROM zipper.v_order_details_full vodf
-        WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = NEW.stock_uuid;
+        FROM zipper.v_order_details_full vodf
+        LEFT JOIN zipper.finishing_batch fb ON fb.uuid = NEW.finishing_batch_uuid
+        WHERE vodf.order_description_uuid = fb.order_description_uuid AND stock.uuid = NEW.stock_uuid;
     END IF;
     RETURN NEW;
 END;
@@ -62,8 +63,9 @@ BEGIN
             u_top_quantity = u_top_quantity - (2 * (NEW.production_quantity - OLD.production_quantity)),
             coloring_prod = coloring_prod + NEW.production_quantity - OLD.production_quantity,
             coloring_prod_weight = coloring_prod_weight + NEW.weight - OLD.weight
-            FROM zipper.v_order_details_full vodf
-        WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = NEW.stock_uuid;
+        FROM zipper.v_order_details_full vodf
+        LEFT JOIN zipper.finishing_batch fb ON fb.uuid = NEW.finishing_batch_uuid
+        WHERE vodf.order_description_uuid = fb.order_description_uuid AND stock.uuid = NEW.stock_uuid;
     END IF;
 
     RETURN NEW;
@@ -84,7 +86,8 @@ BEGIN
             puller_quantity = puller_quantity + OLD.production_quantity,
             link_quantity = link_quantity + CASE WHEN OLD.with_link = 1 THEN OLD.production_quantity ELSE 0 END
         FROM zipper.v_order_details_full vodf
-        WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = OLD.stock_uuid;
+        LEFT JOIN zipper.finishing_batch fb ON fb.uuid = NEW.finishing_batch_uuid
+        WHERE vodf.order_description_uuid = fb.order_description_uuid AND stock.uuid = NEW.stock_uuid;
     END IF;
 
     -- Update slider.stock table for 'coloring' section
@@ -99,7 +102,8 @@ BEGIN
             coloring_prod = coloring_prod - OLD.production_quantity,
             coloring_prod_weight = coloring_prod_weight - OLD.weight
         FROM zipper.v_order_details_full vodf
-        WHERE vodf.order_description_uuid = stock.order_description_uuid AND stock.uuid = OLD.stock_uuid;
+        LEFT JOIN zipper.finishing_batch fb ON fb.uuid = NEW.finishing_batch_uuid
+        WHERE vodf.order_description_uuid = fb.order_description_uuid AND stock.uuid = NEW.stock_uuid;
     END IF;
 
     RETURN OLD;
