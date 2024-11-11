@@ -26,10 +26,6 @@ BEGIN
         CASE WHEN NEW.trx_from = 'teeth_molding_prod' THEN 
         CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
 
-        teeth_coloring_prod = teeth_coloring_prod - 
-        CASE WHEN NEW.trx_from = 'teeth_coloring_prod' THEN 
-        CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-
         finishing_prod = finishing_prod - 
         CASE WHEN NEW.trx_from = 'finishing_prod' THEN 
         CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
@@ -66,9 +62,6 @@ BEGIN
         teeth_molding_prod = teeth_molding_prod + 
         CASE WHEN OLD.trx_from = 'teeth_molding_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
 
-        teeth_coloring_prod = teeth_coloring_prod + 
-        CASE WHEN OLD.trx_from = 'teeth_coloring_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
-
         finishing_prod = finishing_prod + 
         CASE WHEN OLD.trx_from = 'finishing_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END,
 
@@ -102,9 +95,6 @@ BEGIN
         teeth_molding_prod = teeth_molding_prod 
             + CASE WHEN OLD.trx_from = 'teeth_molding_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
             - CASE WHEN NEW.trx_from = 'teeth_molding_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-        teeth_coloring_prod = teeth_coloring_prod 
-            + CASE WHEN OLD.trx_from = 'teeth_coloring_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
-            - CASE WHEN NEW.trx_from = 'teeth_coloring_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
         finishing_prod = finishing_prod 
             + CASE WHEN OLD.trx_from = 'finishing_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
             - CASE WHEN NEW.trx_from = 'finishing_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
@@ -118,16 +108,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER finishing_batch_entry_after_finishing_batch_entry_transaction_insert_trigger
-AFTER INSERT ON zipper.finishing_batch_entry_transaction
+AFTER INSERT ON zipper.finishing_batch_transaction
 FOR EACH ROW
 EXECUTE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_entry_transaction_insert_function();
 
 CREATE OR REPLACE TRIGGER finishing_batch_entry_after_finishing_batch_entry_transaction_delete_trigger
-AFTER DELETE ON zipper.finishing_batch_entry_transaction
+AFTER DELETE ON zipper.finishing_batch_transaction
 FOR EACH ROW
 EXECUTE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_entry_transaction_delete_function();
 
 CREATE OR REPLACE TRIGGER finishing_batch_entry_after_finishing_batch_entry_transaction_update_trigger
-AFTER UPDATE ON zipper.finishing_batch_entry_transaction
+AFTER UPDATE ON zipper.finishing_batch_transaction
 FOR EACH ROW
 EXECUTE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_entry_transaction_update_function();
