@@ -681,6 +681,37 @@ export async function selectOrderNumberForPi(req, res, next) {
 	}
 }
 
+export async function selectFinishingBatch(req, res, next) {
+	const query = sql`
+		SELECT
+			finishing_batch.uuid AS value,
+			concat('FB', to_char(finishing_batch.created_at, 'YY'::text),
+				'-', lpad((finishing_batch.id)::text, 4, '0'::text), ' -> ', vodf.order_number, ' -> ', vodf.item_description) as label
+		FROM
+			zipper.finishing_batch
+		LEFT JOIN 
+			zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
+		ORDER BY
+			finishing_batch.created_at DESC
+	`;
+
+	const finishingBatchPromise = db.execute(query);
+
+	try {
+		const data = await finishingBatchPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Finishing Batch list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 // purchase
 export async function selectVendor(req, res, next) {
 	const vendorPromise = db

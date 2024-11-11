@@ -54,6 +54,10 @@ otherRouter.get(
 	'/order/order-description/value/label/by/:coil_uuid',
 	otherOperations.selectOrderDescriptionByCoilUuid
 );
+otherRouter.get(
+	'/zipper/finishing-batch/value/label',
+	otherOperations.selectFinishingBatch
+);
 
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
@@ -924,6 +928,30 @@ const pathZipper = {
 								properties: {
 									value: SE.string('2ggcphnwHGzEUGy'),
 									label: SE.string('Z24-0001'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/zipper/finishing-batch/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all finishing batches',
+			description: 'All finishing batches',
+			operationId: 'getAllFinishingBatches',
+			responses: {
+				200: {
+					description: 'Returns a all finishing batches.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('batch 1'),
 								},
 							},
 						},
