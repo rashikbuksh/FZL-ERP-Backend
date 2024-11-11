@@ -6,7 +6,7 @@ BEGIN
     WHERE 
         uuid = (SELECT finishing_batch_uuid 
                 FROM zipper.finishing_batch_entry 
-                WHERE uuid = OLD.finishing_batch_entry_uuid);
+                WHERE uuid = OLD.uuid);
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
