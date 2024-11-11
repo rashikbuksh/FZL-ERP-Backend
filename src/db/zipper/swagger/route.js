@@ -3618,7 +3618,7 @@ export const pathZipperFinishingBatch = {
 			},
 		},
 	},
-	'/zipper/finishing-batch/by/{finishing_batch_uuid}': {
+	'/zipper/finishing-batch/by/finishing_batch_uuid/{finishing_batch_uuid}': {
 		get: {
 			tags: ['zipper.finishing_batch'],
 			summary: 'Get all Finishing Batch by finishing batch uuid',

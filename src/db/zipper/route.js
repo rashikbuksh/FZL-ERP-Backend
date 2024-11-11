@@ -476,7 +476,7 @@ zipperRouter.post('/finishing-batch', finishingBatchOperations.insert);
 zipperRouter.put('/finishing-batch/:uuid', finishingBatchOperations.update);
 zipperRouter.delete('/finishing-batch/:uuid', finishingBatchOperations.remove);
 zipperRouter.get(
-	'/finishing-batch/by/:finishing_batch_uuid',
+	'/finishing-batch/by/finishing_batch_uuid/:finishing_batch_uuid',
 	finishingBatchOperations.getFinishingBatchByFinishingBatchUuid
 );
 
