@@ -782,7 +782,7 @@ export async function selectMaterialType(req, res, next) {
 export async function selectMaterial(req, res, next) {
 	const type = req.query.type;
 
-	const typeArray = type.split(',').length > 1 ? type.split(',') : null;
+	const typeArray = type ? type.split(',') : null;
 
 	const infoPromise = db
 		.select({
@@ -799,28 +799,34 @@ export async function selectMaterial(req, res, next) {
 		.leftJoin(
 			materialSchema.type,
 			eq(materialSchema.info.type_uuid, materialSchema.type.uuid)
-		)
-		.where(
-			type
-				? typeArray != null
-					? typeArray.forEach((element) => {
-							sql`lower(material.type.name) = lower(${element})`;
-						})
-					: eq(sql`lower(material.type.name)`, sql`lower(${type})`)
-				: null
 		);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Material list',
-	};
-	handleResponse({
-		promise: infoPromise,
-		res,
-		next,
-		...toast,
-	});
+	if (type) {
+		if (typeArray != null) {
+			infoPromise.where(
+				sql`lower(material.type.name) IN (${sql.join(
+					typeArray.map((element) => sql`lower(${element})`),
+					sql`,`
+				)})`
+			);
+		} else {
+			infoPromise.where(sql`lower(material.type.name) = lower(${type})`);
+		}
+	}
+
+	try {
+		const data = await infoPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Material list',
+		};
+
+		res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 // Commercial
