@@ -4,15 +4,14 @@ CREATE OR REPLACE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_pr
 RETURNS TRIGGER AS $$
 DECLARE 
     item_name TEXT;
-    od_uuid TEXT;
     nylon_stopper_name TEXT;
 BEGIN
     -- Fetch item_name and finishing_batch_uuid once
-    SELECT vodf.item_name, oe.finishing_batch_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
+    SELECT vodf.item_name, vodf.nylon_stopper_name INTO item_name, nylon_stopper_name
     FROM zipper.finishing_batch_entry finishing_batch_entry
-    LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
+    LEFT JOIN zipper.sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
-    LEFT JOIN zipper.v_order_details_full vodf ON oe.finishing_batch_uuid = vodf.finishing_batch_uuid
+    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
     WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
     -- Update finishing_batch based on item_name
@@ -107,7 +106,7 @@ BEGIN
         teeth_molding_prod = teeth_molding_prod + 
             CASE 
                 WHEN NEW.section = 'teeth_molding' THEN 
-                    CASE WHEN lower(vodf.item_name) = 'metal' 
+                    CASE WHEN lower(item_name) = 'metal' 
                     THEN NEW.production_quantity 
                     ELSE 
                         CASE
@@ -144,22 +143,6 @@ BEGIN
                         ELSE NEW.production_quantity_in_kg
                     END 
                 ELSE 0 
-            END,
-        -- dying_and_iron_prod = dying_and_iron_prod + 
-        --     CASE 
-        --         WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity 
-        --         ELSE 0 
-        --     END,
-        
-        -- teeth_coloring_prod = teeth_coloring_prod + 
-        --     CASE 
-        --         WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity 
-        --         ELSE 0 
-        --     END,
-        coloring_prod = coloring_prod + 
-            CASE 
-                WHEN NEW.section = 'coloring' THEN NEW.production_quantity
-                ELSE 0 
             END
     WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
@@ -180,14 +163,14 @@ CREATE OR REPLACE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_pr
 RETURNS TRIGGER AS $$
 DECLARE 
     item_name TEXT;
-    od_uuid TEXT;
     nylon_stopper_name TEXT;
 BEGIN
     -- Fetch item_name and finishing_batch_uuid once
-    SELECT vodf.item_name, oe.finishing_batch_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
+    SELECT vodf.item_name, vodf.nylon_stopper_name INTO item_name, nylon_stopper_name
     FROM zipper.finishing_batch_entry finishing_batch_entry
-    LEFT JOIN zipper.order_entry oe ON oe.uuid = finishing_batch_entry.order_entry_uuid
-    LEFT JOIN zipper.v_order_details_full vodf ON oe.finishing_batch_uuid = vodf.finishing_batch_uuid
+    LEFT JOIN zipper.sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
+    LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
+    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
     WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
 
     -- Update finishing_batch based on item_name
@@ -283,7 +266,7 @@ BEGIN
         teeth_molding_prod = teeth_molding_prod + 
             CASE 
                 WHEN NEW.section = 'teeth_molding' THEN 
-                    CASE WHEN lower(vodf.item_name) = 'metal' 
+                    CASE WHEN lower(item_name) = 'metal' 
                     THEN NEW.production_quantity - OLD.production_quantity 
                     ELSE
                         CASE
@@ -320,22 +303,6 @@ BEGIN
                         ELSE (NEW.production_quantity_in_kg) - (OLD.production_quantity_in_kg)
                     END 
                 ELSE 0 
-            END,
-        -- dying_and_iron_prod = dying_and_iron_prod + 
-        --     CASE 
-        --         WHEN NEW.section = 'dying_and_iron' THEN NEW.production_quantity - OLD.production_quantity
-        --         ELSE 0 
-        --     END,
-
-        -- teeth_coloring_prod = teeth_coloring_prod + 
-        --     CASE 
-        --         WHEN NEW.section = 'teeth_coloring' THEN NEW.production_quantity - OLD.production_quantity
-        --         ELSE 0 
-        --     END,
-        coloring_prod = coloring_prod + 
-            CASE 
-                WHEN NEW.section = 'coloring' THEN NEW.production_quantity - OLD.production_quantity
-                ELSE 0 
             END
     WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
@@ -354,14 +321,14 @@ CREATE OR REPLACE FUNCTION zipper.finishing_batch_entry_after_finishing_batch_pr
 RETURNS TRIGGER AS $$
 DECLARE 
     item_name TEXT;
-    od_uuid TEXT;
     nylon_stopper_name TEXT;
 BEGIN
     -- Fetch item_name and finishing_batch_uuid once
-    SELECT vodf.item_name, oe.finishing_batch_uuid, vodf.nylon_stopper_name INTO item_name, od_uuid, nylon_stopper_name
+    SELECT vodf.item_name, vodf.nylon_stopper_name INTO item_name, nylon_stopper_name
     FROM zipper.finishing_batch_entry finishing_batch_entry
-    LEFT JOIN zipper.order_entry oe ON oe.uuid = finishing_batch_entry.order_entry_uuid
-    LEFT JOIN zipper.v_order_details_full vodf ON oe.finishing_batch_uuid = vodf.finishing_batch_uuid
+    LEFT JOIN zipper.sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
+    LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
+    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
     WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
 
     -- Update finishing_batch based on item_name
@@ -456,7 +423,7 @@ BEGIN
         teeth_molding_prod = teeth_molding_prod - 
             CASE 
                 WHEN OLD.section = 'teeth_molding' THEN 
-                    CASE WHEN lower(vodf.item_name) = 'metal' 
+                    CASE WHEN lower(item_name) = 'metal' 
                     THEN OLD.production_quantity 
                     ELSE
                         CASE
@@ -492,22 +459,6 @@ BEGIN
                         WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity 
                         ELSE OLD.production_quantity_in_kg 
                     END 
-                ELSE 0 
-            END,
-        -- dying_and_iron_prod = dying_and_iron_prod - 
-        --     CASE 
-        --         WHEN OLD.section = 'dying_and_iron' THEN OLD.production_quantity 
-        --         ELSE 0 
-        --     END,
-        
-        -- teeth_coloring_prod = teeth_coloring_prod - 
-        --     CASE 
-        --         WHEN OLD.section = 'teeth_coloring' THEN OLD.production_quantity 
-        --         ELSE 0 
-        --     END,
-        coloring_prod = coloring_prod - 
-            CASE 
-                WHEN OLD.section = 'coloring' THEN OLD.production_quantity
                 ELSE 0 
             END
     WHERE fbe.uuid = OLD.finishing_batch_entry_uuid;
