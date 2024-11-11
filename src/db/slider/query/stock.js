@@ -376,13 +376,15 @@ export async function selectStockByFromSection(req, res, next) {
 				stock.body_quantity::float8,
 				stock.cap_quantity::float8,
 				stock.puller_quantity::float8,
-				stock.link_quantity::float8
+				stock.link_quantity::float8,
+				stock.batch_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0)
 		) 
 		AS max_sa_quantity_with_link,
 		LEAST(
 				stock.body_quantity::float8,
 				stock.cap_quantity::float8,
-				stock.puller_quantity::float8
+				stock.puller_quantity::float8,
+				stock.batch_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0)
 		) 
 		AS max_sa_quantity_without_link,
 		stock.created_at,
