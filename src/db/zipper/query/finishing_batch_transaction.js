@@ -28,15 +28,14 @@ export async function insert(req, res, next) {
 		const data = await finishingBatchTransactionPromise;
 		const orderDescription = sql`
 			SELECT
-				concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text), ' -> ',vodf.order_number, ' - ', vodf.item_description) as inserted_id
+				concat(vodf.order_number, ' - ', vodf.item_description) as inserted_id
 			FROM
-				zipper.v_order_details_full vodf
-				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-				LEFT JOIN zipper.finishing_batch_entry fbe ON sfg.uuid = fbe.sfg_uuid
-				LEFT JOIN zipper.finishing_batch zfb ON fbe.finishing_batch_uuid = zfb.uuid
+				zipper.finishing_batch_entry fbe 
+				LEFT JOIN zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 			WHERE
-				finishing_batch_entry.uuid = ${data[0].insertedId}
+				fbe.uuid = ${data[0].insertedId}
 			`;
 
 		const order_details = await db.execute(orderDescription);
@@ -68,15 +67,14 @@ export async function update(req, res, next) {
 
 		const orderDescription = sql`
 			SELECT
-				concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text), ' -> ',vodf.order_number, ' - ', vodf.item_description) as inserted_id
+				concat(vodf.order_number, ' - ', vodf.item_description) as inserted_id
 			FROM
-				zipper.v_order_details_full vodf
-				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-				LEFT JOIN zipper.finishing_batch_entry fbe ON sfg.uuid = fbe.sfg_uuid
-				LEFT JOIN zipper.finishing_batch zfb ON fbe.finishing_batch_uuid = zfb.uuid
+				zipper.finishing_batch_entry fbe 
+				LEFT JOIN zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 			WHERE
-				finishing_batch_entry.uuid = ${data[0].updatedId}
+				fbe.uuid = ${data[0].updatedId}
 			`;
 
 		const order_details = await db.execute(orderDescription);
@@ -107,15 +105,14 @@ export async function remove(req, res, next) {
 
 		const orderDescription = sql`
 			SELECT
-				concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text), ' -> ',vodf.order_number, ' - ', vodf.item_description) as inserted_id
+				concat(vodf.order_number, ' - ', vodf.item_description) as inserted_id
 			FROM
-				zipper.v_order_details_full vodf
-				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-				LEFT JOIN zipper.finishing_batch_entry fbe ON sfg.uuid = fbe.sfg_uuid
-				LEFT JOIN zipper.finishing_batch zfb ON fbe.finishing_batch_uuid = zfb.uuid
+				zipper.finishing_batch_entry fbe 
+				LEFT JOIN zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 			WHERE
-				finishing_batch_entry.uuid = ${data[0].deletedId}
+				fbe.uuid = ${data[0].deletedId}
 			`;
 
 		const order_details = await db.execute(orderDescription);
