@@ -4,9 +4,7 @@ BEGIN
     SET
         batch_quantity = batch_quantity - OLD.quantity
     WHERE 
-        uuid = (SELECT finishing_batch_uuid 
-                FROM zipper.finishing_batch_entry 
-                WHERE uuid = OLD.uuid);
+        finishing_batch_uuid = OLD.finishing_batch_uuid;
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;

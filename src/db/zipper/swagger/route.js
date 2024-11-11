@@ -3837,7 +3837,7 @@ export const pathZipperFinishingBatchEntry = {
 				},
 			},
 		},
-	'/zipper/finishing-batch-entry/by/{section}': {
+	'/zipper/finishing-batch/by/{section}': {
 		get: {
 			tags: ['zipper.finishing_batch_entry'],
 			summary: 'Get all Finishing Batch by section',

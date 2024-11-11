@@ -511,7 +511,7 @@ zipperRouter.get(
 	finishingBatchEntryOperations.getFinishingBatchEntryByFinishingBatchUuid
 );
 zipperRouter.get(
-	'/finishing-batch-entry/by/:section',
+	'/finishing-batch/by/:section',
 	finishingBatchEntryOperations.selectFinishingBatchEntryBySection
 );
 
