@@ -249,6 +249,7 @@ export async function selectByTrxFrom(req, res, next) {
                         ELSE CAST(oe.size AS NUMERIC)
                     END) AS style_color_size, 
 			oe.quantity::float8 as order_quantity,
+			fbe.quantity::float8 as batch_quantity,
 			finishing_batch_transaction.trx_from,
 			finishing_batch_transaction.trx_to,
 			coalesce(finishing_batch_transaction.trx_quantity_in_kg::numeric,0)::float8 as trx_quantity_in_kg,
@@ -276,11 +277,11 @@ export async function selectByTrxFrom(req, res, next) {
 		LEFT JOIN
 			hr.users ON finishing_batch_transaction.created_by = users.uuid
 		LEFT JOIN
-			zipper.finishing_batch_entry ON finishing_batch_transaction.finishing_batch_entry_uuid = finishing_batch_entry.uuid
+			zipper.finishing_batch_entry fbe ON finishing_batch_transaction.finishing_batch_entry_uuid = finishing_batch_entry.uuid
 		LEFT JOIN 
-			zipper.finishing_batch zfb ON finishing_batch_entry.finishing_batch_uuid = zfb.uuid
+			zipper.finishing_batch zfb ON fbe.finishing_batch_uuid = zfb.uuid
 		LEFT JOIN
-			zipper.sfg ON finishing_batch_entry.sfg_uuid = sfg.uuid
+			zipper.sfg ON fbe.sfg_uuid = sfg.uuid
 		LEFT JOIN
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN

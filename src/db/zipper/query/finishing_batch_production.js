@@ -236,6 +236,7 @@ export async function selectBySection(req, res, next) {
                         ELSE CAST(oe.size AS NUMERIC)
                     END) AS style_color_size,
 			oe.quantity::float8 as order_quantity,
+			fbe.quantity::float8 as batch_quantity,
 			finishing_batch_production.section,
 			COALESCE(finishing_batch_production.dyed_tape_used_in_kg,0)::float8 as dyed_tape_used_in_kg,
 			COALESCE(finishing_batch_production.production_quantity_in_kg,0)::float8 as production_quantity_in_kg,
@@ -246,9 +247,9 @@ export async function selectBySection(req, res, next) {
 			finishing_batch_production.created_at,
 			finishing_batch_production.updated_at,
 			finishing_batch_production.remarks,
-			CASE WHEN sfg.finishing_prod != 0 
-			THEN (oe.quantity - COALESCE(sfg.finishing_prod, 0) - COALESCE(sfg.warehouse, 0)) 
-			ELSE (oe.quantity - COALESCE(sfg.warehouse, 0))::float8 END as balance_quantity,
+			CASE WHEN fbe.finishing_prod != 0 
+			THEN (fbe.quantity - COALESCE(fbe.finishing_prod, 0) - COALESCE(fbe.warehouse, 0)) 
+			ELSE (fbe.quantity - COALESCE(fbe.warehouse, 0))::float8 END as balance_quantity,
 			COALESCE(sfg.dying_and_iron_prod,0)::float8 as dying_and_iron_prod,
 			COALESCE(sfg.teeth_molding_stock,0)::float8 as teeth_molding_stock,
 			COALESCE(sfg.teeth_molding_prod,0)::float8 as teeth_molding_prod,

@@ -285,6 +285,7 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 				ELSE CAST(oe.size AS NUMERIC)
 			END as size,
 			oe.quantity::float8 as order_quantity,
+			fbe.quantity::float8 as batch_quantity,
 			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
@@ -302,10 +303,10 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			fbe.updated_at,
 			fbe.remarks,
 			coalesce(
-				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+				coalesce(fbe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
 			,0) as balance_quantity,
 			coalesce(
-				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+				coalesce(fbe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
 			,0) + coalesce(fbe.quantity::float8,0) as max_quantity
 		FROM
 			zipper.finishing_batch_entry fbe
@@ -384,6 +385,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
                     END
 			) as style_color_size,
 			oe.quantity::float8 as order_quantity,
+			zfbe.quantity::float8 as batch_quantity,
 			sfg.recipe_uuid as recipe_uuid,
 			recipe.name as recipe_name,
 			od.item,
@@ -406,26 +408,26 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			sfg.remarks as remarks,
 			CASE 
 				WHEN lower(${item_name}) = 'vislon'
-					THEN (oe.quantity - (
+					THEN (zfbe.quantity - (
 						COALESCE(zfbe.finishing_prod, 0) + 
 						COALESCE(zfbe.warehouse, 0) + 
 						COALESCE(sfg.delivered, 0)
 					))::float8 
 				WHEN ${section} = 'finishing_prod'
-					THEN (oe.quantity - (
+					THEN (zfbe.quantity - (
 						COALESCE(zfbe.finishing_prod, 0) + 
 						COALESCE(zfbe.warehouse, 0) + 
 						COALESCE(sfg.delivered, 0)
 					))::float8 
 				WHEN ${section} = 'teeth_coloring_prod'
-					THEN (oe.quantity - (
+					THEN (zfbe.quantity - (
 						COALESCE(zfbe.finishing_stock, 0) + 
 						COALESCE(zfbe.finishing_prod, 0) + 
 						COALESCE(zfbe.finishing_prod, 0) + 
 						COALESCE(sfg.delivered, 0)
 					))::float8
 				WHEN ${section} = 'teeth_molding_prod'
-					THEN (oe.quantity - (
+					THEN (zfbe.quantity - (
 						COALESCE(zfbe.teeth_molding_prod, 0) + 
 						COALESCE(zfbe.teeth_coloring_stock, 0) + 
 						COALESCE(zfbe.finishing_stock, 0) + 
@@ -433,7 +435,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 						COALESCE(zfbe.warehouse, 0) + 
 						COALESCE(sfg.delivered, 0)
 					))::float8
-				ELSE (oe.quantity - COALESCE(zfbe.warehouse, 0) - COALESCE(sfg.delivered, 0))::float8 END 
+				ELSE (zfbe.quantity - COALESCE(zfbe.warehouse, 0) - COALESCE(sfg.delivered, 0))::float8 END 
 			as balance_quantity,
 			COALESCE((
 				SELECT 
