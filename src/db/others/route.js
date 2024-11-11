@@ -540,6 +540,7 @@ const pathMaterial = {
 			summary: 'get all materials',
 			description: 'All materials',
 			operationId: 'getAllMaterials',
+			parameters: [SE.parameter_query('type', 'type', ['dyes'])],
 			responses: {
 				200: {
 					description: 'Returns a all materials.',

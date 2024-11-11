@@ -750,6 +750,9 @@ export async function selectMaterialType(req, res, next) {
 
 export async function selectMaterial(req, res, next) {
 	const type = req.query.type;
+
+	const typeArray = type.split(',').length > 1 ? type.split(',') : null;
+
 	const infoPromise = db
 		.select({
 			value: materialSchema.info.uuid,
@@ -768,7 +771,11 @@ export async function selectMaterial(req, res, next) {
 		)
 		.where(
 			type
-				? eq(sql`lower(material.type.name)`, sql`lower(${type})`)
+				? typeArray != null
+					? typeArray.forEach((element) => {
+							sql`lower(material.type.name) = lower(${element})`;
+						})
+					: eq(sql`lower(material.type.name)`, sql`lower(${type})`)
 				: null
 		);
 
