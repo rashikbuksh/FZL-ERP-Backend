@@ -81,6 +81,8 @@ export async function selectAll(req, res, next) {
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
 			dcp.order_description_uuid,
+			fb.uuid as finishing_batch_uuid,
+			concat('FB', to_char(fb.created_at, 'YY'::text), '-', lpad((fb.id)::text, 4, '0'::text)) as batch_number,
 			vodf.order_number,
 			vodf.item_description,
 			vodf.item,
@@ -137,8 +139,10 @@ export async function selectAll(req, res, next) {
 			slider.die_casting ON die_casting.uuid = dcp.die_casting_uuid
 		LEFT JOIN
 			hr.users ON users.uuid = dcp.created_by
+		LEFT JOIN 
+			zipper.finishing_batch fb ON fb.uuid = dcp.finishing_batch_uuid
 		LEFT JOIN
-			zipper.v_order_details_full vodf ON vodf.order_description_uuid = dcp.order_description_uuid
+			zipper.v_order_details_full vodf ON vodf.order_description_uuid = fb.order_description_uuid
 		ORDER BY
 			dcp.created_at DESC`;
 
@@ -167,8 +171,46 @@ export async function select(req, res, next) {
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
 			dcp.order_description_uuid,
-			vod.order_number,
-			vod.item_description,
+			fb.uuid as finishing_batch_uuid,
+			concat('FB', to_char(fb.created_at, 'YY'::text), '-', lpad((fb.id)::text, 4, '0'::text)) as batch_number,
+			vodf.order_number,
+			vodf.item_description,
+			vodf.item,
+			vodf.item_name,
+			vodf.item_short_name,
+			vodf.zipper_number,
+			vodf.zipper_number_name,
+			vodf.zipper_number_short_name,
+			vodf.end_type,
+			vodf.end_type_name,
+			vodf.end_type_short_name,
+			vodf.lock_type,
+			vodf.lock_type_name,
+			vodf.lock_type_short_name,
+			vodf.puller_type,
+			vodf.puller_type_name,
+			vodf.puller_type_short_name,
+			vodf.puller_color,
+			vodf.puller_color_name,
+			vodf.puller_color_short_name,
+			vodf.slider,
+			vodf.slider_name,
+			vodf.slider_short_name,
+			vodf.slider_body_shape,
+			vodf.slider_body_shape_name,
+			vodf.slider_body_shape_short_name,
+			vodf.slider_link,
+			vodf.slider_link_name,
+			vodf.slider_link_short_name,
+			vodf.coloring_type,
+			vodf.coloring_type_name,
+			vodf.coloring_type_short_name,
+			vodf.logo_type,
+			vodf.logo_type_name,
+			vodf.logo_type_short_name,
+			vodf.is_logo_body as logo_is_body,
+			vodf.is_logo_puller as logo_is_puller,
+			vodf.order_type,
 			dcp.mc_no,
 			dcp.cavity_goods::float8,
 			dcp.cavity_defect::float8,
@@ -187,8 +229,10 @@ export async function select(req, res, next) {
 			slider.die_casting ON die_casting.uuid = dcp.die_casting_uuid
 		LEFT JOIN
 			hr.users ON users.uuid = dcp.created_by
+		LEFT JOIN 
+			zipper.finishing_batch fb ON fb.uuid = dcp.finishing_batch_uuid
 		LEFT JOIN
-			zipper.v_order_details vod ON vod.order_description_uuid = dcp.order_description_uuid
+			zipper.v_order_details_full vodf ON vodf.order_description_uuid = fb.order_description_uuid
 		WHERE dcp.uuid = ${req.params.uuid}
 		`;
 

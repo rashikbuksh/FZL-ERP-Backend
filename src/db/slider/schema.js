@@ -209,9 +209,9 @@ export const die_casting_production = slider.table('die_casting_production', {
 	cavity_defect: integer('cavity_defect').notNull(),
 	push: integer('push').notNull(),
 	weight: PG_DECIMAL('weight').notNull(),
-	order_description_uuid: defaultUUID('order_description_uuid')
+	finishing_batch_uuid: defaultUUID('finishing_batch_uuid')
 		.default(null)
-		.references(() => zipperSchema.order_description.uuid),
+		.references(() => zipperSchema.finishing_batch.uuid),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
