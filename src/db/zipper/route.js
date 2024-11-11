@@ -479,10 +479,6 @@ zipperRouter.get(
 	'/finishing-batch/by/:finishing_batch_uuid',
 	finishingBatchOperations.getFinishingBatchByFinishingBatchUuid
 );
-zipperRouter.get(
-	'/finishing-batch/by/:section',
-	finishingBatchOperations.selectFinishingBatchBySection
-);
 
 // --------------------- FINISHING BATCH ENTRY ROUTES ---------------------
 
@@ -513,6 +509,10 @@ zipperRouter.get(
 zipperRouter.get(
 	'/finishing-batch-entry/by/finishing-batch-uuid/:finishing_batch_uuid',
 	finishingBatchEntryOperations.getFinishingBatchEntryByFinishingBatchUuid
+);
+zipperRouter.get(
+	'/finishing-batch-entry/by/:section',
+	finishingBatchEntryOperations.selectFinishingBatchEntryBySection
 );
 
 export { zipperRouter };

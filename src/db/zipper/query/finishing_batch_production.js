@@ -221,6 +221,8 @@ export async function selectBySection(req, res, next) {
 			finishing_batch_production.uuid,
 			finishing_batch_production.finishing_batch_entry_uuid,
 			sfg.order_entry_uuid,
+			zfb.uuid as finishing_batch_uuid,
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			vodf.order_description_uuid,
 			vodf.order_number,
 			vodf.item_description,
@@ -271,12 +273,14 @@ export async function selectBySection(req, res, next) {
 			hr.users ON finishing_batch_production.created_by = users.uuid
 		LEFT JOIN 
 			zipper.finishing_batch_entry fbe ON finishing_batch_production.finishing_batch_entry_uuid = fbe.uuid
+		LEFT JOIN 
+			zipper.finishing_batch zfb ON fbe.finishing_batch_uuid = zfb.uuid
 		LEFT JOIN
 			zipper.sfg ON fbe.sfg_uuid = sfg.uuid
 		LEFT JOIN
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
-			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid AND zfb.order_description_uuid = vodf.order_description_uuid
 		WHERE
 			finishing_batch_production.section = ${req.params.section} ${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? sql`AND lower(vodf.nylon_stopper_name) = lower(${nylon_stopper})` : sql``}
