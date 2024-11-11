@@ -9,7 +9,7 @@ BEGIN
     -- Fetch item_name and finishing_batch_uuid once
     SELECT vodf.item_name, vodf.nylon_stopper_name INTO item_name, nylon_stopper_name
     FROM zipper.finishing_batch_entry finishing_batch_entry
-    LEFT JOIN zipper.sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
+    LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
     WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
@@ -65,6 +65,7 @@ BEGIN
                 CASE 
                     WHEN NEW.section = 'finishing' 
                     THEN NEW.dyed_tape_used_in_kg
+                    ELSE 0
                 END
         WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
@@ -86,6 +87,7 @@ BEGIN
                 CASE 
                     WHEN NEW.section = 'finishing' 
                     THEN NEW.dyed_tape_used_in_kg
+                    ELSE 0
                 END
         WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
@@ -168,7 +170,7 @@ BEGIN
     -- Fetch item_name and finishing_batch_uuid once
     SELECT vodf.item_name, vodf.nylon_stopper_name INTO item_name, nylon_stopper_name
     FROM zipper.finishing_batch_entry finishing_batch_entry
-    LEFT JOIN zipper.sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
+    LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
     WHERE finishing_batch_entry.uuid = NEW.finishing_batch_entry_uuid;
@@ -326,7 +328,7 @@ BEGIN
     -- Fetch item_name and finishing_batch_uuid once
     SELECT vodf.item_name, vodf.nylon_stopper_name INTO item_name, nylon_stopper_name
     FROM zipper.finishing_batch_entry finishing_batch_entry
-    LEFT JOIN zipper.sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
+    LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
     WHERE finishing_batch_entry.uuid = OLD.finishing_batch_entry_uuid;
