@@ -306,6 +306,7 @@ export async function selectStockByFromSection(req, res, next) {
 		stock.uuid,
 		stock.finishing_batch_uuid,
 		finishing_batch.order_description_uuid,
+		concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)) as batch_number,
 		order_description.order_info_uuid,
 		pp.name AS party_name,
 		vodf.order_number,
