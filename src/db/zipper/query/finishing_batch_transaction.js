@@ -289,7 +289,7 @@ export async function selectByTrxFrom(req, res, next) {
 		LEFT JOIN
 			hr.users ON finishing_batch_transaction.created_by = users.uuid
 		LEFT JOIN
-			zipper.finishing_batch_entry fbe ON finishing_batch_transaction.finishing_batch_entry_uuid = finishing_batch_entry.uuid
+			zipper.finishing_batch_entry fbe ON finishing_batch_transaction.finishing_batch_entry_uuid = fbe.uuid
 		LEFT JOIN 
 			zipper.finishing_batch zfb ON fbe.finishing_batch_uuid = zfb.uuid
 		LEFT JOIN
