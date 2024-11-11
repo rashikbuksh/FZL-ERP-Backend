@@ -445,7 +445,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 						ELSE SUM(trx_quantity_in_kg)::float8
 					END
 				FROM zipper.finishing_batch_transaction zfbt
-				WHERE zfbt.finishing_batch_entry_uuid = zfbt.uuid AND zfbt.trx_from = ${section}
+				WHERE zfbt.finishing_batch_entry_uuid = zfbe.uuid AND zfbt.trx_from = ${section}
 			), 0)::float8 as total_trx_quantity,
 			COALESCE((
 				SELECT 
