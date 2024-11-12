@@ -395,6 +395,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			op_coloring_type.name as coloring_type_name,
 			op_coloring_type.short_name as coloring_type_short_name,
 			vod.nylon_stopper_name,
+			od.slider_finishing_stock as slider_finishing_stock_od,
+			zfb.slider_finishing_stock::float8 as slider_finishing_stock_zfb,
 			zfb.slider_finishing_stock::float8,
 			sfg.dying_and_iron_prod::float8 as dying_and_iron_prod,
 			zfbe.teeth_molding_prod::float8 as teeth_molding_prod,
