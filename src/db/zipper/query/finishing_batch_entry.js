@@ -241,12 +241,13 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 					sfg.uuid
 		) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
 		WHERE sfg.recipe_uuid IS NOT NULL 
-				AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0 AND
-					(
-						lower(vodf.item_name) != 'nylon' 
-						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-					)
-				AND vodf.order_description_uuid = ${req.params.order_description_uuid}`;
+			AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0 
+			AND
+				(
+					lower(vodf.item_name) != 'nylon' 
+					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+				)
+			AND vodf.order_description_uuid = ${req.params.order_description_uuid}`;
 
 	const batchEntryPromise = db.execute(query);
 
@@ -303,11 +304,11 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			fbe.updated_at,
 			fbe.remarks,
 			coalesce(
-				coalesce(fbe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+				(coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0))
 			,0) as balance_quantity,
 			coalesce(
-				coalesce(fbe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
-			,0) + coalesce(fbe.quantity::float8,0) as max_quantity
+				(coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0))
+			,0) as max_quantity
 		FROM
 			zipper.finishing_batch_entry fbe
 		LEFT JOIN 
