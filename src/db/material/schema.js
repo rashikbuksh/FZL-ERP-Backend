@@ -1,4 +1,11 @@
-import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import {
+	decimal,
+	integer,
+	pgSchema,
+	serial,
+	text,
+	uuid,
+} from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -8,6 +15,7 @@ import {
 
 import * as hrSchema from '../hr/schema.js';
 import * as zipperSchema from '../zipper/schema.js';
+import { marketing } from '../public/schema.js';
 
 const material = pgSchema('material');
 
@@ -64,6 +72,7 @@ export const stock = material.table('stock', {
 	})
 		.notNull()
 		.default(0.0),
+	booking: PG_DECIMAL('booking').default(0.0),
 	lab_dip: decimal('lab_dip', {
 		precision: 20,
 		scale: 4,
@@ -273,6 +282,24 @@ export const stock_to_sfg = material.table('stock_to_sfg', {
 		precision: 20,
 		scale: 4,
 	}).notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+// booking
+export const booking = material.table('booking', {
+	uuid: uuid_primary,
+	id: serial('id').notNull().unique(),
+	material_uuid: defaultUUID('material_uuid')
+		.references(() => info.uuid)
+		.default(null),
+	marketing_uuid: defaultUUID('marketing_uuid')
+		.references(() => marketing.uuid)
+		.default(null),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	trx_quantity: PG_DECIMAL('trx_quantity').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
