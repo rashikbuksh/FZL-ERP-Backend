@@ -397,7 +397,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			vod.nylon_stopper_name,
 			od.slider_finishing_stock as slider_finishing_stock_od,
 			zfb.slider_finishing_stock::float8 as slider_finishing_stock_zfb,
-			zfb.slider_finishing_stock::float8,
+			zfb.slider_finishing_stock::float8 as slider_finishing_stock,
 			sfg.dying_and_iron_prod::float8 as dying_and_iron_prod,
 			zfbe.teeth_molding_prod::float8 as teeth_molding_prod,
 			zfbe.teeth_coloring_stock::float8 as teeth_coloring_stock,
@@ -406,8 +406,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			zfbe.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
 			sfg.pi::float8 as pi,
-			sfg.short_quantity::float8,
-			sfg.reject_quantity::float8,
+			sfg.short_quantity::float8 as short_quantity,
+			sfg.reject_quantity::float8 as reject_quantity,
 			sfg.remarks as remarks,
 			CASE 
 				WHEN lower(${item_name}) = 'vislon'
