@@ -129,9 +129,38 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-		SELECT v_packing_list.* 
-		FROM delivery.v_packing_list
-		WHERE uuid = ${req.params.uuid}
+		SELECT dvl.*,
+		SUM(ple.quantity)::float8 as total_quantity,
+		SUM(ple.poli_quantity)::float8 as total_poly_quantity
+		FROM delivery.v_packing_list dvl
+		LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
+		WHERE dvl.uuid = ${req.params.uuid}
+		GROUP BY 
+			dvl.uuid,
+			dvl.order_info_uuid,
+			dvl.packing_list_wise_rank,
+			dvl.packing_list_wise_count,
+			dvl.packing_number,
+			dvl.order_number,
+			dvl.challan_uuid,
+			dvl.challan_number,
+			dvl.carton_size,
+			dvl.carton_weight,
+			dvl.carton_uuid,
+			dvl.carton_name,
+			dvl.is_warehouse_received,
+			dvl.factory_uuid,
+			dvl.factory_name,
+			dvl.buyer_uuid,
+			dvl.buyer_name,
+			dvl.created_by,
+			dvl.created_by_name,
+			dvl.created_at,
+			dvl.updated_at,
+			dvl.remarks
+		ORDER BY 
+			dvl.created_at DESC
+		
 	`;
 
 	const packing_listPromise = db.execute(query);
