@@ -1,12 +1,7 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import { packing_list_entry } from '../schema.js';
 
 export async function insert(req, res, next) {

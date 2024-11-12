@@ -1,14 +1,11 @@
-import { asc, desc, eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { bank, manual_pi_entry } from '../schema.js';
+import { manual_pi_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -102,18 +99,18 @@ export async function selectAll(req, res, next) {
 		.from(manual_pi_entry)
 		.orderBy(asc(manual_pi_entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'manual_pi_entry list',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'manual_pi_entry',
+		};
 
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

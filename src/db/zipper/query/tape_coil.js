@@ -176,14 +176,19 @@ export async function selectAll(req, res, next) {
 			materialSchema.info,
 			eq(tape_coil.material_uuid, materialSchema.info.uuid)
 		)
-		.orderBy(tape_coil.created_at, desc);
+		.orderBy(desc(tape_coil.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'tape_coil list',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

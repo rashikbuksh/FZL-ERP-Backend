@@ -1,9 +1,5 @@
 import { sql } from 'drizzle-orm';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectOrderEntryFeed(req, res, next) {

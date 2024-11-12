@@ -1,9 +1,5 @@
 import { desc, eq } from 'drizzle-orm';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { policy_and_notice, users } from '../schema.js';
 
@@ -74,7 +70,7 @@ export async function remove(req, res, next) {
 	}
 }
 
-export function selectAll(req, res, next) {
+export async function selectAll(req, res, next) {
 	const policyAndNoticePromise = db
 		.select({
 			uuid: policy_and_notice.uuid,
@@ -93,18 +89,18 @@ export function selectAll(req, res, next) {
 		.leftJoin(users, eq(policy_and_notice.created_by, users.uuid))
 		.orderBy(desc(policy_and_notice.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Privacy and Notice List',
-	};
+	try {
+		const data = await policyAndNoticePromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Privacy and Notice',
+		};
 
-	handleResponse({
-		promise: policyAndNoticePromise,
-		res,
-		next,
-		...toast,
-	});
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

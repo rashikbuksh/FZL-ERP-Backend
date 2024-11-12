@@ -1,16 +1,11 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as threadSchema from '../../thread/schema.js';
-import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import { info } from '../schema.js';
 
@@ -249,12 +244,17 @@ export async function selectAll(req, res, next) {
 		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
 		.orderBy(desc(info.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Info list',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Info',
+		};
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

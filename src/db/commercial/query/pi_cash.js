@@ -1,33 +1,11 @@
-import { and, desc, eq, or, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
-
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-
-import { alias } from 'drizzle-orm/pg-core';
-import { bank, lc, pi_cash, pi_cash_entry } from '../schema.js';
-
-const pi_cash_entry_order_numbers = alias(
-	sql`
-		SELECT array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, pi_cash_uuid
-		FROM
-			commercial.pi_cash_entry pe 
-			LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
-	        LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-	        LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-			LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
-			LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-		GROUP BY pi_cash_uuid
-	`,
-	'pi_cash_entry_order_numbers'
-);
+import { bank, lc, pi_cash } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

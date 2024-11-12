@@ -1,12 +1,8 @@
 import { desc, eq } from 'drizzle-orm';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import * as materialSchema from '../../material/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import { recipe, recipe_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -102,12 +98,19 @@ export async function selectAll(req, res, next) {
 		)
 		.orderBy(desc(recipe_entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Recipe_entry list',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Recipe_entry',
+		};
+
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -175,10 +178,17 @@ export async function selectRecipeEntryByRecipeUuid(req, res, next) {
 		)
 		.where(eq(recipe_entry.recipe_uuid, req.params.recipe_uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Recipe_entry',
-	};
-	handleResponse({ promise: recipe_entryPromise, res, next, ...toast });
+	try {
+		const data = await recipe_entryPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Recipe_entry',
+		};
+
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

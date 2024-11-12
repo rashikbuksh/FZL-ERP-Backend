@@ -5,11 +5,7 @@ import {
 	CreateToken,
 	HashPass,
 } from '../../../middleware/auth.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { department, designation, users } from '../schema.js';
 
@@ -107,18 +103,18 @@ export async function selectAll(req, res, next) {
 		.leftJoin(department, eq(users.department_uuid, department.uuid))
 		.orderBy(desc(users.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'user list',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'users',
+		};
 
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -224,8 +220,6 @@ export async function loginUser(req, res, next) {
 			user: { uuid, name, department },
 			can_access,
 		});
-
-		// handleResponse(userPromise, res, next);
 	});
 }
 
@@ -239,13 +233,18 @@ export async function selectUsersAccessPages(req, res, next) {
 		.from(users)
 		.where(eq(users.uuid, req.params.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'user',
-	};
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'User access pages',
+		};
 
-	handleResponse({ promise: userPromise, res, next, ...toast });
+		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectCommonUsers(req, res, next) {
@@ -262,18 +261,18 @@ export async function selectCommonUsers(req, res, next) {
 		.from(users)
 		.leftJoin(designation, eq(users.designation_uuid, designation.uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select_common',
-		message: 'Common User list',
-	};
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Common users',
+		};
 
-	handleResponse({
-		promise: userPromise,
-		res,
-		next,
-		...toast,
-	});
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function changeUserAccess(req, res, next) {

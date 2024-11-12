@@ -1,26 +1,9 @@
-import { desc, eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
+import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
-import { decimalToNumber } from '../../variables.js';
-import * as zipperSchema from '../../zipper/schema.js';
 
-import {
-	challan,
-	challan_entry,
-	packing_list,
-	packing_list_entry,
-	vehicle,
-} from '../schema.js';
-
-const createdByUser = alias(hrSchema.users, 'createdByUser');
+import { challan } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

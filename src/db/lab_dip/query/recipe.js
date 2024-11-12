@@ -1,27 +1,11 @@
-import {
-	and,
-	asc,
-	desc,
-	eq,
-	gt,
-	gte,
-	lt,
-	lte,
-	not,
-	or,
-	sql,
-} from 'drizzle-orm';
+import { and, asc, desc, eq, gt, lte, or, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import * as materialSchema from '../../material/schema.js';
 import * as threadSchema from '../../thread/schema.js';
+import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import { info, recipe } from '../schema.js';
 
@@ -140,12 +124,18 @@ export async function selectAll(req, res, next) {
 		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
 		.orderBy(desc(recipe.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Recipe list',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Recipe',
+		};
+
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -322,12 +312,19 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 		.where(eq(recipe.lab_dip_info_uuid, req.params.lab_dip_info_uuid))
 		.orderBy(asc(recipe.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Recipe',
-	};
-	handleResponse({ promise: recipePromise, res, next, ...toast });
+	try {
+		const data = await recipePromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Recipe',
+		};
+
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function updateRecipeByLabDipInfoUuid(req, res, next) {

@@ -1,15 +1,11 @@
-import { asc, desc, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { bank, manual_pi, manual_pi_entry } from '../schema.js';
+import { bank, manual_pi } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -77,65 +73,6 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	// const resultPromise = db
-	// 	.select({
-	// 		uuid: manual_pi.uuid,
-	// 		pi_uuids: manual_pi.pi_uuids,
-	// 		order_number: manual_pi_entry.order_number,
-	// 		marketing_uuid: manual_pi.marketing_uuid,
-	// 		marketing_name: publicSchema.marketing.name,
-	// 		party_uuid: manual_pi.party_uuid,
-	// 		party_name: publicSchema.party.name,
-	// 		party_address: publicSchema.party.address,
-	// 		buyer_uuid: manual_pi.buyer_uuid,
-	// 		buyer_name: publicSchema.buyer.name,
-	// 		merchandiser_uuid: manual_pi.merchandiser_uuid,
-	// 		merchandiser_name: publicSchema.merchandiser.name,
-	// 		factory_uuid: manual_pi.factory_uuid,
-	// 		factory_name: publicSchema.factory.name,
-	// 		bank_uuid: manual_pi.bank_uuid,
-	// 		bank_name: bank.name,
-	// 		bank_address: bank.name,
-	// 		bank_swift_code: bank.swift_code,
-	// 		bank_policy: bank.policy,
-	// 		routing_no: bank.routing_no,
-	// 		validity: manual_pi.validity,
-	// 		payment: manual_pi.payment,
-	// 		remarks: manual_pi.remarks,
-	// 		created_by: manual_pi.created_by,
-	// 		created_by_name: hrSchema.users.name,
-	// 		receive_amount: decimalToNumber(manual_pi.receive_amount),
-	// 		weight: decimalToNumber(manual_pi.weight),
-	// 		date: manual_pi.date,
-	// 		pi_number: manual_pi.pi_number,
-	// 		created_at: manual_pi.created_at,
-	// 		updated_at: manual_pi.updated_at,
-	// 	})
-	// 	.from(manual_pi)
-	// 	.leftJoin(hrSchema.users, eq(manual_pi.created_by, hrSchema.users.uuid))
-	// 	.leftJoin(
-	// 		publicSchema.marketing,
-	// 		eq(manual_pi.marketing_uuid, publicSchema.marketing.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		publicSchema.merchandiser,
-	// 		eq(manual_pi.merchandiser_uuid, publicSchema.merchandiser.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		publicSchema.factory,
-	// 		eq(manual_pi.factory_uuid, publicSchema.factory.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		publicSchema.party,
-	// 		eq(manual_pi.party_uuid, publicSchema.party.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		publicSchema.buyer,
-	// 		eq(manual_pi.buyer_uuid, publicSchema.buyer.uuid)
-	// 	)
-	// 	.leftJoin(bank, eq(manual_pi.bank_uuid, bank.uuid))
-	// 	.orderBy(asc(manual_pi.created_at));
-
 	const query = sql`
 						SELECT
 							cmp.uuid,
@@ -250,19 +187,6 @@ export async function selectAll(req, res, next) {
 	} catch (error) {
 		await handleError({ error, res });
 	}
-
-	// const toast = {
-	// 	status: 200,
-	// 	type: 'select_all',
-	// 	message: 'manual_pi list',
-	// };
-
-	// handleResponse({
-	// 	promise: resultPromise,
-	// 	res,
-	// 	next,
-	// 	...toast,
-	// });
 }
 
 export async function select(req, res, next) {

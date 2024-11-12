@@ -1,21 +1,8 @@
-import { desc, eq, is, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
-import { decimalToNumber } from '../../variables.js';
-import * as zipperSchema from '../../zipper/schema.js';
-import {
-	carton,
-	challan,
-	packing_list,
-	packing_list_entry,
-} from '../schema.js';
+import { packing_list } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

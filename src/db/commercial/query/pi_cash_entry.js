@@ -1,13 +1,8 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import * as zipperSchema from '../../zipper/schema.js';
 import { pi_cash_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -91,17 +86,18 @@ export async function selectAll(req, res, next) {
 		.from(pi_cash_entry)
 		.orderBy(desc(pi_cash_entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'pi_cash_entry list',
-	};
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'pi_cash_entry',
+		};
+
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

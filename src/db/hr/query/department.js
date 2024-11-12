@@ -1,9 +1,5 @@
 import { desc, eq } from 'drizzle-orm';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { department } from '../schema.js';
 
@@ -80,18 +76,18 @@ export async function selectAll(req, res, next) {
 		.from(department)
 		.orderBy(desc(department.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Designation list',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Department',
+		};
 
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

@@ -1,9 +1,5 @@
-import { desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	handleResponse,
-	validateRequest,
-} from '../../../util/index.js';
+import { sql } from 'drizzle-orm';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectGoodsInWarehouse(req, res, next) {
