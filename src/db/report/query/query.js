@@ -756,8 +756,9 @@ export async function ProductionReportDirector(req, res, next) {
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
                     oe.order_description_uuid
                 FROM
-                    zipper.sfg_production
-                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    zipper.finishing_batch_production sfg_production
+                    LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_production.finishing_batch_entry_uuid = fbe.uuid
+                    LEFT JOIN zipper.sfg ON fbe.sfg_uuid = sfg.uuid
                     LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                 GROUP BY
@@ -768,8 +769,9 @@ export async function ProductionReportDirector(req, res, next) {
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
                     oe.order_description_uuid
                 FROM
-                    zipper.sfg_production
-                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    zipper.finishing_batch_production sfg_production
+                    LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_production.finishing_batch_entry_uuid = fbe.uuid
+                    LEFT JOIN zipper.sfg ON fbe.sfg_uuid = sfg.uuid
                     LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                 GROUP BY
@@ -988,8 +990,9 @@ export async function ProductionReportSnm(req, res, next) {
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
                     oe.uuid as order_entry_uuid
                 FROM
-                    zipper.sfg_production
-                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    zipper.finishing_batch_production sfg_production
+                    LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_production.finishing_batch_entry_uuid = fbe.uuid
+                    LEFT JOIN zipper.sfg ON fbe.sfg_uuid = sfg.uuid
                     LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                 GROUP BY
@@ -1000,8 +1003,9 @@ export async function ProductionReportSnm(req, res, next) {
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
                     oe.uuid as order_entry_uuid
                 FROM
-                    zipper.sfg_production
-                    LEFT JOIN zipper.sfg ON sfg_production.sfg_uuid = sfg.uuid
+                    zipper.finishing_batch_production sfg_production
+                    LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_production.finishing_batch_entry_uuid = fbe.uuid
+                    LEFT JOIN zipper.sfg ON fbe.sfg_uuid = sfg.uuid
                     LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                 GROUP BY
