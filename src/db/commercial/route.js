@@ -1,10 +1,4 @@
 import { request, Router } from 'express';
-import {
-	marketing,
-	merchandiser,
-	party,
-	properties,
-} from '../public/schema.js';
 
 import * as bankOperations from './query/bank.js';
 import * as lcOperations from './query/lc.js';
@@ -14,7 +8,6 @@ import * as manualPiOperations from './query/manual_pi.js';
 import * as manualPiEntryOperations from './query/manual_pi_entry.js';
 import * as piCashOperations from './query/pi_cash.js';
 import * as piCashEntryOperations from './query/pi_cash_entry.js';
-import commercial from './schema.js';
 
 const commercialRouter = Router();
 
@@ -50,6 +43,10 @@ commercialRouter.get(
 	'/lc-entry/by/:lc_uuid',
 	lcEntryOperations.selectLcEntryByLcUuid
 );
+commercialRouter.get(
+	'/lc-entry/by/lc-number/:lc_number',
+	lcEntryOperations.selectLcEntryByLcNumber
+);
 
 // * LC Entry Others
 commercialRouter.get('/lc-entry-others', lcEntryOthersOperations.selectAll);
@@ -63,6 +60,11 @@ commercialRouter.delete(
 commercialRouter.get(
 	'/lc-entry-others/by/:lc_uuid',
 	lcEntryOthersOperations.selectLcEntryOthersByLcUuid
+);
+
+commercialRouter.get(
+	'/lc-entry-others/by/lc-number/:lc_number',
+	lcEntryOthersOperations.selectLcEntryOthersByLcNumber
 );
 
 // * Manual Pi routes

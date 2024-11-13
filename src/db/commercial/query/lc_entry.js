@@ -1,8 +1,5 @@
 import { eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { lc_entry } from '../schema.js';
 
@@ -149,6 +146,8 @@ export async function select(req, res, next) {
 export async function selectLcEntryByLcUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	console.log(req.params);
+
 	const query = sql`
 		SELECT
 			lc_entry.uuid,
@@ -184,3 +183,96 @@ export async function selectLcEntryByLcUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectLcEntryByLcNumber(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	const { lc_number } = req.params;
+	console.log(lc_number);
+
+	const query = sql`
+		SELECT
+			lc_entry.uuid,
+            lc_entry.lc_uuid,
+			lc_entry.payment_date,
+			lc_entry.ldbc_fdbc,
+			lc_entry.acceptance_date,
+			lc_entry.maturity_date,
+			lc_entry.handover_date,
+			lc_entry.document_receive_date,
+			lc_entry.payment_value::float8,
+            lc_entry.amount::float8,
+            lc_entry.created_at,
+			lc_entry.updated_at,
+			lc_entry.remarks
+		FROM
+			commercial.lc_entry
+		LEFT JOIN 
+			commercial.lc ON lc_entry.lc_uuid = lc.uuid
+		WHERE lc.lc_number = ${lc_number}
+		ORDER BY lc_entry.created_at ASC`;
+
+	const lc_entryPromise = db.execute(query);
+	console.log(lc_entryPromise);
+
+	try {
+		const data = await lc_entryPromise;
+		console.log(data);
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'lc_entry entry',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+// export async function selectLcEntryByLcNumber(req, res, next) {
+// 	if (!(await validateRequest(req, next))) return;
+// 	const { lc_number } = req.params;
+// 	console.log('LC Number:', lc_number);
+
+// 	const query = sql`
+//         SELECT
+//             lc_entry.uuid,
+//             lc_entry.lc_uuid,
+//             lc_entry.payment_date,
+//             lc_entry.ldbc_fdbc,
+//             lc_entry.acceptance_date,
+//             lc_entry.maturity_date,
+//             lc_entry.handover_date,
+//             lc_entry.document_receive_date,
+//             lc_entry.payment_value::float8,
+//             lc_entry.amount::float8,
+//             lc_entry.created_at,
+//             lc_entry.updated_at,
+//             lc_entry.remarks
+//         FROM
+//             commercial.lc_entry
+//         LEFT JOIN 
+//             commercial.lc ON lc_entry.lc_uuid = lc.uuid
+//         WHERE lc.lc_number = ${lc_number}
+//         ORDER BY lc_entry.created_at ASC`;
+
+// 	console.log('SQL Query:', query);
+
+// 	const lc_entryPromise = db.execute(query);
+// 	console.log('LC Entry Promise:', lc_entryPromise);
+
+// 	try {
+// 		const data = await lc_entryPromise;
+// 		console.log('Query Result:', data);
+// 		const toast = {
+// 			status: 200,
+// 			type: 'select',
+// 			message: 'lc_entry entry',
+// 		};
+
+// 		return await res.status(200).json({ toast, data: data?.rows });
+// 	} catch (error) {
+// 		console.error('Error executing query:', error);
+// 		await handleError({ error, res });
+// 	}
+// }

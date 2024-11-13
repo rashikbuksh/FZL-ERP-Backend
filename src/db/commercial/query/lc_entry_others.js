@@ -1,8 +1,5 @@
 import { eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { lc_entry_others } from '../schema.js';
 
@@ -165,6 +162,43 @@ export async function selectLcEntryOthersByLcUuid(req, res, next) {
 			status: 200,
 			type: 'select',
 			message: 'lc_entry_others entry',
+		};
+
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectLcEntryOthersByLcNumber(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	
+	const query = sql`
+		SELECT
+			lc_entry_others.uuid,
+            lc_entry_others.lc_uuid,
+			lc_entry_others.ud_no,
+			lc_entry_others.ud_received,
+			lc_entry_others.up_number,
+			lc_entry_others.up_number_updated_at,
+            lc_entry_others.created_at,
+			lc_entry_others.updated_at,
+			lc_entry_others.remarks
+		FROM
+			commercial.lc_entry_others
+		LEFT JOIN 
+			commercial.lc ON lc_entry_others.lc_uuid = lc.uuid
+		WHERE lc.lc_number = ${req.params.lc_number}
+		ORDER BY lc_entry_others.created_at ASC`;
+
+	const lc_entryPromise = db.execute(query);
+
+	try {
+		const data = await lc_entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'lc_entry entry others',
 		};
 
 		return await res.status(200).json({ toast, data: data?.rows });

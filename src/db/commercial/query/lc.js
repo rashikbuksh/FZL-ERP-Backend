@@ -1,9 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { lc } from '../schema.js';
 
@@ -255,7 +252,7 @@ export async function selectLcPiByLcUuid(req, res, next) {
 
 export async function selectLcByLcNumber(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
+	const { lc_number } = req.params;
 	const query = sql`
 		SELECT
 			lc.uuid,
@@ -309,65 +306,28 @@ export async function selectLcByLcNumber(req, res, next) {
 		WHERE lc.lc_number = ${req.params.lc_number}
 		GROUP BY lc.uuid, party.name, users.name`;
 
-	const lc_entry_query = sql`
-		SELECT
-			lc_entry.uuid,
-            lc_entry.lc_uuid,
-			lc_entry.payment_date,
-			lc_entry.ldbc_fdbc,
-			lc_entry.acceptance_date,
-			lc_entry.maturity_date,
-			lc_entry.handover_date,
-			lc_entry.document_receive_date,
-			lc_entry.payment_value::float8,
-            lc_entry.amount::float8,
-            lc_entry.created_at,
-			lc_entry.updated_at,
-			lc_entry.remarks
-		FROM
-			commercial.lc_entry
-		LEFT JOIN 
-			commercial.lc ON lc_entry.lc_uuid = lc.uuid
-		WHERE lc.lc_number = ${req.params.lc_number}
-		ORDER BY lc_entry.created_at ASC`;
-
-	const lc_entry_other_query = sql`
-		SELECT
-			lc_entry_others.uuid,
-            lc_entry_others.lc_uuid,
-			lc_entry_others.ud_no,
-			lc_entry_others.ud_received,
-			lc_entry_others.up_number,
-			lc_entry_others.up_number_updated_at,
-            lc_entry_others.created_at,
-			lc_entry_others.updated_at,
-			lc_entry_others.remarks
-		FROM
-			commercial.lc_entry_others
-		LEFT JOIN 
-			commercial.lc ON lc_entry_others.lc_uuid = lc.uuid
-		WHERE lc.lc_number = ${req.params.lc_number}
-		ORDER BY lc_entry_others.created_at ASC`;
-
-	const lcPromise = db.execute(query);
-	const lcEntryPromise = db.execute(lc_entry_query);
-	const lcEntryOthersPromise = db.execute(lc_entry_other_query);
-
 	try {
-		const data = await lcPromise;
-		const lcEntryData = await lcEntryPromise;
-		const lcEntryOthersData = await lcEntryOthersPromise;
+		const data = await db.execute(query);
+		const api = await createApi(req);
+		const fetchData = async (endpoint) =>
+			await api.get(`/commercial/${endpoint}/${lc_number}`);
+
+		const [lc_entry, lc_entry_others] = await Promise.all([
+			fetchData('lc-entry/by/lc-number'),
+			fetchData('lc-entry-others/by/lc-number'),
+		]);
+		console.log('lc_entry', lc_entry);
+		console.log('lc_entry_others', lc_entry_others);
 
 		const response = {
 			...data?.rows[0],
-			lc_entry: lcEntryData?.rows || [],
-			lc_entry_others: lcEntryOthersData?.rows || [],
+			lc_entry: lc_entry?.data?.data || [],
+			lc_entry_others: lc_entry_others?.data?.data || [],
 		};
-
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'lc',
+			message: 'lc by lc number',
 		};
 
 		return await res.status(200).json({ toast, data: response });
