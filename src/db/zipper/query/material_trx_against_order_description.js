@@ -138,6 +138,8 @@ export async function selectAll(req, res, next) {
         hr.users users ON mtaod.created_by = users.uuid
 	LEFT JOIN 
 		material.stock stock ON mtaod.material_uuid = stock.material_uuid
+	LEFT JOIN
+		material.booking booking ON mtaod.booking_uuid = booking.uuid
 	ORDER BY mtaod.created_at DESC
     `;
 
@@ -189,6 +191,8 @@ export async function select(req, res, next) {
         hr.users users ON mtaod.created_by = users.uuid
 	LEFT JOIN 
 		material.stock stock ON mtaod.material_uuid = stock.material_uuid
+	LEFT JOIN
+		material.booking booking ON mtaod.booking_uuid = booking.uuid
     WHERE
         mtaod.uuid = ${req.params.uuid}
     `;
@@ -241,6 +245,8 @@ export async function selectMaterialTrxLogAgainstOrderByTrxTo(req, res, next) {
         hr.users users ON mtaod.created_by = users.uuid
 	LEFT JOIN 
 		material.stock stock ON mtaod.material_uuid = stock.material_uuid
+	LEFT JOIN
+		material.booking booking ON mtaod.booking_uuid = booking.uuid
     WHERE
         mtaod.trx_to = ${req.params.trx_to}
     `;
