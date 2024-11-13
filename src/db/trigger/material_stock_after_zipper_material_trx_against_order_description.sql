@@ -8,7 +8,7 @@ BEGIN
     WHERE material_uuid = NEW.material_uuid;
 
     IF (NEW.booking_uuid IS NOT NULL) THEN
-        UPDATE zipper.booking
+        UPDATE material.booking
         SET
             quantity = quantity - NEW.trx_quantity,
             trx_quantity = trx_quantity + NEW.trx_quantity
@@ -46,7 +46,7 @@ BEGIN
     WHERE material_uuid = NEW.material_uuid;
 
     IF (NEW.booking_uuid IS NOT NULL) THEN
-        UPDATE zipper.booking
+        UPDATE material.booking
         SET
             quantity = quantity 
                 - NEW.trx_quantity
@@ -92,7 +92,7 @@ BEGIN
     WHERE material_uuid = OLD.material_uuid;
 
     IF (OLD.booking_uuid IS NOT NULL) THEN
-        UPDATE zipper.booking
+        UPDATE material.booking
         SET
             quantity = quantity + OLD.trx_quantity,
             trx_quantity = trx_quantity - OLD.trx_quantity
