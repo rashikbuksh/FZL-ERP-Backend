@@ -96,7 +96,7 @@ export async function zipperProductionStatusReport(req, res, next) {
             ) tape_coil_to_dyeing_sum ON tape_coil_to_dyeing_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
                 SELECT 
-                    sfg_prod.sfg_uuid AS sfg_uuid,
+                    fbe.sfg_uuid AS sfg_uuid,
                     oe.uuid AS order_entry_uuid,
                     od.uuid as order_description_uuid,
                     SUM(CASE 
@@ -116,15 +116,17 @@ export async function zipperProductionStatusReport(req, res, next) {
                         ELSE 0 
                     END) AS finishing_quantity
                 FROM 
-                    zipper.sfg_production sfg_prod
-                LEFT JOIN 
-                    zipper.sfg ON sfg_prod.sfg_uuid = sfg.uuid
+                    zipper.finishing_batch_production sfg_prod
+                LEFT JOIN
+                    zipper.finishing_batch_entry fbe ON sfg_prod.finishing_batch_entry_uuid = fbe.uuid
+               LEFT JOIN
+                    zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
                 LEFT JOIN 
                     zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                 LEFT JOIN 
                     zipper.order_description od ON oe.order_description_uuid = od.uuid
                 GROUP BY 
-                    sfg_prod.sfg_uuid, oe.uuid, od.uuid
+                    fbe.sfg_uuid, oe.uuid, od.uuid
             ) sfg_production_sum ON sfg_production_sum.order_description_uuid = oe.order_description_uuid
             LEFT JOIN (
                 SELECT 
