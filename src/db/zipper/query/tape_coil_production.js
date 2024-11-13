@@ -2,7 +2,6 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -126,12 +125,18 @@ export async function selectAll(req, res, next) {
 		)
 		.orderBy(desc(tape_coil_production.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'tape_coil_production list',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'tape_coil_production list',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -245,10 +250,16 @@ export async function selectTapeCoilProductionBySection(req, res, next) {
 		.where(eq(tape_coil_production.section, req.params.section))
 		.orderBy(desc(tape_coil_production.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: `tape_coil_production of ${req.params.section}`,
-	};
-	handleResponse({ promise: tapeCoilProductionPromise, res, next, ...toast });
+	try {
+		const data = await tapeCoilProductionPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil_production',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

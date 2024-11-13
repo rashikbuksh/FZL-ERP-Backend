@@ -1,7 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -102,17 +101,18 @@ export async function selectAll(req, res, next) {
 		.leftJoin(hrSchema.users, eq(party.created_by, hrSchema.users.uuid))
 		.orderBy(desc(party.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Party list',
-	};
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Party list',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

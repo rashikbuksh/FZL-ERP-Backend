@@ -1,7 +1,7 @@
 import SE from '../../../util/swagger_example.js';
 // * Public Buyer * //
 const pathPublicBuyer = {
-	'/public/public/buyer': {
+	'/public/buyer': {
 		get: {
 			summary: 'Get all buyers',
 			tags: ['public.buyer'],
@@ -44,7 +44,7 @@ const pathPublicBuyer = {
 			},
 		},
 	},
-	'/public/buyer/{uuid}': {
+	'/public/{uuid}': {
 		get: {
 			summary: 'Get a buyer',
 			tags: ['public.buyer'],

@@ -2,7 +2,6 @@ import { and, desc, eq, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -302,10 +301,15 @@ export async function selectByNylon(req, res, next) {
 		)
 		.where(eq(sql`lower(item_properties.name)`, 'nylon'));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'tape_coil',
-	};
-	handleResponse({ promise: tapeCoilPromise, res, next, ...toast });
+	try {
+		const data = await tapeCoilPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil by nylon',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

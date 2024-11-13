@@ -2,7 +2,6 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -135,13 +134,18 @@ export async function selectAll(req, res, next) {
 		.leftJoin(hrSchema.users, eq(planning.created_by, hrSchema.users.uuid))
 		.orderBy(desc(planning.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'planning list',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'planning list',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -188,13 +192,18 @@ export async function selectPlanningByPlanningWeek(req, res, next) {
 		.leftJoin(hrSchema.users, eq(planning.created_by, hrSchema.users.uuid))
 		.where(eq(planning.week, req.params.planning_week));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'planning',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'planning by planning week',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectPlanningAndPlanningEntryByPlanningWeek(

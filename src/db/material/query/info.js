@@ -2,7 +2,6 @@ import { asc, desc, eq } from 'drizzle-orm';
 import { description } from '../../../db/purchase/schema.js';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';

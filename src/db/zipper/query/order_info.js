@@ -1,6 +1,5 @@
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
@@ -222,18 +221,18 @@ export async function selectAll(req, res, next) {
 		)
 		.orderBy(desc(order_info.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Order Info',
-	};
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Info list',
+		};
 
-	handleResponse({
-		promise: orderInfoPromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

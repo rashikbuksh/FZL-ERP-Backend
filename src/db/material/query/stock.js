@@ -2,7 +2,6 @@ import { desc, eq, gt, lt, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
@@ -115,14 +114,18 @@ export async function selectAll(req, res, next) {
 		.from(stock)
 		.leftJoin(info, eq(stock.material_uuid, info.uuid))
 		.orderBy(desc(stock.created_at));
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Stock list',
+		};
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Stock list',
-	};
-
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -194,14 +197,18 @@ export async function selectMaterialBelowThreshold(req, res, next) {
 		.from(stock)
 		.innerJoin(info, eq(stock.material_uuid, info.uuid))
 		.where(lt(stock.stock, info.threshold));
+	try {
+		const data = await stockPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Material below threshold',
+		};
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Material below threshold',
-	};
-
-	handleResponse({ promise: stockPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectMaterialStockForAFieldName(req, res, next) {
@@ -223,13 +230,18 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 		.leftJoin(info, eq(stock.material_uuid, info.uuid))
 		.where(sql`stock.${sql.raw(fieldName)} > 0`);
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Stock',
-	};
+	try {
+		const data = await stockPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Stock',
+		};
 
-	handleResponse({ promise: stockPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectMaterialStockForMultiFieldNames(req, res, next) {

@@ -2,7 +2,6 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -156,13 +155,20 @@ export async function selectAll(req, res, next) {
 		.leftJoin(stock, eq(used.material_uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid))
 		.orderBy(desc(used.created_at));
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Used list',
-	};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Used list',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -286,14 +292,19 @@ export async function selectUsedBySection(req, res, next) {
 		.leftJoin(stock, eq(used.material_uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(used.created_by, hrSchema.users.uuid))
 		.where(eq(used.section, req.params.section));
+	try {
+		const data = await usedPromise;
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Used',
-	};
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Used',
+		};
 
-	handleResponse({ promise: usedPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectUsedForMultipleSection(req, res, next) {

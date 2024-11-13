@@ -2,7 +2,6 @@ import { asc, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as deliverySchema from '../../delivery/schema.js';
@@ -164,18 +163,18 @@ export async function selectAll(req, res, next) {
 		.from(order_entry)
 		.orderBy(desc(order_entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Order entry list',
-	};
+	try {
+		const data = await order_entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Entry',
+		};
 
-	handleResponse({
-		promise: order_entryPromise,
-		res,
-		next,
-		...toast,
-	});
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

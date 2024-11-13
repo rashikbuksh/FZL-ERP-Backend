@@ -2,7 +2,6 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -99,14 +98,17 @@ export async function selectAll(req, res, next) {
 			eq(shade_recipe.created_by, hrSchema.users.uuid)
 		)
 		.orderBy(desc(shade_recipe.created_at));
-
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'shade_recipe list',
-	};
-
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'shade_recipe list',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -178,7 +180,6 @@ export async function selectShadeRecipeDetailsByShadeRecipeUuid(
 		const response = {
 			...shade_recipe?.data?.data,
 			shade_recipe_entry: shade_recipe_entry?.data?.data || [],
-
 		};
 
 		const toast = {
