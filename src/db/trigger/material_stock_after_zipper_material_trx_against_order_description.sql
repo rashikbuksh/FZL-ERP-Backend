@@ -7,6 +7,14 @@ BEGIN
         stock = stock - NEW.trx_quantity
     WHERE material_uuid = NEW.material_uuid;
 
+    IF (NEW.booking_uuid IS NOT NULL) THEN
+        UPDATE zipper.booking
+        SET
+            quantity = quantity - NEW.trx_quantity,
+            trx_quantity = trx_quantity + NEW.trx_quantity
+        WHERE uuid = NEW.booking_uuid;
+    END IF;
+
     -- update slider.slider_assembly if material is present in die casting
     IF (NEW.trx_to = 'slider_assembly') THEN
         UPDATE slider.assembly_stock
@@ -36,6 +44,18 @@ BEGIN
             - NEW.trx_quantity
             + OLD.trx_quantity
     WHERE material_uuid = NEW.material_uuid;
+
+    IF (NEW.booking_uuid IS NOT NULL) THEN
+        UPDATE zipper.booking
+        SET
+            quantity = quantity 
+                - NEW.trx_quantity
+                + OLD.trx_quantity,
+            trx_quantity = trx_quantity
+                + NEW.trx_quantity
+                - OLD.trx_quantity
+        WHERE uuid = NEW.booking_uuid;
+    END IF;
 
     -- update slider.slider_assembly if material is present in die casting
     IF (NEW.trx_to = 'slider_assembly') THEN
@@ -70,6 +90,14 @@ BEGIN
     SET
         stock = stock + OLD.trx_quantity
     WHERE material_uuid = OLD.material_uuid;
+
+    IF (OLD.booking_uuid IS NOT NULL) THEN
+        UPDATE zipper.booking
+        SET
+            quantity = quantity + OLD.trx_quantity,
+            trx_quantity = trx_quantity - OLD.trx_quantity
+        WHERE uuid = OLD.booking_uuid;
+    END IF;
 
     -- update slider.slider_assembly if material is present in die casting
     IF (OLD.trx_to = 'slider_assembly') THEN
