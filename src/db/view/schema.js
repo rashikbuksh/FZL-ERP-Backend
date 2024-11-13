@@ -291,7 +291,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
       users.name AS created_by_name,
       packing_list.created_at,
       packing_list.updated_at,
-      packing_list.remarks
+      packing_list.remarks,
+      packing_list.gate_pass
   FROM
       delivery.packing_list
   LEFT JOIN
