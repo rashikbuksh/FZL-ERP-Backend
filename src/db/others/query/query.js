@@ -1498,7 +1498,7 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	query.append(sql`)`);
 
 	if (received == 'true') {
-		query.append(sql` AND pl.is_warehouse_received = 1`);
+		query.append(sql` AND pl.is_warehouse_received = true`);
 	}
 
 	const packingListPromise = db.execute(query);
