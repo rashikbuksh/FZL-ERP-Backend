@@ -215,7 +215,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         pl.remarks,
         pl.is_warehouse_received,
         CASE WHEN pl.challan_uuid IS NOT NULL THEN CONCAT('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) ELSE NULL END as challan_number,
-        ch.gate_pass,
+        pl.gate_pass,
         ch.receive_status,
         ple.uuid as packing_list_entry_uuid,
         ple.sfg_uuid,
