@@ -5,10 +5,10 @@ import {
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
-import * as publicSchema from '../../public/schema.js';
 import db from '../../index.js';
+import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { booking, info } from '../schema.js';
+import { booking, info, stock } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -83,8 +83,11 @@ export async function selectAll(req, res, next) {
 			id: booking.id,
 			material_uuid: booking.material_uuid,
 			material_name: info.name,
+			short_name: info.short_name,
 			marketing_uuid: booking.marketing_uuid,
 			marketing_name: publicSchema.marketing.name,
+			unit: info.unit,
+			stock: decimalToNumber(stock.stock),
 			quantity: decimalToNumber(booking.quantity),
 			trx_quantity: decimalToNumber(booking.trx_quantity),
 			created_by: booking.created_by,
@@ -96,6 +99,7 @@ export async function selectAll(req, res, next) {
 		.from(booking)
 		.leftJoin(hrSchema.users, eq(booking.created_by, hrSchema.users.uuid))
 		.leftJoin(info, eq(booking.material_uuid, info.uuid))
+		.leftJoin(stock, eq(booking.material_uuid, stock.material_uuid))
 		.leftJoin(
 			publicSchema.marketing,
 			eq(booking.marketing_uuid, publicSchema.marketing.uuid)
@@ -123,8 +127,11 @@ export async function select(req, res, next) {
 			id: booking.id,
 			material_uuid: booking.material_uuid,
 			material_name: info.name,
+			short_name: info.short_name,
 			marketing_uuid: booking.marketing_uuid,
 			marketing_name: publicSchema.marketing.name,
+			unit: info.unit,
+			stock: decimalToNumber(stock.stock),
 			quantity: decimalToNumber(booking.quantity),
 			trx_quantity: decimalToNumber(booking.trx_quantity),
 			created_by: booking.created_by,
@@ -136,6 +143,7 @@ export async function select(req, res, next) {
 		.from(booking)
 		.leftJoin(hrSchema.users, eq(booking.created_by, hrSchema.users.uuid))
 		.leftJoin(info, eq(booking.material_uuid, info.uuid))
+		.leftJoin(stock, eq(booking.material_uuid, stock.material_uuid))
 		.leftJoin(
 			publicSchema.marketing,
 			eq(booking.marketing_uuid, publicSchema.marketing.uuid)
