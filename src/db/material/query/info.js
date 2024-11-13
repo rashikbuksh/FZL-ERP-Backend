@@ -8,7 +8,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { info, section, stock, type } from '../schema.js';
+import { booking, info, section, stock, type } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -87,6 +87,7 @@ export async function selectAll(req, res, next) {
 			name: info.name,
 			short_name: info.short_name,
 			stock: decimalToNumber(stock.stock),
+			booking_quantity: decimalToNumber(booking.quantity),
 			unit: info.unit,
 			threshold: decimalToNumber(info.threshold),
 			is_priority_material: info.is_priority_material,
@@ -103,14 +104,20 @@ export async function selectAll(req, res, next) {
 		.leftJoin(type, eq(info.type_uuid, type.uuid))
 		.leftJoin(stock, eq(info.uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+		.leftJoin(booking, eq(info.uuid, booking.material_uuid))
 		.orderBy(asc(info.name));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Info list',
-	};
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Info',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -126,6 +133,7 @@ export async function select(req, res, next) {
 			name: info.name,
 			short_name: info.short_name,
 			stock: decimalToNumber(stock.stock),
+			booking_quantity: decimalToNumber(booking.quantity),
 			unit: info.unit,
 			threshold: decimalToNumber(info.threshold),
 			is_priority_material: info.is_priority_material,
@@ -142,6 +150,7 @@ export async function select(req, res, next) {
 		.leftJoin(type, eq(info.type_uuid, type.uuid))
 		.leftJoin(stock, eq(info.uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
+		.leftJoin(booking, eq(info.uuid, booking.material_uuid))
 		.where(eq(info.uuid, req.params.uuid));
 
 	try {
