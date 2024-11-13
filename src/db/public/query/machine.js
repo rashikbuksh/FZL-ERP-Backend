@@ -2,7 +2,6 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -91,7 +90,7 @@ export async function selectAll(req, res, next) {
 			is_sample: machine.is_sample,
 			max_capacity: decimalToNumber(machine.max_capacity),
 			min_capacity: decimalToNumber(machine.min_capacity),
-			water_capacity:decimalToNumber(machine.water_capacity),
+			water_capacity: decimalToNumber(machine.water_capacity),
 			created_by: machine.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: machine.created_at,
@@ -102,13 +101,18 @@ export async function selectAll(req, res, next) {
 		.leftJoin(hrSchema.users, eq(machine.created_by, hrSchema.users.uuid))
 		.orderBy(desc(machine.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Machine list',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Machine',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

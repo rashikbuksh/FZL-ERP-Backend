@@ -2,7 +2,6 @@ import { asc, desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -143,13 +142,17 @@ export async function selectAll(req, res, next) {
 		)
 		.orderBy(asc(order_entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'order_entry list',
-	};
-
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'order_entry list',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -277,11 +280,15 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 		)
 		.where(eq(order_entry.order_info_uuid, req.params.order_info_uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'order_entry detail',
-	};
-
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'order_entry list',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

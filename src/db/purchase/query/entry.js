@@ -1,7 +1,6 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -98,13 +97,18 @@ export async function selectAll(req, res, next) {
 		)
 		.orderBy(desc(entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Entry list',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Entry list',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -173,11 +177,16 @@ export async function selectEntryByPurchaseDescriptionUuid(req, res, next) {
 		)
 		.orderBy(desc(entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Entry',
-	};
+	try {
+		const data = await entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Entry by purchase description uuid',
+		};
 
-	handleResponse({ promise: entryPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

@@ -2,7 +2,6 @@ import { and, eq, min, or, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
@@ -38,18 +37,17 @@ export async function selectMachine(req, res, next) {
 			min_capacity: decimalToNumber(publicSchema.machine.min_capacity),
 		})
 		.from(publicSchema.machine);
-
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Machine list',
-	};
-	handleResponse({
-		promise: machinePromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await machinePromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Machine list',
+		};
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectParty(req, res, next) {
@@ -105,13 +103,18 @@ export async function selectMarketingUser(req, res, next) {
 		)
 		.where(eq(hrSchema.department.department, 'Sales And Marketing'));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'marketing user',
-	};
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'marketing user',
+		};
 
-	handleResponse({ promise: userPromise, res, next, ...toast });
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectBuyer(req, res, next) {
@@ -122,17 +125,17 @@ export async function selectBuyer(req, res, next) {
 		})
 		.from(publicSchema.buyer);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Buyer list',
-	};
-	handleResponse({
-		promise: buyerPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await buyerPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Buyer list',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectSpecificMerchandiser(req, res, next) {
@@ -745,17 +748,19 @@ export async function selectMaterialSection(req, res, next) {
 		})
 		.from(materialSchema.section);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Section list',
-	};
-	handleResponse({
-		promise: sectionPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await sectionPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Section list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectMaterialType(req, res, next) {
@@ -766,17 +771,19 @@ export async function selectMaterialType(req, res, next) {
 		})
 		.from(materialSchema.type);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Type list',
-	};
-	handleResponse({
-		promise: typePromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await typePromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Type list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectMaterial(req, res, next) {
@@ -839,17 +846,19 @@ export async function selectBank(req, res, next) {
 		})
 		.from(commercialSchema.bank);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Bank list',
-	};
-	handleResponse({
-		promise: bankPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await bankPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Bank list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectLCByPartyUuid(req, res, next) {
@@ -861,17 +870,19 @@ export async function selectLCByPartyUuid(req, res, next) {
 		.from(commercialSchema.lc)
 		.where(eq(commercialSchema.lc.party_uuid, req.params.party_uuid));
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'LC list of a party',
-	};
-	handleResponse({
-		promise: lcPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await lcPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'LC list',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectPi(req, res, next) {
@@ -941,17 +952,19 @@ export async function selectDepartment(req, res, next) {
 		})
 		.from(hrSchema.department);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Department list',
-	};
-	handleResponse({
-		promise: departmentPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await departmentPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Department list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 //* HR User *//
 export async function selectHrUser(req, res, next) {
@@ -997,17 +1010,19 @@ export async function selectDesignation(req, res, next) {
 		})
 		.from(hrSchema.designation);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Designation list',
-	};
-	handleResponse({
-		promise: Designation,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await Designation;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Designation list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 // * Lab Dip * //
@@ -1143,18 +1158,19 @@ export async function selectLabDipInfo(req, res, next) {
 		})
 		.from(labDipSchema.info);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Info list',
-	};
+	try {
+		const data = await InfoPromise;
 
-	handleResponse({
-		promise: InfoPromise,
-		res,
-		next,
-		...toast,
-	});
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Lab Dip Info list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 // * Slider * //
@@ -1419,18 +1435,19 @@ export async function selectBatchId(req, res, next) {
 		})
 		.from(threadSchema.batch);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Batch Id list',
-	};
+	try {
+		const data = await batchIdPromise;
 
-	handleResponse({
-		promise: batchIdPromise,
-		res,
-		next,
-		...toast,
-	});
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Batch Id list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 // Dyes Category
@@ -1442,17 +1459,19 @@ export async function selectDyesCategory(req, res, next) {
 		})
 		.from(threadSchema.dyes_category);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Dyes Category list',
-	};
-	handleResponse({
-		promise: dyesCategoryPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await dyesCategoryPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Dyes Category list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 // * Delivery * //
@@ -1506,17 +1525,19 @@ export async function selectVehicle(req, res, next) {
 		})
 		.from(deliverySchema.vehicle);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Vehicle list',
-	};
-	handleResponse({
-		promise: vehiclePromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await vehiclePromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Vehicle list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function selectCarton(req, res, next) {
@@ -1527,15 +1548,17 @@ export async function selectCarton(req, res, next) {
 		})
 		.from(deliverySchema.carton);
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Carton list',
-	};
-	handleResponse({
-		promise: cartonPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await cartonPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Carton list',
+		};
+
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }

@@ -1,7 +1,6 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 
@@ -98,13 +97,19 @@ export async function selectAll(req, res, next) {
 		)
 		.orderBy(desc(batch_entry_trx.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select all',
-		message: 'batch_entry_trx list',
-	};
+	try {
+		const data = await resultPromise;
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'batch_entry_trx list',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {

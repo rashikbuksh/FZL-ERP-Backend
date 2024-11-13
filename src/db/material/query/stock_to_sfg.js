@@ -1,7 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';

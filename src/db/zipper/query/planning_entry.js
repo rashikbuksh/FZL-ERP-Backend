@@ -1,7 +1,6 @@
 import { and, desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
-	handleResponse,
 	validateRequest,
 } from '../../../util/index.js';
 import db from '../../index.js';
@@ -162,17 +161,18 @@ export async function selectAll(req, res, next) {
 		.leftJoin(planning, eq(planning.uuid, planning_entry.planning_week))
 		.orderBy(desc(planning_entry.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'batch entry list',
-	};
-	handleResponse({
-		promise: resultPromise,
-		res,
-		next,
-		...toast,
-	});
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'planning_entry',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
