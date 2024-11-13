@@ -1,9 +1,6 @@
 import { and, eq, min, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 // * Zipper Production Status Report
@@ -132,8 +129,8 @@ export async function zipperProductionStatusReport(req, res, next) {
                     sfg.uuid as sfg_uuid,
                     od.uuid as order_description_uuid,
                     oe.uuid as order_entry_uuid,
-                    SUM(CASE WHEN challan.gate_pass = 1 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
-                    SUM(CASE WHEN challan.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
+                    SUM(CASE WHEN packing_list.gate_pass = 1 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
+                    SUM(CASE WHEN packing_list.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
                     SUM(packing_list_entry.short_quantity)AS total_short_quantity,
                     SUM(packing_list_entry.reject_quantity) AS total_reject_quantity
                 FROM
@@ -208,7 +205,7 @@ export async function dailyChallanReport(req, res, next) {
                 challan.uuid,
                 challan.created_at AS challan_date,
                 concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
-                challan.gate_pass,
+                packing_list.gate_pass,
                 challan.created_by,
                 users.name AS created_by_name,
                 challan.order_info_uuid,
