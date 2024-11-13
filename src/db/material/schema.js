@@ -15,7 +15,7 @@ import {
 
 import * as hrSchema from '../hr/schema.js';
 import * as zipperSchema from '../zipper/schema.js';
-import { marketing } from '../public/schema.js';
+import * as publicSchema from '../public/schema.js';
 
 const material = pgSchema('material');
 
@@ -296,7 +296,7 @@ export const booking = material.table('booking', {
 		.references(() => info.uuid)
 		.default(null),
 	marketing_uuid: defaultUUID('marketing_uuid')
-		.references(() => marketing.uuid)
+		.references(() => publicSchema.marketing.uuid)
 		.default(null),
 	quantity: PG_DECIMAL('quantity').notNull(),
 	trx_quantity: PG_DECIMAL('trx_quantity').notNull(),

@@ -166,6 +166,30 @@ export const defMaterialStockToSfg = SED({
 	},
 	xml: 'Material/StockToSfg',
 });
+export const defMaterialBooking = SED({
+	required: [
+		'uuid',
+		'material_uuid',
+		'marketing_uuid',
+		'quantity',
+		'trx_quantity',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		id: SE.number(1),
+		material_uuid: SE.uuid(),
+		marketing_uuid: SE.uuid(),
+		quantity: SE.number(1000.0),
+		trx_quantity: SE.number(1000.0),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Material/Booking',
+});
 
 // * Marge All
 
@@ -177,6 +201,7 @@ export const defMaterial = {
 	trx: defMaterialTrx,
 	used: defMaterialUsed,
 	stock_to_sfg: defMaterialStockToSfg,
+	booking: defMaterialBooking,
 };
 
 // * Tag
@@ -232,5 +257,9 @@ export const tagMaterial = [
 	{
 		name: 'material.stock_to_sfg',
 		description: 'Material Stock to SFG',
+	},
+	{
+		name: 'material.booking',
+		description: 'Material Booking',
 	},
 ];
