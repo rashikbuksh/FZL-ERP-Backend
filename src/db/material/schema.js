@@ -14,8 +14,8 @@ import {
 } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
-import * as zipperSchema from '../zipper/schema.js';
 import * as publicSchema from '../public/schema.js';
+import * as zipperSchema from '../zipper/schema.js';
 
 const material = pgSchema('material');
 
@@ -248,6 +248,9 @@ export const trx = material.table('trx', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	booking_uuid: defaultUUID('booking_uuid')
+		.references(() => booking.uuid)
+		.default(null),
 });
 
 export const used = material.table('used', {
@@ -291,7 +294,7 @@ export const stock_to_sfg = material.table('stock_to_sfg', {
 // booking
 export const booking = material.table('booking', {
 	uuid: uuid_primary,
-	id: serial('id').notNull().unique(),
+	id: serial('id').notNull(),
 	material_uuid: defaultUUID('material_uuid')
 		.references(() => info.uuid)
 		.default(null),
@@ -299,7 +302,7 @@ export const booking = material.table('booking', {
 		.references(() => publicSchema.marketing.uuid)
 		.default(null),
 	quantity: PG_DECIMAL('quantity').notNull(),
-	trx_quantity: PG_DECIMAL('trx_quantity').notNull(),
+	trx_quantity: PG_DECIMAL('trx_quantity').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
