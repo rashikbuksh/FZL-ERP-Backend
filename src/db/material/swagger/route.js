@@ -1,3 +1,5 @@
+import SE, { SED } from '../../../util/swagger_example.js';
+
 // * Material Info * //
 
 export const pathMaterialInfo = {
@@ -860,6 +862,8 @@ export const pathMaterialTrx = {
 										type: 'string',
 										example: 'This is an entry',
 									},
+									booking_uuid: SE.uuid(),
+									booking_number: SE.string('MB24-0001'),
 								},
 							},
 						},
@@ -873,18 +877,7 @@ export const pathMaterialTrx = {
 			description: 'Create a new material trx',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					in: 'body',
-					name: 'body',
-					description:
-						'Material trx object that needs to be added to the material.trx',
-					required: true,
-					schema: {
-						$ref: '#/definitions/material/trx',
-					},
-				},
-			],
+			parameters: [SE.requestBody_schema_ref('material/trx')],
 			responses: {
 				200: {
 					description: 'successful operation',
@@ -973,6 +966,8 @@ export const pathMaterialTrx = {
 								type: 'string',
 								example: 'This is an entry',
 							},
+							booking_uuid: SE.uuid(),
+							booking_number: SE.string('MB24-0001'),
 						},
 					},
 				},
@@ -1034,6 +1029,7 @@ export const pathMaterialTrx = {
 								type: 'string',
 								example: 'This is an entry',
 							},
+							booking_uuid: SE.uuid(),
 						},
 					},
 				},
@@ -1045,15 +1041,9 @@ export const pathMaterialTrx = {
 						$ref: '#/definitions/material/trx',
 					},
 				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material trx not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1061,23 +1051,12 @@ export const pathMaterialTrx = {
 			summary: 'Delete a material trx',
 			description: 'Delete a material trx',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material trx to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_params('uuid', 'uuid', 'string')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material trx not found',
-				},
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1089,21 +1068,8 @@ export const pathMaterialTrx = {
 				'Get selected material trx by material uuid and trx_to',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'material_uuid',
-					in: 'path',
-					description: ' material uuid to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-				{
-					name: 'trx_to',
-					in: 'path',
-					description: ' trx_to to get',
-					required: true,
-					type: 'string',
-				},
+				SE.parameter_params('material_uuid', 'material_uuid', 'string'),
+				SE.parameter_params('trx_to', 'trx_to', 'string'),
 			],
 			responses: {
 				200: {

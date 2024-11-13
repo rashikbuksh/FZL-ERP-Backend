@@ -109,15 +109,26 @@ export async function selectAll(req, res, next) {
 			finishing_batch.remarks,
 			ss.uuid as stock_uuid,
 			ss.batch_quantity as stock_batch_quantity,
-			finishing_batch_entry_total.total_batch_quantity
+			finishing_batch_entry_total.total_batch_quantity,
+			finishing_batch_entry_total.colors
 		FROM zipper.finishing_batch
 		LEFT JOIN zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN slider.stock ss ON finishing_batch.uuid = ss.finishing_batch_uuid
 		LEFT JOIN hr.users ON finishing_batch.created_by = users.uuid
 		LEFT JOIN (
-			SELECT finishing_batch_entry.finishing_batch_uuid, sum(finishing_batch_entry.quantity) as total_batch_quantity
-			FROM zipper.finishing_batch_entry
-			GROUP BY finishing_batch_entry.finishing_batch_uuid
+			SELECT 
+				finishing_batch_entry.finishing_batch_uuid, 
+				SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
+				(
+					SELECT ARRAY_AGG(DISTINCT oe.color) 
+					FROM zipper.order_entry oe 
+					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+					WHERE sfg.uuid = finishing_batch_entry.sfg_uuid
+				) AS colors
+			FROM 
+				zipper.finishing_batch_entry
+			GROUP BY 
+				finishing_batch_entry.finishing_batch_uuid, finishing_batch_entry.sfg_uuid
 		) as finishing_batch_entry_total ON finishing_batch.uuid = finishing_batch_entry_total.finishing_batch_uuid
 		ORDER BY finishing_batch.created_at DESC
 	`;

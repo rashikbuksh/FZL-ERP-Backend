@@ -1,4 +1,4 @@
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import {
 	handleError,
 	handleResponse,
@@ -7,7 +7,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { info, stock, trx } from '../schema.js';
+import { booking, info, stock, trx } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -123,6 +123,8 @@ export async function selectAll(req, res, next) {
 			created_at: trx.created_at,
 			updated_at: trx.updated_at,
 			remarks: trx.remarks,
+			booking_uuid: trx.booking_uuid,
+			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text))`,
 		})
 		.from(trx)
 		.leftJoin(info, eq(trx.material_uuid, info.uuid))
@@ -136,15 +138,21 @@ export async function selectAll(req, res, next) {
 			hrSchema.department,
 			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
 		)
+		.leftJoin(booking, eq(trx.booking_uuid, booking.uuid))
 		.orderBy(desc(trx.created_at));
 
-	const toast = {
-		status: 200,
-		type: 'select_all',
-		message: 'Trx list',
-	};
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'trx',
+		};
 
-	handleResponse({ promise: resultPromise, res, next, ...toast });
+		res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
 
 export async function select(req, res, next) {
@@ -166,6 +174,8 @@ export async function select(req, res, next) {
 			created_at: trx.created_at,
 			updated_at: trx.updated_at,
 			remarks: trx.remarks,
+			booking_uuid: trx.booking_uuid,
+			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text))`,
 		})
 		.from(trx)
 		.leftJoin(info, eq(trx.material_uuid, info.uuid))
@@ -179,6 +189,7 @@ export async function select(req, res, next) {
 			hrSchema.department,
 			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
 		)
+		.leftJoin(booking, eq(trx.booking_uuid, booking.uuid))
 		.where(eq(trx.uuid, req.params.uuid));
 
 	try {
@@ -203,6 +214,8 @@ export async function selectMaterialTrxByMaterialTrxTo(req, res, next) {
 			uuid: trx.uuid,
 			material_uuid: trx.material_uuid,
 			material_name: info.name,
+			unit: info.unit,
+			stock: decimalToNumber(stock.stock),
 			trx_to: trx.trx_to,
 			trx_quantity: decimalToNumber(trx.trx_quantity),
 			created_by: trx.created_by,
@@ -212,9 +225,12 @@ export async function selectMaterialTrxByMaterialTrxTo(req, res, next) {
 			created_at: trx.created_at,
 			updated_at: trx.updated_at,
 			remarks: trx.remarks,
+			booking_uuid: trx.booking_uuid,
+			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text))`,
 		})
 		.from(trx)
 		.leftJoin(info, eq(trx.material_uuid, info.uuid))
+		.leftJoin(stock, eq(trx.material_uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(trx.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			hrSchema.designation,
@@ -224,15 +240,21 @@ export async function selectMaterialTrxByMaterialTrxTo(req, res, next) {
 			hrSchema.department,
 			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
 		)
+		.leftJoin(booking, eq(trx.booking_uuid, booking.uuid))
 		.where(
 			and(eq(stock.material_uuid, material_uuid), eq(trx.trx_to, trx_to))
 		);
 
-	const toast = {
-		status: 200,
-		type: 'select',
-		message: 'Trx',
-	};
+	try {
+		const data = await trxPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'trx',
+		};
 
-	handleResponse({ promise: trxPromise, res, next, ...toast });
+		res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
 }
