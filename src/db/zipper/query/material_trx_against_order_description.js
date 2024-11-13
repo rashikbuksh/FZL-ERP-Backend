@@ -1,9 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
 import { material_trx_against_order_description } from '../schema.js';
@@ -128,7 +125,9 @@ export async function selectAll(req, res, next) {
         users.name as created_by_name,
         mtaod.created_at,
         mtaod.updated_at,
-		mtaod.remarks
+		mtaod.remarks,
+		mtaod.booking_uuid,
+		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
@@ -177,7 +176,9 @@ export async function select(req, res, next) {
         users.name as created_by_name,
         mtaod.created_at,
         mtaod.updated_at,
-		mtaod.remarks
+		mtaod.remarks,
+		mtaod.booking_uuid,
+		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
@@ -227,7 +228,9 @@ export async function selectMaterialTrxLogAgainstOrderByTrxTo(req, res, next) {
         users.name as created_by_name,
         mtaod.created_at,
         mtaod.updated_at,
-		mtaod.remarks
+		mtaod.remarks,
+		mtaod.booking_uuid,
+		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN

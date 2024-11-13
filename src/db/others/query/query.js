@@ -1,9 +1,6 @@
 import { and, eq, min, or, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 
@@ -1479,7 +1476,7 @@ export async function selectDyesCategory(req, res, next) {
 export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	const { order_info_uuid } = req.params;
 
-	const { challan_uuid } = req.query;
+	const { challan_uuid, received } = req.query;
 
 	let query = sql`
 	SELECT
@@ -1498,7 +1495,11 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	) {
 		query.append(sql` OR pl.challan_uuid = ${challan_uuid}`);
 	}
-	query.append(sql`);`);
+	query.append(sql`)`);
+
+	if (received == 'true') {
+		query.append(sql` AND pl.is_warehouse_received = 1`);
+	}
 
 	const packingListPromise = db.execute(query);
 

@@ -578,6 +578,9 @@ export const material_trx_against_order_description = zipper.table(
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
 		remarks: text('remarks').default(null),
+		booking_uuid: defaultUUID('booking_uuid')
+			.references(() => materialSchema.booking.uuid)
+			.default(null),
 	}
 );
 

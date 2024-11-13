@@ -1411,6 +1411,7 @@ const pathDelivery = {
 						'challan_uuid',
 						'2ggcphnwHGzEUGy'
 					),
+					SE.parameter_query('received', 'received', [true, false]),
 				],
 				responses: {
 					200: {
