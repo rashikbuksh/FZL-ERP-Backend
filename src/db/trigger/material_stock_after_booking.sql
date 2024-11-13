@@ -4,7 +4,7 @@ BEGIN
     SET 
         stock = stock - NEW.quantity,
         booking = booking + NEW.quantity
-    WHERE material_uuid = (SELECT uuid FROM material.info WHERE uuid = NEW.material_uuid);
+    WHERE material_uuid = NEW.material_uuid;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -16,7 +16,7 @@ BEGIN
     SET 
         stock = stock + OLD.quantity - NEW.quantity,
         booking = booking + NEW.quantity - OLD.quantity
-    WHERE material_uuid = (SELECT uuid FROM material.info WHERE uuid = NEW.material_uuid);
+    WHERE material_uuid =  NEW.material_uuid;
     RETURN NEW;
 END;
 
@@ -30,7 +30,7 @@ BEGIN
     SET 
         stock = stock + OLD.quantity,
         booking = booking - OLD.quantity
-    WHERE material_uuid = (SELECT uuid FROM material.info WHERE uuid = OLD.material_uuid);
+    WHERE material_uuid =  OLD.material_uuid;
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;

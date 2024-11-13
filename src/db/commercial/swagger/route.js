@@ -486,6 +486,29 @@ export const pathCommercialLcEntry = {
 			},
 		},
 	},
+	'/commercial/lc-entry/by/lc-number/{lc_number}': {
+		get: {
+			tags: ['commercial.lc_entry'],
+			summary: 'Get a lc entry by lc_number',
+			description: ' Get a lc entry by lc_number',
+			//operationId: "getLcEntryByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Get data using uuid',
+					'lc_number',
+					'string',
+					'77'
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/lc_entry'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
 };
 
 // * Commercial LC Entry Others * //
@@ -581,6 +604,29 @@ export const pathCommercialLcEntryOthers = {
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params('Get data using uuid', 'lc_uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/lc_entry_others'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+	'/commercial/lc-entry-others/by/lc-number/{lc_number}': {
+		get: {
+			tags: ['commercial.lc_entry_others'],
+			summary: 'Get a lc entry others by lc_number',
+			description: ' Get a lc entry others by lc_number',
+			//operationId: "getLcEntryOthersByUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Get data using uuid',
+					'lc_number',
+					'string',
+					'77'
+				),
 			],
 			responses: {
 				200: SE.response_schema_ref(200, 'commercial/lc_entry_others'),
