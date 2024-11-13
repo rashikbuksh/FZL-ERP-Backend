@@ -2220,6 +2220,259 @@ export const pathMaterialStockToSFG = {
 	},
 };
 
+export const pathMaterialBooking = {
+	'/material/booking': {
+		get: {
+			tags: ['material.booking'],
+			summary: 'Get all material booking',
+			description: 'Get all material booking',
+			responses: {
+				200: {
+					description: 'Returns all material booking',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									id: { type: 'number', example: 1 },
+									material_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									material_name: {
+										type: 'string',
+										example: 'material 1',
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'marketing 1',
+									},
+									quantity: { type: 'number', example: 10.0 },
+									trx_quantity: {
+										type: 'number',
+										example: 10.0,
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'admin',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'This is an entry',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['material.booking'],
+			summary: 'Create a new material booking',
+			description: 'Create a new material booking',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/booking',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/material/booking',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+
+	'/material/booking/{uuid}': {
+		get: {
+			tags: ['material.booking'],
+			summary: 'Get material booking by uuid',
+			description: 'Get material booking by uuid',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' material booking to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+				},
+			],
+
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'object',
+						properties: {
+							uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							id: { type: 'number', example: 1 },
+							material_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							material_name: {
+								type: 'string',
+								example: 'material 1',
+							},
+							marketing_uuid: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							marketing_name: {
+								type: 'string',
+								example: 'marketing 1',
+							},
+							quantity: { type: 'number', example: 10.0 },
+							trx_quantity: {
+								type: 'number',
+								example: 10.0,
+							},
+							created_by: {
+								type: 'string',
+								example: 'igD0v9DIJQhJeet',
+							},
+							created_by_name: {
+								type: 'string',
+								example: 'admin',
+							},
+							created_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							updated_at: {
+								type: 'string',
+								format: 'date-time',
+								example: '2024-01-01 00:00:00',
+							},
+							remarks: {
+								type: 'string',
+								example: 'This is an entry',
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material booking not found',
+				},
+			},
+		},
+		put: {
+			tags: ['material.booking'],
+			summary: 'Update an existing material booking',
+			description: 'Update an existing material booking',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'material booking to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/material/booking',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						$ref: '#/definitions/material/booking',
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material booking not found',
+				},
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+		delete: {
+			tags: ['material.booking'],
+			summary: 'Delete a material booking',
+			description: 'Delete a material booking',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'material booking to delete',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Material booking not found',
+				},
+			},
+		},
+	},
+};
+
 export const pathMaterial = {
 	...pathMaterialInfo,
 	...pathMaterialSection,
@@ -2228,4 +2481,5 @@ export const pathMaterial = {
 	...pathMaterialType,
 	...pathMaterialUsed,
 	...pathMaterialStockToSFG,
+	...pathMaterialBooking,
 };

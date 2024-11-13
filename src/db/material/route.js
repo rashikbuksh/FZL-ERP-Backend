@@ -6,6 +6,7 @@ import * as stockToSfgOperations from './query/stock_to_sfg.js';
 import * as trxOperations from './query/trx.js';
 import * as typeOperations from './query/type.js';
 import * as usedOperations from './query/used.js';
+import * as bookingOperations from './query/booking.js';
 import material from './schema.js';
 
 const materialRouter = Router();
@@ -25,10 +26,7 @@ materialRouter.delete(
 // section routes
 
 materialRouter.get('/section', sectionOperations.selectAll);
-materialRouter.get(
-	'/section/:uuid',
-	sectionOperations.select
-);
+materialRouter.get('/section/:uuid', sectionOperations.select);
 materialRouter.post('/section', sectionOperations.insert);
 materialRouter.put('/section/:uuid', sectionOperations.update);
 materialRouter.delete(
@@ -112,6 +110,18 @@ materialRouter.delete(
 	'/stock-to-sfg/:uuid',
 
 	stockToSfgOperations.remove
+);
+
+// booking routes
+
+materialRouter.get('/booking', bookingOperations.selectAll);
+materialRouter.get('/booking/:uuid', bookingOperations.select);
+materialRouter.post('/booking', bookingOperations.insert);
+materialRouter.put('/booking/:uuid', bookingOperations.update);
+materialRouter.delete(
+	'/booking/:uuid',
+
+	bookingOperations.remove
 );
 
 export { materialRouter };
