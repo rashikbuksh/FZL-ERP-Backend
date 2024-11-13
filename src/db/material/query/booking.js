@@ -90,6 +90,9 @@ export async function selectAll(req, res, next) {
 			stock: decimalToNumber(stock.stock),
 			quantity: decimalToNumber(booking.quantity),
 			trx_quantity: decimalToNumber(booking.trx_quantity),
+			max_quantity:
+				decimalToNumber(stock.stock) +
+				decimalToNumber(booking.quantity),
 			created_by: booking.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: booking.created_at,
@@ -134,6 +137,9 @@ export async function select(req, res, next) {
 			stock: decimalToNumber(stock.stock),
 			quantity: decimalToNumber(booking.quantity),
 			trx_quantity: decimalToNumber(booking.trx_quantity),
+			max_quantity:
+				decimalToNumber(stock.stock) +
+				decimalToNumber(booking.quantity),
 			created_by: booking.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: booking.created_at,
