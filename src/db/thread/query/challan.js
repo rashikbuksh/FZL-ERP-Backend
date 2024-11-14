@@ -322,6 +322,23 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 			query_data = await fetchOrderDataForChallan();
 
 			// console.log('query_data', query_data);
+
+			// remove the order_entry_uuid from the challan_entry if that exists in the order_details_for_challan
+
+			const order_entry_uuid = challan_entry?.data?.data?.map(
+				(entry) => entry.order_entry_uuid
+			);
+
+			if (order_entry_uuid) {
+				if (!Array.isArray(query_data?.data?.data?.batch_entry)) {
+					query_data.data.data.batch_entry = [];
+				}
+				query_data.data.data.batch_entry =
+					query_data.data.data.batch_entry.filter(
+						(uuid) =>
+							!order_entry_uuid.includes(uuid.order_entry_uuid)
+					);
+			}
 		}
 
 		const response = {
