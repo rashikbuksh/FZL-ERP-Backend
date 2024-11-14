@@ -123,6 +123,10 @@ publicRouter.get('/marketing-team/:uuid', marketingTeamOperations.select);
 publicRouter.post('/marketing-team', marketingTeamOperations.insert);
 publicRouter.put('/marketing-team/:uuid', marketingTeamOperations.update);
 publicRouter.delete('/marketing-team/:uuid', marketingTeamOperations.remove);
+publicRouter.get(
+	'/marketing-team-details/by/marketing-team-uuid/:marketing_team_uuid',
+	marketingTeamOperations.selectMarketingTeamDetailsByMarketingTeamUuid
+);
 
 // marketing_team_member_target routes
 publicRouter.get(
@@ -163,6 +167,10 @@ publicRouter.put(
 publicRouter.delete(
 	'/marketing-team-entry/:uuid',
 	marketingTeamEntryOperations.remove
+);
+publicRouter.get(
+	'/marketing-team-entry/:marketing_team_uuid',
+	marketingTeamEntryOperations.selectAllByMarketingTeamUuid
 );
 
 export { publicRouter };

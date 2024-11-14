@@ -169,3 +169,53 @@ export async function selectAll(req, res, next) {
 		});
 	}
 }
+
+export async function selectAllByMarketingTeamUuid(req, res, next) {
+	const marketing_team_entryPromise = db
+		.select({
+			uuid: marketing_team_entry.uuid,
+			marketing_team_uuid: marketing_team_entry.marketing_team_uuid,
+			marketing_team_name: marketing_team.name,
+			marketing_uuid: marketing_team_entry.marketing_uuid,
+			marketing_name: marketing.name,
+			is_team_leader: marketing_team_entry.is_team_leader,
+			created_at: marketing_team_entry.created_at,
+			updated_at: marketing_team_entry.updated_at,
+			created_by: marketing_team_entry.created_by,
+			created_by_name: hrSchema.users.name,
+			remarks: marketing_team_entry.remarks,
+		})
+		.from(marketing_team_entry)
+		.leftJoin(
+			marketing_team,
+			eq(marketing_team.uuid, marketing_team_entry.marketing_team_uuid)
+		)
+		.leftJoin(
+			marketing,
+			eq(marketing.uuid, marketing_team_entry.marketing_uuid)
+		)
+		.leftJoin(
+			hrSchema.users,
+			eq(marketing_team_entry.created_by, hrSchema.users.uuid)
+		)
+		.where(
+			eq(
+				marketing_team_entry.marketing_team_uuid,
+				req.params.marketing_team_uuid
+			)
+		);
+
+	try {
+		const data = await marketing_team_entryPromise;
+		const toast = {
+			status: 200,
+			message: 'marketing_team_entry list',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
+}
