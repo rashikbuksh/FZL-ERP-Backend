@@ -171,6 +171,10 @@ export async function selectAll(req, res, next) {
 }
 
 export async function selectAllByMarketingTeamUuid(req, res, next) {
+	console.log(
+		'req.params.marketing_team_uuid',
+		req.params.marketing_team_uuid
+	);
 	const marketing_team_entryPromise = db
 		.select({
 			uuid: marketing_team_entry.uuid,

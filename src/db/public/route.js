@@ -169,7 +169,7 @@ publicRouter.delete(
 	marketingTeamEntryOperations.remove
 );
 publicRouter.get(
-	'/marketing-team-entry/:marketing_team_uuid',
+	'/marketing-team-entry/by/:marketing_team_uuid',
 	marketingTeamEntryOperations.selectAllByMarketingTeamUuid
 );
 

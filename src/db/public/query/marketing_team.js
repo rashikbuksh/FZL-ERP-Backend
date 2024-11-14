@@ -163,7 +163,7 @@ export async function selectMarketingTeamDetailsByMarketingTeamUuid(
 
 		const [marketing_team, marketing_team_entry] = await Promise.all([
 			fetchData('/public/marketing-team'),
-			fetchData('/public/marketing-team-entry'),
+			fetchData('/public/marketing-team-entry/by'),
 		]);
 
 		const response = {
