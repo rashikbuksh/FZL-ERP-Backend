@@ -307,6 +307,18 @@ export const pathDeliveryPackingList = {
 			summary: 'Get all orders for packing list',
 			description: 'Get all orders for packing list',
 			// operationId: "getAllOrdersForPackingList",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'order_info_uuid',
+					in: 'path',
+					description: ' order_info_uuid to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
 			responses: {
 				200: {
 					description: 'Return list of orders for packing list',
