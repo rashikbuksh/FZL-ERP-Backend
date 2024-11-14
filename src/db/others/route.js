@@ -147,6 +147,9 @@ otherRouter.get(
 	otherOperations.selectPackingListByOrderInfoUuid
 );
 
+// challan
+otherRouter.get('/delivery/challan/value/label', otherOperations.selectChallan);
+
 // vehicle
 otherRouter.get('/delivery/vehicle/value/label', otherOperations.selectVehicle);
 
@@ -1472,6 +1475,30 @@ const pathDelivery = {
 								properties: {
 									value: SE.uuid(),
 									label: SE.string('10*10*10'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/delivery/challan/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all challans',
+			description: 'All challans',
+			operationId: 'getAllChallans',
+			responses: {
+				200: {
+					description: 'Returns a all challans.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('CH24-0001'),
 								},
 							},
 						},

@@ -1563,3 +1563,29 @@ export async function selectCarton(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectChallan(req, res, next) {
+	const query = sql`
+	SELECT
+		ch.uuid AS value,
+		concat('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) AS label
+	FROM
+		delivery.challan ch
+	`;
+
+	const challanPromise = db.execute(query);
+
+	try {
+		const data = await challanPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Challan list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
