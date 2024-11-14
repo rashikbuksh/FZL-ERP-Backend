@@ -11,14 +11,14 @@ export async function insert(req, res, next) {
 	const marketing_team_member_targetPromise = db
 		.insert(marketing_team_member_target)
 		.values(req.body)
-		.returning({ insertedName: marketing_team_member_target.name });
+		.returning({ insertedId: marketing_team_member_target.uuid });
 
 	try {
 		const data = await marketing_team_member_targetPromise;
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedName} inserted`,
+			message: `${data[0].insertedId} inserted`,
 		};
 
 		return await res.status(201).json({ toast, data });
@@ -37,14 +37,14 @@ export async function update(req, res, next) {
 		.update(marketing_team_member_target)
 		.set(req.body)
 		.where(eq(marketing_team_member_target.uuid, req.params.uuid))
-		.returning({ updatedName: marketing_team_member_target.name });
+		.returning({ updatedId: marketing_team_member_target.uuid });
 
 	try {
 		const data = await marketing_team_member_targetPromise;
 		const toast = {
 			status: 200,
 			type: 'update',
-			message: `${data[0].updatedName} updated`,
+			message: `${data[0].updatedId} updated`,
 		};
 
 		return await res.status(200).json({ toast, data });
@@ -61,18 +61,18 @@ export async function remove(req, res, next) {
 
 	const marketing_team_member_targetPromise = db
 		.delete(marketing_team_member_target)
-		.where(eq(marketing_team_member_target.uuid, req.params.uuid));
+		.where(eq(marketing_team_member_target.uuid, req.params.uuid))
+		.returning({ deletedId: marketing_team_member_target.uuid });
 
 	try {
 		const data = await marketing_team_member_targetPromise;
-		return await res.status(200).json({
-			toast: {
-				status: 200,
-				type: 'delete',
-				message: `${data[0].deletedName} deleted`,
-			},
-			data,
-		});
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: `${data[0].deletedId} removed`,
+		};
+
+		return await res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({
 			error,

@@ -1612,12 +1612,11 @@ export const publicMarketingTeamEntry = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the marketing team entry',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -1834,12 +1833,11 @@ export const publicMarketingTeamMemberTarget = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the marketing team member target',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
