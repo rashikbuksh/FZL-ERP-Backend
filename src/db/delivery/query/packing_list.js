@@ -206,54 +206,29 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 		if (is_update == 'true') {
 			const order_info_uuid = packing_list?.data?.data?.order_info_uuid;
-			const query = sql`
-				SELECT 
-					null as uuid,
-					null as packing_list_uuid,
-					null as sfg_uuid,
-					null as quantity,
-					null as poli_quantity,
-					null as short_quantity,
-					null as reject_quantity,
-					null as created_at,
-					null as updated_at,
-					null as remarks,
-					vodf.order_info_uuid as order_info_uuid,
-					vodf.order_number,
-					vodf.item_description,
-					vodf.order_description_uuid,
-					oe.style,
-					oe.color,
-					CASE 
-						WHEN vodf.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-						ELSE CAST(oe.size AS NUMERIC)
-					END as size,
-					concat(oe.style, ' / ', oe.color, ' / ', CASE 
-						WHEN vodf.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-						ELSE CAST(oe.size AS NUMERIC)
-					END) as style_color_size,
-					oe.quantity::float8 as order_quantity,
-					sfg.uuid as sfg_uuid,
-					sfg.warehouse::float8 as warehouse,
-					sfg.delivered::float8 as delivered,
-					(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
-					false as is_checked
-				FROM
-					zipper.v_order_details_full vodf
-				LEFT JOIN
-					zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-				LEFT JOIN
-					zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-				LEFT JOIN 
-					delivery.packing_list_entry ple ON ple.sfg_uuid = sfg.uuid
-				WHERE 
-					vodf.order_info_uuid = ${order_info_uuid} AND ple.uuid IS NULL
-				ORDER BY
-					ple.created_at DESC, ple.uuid DESC;
-			`;
-			query_data = await db.execute(query);
+			const fetchOrderDataForPacking = async () =>
+				await api
+					.get(`/delivery/order-for-packing-list/${order_info_uuid}`)
+					.then((response) => response);
+
+			query_data = await fetchOrderDataForPacking();
+
+			// console.log('query_data', query_data);
+
+			// remove the order_entry_uuid from the challan_entry if that exists in the order_details_for_challan
+
+			const sfg_uuid = challan_entry?.data?.data?.map(
+				(entry) => entry.sfg_uuid
+			);
+
+			if (sfg_uuid) {
+				if (!Array.isArray(query_data?.data?.data)) {
+					query_data.data.data = [];
+				}
+				query_data.data.data = query_data.data.data.filter(
+					(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
+				);
+			}
 		}
 
 		const response = {
@@ -263,7 +238,7 @@ export async function selectPackingListDetailsByPackingListUuid(
 		};
 		// if is_update true then add the query_data to the existing packing_list_entry
 		if (is_update == 'true') {
-			response.new_packing_list_entry = [...query_data?.rows];
+			response.new_packing_list_entry = [...query_data?.data?.data];
 		}
 
 		const toast = {
