@@ -1417,6 +1417,41 @@ export const publicMarketingTeam = {
 			},
 		},
 	},
+	'/public/marketing-team-details/by/marketing-team-uuid/{marketing_team_uuid}':
+		{
+			get: {
+				summary:
+					'Get all marketing team details by marketing team uuid',
+				tags: ['public.marketing_team'],
+				operationId: 'getMarketingTeamDetailsByMarketingTeamUuid',
+				parameters: [
+					{
+						name: 'marketing_team_uuid',
+						in: 'path',
+						description: 'marketing_team_uuid',
+						required: true,
+						type: 'string',
+						format: 'uuid',
+						example: 'igD0v9DIJQhJeet',
+					},
+				],
+				responses: {
+					200: {
+						description: 'OK',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'array',
+									items: {
+										$ref: '#/definitions/public/marketing_team',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 };
 
 export const publicMarketingTeamEntry = {
@@ -1622,6 +1657,39 @@ export const publicMarketingTeamEntry = {
 			responses: {
 				204: {
 					description: 'No Content',
+				},
+			},
+		},
+	},
+	'/public/marketing-team-entry/{marketing_team_uuid}': {
+		get: {
+			summary: 'Get all marketing team entries',
+			tags: ['public.marketing_team_entry'],
+			operationId: 'getMarketingTeamEntries',
+			parameters: [
+				{
+					name: 'marketing_team_uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/public/marketing_team_entry',
+								},
+							},
+						},
+					},
 				},
 			},
 		},

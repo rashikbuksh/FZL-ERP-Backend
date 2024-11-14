@@ -4,6 +4,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { marketing_team } from '../schema.js';
+import { createApi } from '../../../util/api.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -138,6 +139,43 @@ export async function selectAll(req, res, next) {
 			message: 'marketing_team list',
 		};
 		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
+}
+export async function selectMarketingTeamDetailsByMarketingTeamUuid(
+	req,
+	res,
+	next
+) {
+	if (!validateRequest(req, next)) return;
+	try {
+		const { marketing_team_uuid } = req.params;
+		const api = await createApi(req);
+
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/${marketing_team_uuid}`)
+				.then((response) => response);
+
+		const [marketing_team, marketing_team_entry] = await Promise.all([
+			fetchData('/public/marketing-team'),
+			fetchData('/public/marketing-team-entry'),
+		]);
+
+		const response = {
+			...marketing_team?.data?.data[0],
+			marketing_team_entry: marketing_team_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			message: 'marketing_team list',
+		};
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({
 			error,
