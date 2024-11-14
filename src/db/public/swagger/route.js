@@ -1661,7 +1661,7 @@ export const publicMarketingTeamEntry = {
 			},
 		},
 	},
-	'/public/marketing-team-entry/{marketing_team_uuid}': {
+	'/public/marketing-team-entry/by/{marketing_team_uuid}': {
 		get: {
 			summary: 'Get all marketing team entries',
 			tags: ['public.marketing_team_entry'],
