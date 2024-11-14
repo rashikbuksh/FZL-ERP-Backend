@@ -215,17 +215,16 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 			// console.log('query_data', query_data);
 
-			// remove the order_entry_uuid from the packing_list_entry if that exists in the order_details_for_challan
-
+			// remove the sfg_uuid from the packing_list_entry if that exists in the order_details_for_packing
 			const sfg_uuid = packing_list_entry?.data?.data?.map(
-				(entry) => entry.sfg_uuid
+				(entry) => entry?.sfg_uuid
 			);
 
 			if (sfg_uuid) {
 				if (!Array.isArray(query_data?.data?.data)) {
 					query_data.data.data = [];
 				}
-				query_data.data.data = query_data.data.data.filter(
+				query_data.data.data = query_data?.data?.data.filter(
 					(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
 				);
 			}
