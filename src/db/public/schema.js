@@ -1,4 +1,4 @@
-import { integer, pgTable, text } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgTable, text } from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -104,5 +104,48 @@ export const machine = pgTable('machine', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 });
+
+export const marketing_team = pgTable('marketing_team', {
+	uuid: uuid_primary,
+	name: text('name').notNull().unique(),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	remarks: text('remarks').default(null),
+});
+
+export const marketing_team_entry = pgTable('marketing_team_entry', {
+	uuid: uuid_primary,
+	marketing_team_uuid: defaultUUID('marketing_team_uuid').references(
+		() => marketing_team.uuid
+	),
+	marketing_uuid: defaultUUID('marketing_uuid').references(
+		() => marketing.uuid
+	),
+	is_team_leader: boolean('is_team_leader').default(false),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	remarks: text('remarks').default(null),
+});
+
+export const marketing_team_member_target = pgTable(
+	'marketing_team_member_target',
+	{
+		uuid: uuid_primary,
+		marketing_uuid: defaultUUID('marketing_uuid').references(
+			() => marketing.uuid
+		),
+		year: integer('year').notNull(),
+		month: integer('month').notNull(),
+		amount: PG_DECIMAL('amount').notNull(),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		remarks: text('remarks').default(null),
+	}
+);
 
 export default buyer;
