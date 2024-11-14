@@ -259,13 +259,11 @@ export async function selectPackingListDetailsByPackingListUuid(
 		const response = {
 			...packing_list?.data?.data,
 			packing_list_entry: packing_list_entry?.data?.data || [],
+			new_packing_list_entry: [],
 		};
 		// if is_update true then add the query_data to the existing packing_list_entry
 		if (is_update == 'true') {
-			response.packing_list_entry = [
-				...response.packing_list_entry,
-				...query_data?.rows,
-			];
+			response.new_packing_list_entry = [...query_data?.rows];
 		}
 
 		const toast = {

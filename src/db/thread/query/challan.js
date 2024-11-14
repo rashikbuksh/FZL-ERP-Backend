@@ -1,13 +1,10 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { challan } from '../schema.js';
+import { batch, challan } from '../schema.js';
 
 const assignToUser = alias(hrSchema.users, 'assignToUser');
 
@@ -329,15 +326,12 @@ export async function selectThreadChallanDetailsByChallanUuid(req, res, next) {
 
 		const response = {
 			...challan?.data?.data,
-			challan_entry: challan_entry?.data?.data || [],
-			batch_entry: [],
+			batch_entry: challan_entry?.data?.data || [],
+			new_batch_entry: [],
 		};
 
 		if (is_update == 'true') {
-			response.batch_entry = [
-				...response.challan_entry,
-				...query_data?.data?.data?.batch_entry,
-			];
+			response.new_batch_entry = [...query_data?.data?.data?.batch_entry];
 		}
 
 		const toast = {
