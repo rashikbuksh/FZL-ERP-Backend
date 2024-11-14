@@ -77,12 +77,15 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { challan_uuid } = req.query;
+
 	const query = sql`
 		SELECT dvl.*,
 		SUM(ple.quantity)::float8 as total_quantity,
 		SUM(ple.poli_quantity)::float8 as total_poly_quantity
 		FROM delivery.v_packing_list dvl
 		LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
+		${challan_uuid ? sql`WHERE dvl.challan_uuid = ${challan_uuid}` : sql``}
 		GROUP BY 
 			dvl.uuid,
 			dvl.order_info_uuid,
