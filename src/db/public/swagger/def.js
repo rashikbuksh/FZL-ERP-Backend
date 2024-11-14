@@ -177,6 +177,59 @@ export const defMachine = {
 	},
 };
 
+export const defMarketingTeam = SED({
+	required: ['uuid', 'name', 'created_at', 'created_by'],
+	properties: {
+		uuid: SE.uuid(),
+		name: SE.string('John Doe'),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		created_by: SE.uuid(),
+		remarks: SE.string('Remarks'),
+	},
+	xml: 'Public/MarketingTeam',
+});
+
+export const defMarketingTeamEntry = SED({
+	required: ['uuid', 'marketing_team_uuid', 'marketing_uuid', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		marketing_team_uuid: SE.uuid(),
+		marketing_uuid: SE.uuid(),
+		is_team_leader: SE.boolean(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		created_by: SE.uuid(),
+		remarks: SE.string('Remarks'),
+	},
+	xml: 'Public/MarketingTeamEntry',
+});
+
+export const defMarketingTeamMemberTarget = {
+	required: [
+		'uuid',
+		'marketing_uuid',
+		'year',
+		'month',
+		'amount',
+		'created_at',
+		'created_by',
+	],
+
+	properties: {
+		uuid: SE.uuid(),
+		marketing_uuid: SE.uuid(),
+		year: SE.integer(),
+		month: SE.integer(),
+		amount: SE.number(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		created_by: SE.uuid(),
+		remarks: SE.string('Remarks'),
+	},
+	xml: 'Public/MarketingTeamMemberTarget',
+};
+
 // * Marge All
 export const defPublic = {
 	buyer: defPublicBuyer,
@@ -187,6 +240,9 @@ export const defPublic = {
 	section: defPublicSection,
 	properties: defPublicProperties,
 	machine: defMachine,
+	marketing_team: defMarketingTeam,
+	marketing_team_entry: defMarketingTeamEntry,
+	marketing_team_member_target: defMarketingTeamMemberTarget,
 };
 
 // * Tag
@@ -222,5 +278,18 @@ export const tagPublic = [
 	{
 		name: 'public.machine',
 		description: 'Machine',
+	},
+
+	{
+		name: 'public.marketing_team',
+		description: 'marketing_team',
+	},
+	{
+		name: 'public.marketing_team_entry',
+		description: 'marketing_team_entry',
+	},
+	{
+		name: 'public.marketing_team_member_target',
+		description: 'marketing_team_member_target',
 	},
 ];

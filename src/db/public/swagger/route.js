@@ -53,12 +53,11 @@ const pathPublicBuyer = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the buyer',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -82,12 +81,11 @@ const pathPublicBuyer = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the buyer',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -113,12 +111,11 @@ const pathPublicBuyer = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the buyer',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -214,12 +211,11 @@ const pathPublicFactory = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the factory',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -243,12 +239,11 @@ const pathPublicFactory = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the factory',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -274,12 +269,11 @@ const pathPublicFactory = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the factory',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -346,12 +340,11 @@ const pathPublicMarketing = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the marketing',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -375,12 +368,11 @@ const pathPublicMarketing = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the marketing',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -406,12 +398,11 @@ const pathPublicMarketing = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the marketing',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -510,12 +501,11 @@ const pathPublicMerchandiser = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the merchandiser',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -571,12 +561,11 @@ const pathPublicMerchandiser = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the merchandiser',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -602,12 +591,11 @@ const pathPublicMerchandiser = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the merchandiser',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -673,12 +661,11 @@ const pathPublicParty = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the party',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -702,12 +689,11 @@ const pathPublicParty = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the party',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -733,12 +719,11 @@ const pathPublicParty = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the party',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -842,12 +827,11 @@ const pathPublicProperties = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the properties',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -977,12 +961,11 @@ const pathPublicProperties = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the properties',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -1048,12 +1031,11 @@ const pathPublicSection = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the section',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -1077,12 +1059,11 @@ const pathPublicSection = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the section',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -1108,12 +1089,11 @@ const pathPublicSection = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the section',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -1178,12 +1158,11 @@ export const publicMachine = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the machine',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			responses: {
@@ -1207,12 +1186,11 @@ export const publicMachine = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the section',
-					schema: {
-						type: 'string',
-						format: 'uuid',
-					},
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
 				},
 			],
 			requestBody: {
@@ -1238,8 +1216,626 @@ export const publicMachine = {
 				{
 					name: 'uuid',
 					in: 'path',
+					description: ' UUID',
 					required: true,
-					description: 'uuid of the machine',
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
+};
+
+export const publicMarketingTeam = {
+	'/public/marketing-team': {
+		get: {
+			summary: 'Get all marketing teams',
+			tags: ['public.marketing_team'],
+			operationId: 'getMarketingTeams',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			summary: 'Create a marketing team',
+			tags: ['public.marketing_team'],
+			operationId: 'createMarketingTeam',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public/marketing_team',
+						},
+					},
+				},
+			},
+			responses: {
+				201: {
+					description: 'Created',
+				},
+			},
+		},
+	},
+
+	'/public/marketing-team/{uuid}': {
+		get: {
+			summary: 'Get a marketing team',
+			tags: ['public.marketing_team'],
+			operationId: 'getMarketingTeam',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		put: {
+			summary: 'Update a marketing team',
+			tags: ['public.marketing_team'],
+			operationId: 'updateMarketingTeam',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public/marketing_team',
+						},
+					},
+				},
+			},
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+		delete: {
+			summary: 'Delete a marketing team',
+			tags: ['public.marketing_team'],
+			operationId: 'deleteMarketingTeam',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
+};
+
+export const publicMarketingTeamEntry = {
+	'/public/marketing-team-entry': {
+		get: {
+			summary: 'Get all marketing team entries',
+			tags: ['public.marketing_team_entry'],
+			operationId: 'getMarketingTeamEntries',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_team_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_team_name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			summary: 'Create a marketing team entry',
+			tags: ['public.marketing_team_entry'],
+			operationId: 'createMarketingTeamEntry',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public/marketing_team_entry',
+						},
+					},
+				},
+			},
+			responses: {
+				201: {
+					description: 'Created',
+				},
+			},
+		},
+	},
+
+	'/public/marketing-team-entry/{uuid}': {
+		get: {
+			summary: 'Get a marketing team entry',
+			tags: ['public.marketing_team_entry'],
+			operationId: 'getMarketingTeamEntry',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_team_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_team_name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		put: {
+			summary: 'Update a marketing team entry',
+			tags: ['public.marketing_team_entry'],
+			operationId: 'updateMarketingTeamEntry',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public/marketing_team_entry',
+						},
+					},
+				},
+			},
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+		delete: {
+			summary: 'Delete a marketing team entry',
+			tags: ['public.marketing_team_entry'],
+			operationId: 'deleteMarketingTeamEntry',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					description: 'uuid of the marketing team entry',
+					schema: {
+						type: 'string',
+						format: 'uuid',
+					},
+				},
+			],
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
+};
+
+export const publicMarketingTeamMemberTarget = {
+	'/public/marketing-team-member-target': {
+		get: {
+			summary: 'Get all marketing team member targets',
+			tags: ['public.marketing_team_member_target'],
+			operationId: 'getMarketingTeamMemberTargets',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									year: {
+										type: 'string',
+										example: '2024',
+									},
+									month: {
+										type: 'string',
+										example: '01',
+									},
+									amount: {
+										type: 'string',
+										example: '1000',
+									},
+
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			summary: 'Create a marketing team member target',
+			tags: ['public.marketing_team_member_target'],
+			operationId: 'createMarketingTeamMemberTarget',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public/marketing_team_member_target',
+						},
+					},
+				},
+			},
+			responses: {
+				201: {
+					description: 'Created',
+				},
+			},
+		},
+	},
+
+	'/public/marketing-team-member-target/{uuid}': {
+		get: {
+			summary: 'Get a marketing team member target',
+			tags: ['public.marketing_team_member_target'],
+			operationId: 'getMarketingTeamMemberTarget',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+
+									marketing_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									marketing_name: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									year: {
+										type: 'string',
+										example: '2024',
+									},
+									month: {
+										type: 'string',
+										example: '01',
+									},
+									amount: {
+										type: 'string',
+										example: '1000',
+									},
+
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		put: {
+			summary: 'Update a marketing team member target',
+			tags: ['public.marketing_team_member_target'],
+			operationId: 'updateMarketingTeamMemberTarget',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public/marketing_team_member_target',
+						},
+					},
+				},
+			},
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+		delete: {
+			summary: 'Delete a marketing team member target',
+			tags: ['public.marketing_team_member_target'],
+			operationId: 'deleteMarketingTeamMemberTarget',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					required: true,
+					description: 'uuid of the marketing team member target',
 					schema: {
 						type: 'string',
 						format: 'uuid',
@@ -1264,4 +1860,7 @@ export const pathPublic = {
 	...pathPublicProperties,
 	...pathPublicSection,
 	...publicMachine,
+	...publicMarketingTeam,
+	...publicMarketingTeamEntry,
+	...publicMarketingTeamMemberTarget,
 };

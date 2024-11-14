@@ -7,6 +7,9 @@ import * as merchandiserOperations from './query/merchandiser.js';
 import * as partyOperations from './query/party.js';
 import * as propertiesOperations from './query/properties.js';
 import * as sectionOperations from './query/section.js';
+import * as marketingTeamOperations from './query/marketing_team.js';
+import * as marketingTeamMemberTargetOperations from './query/marketing_team_member_target.js';
+import * as marketingTeamEntryOperations from './query/marketing_team_entry.js';
 
 const publicRouter = Router();
 
@@ -113,5 +116,53 @@ publicRouter.get('/machine/:uuid', machineOperations.select);
 publicRouter.post('/machine', machineOperations.insert);
 publicRouter.put('/machine/:uuid', machineOperations.update);
 publicRouter.delete('/machine/:uuid', machineOperations.remove);
+
+// marketing_team routes
+publicRouter.get('/marketing-team', marketingTeamOperations.selectAll);
+publicRouter.get('/marketing-team/:uuid', marketingTeamOperations.select);
+publicRouter.post('/marketing-team', marketingTeamOperations.insert);
+publicRouter.put('/marketing-team/:uuid', marketingTeamOperations.update);
+publicRouter.delete('/marketing-team/:uuid', marketingTeamOperations.remove);
+
+// marketing_team_member_target routes
+publicRouter.get(
+	'/marketing-team-member-target',
+	marketingTeamMemberTargetOperations.selectAll
+);
+publicRouter.get(
+	'/marketing-team-member-target/:uuid',
+	marketingTeamMemberTargetOperations.select
+);
+publicRouter.post(
+	'/marketing-team-member-target',
+	marketingTeamMemberTargetOperations.insert
+);
+publicRouter.put(
+	'/marketing-team-member-target/:uuid',
+	marketingTeamMemberTargetOperations.update
+);
+publicRouter.delete(
+	'/marketing-team-member-target/:uuid',
+	marketingTeamMemberTargetOperations.remove
+);
+
+// marketing_team_entry routes
+publicRouter.get(
+	'/marketing-team-entry',
+	marketingTeamEntryOperations.selectAll
+);
+publicRouter.get(
+	'/marketing-team-entry/:uuid',
+	marketingTeamEntryOperations.select
+);
+publicRouter.post('/marketing-team-entry', marketingTeamEntryOperations.insert);
+publicRouter.put(
+	'/marketing-team-entry/:uuid',
+	marketingTeamEntryOperations.update
+);
+publicRouter.delete(
+	'/marketing-team-entry/:uuid',
+	marketingTeamEntryOperations.remove
+);
 
 export { publicRouter };
