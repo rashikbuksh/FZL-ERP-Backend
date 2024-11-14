@@ -213,20 +213,17 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 			query_data = await fetchOrderDataForPacking();
 
-			// console.log('query_data', query_data);
+			// remove the order_entry_uuid from the packing_list_entry if that exists in the order_details_for_challan
 
-			// remove the sfg_uuid from the packing_list_entry if that exists in the order_details_for_packing
 			const sfg_uuid = packing_list_entry?.data?.data?.map(
 				(entry) => entry?.sfg_uuid
 			);
 
 			if (sfg_uuid) {
-				if (!Array.isArray(query_data?.data?.data)) {
-					query_data.data.data = [];
-				}
-				query_data.data.data = query_data?.data?.data.filter(
-					(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
-				);
+				query_data.data.data.packing_list_entry =
+					query_data.data.data.packing_list_entry.filter(
+						(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
+					);
 			}
 		}
 
@@ -237,7 +234,9 @@ export async function selectPackingListDetailsByPackingListUuid(
 		};
 		// if is_update true then add the query_data to the existing packing_list_entry
 		if (is_update == 'true') {
-			response.new_packing_list_entry = [...query_data?.data?.data];
+			response.new_packing_list_entry = [
+				...query_data?.data?.data?.packing_list_entry,
+			];
 		}
 
 		const toast = {
