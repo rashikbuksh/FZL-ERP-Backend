@@ -8,16 +8,16 @@ export class CustomError extends Error {
 }
 
 export function notFound(req, res, next) {
-	return next(new CustomError("Resource Not Found", 404));
+	return next(new CustomError('Resource Not Found', 404));
 }
 
 export function nullValueError(res, error) {
-	const { column, table, schema, code, message } = error;
-	const msg = `${code}: '${schema}.${table}.${column}': ${message}`;
+	const { detail, where } = error;
+	const msg = `${error.code}: '${detail ? detail : where}`;
 
 	const toast = {
 		status: 500,
-		type: "error",
+		type: 'error',
 		message: msg,
 	};
 

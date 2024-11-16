@@ -1,10 +1,7 @@
 import { desc, eq, is, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
