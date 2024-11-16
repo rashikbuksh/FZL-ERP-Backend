@@ -1,12 +1,11 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as sliderSchema from '../../slider/schema.js';
 import { decimalToNumber } from '../../variables.js';
+import * as viewSchema from '../../view/schema.js';
 import { finishing_batch } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -85,57 +84,69 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const query = sql`
-		SELECT 
-			finishing_batch.uuid,
-			finishing_batch.id,
-			concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)) as batch_number,
-			vodf.order_info_uuid,
-			vodf.order_number,
-			vodf.item_description,
-			vodf.order_type,
-			vodf.slider_provided,
-			finishing_batch.order_description_uuid,
-			vodf.item_description,
-			finishing_batch.slider_lead_time,
-			finishing_batch.dyeing_lead_time,
-			finishing_batch.status,
-			finishing_batch.slider_finishing_stock,
-			finishing_batch.created_by,
-			users.name as created_by_name,
-			finishing_batch.created_at,
-			finishing_batch.updated_at,
-			finishing_batch.remarks,
-			ss.uuid as stock_uuid,
-			ss.batch_quantity as stock_batch_quantity,
-			finishing_batch_entry_total.total_batch_quantity,
-			finishing_batch_entry_total.colors
-		FROM zipper.finishing_batch
-		LEFT JOIN zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
-		LEFT JOIN slider.stock ss ON finishing_batch.uuid = ss.finishing_batch_uuid
-		LEFT JOIN hr.users ON finishing_batch.created_by = users.uuid
-		LEFT JOIN (
+	const resultPromise = db
+		.select({
+			uuid: finishing_batch.uuid,
+			id: finishing_batch.id,
+			batch_number: sql`concat('FB', to_char(${finishing_batch.created_at}, 'YY'::text), '-', lpad((${finishing_batch.id})::text, 4, '0'::text))`,
+			order_info_uuid: viewSchema.v_order_details_full.order_info_uuid,
+			order_number: viewSchema.v_order_details_full.order_number,
+			item_description: viewSchema.v_order_details_full.item_description,
+			order_type: viewSchema.v_order_details_full.order_type,
+			slider_provided: viewSchema.v_order_details_full.slider_provided,
+			order_description_uuid: finishing_batch.order_description_uuid,
+			slider_lead_time: finishing_batch.slider_lead_time,
+			dyeing_lead_time: finishing_batch.dyeing_lead_time,
+			status: finishing_batch.status,
+			slider_finishing_stock: finishing_batch.slider_finishing_stock,
+			created_by: finishing_batch.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: finishing_batch.created_at,
+			updated_at: finishing_batch.updated_at,
+			remarks: finishing_batch.remarks,
+			stock_uuid: sliderSchema.stock.uuid,
+			stock_batch_quantity: sliderSchema.stock.batch_quantity,
+			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity`,
+			colors: sql`finishing_batch_entry_total.colors`,
+		})
+		.from(finishing_batch)
+		.leftJoin(
+			viewSchema.v_order_details_full,
+			eq(
+				viewSchema.v_order_details_full.order_description_uuid,
+				finishing_batch.order_description_uuid
+			)
+		)
+		.leftJoin(
+			sliderSchema.stock,
+			eq(sliderSchema.stock.finishing_batch_uuid, finishing_batch.uuid)
+		)
+		.leftJoin(
+			hrSchema.users,
+			eq(hrSchema.users.uuid, finishing_batch.created_by)
+		)
+		.leftJoin(
+			sql`(
 			SELECT 
-				finishing_batch_entry.finishing_batch_uuid, 
-				SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
+				finishing_batch_uuid, 
+				SUM(quantity) AS total_batch_quantity,
 				(
-					SELECT ARRAY_AGG(DISTINCT oe.color) 
-					FROM zipper.order_entry oe 
-					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-					WHERE sfg.uuid = finishing_batch_entry.sfg_uuid
+				SELECT ARRAY_AGG(DISTINCT color) 
+				FROM zipper.order_entry
+				LEFT JOIN zipper.sfg ON order_entry.uuid = sfg.order_entry_uuid
+				WHERE sfg.uuid = finishing_batch_entry.sfg_uuid
 				) AS colors
 			FROM 
 				zipper.finishing_batch_entry
 			GROUP BY 
 				finishing_batch_entry.finishing_batch_uuid, finishing_batch_entry.sfg_uuid
-		) as finishing_batch_entry_total ON finishing_batch.uuid = finishing_batch_entry_total.finishing_batch_uuid
-		ORDER BY finishing_batch.created_at DESC
-	`;
-
-	const finishingBatchPromise = db.execute(query);
+			) as finishing_batch_entry_total`,
+			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid`
+		)
+		.orderBy(desc(finishing_batch.created_at));
 
 	try {
-		const data = await finishingBatchPromise;
+		const data = await resultPromise;
 
 		const toast = {
 			status: 200,
@@ -143,57 +154,76 @@ export async function selectAll(req, res, next) {
 			message: 'finishing_batch',
 		};
 
-		res.status(200).json({ toast, data: data?.rows });
+		res.status(200).json({ toast, data: data });
 	} catch (error) {
-		await handleError({ error, res });
+		if (error.code === '23503') {
+			// Foreign key violation
+			const toast = {
+				status: 400,
+				type: 'error',
+				message:
+					'Cannot update or delete this finishing batch because it is referenced by other records.',
+			};
+			res.status(400).json({ toast });
+		} else {
+			await handleError({ error, res });
+		}
 	}
 }
 
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`
-		SELECT 
-			finishing_batch.uuid,
-			finishing_batch.id,
-			concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)) as batch_number,
-			vodf.order_info_uuid,
-			vodf.order_number,
-			vodf.item_description,
-			vodf.order_type,
-			vodf.slider_provided,
-			finishing_batch.order_description_uuid,
-			vodf.item_description,
-			finishing_batch.slider_lead_time,
-			finishing_batch.dyeing_lead_time,
-			finishing_batch.status,
-			finishing_batch.slider_finishing_stock,
-			finishing_batch.created_by,
-			users.name as created_by_name,
-			finishing_batch.created_at,
-			finishing_batch.updated_at,
-			finishing_batch.remarks,
-			ss.uuid as stock_uuid,
-			ss.batch_quantity as stock_batch_quantity
-		FROM zipper.finishing_batch
-		LEFT JOIN zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
-		LEFT JOIN slider.stock ss ON finishing_batch.uuid = ss.finishing_batch_uuid
-		LEFT JOIN hr.users ON finishing_batch.created_by = users.uuid
-		WHERE finishing_batch.uuid = ${req.params.uuid}
-		ORDER BY finishing_batch.created_at DESC
-	`;
-
-	const finishingBatchPromise = db.execute(query);
+	const resultPromise = db
+		.select({
+			uuid: finishing_batch.uuid,
+			id: finishing_batch.id,
+			batch_number: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+			order_info_uuid: viewSchema.v_order_details_full.order_info_uuid,
+			order_number: viewSchema.v_order_details_full.order_number,
+			item_description: viewSchema.v_order_details_full.item_description,
+			order_type: viewSchema.v_order_details_full.order_type,
+			slider_provided: viewSchema.v_order_details_full.slider_provided,
+			order_description_uuid: finishing_batch.order_description_uuid,
+			slider_lead_time: finishing_batch.slider_lead_time,
+			dyeing_lead_time: finishing_batch.dyeing_lead_time,
+			status: finishing_batch.status,
+			slider_finishing_stock: finishing_batch.slider_finishing_stock,
+			created_by: finishing_batch.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: finishing_batch.created_at,
+			updated_at: finishing_batch.updated_at,
+			remarks: finishing_batch.remarks,
+			stock_uuid: sliderSchema.stock.uuid,
+			stock_batch_quantity: sliderSchema.stock.batch_quantity,
+		})
+		.from(finishing_batch)
+		.leftJoin(
+			viewSchema.v_order_details_full,
+			eq(
+				viewSchema.v_order_details_full.order_description_uuid,
+				finishing_batch.order_description_uuid
+			)
+		)
+		.leftJoin(
+			sliderSchema.stock,
+			eq(finishing_batch.uuid, sliderSchema.stock.finishing_batch_uuid)
+		)
+		.leftJoin(
+			hrSchema.users,
+			eq(finishing_batch.created_by, hrSchema.users.uuid)
+		)
+		.where(eq(finishing_batch.uuid, req.params.uuid));
 
 	try {
-		const data = await finishingBatchPromise;
+		const data = await resultPromise;
 
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'finishing_batch',
 		};
-		return res.status(200).json({ toast, data: data.rows[0] });
+		return res.status(200).json({ toast, data: data[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
