@@ -82,6 +82,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { status } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: users.uuid,
@@ -102,6 +104,12 @@ export async function selectAll(req, res, next) {
 		.leftJoin(designation, eq(users.designation_uuid, designation.uuid))
 		.leftJoin(department, eq(users.department_uuid, department.uuid))
 		.orderBy(desc(users.created_at));
+
+	if (status == 'true') {
+		resultPromise.where(eq(users.status, 1));
+	} else if (status == 'false') {
+		resultPromise.where(eq(users.status, 0));
+	}
 
 	try {
 		const data = await resultPromise;

@@ -29,6 +29,9 @@ export const pathHrUser = {
 			tags: ['hr.user'],
 			summary: 'get all users',
 			description: 'All users',
+			parameters: [
+				SE.parameter_query('status', 'status', ['true', 'false']),
+			],
 			operationId: 'getAllUsers',
 			responses: {
 				200: SE.response_schema(200, {
