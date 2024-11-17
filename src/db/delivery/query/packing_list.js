@@ -329,7 +329,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN 
 			thread.count_length cl ON toe.count_length_uuid = cl.uuid
 		WHERE
-			(toe.quantity - toe.delivered - toe.delivered) > 0 AND vodf.order_info_uuid = ${req.params.order_info_uuid}
+			(toe.quantity - toe.delivered - toe.delivered) > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid}
 		ORDER BY
 			toe.created_at, toe.uuid DESC
 		`;
