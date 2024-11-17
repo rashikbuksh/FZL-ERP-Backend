@@ -89,10 +89,12 @@ export async function selectAll(req, res, next) {
 		GROUP BY 
 			dvl.uuid,
 			dvl.order_info_uuid,
+			dvl.thread_order_info_uuid,
 			dvl.packing_list_wise_rank,
 			dvl.packing_list_wise_count,
 			dvl.packing_number,
 			dvl.order_number,
+			dvl.item_for,
 			dvl.challan_uuid,
 			dvl.challan_number,
 			dvl.carton_size,
