@@ -269,6 +269,76 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 	}
 }
 
+export async function selectPackingListEntryByChallanUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+		SELECT 
+			ple.uuid,
+			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
+			ple.packing_list_uuid,
+			ple.sfg_uuid,
+			coalesce(ple.quantity,0)::float8 as quantity,
+			coalesce(ple.poli_quantity,0)::float8 as poli_quantity,
+			coalesce(ple.short_quantity,0)::float8 as short_quantity,
+			coalesce(ple.reject_quantity,0)::float8 as reject_quantity,
+			ple.created_at,
+			ple.updated_at,
+			ple.remarks,
+			vodf.order_info_uuid as order_info_uuid,
+			vodf.order_number,
+			vodf.item_description,
+			vodf.order_description_uuid,
+			concat(oe.style, ' / ', oe.color, ' / ', CASE 
+                WHEN vodf.is_inch = 1 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                ELSE CAST(oe.size AS NUMERIC)
+            END) as style_color_size,
+			oe.style,
+			oe.color,
+			CASE 
+                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)::float8
+                ELSE CAST(oe.size AS NUMERIC)::float8
+            END as size,
+			vodf.is_inch,
+			oe.quantity::float8 as order_quantity,
+			sfg.uuid as sfg_uuid,
+			sfg.warehouse::float8 as warehouse,
+			sfg.delivered::float8 as delivered,
+			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
+			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 + ple.quantity::float8 as max_quantity,
+			true as is_checked
+		FROM 
+			delivery.packing_list_entry ple
+		LEFT JOIN 
+			zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+		LEFT JOIN
+			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN
+			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN
+			delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+		WHERE 
+			pl.challan_uuid = ${req.params.challan_uuid}
+		ORDER BY
+			ple.created_at, ple.uuid DESC
+	`;
+
+	const packing_list_entryPromise = db.execute(query);
+
+	try {
+		const data = await packing_list_entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Packing_list_entry',
+		};
+		return await res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function selectPackingListEntryByMultiPackingListUuid(
 	req,
 	res,

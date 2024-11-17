@@ -620,6 +620,76 @@ export const pathDeliveryPackingListEntry = {
 			},
 		},
 	},
+	'/delivery/packing-list-entry-for-challan/{challan_uuid}': {
+		get: {
+			tags: ['delivery.packing-list-entry'],
+			summary: 'Get a packing list entry by challan_uuid',
+			description: 'Get a packing list entry by challan_uuid',
+			// operationId: "getPackingListEntryByPackingListUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'challan_uuid',
+					in: 'path',
+					description: ' packing list entry to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Return packing list entry',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									packing_list_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									sfg_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									quantity: {
+										type: 'number',
+										example: 100,
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Packing list entry not found',
+				},
+			},
+		},
+	},
 	'/delivery/packing-list-entry/by/multi-packing-list-uuid/{packing_list_uuids}':
 		{
 			get: {
@@ -1167,312 +1237,6 @@ export const pathDeliveryChallan = {
 	},
 };
 
-// * Delivery ChallanEntry * //
-export const pathDeliveryChallanEntry = {
-	'/delivery/challan-entry': {
-		get: {
-			tags: ['delivery.challan-entry'],
-			summary: 'Get all challan entries',
-			description: 'Get all challan entries',
-			// operationId: "getChallanEntry",
-			responses: {
-				200: {
-					description: 'Return list of challan entries',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_assign_to: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_assign_to_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									challan_created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									packing_list_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									delivery_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		post: {
-			tags: ['delivery.challan-entry'],
-			summary: 'Create a new challan entry',
-			description: 'Create a new challan entry',
-			// operationId: "createChallanEntry",
-			consumes: 'application/json',
-			produces: 'application/json',
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/delivery/challan_entry',
-						},
-					},
-				},
-			},
-
-			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/delivery/challan_entry',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
-			},
-		},
-	},
-	'/delivery/challan-entry/{uuid}': {
-		get: {
-			tags: ['delivery.challan-entry'],
-			summary: 'Get a challan entry by uuid',
-			description: 'Get a challan entry by uuid',
-			// operationId: "getChallanEntryByUuid",
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' challan entry to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Challan entry not found',
-				},
-			},
-		},
-		put: {
-			tags: ['delivery.challan-entry'],
-			summary: 'Update a challan entry by uuid',
-			description: 'Update a challan entry by uuid',
-			// operationId: "updateChallanEntryByUuid",
-			consumes: 'application/json',
-			produces: 'application/json',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' challan entry to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/delivery/challan_entry',
-						},
-					},
-				},
-			},
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Challan entry not found',
-				},
-				405: { description: 'Validation exception' },
-			},
-		},
-		delete: {
-			tags: ['delivery.challan-entry'],
-			summary: 'Delete a challan entry by uuid',
-			description: 'Delete a challan entry by uuid',
-			// operationId: "deleteChallanEntryByUuid",
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'challan entry to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Challan entry not found',
-				},
-			},
-		},
-	},
-	'/delivery/challan-entry/by/{challan_uuid}': {
-		get: {
-			tags: ['delivery.challan-entry'],
-			summary: 'Get a challan entry by challan_uuid',
-			description: 'Get a challan entry by challan_uuid',
-			// operationId: "getChallanEntryByChallanUuid",
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'challan_uuid',
-					in: 'path',
-					description: ' challan to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Return challan entry',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_assign_to: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_assign_to_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									challan_created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									packing_list_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									delivery_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Challan entry not found',
-				},
-			},
-		},
-	},
-	'/delivery/remove-challan-entry-by/{packing_list_uuid}': {
-		delete: {
-			tags: ['delivery.challan-entry'],
-			summary: 'Remove a challan entry by packing_list_uuid',
-			description: 'Remove a challan entry by packing_list_uuid',
-			// operationId: "removeChallanEntryByPackingListUuid",
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'packing_list_uuid',
-					in: 'path',
-					description: ' packing list to remove',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				200: SE.response(200),
-				400: SE.response(400),
-			},
-		},
-	},
-};
-
 export const pathDeliveryVehicle = {
 	'/delivery/vehicle': {
 		get: {
@@ -1924,7 +1688,7 @@ export const pathDelivery = {
 	...pathDeliveryPackingList,
 	...pathDeliveryPackingListEntry,
 	...pathDeliveryChallan,
-	...pathDeliveryChallanEntry,
+	// ...pathDeliveryChallanEntry,
 	...pathDeliveryVehicle,
 	...pathDeliveryCarton,
 };

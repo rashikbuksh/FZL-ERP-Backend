@@ -91,20 +91,6 @@ export const defChallan = SED({
 	xml: 'Delivery/Challan',
 });
 
-export const defChallanEntry = SED({
-	// type: 'object',
-	required: ['uuid', 'challan_uuid', 'packing_list_uuid', 'created_at'],
-	properties: {
-		uuid: SE.uuid(),
-		challan_uuid: SE.uuid(),
-		packing_list_uuid: SE.uuid(),
-		created_at: SE.date_time(),
-		updated_at: SE.date_time(),
-		remarks: SE.string('remarks'),
-	},
-	xml: 'Delivery/ChallanEntry',
-});
-
 export const defVehicle = SED({
 	// type: 'object',
 	required: [
@@ -154,7 +140,6 @@ export const defDelivery = {
 	packing_list: defPackingList,
 	packing_list_entry: defPackingListEntry,
 	challan: defChallan,
-	challan_entry: defChallanEntry,
 	vehicle: defVehicle,
 	carton: defCarton,
 };
@@ -180,14 +165,6 @@ export const tagDelivery = [
 	{
 		name: 'delivery.challan',
 		description: 'Operations about Challan',
-		externalDocs: {
-			description: 'Find out more',
-			url: 'http://swagger.io',
-		},
-	},
-	{
-		name: 'delivery.challan-entry',
-		description: 'Operations about Challan Entry',
 		externalDocs: {
 			description: 'Find out more',
 			url: 'http://swagger.io',

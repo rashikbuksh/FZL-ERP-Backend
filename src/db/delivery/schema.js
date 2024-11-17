@@ -97,19 +97,6 @@ export const challan = delivery.table('challan', {
 	remarks: text('remarks').default(null),
 });
 
-export const challan_entry = delivery.table('challan_entry', {
-	uuid: uuid_primary,
-	challan_uuid: defaultUUID('challan_uuid').references(() => challan.uuid, {
-		onDelete: 'CASCADE',
-	}),
-	packing_list_uuid: defaultUUID('packing_list_uuid').references(
-		() => packing_list.uuid
-	),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});
-
 export const vehicle = delivery.table('vehicle', {
 	uuid: uuid_primary,
 	type: text('type').notNull(),

@@ -321,7 +321,7 @@ export async function selectChallanDetailsByChallanUuid(req, res, next) {
 
 		const [challan, challan_entry] = await Promise.all([
 			fetchData('/delivery/challan'),
-			fetchData('/delivery/challan-entry/by'),
+			fetchData('/delivery/packing-list-entry-for-challan'),
 		]);
 
 		const response = {
