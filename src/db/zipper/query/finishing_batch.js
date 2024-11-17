@@ -156,18 +156,7 @@ export async function selectAll(req, res, next) {
 
 		res.status(200).json({ toast, data: data });
 	} catch (error) {
-		if (error.code === '23503') {
-			// Foreign key violation
-			const toast = {
-				status: 400,
-				type: 'error',
-				message:
-					'Cannot update or delete this finishing batch because it is referenced by other records.',
-			};
-			res.status(400).json({ toast });
-		} else {
-			await handleError({ error, res });
-		}
+		await handleError({ error, res });
 	}
 }
 
