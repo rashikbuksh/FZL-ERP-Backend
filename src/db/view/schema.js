@@ -209,6 +209,7 @@ export const v_packing_list_details = delivery
 		carton_size: text('carton_size'),
 		carton_weight: PG_DECIMAL('carton_weight'),
 		order_info_uuid: text('order_info_uuid'),
+		thread_order_info_uuid: text('thread_order_info_uuid'),
 		challan_uuid: text('challan_uuid'),
 		created_by_uuid: text('created_by_uuid'),
 		created_by_name: text('created_by_name'),
@@ -271,5 +272,6 @@ export const v_packing_list = delivery
 		updated_at: DateTime('updated_at'),
 		remarks: text('remarks'),
 		gate_pass: text('gate_pass'),
+		item_for: text('item_for'),
 	})
 	.existing();

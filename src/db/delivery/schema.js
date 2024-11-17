@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { boolean, decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
+import * as threadSchema from '../thread/schema.js';
 import {
 	DateTime,
 	defaultUUID,
@@ -19,13 +20,18 @@ export const packing_list_sequence = delivery.sequence(
 	}
 );
 
+export const item_for_enum = delivery.enum('item_for_enum', [
+	'zipper',
+	'thread',
+]);
+
 export const packing_list = delivery.table('packing_list', {
 	id: integer('id').default(sql`nextval('delivery.packing_list_sequence')`),
 	uuid: uuid_primary,
 	carton_weight: text('carton_weight').notNull(),
-	order_info_uuid: defaultUUID('order_info_uuid').references(
-		() => zipperSchema.order_info.uuid
-	),
+	order_info_uuid: defaultUUID('order_info_uuid')
+		.references(() => zipperSchema.order_info.uuid)
+		.default(null),
 	challan_uuid: defaultUUID('challan_uuid')
 		.references(() => challan.uuid)
 		.default(null),
@@ -36,6 +42,10 @@ export const packing_list = delivery.table('packing_list', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	item_for: item_for_enum('item_for').notNull().default('zipper'),
+	thread_order_info_uuid: defaultUUID('thread_order_info_uuid')
+		.references(() => threadSchema.order_info.uuid)
+		.default(null),
 });
 
 export const packing_list_entry = delivery.table('packing_list_entry', {
@@ -43,7 +53,9 @@ export const packing_list_entry = delivery.table('packing_list_entry', {
 	packing_list_uuid: defaultUUID('packing_list_uuid').references(
 		() => packing_list.uuid
 	),
-	sfg_uuid: defaultUUID('sfg_uuid').references(() => zipperSchema.sfg.uuid),
+	sfg_uuid: defaultUUID('sfg_uuid')
+		.references(() => zipperSchema.sfg.uuid)
+		.default(null),
 	quantity: decimal('quantity', {
 		precision: 20,
 		scale: 4,
@@ -54,6 +66,9 @@ export const packing_list_entry = delivery.table('packing_list_entry', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	thread_order_entry_uuid: defaultUUID('thread_order_entry_uuid')
+		.references(() => threadSchema.order_entry.uuid)
+		.default(null),
 });
 
 export const challan_sequence = delivery.sequence('challan_sequence', {
