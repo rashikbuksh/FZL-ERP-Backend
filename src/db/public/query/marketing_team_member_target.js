@@ -42,17 +42,14 @@ export async function update(req, res, next) {
 	try {
 		const data = await marketing_team_member_targetPromise;
 		const toast = {
-			status: 200,
+			status: 201,
 			type: 'update',
 			message: `${data[0].updatedId} updated`,
 		};
 
-		return await res.status(200).json({ toast, data });
+		return await res.status(201).json({ toast, data });
 	} catch (error) {
-		await handleError({
-			error,
-			res,
-		});
+		await handleError({ error, res });
 	}
 }
 
@@ -74,10 +71,7 @@ export async function remove(req, res, next) {
 
 		return await res.status(200).json({ toast, data });
 	} catch (error) {
-		await handleError({
-			error,
-			res,
-		});
+		await handleError({ error, res });
 	}
 }
 
