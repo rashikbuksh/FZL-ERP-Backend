@@ -244,6 +244,7 @@ export const v_packing_list_details = delivery
 		warehouse: PG_DECIMAL('warehouse'),
 		delivered: PG_DECIMAL('delivered'),
 		balance_quantity: PG_DECIMAL('balance_quantity'),
+		item_for: text('item_for'),
 	})
 	.existing();
 

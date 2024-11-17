@@ -227,7 +227,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         ple.created_at as entry_created_at,
         ple.updated_at as entry_updated_at,
         ple.remarks as entry_remarks,
-        oe.uuid as order_entry_uuid,
+        CASE WHEN pl.item_for = 'zipper' THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
         oe.style,
         oe.color,
         CASE 
@@ -244,13 +244,13 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
                         THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
                       ELSE CAST(oe.size AS NUMERIC)
                     END) as style_color_size,
-        oe.quantity::float8 as order_quantity,
+        CASE WHEN pl.item_for = 'zipper' THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
         vodf.order_description_uuid,
-        vodf.order_number,
-        vodf.item_description,
-        sfg.warehouse::float8 as warehouse,
-		    sfg.delivered::float8 as delivered,
-		    (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity
+        CASE WHEN pl.item_for = 'zipper' THEN vodf.order_number ELSE CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
+        CASE WHEN pl.item_for = 'zipper' THEN vodf.item_description ELSE CONCAT(tc.count, ' - ', tc.length) END as item_description,
+        CASE WHEN pl.item_for = 'zipper' THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
+		    CASE WHEN pl.item_for = 'zipper' THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
+		    CASE WHEN pl.item_for = 'zipper' THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
     FROM 
         delivery.packing_list_entry ple
         LEFT JOIN delivery.packing_list pl ON pl.uuid = ple.packing_list_uuid
@@ -259,6 +259,9 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         LEFT JOIN zipper.sfg ON sfg.uuid = ple.sfg_uuid
         LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
         LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+        LEFT JOIN thread.order_entry toe ON toe.uuid = sfg.order_entry_uuid
+        LEFT JOIN thread.count_length tc ON tc.uuid = toe.count_length_uuid
+        LEFT JOIN thread.order_info toi ON toi.uuid = toe.order_info_uuid
         LEFT JOIN delivery.challan ch ON ch.uuid = pl.challan_uuid;
 `;
 
