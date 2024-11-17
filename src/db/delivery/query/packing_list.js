@@ -213,9 +213,12 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 		if (is_update == 'true') {
 			const order_info_uuid = packing_list?.data?.data?.order_info_uuid;
+			const item_for = packing_list?.data?.data?.item_for;
 			const fetchOrderDataForPacking = async () =>
 				await api
-					.get(`/delivery/order-for-packing-list/${order_info_uuid}`)
+					.get(
+						`/delivery/order-for-packing-list/${order_info_uuid}?item_for=${item_for}`
+					)
 					.then((response) => response);
 
 			query_data = await fetchOrderDataForPacking();
@@ -261,7 +264,13 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 export async function selectAllOrderForPackingList(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	const query = sql`
+
+	const { item_for } = req.query;
+
+	let query;
+
+	if (item_for == 'zipper') {
+		query = sql`
 		SELECT 
 			vodf.order_info_uuid as order_info_uuid,
 			vodf.order_number,
@@ -295,6 +304,36 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		ORDER BY
 			oe.created_at, oe.uuid DESC
 		`;
+	} else {
+		query = sql`
+		SELECT 
+			toi.uuid as order_info_uuid,
+			CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+			CONCAT(cl.count, ' - ',cl.length) as item_description,
+			toe.style,
+			toe.color,
+			cl.count,
+			cl.length,
+			toe.quantity::float8  as order_quantity,
+			toe.uuid as order_entry_uuid,
+			toe.warehouse::float8 as warehouse,
+			toe.delivered::float8 as delivered,
+			(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 as balance_quantity,
+			(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 as max_quantity,
+			0 as short_quantity,
+			0 as reject_quantity
+		FROM
+			thread.order_info toi
+		LEFT JOIN
+			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+		LEFT JOIN 
+			thread.count_length cl ON toe.count_length_uuid = cl.uuid
+		WHERE
+			(toe.quantity - toe.delivered - toe.delivered) > 0 AND vodf.order_info_uuid = ${req.params.order_info_uuid}
+		ORDER BY
+			toe.created_at, toe.uuid DESC
+		`;
+	}
 
 	try {
 		const data = await db.execute(query);
