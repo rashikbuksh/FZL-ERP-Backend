@@ -1,8 +1,5 @@
 import { asc, eq } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { manual_pi_entry } from '../schema.js';
@@ -87,10 +84,7 @@ export async function selectAll(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
-			value: decimalToNumber(
-				(decimalToNumber(manual_pi_entry.unit_price) / 12) *
-					decimalToNumber(manual_pi_entry.quantity)
-			),
+			value: sql` coalesce(manual_pi_entry.unit_price,0)::float8 / 12 * coalesce(manual_pi_entry.quantity,0)::float8 `,
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
@@ -127,10 +121,7 @@ export async function select(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
-			value: decimalToNumber(
-				(decimalToNumber(manual_pi_entry.unit_price) / 12) *
-					decimalToNumber(manual_pi_entry.quantity)
-			),
+			value: sql` coalesce(manual_pi_entry.unit_price,0)::float8 / 12 * coalesce(manual_pi_entry.quantity,0)::float8 `,
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
@@ -167,10 +158,7 @@ export async function selectByManualPiUuid(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
-			value: decimalToNumber(
-				(decimalToNumber(manual_pi_entry.unit_price) / 12) *
-					decimalToNumber(manual_pi_entry.quantity)
-			),
+			value: sql` coalesce(manual_pi_entry.unit_price,0)::float8 / 12 * coalesce(manual_pi_entry.quantity,0)::float8 `,
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
