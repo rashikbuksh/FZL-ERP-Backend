@@ -183,6 +183,7 @@ export const pi_cash = commercial.table('pi_cash', {
 	validity: integer('validity').default(0),
 	payment: integer('payment').default(0),
 	is_pi: integer('is_pi').default(0),
+	is_rtgs: boolean('is_rtgs').default(false),
 	conversion_rate: decimal('conversion_rate', {
 		precision: 20,
 		scale: 4,

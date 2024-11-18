@@ -212,6 +212,7 @@ export const defCommercialPiCash = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 		is_pi: SE.integer(0),
+		is_rtgs: SE.boolean(false),
 		conversion_rate: SE.number(1000.0),
 		weight: SE.number(1000.0),
 		receive_amount: SE.number(1000.0),
