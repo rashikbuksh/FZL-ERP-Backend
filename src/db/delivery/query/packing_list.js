@@ -7,6 +7,14 @@ import { packing_list } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const item_for = req.body.item_for;
+
+	if (item_for == 'thread') {
+		const { order_info_uuid } = req.body;
+		req.body.thread_order_info_uuid = order_info_uuid;
+		req.body.order_info_uuid = null;
+	}
+
 	const packing_listPromise = db
 		.insert(packing_list)
 		.values(req.body)
@@ -29,6 +37,12 @@ export async function insert(req, res, next) {
 
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	if (item_for == 'thread') {
+		const { order_info_uuid } = req.body;
+		req.body.thread_order_info_uuid = order_info_uuid;
+		req.body.order_info_uuid = null;
+	}
 
 	const packing_listPromise = db
 		.update(packing_list)

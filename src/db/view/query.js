@@ -206,7 +206,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         carton.name as carton_name,
         carton.size as carton_size,
         pl.carton_weight,
-        pl.order_info_uuid,
+        CASE WHEN pl.item_for = 'zipper' THEN pl.order_info_uuid ELSE pl.thread_order_info_uuid END as order_info_uuid,
         pl.challan_uuid,
         pl.created_by as created_by_uuid,
         users.name as created_by_name,
@@ -269,8 +269,7 @@ export const PackingListView = `
 CREATE OR REPLACE VIEW delivery.v_packing_list AS 
   SELECT 
       packing_list.uuid,
-      packing_list.order_info_uuid,
-      packing_list.thread_order_info_uuid,
+      CASE WHEN packing_list.item_for = 'zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END as order_info_uuid,
       ROW_NUMBER() OVER (
 					PARTITION BY CASE WHEN packing_list.item_for = 'zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END
 					ORDER BY packing_list.created_at
