@@ -309,8 +309,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		SELECT 
 			toi.uuid as order_info_uuid,
 			CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
-			CONCAT(cl.count, ' - ',cl.length) as item_description,
-			cl.count,
+			CONCAT(cl.count) as item_description,
 			cl.length as size,
 			toe.style,
 			toe.color,
