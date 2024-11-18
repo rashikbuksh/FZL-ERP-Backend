@@ -291,6 +291,8 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			sfg.delivered::float8 as delivered,
 			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
 			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as max_quantity,
+			0 as quantity,
+			0 as poli_quantity,
 			0 as short_quantity,
 			0 as reject_quantity
 		FROM
@@ -321,6 +323,8 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			toe.delivered::float8 as delivered,
 			(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 as balance_quantity,
 			(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 as max_quantity,
+			0 as quantity,
+			0 as poli_quantity,
 			0 as short_quantity,
 			0 as reject_quantity
 		FROM
