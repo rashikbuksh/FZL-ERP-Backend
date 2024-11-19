@@ -271,6 +271,7 @@ export const thread_challan_sequence = thread.sequence(
 	}
 );
 
+
 export const challan = thread.table('challan', {
 	uuid: uuid_primary,
 	order_info_uuid: defaultUUID('order_info_uuid').references(
