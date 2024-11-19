@@ -98,7 +98,7 @@ export async function selectAll(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-				WHEN sfg_uuid IS NOT NULL THEN 
+				WHEN ple.sfg_uuid IS NOT NULL THEN 
 					CASE 
 						WHEN vodf.is_inch = 1 
 							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
@@ -111,11 +111,11 @@ export async function selectAll(req, res, next) {
 					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
                 ELSE CAST(oe.size AS NUMERIC)
             END) as style_color_size,
-			oe.quantity::float8 as order_quantity,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
 			sfg.uuid as sfg_uuid,
-			sfg.warehouse::float8 as warehouse,
-			sfg.delivered::float8 as delivered,
-			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity
+			CASE WHEN sfg.uuid IS NOT NULL THEN THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
+			CASE WHEN sfg.uuid IS NOT NULL THEN THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
+			CASE WHEN sfg.uuid IS NOT NULL THEN THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN 
@@ -173,7 +173,7 @@ export async function select(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-				WHEN sfg_uuid IS NOT NULL THEN 
+				WHEN ple.sfg_uuid IS NOT NULL THEN 
 					CASE 
 						WHEN vodf.is_inch = 1 
 							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
@@ -181,11 +181,11 @@ export async function select(req, res, next) {
 					END 
 				ELSE tc.length 
 			END as size,
-			oe.quantity::float8 as order_quantity,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
 			sfg.uuid as sfg_uuid,
-			sfg.warehouse::float8 as warehouse,
-			sfg.delivered::float8 as delivered,
-			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
+			CASE WHEN sfg.uuid IS NOT NULL THEN THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
+			CASE WHEN sfg.uuid IS NOT NULL THEN THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
+			CASE WHEN sfg.uuid IS NOT NULL THEN THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity,
 			true as is_checked
 		FROM 
 			delivery.packing_list_entry ple
