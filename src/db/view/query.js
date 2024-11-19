@@ -315,12 +315,31 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
   LEFT JOIN
       public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
   LEFT JOIN
-      public.factory toi_fac ON toi.factory_uuid = public.factory.uuid
+      public.factory toi_fac ON toi.factory_uuid = toi_fac.uuid
   LEFT JOIN
-      public.buyer toi_buyer ON toi.buyer_uuid = public.buyer.uuid
+      public.buyer toi_buyer ON toi.buyer_uuid = toi_buyer.uuid
   LEFT JOIN (
-			SELECT packing_list.order_info_uuid as order_info_uuid, COUNT(*) AS packing_list_wise_count
-			FROM delivery.packing_list
-			GROUP BY packing_list.order_info_uuid
-	) packing_list_wise_counts ON packing_list.order_info_uuid = packing_list_wise_counts.order_info_uuid
+                SELECT
+                    packing_list.order_info_uuid AS order_info_uuid,
+                    COUNT(*) AS packing_list_wise_count
+                FROM
+                    delivery.packing_list
+                WHERE
+                    packing_list.item_for = 'zipper'
+                GROUP BY
+                    packing_list.order_info_uuid
+
+                UNION ALL
+
+                SELECT
+                    packing_list.thread_order_info_uuid AS order_info_uuid,
+                    COUNT(*) AS packing_list_wise_count
+                FROM
+                    delivery.packing_list
+                WHERE
+                    packing_list.item_for != 'zipper'
+                GROUP BY
+                    packing_list.thread_order_info_uuid
+            ) packing_list_wise_counts
+            ON packing_list_wise_counts.order_info_uuid = CASE WHEN packing_list.item_for = 'zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END;
 `;
