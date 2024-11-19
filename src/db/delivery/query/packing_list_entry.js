@@ -7,6 +7,16 @@ import { packing_list_entry } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { order_entry_uuid, sfg_uuid } = req.body;
+
+	if (order_entry_uuid !== null) {
+		req.body.thread_order_entry_uuid = order_entry_uuid;
+	}
+	if (sfg_uuid !== null) {
+		req.body.sfg_uuid = sfg_uuid;
+		req.body.thread_order_entry_uuid = null;
+	}
+
 	const packing_list_entryPromise = db
 		.insert(packing_list_entry)
 		.values(req.body)
