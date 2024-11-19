@@ -7,14 +7,10 @@ import { packing_list_entry } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_entry_uuid, sfg_uuid } = req.body;
+	const { order_entry_uuid } = req.body;
 
 	if (order_entry_uuid !== null) {
 		req.body.thread_order_entry_uuid = order_entry_uuid;
-	}
-	if (sfg_uuid !== null) {
-		req.body.sfg_uuid = sfg_uuid;
-		req.body.thread_order_entry_uuid = null;
 	}
 
 	const packing_list_entryPromise = db
@@ -84,6 +80,7 @@ export async function selectAll(req, res, next) {
 			ple.uuid,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
+			ple.thread_order_entry_uuid,
 			ple.quantity::float8,
 			ple.poli_quantity,
 			ple.short_quantity::float8,
