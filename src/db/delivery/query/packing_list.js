@@ -38,6 +38,8 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { item_for } = req.body;
+
 	if (item_for == 'thread') {
 		const { order_info_uuid } = req.body;
 		req.body.thread_order_info_uuid = order_info_uuid;
