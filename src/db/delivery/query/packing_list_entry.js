@@ -90,10 +90,10 @@ export async function selectAll(req, res, next) {
 			ple.remarks,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_info_uuid ELSE toi.uuid END as order_info_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_number ELSE CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
-			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description  ELSE tc.count END as item_description,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END as item_description,
 			vodf.order_description_uuid,
-			oe.style,
-			oe.color,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
 			CASE 
 				WHEN ple.sfg_uuid IS NOT NULL THEN 
 					CASE 
@@ -165,10 +165,10 @@ export async function select(req, res, next) {
 			ple.remarks,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_info_uuid ELSE toi.uuid END as order_info_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_number ELSE CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
-			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description  ELSE tc.count END as item_description,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END as item_description,
 			vodf.order_description_uuid,
-			oe.style,
-			oe.color,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
 			CASE 
 				WHEN ple.sfg_uuid IS NOT NULL THEN 
 					CASE 
@@ -241,10 +241,10 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			ple.remarks,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_info_uuid ELSE toi.uuid END as order_info_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_number ELSE CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
-			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description  ELSE tc.count END as item_description,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END as item_description,
 			vodf.order_description_uuid,
-			oe.style,
-			oe.color,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
 			CASE 
 				WHEN ple.sfg_uuid IS NOT NULL THEN 
 					CASE 
@@ -315,29 +315,31 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 			ple.created_at,
 			ple.updated_at,
 			ple.remarks,
-			vodf.order_info_uuid as order_info_uuid,
-			vodf.order_number,
-			vodf.item_description,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_info_uuid ELSE toi.uuid END as order_info_uuid,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_number ELSE CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END as item_description,
 			vodf.order_description_uuid,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
+			CASE 
+				WHEN ple.sfg_uuid IS NOT NULL THEN 
+					CASE 
+						WHEN vodf.is_inch = 1 
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+							ELSE CAST(oe.size AS NUMERIC)
+					END 
+				ELSE tc.length 
+			END as size,
 			concat(oe.style, ' / ', oe.color, ' / ', CASE 
                 WHEN vodf.is_inch = 1 
 					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
                 ELSE CAST(oe.size AS NUMERIC)
             END) as style_color_size,
-			oe.style,
-			oe.color,
-			CASE 
-                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)::float8
-                ELSE CAST(oe.size AS NUMERIC)::float8
-            END as size,
-			vodf.is_inch,
-			oe.quantity::float8 as order_quantity,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
 			sfg.uuid as sfg_uuid,
-			sfg.warehouse::float8 as warehouse,
-			sfg.delivered::float8 as delivered,
-			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
-			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 + ple.quantity::float8 as max_quantity,
-			true as is_checked
+			CASE WHEN sfg.uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
+			CASE WHEN sfg.uuid IS NOT NULL THEN  sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
+			CASE WHEN sfg.uuid IS NOT NULL THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN 
@@ -346,6 +348,12 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN 
+			thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+		LEFT JOIN
+			thread.order_info toi ON toe.order_info_uuid = toi.uuid
+		LEFT JOIN
+			thread.count_length tc ON tc.uuid = toe.count_length_uuid
 		LEFT JOIN
 			delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
 		WHERE 
