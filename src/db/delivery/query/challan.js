@@ -88,7 +88,9 @@ export async function selectAll(req, res, next) {
 						FROM
 							(
 								SELECT
-									challan.uuid,
+									CASE WHEN packing_list.item_for = 'zipper' THEN
+										challan.uuid ELSE
+										tc.uuid END AS uuid,
 									CASE WHEN packing_list.item_for = 'zipper' THEN
 										CONCAT('ZC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE
 										CONCAT('TC', TO_CHAR(tc.created_at, 'YY'), '-', LPAD(tc.id::text, 4, '0')) END AS challan_number,
@@ -168,7 +170,8 @@ export async function selectAll(req, res, next) {
 										tc.updated_at END AS updated_at,
 									CASE WHEN packing_list.item_for = 'zipper' THEN
 										challan.remarks ELSE
-										tc.remarks END AS remarks
+										tc.remarks END AS remarks,
+									packing_list.item_for
 								FROM
 									delivery.challan
 								LEFT JOIN
@@ -261,7 +264,9 @@ export async function select(req, res, next) {
 						FROM
 							(
 								SELECT
-									challan.uuid,
+									CASE WHEN packing_list.item_for = 'zipper' THEN
+										challan.uuid ELSE
+										tc.uuid END AS uuid,
 									CASE WHEN packing_list.item_for = 'zipper' THEN
 										CONCAT('ZC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE
 										CONCAT('TC', TO_CHAR(tc.created_at, 'YY'), '-', LPAD(tc.id::text, 4, '0')) END AS challan_number,
@@ -341,7 +346,8 @@ export async function select(req, res, next) {
 										tc.updated_at END AS updated_at,
 									CASE WHEN packing_list.item_for = 'zipper' THEN
 										challan.remarks ELSE
-										tc.remarks END AS remarks
+										tc.remarks END AS remarks,
+									packing_list.item_for
 								FROM
 									delivery.challan
 								LEFT JOIN
