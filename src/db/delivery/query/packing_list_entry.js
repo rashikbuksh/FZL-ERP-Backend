@@ -91,8 +91,8 @@ export async function selectAll(req, res, next) {
 			ple.created_at,
 			ple.updated_at,
 			ple.remarks,
-			vodf.order_info_uuid as order_info_uuid,
-			vodf.order_number,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_info_uuid ELSE toi.uuid END as order_info_uuid,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_number ELSE CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
 			vodf.item_description,
 			vodf.order_description_uuid,
 			oe.style,
@@ -120,6 +120,10 @@ export async function selectAll(req, res, next) {
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN 
+			thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+		LEFT JOIN
+			thread.order_info toi ON toe.order_info_uuid = toi.uuid
 		ORDER BY
 			ple.created_at, ple.uuid DESC
 	`;
