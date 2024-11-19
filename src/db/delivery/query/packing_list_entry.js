@@ -34,6 +34,12 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { order_entry_uuid } = req.body;
+
+	if (order_entry_uuid !== null) {
+		req.body.thread_order_entry_uuid = order_entry_uuid;
+	}
+
 	const packing_list_entryPromise = db
 		.update(packing_list_entry)
 		.set(req.body)
