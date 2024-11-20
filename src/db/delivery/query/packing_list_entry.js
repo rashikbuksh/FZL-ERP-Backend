@@ -267,12 +267,12 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
                 ELSE CAST(oe.size AS NUMERIC)
             END) as style_color_size,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
-			sfg.uuid as sfg_uuid,
-			CASE WHEN sfg.uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
-			CASE WHEN sfg.uuid IS NOT NULL THEN  sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
-			CASE WHEN sfg.uuid IS NOT NULL THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity,
-			CASE WHEN sfg.uuid IS NOT NULL THEN (ple.quantity + oe.quantity - sfg.warehouse - sfg.delivered)::float8 ELSE (ple.quantity + toe.quantity - toe.warehouse - toe.delivered)::float8 END as max_quantity,
-			sfg.finishing_prod
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN  sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN (ple.quantity + oe.quantity - sfg.warehouse - sfg.delivered)::float8 ELSE (ple.quantity + toe.quantity - toe.warehouse - toe.delivered)::float8 END as max_quantity,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.finishing_prod::float8 ELSE total_production_quantity.coning_production_quantity END as finishing_prod
+			
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN
@@ -289,6 +289,14 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			thread.order_info toi ON toe.order_info_uuid = toi.uuid
 		LEFT JOIN
 			thread.count_length tc ON tc.uuid = toe.count_length_uuid
+		LEFT JOIN
+			(SELECT
+				tbe.uuid,
+				SUM(tbe.coning_production_quantity) as coning_production_quantity
+			FROM
+				thread.batch_entry tbe
+			GROUP BY
+				tbe.uuid) total_production_quantity ON total_production_quantity.uuid = toe.uuid
 		WHERE 
 			ple.packing_list_uuid = ${req.params.packing_list_uuid}
 		ORDER BY
