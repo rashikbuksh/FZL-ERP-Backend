@@ -388,9 +388,9 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 	const packingListPromise = db
 		.update(packing_list)
 		.set({ challan_uuid })
-		.where(eq(packing_list.uuid, req.params.uuid))
+		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
 		.returning({
-			updatedId: packing_list.id,
+			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
 		});
 
 	try {
