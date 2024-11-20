@@ -320,6 +320,10 @@ export const pathDeliveryPackingList = {
 					format: 'uuid',
 					example: 'igD0v9DIJQhJeet',
 				},
+				SE.parameter_query('item_for', 'item_for', [
+					'zipper',
+					'thread',
+				]),
 			],
 			responses: {
 				200: {

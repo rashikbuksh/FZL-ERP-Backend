@@ -309,7 +309,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			0 as poli_quantity,
 			0 as short_quantity,
 			0 as reject_quantity,
-			sfg.finishing_prod
+			sfg.finishing_prod::float8
 		FROM
 			zipper.v_order_details_full vodf
 		LEFT JOIN
@@ -342,7 +342,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			0 as poli_quantity,
 			0 as short_quantity,
 			0 as reject_quantity,
-			total_production_quantity.total_production_quantity as finishing_prod
+			total_production_quantity.total_production_quantity::float8 as finishing_prod
 		FROM
 			thread.order_info toi
 		LEFT JOIN
@@ -352,8 +352,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN
 			(SELECT 
 				tbe.order_entry_uuid,
-				SUM(tbe.coning_production_quantity) as total_production_quantity,
-				
+				SUM(tbe.coning_production_quantity) as total_production_quantity
 			FROM
 				thread.batch_entry tbe
 			GROUP BY
