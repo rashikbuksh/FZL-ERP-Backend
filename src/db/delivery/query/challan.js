@@ -40,6 +40,15 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	if (req.body.item_for === 'zipper') {
+		req.body.order_info_uuid = req.body.order_info_uuid;
+		req.body.thread_order_info_uuid = null;
+	} else {
+		const threadOrders = req.body.order_info_uuid;
+		req.body.order_info_uuid = null;
+		req.body.thread_order_info_uuid = threadOrders;
+	}
+
 	const challanPromise = db
 		.update(challan)
 		.set(req.body)
