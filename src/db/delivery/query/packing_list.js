@@ -239,15 +239,31 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 			// remove the order_entry_uuid from the packing_list_entry if that exists in the order_details_for_challan
 
-			const sfg_uuid = packing_list_entry?.data?.data?.map(
-				(entry) => entry?.sfg_uuid
-			);
+			if (item_for == 'thread') {
+				const order_entry_uuid = packing_list?.data?.data?.map(
+					(entry) => entry?.order_entry_uuid
+				);
 
-			if (sfg_uuid) {
-				query_data.data.data.packing_list_entry =
-					query_data.data.data.packing_list_entry.filter(
-						(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
-					);
+				if (order_entry_uuid) {
+					query_data.data.data.packing_list_entry =
+						query_data.data.data.packing_list_entry.filter(
+							(uuid) =>
+								!order_entry_uuid.includes(
+									uuid.thread_order_entry_uuid
+								)
+						);
+				}
+			} else {
+				const sfg_uuid = packing_list_entry?.data?.data?.map(
+					(entry) => entry?.sfg_uuid
+				);
+
+				if (sfg_uuid) {
+					query_data.data.data.packing_list_entry =
+						query_data.data.data.packing_list_entry.filter(
+							(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
+						);
+				}
 			}
 		}
 
