@@ -1329,49 +1329,105 @@ export async function selectThreadOrder(req, res, next) {
 
 	const { page } = req.query;
 
-	const query = sql`
+	let condition = '';
+
+	if (page === 'challan') {
+		condition = sql`
+					ot.uuid IN (
+					SELECT
+						pl.thread_order_info_uuid
+					FROM
+						delivery.packing_list pl
+					WHERE
+						pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
+					)
+				`;
+	} else if (page === 'packing_list') {
+		condition = sql`
+					ot.uuid IN (
+					SELECT
+						oi.uuid
+					FROM
+						thread.order_info oi
+					LEFT JOIN
+						thread.order_entry oe ON oi.uuid = oe.order_info_uuid
+					LEFT JOIN
+						(
 						SELECT
-							ot.uuid AS value,
-							CONCAT('TO', to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
+							tbe.order_entry_uuid,
+							SUM(tbe.coning_production_quantity) AS total_coning_quantity
 						FROM
-							thread.order_info ot
-						WHERE 
-							${
-								page == 'challan'
-									? sql`ot.uuid IN (
-								SELECT
-									pl.thread_order_info_uuid
-								FROM
-									delivery.packing_list pl
-								WHERE
-									pl.challan_uuid IS NULL AND pl.is_warehouse_received = true)`
-									: sql`1=1`
-							} OR ${
-								page == 'packing_list'
-									? sql`ot.uuid IN (
-								SELECT
-									oi.uuid
-									FROM
-										thread.order_info oi
-									LEFT JOIN
-										thread.order_entry oe ON oi.uuid = oe.order_info_uuid
-									LEFT JOIN
-										(
-											SELECT
-												 tbe.order_entry_uuid,
-												 SUM(tbe.coning_production_quantity) AS total_coning_quantity
-											FROM
-												thread.batch_entry tbe
-											GROUP BY
-												tbe.order_entry_uuid
-										) AS total_coning ON total_coning.order_entry_uuid = oe.uuid
-									WHERE
-										total_coning.total_coning_quantity > 0)`
-									: sql`1=1`
-							}
-									ORDER BY
-									ot.created_at DESC
-									`;
+							thread.batch_entry tbe
+						GROUP BY
+							tbe.order_entry_uuid
+						) AS total_coning ON total_coning.order_entry_uuid = oe.uuid
+					WHERE
+						total_coning.total_coning_quantity > 0
+					)
+				`;
+	} else {
+		condition = sql`1=1`;
+	}
+
+	const query = sql`
+				SELECT
+					ot.uuid AS value,
+					CONCAT('TO', to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
+				FROM
+					thread.order_info ot
+				WHERE
+					${condition}
+				`;
+
+	// const query = `
+	// 			SELECT
+	// 				ot.uuid AS value,
+	// 				CONCAT('TO', to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
+	// 			FROM
+	// 				thread.order_info ot
+	// 			WHERE
+	// 				${
+	// 					page === 'challan'
+	// 						? `
+	// 				ot.uuid IN (
+	// 					SELECT
+	// 					pl.thread_order_info_uuid
+	// 					FROM
+	// 					delivery.packing_list pl
+	// 					WHERE
+	// 					pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
+	// 				)
+	// 				`
+	// 						: '1=1'
+	// 				}
+	// 				OR
+	// 				${
+	// 					page === 'packing_list'
+	// 						? `
+	// 				ot.uuid IN (
+	// 					SELECT
+	// 					oi.uuid
+	// 					FROM
+	// 					thread.order_info oi
+	// 					LEFT JOIN
+	// 					thread.order_entry oe ON oi.uuid = oe.order_info_uuid
+	// 					LEFT JOIN
+	// 					(
+	// 						SELECT
+	// 						tbe.order_entry_uuid,
+	// 						SUM(tbe.coning_production_quantity) AS total_coning_quantity
+	// 						FROM
+	// 						thread.batch_entry tbe
+	// 						GROUP BY
+	// 						tbe.order_entry_uuid
+	// 					) AS total_coning ON total_coning.order_entry_uuid = oe.uuid
+	// 					WHERE
+	// 					total_coning.total_coning_quantity > 0
+	// 				)
+	// 				`
+	// 						: '1=1'
+	// 				}
+	// 			`;
 
 	const orderThreadPromise = db.execute(query);
 
