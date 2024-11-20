@@ -1340,11 +1340,11 @@ export async function selectThreadOrder(req, res, next) {
 								page == 'challan'
 									? sql`ot.uuid IN (
 								SELECT
-									oe.order_info_uuid
+									pl.thread_order_info_uuid
 								FROM
-									thread.order_entry oe
+									delivery.packing_list pl
 								WHERE
-									oe.warehouse > 0)`
+									pl.challan_uuid IS NULL AND pl.is_warehouse_received = true)`
 									: sql`1=1`
 							}`;
 
