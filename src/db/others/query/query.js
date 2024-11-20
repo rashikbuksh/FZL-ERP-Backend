@@ -328,6 +328,7 @@ export async function selectOrderInfo(req, res, next) {
 	// 			: null
 	// 	);
 
+	const orderInfoPromise = db.execute(query);
 	try {
 		const data = await orderInfoPromise;
 		const toast = {
