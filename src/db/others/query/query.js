@@ -1513,7 +1513,7 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	FROM
 		delivery.packing_list pl
 	WHERE
-		pl.order_info_uuid = ${order_info_uuid} AND (pl.challan_uuid IS NULL`;
+		pl.order_info_uuid = ${order_info_uuid} OR pl.thread_order_info_uuid =  ${order_info_uuid}  AND (pl.challan_uuid IS NULL`;
 
 	// Conditionally add the challan_uuid part
 	if (
