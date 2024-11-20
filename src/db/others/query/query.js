@@ -309,40 +309,22 @@ export async function selectOrderInfo(req, res, next) {
 					}
 				`;
 
-	const orderInfoPromise = db.execute(query);
+	// const orderInfoPromise = db.execute(query);
 
 	// const orderInfoPromise = db
 	// 	.select({
-	// 		value: sql`CASE WHEN ${item_for} = 'zipper' THEN zipper.order_info.uuid ELSE thread.order_info.uuid END`,
-	// 		label: sql`CASE WHEN ${item_for} = 'zipper' THEN CONCAT('Z', to_char(zipper.order_info.created_at, 'YY'), '-', LPAD(zipper.order_info.id::text, 4, '0')) ELSE CONCAT('TO', to_char(thread.order_info.created_at, 'YY'), '-', LPAD(thread.order_info.id::text, 4, '0')) END`,
+	// 		value: zipperSchema.order_info.uuid,
+	// 		label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 	// 	})
 	// 	.from(zipperSchema.order_info)
-	// 	.leftJoin(
-	// 		deliverySchema.packing_list,
-	// 		eq(
-	// 			zipperSchema.order_info.uuid,
-	// 			deliverySchema.packing_list.order_info_uuid
-	// 		)
-	// 	)
-	// 	.leftJoin(
-	// 		threadSchema.order_info,
-	// 		eq(
-	// 			deliverySchema.packing_list.thread_order_info_uuid,
-	// 			threadSchema.order_info.uuid
-	// 		)
-	// 	)
 	// 	.where(
 	// 		page == 'challan'
 	// 			? sql`
-	// 			CASE WHEN ${item_for} = 'zipper' THEN zipper.order_info.uuid IN (
+	// 				order_info.uuid IN (
 	// 					SELECT pl.order_info_uuid
 	// 					FROM delivery.packing_list pl
-	// 					WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
-	// 				) ELSE thread.order_info.uuid IN (
-	// 					SELECT pl.order_info_uuid
-	// 					FROM delivery.packing_list pl
-	// 					WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
-	// 				) END`
+	// 					WHERE pl.challan_uuid IS NULL
+	// 				)`
 	// 			: null
 	// 	);
 
