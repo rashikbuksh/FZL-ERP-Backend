@@ -368,6 +368,29 @@ export const pathDeliveryPackingList = {
 			},
 		},
 	},
+	'/delivery/update-challan-uuid/for-packing-list/{packing_list_uuid}': {
+		put: {
+			tags: ['delivery.packing-list'],
+			summary: 'Update challan_uuid for packing list',
+			description: 'Update challan_uuid for packing list',
+			// operationId: "updateChallanUuidForPackingList",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [
+				SE.parameter_params('packing_list_uuid', 'packing_list_uuid'),
+			],
+			requestBody: SE.requestBody('challan_uuid', 'challan_uuid'),
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Packing list not found',
+				},
+				405: { description: 'Validation exception' },
+			},
+		},
+	},
 };
 
 // * Delivery PackingListEntry * //

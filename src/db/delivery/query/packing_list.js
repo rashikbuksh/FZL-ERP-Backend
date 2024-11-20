@@ -380,3 +380,30 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function setChallanUuidOfPackingList(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { challan_uuid } = req.body;
+
+	const packingListPromise = db
+		.update(packing_list)
+		.set({ challan_uuid })
+		.where(eq(packing_list.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await packingListPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		console.error(error);
+		handleError({ error, res });
+	}
+}

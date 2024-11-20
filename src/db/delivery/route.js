@@ -5,6 +5,7 @@ import * as deliveryOperations from './query/delivery_dashboard.js';
 import * as packingListOperations from './query/packing_list.js';
 import * as packingListEntryOperations from './query/packing_list_entry.js';
 import * as vehicleOperations from './query/vehicle.js';
+import delivery from './schema.js';
 
 const deliveryRouter = Router();
 
@@ -30,6 +31,10 @@ deliveryRouter.get(
 deliveryRouter.get(
 	'/order-for-packing-list/:order_info_uuid',
 	packingListOperations.selectAllOrderForPackingList
+);
+deliveryRouter.put(
+	'/update-challan-uuid/for-packing-list/:packing_list_uuid',
+	packingListOperations.setChallanUuidOfPackingList
 );
 
 // packing_list_entry routes
