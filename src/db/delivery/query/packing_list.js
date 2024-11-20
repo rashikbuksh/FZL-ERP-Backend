@@ -351,16 +351,13 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			thread.count_length cl ON toe.count_length_uuid = cl.uuid
 		LEFT JOIN
 			(SELECT 
-			
+				tbe.order_entry_uuid,
 				SUM(tbe.coning_production_quantity) as total_production_quantity,
 				
 			FROM
 				thread.batch_entry tbe
-			WHERE
-				tbe.order_entry_uuid = toe.uuid
 			GROUP BY
 				tbe.order_entry_uuid) as total_production_quantity ON total_production_quantity.order_entry_uuid = toe.uuid
-
 		WHERE
 			(toe.quantity - toe.delivered - toe.delivered) > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid}
 		ORDER BY
