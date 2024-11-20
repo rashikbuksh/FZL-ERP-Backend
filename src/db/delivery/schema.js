@@ -94,6 +94,9 @@ export const challan = delivery.table('challan', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	thread_order_info_uuid: defaultUUID('thread_order_info_uuid').references(
+		() => threadSchema.order_info.uuid
+	),
 	remarks: text('remarks').default(null),
 });
 
