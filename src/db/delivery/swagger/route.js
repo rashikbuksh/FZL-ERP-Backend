@@ -368,7 +368,7 @@ export const pathDeliveryPackingList = {
 			},
 		},
 	},
-	'/delivery/update-challan-uuid/for-packing-list/{packing_list_uuid}': {
+	'/delivery/update-challan-uuid/for-packing-list/{uuid}': {
 		put: {
 			tags: ['delivery.packing-list'],
 			summary: 'Update challan_uuid for packing list',
@@ -376,9 +376,7 @@ export const pathDeliveryPackingList = {
 			// operationId: "updateChallanUuidForPackingList",
 			consumes: 'application/json',
 			produces: 'application/json',
-			parameters: [
-				SE.parameter_params('packing_list_uuid', 'packing_list_uuid'),
-			],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			requestBody: SE.requestBody('challan_uuid', 'challan_uuid'),
 			responses: {
 				400: {
