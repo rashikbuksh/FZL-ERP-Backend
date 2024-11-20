@@ -366,7 +366,13 @@ const pathPublic = {
 			summary: 'get all order info',
 			description: 'All order info',
 			operationId: 'getAllOrderInfo',
-			parameters: [SE.parameter_query('page', 'page', ['challan'])],
+			parameters: [
+				SE.parameter_query('page', 'page', ['challan']),
+				SE.parameter_query('item_for', 'item_for', [
+					'zipper',
+					'thread',
+				]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					value: SE.uuid(),
