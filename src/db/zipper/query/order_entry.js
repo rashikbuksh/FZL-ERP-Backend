@@ -1,9 +1,6 @@
 import { asc, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as deliverySchema from '../../delivery/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -288,12 +285,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			)
 		)
 		.where(eq(order_description.uuid, order_description_uuid))
-		.groupBy(order_entry.uuid, sfg.uuid)
-		.orderBy(
-			asc(order_entry.style),
-			asc(order_entry.color),
-			asc(order_entry.size)
-		);
+		.groupBy(order_entry.uuid, sfg.uuid);
 
 	try {
 		const data = await orderEntryPromise;
