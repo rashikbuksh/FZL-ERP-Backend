@@ -1690,7 +1690,7 @@ export async function selectChallan(req, res, next) {
 				FROM
 					delivery.challan ch 
 				WHERE 
-					${get_pass == 0 ? sql`ch.gate_pass = 0` : sql`1=1`}
+					${get_pass === 'false' ? sql`ch.gate_pass = 0` : sql`1=1`}
 				`;
 
 	const challanPromise = db.execute(query);
