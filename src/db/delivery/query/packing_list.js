@@ -397,7 +397,7 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 		const data = await packingListPromise;
 		const toast = {
 			status: 201,
-			type: challan_uuid == null ? 'insert' : 'delete',
+			type: challan_uuid != null ? 'insert' : 'delete',
 			message: `${data[0].updatedId} updated`,
 		};
 		return await res.status(201).json({ toast, data });
