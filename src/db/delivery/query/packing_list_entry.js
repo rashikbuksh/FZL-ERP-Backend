@@ -233,7 +233,8 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-		SELECT 
+		SELECT
+			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number, 
 			ple.uuid,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
@@ -273,6 +274,8 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			CASE WHEN sfg.uuid IS NOT NULL THEN (ple.quantity + oe.quantity - sfg.warehouse - sfg.delivered)::float8 ELSE (ple.quantity + toe.quantity - toe.warehouse - toe.delivered)::float8 END as max_quantity
 		FROM 
 			delivery.packing_list_entry ple
+		LEFT JOIN
+			delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
 		LEFT JOIN 
 			zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 		LEFT JOIN
