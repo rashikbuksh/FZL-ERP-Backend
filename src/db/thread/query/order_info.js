@@ -1,9 +1,6 @@
 import { asc, desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
@@ -178,6 +175,8 @@ export async function selectAll(req, res, next) {
 }
 
 export async function select(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
 	const query = sql`
 		SELECT 
 			order_info.uuid,

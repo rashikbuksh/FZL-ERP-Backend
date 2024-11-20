@@ -1504,7 +1504,7 @@ export async function selectDyesCategory(req, res, next) {
 export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	const { order_info_uuid } = req.params;
 
-	const { challan_uuid, received, item_for } = req.query;
+	const { challan_uuid, received } = req.query;
 
 	let query = sql`
     SELECT
@@ -1513,7 +1513,7 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
     FROM
         delivery.packing_list pl
     WHERE
-        (pl.order_info_uuid = ${order_info_uuid} OR pl.thread_order_info_uuid = ${order_info_uuid}) AND ((pl.challan_uuid IS NULL`;
+        (pl.order_info_uuid = ${order_info_uuid} OR pl.thread_order_info_uuid = ${order_info_uuid}) `;
 
 	// Conditionally add the challan_uuid part
 	if (
@@ -1525,7 +1525,7 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 			sql` OR pl.challan_uuid = ${challan_uuid}) AND pl.is_warehouse_received = true`
 		);
 	}
-	query.append(sql`)`);
+	query.append(sql``);
 
 	if (received == 'true') {
 		query.append(sql` AND pl.is_warehouse_received = true`);
