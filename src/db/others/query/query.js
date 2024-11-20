@@ -1682,13 +1682,16 @@ export async function selectCarton(req, res, next) {
 }
 
 export async function selectChallan(req, res, next) {
+	const { get_pass } = req.query;
 	const query = sql`
-	SELECT
-		ch.uuid AS value,
-		concat('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) AS label
-	FROM
-		delivery.challan ch
-	`;
+				SELECT
+					ch.uuid AS value,
+					concat('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) AS label
+				FROM
+					delivery.challan ch 
+				WHERE 
+					${get_pass == 0 ? sql`ch.gate_pass = 0` : sql`1=1`}
+				`;
 
 	const challanPromise = db.execute(query);
 
