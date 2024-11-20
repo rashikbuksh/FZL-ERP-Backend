@@ -271,7 +271,8 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			CASE WHEN sfg.uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
 			CASE WHEN sfg.uuid IS NOT NULL THEN  sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
 			CASE WHEN sfg.uuid IS NOT NULL THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity,
-			CASE WHEN sfg.uuid IS NOT NULL THEN (ple.quantity + oe.quantity - sfg.warehouse - sfg.delivered)::float8 ELSE (ple.quantity + toe.quantity - toe.warehouse - toe.delivered)::float8 END as max_quantity
+			CASE WHEN sfg.uuid IS NOT NULL THEN (ple.quantity + oe.quantity - sfg.warehouse - sfg.delivered)::float8 ELSE (ple.quantity + toe.quantity - toe.warehouse - toe.delivered)::float8 END as max_quantity,
+			sfg.finishing_prod
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN
