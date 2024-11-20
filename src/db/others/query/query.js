@@ -1346,7 +1346,32 @@ export async function selectThreadOrder(req, res, next) {
 								WHERE
 									pl.challan_uuid IS NULL AND pl.is_warehouse_received = true)`
 									: sql`1=1`
-							}`;
+							} OR ${
+								page == 'packing_list'
+									? sql`ot.uuid IN (
+								SELECT
+									oi.uuid
+									FROM
+										thread.order_info oi
+									LEFT JOIN
+										thread.order_entry oe ON oi.uuid = oe.order_info_uuid
+									LEFT JOIN
+										(
+											SELECT
+												 tbe.order_entry_uuid,
+												 SUM(tbe.coning_production_quantity) AS total_coning_quantity
+											FROM
+												thread.batch_entry tbe
+											GROUP BY
+												tbe.order_entry_uuid
+										) AS total_coning ON total_coning.order_entry_uuid = oe.uuid
+									WHERE
+										total_coning.total_coning_quantity > 0)`
+									: sql`1=1`
+							}
+									ORDER BY
+									ot.created_at DESC
+									`;
 
 	const orderThreadPromise = db.execute(query);
 

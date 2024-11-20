@@ -341,13 +341,23 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			0 as quantity,
 			0 as poli_quantity,
 			0 as short_quantity,
-			0 as reject_quantity
+			0 as reject_quantity,
+			total_production_quantity.total_production_quantity as finishing_prod
 		FROM
 			thread.order_info toi
 		LEFT JOIN
 			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
 		LEFT JOIN 
 			thread.count_length cl ON toe.count_length_uuid = cl.uuid
+		LEFT JOIN
+			(SELECT 
+				tbe.order_entry_uuid,
+				SUM(tbe.coning_production_quantity) as total_production_quantity,
+				
+			FROM
+				thread.batch_entry tbe
+			GROUP BY
+				tbe.order_entry_uuid) as total_production_quantity ON total_production_quantity.order_entry_uuid = toe.uuid
 		WHERE
 			(toe.quantity - toe.delivered - toe.delivered) > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid}
 		ORDER BY
