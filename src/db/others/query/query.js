@@ -336,7 +336,7 @@ export async function selectOrderInfo(req, res, next) {
 			type: 'select_all',
 			message: 'Order Info list',
 		};
-		return await res.status(200).json({ toast, data: data?.rows });
+		return await res.status(200).json({ toast, data: data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
