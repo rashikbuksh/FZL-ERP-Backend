@@ -1495,7 +1495,9 @@ const pathDelivery = {
 			summary: 'get all challans',
 			description: 'All challans',
 			operationId: 'getAllChallans',
-			parameters: [SE.parameter_query('get_pass', 'get_pass', [0, 1])],
+			parameters: [
+				SE.parameter_query('get_pass', 'get_pass', ['true', 'false']),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all challans.',
