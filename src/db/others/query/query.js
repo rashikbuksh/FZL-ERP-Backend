@@ -1507,13 +1507,13 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	const { challan_uuid, received, item_for } = req.query;
 
 	let query = sql`
-	SELECT
-		pl.uuid AS value,
-		concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS label
-	FROM
-		delivery.packing_list pl
-	WHERE
-		pl.order_info_uuid = ${order_info_uuid} OR pl.thread_order_info_uuid =  ${order_info_uuid}  AND (pl.challan_uuid IS NULL`;
+    SELECT
+        pl.uuid AS value,
+        concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS label
+    FROM
+        delivery.packing_list pl
+    WHERE
+        (pl.order_info_uuid = ${order_info_uuid} OR pl.thread_order_info_uuid = ${order_info_uuid}) AND (pl.challan_uuid IS NULL`;
 
 	// Conditionally add the challan_uuid part
 	if (
