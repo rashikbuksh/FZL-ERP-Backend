@@ -342,7 +342,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			0 as poli_quantity,
 			0 as short_quantity,
 			0 as reject_quantity,
-			total_quantity.total_quantity as finishing_prod
+			total_production_quantity.total_production_quantity as finishing_prod
 		FROM
 			thread.order_info toi
 		LEFT JOIN
@@ -352,14 +352,14 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN
 			(SELECT 
 			
-				SUM(tbe.quantity) as total_quantity,
+				SUM(tbe.coning_production_quantity) as total_production_quantity,
 				
 			FROM
 				thread.batch_entry tbe
 			WHERE
 				tbe.order_entry_uuid = toe.uuid
 			GROUP BY
-				tbe.order_entry_uuid) as total_quantity ON total_quantity.order_entry_uuid = toe.uuid
+				tbe.order_entry_uuid) as total_production_quantity ON total_production_quantity.order_entry_uuid = toe.uuid
 
 		WHERE
 			(toe.quantity - toe.delivered - toe.delivered) > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid}
