@@ -333,7 +333,8 @@ export async function selectOrderInfo(req, res, next) {
 						SELECT vodf.order_info_uuid
 						FROM zipper.v_order_details_full vodf
 						LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-						WHERE vodf.item_description != '---' AND vodf.item_description != '' AND oe.finishing_prod > 0
+						LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+						WHERE vodf.item_description != '---' AND vodf.item_description != '' AND sfg.finishing_prod > 0
 					)`
 					: null
 			)

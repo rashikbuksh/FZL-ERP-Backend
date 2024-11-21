@@ -24,7 +24,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION delivery.sfg_after_packing_list_entry_delete_function() RETURNS TRIGGER AS $$
 BEGIN
     -- Update zipper,sfg
-    IF NEW.sfg_uuid IS NOT NULL THEN
+    IF OLD.sfg_uuid IS NOT NULL THEN
         UPDATE zipper.sfg
         SET
             warehouse = warehouse + OLD.quantity,
@@ -61,6 +61,7 @@ BEGIN
             carton_of_production_quantity = carton_of_production_quantity - NEW.quantity + OLD.quantity
         WHERE uuid = NEW.thread_order_entry_uuid;
     END IF;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
