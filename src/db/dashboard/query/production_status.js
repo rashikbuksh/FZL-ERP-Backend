@@ -24,25 +24,27 @@ export async function selectProductionStatus(req, res, next) {
                         vodf.item,
                         vodf.nylon_stopper,
                         SUM(CASE 
-                            WHEN sfg_prod.section = 'teeth_molding' THEN 
+                            WHEN fb_prod.section = 'teeth_molding' THEN 
                                 CASE 
-                                    WHEN sfg_prod.production_quantity > 0 THEN sfg_prod.production_quantity 
-                                    ELSE sfg_prod.production_quantity_in_kg 
+                                    WHEN fb_prod.production_quantity > 0 THEN fb_prod.production_quantity 
+                                    ELSE fb_prod.production_quantity_in_kg 
                                 END 
                             ELSE 0 
                         END) AS teeth_molding_quantity,
                         SUM(CASE 
-                            WHEN sfg_prod.section = 'teeth_coloring' THEN sfg_prod.production_quantity 
+                            WHEN fb_prod.section = 'teeth_coloring' THEN fb_prod.production_quantity 
                             ELSE 0 
                         END) AS teeth_coloring_quantity,
                         SUM(CASE 
-                            WHEN sfg_prod.section = 'finishing' THEN sfg_prod.production_quantity 
+                            WHEN fb_prod.section = 'finishing' THEN fb_prod.production_quantity 
                             ELSE 0 
                         END) AS finishing_quantity
                     FROM 
-                        zipper.sfg_production sfg_prod
+                        zipper.finishing_batch_production fb_prod
+                    LEFT JOIN
+                        zipper.finishing_batch_entry fbe ON fb_prod.finishing_batch_entry_uuid = fbe.uuid
                     LEFT JOIN 
-                        zipper.sfg ON sfg_prod.sfg_uuid = sfg.uuid
+                        zipper.sfg ON fbe.sfg_uuid = sfg.uuid
                     LEFT JOIN 
                         zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     LEFT JOIN 
