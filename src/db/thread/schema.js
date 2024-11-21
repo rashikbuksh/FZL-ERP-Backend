@@ -109,6 +109,9 @@ export const order_entry = thread.table('order_entry', {
 	party_price: PG_DECIMAL('party_price').default(0),
 	swatch_approval_date: DateTime('swatch_approval_date').default(null),
 	production_quantity: PG_DECIMAL('production_quantity').default(0),
+	carton_of_production_quantity: integer(
+		'carton_of_production_quantity'
+	).default(0),
 	bleaching: text('bleaching').default(null),
 	transfer_quantity: PG_DECIMAL('transfer_quantity').default(0),
 	created_by: defaultUUID('created_by')
@@ -270,7 +273,6 @@ export const thread_challan_sequence = thread.sequence(
 		increment: 1,
 	}
 );
-
 
 export const challan = thread.table('challan', {
 	uuid: uuid_primary,
