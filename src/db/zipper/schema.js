@@ -20,7 +20,7 @@ import {
 	uuid_primary,
 } from '../variables.js';
 
-const zipper = pgSchema('zipper');
+export const zipper = pgSchema('zipper');
 
 export const order_info_sequence = zipper.sequence('order_info_sequence', {
 	startWith: 1,

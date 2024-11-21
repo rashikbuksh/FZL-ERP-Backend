@@ -102,7 +102,8 @@ export async function selectAll(req, res, next) {
 		sub_query.packing_numbers,
 		sub_query.packing_list_numbers,
 		sub_query.total_quantity,
-		sub_query.total_poly_quantity
+		sub_query.total_poly_quantity,
+		sub_query.gate_pass
 	FROM
 		(
 			SELECT
@@ -149,7 +150,6 @@ export async function selectAll(req, res, next) {
 				vehicle.driver_name AS vehicle_driver_name,
 				CAST(challan.carton_quantity AS NUMERIC) AS carton_quantity,
 				challan.receive_status AS receive_status,
-				packing_list.gate_pass AS gate_pass,
 				challan.name AS name,
 				CAST(challan.delivery_cost AS NUMERIC) AS delivery_cost,
 				challan.is_hand_delivery AS is_hand_delivery,
@@ -204,7 +204,12 @@ export async function selectAll(req, res, next) {
 			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
 			jsonb_agg(DISTINCT jsonb_build_object('packing_list_uuid', packing_list.uuid, 'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')))) AS packing_list_numbers,
 			SUM(packing_list_entry.quantity)::float8 AS total_quantity,
-			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity
+			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
+			CASE
+				WHEN COUNT(packing_list.uuid) = SUM(CASE WHEN packing_list.gate_pass = 1 THEN 1 ELSE 0 END) 
+				THEN 1
+				ELSE 0
+			END AS gate_pass
 		FROM
 			delivery.packing_list
 		LEFT JOIN

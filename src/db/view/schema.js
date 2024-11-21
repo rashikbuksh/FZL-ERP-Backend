@@ -1,11 +1,12 @@
 import { integer, pgSchema, pgView, text } from 'drizzle-orm/pg-core';
+import * as deliverySchema from '../delivery/schema.js';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
 import { DateTime, PG_DECIMAL } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
-const zipper = pgSchema('zipper');
-const delivery = pgSchema('delivery');
+const zipper = zipperSchema.zipper;
+const delivery = deliverySchema.delivery;
 
 // NOTE: ZIPPER VIEWS
 export const v_order_details = zipper

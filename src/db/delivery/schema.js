@@ -10,7 +10,7 @@ import {
 } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
-const delivery = pgSchema('delivery');
+export const delivery = pgSchema('delivery');
 
 export const packing_list_sequence = delivery.sequence(
 	'packing_list_sequence',
