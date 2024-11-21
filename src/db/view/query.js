@@ -215,7 +215,14 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         pl.remarks,
         pl.is_warehouse_received,
         pl.item_for,
-        CASE WHEN pl.challan_uuid IS NOT NULL THEN CONCAT('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) ELSE NULL END as challan_number,
+        CASE WHEN pl.challan_uuid IS NOT NULL 
+            THEN 
+                CASE WHEN pl.item_for = 'zipper' 
+                    THEN CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
+                    ELSE CONCAT('TC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
+                END 
+            ELSE NULL 
+        END as challan_number,
         pl.gate_pass,
         ch.receive_status,
         ple.uuid as packing_list_entry_uuid,
@@ -279,8 +286,13 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
       CASE WHEN packing_list.item_for = 'zipper' THEN CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE CONCAT('T', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
       packing_list.challan_uuid,
       CASE
-          WHEN packing_list.challan_uuid IS NOT NULL THEN CONCAT('C', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
-          ELSE NULL
+          WHEN packing_list.challan_uuid IS NOT NULL 
+            THEN 
+                CASE WHEN packing_list.item_for = 'zipper' 
+                    THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
+                    ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
+                END 
+            ELSE NULL
       END AS challan_number,
       carton.size AS carton_size,
       packing_list.carton_weight,

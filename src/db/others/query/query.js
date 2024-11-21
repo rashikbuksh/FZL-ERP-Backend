@@ -1682,15 +1682,18 @@ export async function selectCarton(req, res, next) {
 }
 
 export async function selectChallan(req, res, next) {
-	const { get_pass } = req.query;
+	const { gate_pass } = req.query;
 	const query = sql`
 				SELECT
 					ch.uuid AS value,
-					concat('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) AS label
+					CASE WHEN ch.thread_order_info_uuid IS NULL 
+						THEN concat('ZH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
+						ELSE concat('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
+					END AS label
 				FROM
 					delivery.challan ch 
 				WHERE 
-					${get_pass === 'false' ? sql`ch.gate_pass = 0` : sql`1=1`}
+					${gate_pass === 'false' ? sql`ch.gate_pass = 0` : sql`1=1`}
 				`;
 
 	const challanPromise = db.execute(query);
