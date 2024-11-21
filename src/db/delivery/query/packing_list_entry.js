@@ -296,12 +296,12 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			thread.count_length tc ON tc.uuid = toe.count_length_uuid
 		LEFT JOIN
 			(SELECT
-				tbe.uuid,
+				tbe.order_entry_uuid,
 				SUM(tbe.coning_production_quantity) as coning_production_quantity
 			FROM
 				thread.batch_entry tbe
 			GROUP BY
-				tbe.uuid) total_production_quantity ON total_production_quantity.uuid = toe.uuid
+				tbe.uuid) total_production_quantity ON total_production_quantity.order_entry_uuid = toe.uuid
 		WHERE 
 			ple.packing_list_uuid = ${req.params.packing_list_uuid}
 		ORDER BY
