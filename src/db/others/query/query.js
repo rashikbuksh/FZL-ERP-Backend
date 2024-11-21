@@ -1692,8 +1692,25 @@ export async function selectChallan(req, res, next) {
 					END AS label
 				FROM
 					delivery.challan ch 
-				WHERE 
-					${gate_pass == 'false' ? sql`pl.gate_pass = 0` : sql`1=1`}
+				${
+					gate_pass
+						? sql`LEFT JOIN (
+								SELECT
+									packing_list.challan_uuid,
+									CASE
+										WHEN COUNT(packing_list.uuid) = SUM(CASE WHEN packing_list.gate_pass = 1 THEN 1 ELSE 0 END) 
+										THEN 1
+										ELSE 0
+									END AS gate_pass
+								FROM
+									delivery.packing_list
+								GROUP BY
+									packing_list.challan_uuid
+							) AS sub_query ON ch.uuid = sub_query.challan_uuid
+							WHERE
+								sub_query.gate_pass = 0`
+						: sql``
+				}
 				`;
 
 	const challanPromise = db.execute(query);
