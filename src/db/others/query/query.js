@@ -1687,13 +1687,13 @@ export async function selectChallan(req, res, next) {
 				SELECT
 					ch.uuid AS value,
 					CASE WHEN ch.thread_order_info_uuid IS NULL 
-						THEN concat('ZH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
-						ELSE concat('CH', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
+						THEN concat('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
+						ELSE concat('TC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
 					END AS label
 				FROM
 					delivery.challan ch 
 				WHERE 
-					${gate_pass === 'false' ? sql`ch.gate_pass = 0` : sql`1=1`}
+					${gate_pass == 'false' ? sql`pl.gate_pass = 0` : sql`1=1`}
 				`;
 
 	const challanPromise = db.execute(query);
