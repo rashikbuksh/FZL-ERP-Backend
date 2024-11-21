@@ -308,7 +308,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
       packing_list.created_at,
       packing_list.updated_at,
       packing_list.remarks,
-      packing_list.gate_pass,
+      CASE WHEN packing_list.challan_uuid IS NOT NULL THEN  packing_list.gate_pass ELSE 0 END AS gate_pass,
       packing_list.item_for
   FROM
       delivery.packing_list
