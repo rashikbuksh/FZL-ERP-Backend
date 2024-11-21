@@ -235,8 +235,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         ple.updated_at as entry_updated_at,
         ple.remarks as entry_remarks,
         CASE WHEN pl.item_for = 'zipper' THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
-        oe.style,
-        oe.color,
+        CASE WHEN pl.item_for = 'zipper' THEN oe.style ELSE toe.style END as style,
+        CASE WHEN pl.item_for = 'zipper' THEN oe.color ELSE toe.color END as color,
         CASE 
             WHEN vodf.is_inch = 1 
               THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
@@ -245,19 +245,21 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         vodf.is_inch,
         vodf.is_meter,
         vodf.is_cm,
-        CONCAT(oe.style, ' / ', oe.color, ' / ', 
+        CASE WHEN pl.item_for = 'zipper' THEN
+            CONCAT(oe.style, ' / ', oe.color, ' / ', 
                     CASE 
                       WHEN vodf.is_inch = 1 
                         THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
                       ELSE CAST(oe.size AS NUMERIC)
-                    END) as style_color_size,
+                    END) ELSE CONCAT (toe.style, ' / ', toe.color) END as style_color_size,
+            
         CASE WHEN pl.item_for = 'zipper' THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
         vodf.order_description_uuid,
         CASE WHEN pl.item_for = 'zipper' THEN vodf.order_number ELSE CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
         CASE WHEN pl.item_for = 'zipper' THEN vodf.item_description ELSE CONCAT(tc.count, ' - ', tc.length) END as item_description,
         CASE WHEN pl.item_for = 'zipper' THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
-		    CASE WHEN pl.item_for = 'zipper' THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
-		    CASE WHEN pl.item_for = 'zipper' THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
+		CASE WHEN pl.item_for = 'zipper' THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
+		CASE WHEN pl.item_for = 'zipper' THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
     FROM 
         delivery.packing_list_entry ple
         LEFT JOIN delivery.packing_list pl ON pl.uuid = ple.packing_list_uuid
@@ -266,7 +268,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         LEFT JOIN zipper.sfg ON sfg.uuid = ple.sfg_uuid
         LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
         LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
-        LEFT JOIN thread.order_entry toe ON toe.uuid = sfg.order_entry_uuid
+        LEFT JOIN thread.order_entry toe ON toe.uuid = ple.thread_order_entry_uuid
         LEFT JOIN thread.count_length tc ON tc.uuid = toe.count_length_uuid
         LEFT JOIN thread.order_info toi ON toi.uuid = toe.order_info_uuid
         LEFT JOIN delivery.challan ch ON ch.uuid = pl.challan_uuid;
@@ -308,7 +310,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
       packing_list.created_at,
       packing_list.updated_at,
       packing_list.remarks,
-      packing_list.gate_pass,
+      CASE WHEN packing_list.challan_uuid IS NOT NULL THEN  packing_list.gate_pass ELSE 0 END AS gate_pass,
       packing_list.item_for
   FROM
       delivery.packing_list
