@@ -1,4 +1,3 @@
-import { production } from '@/db/slider/schema.js';
 import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
