@@ -368,10 +368,7 @@ const pathPublic = {
 			operationId: 'getAllOrderInfo',
 			parameters: [
 				SE.parameter_query('page', 'page', ['challan']),
-				SE.parameter_query('item_for', 'item_for', [
-					'zipper',
-					'thread',
-				]),
+				SE.parameter_query('is_sample', 'is_sample', ['true', 'false']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -1228,7 +1225,10 @@ const pathThread = {
 			summary: 'get all threads',
 			description: 'All threads',
 			operationId: 'getAllThreads',
-			parameters: [SE.parameter_query('page', 'page', ['challan'])],
+			parameters: [
+				SE.parameter_query('page', 'page', ['challan']),
+				SE.parameter_query('is_sample', 'is_sample', ['true', 'false']),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all threads.',
