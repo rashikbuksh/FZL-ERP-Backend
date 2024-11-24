@@ -282,34 +282,7 @@ export async function selectTapeCoil(req, res, next) {
 export async function selectOrderInfo(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { page, item_for } = req.query;
-
-	// const query = sql`SELECT
-	// 				CASE WHEN ${item_for} == 'zipper' THEN zipper.order_info.uuid ELSE thread.order_info.uuid END AS value,
-	// 				CASE WHEN ${item_for} == 'zipper' THEN CONCAT('Z', to_char(zipper.order_info.created_at, 'YY'), '-', LPAD(zipper.order_info.id::text, 4, '0')) ELSE CONCAT('TO', to_char(thread.order_info.created_at, 'YY'), '-', LPAD(thread.order_info.id::text, 4, '0')) END AS label
-	// 			FROM
-	// 				zipper.order_info
-	// 			LEFT JOIN
-	// 				delivery.packing_list ON zipper.order_info.uuid = delivery.packing_list.order_info_uuid
-	// 			LEFT JOIN
-	// 				thread.order_info ON delivery.packing_list.thread_order_info_uuid = thread.order_info.uuid
-	// 			WHERE
-	// 				${
-	// 					page == 'challan'
-	// 						? sql`CASE WHEN ${item_for} = 'zipper' THEN zipper.order_info.uuid IN (
-	// 					SELECT pl.order_info_uuid
-	// 					FROM delivery.packing_list pl
-	// 					WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
-	// 				) ELSE thread.order_info.uuid IN (
-	// 					SELECT pl.order_info_uuid
-	// 					FROM delivery.packing_list pl
-	// 					WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
-	// 				) END`
-	// 						: null
-	// 				}
-	// 			`;
-
-	// const orderInfoPromise = db.execute(query);
+	const { page, is_sample } = req.query;
 
 	const orderInfoPromise = db
 		.select({
@@ -336,7 +309,8 @@ export async function selectOrderInfo(req, res, next) {
 						LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 						WHERE vodf.item_description != '---' AND vodf.item_description != '' AND sfg.finishing_prod > 0
 					)`
-					: null
+					: null,
+				is_sample == 'true' ? sql`order_info.is_sample = 1` : null
 			)
 		);
 
@@ -1339,9 +1313,28 @@ export async function selectDieCastingUsingType(req, res, next) {
 export async function selectThreadOrder(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { page } = req.query;
+	const { page, is_sample } = req.query;
+
+	let sample_condition = '';
 
 	let condition = '';
+
+	if (is_sample === 'true') {
+		sample_condition = sql`
+			ot.uuid IN (
+				SELECT
+					oi.uuid
+				FROM
+					thread.order_info oi
+				LEFT JOIN
+					thread.order_entry oe ON oi.uuid = oe.order_info_uuid
+				WHERE
+					oi.is_sample = 1
+			)
+		`;
+	} else {
+		sample_condition = sql`1=1`;
+	}
 
 	if (page === 'challan') {
 		condition = sql`
@@ -1388,7 +1381,7 @@ export async function selectThreadOrder(req, res, next) {
 				FROM
 					thread.order_info ot
 				WHERE
-					${condition}
+					${(condition = '1=1' ? sample_condition : condition + ' AND ' + sample_condition)}
 				`;
 
 	// const query = `
