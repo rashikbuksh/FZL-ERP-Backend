@@ -284,37 +284,54 @@ export async function selectOrderInfo(req, res, next) {
 
 	const { page, is_sample } = req.query;
 
+	let filterCondition;
+
+	if (page === 'challan') {
+		filterCondition = sql`
+			order_info.uuid IN (
+				SELECT pl.order_info_uuid
+				FROM delivery.packing_list pl
+				WHERE pl.challan_uuid IS NULL 
+				  AND pl.is_warehouse_received = true AND order_info.is_sample = 0
+			)
+		`;
+		if (is_sample === 'true') {
+			filterCondition = sql`
+				(${filterCondition}) AND order_info.is_sample = 1
+			`;
+		}
+	} else if (page === 'packing_list') {
+		filterCondition = sql`
+			order_info.uuid IN (
+				SELECT vodf.order_info_uuid
+				FROM zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+				WHERE vodf.item_description != '---' 
+				  AND vodf.item_description != '' 
+				  AND sfg.finishing_prod > 0
+			)
+		`;
+		if (is_sample === 'true') {
+			filterCondition = sql`
+				(${filterCondition}) AND order_info.is_sample = 1
+			`;
+		}
+	} else {
+		filterCondition =
+			is_sample === 'true'
+				? sql`order_info.is_sample = 1`
+				: sql`order_info.is_sample = 0`;
+	}
+
 	const orderInfoPromise = db
 		.select({
 			value: zipperSchema.order_info.uuid,
 			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		})
 		.from(zipperSchema.order_info)
-		.where(
-			or(
-				page == 'challan'
-					? sql`
-					order_info.uuid IN (
-						SELECT pl.order_info_uuid
-						FROM delivery.packing_list pl
-						WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
-					)`
-					: null,
-				page == 'packing_list'
-					? sql`
-					order_info.uuid IN (
-						SELECT vodf.order_info_uuid
-						FROM zipper.v_order_details_full vodf
-						LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-						LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-						WHERE vodf.item_description != '---' AND vodf.item_description != '' AND sfg.finishing_prod > 0
-					)`
-					: null,
-				is_sample == 'true'
-					? sql`order_info.is_sample = 1`
-					: sql`order_info.is_sample = 0`
-			)
-		);
+
+		.where(filterCondition);
 
 	// const orderInfoPromise = db.execute(query);
 	try {
