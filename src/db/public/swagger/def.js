@@ -230,6 +230,30 @@ export const defMarketingTeamMemberTarget = {
 	xml: 'Public/MarketingTeamMemberTarget',
 };
 
+export const defProductionCapacity = {
+	required: [
+		'uuid',
+		'product',
+		'item',
+		'nylon_stopper',
+		'zipper_number',
+		'created_at',
+	],
+
+	properties: {
+		uuid: SE.uuid(),
+		product: SE.string('zipper'),
+		item: SE.uuid(),
+		nylon_stopper: SE.uuid(),
+		zipper_number: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		created_by: SE.uuid(),
+		remarks: SE.string('Remarks'),
+	},
+	xml: 'Public/ProductionCapacity',
+};
+
 // * Marge All
 export const defPublic = {
 	buyer: defPublicBuyer,
@@ -243,6 +267,7 @@ export const defPublic = {
 	marketing_team: defMarketingTeam,
 	marketing_team_entry: defMarketingTeamEntry,
 	marketing_team_member_target: defMarketingTeamMemberTarget,
+	production_capacity: defProductionCapacity,
 };
 
 // * Tag
@@ -291,5 +316,9 @@ export const tagPublic = [
 	{
 		name: 'public.marketing_team_member_target',
 		description: 'marketing_team_member_target',
+	},
+	{
+		name: 'public.production_capacity',
+		description: 'production_capacity',
 	},
 ];

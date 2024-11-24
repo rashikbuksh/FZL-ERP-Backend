@@ -1950,6 +1950,231 @@ export const publicMarketingTeamMemberTarget = {
 	},
 };
 
+export const publicProductionCapacity = {
+	'/public/production-capacity': {
+		get: {
+			summary: 'Get all production capacities',
+			tags: ['public.production_capacity'],
+			operationId: 'getProductionCapacities',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									product: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									item: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									nylon_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									zipper_number: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									quantity: {
+										type: 'string',
+										example: '1000',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			summary: 'Create a production capacity',
+			tags: ['public.production_capacity'],
+			operationId: 'createProductionCapacity',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public.production_capacity',
+						},
+					},
+				},
+			},
+			responses: {
+				201: {
+					description: 'Created',
+				},
+			},
+		},
+	},
+
+	'/public/production-capacity/{uuid}': {
+		get: {
+			summary: 'Get a production capacity',
+			tags: ['public.production_capacity'],
+			operationId: 'getProductionCapacity',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									product: {
+										type: 'string',
+										example: 'prop 1',
+									},
+									item: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									nylon_stopper: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									zipper_number: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									end_type: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									quantity: {
+										type: 'string',
+										example: '1000',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_by_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									created_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		put: {
+			summary: 'Update a production capacity',
+			tags: ['public.production_capacity'],
+			operationId: 'updateProductionCapacity',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/public.production_capacity',
+						},
+					},
+				},
+			},
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+		delete: {
+			summary: 'Delete a production capacity',
+			tags: ['public.production_capacity'],
+			operationId: 'deleteProductionCapacity',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
+};
+
 export const pathPublic = {
 	...pathPublicBuyer,
 	...pathPublicFactory,
@@ -1962,4 +2187,5 @@ export const pathPublic = {
 	...publicMarketingTeam,
 	...publicMarketingTeamEntry,
 	...publicMarketingTeamMemberTarget,
+	...publicProductionCapacity,
 };

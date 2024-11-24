@@ -148,11 +148,21 @@ export const marketing_team_member_target = pgTable(
 	}
 );
 
-// export const product_enum = pgTable.enum('product_enum', ['zipper', 'thread']);
+export const product_enum = pgEnum('product_enum', ['zipper', 'thread']);
 
 export const production_capacity = pgTable('production_capacity', {
 	uuid: uuid_primary,
+	product: product_enum().default('zipper'),
+	item: defaultUUID('item').references(() => properties.uuid),
 
+	nylon_stopper: defaultUUID('nylon_stopper').references(
+		() => properties.uuid
+	),
+	zipper_number: defaultUUID('zipper_number').references(
+		() => properties.uuid
+	),
+	end_type: defaultUUID('end_type').references(() => properties.uuid),
+	quantity: PG_DECIMAL('quantity').notNull(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
