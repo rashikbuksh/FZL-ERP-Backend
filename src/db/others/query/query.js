@@ -1342,70 +1342,72 @@ export async function selectThreadOrder(req, res, next) {
 
 	const { page, is_sample } = req.query;
 
-	let sample_condition = '';
-
-	let condition = '';
+	let sample_condition;
 
 	if (is_sample === 'true') {
 		sample_condition = sql`
-			ot.uuid IN (
-				SELECT
-					oi.uuid
-				FROM
-					thread.order_info oi
-				LEFT JOIN
-					thread.order_entry oe ON oi.uuid = oe.order_info_uuid
-				WHERE
-					oi.is_sample = 1
-			)
-		`;
+		ot.uuid IN (
+			SELECT
+				oi.uuid
+			FROM
+				thread.order_info oi
+			LEFT JOIN
+				thread.order_entry oe ON oi.uuid = oe.order_info_uuid
+			WHERE
+				oi.is_sample = 1
+		)
+	`;
 	} else {
-		sample_condition = sql`ot.uuid IN (
-				SELECT
-					oi.uuid
-				FROM
-					thread.order_info oi
-				LEFT JOIN
-					thread.order_entry oe ON oi.uuid = oe.order_info_uuid
-				WHERE
-					oi.is_sample = 0
-			)`;
+		sample_condition = sql`
+		ot.uuid IN (
+			SELECT
+				oi.uuid
+			FROM
+				thread.order_info oi
+			LEFT JOIN
+				thread.order_entry oe ON oi.uuid = oe.order_info_uuid
+			WHERE
+				oi.is_sample = 0
+		)
+	`;
 	}
 
+	let condition;
 	if (page === 'challan') {
 		condition = sql`
-					ot.uuid IN (
-					SELECT
-						pl.thread_order_info_uuid
-					FROM
-						delivery.packing_list pl
-					WHERE
-						pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
-					)
-				`;
+		ot.uuid IN (
+			SELECT
+				pl.thread_order_info_uuid
+			FROM
+				delivery.packing_list pl
+			WHERE
+				pl.challan_uuid IS NULL 
+				AND pl.is_warehouse_received = true
+		)
+	`;
 	} else if (page === 'packing_list') {
 		condition = sql`
-					ot.uuid IN (
+		ot.uuid IN (
+			SELECT
+				oi.uuid
+			FROM
+				thread.order_info oi
+			LEFT JOIN
+				thread.order_entry oe ON oi.uuid = oe.order_info_uuid
+			LEFT JOIN
+				(
 					SELECT
-						oi.uuid
+						tbe.order_entry_uuid,
+						SUM(tbe.coning_production_quantity) AS total_coning_quantity
 					FROM
-						thread.order_info oi
-					LEFT JOIN
-						thread.order_entry oe ON oi.uuid = oe.order_info_uuid
-					LEFT JOIN
-						(
-						SELECT
-							tbe.order_entry_uuid,
-							SUM(tbe.coning_production_quantity) AS total_coning_quantity
-						FROM
-							thread.batch_entry tbe
-						GROUP BY
-							tbe.order_entry_uuid
-						) AS total_coning ON total_coning.order_entry_uuid = oe.uuid
-					WHERE
-						total_coning.total_coning_quantity > 0
-					)
-				`;
+						thread.batch_entry tbe
+					GROUP BY
+						tbe.order_entry_uuid
+				) AS total_coning ON total_coning.order_entry_uuid = oe.uuid
+			WHERE
+				total_coning.total_coning_quantity > 0
+		)
+	`;
 	} else {
 		condition = sql`1=1`;
 	}
@@ -1417,7 +1419,7 @@ export async function selectThreadOrder(req, res, next) {
 				FROM
 					thread.order_info ot
 				WHERE
-					${(condition = '1=1' ? sample_condition : condition + ' AND ' + sample_condition)}
+					${condition} AND ${sample_condition}
 				`;
 
 	const orderThreadPromise = db.execute(query);
