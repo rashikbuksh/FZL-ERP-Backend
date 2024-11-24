@@ -320,7 +320,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			sfg.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
 			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
-			CASE WHEN ${item_for} == 'sample_zipper' 
+			CASE WHEN ${item_for} = 'sample_zipper' 
 				THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 
 				ELSE LEAST(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8, sfg.finishing_prod::float8) 
 			END as max_quantity,
@@ -356,7 +356,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			toe.warehouse::float8 as warehouse,
 			toe.delivered::float8 as delivered,
 			(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 as balance_quantity,
-			CASE WHEN ${item_for} == 'sample_thread' 
+			CASE WHEN ${item_for} = 'sample_thread' 
 				THEN (toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 
 				ELSE LEAST(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8, total_production_quantity.total_production_quantity::float8)
 			END as max_quantity,
