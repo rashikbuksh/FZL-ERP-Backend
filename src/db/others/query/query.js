@@ -292,12 +292,16 @@ export async function selectOrderInfo(req, res, next) {
 				SELECT pl.order_info_uuid
 				FROM delivery.packing_list pl
 				WHERE pl.challan_uuid IS NULL 
-				  AND pl.is_warehouse_received = true AND order_info.is_sample = 0
+				  AND pl.is_warehouse_received = true
 			)
 		`;
 		if (is_sample === 'true') {
 			filterCondition = sql`
 				(${filterCondition}) AND order_info.is_sample = 1
+			`;
+		} else {
+			filterCondition = sql`
+				(${filterCondition}) AND order_info.is_sample = 0
 			`;
 		}
 	} else if (page === 'packing_list') {
