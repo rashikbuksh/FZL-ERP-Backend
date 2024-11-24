@@ -188,14 +188,13 @@ export async function selectByDate(req, res, next) {
 				acc[item.machine_name] = {};
 			}
 			if (!acc[item.machine_name][item.slot]) {
-				acc[item.machine_name][item.slot] = [];
+				acc[item.machine_name][item.slot] = {
+					batch_no: item.batch_no,
+					order_no: item.order_number,
+					color: item.color,
+					weight: item.weight,
+				};
 			}
-			acc[item.machine_name][item.slot].push({
-				batch_no: item.batch_no,
-				order_no: item.order_number,
-				color: item.color,
-				weight: item.weight,
-			});
 			return acc;
 		}, {});
 
@@ -203,10 +202,12 @@ export async function selectByDate(req, res, next) {
 			date: results[0]?.date,
 			data: machines.map((machine) => ({
 				machine: machine.machine_name,
-				data: Array.from({ length: 6 }, (_, i) => ({
-					slot: i + 1,
-					data: groupedResults[machine.machine_name]?.[i + 1] || null,
-				})),
+				slot_1: groupedResults[machine.machine_name]?.[1] || null,
+				slot_2: groupedResults[machine.machine_name]?.[2] || null,
+				slot_3: groupedResults[machine.machine_name]?.[3] || null,
+				slot_4: groupedResults[machine.machine_name]?.[4] || null,
+				slot_5: groupedResults[machine.machine_name]?.[5] || null,
+				slot_6: groupedResults[machine.machine_name]?.[6] || null,
 			})),
 		};
 
