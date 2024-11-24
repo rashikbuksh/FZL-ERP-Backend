@@ -153,7 +153,6 @@ export async function select(req, res, next) {
 
 export async function selectByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	console.log('req.params.date', req.params.date);
 
 	const query = sql`
         SELECT
@@ -196,9 +195,13 @@ export async function selectByDate(req, res, next) {
 			return acc;
 		}, {});
 
+		const machines = Object.keys(groupedResults).map((machine_name) => ({
+			[machine_name]: groupedResults[machine_name],
+		}));
+
 		const response = {
 			date: results[0]?.date,
-			...groupedResults,
+			machines,
 		};
 
 		const toast = {
