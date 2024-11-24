@@ -157,12 +157,13 @@ export async function selectByDate(req, res, next) {
 	const machineQuery = sql`SELECT name AS machine_name FROM public.machine`;
 	const dataQuery = sql`
         SELECT
-			zdb.uuid AS dyeing_batch_uuid,
             DATE(zdb.production_date) as date,
             pm.name AS machine_name,
             zdb.slot,
             CONCAT('B', to_char(zdb.created_at, 'YY'), '-', LPAD(zdb.id::text, 4, '0')) AS batch_no,
+			zdb.uuid AS batch_uuid,
             vodf.order_number,
+			vodf.order_info_uuid as order_uuid,
             zoe.color,
             zbe.production_quantity_in_kg::float8 as weight,
 			expected.total_quantity::float8,
@@ -222,9 +223,10 @@ export async function selectByDate(req, res, next) {
 			}
 			if (!acc[item.machine_name][item.slot]) {
 				acc[item.machine_name][item.slot] = {
-					dyeing_batch_uuid: item.dyeing_batch_uuid,
 					batch_no: item.batch_no,
+					batch_uuid: item.batch_uuid,
 					order_no: item.order_number,
+					order_uuid: item.order_uuid,
 					color: item.color,
 					weight: item.weight,
 					total_quantity: item.total_quantity,
