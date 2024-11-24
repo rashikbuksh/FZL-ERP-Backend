@@ -163,7 +163,12 @@ export async function selectByDate(req, res, next) {
             CONCAT('B', to_char(zdb.created_at, 'YY'), '-', LPAD(zdb.id::text, 4, '0')) AS batch_no,
             vodf.order_number,
             zoe.color,
-            zbe.production_quantity_in_kg::float8 as weight
+            zbe.production_quantity_in_kg::float8 as weight,
+			expected.total_quantity::float8,
+			zdb.batch_status,
+			expected.expected_kg::float8 as expected_kg,
+			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
+			zdb.received
         FROM public.machine pm
         LEFT JOIN zipper.dyeing_batch zdb ON zdb.machine_uuid = pm.uuid
         LEFT JOIN zipper.dyeing_batch_entry zbe ON zbe.dyeing_batch_uuid = zdb.uuid
@@ -171,6 +176,33 @@ export async function selectByDate(req, res, next) {
         LEFT JOIN zipper.order_entry zoe ON zoe.uuid = sfg.order_entry_uuid
         LEFT JOIN zipper.order_description zod ON zod.uuid = zoe.order_description_uuid
         LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = zod.uuid
+		LEFT JOIN (
+			SELECT 
+				ROUND(
+					SUM(((
+						(tcr.top + tcr.bottom + CASE 
+						WHEN vodf.is_inch = 1 
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC) 
+						ELSE CAST(oe.size AS NUMERIC)
+						END) * be.quantity::float8) /100) / tc.dyed_per_kg_meter::float8)::numeric
+				, 3) as expected_kg, 
+				be.dyeing_batch_uuid, 
+				jsonb_agg(DISTINCT vodf.order_number) as order_numbers, 
+				SUM(be.quantity::float8) as total_quantity, 
+				SUM(be.production_quantity_in_kg::float8) as total_actual_production_quantity
+			FROM zipper.dyeing_batch_entry be
+				LEFT JOIN zipper.sfg ON be.sfg_uuid = zipper.sfg.uuid
+				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+				LEFT JOIN 
+					zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid AND vodf.item = tcr.item_uuid 
+					AND vodf.zipper_number = tcr.zipper_number_uuid 
+					AND vodf.end_type = tcr.end_type_uuid
+				LEFT JOIN
+					zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid AND vodf.zipper_number = tc.zipper_number_uuid 
+			WHERE CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END
+			GROUP BY be.dyeing_batch_uuid
+		) AS expected ON zdb.uuid = expected.dyeing_batch_uuid
         WHERE DATE(zdb.production_date) = ${req.params.date}
         ORDER BY zdb.created_at DESC
     `;
@@ -193,6 +225,12 @@ export async function selectByDate(req, res, next) {
 					order_no: item.order_number,
 					color: item.color,
 					weight: item.weight,
+					total_quantity: item.total_quantity,
+					expected_kg: item.expected_kg,
+					batch_status: item.batch_status,
+					total_actual_production_quantity:
+						item.total_actual_production_quantity,
+					received: item.received,
 				};
 			}
 			return acc;
