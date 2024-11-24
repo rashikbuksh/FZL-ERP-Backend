@@ -189,6 +189,9 @@ export const batch = thread.table('batch', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	production_date: DateTime('production_date')
+		.notNull()
+		.default('2024-01-01 00:00:00'),
 });
 
 export const batch_entry = thread.table('batch_entry', {
@@ -211,9 +214,6 @@ export const batch_entry = thread.table('batch_entry', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 	yarn_quantity: PG_DECIMAL('yarn_quantity').default(0),
-	production_date: DateTime('production_date')
-		.notNull()
-		.default('2024-01-01 00:00:00'),
 });
 
 export const dyes_category = thread.table('dyes_category', {
