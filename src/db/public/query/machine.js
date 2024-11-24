@@ -157,6 +157,7 @@ export async function selectByDate(req, res, next) {
 	const machineQuery = sql`SELECT name AS machine_name FROM public.machine`;
 	const dataQuery = sql`
         SELECT
+			zdb.uuid AS dyeing_batch_uuid,
             DATE(zdb.production_date) as date,
             pm.name AS machine_name,
             zdb.slot,
@@ -221,6 +222,7 @@ export async function selectByDate(req, res, next) {
 			}
 			if (!acc[item.machine_name][item.slot]) {
 				acc[item.machine_name][item.slot] = {
+					dyeing_batch_uuid: item.dyeing_batch_uuid,
 					batch_no: item.batch_no,
 					order_no: item.order_number,
 					color: item.color,
