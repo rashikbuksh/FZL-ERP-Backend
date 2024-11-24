@@ -268,13 +268,19 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
             END) as style_color_size,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
-			CASE WHEN ple.sfg_uuid IS NOT NULL THEN  sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity,
 			CASE 
 				WHEN ple.sfg_uuid IS NOT NULL THEN 
-					(ple.quantity + LEAST((oe.quantity - sfg.warehouse - sfg.delivered), sfg.finishing_prod)::float8)
+					CASE WHEN pl.item_for = 'sample_zipper' 
+						THEN (ple.quantity + (oe.quantity - sfg.warehouse - sfg.delivered)::float8)
+						ELSE (ple.quantity + LEAST((oe.quantity - sfg.warehouse - sfg.delivered), sfg.finishing_prod)::float8)
+					END
 				ELSE 
-					(ple.quantity + LEAST((toe.quantity - toe.warehouse - toe.delivered), total_production_quantity.coning_production_quantity)::float8)
+					CASE WHEN pl.item_for = 'sample_thread' 
+						THEN (ple.quantity + (toe.quantity - toe.warehouse - toe.delivered)::float8)
+						ELSE (ple.quantity + LEAST((toe.quantity - toe.warehouse - toe.delivered), total_production_quantity.coning_production_quantity)::float8)
+					END
 				END as max_quantity,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.finishing_prod::float8 ELSE total_production_quantity.coning_production_quantity END as finishing_prod
 			

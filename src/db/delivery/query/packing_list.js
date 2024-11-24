@@ -246,7 +246,7 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 			// remove the order_entry_uuid from the packing_list_entry if that exists in the order_details_for_challan
 
-			if (item_for == 'thread') {
+			if (item_for == 'thread' || item_for == 'sample_thread') {
 				const order_entry_uuid = packing_list_entry?.data?.data?.map(
 					(entry) => entry?.order_entry_uuid
 				);
