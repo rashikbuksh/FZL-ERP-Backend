@@ -278,19 +278,19 @@ export const PackingListView = `
 CREATE OR REPLACE VIEW delivery.v_packing_list AS 
   SELECT 
       packing_list.uuid,
-      CASE WHEN packing_list.item_for = 'zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END as order_info_uuid,
+      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END as order_info_uuid,
       ROW_NUMBER() OVER (
-					PARTITION BY CASE WHEN packing_list.item_for = 'zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END
+					PARTITION BY CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END
 					ORDER BY packing_list.created_at
 				) AS packing_list_wise_rank, 
       packing_list_wise_counts.packing_list_wise_count,
       CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')) AS packing_number,
-      CASE WHEN packing_list.item_for = 'zipper' THEN CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE CONCAT('T', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
+      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE CONCAT('T', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
       packing_list.challan_uuid,
       CASE
           WHEN packing_list.challan_uuid IS NOT NULL 
             THEN 
-                CASE WHEN packing_list.item_for = 'zipper' 
+                CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' 
                     THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
                     ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
                 END 
@@ -301,10 +301,10 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
       packing_list.carton_uuid,
       carton.name AS carton_name,
       packing_list.is_warehouse_received,
-      CASE WHEN packing_list.item_for = 'zipper' THEN order_info.factory_uuid ELSE toi.factory_uuid END AS factory_uuid,
-      CASE WHEN packing_list.item_for = 'zipper' THEN factory.name ELSE toi_fac.name END AS factory_name,
-      CASE WHEN packing_list.item_for = 'zipper' THEN order_info.buyer_uuid ELSE toi.buyer_uuid END AS buyer_uuid,
-      CASE WHEN packing_list.item_for = 'zipper' THEN buyer.name ELSE toi_buyer.name END AS buyer_name,
+      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN order_info.factory_uuid ELSE toi.factory_uuid END AS factory_uuid,
+      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN factory.name ELSE toi_fac.name END AS factory_name,
+      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN order_info.buyer_uuid ELSE toi.buyer_uuid END AS buyer_uuid,
+      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN buyer.name ELSE toi_buyer.name END AS buyer_name,
       packing_list.created_by,
       users.name AS created_by_name,
       packing_list.created_at,
@@ -339,7 +339,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                 FROM
                     delivery.packing_list
                 WHERE
-                    packing_list.item_for = 'zipper'
+                    packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper'
                 GROUP BY
                     packing_list.order_info_uuid
 
@@ -355,5 +355,5 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                 GROUP BY
                     packing_list.thread_order_info_uuid
             ) packing_list_wise_counts
-            ON packing_list_wise_counts.order_info_uuid = CASE WHEN packing_list.item_for = 'zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END;
+            ON packing_list_wise_counts.order_info_uuid = CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END;
 `;

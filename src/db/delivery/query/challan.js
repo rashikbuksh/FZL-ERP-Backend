@@ -26,6 +26,10 @@ export async function insert(req, res, next) {
 		req.body.thread_order_info_uuid = null;
 	}
 
+	if (item_for == 'sample_thread' || item_for == 'sample_zipper') {
+		req.body.gate_pass = true;
+	}
+
 	const challanPromise = db
 		.insert(challan)
 		.values(req.body)
@@ -65,6 +69,9 @@ export async function update(req, res, next) {
 	} else {
 		req.body.order_info_uuid = null;
 		req.body.thread_order_info_uuid = null;
+	}
+	if (item_for == 'sample_thread' || item_for == 'sample_zipper') {
+		req.body.gate_pass = true;
 	}
 
 	const challanPromise = db

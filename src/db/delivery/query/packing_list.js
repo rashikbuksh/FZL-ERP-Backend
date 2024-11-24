@@ -15,6 +15,10 @@ export async function insert(req, res, next) {
 		req.body.order_info_uuid = null;
 	}
 
+	if (item_for == 'sample_thread' || item_for == 'sample_zipper') {
+		req.body.is_warehouse_received = true;
+	}
+
 	const packing_listPromise = db
 		.insert(packing_list)
 		.values(req.body)
@@ -44,6 +48,9 @@ export async function update(req, res, next) {
 		const { order_info_uuid } = req.body;
 		req.body.thread_order_info_uuid = order_info_uuid;
 		req.body.order_info_uuid = null;
+	}
+	if (item_for == 'sample_thread' || item_for == 'sample_zipper') {
+		req.body.is_warehouse_received = true;
 	}
 
 	const packing_listPromise = db
