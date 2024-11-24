@@ -131,8 +131,7 @@ export async function selectAll(req, res, next) {
 
 export async function select(req, res, next) {
 	const productionCapacityPromise = db
-		.select({})
-		.from({
+		.select({
 			uuid: production_capacity.uuid,
 			product: production_capacity.product,
 			item: item_properties.uuid,
@@ -180,7 +179,7 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: `${req.params.uuid} selected`,
 		};
-		return await res.status(200).json({ toast, data });
+		return await res.status(200).json({ toast, data: data[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
