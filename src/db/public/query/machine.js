@@ -154,7 +154,8 @@ export async function select(req, res, next) {
 export async function selectByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`
+	const machineQuery = sql`SELECT name AS machine_name FROM public.machine`;
+	const dataQuery = sql`
         SELECT
             DATE(zdb.production_date) as date,
             pm.name AS machine_name,
@@ -175,41 +176,40 @@ export async function selectByDate(req, res, next) {
     `;
 
 	try {
-		const { rows: results } = await db.execute(query);
+		const { rows: machines } = await db.execute(machineQuery);
+		const { rows: results } = await db.execute(dataQuery);
 
-		if (!Array.isArray(results)) {
+		if (!Array.isArray(machines) || !Array.isArray(results)) {
 			throw new TypeError('Expected results to be an array');
 		}
 
-		let response = { data: [] };
-
-		if (results.length > 0) {
-			const groupedResults = results.reduce((acc, item) => {
-				if (!acc[item.machine_name]) {
-					acc[item.machine_name] = [];
-				}
-				acc[item.machine_name].push({
-					slot: item.slot,
+		const groupedResults = results.reduce((acc, item) => {
+			if (!acc[item.machine_name]) {
+				acc[item.machine_name] = {};
+			}
+			if (!acc[item.machine_name][item.slot]) {
+				acc[item.machine_name][item.slot] = {
 					batch_no: item.batch_no,
 					order_no: item.order_number,
 					color: item.color,
 					weight: item.weight,
-				});
-				return acc;
-			}, {});
+				};
+			}
+			return acc;
+		}, {});
 
-			const machines = Object.keys(groupedResults).map(
-				(machine_name) => ({
-					machine: machine_name,
-					data: groupedResults[machine_name],
-				})
-			);
-
-			response = {
-				date: results[0]?.date,
-				data: machines,
-			};
-		}
+		const response = {
+			date: results[0]?.date,
+			data: machines.map((machine) => ({
+				machine: machine.machine_name,
+				slot_1: groupedResults[machine.machine_name]?.[1] || null,
+				slot_2: groupedResults[machine.machine_name]?.[2] || null,
+				slot_3: groupedResults[machine.machine_name]?.[3] || null,
+				slot_4: groupedResults[machine.machine_name]?.[4] || null,
+				slot_5: groupedResults[machine.machine_name]?.[5] || null,
+				slot_6: groupedResults[machine.machine_name]?.[6] || null,
+			})),
+		};
 
 		const toast = {
 			status: 200,
