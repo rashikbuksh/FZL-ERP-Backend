@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, text } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgEnum, pgTable, text } from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -147,5 +147,16 @@ export const marketing_team_member_target = pgTable(
 		remarks: text('remarks').default(null),
 	}
 );
+
+// export const product_enum = pgTable.enum('product_enum', ['zipper', 'thread']);
+
+export const production_capacity = pgTable('production_capacity', {
+	uuid: uuid_primary,
+
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	remarks: text('remarks').default(null),
+});
 
 export default buyer;
