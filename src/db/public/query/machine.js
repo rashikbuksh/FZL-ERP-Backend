@@ -153,7 +153,6 @@ export async function select(req, res, next) {
 
 export async function selectByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	console.log('req.params.date', req.params.date);
 
 	const query = sql`
         SELECT
