@@ -23,6 +23,8 @@ export const packing_list_sequence = delivery.sequence(
 export const item_for_enum = delivery.enum('item_for_enum', [
 	'zipper',
 	'thread',
+	'sample_zipper',
+	'sample_thread',
 ]);
 
 export const packing_list = delivery.table('packing_list', {

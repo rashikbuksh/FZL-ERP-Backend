@@ -9,7 +9,7 @@ export async function insert(req, res, next) {
 
 	const item_for = req.body.item_for;
 
-	if (item_for == 'thread') {
+	if (item_for == 'thread' || item_for == 'sample_thread') {
 		const { order_info_uuid } = req.body;
 		req.body.thread_order_info_uuid = order_info_uuid;
 		req.body.order_info_uuid = null;
@@ -40,7 +40,7 @@ export async function update(req, res, next) {
 
 	const { item_for } = req.body;
 
-	if (item_for == 'thread') {
+	if (item_for == 'thread' || item_for == 'sample_thread') {
 		const { order_info_uuid } = req.body;
 		req.body.thread_order_info_uuid = order_info_uuid;
 		req.body.order_info_uuid = null;
@@ -299,7 +299,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 
 	let query;
 
-	if (item_for == 'zipper') {
+	if (item_for == 'zipper' || item_for == 'sample_zipper') {
 		query = sql`
 		SELECT 
 			vodf.order_info_uuid as order_info_uuid,
