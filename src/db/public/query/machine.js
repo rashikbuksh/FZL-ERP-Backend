@@ -195,9 +195,13 @@ export async function selectByDate(req, res, next) {
 			return acc;
 		}, {});
 
+		const machines = Object.keys(groupedResults).map((machine_name) => ({
+			[machine_name]: groupedResults[machine_name],
+		}));
+
 		const response = {
 			date: results[0]?.date,
-			...groupedResults,
+			machines,
 		};
 
 		const toast = {
