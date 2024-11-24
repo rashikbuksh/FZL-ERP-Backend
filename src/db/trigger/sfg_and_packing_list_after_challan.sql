@@ -10,7 +10,7 @@ BEGIN
     WHERE packing_list.challan_uuid = NEW.uuid;
     -- Update zipper.sfg
     IF NEW.receive_status = 1 THEN
-        IF pl_sfg.item_for = 'thread' THEN
+        IF pl_sfg.item_for = 'thread' OR pl_sfg.item_for = 'sample_thread' THEN
             UPDATE thread.order_entry
             SET
                 warehouse = warehouse - pl_sfg.quantity,
@@ -40,7 +40,7 @@ BEGIN
     WHERE packing_list.challan_uuid = OLD.uuid;
     -- Update zipper.sfg
     IF OLD.receive_status = 1 THEN
-        IF pl_sfg.item_for = 'thread' THEN
+        IF pl_sfg.item_for = 'thread' OR pl_sfg.item_for = 'sample_thread' THEN
             UPDATE thread.order_entry
             SET
                 warehouse = warehouse + pl_sfg.quantity,
@@ -70,7 +70,7 @@ BEGIN
     LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid 
     WHERE packing_list.challan_uuid = NEW.uuid;
     -- Update zipper.sfg
-        IF pl_sfg.item_for = 'thread' THEN
+        IF pl_sfg.item_for = 'thread' OR pl_sfg.item_for = 'sample_thread' THEN
             UPDATE thread.order_entry
             SET
                 warehouse = warehouse - CASE WHEN NEW.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END + CASE WHEN OLD.receive_status = 1 THEN pl_sfg.quantity ELSE 0 END,

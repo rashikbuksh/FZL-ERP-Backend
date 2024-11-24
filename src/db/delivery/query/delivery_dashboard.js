@@ -27,7 +27,7 @@ export async function selectDelivery(req, res, next) {
         FROM
             delivery.v_packing_list_details vpl
         WHERE 
-            vpl.item_for = 'zipper'`;
+            vpl.item_for = 'zipper' OR vpl.item_for = 'sample_zipper'`;
 
 	try {
 		const data = await db.execute(query);
@@ -67,7 +67,7 @@ export async function selectDeliveryThread(req, res, next) {
                 FROM
                     delivery.v_packing_list_details vpl
                 WHERE 
-                    vpl.item_for = 'thread'`;
+                    vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread'`;
 
 	try {
 		const data = await db.execute(query);

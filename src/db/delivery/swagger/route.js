@@ -323,6 +323,8 @@ export const pathDeliveryPackingList = {
 				SE.parameter_query('item_for', 'item_for', [
 					'zipper',
 					'thread',
+					'sample_zipper',
+					'sample_thread',
 				]),
 			],
 			responses: {

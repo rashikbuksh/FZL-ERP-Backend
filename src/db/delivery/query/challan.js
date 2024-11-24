@@ -8,17 +8,16 @@ import { challan } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	if (req.body.item_for === 'zipper') {
+	if (
+		req.body.item_for === 'zipper' ||
+		req.body.item_for === 'sample_zipper'
+	) {
 		req.body.order_info_uuid = req.body.order_info_uuid;
 		req.body.thread_order_info_uuid = null;
-	} else if (req.body.item_for === 'thread') {
-		const threadOrders = req.body.order_info_uuid;
-		req.body.order_info_uuid = null;
-		req.body.thread_order_info_uuid = threadOrders;
-	} else if (req.body.item_for === 'sample_zipper') {
-		req.body.order_info_uuid = req.body.order_info_uuid;
-		req.body.thread_order_info_uuid = null;
-	} else if (req.body.item_for === 'sample_thread') {
+	} else if (
+		req.body.item_for === 'thread' ||
+		req.body.item_for === 'sample_thread'
+	) {
 		const threadOrders = req.body.order_info_uuid;
 		req.body.order_info_uuid = null;
 		req.body.thread_order_info_uuid = threadOrders;
@@ -50,17 +49,16 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	if (req.body.item_for === 'zipper') {
+	if (
+		req.body.item_for === 'zipper' ||
+		req.body.item_for === 'sample_zipper'
+	) {
 		req.body.order_info_uuid = req.body.order_info_uuid;
 		req.body.thread_order_info_uuid = null;
-	} else if (req.body.item_for === 'thread') {
-		const threadOrders = req.body.order_info_uuid;
-		req.body.order_info_uuid = null;
-		req.body.thread_order_info_uuid = threadOrders;
-	} else if (req.body.item_for === 'sample_zipper') {
-		req.body.order_info_uuid = req.body.order_info_uuid;
-		req.body.thread_order_info_uuid = null;
-	} else if (req.body.item_for === 'sample_thread') {
+	} else if (
+		req.body.item_for === 'thread' ||
+		req.body.item_for === 'sample_thread'
+	) {
 		const threadOrders = req.body.order_info_uuid;
 		req.body.order_info_uuid = null;
 		req.body.thread_order_info_uuid = threadOrders;

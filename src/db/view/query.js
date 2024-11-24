@@ -206,7 +206,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         carton.name as carton_name,
         carton.size as carton_size,
         pl.carton_weight,
-        CASE WHEN pl.item_for = 'zipper' THEN pl.order_info_uuid ELSE pl.thread_order_info_uuid END as order_info_uuid,
+        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN pl.order_info_uuid ELSE pl.thread_order_info_uuid END as order_info_uuid,
         pl.challan_uuid,
         pl.created_by as created_by_uuid,
         users.name as created_by_name,
@@ -217,7 +217,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         pl.item_for,
         CASE WHEN pl.challan_uuid IS NOT NULL 
             THEN 
-                CASE WHEN pl.item_for = 'zipper' 
+                CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
                     THEN CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
                     ELSE CONCAT('TC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
                 END 
@@ -234,9 +234,9 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         ple.created_at as entry_created_at,
         ple.updated_at as entry_updated_at,
         ple.remarks as entry_remarks,
-        CASE WHEN pl.item_for = 'zipper' THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
-        CASE WHEN pl.item_for = 'zipper' THEN oe.style ELSE toe.style END as style,
-        CASE WHEN pl.item_for = 'zipper' THEN oe.color ELSE toe.color END as color,
+        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
+        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN oe.style ELSE toe.style END as style,
+        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN oe.color ELSE toe.color END as color,
         CASE 
             WHEN vodf.is_inch = 1 
               THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
@@ -245,7 +245,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         vodf.is_inch,
         vodf.is_meter,
         vodf.is_cm,
-        CASE WHEN pl.item_for = 'zipper' THEN
+        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN
             CONCAT(oe.style, ' / ', oe.color, ' / ', 
                     CASE 
                       WHEN vodf.is_inch = 1 
@@ -253,13 +253,13 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
                       ELSE CAST(oe.size AS NUMERIC)
                     END) ELSE CONCAT (toe.style, ' / ', toe.color) END as style_color_size,
             
-        CASE WHEN pl.item_for = 'zipper' THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
+        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
         vodf.order_description_uuid,
-        CASE WHEN pl.item_for = 'zipper' THEN vodf.order_number ELSE CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
-        CASE WHEN pl.item_for = 'zipper' THEN vodf.item_description ELSE CONCAT(tc.count, ' - ', tc.length) END as item_description,
-        CASE WHEN pl.item_for = 'zipper' THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
-		CASE WHEN pl.item_for = 'zipper' THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
-		CASE WHEN pl.item_for = 'zipper' THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
+        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN vodf.order_number ELSE CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
+        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN vodf.item_description ELSE CONCAT(tc.count, ' - ', tc.length) END as item_description,
+        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
+		CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
+		CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
     FROM 
         delivery.packing_list_entry ple
         LEFT JOIN delivery.packing_list pl ON pl.uuid = ple.packing_list_uuid
