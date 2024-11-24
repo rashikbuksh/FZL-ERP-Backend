@@ -310,7 +310,9 @@ export async function selectOrderInfo(req, res, next) {
 						WHERE vodf.item_description != '---' AND vodf.item_description != '' AND sfg.finishing_prod > 0
 					)`
 					: null,
-				is_sample == 'true' ? sql`order_info.is_sample = 1` : null
+				is_sample == 'true'
+					? sql`order_info.is_sample = 1`
+					: sql`order_info.is_sample = 0`
 			)
 		);
 
@@ -1333,7 +1335,16 @@ export async function selectThreadOrder(req, res, next) {
 			)
 		`;
 	} else {
-		sample_condition = sql`1=1`;
+		sample_condition = sql`ot.uuid IN (
+				SELECT
+					oi.uuid
+				FROM
+					thread.order_info oi
+				LEFT JOIN
+					thread.order_entry oe ON oi.uuid = oe.order_info_uuid
+				WHERE
+					oi.is_sample = 0
+			)`;
 	}
 
 	if (page === 'challan') {
@@ -1383,56 +1394,6 @@ export async function selectThreadOrder(req, res, next) {
 				WHERE
 					${(condition = '1=1' ? sample_condition : condition + ' AND ' + sample_condition)}
 				`;
-
-	// const query = `
-	// 			SELECT
-	// 				ot.uuid AS value,
-	// 				CONCAT('TO', to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
-	// 			FROM
-	// 				thread.order_info ot
-	// 			WHERE
-	// 				${
-	// 					page === 'challan'
-	// 						? `
-	// 				ot.uuid IN (
-	// 					SELECT
-	// 					pl.thread_order_info_uuid
-	// 					FROM
-	// 					delivery.packing_list pl
-	// 					WHERE
-	// 					pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
-	// 				)
-	// 				`
-	// 						: '1=1'
-	// 				}
-	// 				OR
-	// 				${
-	// 					page === 'packing_list'
-	// 						? `
-	// 				ot.uuid IN (
-	// 					SELECT
-	// 					oi.uuid
-	// 					FROM
-	// 					thread.order_info oi
-	// 					LEFT JOIN
-	// 					thread.order_entry oe ON oi.uuid = oe.order_info_uuid
-	// 					LEFT JOIN
-	// 					(
-	// 						SELECT
-	// 						tbe.order_entry_uuid,
-	// 						SUM(tbe.coning_production_quantity) AS total_coning_quantity
-	// 						FROM
-	// 						thread.batch_entry tbe
-	// 						GROUP BY
-	// 						tbe.order_entry_uuid
-	// 					) AS total_coning ON total_coning.order_entry_uuid = oe.uuid
-	// 					WHERE
-	// 					total_coning.total_coning_quantity > 0
-	// 				)
-	// 				`
-	// 						: '1=1'
-	// 				}
-	// 			`;
 
 	const orderThreadPromise = db.execute(query);
 
