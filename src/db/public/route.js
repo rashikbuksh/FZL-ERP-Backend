@@ -10,6 +10,7 @@ import * as sectionOperations from './query/section.js';
 import * as marketingTeamOperations from './query/marketing_team.js';
 import * as marketingTeamMemberTargetOperations from './query/marketing_team_member_target.js';
 import * as marketingTeamEntryOperations from './query/marketing_team_entry.js';
+import * as productionCapacityOperations from './query/production_capacity.js';
 
 const publicRouter = Router();
 
@@ -172,6 +173,26 @@ publicRouter.delete(
 publicRouter.get(
 	'/marketing-team-entry/by/:marketing_team_uuid',
 	marketingTeamEntryOperations.selectAllByMarketingTeamUuid
+);
+
+// production_capacity routes
+
+publicRouter.get(
+	'/production-capacity',
+	productionCapacityOperations.selectAll
+);
+publicRouter.get(
+	'/production-capacity/:uuid',
+	productionCapacityOperations.select
+);
+publicRouter.post('/production-capacity', productionCapacityOperations.insert);
+publicRouter.put(
+	'/production-capacity/:uuid',
+	productionCapacityOperations.update
+);
+publicRouter.delete(
+	'/production-capacity/:uuid',
+	productionCapacityOperations.remove
 );
 
 export { publicRouter };
