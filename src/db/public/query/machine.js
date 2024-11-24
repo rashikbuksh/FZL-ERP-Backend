@@ -154,7 +154,8 @@ export async function select(req, res, next) {
 export async function selectByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`
+	const machineQuery = sql`SELECT name AS machine_name FROM public.machine`;
+	const dataQuery = sql`
         SELECT
             DATE(zdb.production_date) as date,
             pm.name AS machine_name,
@@ -175,41 +176,39 @@ export async function selectByDate(req, res, next) {
     `;
 
 	try {
-		const { rows: results } = await db.execute(query);
+		const { rows: machines } = await db.execute(machineQuery);
+		const { rows: results } = await db.execute(dataQuery);
 
-		if (!Array.isArray(results)) {
+		if (!Array.isArray(machines) || !Array.isArray(results)) {
 			throw new TypeError('Expected results to be an array');
 		}
 
-		let response = { data: [] };
+		const groupedResults = results.reduce((acc, item) => {
+			if (!acc[item.machine_name]) {
+				acc[item.machine_name] = {};
+			}
+			if (!acc[item.machine_name][item.slot]) {
+				acc[item.machine_name][item.slot] = [];
+			}
+			acc[item.machine_name][item.slot].push({
+				batch_no: item.batch_no,
+				order_no: item.order_number,
+				color: item.color,
+				weight: item.weight,
+			});
+			return acc;
+		}, {});
 
-		if (results.length > 0) {
-			const groupedResults = results.reduce((acc, item) => {
-				if (!acc[item.machine_name]) {
-					acc[item.machine_name] = [];
-				}
-				acc[item.machine_name].push({
-					slot: item.slot,
-					batch_no: item.batch_no,
-					order_no: item.order_number,
-					color: item.color,
-					weight: item.weight,
-				});
-				return acc;
-			}, {});
-
-			const machines = Object.keys(groupedResults).map(
-				(machine_name) => ({
-					machine: machine_name,
-					data: groupedResults[machine_name],
-				})
-			);
-
-			response = {
-				date: results[0]?.date,
-				data: machines,
-			};
-		}
+		const response = {
+			date: results[0]?.date,
+			data: machines.map((machine) => ({
+				machine: machine.machine_name,
+				data: Array.from({ length: 6 }, (_, i) => ({
+					slot: i + 1,
+					data: groupedResults[machine.machine_name]?.[i + 1] || null,
+				})),
+			})),
+		};
 
 		const toast = {
 			status: 200,
