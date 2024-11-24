@@ -320,6 +320,10 @@ export async function selectOrderInfo(req, res, next) {
 			filterCondition = sql`
 				(${filterCondition}) AND order_info.is_sample = 1
 			`;
+		} else {
+			filterCondition = sql`
+				(${filterCondition}) AND order_info.is_sample = 0
+			`;
 		}
 	} else {
 		filterCondition =
