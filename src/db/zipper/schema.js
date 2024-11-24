@@ -386,6 +386,9 @@ export const dyeing_batch = zipper.table('dyeing_batch', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	production_date: DateTime('production_date')
+		.notNull()
+		.default('2024-01-01 00:00:00'),
 });
 
 export const dyeing_batch_entry = zipper.table('dyeing_batch_entry', {
@@ -679,6 +682,9 @@ export const finishing_batch = zipper.table('finishing_batch', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	production_date: DateTime('production_date')
+		.notNull()
+		.default('2024-01-01 00:00:00'),
 });
 
 export const finishing_batch_entry = zipper.table('finishing_batch_entry', {

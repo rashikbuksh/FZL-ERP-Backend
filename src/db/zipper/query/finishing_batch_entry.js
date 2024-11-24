@@ -1,8 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -307,7 +304,7 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 				(coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0))
 			,0) as balance_quantity,
 			coalesce(
-				(coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0))
+				(coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)) + coalesce(fbe.quantity::float8,0)
 			,0) as max_quantity
 		FROM
 			zipper.finishing_batch_entry fbe

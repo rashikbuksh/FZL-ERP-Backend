@@ -1,10 +1,7 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
@@ -245,7 +242,8 @@ export async function selectAll(req, res, next) {
 						SUM(batch_entry.quantity)::float8 as total_cone,
 						jsonb_agg(DISTINCT jsonb_build_object('order_info_uuid', order_info.uuid, 'order_number', concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')))) AS order_numbers,
 						jsonb_agg(
-							DISTINCT order_info.uuid ) as order_uuids
+							DISTINCT order_info.uuid ) as order_uuids,
+						batch.production_date
 					FROM
 						thread.batch
 						LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
@@ -369,7 +367,8 @@ export async function select(req, res, next) {
 						batch.updated_at,
 						batch.remarks,
 						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity,
-						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight
+						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight,
+						batch.production_date
 					FROM
 						thread.batch
 					LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid

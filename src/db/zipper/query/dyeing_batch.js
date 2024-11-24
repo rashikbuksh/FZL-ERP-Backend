@@ -1,9 +1,7 @@
+import { production } from '@/db/slider/schema.js';
 import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
@@ -100,7 +98,8 @@ export async function selectAll(req, res, next) {
 			expected.total_quantity::float8,
 			expected.expected_kg::float8,
 			expected.order_numbers,
-			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity
+			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
+			dyeing_batch.production_date
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
 		LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
@@ -166,6 +165,7 @@ export async function select(req, res, next) {
 			created_at: dyeing_batch.created_at,
 			updated_at: dyeing_batch.updated_at,
 			remarks: dyeing_batch.remarks,
+			production_date: dyeing_batch.production_date,
 		})
 		.from(dyeing_batch)
 		.leftJoin(

@@ -108,6 +108,7 @@ export async function selectAll(req, res, next) {
 			stock_batch_quantity: sliderSchema.stock.batch_quantity,
 			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity`,
 			colors: sql`finishing_batch_entry_total.colors`,
+			production_date: finishing_batch.production_date,
 		})
 		.from(finishing_batch)
 		.leftJoin(
@@ -185,6 +186,7 @@ export async function select(req, res, next) {
 			remarks: finishing_batch.remarks,
 			stock_uuid: sliderSchema.stock.uuid,
 			stock_batch_quantity: sliderSchema.stock.batch_quantity,
+			production_date: finishing_batch.production_date,
 		})
 		.from(finishing_batch)
 		.leftJoin(
