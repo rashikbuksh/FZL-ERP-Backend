@@ -116,6 +116,7 @@ publicRouter.get('/machine/:uuid', machineOperations.select);
 publicRouter.post('/machine', machineOperations.insert);
 publicRouter.put('/machine/:uuid', machineOperations.update);
 publicRouter.delete('/machine/:uuid', machineOperations.remove);
+publicRouter.get('/machine/by/:date', machineOperations.selectByDate);
 
 // marketing_team routes
 publicRouter.get('/marketing-team', marketingTeamOperations.selectAll);

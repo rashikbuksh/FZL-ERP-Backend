@@ -1230,6 +1230,39 @@ export const publicMachine = {
 			},
 		},
 	},
+	'/public/machine/by/{date}': {
+		get: {
+			summary: 'Get all machines by date',
+			tags: ['public.machine'],
+			operationId: 'getSections',
+			parameters: [
+				{
+					name: 'date',
+					in: 'path',
+					description: ' Date',
+					required: true,
+					type: 'string',
+					format: 'date',
+					example: '2024-01-01',
+				},
+			],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/public/machine',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 export const publicMarketingTeam = {
