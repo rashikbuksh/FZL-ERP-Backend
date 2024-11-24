@@ -181,28 +181,35 @@ export async function selectByDate(req, res, next) {
 			throw new TypeError('Expected results to be an array');
 		}
 
-		const groupedResults = results.reduce((acc, item) => {
-			if (!acc[item.machine_name]) {
-				acc[item.machine_name] = [];
-			}
-			acc[item.machine_name].push({
-				slot: item.slot,
-				batch_no: item.batch_no,
-				order_no: item.order_number,
-				color: item.color,
-				weight: item.weight,
-			});
-			return acc;
-		}, {});
+		let response = { data: [] };
 
-		const machines = Object.keys(groupedResults).map((machine_name) => ({
-			[machine_name]: groupedResults[machine_name],
-		}));
+		if (results.length > 0) {
+			const groupedResults = results.reduce((acc, item) => {
+				if (!acc[item.machine_name]) {
+					acc[item.machine_name] = [];
+				}
+				acc[item.machine_name].push({
+					slot: item.slot,
+					batch_no: item.batch_no,
+					order_no: item.order_number,
+					color: item.color,
+					weight: item.weight,
+				});
+				return acc;
+			}, {});
 
-		const response = {
-			date: results[0]?.date,
-			machines,
-		};
+			const machines = Object.keys(groupedResults).map(
+				(machine_name) => ({
+					machine: machine_name,
+					data: groupedResults[machine_name],
+				})
+			);
+
+			response = {
+				date: results[0]?.date,
+				data: machines,
+			};
+		}
 
 		const toast = {
 			status: 200,
@@ -210,7 +217,7 @@ export async function selectByDate(req, res, next) {
 			message: 'Machine',
 		};
 
-		return res.status(200).json({ toast, data: response });
+		return res.status(200).json({ toast, data: response.data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
