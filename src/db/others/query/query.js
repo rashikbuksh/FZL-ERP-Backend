@@ -467,9 +467,38 @@ export async function selectOrderDescription(req, res, next) {
 					tcr.top::float8,
 					tcr.bottom::float8,
 					tape_coil.dyed_per_kg_meter::float8,
-					coalesce(batch_stock.stock,0)::float8 as stock
+					coalesce(batch_stock.stock,0)::float8 as stock,
+					sfg.uuid as sfg_uuid,
+					sfg.recipe_uuid as recipe_uuid,
+					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+					oe.style,
+					oe.color,
+					CASE 
+						WHEN vodf.is_inch = 1 
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+						ELSE CAST(oe.size AS NUMERIC)
+					END as size,
+					oe.quantity::float8 as order_quantity,
+					coalesce(
+						coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+					,0) as balance_quantity
 				FROM
 					zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
+				LEFT JOIN
+						(
+							SELECT
+								sfg.uuid as sfg_uuid,
+								SUM(fbe.quantity::float8) AS given_quantity
+							FROM
+								zipper.finishing_batch_entry fbe
+							LEFT JOIN 
+								zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+							GROUP BY
+								sfg.uuid
+					) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
 				LEFT JOIN 
 					(
 						SELECT oe.order_description_uuid, 
@@ -507,7 +536,7 @@ export async function selectOrderDescription(req, res, next) {
 						GROUP BY oe.order_description_uuid
 				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL
+					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND sfg.recipe_uuid IS NOT NULL
 				`;
 
 	if (dyed_tape_required == 'false') {
