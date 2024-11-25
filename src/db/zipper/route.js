@@ -507,6 +507,10 @@ zipperRouter.get(
 	finishingBatchEntryOperations.getOrderDetailsForFinishingBatchEntry
 );
 zipperRouter.get(
+	'/finishing-batch-entry/production-quantity/max/:order_description_uuid',
+	finishingBatchEntryOperations.selectMaxProductionQuantityForFinishingBatch
+);
+zipperRouter.get(
 	'/finishing-batch-entry/by/finishing-batch-uuid/:finishing_batch_uuid',
 	finishingBatchEntryOperations.getFinishingBatchEntryByFinishingBatchUuid
 );

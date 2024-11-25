@@ -3811,6 +3811,11 @@ export const pathZipperFinishingBatchEntry = {
 					'finishing batch entry to get',
 					'order_description_uuid'
 				),
+				SE.parameter_query(
+					'production_date',
+					'production_date',
+					'2021-01-01'
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -3836,6 +3841,30 @@ export const pathZipperFinishingBatchEntry = {
 			},
 		},
 	},
+	'/zipper/finishing-batch-entry/production-quantity/max/{order_description_uuid}':
+		{
+			get: {
+				tags: ['zipper.finishing_batch_entry'],
+				summary:
+					'Get all Finishing Batch Entry by order description uuid',
+				parameters: [
+					SE.parameter_params(
+						'finishing batch entry to get',
+						'order_description_uuid'
+					),
+					SE.parameter_query(
+						'production_date',
+						'production_date',
+						'2021-01-01'
+					),
+				],
+				responses: {
+					200: SE.response_schema(200, {
+						max: SE.number(100),
+					}),
+				},
+			},
+		},
 	'/zipper/finishing-batch-entry/by/finishing-batch-uuid/{finishing_batch_uuid}':
 		{
 			get: {

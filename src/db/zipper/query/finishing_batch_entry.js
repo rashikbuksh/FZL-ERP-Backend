@@ -238,13 +238,15 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 					sfg.uuid
 		) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
 		WHERE sfg.recipe_uuid IS NOT NULL 
-			AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0 
-			AND
-				(
-					lower(vodf.item_name) != 'nylon' 
-					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-				)
+			
 			AND vodf.order_description_uuid = ${req.params.order_description_uuid}`;
+
+	// AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0
+	// AND
+	// 	(
+	// 		lower(vodf.item_name) != 'nylon'
+	// 		OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+	// 	)
 
 	const batchEntryPromise = db.execute(query);
 
@@ -258,6 +260,60 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 		};
 
 		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectMaxProductionQuantityForFinishingBatch(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { production_date } = req.query;
+
+	const max_possible_quantity_query = sql`
+			SELECT
+				(SUM(finishing_batch_entry.quantity)::float8) as total_production,
+				pc.quantity::float8 as production_capacity_quantity,
+				pc.quantity::float8 - (SUM(finishing_batch_entry.quantity)::float8) as total_production_capacity
+			FROM
+				zipper.finishing_batch_entry
+			LEFT JOIN
+				zipper.finishing_batch ON finishing_batch_entry.finishing_batch_uuid = finishing_batch.uuid
+			LEFT JOIN
+				zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
+			LEFT JOIN 
+				public.production_capacity pc ON (
+								vodf.item = pc.item 
+								AND vodf.zipper_number = pc.zipper_number 
+								AND vodf.end_type = pc.end_type
+								AND vodf.nylon_stopper = pc.nylon_stopper
+								)
+			WHERE
+				finishing_batch.production_date = ${production_date}::TIMESTAMP AND finishing_batch.order_description_uuid = ${req.params.order_description_uuid}
+			GROUP BY
+				finishing_batch.order_description_uuid, pc.quantity
+`;
+
+	try {
+		const max_possible_quantity = await db.execute(
+			max_possible_quantity_query
+		);
+		console.log(max_possible_quantity);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Max Production Quantity',
+		};
+
+		return res.status(200).json({
+			toast,
+			data: max_possible_quantity.rows[0],
+		});
 	} catch (error) {
 		await handleError({ error, res });
 	}
