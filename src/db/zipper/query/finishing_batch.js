@@ -98,15 +98,19 @@ export async function selectAll(req, res, next) {
 			slider_lead_time: finishing_batch.slider_lead_time,
 			dyeing_lead_time: finishing_batch.dyeing_lead_time,
 			status: finishing_batch.status,
-			slider_finishing_stock: finishing_batch.slider_finishing_stock,
+			slider_finishing_stock: decimalToNumber(
+				finishing_batch.slider_finishing_stock
+			),
 			created_by: finishing_batch.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: finishing_batch.created_at,
 			updated_at: finishing_batch.updated_at,
 			remarks: finishing_batch.remarks,
 			stock_uuid: sliderSchema.stock.uuid,
-			stock_batch_quantity: sliderSchema.stock.batch_quantity,
-			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity`,
+			stock_batch_quantity: decimalToNumber(
+				sliderSchema.stock.batch_quantity
+			),
+			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity::float8`,
 			colors: sql`finishing_batch_entry_total.colors`,
 			production_date: finishing_batch.production_date,
 		})
@@ -167,7 +171,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: finishing_batch.uuid,
 			id: finishing_batch.id,
-			batch_number: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+			batch_number: sql`concat('FB', to_char(${finishing_batch.created_at}, 'YY'::text), '-', lpad((${finishing_batch.id})::text, 4, '0'::text))`,
 			order_info_uuid: viewSchema.v_order_details_full.order_info_uuid,
 			order_number: viewSchema.v_order_details_full.order_number,
 			item_description: viewSchema.v_order_details_full.item_description,
@@ -177,14 +181,20 @@ export async function select(req, res, next) {
 			slider_lead_time: finishing_batch.slider_lead_time,
 			dyeing_lead_time: finishing_batch.dyeing_lead_time,
 			status: finishing_batch.status,
-			slider_finishing_stock: finishing_batch.slider_finishing_stock,
+			slider_finishing_stock: decimalToNumber(
+				finishing_batch.slider_finishing_stock
+			),
 			created_by: finishing_batch.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: finishing_batch.created_at,
 			updated_at: finishing_batch.updated_at,
 			remarks: finishing_batch.remarks,
 			stock_uuid: sliderSchema.stock.uuid,
-			stock_batch_quantity: sliderSchema.stock.batch_quantity,
+			stock_batch_quantity: decimalToNumber(
+				sliderSchema.stock.batch_quantity
+			),
+			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity::float8`,
+			colors: sql`finishing_batch_entry_total.colors`,
 			production_date: finishing_batch.production_date,
 		})
 		.from(finishing_batch)
@@ -197,11 +207,28 @@ export async function select(req, res, next) {
 		)
 		.leftJoin(
 			sliderSchema.stock,
-			eq(finishing_batch.uuid, sliderSchema.stock.finishing_batch_uuid)
+			eq(sliderSchema.stock.finishing_batch_uuid, finishing_batch.uuid)
 		)
 		.leftJoin(
 			hrSchema.users,
-			eq(finishing_batch.created_by, hrSchema.users.uuid)
+			eq(hrSchema.users.uuid, finishing_batch.created_by)
+		)
+		.leftJoin(
+			sql`(
+			SELECT 
+				DISTINCT finishing_batch_uuid, 
+				SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
+				ARRAY_AGG(DISTINCT order_entry.color) as colors
+			FROM 
+				zipper.finishing_batch_entry
+			LEFT JOIN 
+				zipper.sfg ON finishing_batch_entry.sfg_uuid = sfg.uuid
+			LEFT JOIN 
+				zipper.order_entry ON order_entry.uuid = sfg.order_entry_uuid
+			GROUP BY 
+				finishing_batch_entry.finishing_batch_uuid
+			) as finishing_batch_entry_total`,
+			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid`
 		)
 		.where(eq(finishing_batch.uuid, req.params.uuid));
 
