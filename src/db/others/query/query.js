@@ -309,7 +309,7 @@ export async function selectOrderInfo(req, res, next) {
 					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 					WHERE vodf.item_description != '---' 
 					  AND vodf.item_description != '' 
-					  AND ${is_sample === 'true' ? sql`oe.quantity - sfg.delivered > 0` : sql`sfg.finishing_prod > 0`} 
+					  AND ${is_sample === 'true' ? sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0` : sql`sfg.finishing_prod > 0`} 
 				)
 			`;
 			break;
