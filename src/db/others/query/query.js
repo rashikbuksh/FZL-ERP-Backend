@@ -48,7 +48,7 @@ export async function selectMachine(req, res, next) {
 }
 
 export async function selectOpenSlotMachine(req, res, next) {
-	const { item_for, production_date } = req.query;
+	const { production_date } = req.query;
 
 	const machinePromise = db
 		.select({
@@ -56,33 +56,51 @@ export async function selectOpenSlotMachine(req, res, next) {
 			label: sql`concat(machine.name, ' - ', '(', machine.min_capacity::float8, ' - ', machine.max_capacity::float8 ,')')`,
 			max_capacity: decimalToNumber(publicSchema.machine.max_capacity),
 			min_capacity: decimalToNumber(publicSchema.machine.min_capacity),
-			booked_slot:
-				item_for == 'zipper'
-					? sql`ARRAY_AGG(DISTINCT zipper.dyeing_batch.slot)`
-					: sql`ARRAY_AGG(DISTINCT thread.batch.slot)`,
+			zipper_slot: sql`ARRAY_AGG(DISTINCT zipper.dyeing_batch.slot)`,
+			thread_slot: sql`ARRAY_AGG(DISTINCT thread.batch.slot)`,
 		})
 		.from(publicSchema.machine)
 		.leftJoin(
-			item_for === 'zipper'
-				? zipperSchema.dyeing_batch
-				: threadSchema.batch,
-			item_for === 'zipper'
-				? sql`${publicSchema.machine.uuid} = ${zipperSchema.dyeing_batch.machine_uuid} AND ${zipperSchema.dyeing_batch.production_date} = ${production_date}`
-				: sql`${publicSchema.machine.uuid} = ${threadSchema.batch.machine_uuid} AND ${threadSchema.batch.production_date} = ${production_date}`
+			zipperSchema.dyeing_batch,
+			sql`${publicSchema.machine.uuid} = ${zipperSchema.dyeing_batch.machine_uuid} AND ${zipperSchema.dyeing_batch.production_date} = ${production_date}`
+		)
+		.leftJoin(
+			threadSchema.batch,
+			sql`${publicSchema.machine.uuid} = ${threadSchema.batch.machine_uuid} AND ${threadSchema.batch.production_date} = ${production_date}`
 		)
 		.groupBy(publicSchema.machine.uuid)
 		.orderBy(publicSchema.machine.name);
 
-	const all_slots = [0, 1, 2, 3, 4, 5, 6];
+	const all_slots = [
+		{ value: 1, label: 'Slot 1' },
+		{ value: 2, label: 'Slot 2' },
+		{ value: 3, label: 'Slot 3' },
+		{ value: 4, label: 'Slot 4' },
+		{ value: 5, label: 'Slot 5' },
+		{ value: 6, label: 'Slot 6' },
+	];
 
 	try {
 		const data = await machinePromise;
 
 		data.forEach((machine) => {
-			machine.open_slot = all_slots.filter(
-				(slot) => !machine.booked_slot.includes(slot)
+			let booked_slot = machine.zipper_slot.concat(machine.thread_slot);
+
+			// booked_slot: [ null, null ],   filter null
+			// booked_slot = machine.booked_slot.filter((slot) => slot != null);
+
+			machine.booked_slot = all_slots.filter((slot) =>
+				booked_slot.includes(slot.value)
 			);
+
+			machine.open_slot = all_slots.filter(
+				(slot) => !booked_slot.includes(slot.value)
+			);
+
+			machine.can_book = machine.open_slot.length > 0;
 		});
+
+		console.log(data);
 
 		const toast = {
 			status: 200,
