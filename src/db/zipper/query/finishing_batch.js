@@ -424,27 +424,41 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		);
 
 	try {
-		const CapacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
-		const data = await resultPromise; // Fetch main query results
+		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
+		const dataResult = await resultPromise; // Fetch main query results
 
-		// Transform data to required format
-		const formattedData = data.map((item) => {
-			const {
-				production_date,
-				item_description_quantity,
-				production_quantity,
-			} = item;
+		const productionDate =
+			dataResult && dataResult.rows && dataResult.rows.length > 0
+				? dataResult.rows[0].production_date
+				: null;
+
+		const formattedData = capacityQueryResult.rows.map((capacityRow) => {
+			const matchingDataRow =
+				dataResult &&
+				dataResult.rows &&
+				dataResult.rows.find(
+					(dataRow) =>
+						dataRow.item === capacityRow.item &&
+						dataRow.nylon_stopper === capacityRow.nylon_stopper &&
+						dataRow.zipper_number === capacityRow.zipper_number &&
+						dataRow.end_type === capacityRow.end_type
+				);
 
 			return {
-				production_date: production_date || null,
-				item_description_quantity,
-				data: [
-					{
-						production_quantity: production_quantity || null,
-					},
-				],
+				item_description_quantity:
+					capacityRow.item_description_quantity,
+				data: {
+					production_quantity: matchingDataRow
+						? matchingDataRow.production_quantity
+						: null,
+				},
 			};
 		});
+
+		const response = {
+			production_date: productionDate,
+			data: formattedData,
+		};
 
 		const toast = {
 			status: 200,
@@ -452,7 +466,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 			message: 'finishing_batch',
 		};
 
-		return await res.status(200).json({ toast, data: formattedData });
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}
