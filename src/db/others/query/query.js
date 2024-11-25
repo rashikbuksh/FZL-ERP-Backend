@@ -334,50 +334,37 @@ export async function selectOrderInfo(req, res, next) {
 
 	let filterCondition;
 
-	if (page === 'challan') {
-		filterCondition = sql`
-			order_info.uuid IN (
-				SELECT pl.order_info_uuid
-				FROM delivery.packing_list pl
-				WHERE pl.challan_uuid IS NULL 
-				  AND pl.is_warehouse_received = true
-			)
-		`;
-		if (is_sample === 'true') {
+	switch (page) {
+		case 'challan':
 			filterCondition = sql`
-				(${filterCondition}) AND order_info.is_sample = 1
+				order_info.is_sample = ${is_sample === 'true' ? '1' : '0'} 
+				AND order_info.uuid IN (
+					SELECT pl.order_info_uuid
+					FROM delivery.packing_list pl
+					WHERE pl.challan_uuid IS NULL 
+					  AND pl.is_warehouse_received = true
+				)
 			`;
-		} else {
+			break;
+
+		case 'packing_list':
 			filterCondition = sql`
-				(${filterCondition}) AND order_info.is_sample = 0
+				order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`} 
+				AND order_info.uuid IN (
+					SELECT vodf.order_info_uuid
+					FROM zipper.v_order_details_full vodf
+					LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+					WHERE vodf.item_description != '---' 
+					  AND vodf.item_description != '' 
+					  AND ${is_sample === 'true' ? sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0` : sql`sfg.finishing_prod > 0`} 
+				)
 			`;
-		}
-	} else if (page === 'packing_list') {
-		filterCondition = sql`
-			order_info.uuid IN (
-				SELECT vodf.order_info_uuid
-				FROM zipper.v_order_details_full vodf
-				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-				WHERE vodf.item_description != '---' 
-				  AND vodf.item_description != '' 
-				  AND sfg.finishing_prod > 0
-			)
-		`;
-		if (is_sample === 'true') {
-			filterCondition = sql`
-				(${filterCondition}) AND order_info.is_sample = 1
-			`;
-		} else {
-			filterCondition = sql`
-				(${filterCondition}) AND order_info.is_sample = 0
-			`;
-		}
-	} else {
-		filterCondition =
-			is_sample === 'true'
-				? sql`order_info.is_sample = 1`
-				: sql`order_info.is_sample = 0`;
+			break;
+
+		default:
+			filterCondition = sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`;
+			break;
 	}
 
 	const orderInfoPromise = db
@@ -386,7 +373,6 @@ export async function selectOrderInfo(req, res, next) {
 			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		})
 		.from(zipperSchema.order_info)
-
 		.where(filterCondition);
 
 	// const orderInfoPromise = db.execute(query);
@@ -507,6 +493,9 @@ export async function selectOrderDescription(req, res, next) {
 				SELECT
 					vodf.order_description_uuid AS value,
 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label,
+					vodf.order_number,
+					vodf.item_description,
+					vodf.order_description_uuid,
 					vodf.item_name,
 					vodf.tape_received::float8,
 					vodf.tape_transferred::float8,
@@ -515,9 +504,38 @@ export async function selectOrderDescription(req, res, next) {
 					tcr.top::float8,
 					tcr.bottom::float8,
 					tape_coil.dyed_per_kg_meter::float8,
-					coalesce(batch_stock.stock,0)::float8 as stock
+					coalesce(batch_stock.stock,0)::float8 as stock,
+					sfg.uuid as sfg_uuid,
+					sfg.recipe_uuid as recipe_uuid,
+					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+					oe.style,
+					oe.color,
+					CASE 
+						WHEN vodf.is_inch = 1 
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+						ELSE CAST(oe.size AS NUMERIC)
+					END as size,
+					oe.quantity::float8 as order_quantity,
+					coalesce(
+						coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+					,0) as balance_quantity
 				FROM
 					zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
+				LEFT JOIN
+						(
+							SELECT
+								sfg.uuid as sfg_uuid,
+								SUM(fbe.quantity::float8) AS given_quantity
+							FROM
+								zipper.finishing_batch_entry fbe
+							LEFT JOIN 
+								zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+							GROUP BY
+								sfg.uuid
+					) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
 				LEFT JOIN 
 					(
 						SELECT oe.order_description_uuid, 
@@ -555,7 +573,7 @@ export async function selectOrderDescription(req, res, next) {
 						GROUP BY oe.order_description_uuid
 				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL
+					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND sfg.recipe_uuid IS NOT NULL
 				`;
 
 	if (dyed_tape_required == 'false') {
