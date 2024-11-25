@@ -189,6 +189,7 @@ export async function selectAll(req, res, next) {
 				challan.created_at AS created_at,
 				challan.updated_at AS updated_at,
 				challan.remarks AS remarks,
+				challan.delivery_date,
 				packing_list.item_for
 			FROM
 				delivery.challan
@@ -333,6 +334,7 @@ export async function select(req, res, next) {
 									challan.created_at AS created_at,
 									challan.updated_at AS updated_at,
 									challan.remarks AS remarks,
+									challan.delivery_date,
 									packing_list.item_for
 								FROM
 									delivery.challan

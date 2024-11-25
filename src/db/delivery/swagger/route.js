@@ -920,6 +920,11 @@ export const pathDeliveryChallan = {
 										type: 'string',
 										example: 'Remarks',
 									},
+									delivery_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
 								},
 							},
 						},
@@ -1196,6 +1201,11 @@ export const pathDeliveryChallan = {
 									remarks: {
 										type: 'string',
 										example: 'Remarks',
+									},
+									delivery_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
 									},
 									challan_entry: {
 										type: 'object',

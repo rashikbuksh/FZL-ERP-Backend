@@ -101,6 +101,7 @@ export const challan = delivery.table('challan', {
 		() => threadSchema.order_info.uuid
 	),
 	remarks: text('remarks').default(null),
+	delivery_date: DateTime('delivery_date').default(null),
 });
 
 export const vehicle = delivery.table('vehicle', {
