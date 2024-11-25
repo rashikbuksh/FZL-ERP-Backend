@@ -138,7 +138,8 @@ export const marketing_team_member_target = pgTable(
 		),
 		year: integer('year').notNull(),
 		month: integer('month').notNull(),
-		amount: PG_DECIMAL('amount').notNull(),
+		zipper_amount: PG_DECIMAL('zipper_amount').default(0),
+		thread_amount: PG_DECIMAL('thread_amount').default(0),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
 		created_by: defaultUUID('created_by').references(
