@@ -363,7 +363,10 @@ export async function selectOrderInfo(req, res, next) {
 			break;
 
 		default:
-			filterCondition = sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`;
+			filterCondition =
+				is_sample == null || is_sample == undefined || is_sample == ''
+					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`
+					: sql`1=1`;
 			break;
 	}
 
@@ -1424,7 +1427,7 @@ export async function selectThreadOrder(req, res, next) {
 				oi.is_sample = 1
 		)
 	`;
-	} else {
+	} else if (is_sample === 'false') {
 		sample_condition = sql`
 		ot.uuid IN (
 			SELECT
@@ -1437,6 +1440,8 @@ export async function selectThreadOrder(req, res, next) {
 				oi.is_sample = 0
 		)
 	`;
+	} else {
+		sample_condition = sql`1=1`;
 	}
 
 	if (page === 'challan') {
