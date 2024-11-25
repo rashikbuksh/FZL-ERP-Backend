@@ -132,7 +132,7 @@ otherRouter.get(
 //machine
 otherRouter.get('/machine/value/label', otherOperations.selectMachine);
 otherRouter.get(
-	'/machine-booked/value/label',
+	'/machine-with-slot/value/label',
 	otherOperations.selectOpenSlotMachine
 );
 
@@ -199,7 +199,7 @@ const pathPublic = {
 			},
 		},
 	},
-	'/other/machine-booked/value/label': {
+	'/other/machine-with-slot/value/label': {
 		get: {
 			tags: ['others'],
 			summary: 'get all machines',
