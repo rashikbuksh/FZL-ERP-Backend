@@ -332,6 +332,8 @@ export async function selectOrderInfo(req, res, next) {
 
 	const { page, is_sample } = req.query;
 
+	console.log(page, is_sample);
+
 	let filterCondition;
 
 	switch (page) {
@@ -364,7 +366,7 @@ export async function selectOrderInfo(req, res, next) {
 
 		default:
 			filterCondition =
-				is_sample == null || is_sample == undefined || is_sample == ''
+				is_sample != undefined
 					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`
 					: sql`1=1`;
 			break;
@@ -378,7 +380,8 @@ export async function selectOrderInfo(req, res, next) {
 		.from(zipperSchema.order_info)
 		.where(filterCondition);
 
-	// const orderInfoPromise = db.execute(query);
+	console.log(orderInfoPromise.toSQL());
+
 	try {
 		const data = await orderInfoPromise;
 		const toast = {
