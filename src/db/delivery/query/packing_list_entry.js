@@ -263,7 +263,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			END as size_cm,
 			CASE WHEN 
 				ple.sfg_uuid IS NOT NULL THEN 
-					oe.size
+					CAST(oe.size AS NUMERIC)
 				ELSE
 					tc.length
 			END as size,
