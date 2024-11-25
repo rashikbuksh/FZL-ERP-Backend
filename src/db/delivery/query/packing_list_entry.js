@@ -260,7 +260,9 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 							ELSE CAST(oe.size AS NUMERIC)
 					END 
 				ELSE tc.length 
-			END as size,
+			END as size_cm,
+			oe.size,
+			vodf.is_inch,
 			concat(oe.style, ' / ', oe.color, ' / ', CASE 
                 WHEN vodf.is_inch = 1 
 					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)

@@ -479,6 +479,10 @@ zipperRouter.get(
 	'/finishing-batch/by/finishing_batch_uuid/:finishing_batch_uuid',
 	finishingBatchOperations.getFinishingBatchByFinishingBatchUuid
 );
+zipperRouter.get(
+	'/finishing-batch-capacity-details',
+	finishingBatchOperations.getFinishingBatchCapacityDetails
+);
 
 // --------------------- FINISHING BATCH ENTRY ROUTES ---------------------
 

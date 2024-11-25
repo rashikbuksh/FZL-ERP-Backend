@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, sql, and } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -7,7 +7,7 @@ import * as sliderSchema from '../../slider/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as viewSchema from '../../view/schema.js';
 import { finishing_batch } from '../schema.js';
-
+import * as publicSchema from '../../public/schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -307,6 +307,152 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 		};
 
 		return await res.status(200).json({ toast, data: response });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function getFinishingBatchCapacityDetails(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	const { production_date } = req.query;
+	const CapacityQuery = sql`
+		SELECT
+			item_properties.uuid AS item,
+			item_properties.name AS item_name,
+			nylon_stopper_properties.uuid AS nylon_stopper,
+			nylon_stopper_properties.name AS nylon_stopper_name,
+			zipper_number_properties.uuid AS zipper_number,
+			zipper_number_properties.name AS zipper_number_name,
+			end_type_properties.uuid AS end_type,
+			end_type_properties.name AS end_type_name,
+			production_capacity.quantity::float8 AS production_capacity_quantity,
+			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name) AS item_description,
+			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name,'(', production_capacity.quantity::float8, ')') AS item_description_quantity
+
+		FROM
+			public.production_capacity
+		LEFT JOIN
+			public.properties item_properties ON production_capacity.item = item_properties.uuid
+		LEFT JOIN
+			public.properties nylon_stopper_properties ON production_capacity.nylon_stopper = nylon_stopper_properties.uuid
+		LEFT JOIN
+			public.properties zipper_number_properties ON production_capacity.zipper_number = zipper_number_properties.uuid
+		LEFT JOIN
+			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid
+			
+	`;
+
+	const resultPromise = db
+		.select({
+			finishing_batch_uuid: finishing_batch.uuid,
+			order_description_uuid: finishing_batch.order_description_uuid,
+			slider_lead_time: finishing_batch.slider_lead_time,
+			dyeing_lead_time: finishing_batch.dyeing_lead_time,
+			status: finishing_batch.status,
+			slider_finishing_stock: finishing_batch.slider_finishing_stock,
+			created_by: finishing_batch.created_by,
+			created_at: finishing_batch.created_at,
+			updated_at: finishing_batch.updated_at,
+			remarks: finishing_batch.remarks,
+			item: publicSchema.production_capacity.item,
+			item_name: viewSchema.v_order_details_full.item_name,
+			nylon_stopper: publicSchema.production_capacity.nylon_stopper,
+			nylon_stopper_name:
+				viewSchema.v_order_details_full.nylon_stopper_name,
+			zipper_number: publicSchema.production_capacity.zipper_number,
+			zipper_number_name:
+				viewSchema.v_order_details_full.zipper_number_name,
+			end_type: publicSchema.production_capacity.end_type,
+			end_type_name: viewSchema.v_order_details_full.end_type_name,
+			production_capacity_quantity: decimalToNumber(
+				publicSchema.production_capacity.quantity
+			),
+			production_quantity: decimalToNumber(
+				sql`finishing_batch_entry_total.total_batch_quantity`
+			),
+			production_date: finishing_batch.production_date,
+		})
+		.from(publicSchema.production_capacity)
+		.leftJoin(
+			viewSchema.v_order_details_full,
+			and(
+				eq(
+					publicSchema.production_capacity.item,
+					viewSchema.v_order_details_full.item
+				),
+				eq(
+					publicSchema.production_capacity.nylon_stopper,
+					viewSchema.v_order_details_full.nylon_stopper
+				),
+				eq(
+					publicSchema.production_capacity.zipper_number,
+					viewSchema.v_order_details_full.zipper_number
+				),
+				eq(
+					publicSchema.production_capacity.end_type,
+					viewSchema.v_order_details_full.end_type
+				)
+			)
+		)
+		.leftJoin(
+			finishing_batch,
+			eq(
+				finishing_batch.order_description_uuid,
+				viewSchema.v_order_details_full.order_description_uuid
+			)
+		)
+		.leftJoin(
+			sql`(
+			SELECT 
+				DISTINCT finishing_batch_uuid, 
+				SUM(finishing_batch_entry.quantity) AS total_batch_quantity
+			FROM 
+				zipper.finishing_batch_entry
+			LEFT JOIN
+				zipper.finishing_batch ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
+			LEFT JOIN zipper.v_order_details_full ON finishing_batch.order_description_uuid = v_order_details_full.order_description_uuid
+			WHERE 
+				DATE(finishing_batch.production_date) = ${production_date}
+			GROUP BY 
+				finishing_batch_entry.finishing_batch_uuid,
+				v_order_details_full.item,
+				v_order_details_full.nylon_stopper,
+				v_order_details_full.zipper_number,
+				v_order_details_full.end_type
+			) as finishing_batch_entry_total`,
+			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid AND DATE(finishing_batch.production_date) = ${production_date}`
+		);
+
+	try {
+		const CapacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
+		const data = await resultPromise; // Fetch main query results
+
+		// Transform data to required format
+		const formattedData = data.map((item) => {
+			const {
+				production_date,
+				item_description_quantity,
+				production_quantity,
+			} = item;
+
+			return {
+				production_date: production_date || null,
+				item_description_quantity,
+				data: [
+					{
+						production_quantity: production_quantity || null,
+					},
+				],
+			};
+		});
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'finishing_batch',
+		};
+
+		return await res.status(200).json({ toast, data: formattedData });
 	} catch (error) {
 		await handleError({ error, res });
 	}

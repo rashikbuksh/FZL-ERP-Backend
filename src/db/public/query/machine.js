@@ -155,6 +155,8 @@ export async function selectByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const machineQuery = sql`SELECT name AS machine_name FROM public.machine`;
+
+	
 	const dataQuery = sql`
         SELECT
             DATE(zdb.production_date) as date,
