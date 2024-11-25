@@ -1,3 +1,4 @@
+import { param } from 'express-validator';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Zipper Order Info * //
@@ -3675,6 +3676,49 @@ export const pathZipperFinishingBatch = {
 					created_at: SE.date_time(),
 					updated_at: SE.date_time(),
 					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+	},
+	'/zipper//finishing-batch-capacity-details': {
+		get: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'Get all Finishing Batch Capacity Details',
+			parameters: [
+				SE.parameter_query('production_date', 'production_date', [
+					'2024-01-01',
+				]),
+			],
+
+			responses: {
+				200: SE.response_schema(200, {
+					finishing_batch_uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+
+					slider_lead_time: SE.number(100),
+					dyeing_lead_time: SE.number(100),
+					status: SE.string('pending'),
+					slider_finishing_stock: SE.number(100),
+					created_by: SE.uuid(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+					item: SE.uuid(),
+					item_name: SE.string('Item 1'),
+					nylon_stopper: SE.uuid(),
+
+					nylon_stopper_name: SE.string('Nylon Stopper'),
+
+					zipper_number: SE.uuid(),
+
+					zipper_number_name: SE.string('Zipper Number'),
+
+					end_type: SE.uuid(),
+					end_type_name: SE.string('End Type'),
+
+					production_capacity_quantity: SE.number(100),
+
+					production_quantity: SE.number(100),
 				}),
 			},
 		},
