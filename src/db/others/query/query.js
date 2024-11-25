@@ -286,50 +286,37 @@ export async function selectOrderInfo(req, res, next) {
 
 	let filterCondition;
 
-	if (page === 'challan') {
-		filterCondition = sql`
-			order_info.uuid IN (
-				SELECT pl.order_info_uuid
-				FROM delivery.packing_list pl
-				WHERE pl.challan_uuid IS NULL 
-				  AND pl.is_warehouse_received = true
-			)
-		`;
-		if (is_sample === 'true') {
+	switch (page) {
+		case 'challan':
 			filterCondition = sql`
-				(${filterCondition}) AND order_info.is_sample = 1
+				order_info.is_sample = ${is_sample === 'true' ? '1' : '0'} 
+				AND order_info.uuid IN (
+					SELECT pl.order_info_uuid
+					FROM delivery.packing_list pl
+					WHERE pl.challan_uuid IS NULL 
+					  AND pl.is_warehouse_received = true
+				)
 			`;
-		} else {
+			break;
+
+		case 'packing_list':
 			filterCondition = sql`
-				(${filterCondition}) AND order_info.is_sample = 0
+				order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`} 
+				AND order_info.uuid IN (
+					SELECT vodf.order_info_uuid
+					FROM zipper.v_order_details_full vodf
+					LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+					WHERE vodf.item_description != '---' 
+					  AND vodf.item_description != '' 
+					  AND ${is_sample === 'true' ? sql`oe.quantity - sfg.delivered > 0` : sql`sfg.finishing_prod > 0`} 
+				)
 			`;
-		}
-	} else if (page === 'packing_list') {
-		filterCondition = sql`
-			order_info.uuid IN (
-				SELECT vodf.order_info_uuid
-				FROM zipper.v_order_details_full vodf
-				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-				WHERE vodf.item_description != '---' 
-				  AND vodf.item_description != '' 
-				  AND sfg.finishing_prod > 0
-			)
-		`;
-		if (is_sample === 'true') {
-			filterCondition = sql`
-				(${filterCondition}) AND order_info.is_sample = 1
-			`;
-		} else {
-			filterCondition = sql`
-				(${filterCondition}) AND order_info.is_sample = 0
-			`;
-		}
-	} else {
-		filterCondition =
-			is_sample === 'true'
-				? sql`order_info.is_sample = 1`
-				: sql`order_info.is_sample = 0`;
+			break;
+
+		default:
+			filterCondition = sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`;
+			break;
 	}
 
 	const orderInfoPromise = db
@@ -338,7 +325,6 @@ export async function selectOrderInfo(req, res, next) {
 			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		})
 		.from(zipperSchema.order_info)
-
 		.where(filterCondition);
 
 	// const orderInfoPromise = db.execute(query);
