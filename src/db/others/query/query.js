@@ -459,6 +459,9 @@ export async function selectOrderDescription(req, res, next) {
 				SELECT
 					vodf.order_description_uuid AS value,
 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label,
+					vodf.order_number,
+					vodf.item_description,
+					vodf.order_description_uuid,
 					vodf.item_name,
 					vodf.tape_received::float8,
 					vodf.tape_transferred::float8,
