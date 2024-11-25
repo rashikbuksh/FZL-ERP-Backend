@@ -30,7 +30,7 @@ export async function insert(req, res, next) {
 		req.body.item_for == 'sample_thread' ||
 		req.body.item_for == 'sample_zipper'
 	) {
-		req.body.gate_pass = true;
+		req.body.gate_pass = 1;
 	}
 
 	const challanPromise = db
@@ -77,7 +77,7 @@ export async function update(req, res, next) {
 		req.body.item_for == 'sample_thread' ||
 		req.body.item_for == 'sample_zipper'
 	) {
-		req.body.gate_pass = true;
+		req.body.gate_pass = 1;
 	}
 
 	const challanPromise = db
