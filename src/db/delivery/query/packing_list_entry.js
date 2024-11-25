@@ -261,7 +261,12 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 					END 
 				ELSE tc.length 
 			END as size_cm,
-			oe.size,
+			CASE WHEN 
+				ple.sfg_uuid IS NOT NULL THEN 
+					oe.size
+				ELSE
+					tc.length
+			END as size,
 			vodf.is_inch,
 			concat(oe.style, ' / ', oe.color, ' / ', CASE 
                 WHEN vodf.is_inch = 1 
