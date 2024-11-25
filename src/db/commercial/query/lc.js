@@ -316,8 +316,6 @@ export async function selectLcByLcNumber(req, res, next) {
 			fetchData('lc-entry/by/lc-number'),
 			fetchData('lc-entry-others/by/lc-number'),
 		]);
-		console.log('lc_entry', lc_entry);
-		console.log('lc_entry_others', lc_entry_others);
 
 		const response = {
 			...data?.rows[0],

@@ -332,8 +332,6 @@ export async function selectOrderInfo(req, res, next) {
 
 	const { page, is_sample } = req.query;
 
-	console.log(page, is_sample);
-
 	let filterCondition;
 
 	switch (page) {
@@ -379,8 +377,6 @@ export async function selectOrderInfo(req, res, next) {
 		})
 		.from(zipperSchema.order_info)
 		.where(filterCondition);
-
-	console.log(orderInfoPromise.toSQL());
 
 	try {
 		const data = await orderInfoPromise;

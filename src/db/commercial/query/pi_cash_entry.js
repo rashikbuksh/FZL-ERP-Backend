@@ -233,9 +233,6 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 						specialRequirement?.values
 					);
 
-					// Log to verify the structure after parsing
-					// console.log('Nested values object:', nestedValuesObject);
-
 					// Extract the UUID from the nested values array
 					const [uuid] = nestedValuesObject?.values;
 

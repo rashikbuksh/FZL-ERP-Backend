@@ -107,7 +107,7 @@ export async function selectAll(req, res, next) {
 			stock_uuid: sliderSchema.stock.uuid,
 			stock_batch_quantity: sliderSchema.stock.batch_quantity,
 			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity`,
-			colors: sql`ARRAY_AGG(finishing_batch_entry_total.colors)`,
+			colors: sql`finishing_batch_entry_total.colors`,
 			production_date: finishing_batch.production_date,
 		})
 		.from(finishing_batch)
@@ -129,47 +129,21 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			sql`(
 			SELECT 
-				finishing_batch_uuid, 
-				SUM(quantity) AS total_batch_quantity,
-				(
-				SELECT DISTINCT color 
-				FROM zipper.order_entry
-				LEFT JOIN zipper.sfg ON order_entry.uuid = sfg.order_entry_uuid
-				WHERE sfg.uuid = finishing_batch_entry.sfg_uuid
-				) AS colors
+				DISTINCT finishing_batch_uuid, 
+				SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
+				ARRAY_AGG(DISTINCT order_entry.color) as colors
 			FROM 
 				zipper.finishing_batch_entry
+			LEFT JOIN 
+				zipper.sfg ON finishing_batch_entry.sfg_uuid = sfg.uuid
+			LEFT JOIN 
+				zipper.order_entry ON order_entry.uuid = sfg.order_entry_uuid
 			GROUP BY 
-				finishing_batch_entry.finishing_batch_uuid, finishing_batch_entry.sfg_uuid
+				finishing_batch_entry.finishing_batch_uuid
 			) as finishing_batch_entry_total`,
 			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid`
 		)
-		.orderBy(desc(finishing_batch.created_at))
-		.groupBy(
-			finishing_batch.uuid,
-			finishing_batch.id,
-			viewSchema.v_order_details_full.order_info_uuid,
-			viewSchema.v_order_details_full.order_number,
-			viewSchema.v_order_details_full.item_description,
-			viewSchema.v_order_details_full.order_type,
-			viewSchema.v_order_details_full.slider_provided,
-			finishing_batch.order_description_uuid,
-			finishing_batch.slider_lead_time,
-			finishing_batch.dyeing_lead_time,
-			finishing_batch.status,
-			finishing_batch.slider_finishing_stock,
-			finishing_batch.created_by,
-			hrSchema.users.name,
-			finishing_batch.created_at,
-			finishing_batch.updated_at,
-			finishing_batch.remarks,
-			sliderSchema.stock.uuid,
-			sliderSchema.stock.batch_quantity,
-			finishing_batch.production_date,
-			sql`finishing_batch_entry_total.total_batch_quantity`
-		);
-
-	console.log(resultPromise.toSQL());
+		.orderBy(desc(finishing_batch.created_at));
 
 	try {
 		const data = await resultPromise;

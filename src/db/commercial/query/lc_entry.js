@@ -146,8 +146,6 @@ export async function select(req, res, next) {
 export async function selectLcEntryByLcUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	console.log(req.params);
-
 	const query = sql`
 		SELECT
 			lc_entry.uuid,
@@ -187,7 +185,6 @@ export async function selectLcEntryByLcUuid(req, res, next) {
 export async function selectLcEntryByLcNumber(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { lc_number } = req.params;
-	console.log(lc_number);
 
 	const query = sql`
 		SELECT
@@ -212,11 +209,10 @@ export async function selectLcEntryByLcNumber(req, res, next) {
 		ORDER BY lc_entry.created_at ASC`;
 
 	const lc_entryPromise = db.execute(query);
-	console.log(lc_entryPromise);
 
 	try {
 		const data = await lc_entryPromise;
-		console.log(data);
+
 		const toast = {
 			status: 200,
 			type: 'select',
@@ -251,7 +247,7 @@ export async function selectLcEntryByLcNumber(req, res, next) {
 //             lc_entry.remarks
 //         FROM
 //             commercial.lc_entry
-//         LEFT JOIN 
+//         LEFT JOIN
 //             commercial.lc ON lc_entry.lc_uuid = lc.uuid
 //         WHERE lc.lc_number = ${lc_number}
 //         ORDER BY lc_entry.created_at ASC`;

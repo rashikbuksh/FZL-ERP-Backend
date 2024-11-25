@@ -3,7 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { marketing_team, marketing_team_entry, marketing } from '../schema.js';
+import { marketing, marketing_team, marketing_team_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -171,10 +171,7 @@ export async function selectAll(req, res, next) {
 }
 
 export async function selectAllByMarketingTeamUuid(req, res, next) {
-	console.log(
-		'req.params.marketing_team_uuid',
-		req.params.marketing_team_uuid
-	);
+	if (!(await validateRequest(req, next))) return;
 	const marketing_team_entryPromise = db
 		.select({
 			uuid: marketing_team_entry.uuid,
