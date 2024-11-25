@@ -1479,7 +1479,7 @@ export async function selectThreadOrder(req, res, next) {
 						tbe.order_entry_uuid
 				) AS total_coning ON total_coning.order_entry_uuid = oe.uuid
 			WHERE
-				total_coning.total_coning_quantity > 0
+				${is_sample === 'true' ? sql`oe.quantity - oe.warehouse - oe.delivered > 0` : sql`total_coning.total_coning_quantity > 0`}
 		)
 	`;
 	} else {
