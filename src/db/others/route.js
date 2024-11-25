@@ -206,10 +206,6 @@ const pathPublic = {
 			description: 'All machines',
 			operationId: 'getAllBookedMachines',
 			parameters: [
-				SE.parameter_query('item_for', 'item_for', [
-					'zipper',
-					'thread',
-				]),
 				SE.parameter_query(
 					'production_date',
 					'production_date',

@@ -71,23 +71,30 @@ export async function selectOpenSlotMachine(req, res, next) {
 		.groupBy(publicSchema.machine.uuid)
 		.orderBy(publicSchema.machine.name);
 
-	const all_slots = [1, 2, 3, 4, 5, 6];
+	const all_slots = [
+		{ value: 1, label: 'Slot 1' },
+		{ value: 2, label: 'Slot 2' },
+		{ value: 3, label: 'Slot 3' },
+		{ value: 4, label: 'Slot 4' },
+		{ value: 5, label: 'Slot 5' },
+		{ value: 6, label: 'Slot 6' },
+	];
 
 	try {
 		const data = await machinePromise;
 
 		data.forEach((machine) => {
-			machine.booked_slot = machine.zipper_slot.concat(
-				machine.thread_slot
-			);
+			let booked_slot = machine.zipper_slot.concat(machine.thread_slot);
 
 			// booked_slot: [ null, null ],   filter null
-			machine.booked_slot = machine.booked_slot.filter(
-				(slot) => slot != null
+			// booked_slot = machine.booked_slot.filter((slot) => slot != null);
+
+			machine.booked_slot = all_slots.filter((slot) =>
+				booked_slot.includes(slot.value)
 			);
 
 			machine.open_slot = all_slots.filter(
-				(slot) => !machine.booked_slot.includes(slot)
+				(slot) => !booked_slot.includes(slot.value)
 			);
 
 			machine.can_book = machine.open_slot.length > 0;
