@@ -34,6 +34,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER delivery_challan_after_packing_list_update
-AFTER  UPDATE ON delivery.packing_list
+AFTER UPDATE ON delivery.packing_list
 FOR EACH ROW
 EXECUTE FUNCTION delivery.delivery_challan_after_packing_list_update_funct();

@@ -1342,6 +1342,7 @@ export async function selectThreadOrder(req, res, next) {
 
 	const { page, is_sample } = req.query;
 
+	let condition;
 	let sample_condition;
 
 	if (is_sample === 'true') {
@@ -1372,7 +1373,6 @@ export async function selectThreadOrder(req, res, next) {
 	`;
 	}
 
-	let condition;
 	if (page === 'challan') {
 		condition = sql`
 		ot.uuid IN (

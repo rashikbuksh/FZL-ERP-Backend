@@ -26,7 +26,10 @@ export async function insert(req, res, next) {
 		req.body.thread_order_info_uuid = null;
 	}
 
-	if (item_for == 'sample_thread' || item_for == 'sample_zipper') {
+	if (
+		req.body.item_for == 'sample_thread' ||
+		req.body.item_for == 'sample_zipper'
+	) {
 		req.body.gate_pass = true;
 	}
 
