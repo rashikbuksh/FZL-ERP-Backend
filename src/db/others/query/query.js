@@ -1,4 +1,4 @@
-import { and, eq, min, or, sql, sum } from 'drizzle-orm';
+import { and, eq, min, ne, or, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
@@ -36,6 +36,54 @@ export async function selectMachine(req, res, next) {
 		.from(publicSchema.machine);
 	try {
 		const data = await machinePromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Machine list',
+		};
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectOpenSlotMachine(req, res, next) {
+	const { item_for, production_date } = req.query;
+
+	const machinePromise = db
+		.select({
+			value: publicSchema.machine.uuid,
+			label: sql`concat(machine.name, ' - ', '(', machine.min_capacity::float8, ' - ', machine.max_capacity::float8 ,')')`,
+			max_capacity: decimalToNumber(publicSchema.machine.max_capacity),
+			min_capacity: decimalToNumber(publicSchema.machine.min_capacity),
+			booked_slot:
+				item_for == 'zipper'
+					? sql`ARRAY_AGG(DISTINCT zipper.dyeing_batch.slot)`
+					: sql`ARRAY_AGG(DISTINCT thread.batch.slot)`,
+		})
+		.from(publicSchema.machine)
+		.leftJoin(
+			item_for === 'zipper'
+				? zipperSchema.dyeing_batch
+				: threadSchema.batch,
+			item_for === 'zipper'
+				? sql`${publicSchema.machine.uuid} = ${zipperSchema.dyeing_batch.machine_uuid} AND ${zipperSchema.dyeing_batch.production_date} = ${production_date}`
+				: sql`${publicSchema.machine.uuid} = ${threadSchema.batch.machine_uuid} AND ${threadSchema.batch.production_date} = ${production_date}`
+		)
+		.groupBy(publicSchema.machine.uuid)
+		.orderBy(publicSchema.machine.name);
+
+	const all_slots = [0, 1, 2, 3, 4, 5, 6];
+
+	try {
+		const data = await machinePromise;
+
+		data.forEach((machine) => {
+			machine.open_slot = all_slots.filter(
+				(slot) => !machine.booked_slot.includes(slot)
+			);
+		});
+
 		const toast = {
 			status: 200,
 			type: 'select_all',

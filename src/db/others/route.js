@@ -131,6 +131,10 @@ otherRouter.get(
 
 //machine
 otherRouter.get('/machine/value/label', otherOperations.selectMachine);
+otherRouter.get(
+	'/machine-booked/value/label',
+	otherOperations.selectOpenSlotMachine
+);
 
 //batch-id
 otherRouter.get('/thread/batch/value/label', otherOperations.selectBatchId);
@@ -163,6 +167,55 @@ const pathPublic = {
 			summary: 'get all machines',
 			description: 'All machines',
 			operationId: 'getAllMachines',
+			responses: {
+				200: {
+					description: 'Returns a all machines.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: {
+										type: 'string',
+										example: '2ggcphnwHGzEUGy',
+									},
+									label: {
+										type: 'string',
+										example: 'machine 1',
+									},
+									max_capacity: {
+										type: 'number',
+										example: 10,
+									},
+									min_capacity: {
+										type: 'number',
+										example: 10,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/machine-booked/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all machines',
+			description: 'All machines',
+			operationId: 'getAllBookedMachines',
+			parameters: [
+				SE.parameter_query('item_for', 'item_for', [
+					'zipper',
+					'thread',
+				]),
+				SE.parameter_query(
+					'production_date',
+					'production_date',
+					'2021-01-01'
+				),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all machines.',
