@@ -691,6 +691,7 @@ const pathCommercial = {
 			operationId: 'getAllPIs',
 			parameters: [
 				SE.parameter_query('is_update', 'is_update', [true, false]),
+				SE.parameter_query('party_uuid', 'party_uuid', [SE.uuid()]),
 			],
 			responses: {
 				200: {
