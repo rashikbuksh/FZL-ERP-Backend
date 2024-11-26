@@ -100,8 +100,6 @@ export async function selectOpenSlotMachine(req, res, next) {
 			machine.can_book = machine.open_slot.length > 0;
 		});
 
-		console.log(data);
-
 		const toast = {
 			status: 200,
 			type: 'select_all',
@@ -395,22 +393,20 @@ export async function selectOrderInfo(req, res, next) {
 		})
 		.from(zipperSchema.order_info);
 
-	if (is_sample == 'true') {
-		orderInfoPromise = orderInfoPromise.leftJoin(
-			sql`(
-                SELECT COUNT(recipe_uuid) as recipe_count, od.order_info_uuid as order_info_uuid
-                FROM zipper.sfg
-                LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
-                GROUP BY od.order_info_uuid
-            ) as sfg_recipe`,
-			sql`${zipperSchema.order_info.uuid} = sfg_recipe.order_info_uuid`
-		);
-	}
+	// if (is_sample == 'true') {
+	// 	orderInfoPromise = orderInfoPromise.leftJoin(
+	// 		sql`(
+    //             SELECT COUNT(recipe_uuid) as recipe_count, od.order_info_uuid as order_info_uuid
+    //             FROM zipper.sfg
+    //             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+    //             LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
+    //             GROUP BY od.order_info_uuid
+    //         ) as sfg_recipe`,
+	// 		sql`${zipperSchema.order_info.uuid} = sfg_recipe.order_info_uuid`
+	// 	);
+	// }
 
 	orderInfoPromise = orderInfoPromise.where(filterCondition);
-
-	console.log(orderInfoPromise.toSQL());
 
 	try {
 		const data = await orderInfoPromise;
