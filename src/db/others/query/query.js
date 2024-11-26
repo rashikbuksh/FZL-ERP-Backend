@@ -1071,7 +1071,7 @@ export async function selectLCByPartyUuid(req, res, next) {
 }
 
 export async function selectPi(req, res, next) {
-	const { is_update } = req.query;
+	const { is_update, party_uuid } = req.query;
 
 	const query = sql`
 	SELECT
@@ -1103,6 +1103,7 @@ export async function selectPi(req, res, next) {
 		pi_cash.is_pi = 1
 		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
 		AND (marketing.name is not null)
+		${party_uuid ? sql`AND pi_cash.party_uuid = ${party_uuid}` : sql``}
 	GROUP BY
 		pi_cash.uuid,
 		pi_cash.created_at,
