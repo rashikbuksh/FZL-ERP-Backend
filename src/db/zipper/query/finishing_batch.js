@@ -410,7 +410,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					capacityRow.production_capacity_quantity,
 				production_quantity: matchingDataRow
 					? matchingDataRow.total_batch_quantity_sum
-					: null,
+					: 0,
 			};
 		});
 
