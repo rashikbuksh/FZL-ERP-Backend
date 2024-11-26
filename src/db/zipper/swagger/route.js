@@ -3680,7 +3680,7 @@ export const pathZipperFinishingBatch = {
 			},
 		},
 	},
-	'/zipper//finishing-batch-capacity-details': {
+	'/zipper/finishing-batch-capacity-details': {
 		get: {
 			tags: ['zipper.finishing_batch'],
 			summary: 'Get all Finishing Batch Capacity Details',
