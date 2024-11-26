@@ -312,7 +312,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 
 	if (item_for == 'zipper' || item_for == 'sample_zipper') {
 		query = sql`
-		SELECT 
+		SELECT DISTINCT
 			vodf.order_info_uuid as order_info_uuid,
 			vodf.order_number,
 			vodf.item_description,
@@ -339,7 +339,9 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			0 as poli_quantity,
 			0 as short_quantity,
 			0 as reject_quantity,
-			COALESCE(sfg.finishing_prod::float8, 0) as finishing_prod
+			COALESCE(sfg.finishing_prod::float8, 0) as finishing_prod,
+			oe.uuid as order_entry_uuid,
+			oe.created_at
 		FROM
 			zipper.v_order_details_full vodf
 		LEFT JOIN
@@ -358,7 +360,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		`;
 	} else {
 		query = sql`
-		SELECT 
+		SELECT DISTINCT
 			toi.uuid as order_info_uuid,
 			CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
 			CONCAT(cl.count) as item_description,
@@ -380,7 +382,9 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			0 as poli_quantity,
 			0 as short_quantity,
 			0 as reject_quantity,
-			COALESCE(toe.production_quantity::float8,0) as finishing_prod
+			COALESCE(toe.production_quantity::float8,0) as finishing_prod,
+			toe.uuid as order_entry_uuid,
+			toe.created_at
 		FROM
 			thread.order_info toi
 		LEFT JOIN
