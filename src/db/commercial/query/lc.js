@@ -76,16 +76,23 @@ export async function selectAll(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-			concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
-				)) as pi_ids,
+				concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))
+			) as pi_ids,
 			party.name AS party_name,
 			CASE WHEN is_old_pi = 0 THEN(	
 				SELECT 
-					(SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12))::float8
+					SUM(
+						CASE 
+							WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
+							THEN coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12 
+							ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
+						END
+					)
 				FROM commercial.pi_cash 
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+					LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
 				WHERE pi_cash.lc_uuid = lc.uuid
 			) ELSE lc.lc_value::float8 END AS total_value,
 			concat(
@@ -150,16 +157,23 @@ export async function select(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-			concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
-			)) as pi_cash_ids,
+				concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))
+			) as pi_ids,
 			party.name AS party_name,
 			CASE WHEN is_old_pi = 0 THEN(	
 				SELECT 
-					SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12)
+					SUM(
+						CASE 
+							WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
+							THEN coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12 
+							ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
+						END
+					)
 				FROM commercial.pi_cash 
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+					LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
 				WHERE pi_cash.lc_uuid = lc.uuid
 			) ELSE lc.lc_value::float8 END AS total_value,
 			concat(
@@ -263,11 +277,18 @@ export async function selectLcByLcNumber(req, res, next) {
 			party.name AS party_name,
 			CASE WHEN is_old_pi = 0 THEN(	
 				SELECT 
-					SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12)
+					SUM(
+						CASE 
+							WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
+							THEN coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(order_entry.party_price,0)/12 
+							ELSE coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(toe.party_price,0) 
+						END
+					)
 				FROM commercial.pi_cash 
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+					LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
 				WHERE pi_cash.lc_uuid = lc.uuid
 			) ELSE lc.lc_value::float8 END AS total_value,
 			concat(
