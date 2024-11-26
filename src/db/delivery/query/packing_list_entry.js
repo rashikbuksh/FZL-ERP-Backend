@@ -233,7 +233,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-		SELECT
+		SELECT DISTINCT
 			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number, 
 			ple.uuid,
 			ple.packing_list_uuid,
