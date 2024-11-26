@@ -344,26 +344,26 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 
 	const resultPromise = db
 		.select({
-			finishing_batch_uuid: finishing_batch.uuid,
-			order_description_uuid: finishing_batch.order_description_uuid,
-			slider_lead_time: finishing_batch.slider_lead_time,
-			dyeing_lead_time: finishing_batch.dyeing_lead_time,
-			status: finishing_batch.status,
-			slider_finishing_stock: finishing_batch.slider_finishing_stock,
-			created_by: finishing_batch.created_by,
-			created_at: finishing_batch.created_at,
-			updated_at: finishing_batch.updated_at,
-			remarks: finishing_batch.remarks,
+			// finishing_batch_uuid: finishing_batch.uuid,
+			// order_description_uuid: finishing_batch.order_description_uuid,
+			// slider_lead_time: finishing_batch.slider_lead_time,
+			// dyeing_lead_time: finishing_batch.dyeing_lead_time,
+			// status: finishing_batch.status,
+			// slider_finishing_stock: finishing_batch.slider_finishing_stock,
+			// created_by: finishing_batch.created_by,
+			// created_at: finishing_batch.created_at,
+			// updated_at: finishing_batch.updated_at,
+			// remarks: finishing_batch.remarks,
 			item: publicSchema.production_capacity.item,
-			item_name: viewSchema.v_order_details_full.item_name,
+			// item_name: viewSchema.v_order_details_full.item_name,
 			nylon_stopper: publicSchema.production_capacity.nylon_stopper,
-			nylon_stopper_name:
-				viewSchema.v_order_details_full.nylon_stopper_name,
+			// nylon_stopper_name:
+			// 	viewSchema.v_order_details_full.nylon_stopper_name,
 			zipper_number: publicSchema.production_capacity.zipper_number,
-			zipper_number_name:
-				viewSchema.v_order_details_full.zipper_number_name,
+			// zipper_number_name:
+			// 	viewSchema.v_order_details_full.zipper_number_name,
 			end_type: publicSchema.production_capacity.end_type,
-			end_type_name: viewSchema.v_order_details_full.end_type_name,
+
 			production_capacity_quantity: decimalToNumber(
 				publicSchema.production_capacity.quantity
 			),
@@ -372,9 +372,16 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 			),
 			production_date: finishing_batch.production_date,
 		})
-		.from(publicSchema.production_capacity)
+		.from(finishing_batch)
 		.leftJoin(
 			viewSchema.v_order_details_full,
+			eq(
+				viewSchema.v_order_details_full.order_description_uuid,
+				finishing_batch.order_description_uuid
+			)
+		)
+		.leftJoin(
+			publicSchema.production_capacity,
 			and(
 				eq(
 					publicSchema.production_capacity.item,
@@ -395,32 +402,26 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 			)
 		)
 		.leftJoin(
-			finishing_batch,
-			eq(
-				finishing_batch.order_description_uuid,
-				viewSchema.v_order_details_full.order_description_uuid
-			)
-		)
-		.leftJoin(
 			sql`(
 			SELECT 
 				DISTINCT finishing_batch_uuid, 
-				SUM(finishing_batch_entry.quantity) AS total_batch_quantity
+				SUM(fbe.quantity) AS total_batch_quantity
 			FROM 
-				zipper.finishing_batch_entry
+				zipper.finishing_batch_entry fbe
 			LEFT JOIN
-				zipper.finishing_batch ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
-			LEFT JOIN zipper.v_order_details_full ON finishing_batch.order_description_uuid = v_order_details_full.order_description_uuid
+				zipper.finishing_batch zfb ON zfb.uuid = fbe.finishing_batch_uuid
+			LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = zfb.order_description_uuid
+			LEFT JOIN public.production_capacity pc ON pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
 			WHERE 
-				DATE(finishing_batch.production_date) = ${production_date}
+				DATE(zfb.production_date) = ${production_date}
 			GROUP BY 
-				finishing_batch_entry.finishing_batch_uuid,
-				v_order_details_full.item,
-				v_order_details_full.nylon_stopper,
-				v_order_details_full.zipper_number,
-				v_order_details_full.end_type
+				fbe.finishing_batch_uuid,
+				vodf.item,
+				vodf.nylon_stopper,
+				vodf.zipper_number,
+				vodf.end_type
 			) as finishing_batch_entry_total`,
-			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid AND DATE(finishing_batch.production_date) = ${production_date}`
+			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid AND ${finishing_batch.production_date} = ${production_date}`
 		);
 
 	try {
