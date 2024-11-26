@@ -114,19 +114,45 @@ export async function selectOpenSlotMachine(req, res, next) {
 }
 
 export async function selectParty(req, res, next) {
-	const { marketing } = req.query;
+	const { marketing, item_for } = req.query;
 
 	const query = sql`
-		SELECT
-			DISTINCT party.uuid AS value,
-			party.name AS label
-		FROM
-			public.party
-		LEFT JOIN 
-			zipper.v_order_details vod ON party.uuid = vod.party_uuid
-		WHERE
-			${marketing ? sql`vod.marketing_uuid = ${marketing}` : sql`1=1`}
+			SELECT  DISTINCT
+				party.uuid AS value,
+				party.name AS label
+			FROM public.party
 	`;
+
+	if (item_for === 'zipper') {
+		query.append(
+			sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid`
+		);
+		if (marketing) {
+			query.append(sql`WHERE vod.marketing_uuid = ${marketing}`);
+		}
+	}
+	if (item_for === 'thread') {
+		query.append(
+			sql`LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid`
+		);
+		if (marketing) {
+			query.append(sql`WHERE oi.marketing_uuid = ${marketing}`);
+		}
+	}
+
+	if (item_for === 'all' || item_for === undefined) {
+		query.append(
+			sql`
+			LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid 
+			LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid
+			`
+		);
+		if (marketing) {
+			query.append(
+				sql`WHERE vod.marketing_uuid = ${marketing} OR oi.marketing_uuid = ${marketing}`
+			);
+		}
+	}
 
 	const partyPromise = db.execute(query);
 
