@@ -343,7 +343,12 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN
 			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 		WHERE
-			(oe.quantity - sfg.warehouse - sfg.delivered) > 0 AND vodf.order_info_uuid = ${req.params.order_info_uuid}
+			(oe.quantity - sfg.warehouse - sfg.delivered) > 0 AND vodf.order_info_uuid = ${req.params.order_info_uuid} AND 
+			CASE 
+				WHEN ${item_for} = 'sample_zipper' 
+				THEN (oe.quantity - sfg.warehouse - sfg.delivered) > 0 
+				ELSE sfg.finishing_prod > 0 
+			END
 		ORDER BY
 			oe.created_at, oe.uuid DESC
 		`;
@@ -387,7 +392,12 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			GROUP BY
 				tbe.order_entry_uuid) as total_production_quantity ON total_production_quantity.order_entry_uuid = toe.uuid
 		WHERE
-			(toe.quantity - toe.warehouse - toe.delivered) > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid}
+			(toe.quantity - toe.warehouse - toe.delivered) > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} AND 
+			CASE 
+				WHEN ${item_for} = 'sample_thread' 
+				THEN (toe.quantity - toe.warehouse - toe.delivered) > 0 
+				ELSE total_production_quantity.total_production_quantity > 0 
+			END
 		ORDER BY
 			toe.created_at, toe.uuid DESC
 		`;
