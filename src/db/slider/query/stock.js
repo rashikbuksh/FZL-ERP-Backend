@@ -1,9 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
@@ -153,7 +150,8 @@ export async function selectAll(req, res, next) {
 		vodf.logo_type_short_name,
 		vodf.is_logo_body,
 		vodf.is_logo_puller,
-		vodf.order_type
+		vodf.order_type,
+		vodf.is_waterproof
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -273,7 +271,8 @@ SELECT
 		vodf.logo_type_short_name,
 		vodf.is_logo_body,
 		vodf.is_logo_puller,
-		vodf.order_type
+		vodf.order_type,
+		vodf.is_waterproof
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -357,6 +356,7 @@ export async function selectStockByFromSection(req, res, next) {
 		vodf.is_logo_body as logo_is_body,
 		vodf.is_logo_puller as logo_is_puller,
 		vodf.order_type,
+		vodf.is_waterproof,
 		stock.batch_quantity::float8,
 		stock.swatch_approved_quantity::float8,
 		stock.body_quantity::float8,
