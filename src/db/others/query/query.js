@@ -420,18 +420,32 @@ export async function selectOrderInfo(req, res, next) {
 		default:
 			filterCondition =
 				is_sample != undefined
-					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`
+					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1 AND sfg_recipe.recipe_count > 0` : sql`0`}`
 					: sql`1=1`;
 			break;
 	}
 
-	const orderInfoPromise = db
+	let orderInfoPromise = db
 		.select({
 			value: zipperSchema.order_info.uuid,
 			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		})
-		.from(zipperSchema.order_info)
-		.where(filterCondition);
+		.from(zipperSchema.order_info);
+
+	// if (is_sample == 'true') {
+	// 	orderInfoPromise = orderInfoPromise.leftJoin(
+	// 		sql`(
+    //             SELECT COUNT(recipe_uuid) as recipe_count, od.order_info_uuid as order_info_uuid
+    //             FROM zipper.sfg
+    //             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+    //             LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
+    //             GROUP BY od.order_info_uuid
+    //         ) as sfg_recipe`,
+	// 		sql`${zipperSchema.order_info.uuid} = sfg_recipe.order_info_uuid`
+	// 	);
+	// }
+
+	orderInfoPromise = orderInfoPromise.where(filterCondition);
 
 	try {
 		const data = await orderInfoPromise;

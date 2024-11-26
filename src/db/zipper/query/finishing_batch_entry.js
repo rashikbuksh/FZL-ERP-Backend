@@ -290,8 +290,10 @@ export async function selectMaxProductionQuantityForFinishingBatch(
 								vodf.item = pc.item 
 								AND vodf.zipper_number = pc.zipper_number 
 								AND vodf.end_type = pc.end_type
-								AND vodf.nylon_stopper = pc.nylon_stopper
-								)
+								AND (
+									lower(vodf.item_name) != 'nylon' 
+									OR vodf.nylon_stopper = pc.nylon_stopper
+								))
 			WHERE
 				finishing_batch.production_date = ${production_date}::TIMESTAMP AND finishing_batch.order_description_uuid = ${req.params.order_description_uuid}
 			GROUP BY
