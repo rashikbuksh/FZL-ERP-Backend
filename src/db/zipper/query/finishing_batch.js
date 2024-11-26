@@ -344,33 +344,11 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 
 	const resultPromise = db
 		.select({
-			// finishing_batch_uuid: finishing_batch.uuid,
-			// order_description_uuid: finishing_batch.order_description_uuid,
-			// slider_lead_time: finishing_batch.slider_lead_time,
-			// dyeing_lead_time: finishing_batch.dyeing_lead_time,
-			// status: finishing_batch.status,
-			// slider_finishing_stock: finishing_batch.slider_finishing_stock,
-			// created_by: finishing_batch.created_by,
-			// created_at: finishing_batch.created_at,
-			// updated_at: finishing_batch.updated_at,
-			// remarks: finishing_batch.remarks,
-			item: publicSchema.production_capacity.item,
-			// item_name: viewSchema.v_order_details_full.item_name,
-			nylon_stopper: publicSchema.production_capacity.nylon_stopper,
-			// nylon_stopper_name:
-			// 	viewSchema.v_order_details_full.nylon_stopper_name,
-			zipper_number: publicSchema.production_capacity.zipper_number,
-			// zipper_number_name:
-			// 	viewSchema.v_order_details_full.zipper_number_name,
-			end_type: publicSchema.production_capacity.end_type,
-
-			production_capacity_quantity: decimalToNumber(
-				publicSchema.production_capacity.quantity
-			),
-			// production_quantity: decimalToNumber(
-			// 	sql`finishing_batch_entry_total.total_batch_quantity`
-			// ),
-			production_date: finishing_batch.production_date,
+			item: viewSchema.v_order_details_full.item,
+			nylon_stopper: viewSchema.v_order_details_full.nylon_stopper,
+			zipper_number: viewSchema.v_order_details_full.zipper_number,
+			end_type: viewSchema.v_order_details_full.end_type,
+			finishing_batch_uuid: finishing_batch.uuid,
 		})
 		.from(finishing_batch)
 		.leftJoin(
@@ -401,56 +379,110 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				)
 			)
 		)
-		.leftJoin(
-			sql`(
-			SELECT 
-				DISTINCT finishing_batch_uuid, 
-				SUM(fbe.quantity) AS total_batch_quantity
-			FROM 
-				zipper.finishing_batch_entry fbe
-			LEFT JOIN
-				zipper.finishing_batch zfb ON zfb.uuid = fbe.finishing_batch_uuid
-			LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = zfb.order_description_uuid
-			LEFT JOIN public.production_capacity pc ON pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
-			WHERE 
-				DATE(zfb.production_date) = ${production_date}
-			GROUP BY 
-				fbe.finishing_batch_uuid,
-				vodf.item,
-				vodf.nylon_stopper,
-				vodf.zipper_number,
-				vodf.end_type
-			) as finishing_batch_entry_total`,
-			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid AND ${finishing_batch.production_date} = ${production_date}`
+		.where(
+			and(
+				eq(
+					publicSchema.production_capacity.item,
+					viewSchema.v_order_details_full.item
+				),
+				eq(
+					publicSchema.production_capacity.nylon_stopper,
+					viewSchema.v_order_details_full.nylon_stopper
+				),
+				eq(
+					publicSchema.production_capacity.zipper_number,
+					viewSchema.v_order_details_full.zipper_number
+				),
+				eq(
+					publicSchema.production_capacity.end_type,
+					viewSchema.v_order_details_full.end_type
+				),
+				eq(finishing_batch.production_date, production_date)
+			)
 		);
+
+	const dataResult = await resultPromise;
+
+	const productionQuery = sql`
+		SELECT
+		        DISTINCT fbe.finishing_batch_uuid,
+		        SUM(fbe.quantity) AS total_batch_quantity
+		    FROM
+		        zipper.finishing_batch_entry fbe
+		    LEFT JOIN
+		        zipper.finishing_batch zfb ON zfb.uuid = fbe.finishing_batch_uuid
+			LEFT JOIN (
+				SELECT
+					vodf.order_description_uuid
+				FROM
+					zipper.v_order_details_full vodf
+				WHERE 
+				 	vodf.item = ${dataResult[0].item} AND
+					vodf.nylon_stopper = ${dataResult[0].nylon_stopper} AND
+					vodf.zipper_number = ${dataResult[0].zipper_number} AND
+					vodf.end_type = ${dataResult[0].end_type}
+			) as vodf ON vodf.order_description_uuid = zfb.order_description_uuid
+		    WHERE
+		        zfb.production_date = ${production_date}  AND zfb.uuid = ${dataResult[0].finishing_batch_uuid}
+		    GROUP BY
+		        fbe.finishing_batch_uuid, vodf.order_description_uuid
+		`;
 
 	try {
 		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
 		const dataResult = await resultPromise; // Fetch main query results
+		const productionQueryResult = await db.execute(productionQuery); // Fetch production query results
+		console.log('dataResult', dataResult);
+		// console.log('capacityQueryResult', capacityQueryResult);
+		// console.log('dataResult', dataResult);
+		console.log('productionQueryResult', productionQueryResult);
+
+		// const productionDate =
+		// 	dataResult && dataResult.rows && dataResult.rows.length > 0
+		// 		? dataResult.rows[0].production_date
+		// 		: null;
+
+		// const formattedData = capacityQueryResult.rows.map((capacityRow) => {
+		// 	const matchingDataRow =
+		// 		dataResult &&
+		// 		dataResult.rows &&
+		// 		dataResult.rows.find(
+		// 			(dataRow) =>
+		// 				dataRow.item === capacityRow.item &&
+		// 				dataRow.nylon_stopper === capacityRow.nylon_stopper &&
+		// 				dataRow.zipper_number === capacityRow.zipper_number &&
+		// 				dataRow.end_type === capacityRow.end_type &&
+		// 				dataRow.production_date === capacityRow.production_date
+		// 		);
+
+		// 	return {
+		// 		item_description_quantity:
+		// 			capacityRow.item_description_quantity,
+		// 		data: {
+		// 			production_quantity: matchingDataRow
+		// 				? matchingDataRow.total_batch_quantity
+		// 				: null,
+		// 		},
+		// 	};
+		// });
 
 		const productionDate =
-			dataResult && dataResult.rows && dataResult.rows.length > 0
-				? dataResult.rows[0].production_date
+			dataResult && dataResult.length > 0
+				? dataResult[0].production_date
 				: null;
-
 		const formattedData = capacityQueryResult.rows.map((capacityRow) => {
-			const matchingDataRow =
-				dataResult &&
-				dataResult.rows &&
-				dataResult.rows.find(
-					(dataRow) =>
-						dataRow.item === capacityRow.item &&
-						dataRow.nylon_stopper === capacityRow.nylon_stopper &&
-						dataRow.zipper_number === capacityRow.zipper_number &&
-						dataRow.end_type === capacityRow.end_type
-				);
+			const matchingDataRow = productionQueryResult.rows.find(
+				(dataRow) =>
+					dataRow.finishing_batch_uuid ===
+					capacityRow.finishing_batch_uuid
+			);
 
 			return {
 				item_description_quantity:
 					capacityRow.item_description_quantity,
 				data: {
 					production_quantity: matchingDataRow
-						? matchingDataRow.production_quantity
+						? matchingDataRow.total_batch_quantity
 						: null,
 				},
 			};

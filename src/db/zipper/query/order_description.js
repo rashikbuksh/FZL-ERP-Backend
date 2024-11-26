@@ -390,6 +390,7 @@ export async function selectAll(req, res, next) {
 			is_cm: order_description.is_cm,
 			order_type: order_description.order_type,
 			is_multi_color: order_description.is_multi_color,
+			is_waterproof: order_description.is_waterproof,
 		})
 		.from(order_description)
 		.where(
@@ -595,6 +596,7 @@ export async function select(req, res, next) {
 			is_cm: order_description.is_cm,
 			order_type: order_description.order_type,
 			is_multi_color: order_description.is_multi_color,
+			is_waterproof: order_description.is_waterproof,
 		})
 		.from(order_description)
 		.where(

@@ -164,7 +164,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
       order_description.is_meter,
       order_description.is_cm,
       order_description.order_type,
-      order_description.is_multi_color
+      order_description.is_multi_color,
+      order_description.is_waterproof
   FROM zipper.order_info
       LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
       LEFT JOIN marketing ON marketing.uuid = order_info.marketing_uuid
