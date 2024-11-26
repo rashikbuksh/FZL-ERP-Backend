@@ -29,7 +29,14 @@ export async function selectMachine(req, res, next) {
 	const machinePromise = db
 		.select({
 			value: publicSchema.machine.uuid,
-			label: sql`concat(machine.name, ' - ', '(', machine.min_capacity::float8, ' - ', machine.max_capacity::float8 ,')')`,
+			label: sql`concat(
+							machine.name, 
+							' - ', 
+							'(', 
+							machine.min_capacity::float8, 
+							' - ', 
+							machine.max_capacity::float8, 
+						')')`,
 			max_capacity: decimalToNumber(publicSchema.machine.max_capacity),
 			min_capacity: decimalToNumber(publicSchema.machine.min_capacity),
 		})
@@ -114,42 +121,48 @@ export async function selectOpenSlotMachine(req, res, next) {
 export async function selectParty(req, res, next) {
 	const { marketing, item_for } = req.query;
 
-	const query = sql`
-			SELECT  DISTINCT
-				party.uuid AS value,
-				party.name AS label
-			FROM public.party
+	let query = sql`
+		SELECT DISTINCT
+			party.uuid AS value,
+			party.name AS label
+		FROM public.party
 	`;
 
-	if (item_for === 'zipper') {
-		query.append(
-			sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid`
-		);
-		if (marketing) {
-			query.append(sql`WHERE vod.marketing_uuid = ${marketing}`);
-		}
-	}
-	if (item_for === 'thread') {
-		query.append(
-			sql`LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid`
-		);
-		if (marketing) {
-			query.append(sql`WHERE oi.marketing_uuid = ${marketing}`);
-		}
-	}
-
-	if (item_for === 'all' || item_for === undefined) {
-		query.append(
-			sql`
-			LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid 
-			LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid
-			`
-		);
-		if (marketing) {
-			query.append(
-				sql`WHERE vod.marketing_uuid = ${marketing} OR oi.marketing_uuid = ${marketing}`
+	switch (item_for) {
+		case 'zipper':
+			query = query.append(
+				sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid`
 			);
-		}
+			if (marketing) {
+				query = query.append(
+					sql`WHERE vod.marketing_uuid = ${marketing}`
+				);
+			}
+			break;
+		case 'thread':
+			query = query.append(
+				sql`LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid`
+			);
+			if (marketing) {
+				query = query.append(
+					sql`WHERE oi.marketing_uuid = ${marketing}`
+				);
+			}
+			break;
+		case 'all':
+		default:
+			query = query.append(
+				sql`
+				LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid 
+				LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid
+				`
+			);
+			if (marketing) {
+				query = query.append(
+					sql`WHERE vod.marketing_uuid = ${marketing} OR oi.marketing_uuid = ${marketing}`
+				);
+			}
+			break;
 	}
 
 	const partyPromise = db.execute(query);
