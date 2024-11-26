@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
@@ -83,7 +83,13 @@ export async function select(req, res, next) {
 			marketing_name: marketing.name,
 			year: marketing_team_member_target.year,
 			month: marketing_team_member_target.month,
-			amount: decimalToNumber(marketing_team_member_target.amount),
+			amount: sql`(marketing_team_member_target.zipper_amount + marketing_team_member_target.thread_amount)::float8`,
+			zipper_amount: decimalToNumber(
+				marketing_team_member_target.zipper_amount
+			),
+			thread_amount: decimalToNumber(
+				marketing_team_member_target.thread_amount
+			),
 			created_at: marketing_team_member_target.created_at,
 			updated_at: marketing_team_member_target.updated_at,
 			created_by: marketing_team_member_target.created_by,
@@ -124,7 +130,13 @@ export async function selectAll(req, res, next) {
 			marketing_name: marketing.name,
 			year: marketing_team_member_target.year,
 			month: marketing_team_member_target.month,
-			amount: decimalToNumber(marketing_team_member_target.amount),
+			amount: sql`(marketing_team_member_target.zipper_amount + marketing_team_member_target.thread_amount)::float8`,
+			zipper_amount: decimalToNumber(
+				marketing_team_member_target.zipper_amount
+			),
+			thread_amount: decimalToNumber(
+				marketing_team_member_target.thread_amount
+			),
 			created_at: marketing_team_member_target.created_at,
 			updated_at: marketing_team_member_target.updated_at,
 			created_by: marketing_team_member_target.created_by,
@@ -149,9 +161,6 @@ export async function selectAll(req, res, next) {
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {
-		await handleError({
-			error,
-			res,
-		});
+		await handleError({ error, res });
 	}
 }
