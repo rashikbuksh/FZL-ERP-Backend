@@ -114,6 +114,7 @@ export async function insert(req, res, next) {
 		is_cm,
 		order_type,
 		is_multi_color,
+		is_waterproof,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -158,6 +159,7 @@ export async function insert(req, res, next) {
 			is_cm,
 			order_type,
 			is_multi_color,
+			is_waterproof,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -218,6 +220,7 @@ export async function update(req, res, next) {
 		is_cm,
 		order_type,
 		is_multi_color,
+		is_waterproof,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -262,6 +265,7 @@ export async function update(req, res, next) {
 			is_cm,
 			order_type,
 			is_multi_color,
+			is_waterproof,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
