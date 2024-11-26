@@ -252,6 +252,11 @@ const pathPublic = {
 			operationId: 'getAllParties',
 			parameters: [
 				SE.parameter_query('marketing', 'marketing', [SE.uuid()]),
+				SE.parameter_query('item_for', 'item_for', [
+					'zipper',
+					'thread',
+					'all',
+				]),
 			],
 			responses: {
 				200: {
