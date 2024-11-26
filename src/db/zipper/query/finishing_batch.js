@@ -314,7 +314,9 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 
 export async function getFinishingBatchCapacityDetails(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	const { production_date } = req.query;
+	const { from_date, to_date } = req.query;
+	console.log('from_date:', from_date);
+	console.log('to_date:', to_date);
 	const CapacityQuery = sql`
 		SELECT
 			item_properties.uuid AS item,
@@ -348,6 +350,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
         subquery.nylon_stopper,
         subquery.zipper_number,
         subquery.end_type,
+		subquery.production_date,
 		SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum
 			FROM (
 				SELECT DISTINCT
@@ -373,18 +376,19 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				LEFT JOIN
 					zipper.finishing_batch ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
 				WHERE
-					finishing_batch.production_date = ${production_date}
+					DATE(finishing_batch.production_date)  BETWEEN ${from_date} AND ${to_date}
 				GROUP BY
 					finishing_batch.uuid
 				) as fbe ON fbe.finishing_batch_uuid = finishing_batch.uuid
 				WHERE
-					finishing_batch.production_date = ${production_date} AND pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
+					DATE(finishing_batch.production_date) BETWEEN ${from_date} AND ${to_date} AND pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
 			) subquery
             GROUP BY 
 				subquery.item,
 				subquery.nylon_stopper,
 				subquery.zipper_number,
-				subquery.end_type;
+				subquery.end_type,
+				subquery.production_date
 	`;
 
 	try {
@@ -400,14 +404,16 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					dataRow.zipper_number === capacityRow.zipper_number &&
 					dataRow.end_type === capacityRow.end_type
 			);
-			// console.log('matchingDataRow', matchingDataRow);
-			// console.log('capacityRow', capacityRow);
+
 			return {
 				item_description_quantity:
 					capacityRow.item_description_quantity,
 				item_description: capacityRow.item_description,
 				production_capacity_quantity:
 					capacityRow.production_capacity_quantity,
+				production_date: matchingDataRow
+					? matchingDataRow.production_date
+					: null,
 				production_quantity: matchingDataRow
 					? matchingDataRow.total_batch_quantity_sum
 					: 0,
@@ -415,7 +421,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		});
 
 		const response = {
-			production_date: production_date,
+			// production_date: dataResult.rows[0]?.production_date,
 			data: formattedData,
 		};
 
