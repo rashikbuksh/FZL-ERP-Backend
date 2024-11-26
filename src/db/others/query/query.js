@@ -506,8 +506,13 @@ export async function selectOrderEntry(req, res, next) {
 }
 
 export async function selectOrderDescription(req, res, next) {
-	const { item, tape_received, dyed_tape_required, swatch_approved } =
-		req.query;
+	const {
+		item,
+		tape_received,
+		dyed_tape_required,
+		swatch_approved,
+		is_balance,
+	} = req.query;
 
 	const query = sql`
 				SELECT
@@ -614,6 +619,11 @@ export async function selectOrderDescription(req, res, next) {
 
 	if (tape_received == 'true') {
 		query.append(sql` AND vodf.tape_received > 0`);
+	}
+	if (is_balance == 'true') {
+		query.append(
+			sql` AND coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0) > 0`
+		);
 	}
 
 	// , ' ⇾ ',  vodf.tape_received
