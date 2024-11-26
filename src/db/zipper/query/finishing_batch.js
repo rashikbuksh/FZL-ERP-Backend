@@ -367,9 +367,9 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 			production_capacity_quantity: decimalToNumber(
 				publicSchema.production_capacity.quantity
 			),
-			production_quantity: decimalToNumber(
-				sql`finishing_batch_entry_total.total_batch_quantity`
-			),
+			// production_quantity: decimalToNumber(
+			// 	sql`finishing_batch_entry_total.total_batch_quantity`
+			// ),
 			production_date: finishing_batch.production_date,
 		})
 		.from(finishing_batch)
