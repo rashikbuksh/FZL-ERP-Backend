@@ -276,84 +276,108 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
 
 export const PackingListView = `
 CREATE OR REPLACE VIEW delivery.v_packing_list AS 
-  SELECT 
-      packing_list.uuid,
-      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END as order_info_uuid,
-      ROW_NUMBER() OVER (
-					PARTITION BY CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END
-					ORDER BY packing_list.created_at
-				) AS packing_list_wise_rank, 
-      packing_list_wise_counts.packing_list_wise_count,
-      CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')) AS packing_number,
-      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE CONCAT('T', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
-      packing_list.challan_uuid,
-      CASE
-          WHEN packing_list.challan_uuid IS NOT NULL 
-            THEN 
-                CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' 
-                    THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
-                    ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
-                END 
-            ELSE NULL
-      END AS challan_number,
-      carton.size AS carton_size,
-      packing_list.carton_weight,
-      packing_list.carton_uuid,
-      carton.name AS carton_name,
-      packing_list.is_warehouse_received,
-      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN order_info.factory_uuid ELSE toi.factory_uuid END AS factory_uuid,
-      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN factory.name ELSE toi_fac.name END AS factory_name,
-      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN order_info.buyer_uuid ELSE toi.buyer_uuid END AS buyer_uuid,
-      CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN buyer.name ELSE toi_buyer.name END AS buyer_name,
-      packing_list.created_by,
-      users.name AS created_by_name,
-      packing_list.created_at,
-      packing_list.updated_at,
-      packing_list.remarks,
-      packing_list.gate_pass AS gate_pass,
-      packing_list.item_for
-  FROM
-      delivery.packing_list
-  LEFT JOIN
-      hr.users ON packing_list.created_by = hr.users.uuid
-  LEFT JOIN
-      zipper.order_info ON packing_list.order_info_uuid = zipper.order_info.uuid
-  LEFT JOIN 
-      thread.order_info toi ON packing_list.thread_order_info_uuid = toi.uuid  
-  LEFT JOIN
-      delivery.challan ON packing_list.challan_uuid = challan.uuid
-  LEFT JOIN
-      delivery.carton ON packing_list.carton_uuid = carton.uuid
-  LEFT JOIN
-      public.factory ON zipper.order_info.factory_uuid = public.factory.uuid
-  LEFT JOIN
-      public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
-  LEFT JOIN
-      public.factory toi_fac ON toi.factory_uuid = toi_fac.uuid
-  LEFT JOIN
-      public.buyer toi_buyer ON toi.buyer_uuid = toi_buyer.uuid
-  LEFT JOIN (
-                SELECT
-                    packing_list.order_info_uuid AS order_info_uuid,
-                    COUNT(*) AS packing_list_wise_count
-                FROM
-                    delivery.packing_list
-                WHERE
-                    packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper'
-                GROUP BY
-                    packing_list.order_info_uuid
+    SELECT 
+        packing_list.uuid,
+        CASE 
+            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' 
+            THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid 
+        END as order_info_uuid,
+        ROW_NUMBER() OVER (
+                        PARTITION BY CASE 
+                            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' 
+                            THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid 
+                        END
+                        ORDER BY packing_list.created_at
+                    ) AS packing_list_wise_rank, 
+        packing_list_wise_counts.packing_list_wise_count,
+        CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')) AS packing_number,
+        CASE 
+            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' 
+                THEN CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
+                ELSE CONCAT('T', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+            END AS order_number,
+        packing_list.challan_uuid,
+        CASE
+            WHEN packing_list.challan_uuid IS NOT NULL 
+                THEN 
+                    CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' 
+                        THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
+                        ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
+                    END 
+                ELSE NULL
+        END AS challan_number,
+        CASE 
+            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper'
+            THEN order_info.party_uuid 
+            ELSE toi.party_uuid
+        END AS party_uuid,
+        CASE 
+            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' 
+            THEN party.name 
+            ELSE toi_party.name 
+        END AS party_name,
+        carton.size AS carton_size,
+        packing_list.carton_weight,
+        packing_list.carton_uuid,
+        carton.name AS carton_name,
+        packing_list.is_warehouse_received,
+        CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN order_info.factory_uuid ELSE toi.factory_uuid END AS factory_uuid,
+        CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN factory.name ELSE toi_fac.name END AS factory_name,
+        CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN order_info.buyer_uuid ELSE toi.buyer_uuid END AS buyer_uuid,
+        CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN buyer.name ELSE toi_buyer.name END AS buyer_name,
+        packing_list.created_by,
+        users.name AS created_by_name,
+        packing_list.created_at,
+        packing_list.updated_at,
+        packing_list.remarks,
+        packing_list.gate_pass AS gate_pass,
+        packing_list.item_for
+    FROM
+        delivery.packing_list
+    LEFT JOIN
+        hr.users ON packing_list.created_by = hr.users.uuid
+    LEFT JOIN
+        zipper.order_info ON packing_list.order_info_uuid = zipper.order_info.uuid
+    LEFT JOIN 
+        thread.order_info toi ON packing_list.thread_order_info_uuid = toi.uuid  
+    LEFT JOIN
+        delivery.challan ON packing_list.challan_uuid = challan.uuid
+    LEFT JOIN
+        delivery.carton ON packing_list.carton_uuid = carton.uuid
+    LEFT JOIN
+        public.factory ON zipper.order_info.factory_uuid = public.factory.uuid
+    LEFT JOIN 
+        public.party ON zipper.order_info.party_uuid = public.party.uuid
+    LEFT JOIN
+        public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
+    LEFT JOIN
+        public.factory toi_fac ON toi.factory_uuid = toi_fac.uuid
+    LEFT JOIN
+        public.buyer toi_buyer ON toi.buyer_uuid = toi_buyer.uuid
+    LEFT JOIN 
+        public.party toi_party ON toi.party_uuid = toi_party.uuid
+    LEFT JOIN (
+                    SELECT
+                        packing_list.order_info_uuid AS order_info_uuid,
+                        COUNT(*) AS packing_list_wise_count
+                    FROM
+                        delivery.packing_list
+                    WHERE
+                        packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper'
+                    GROUP BY
+                        packing_list.order_info_uuid
 
-                UNION ALL
+                    UNION ALL
 
-                SELECT
-                    packing_list.thread_order_info_uuid AS order_info_uuid,
-                    COUNT(*) AS packing_list_wise_count
-                FROM
-                    delivery.packing_list
-                WHERE
-                    packing_list.item_for != 'zipper'
-                GROUP BY
-                    packing_list.thread_order_info_uuid
-            ) packing_list_wise_counts
-            ON packing_list_wise_counts.order_info_uuid = CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END;
+                    SELECT
+                        packing_list.thread_order_info_uuid AS order_info_uuid,
+                        COUNT(*) AS packing_list_wise_count
+                    FROM
+                        delivery.packing_list
+                    WHERE
+                        packing_list.item_for != 'zipper'
+                    GROUP BY
+                        packing_list.thread_order_info_uuid
+                ) packing_list_wise_counts
+                ON packing_list_wise_counts.order_info_uuid = CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END;
 `;

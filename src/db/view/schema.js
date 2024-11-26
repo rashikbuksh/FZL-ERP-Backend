@@ -259,6 +259,7 @@ export const v_packing_list = delivery
 		order_number: text('order_number'),
 		challan_uuid: text('challan_uuid'),
 		challan_number: text('challan_number'),
+		party_name: text('party_name'),
 		carton_size: text('carton_size'),
 		carton_weight: PG_DECIMAL('carton_weight'),
 		carton_uuid: text('carton_uuid'),
