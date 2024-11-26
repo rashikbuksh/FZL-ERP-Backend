@@ -1,4 +1,4 @@
-import { integer, pgSchema, pgView, text } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgSchema, pgView, text } from 'drizzle-orm/pg-core';
 import * as deliverySchema from '../delivery/schema.js';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';
@@ -197,6 +197,7 @@ export const v_order_details_full = zipper
 		is_cm: integer('is_cm'),
 		order_type: text('order_type'),
 		is_multi_color: integer('is_multi_color'),
+		is_waterproof: boolean('is_waterproof'),
 	})
 	.existing();
 
