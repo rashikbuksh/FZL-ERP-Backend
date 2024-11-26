@@ -156,7 +156,6 @@ export async function selectByDate(req, res, next) {
 
 	const machineQuery = sql`SELECT name AS machine_name FROM public.machine`;
 
-	
 	const dataQuery = sql`
         SELECT
             DATE(zdb.production_date) as date,
@@ -172,7 +171,8 @@ export async function selectByDate(req, res, next) {
 			zdb.batch_status,
 			expected.expected_kg::float8 as expected_kg,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
-			zdb.received
+			zdb.received,
+			vodf.item_description
         FROM public.machine pm
         LEFT JOIN zipper.dyeing_batch zdb ON zdb.machine_uuid = pm.uuid
         LEFT JOIN zipper.dyeing_batch_entry zbe ON zbe.dyeing_batch_uuid = zdb.uuid
@@ -237,6 +237,7 @@ export async function selectByDate(req, res, next) {
 					total_actual_production_quantity:
 						item.total_actual_production_quantity,
 					received: item.received,
+					item_description: item.item_description,
 				};
 			}
 			return acc;
