@@ -1078,13 +1078,15 @@ export async function selectPi(req, res, next) {
 		pi_cash.uuid AS value,
 		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
 		bank.name AS pi_bank,
-		SUM(
-			CASE 
-				WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
-				THEN coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12 
-				ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
-			END
-		)::float8 AS pi_value,
+		ROUND(
+			SUM(
+				CASE 
+					WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
+					THEN coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12 
+					ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
+				END
+			)
+		,2)::float8 AS pi_value,
 		ARRAY_AGG(DISTINCT CASE WHEN pi_cash_entry.sfg_uuid IS NOT NULL THEN v_order_details.order_number ELSE concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END) AS order_number,
 		marketing.name AS marketing_name
 	FROM
