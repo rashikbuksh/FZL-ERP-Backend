@@ -248,15 +248,17 @@ export async function selectPackingListDetailsByPackingListUuid(
 
 			if (item_for == 'thread' || item_for == 'sample_thread') {
 				const order_entry_uuid = packing_list_entry?.data?.data?.map(
-					(entry) => entry?.order_entry_uuid
+					(entry) => entry?.thread_order_entry_uuid
 				);
+
+				console.log(order_entry_uuid);
 
 				if (order_entry_uuid) {
 					query_data.data.data.packing_list_entry =
 						query_data.data.data.packing_list_entry.filter(
 							(uuid) =>
 								!order_entry_uuid.includes(
-									uuid.thread_order_entry_uuid
+									uuid.order_entry_uuid
 								)
 						);
 				}
