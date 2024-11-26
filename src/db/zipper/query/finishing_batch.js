@@ -396,6 +396,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		const dataResult = await db.execute(resultPromise); // Fetch main query results
 		console.log('capacityQueryResult:', capacityQueryResult.rows);
 		console.log('dataResult:', dataResult.rows);
+
 		const formattedData = capacityQueryResult.rows.map((capacityRow) => {
 			const matchingDataRow = dataResult.rows.find(
 				(dataRow) =>
@@ -412,7 +413,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				production_capacity_quantity:
 					capacityRow.production_capacity_quantity,
 				production_date: matchingDataRow
-					? matchingDataRow.production_date
+					? matchingDataRow.production_date.split(' ')[0]
 					: null,
 				production_quantity: matchingDataRow
 					? matchingDataRow.total_batch_quantity_sum
@@ -420,10 +421,36 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 			};
 		});
 
-		const response = {
-			// production_date: dataResult.rows[0]?.production_date,
-			data: formattedData,
-		};
+		console.log('formattedData:', formattedData);
+
+		const dateRange = [];
+		let currentDate = new Date(from_date);
+		const endDate = new Date(to_date);
+
+		while (currentDate <= endDate) {
+			dateRange.push(currentDate.toISOString().split('T')[0]);
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
+
+		const groupedData = dateRange.reduce((acc, date) => {
+			acc[date] = formattedData.map((item) => {
+				const productionQuantity =
+					item.production_date === date
+						? item.production_quantity
+						: 0;
+				return {
+					...item,
+					production_date: date,
+					production_quantity: productionQuantity,
+				};
+			});
+			return acc;
+		}, {});
+
+		const response = Object.keys(groupedData).map((date) => ({
+			production_date: date,
+			data: groupedData[date],
+		}));
 
 		const toast = {
 			status: 200,
