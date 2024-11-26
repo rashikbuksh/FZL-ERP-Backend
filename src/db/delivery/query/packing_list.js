@@ -374,33 +374,25 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 as balance_quantity,
 			CASE WHEN ${item_for} = 'sample_thread' 
 				THEN (toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 
-				ELSE LEAST(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8, total_production_quantity.total_production_quantity::float8)
+				ELSE LEAST(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8, toe.production_quantity::float8)
 			END as max_quantity,
 			0 as quantity,
 			0 as poli_quantity,
 			0 as short_quantity,
 			0 as reject_quantity,
-			COALESCE(total_production_quantity.total_production_quantity::float8,0) as finishing_prod
+			COALESCE(toe.production_quantity::float8,0) as finishing_prod
 		FROM
 			thread.order_info toi
 		LEFT JOIN
 			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
 		LEFT JOIN 
 			thread.count_length cl ON toe.count_length_uuid = cl.uuid
-		LEFT JOIN
-			(SELECT 
-				tbe.order_entry_uuid,
-				SUM(COALESCE(tbe.coning_production_quantity,0)) as total_production_quantity
-			FROM
-				thread.batch_entry tbe
-			GROUP BY
-				tbe.order_entry_uuid) as total_production_quantity ON total_production_quantity.order_entry_uuid = toe.uuid
 		WHERE
 			(toe.quantity - toe.warehouse - toe.delivered) > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} AND 
 			CASE 
 				WHEN ${item_for} = 'sample_thread' 
 				THEN (toe.quantity - toe.warehouse - toe.delivered) > 0 
-				ELSE total_production_quantity.total_production_quantity > 0 
+				ELSE toe.production_quantity::float8 > 0 
 			END
 		ORDER BY
 			toe.created_at, toe.uuid DESC

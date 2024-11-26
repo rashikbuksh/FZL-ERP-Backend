@@ -1,13 +1,13 @@
-import { desc, eq, sql, and } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
+import * as publicSchema from '../../public/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as viewSchema from '../../view/schema.js';
 import { finishing_batch } from '../schema.js';
-import * as publicSchema from '../../public/schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -86,7 +86,7 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
-			uuid: finishing_batch.uuid,
+			uuid: sql`DISTINCT finishing_batch.uuid`,
 			id: finishing_batch.id,
 			batch_number: sql`concat('FB', to_char(${finishing_batch.created_at}, 'YY'::text), '-', lpad((${finishing_batch.id})::text, 4, '0'::text))`,
 			order_info_uuid: viewSchema.v_order_details_full.order_info_uuid,
