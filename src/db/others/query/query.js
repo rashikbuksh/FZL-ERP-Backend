@@ -383,7 +383,7 @@ export async function selectOrderInfo(req, res, next) {
 		default:
 			filterCondition =
 				is_sample != undefined
-					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`
+					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1 AND sfg_recipe.recipe_count > 0` : sql`0`}`
 					: sql`1=1`;
 			break;
 	}
@@ -404,11 +404,13 @@ export async function selectOrderInfo(req, res, next) {
                 LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
                 GROUP BY od.order_info_uuid
             ) as sfg_recipe`,
-			sql`${zipperSchema.order_info.uuid} = sfg_recipe.order_info_uuid AND sfg_recipe.recipe_count > 0`
+			sql`${zipperSchema.order_info.uuid} = sfg_recipe.order_info_uuid`
 		);
 	}
 
 	orderInfoPromise = orderInfoPromise.where(filterCondition);
+
+	console.log(orderInfoPromise.toSQL());
 
 	try {
 		const data = await orderInfoPromise;
