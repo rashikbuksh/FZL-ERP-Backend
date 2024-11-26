@@ -420,7 +420,7 @@ export async function selectOrderInfo(req, res, next) {
 		default:
 			filterCondition =
 				is_sample != undefined
-					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1 AND sfg_recipe.recipe_count > 0` : sql`0`}`
+					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`
 					: sql`1=1`;
 			break;
 	}
@@ -435,12 +435,12 @@ export async function selectOrderInfo(req, res, next) {
 	// if (is_sample == 'true') {
 	// 	orderInfoPromise = orderInfoPromise.leftJoin(
 	// 		sql`(
-    //             SELECT COUNT(recipe_uuid) as recipe_count, od.order_info_uuid as order_info_uuid
-    //             FROM zipper.sfg
-    //             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-    //             LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
-    //             GROUP BY od.order_info_uuid
-    //         ) as sfg_recipe`,
+	//             SELECT COUNT(recipe_uuid) as recipe_count, od.order_info_uuid as order_info_uuid
+	//             FROM zipper.sfg
+	//             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+	//             LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
+	//             GROUP BY od.order_info_uuid
+	//         ) as sfg_recipe`,
 	// 		sql`${zipperSchema.order_info.uuid} = sfg_recipe.order_info_uuid`
 	// 	);
 	// }
