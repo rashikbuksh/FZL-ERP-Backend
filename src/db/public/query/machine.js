@@ -168,7 +168,7 @@ export async function selectByDate(req, res, next) {
             zoe.color,
             zbe.production_quantity_in_kg::float8 as weight,
 			expected.total_quantity::float8,
-			zdb.batch_status,
+			zdb.batch_status::text as batch_status,
 			expected.expected_kg::float8 as expected_kg,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
 			zdb.received,
@@ -208,7 +208,30 @@ export async function selectByDate(req, res, next) {
 			GROUP BY be.dyeing_batch_uuid
 		) AS expected ON zdb.uuid = expected.dyeing_batch_uuid
         WHERE DATE(zdb.production_date) = ${req.params.date}
-        ORDER BY zdb.created_at DESC
+	UNION 
+		SELECT 
+			DATE(tb.production_date) as date,
+			pm.name AS machine_name,
+			tb.slot,
+			CONCAT('TB', to_char(tb.created_at, 'YY'), '-', LPAD(tb.id::text, 4, '0')) AS batch_no,
+			tb.uuid AS batch_uuid,
+			CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
+			toi.uuid as order_uuid,
+			toe.color,
+			toe.production_quantity_in_kg as weight,
+			0 as total_quantity,
+			tb.status as batch_status,
+			0 as expected_kg,
+			0 as total_actual_production_quantity,
+			null as received,
+			CONCAT(tcl.count,'-',tcl.length) as item_description
+		FROM public.machine pm
+		LEFT JOIN thread.batch tb ON tb.machine_uuid = pm.uuid
+		LEFT JOIN thread.batch_entry tbe ON tbe.batch_uuid = tb.uuid
+		LEFT JOIN thread.order_entry toe ON toe.uuid = tbe.order_entry_uuid
+		LEFT JOIN thread.order_info toi ON toi.uuid = toe.order_info_uuid
+		LEFT JOIN thread.count_length tcl ON tcl.uuid = toe.count_length_uuid
+		WHERE DATE(tb.production_date) = ${req.params.date}
     `;
 
 	try {
