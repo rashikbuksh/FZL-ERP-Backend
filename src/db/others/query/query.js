@@ -174,11 +174,11 @@ export async function selectParty(req, res, next) {
 			}
 			if (is_cash == 'true') {
 				query = query.append(
-					sql`AND (vod.is_cash = 1 OR oi.is_cash = 1)`
+					sql` AND (vod.is_cash = 1 OR oi.is_cash = 1)`
 				);
 			} else if (is_cash == 'false') {
 				query = query.append(
-					sql`AND (vod.is_cash = 0 OR oi.is_cash = 0)`
+					sql` AND (vod.is_cash = 0 OR oi.is_cash = 0)`
 				);
 			}
 			break;
