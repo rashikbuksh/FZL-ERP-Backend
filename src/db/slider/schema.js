@@ -253,6 +253,9 @@ export const transaction = slider.table('transaction', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	sfg_uuid: defaultUUID('sfg_uuid')
+		.references(() => zipperSchema.sfg.uuid)
+		.default(null),
 });
 
 export const coloring_transaction = slider.table('coloring_transaction', {

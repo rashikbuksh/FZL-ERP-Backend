@@ -307,7 +307,7 @@ export async function selectStockByFromSection(req, res, next) {
 
 	const query = sql`
 	SELECT
-		stock.uuid,
+		DISTINCT stock.uuid,
 		stock.finishing_batch_uuid,
 		finishing_batch.order_description_uuid,
 		concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)) as batch_number,
@@ -399,7 +399,9 @@ export async function selectStockByFromSection(req, res, next) {
 		slider_production_given.total_production_quantity::float8 as total_production_quantity,
 		slider_production_given.total_production_weight::float8 as total_production_weight,
 		stock.batch_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0) as balance_quantity,
-		vodf.is_waterproof
+		vodf.is_waterproof,
+		styles_colors.styles as value,
+		styles_colors.sfg_uuids as label
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -412,6 +414,12 @@ export async function selectStockByFromSection(req, res, next) {
 		zipper.v_order_details_full vodf ON order_description.uuid = vodf.order_description_uuid
 	LEFT JOIN
 		public.party pp ON order_info.party_uuid = pp.uuid
+	LEFT JOIN (
+		SELECT ARRAY_AGG(oe.style) AS styles, ARRAY_AGG(sfg.uuid) as sfg_uuids, oe.order_description_uuid
+		FROM zipper.sfg
+		LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		GROUP BY oe.order_description_uuid
+	) styles_colors ON order_description.uuid = styles_colors.order_description_uuid
 	LEFT JOIN
     (
         SELECT
