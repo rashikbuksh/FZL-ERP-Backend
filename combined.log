@@ -2788,3 +2788,4 @@
 {"level":"\u001b[31merror\u001b[39m","timestamp":"2024-11-26 02:37:04 PM"}
 {"level":"\u001b[31merror\u001b[39m","timestamp":"2024-11-26 02:40:06 PM"}
 {"code":"42601","file":"scan.l","length":95,"level":"\u001b[31merror\u001b[39m","line":"1245","name":"error","position":"1037","routine":"scanner_yyerror","severity":"ERROR","timestamp":"2024-11-26 03:01:36 PM"}
+{"code":"42601","file":"scan.l","length":93,"level":"\u001b[31merror\u001b[39m","line":"1245","name":"error","position":"34","routine":"scanner_yyerror","severity":"ERROR","timestamp":"2024-11-27 03:40:39 PM"}
