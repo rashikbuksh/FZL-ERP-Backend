@@ -76,7 +76,7 @@ BEGIN
                 END
         WHERE od.uuid = od_uuid;
 
-    ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
+    ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) != 'plastic' THEN
 
         UPDATE zipper.sfg sfg
         SET 
@@ -249,7 +249,7 @@ BEGIN
                 END
         WHERE od.uuid = od_uuid;
 
-    ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
+    ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) != 'plastic' THEN
 
         UPDATE zipper.sfg sfg
         SET 
@@ -419,7 +419,7 @@ BEGIN
                 END
         WHERE od.uuid = od_uuid;
 
-    ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) = 'metallic' THEN
+    ELSIF lower(item_name) = 'nylon' AND lower(nylon_stopper_name) != 'plastic' THEN
         
         UPDATE zipper.sfg sfg
         SET 
