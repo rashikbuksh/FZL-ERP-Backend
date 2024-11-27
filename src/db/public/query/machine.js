@@ -215,7 +215,7 @@ export async function selectByDate(req, res, next) {
 			tb.slot,
 			CONCAT('TB', to_char(tb.created_at, 'YY'), '-', LPAD(tb.id::text, 4, '0')) AS batch_no,
 			tb.uuid AS batch_uuid,
-			CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
+			CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
 			toi.uuid as order_uuid,
 			toe.color,
 			toe.production_quantity_in_kg as weight,
