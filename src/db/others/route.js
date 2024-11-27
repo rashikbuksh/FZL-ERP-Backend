@@ -471,6 +471,7 @@ const pathPublic = {
 					type: 'string',
 					example: 'item',
 				},
+				SE.parameter_query('sort', 'sort', ['asc', 'desc']),
 			],
 			responses: {
 				200: {
@@ -1320,6 +1321,8 @@ const pathThread = {
 						'party_uuid',
 						'2ggcphnwHGzEUGy'
 					),
+					SE.parameter_query('is_cash', 'is_cash', [true, false]),
+					SE.parameter_query('pi_uuid', 'pi_uuid', '2ggcphnwHGzEUGy'),
 				],
 				responses: {
 					200: {

@@ -11,7 +11,7 @@ export async function selectGoodsInWarehouse(req, res, next) {
                 sum(sfg.warehouse)::float8 as amount,
                 pl_count.count as number_of_carton,
                 CASE 
-                    WHEN vodf.nylon_stopper_name = 'Metallic' THEN vodf.item_name || ' Metallic'
+                    WHEN vodf.nylon_stopper_name != 'plastic' THEN vodf.item_name || CONCAT(' ', vodf.nylon_stopper_name)
                     WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
                     ELSE vodf.item_name
                 END as item_name

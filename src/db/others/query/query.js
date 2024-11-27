@@ -1,4 +1,4 @@
-import { and, eq, min, ne, or, sql, sum } from 'drizzle-orm';
+import { and, asc, desc, eq, min, ne, or, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
@@ -318,13 +318,20 @@ export async function selectMarketing(req, res, next) {
 export async function selectOrderProperties(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
+	const { sort } = req.query;
+
 	const orderPropertiesPromise = db
 		.select({
 			value: publicSchema.properties.uuid,
 			label: publicSchema.properties.name,
 		})
 		.from(publicSchema.properties)
-		.where(eq(publicSchema.properties.type, req.params.type_name));
+		.where(eq(publicSchema.properties.type, req.params.type_name))
+		.orderBy(
+			sort == 'desc'
+				? desc(publicSchema.properties.name)
+				: asc(publicSchema.properties.name)
+		);
 
 	try {
 		const data = await orderPropertiesPromise;
@@ -831,7 +838,8 @@ export async function selectOrderNumberForPi(req, res, next) {
 			WHERE
 				vod.is_cash = 1 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
-				oi.party_uuid = ${req.params.party_uuid}
+				oi.party_uuid = ${req.params.party_uuid} AND 
+				oi.is_sample = 0
 			ORDER BY
 				vod.order_number ASC
 `;
@@ -846,7 +854,8 @@ export async function selectOrderNumberForPi(req, res, next) {
 			WHERE
 				vod.is_cash = 0 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
-				oi.party_uuid = ${req.params.party_uuid}
+				oi.party_uuid = ${req.params.party_uuid} AND 
+				oi.is_sample = 0
 				${pi_uuid ? sql`AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql``}
 			ORDER BY
 				vod.order_number ASC`;
@@ -1620,7 +1629,9 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		WHERE
 			toi.is_cash = 1 AND
 			toi.marketing_uuid = ${marketing_uuid} AND
-			toi.party_uuid = ${party_uuid}
+			toi.party_uuid = ${party_uuid} AND 
+			toi.is_sample = 0
+		ORDER BY toi.id ASC
 	`;
 	} else {
 		query = sql`
@@ -1634,8 +1645,10 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		WHERE
 			toi.is_cash = 0 AND
 			toi.marketing_uuid = ${marketing_uuid} AND
-			toi.party_uuid = ${party_uuid}
+			toi.party_uuid = ${party_uuid} AND 
+			toi.is_sample = 0
 		${pi_uuid ? sql`AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql``}
+		ORDER BY toi.id ASC
 	`;
 	}
 
