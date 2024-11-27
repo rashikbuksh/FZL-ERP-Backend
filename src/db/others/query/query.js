@@ -632,14 +632,21 @@ export async function selectOrderDescription(req, res, next) {
 
 	const query = sql`
 				SELECT
-					vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description) AS label,
+					DISTINCT vodf.order_description_uuid AS value,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, 
+						CASE 
+							WHEN vodf.order_type = 'slider' 
+							THEN ' - Slider' 
+							ELSE ''
+							END
+						) AS label,
 					vodf.order_number,
 					vodf.item_description,
 					vodf.order_description_uuid,
 					vodf.item_name,
 					vodf.tape_received::float8,
 					vodf.tape_transferred::float8,
+					vodf.order_type,
 					totals_of_oe.total_size::float8,
 					totals_of_oe.total_quantity::float8,
 					tcr.top::float8,
@@ -668,15 +675,17 @@ export async function selectOrderDescription(req, res, next) {
 				LEFT JOIN
 						(
 							SELECT
-								sfg.uuid as sfg_uuid,
+								oe.order_description_uuid as order_description_uuid,
 								SUM(fbe.quantity::float8) AS given_quantity
 							FROM
 								zipper.finishing_batch_entry fbe
 							LEFT JOIN 
 								zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+							LEFT JOIN
+								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 							GROUP BY
-								sfg.uuid
-					) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
+								oe.order_description_uuid
+					) AS fbe_given ON oe.order_description_uuid = fbe_given.order_description_uuid
 				LEFT JOIN 
 					(
 						SELECT oe.order_description_uuid, 
@@ -714,7 +723,9 @@ export async function selectOrderDescription(req, res, next) {
 						GROUP BY oe.order_description_uuid
 				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND sfg.recipe_uuid IS NOT NULL
+					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND 
+					CASE WHEN order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
+				ORDER BY vodf.order_number DESC
 				`;
 
 	if (dyed_tape_required == 'false') {

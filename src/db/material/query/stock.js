@@ -1,9 +1,6 @@
 import { desc, eq, gt, lt, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { info, stock } from '../schema.js';
@@ -112,8 +109,8 @@ export async function selectAll(req, res, next) {
 			remarks: stock.remarks,
 		})
 		.from(stock)
-		.leftJoin(info, eq(stock.material_uuid, info.uuid))
-		.orderBy(desc(stock.created_at));
+		.leftJoin(info, eq(stock.material_uuid, info.uuid));
+
 	try {
 		const data = await resultPromise;
 		const toast = {

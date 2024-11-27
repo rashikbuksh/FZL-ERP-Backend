@@ -80,7 +80,7 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const query = sql`
 	SELECT
-		stock.uuid,
+		DISTINCT stock.uuid,
 		stock.finishing_batch_uuid,
 		finishing_batch.order_description_uuid,
 		concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)) as batch_number,
@@ -200,7 +200,7 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-SELECT
+	SELECT
 		stock.uuid,
 		stock.finishing_batch_uuid,
 		finishing_batch.order_description_uuid,
