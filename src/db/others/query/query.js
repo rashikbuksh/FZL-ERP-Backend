@@ -1621,7 +1621,8 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		query = sql`
 		SELECT
 			DISTINCT toi.uuid AS value,
-			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label
+			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label,
+			toi.id
 		FROM
 			thread.order_info toi
 		LEFT JOIN
@@ -1637,7 +1638,8 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		query = sql`
 		SELECT
 			DISTINCT toi.uuid AS value,
-			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label
+			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label,
+			toi.id
 		FROM
 			thread.order_info toi
 		LEFT JOIN

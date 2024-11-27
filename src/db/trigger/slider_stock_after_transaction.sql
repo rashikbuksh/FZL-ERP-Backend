@@ -1,5 +1,12 @@
 CREATE OR REPLACE FUNCTION slider.slider_stock_after_transaction_insert () RETURNS TRIGGER AS $$
+DECLARE
+    order_type TEXT;
 BEGIN
+    SELECT od.order_type INTO order_type 
+    FROM slider.stock ss
+    LEFT JOIN zipper.finishing_batch fb ON ss.finishing_batch_uuid = fb.uuid
+    LEFT JOIN zipper.order_description od ON fb.order_description_uuid = od.uuid
+    WHERE ss.uuid = NEW.stock_uuid;
     --update slider.stock table
     UPDATE slider.stock
     SET
@@ -13,20 +20,26 @@ BEGIN
         + CASE WHEN NEW.to_section = 'coloring_stock' THEN NEW.weight ELSE 0 END
     WHERE uuid = NEW.stock_uuid;
 
-    IF NEW.from_section = 'coloring_prod' AND NEW.to_section = 'trx_to_finishing'
-    THEN
+    IF NEW.from_section = 'coloring_prod' AND NEW.to_section = 'trx_to_finishing' THEN
         UPDATE slider.stock
         SET
-        coloring_prod = coloring_prod - NEW.trx_quantity,
-        coloring_prod_weight = coloring_prod_weight - NEW.weight,
-        trx_to_finishing = trx_to_finishing + NEW.trx_quantity,
-        trx_to_finishing_weight = trx_to_finishing_weight + NEW.weight
+            coloring_prod = coloring_prod - NEW.trx_quantity,
+            coloring_prod_weight = coloring_prod_weight - NEW.weight,
+            trx_to_finishing = trx_to_finishing + NEW.trx_quantity,
+            trx_to_finishing_weight = trx_to_finishing_weight + NEW.weight
         WHERE uuid = NEW.stock_uuid;
 
-        UPDATE zipper.finishing_batch
-        SET
-        slider_finishing_stock = slider_finishing_stock + NEW.trx_quantity
-        WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
+        IF order_type = 'slider' THEN
+            UPDATE zipper.finishing_batch
+            SET
+                finishing_prod = finishing_prod + NEW.trx_quantity
+            WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
+        ELSE
+            UPDATE zipper.finishing_batch
+            SET
+                slider_finishing_stock = slider_finishing_stock + NEW.trx_quantity
+            WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
+        END IF;
     END IF;
 
     IF NEW.assembly_stock_uuid IS NOT NULL
@@ -50,7 +63,14 @@ $$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION slider.slider_stock_after_transaction_delete () RETURNS TRIGGER AS $$
+DECLARE
+    order_type TEXT;
 BEGIN
+    SELECT od.order_type INTO order_type 
+    FROM slider.stock ss
+    LEFT JOIN zipper.finishing_batch fb ON ss.finishing_batch_uuid = fb.uuid
+    LEFT JOIN zipper.order_description od ON fb.order_description_uuid = od.uuid
+    WHERE ss.uuid = OLD.stock_uuid;
     --update slider.stock table
     UPDATE slider.stock
     SET
@@ -72,17 +92,23 @@ BEGIN
     THEN
         UPDATE slider.stock
         SET
-        coloring_prod = coloring_prod + OLD.trx_quantity,
-        coloring_prod_weight = coloring_prod_weight + OLD.weight,
-        trx_to_finishing = trx_to_finishing - OLD.trx_quantity,
-        trx_to_finishing_weight = trx_to_finishing_weight - OLD.weight
+            coloring_prod = coloring_prod + OLD.trx_quantity,
+            coloring_prod_weight = coloring_prod_weight + OLD.weight,
+            trx_to_finishing = trx_to_finishing - OLD.trx_quantity,
+            trx_to_finishing_weight = trx_to_finishing_weight - OLD.weight
         WHERE uuid = OLD.stock_uuid;
 
-        UPDATE zipper.finishing_batch
-        SET
-        slider_finishing_stock = slider_finishing_stock - OLD.trx_quantity
-        WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = OLD.stock_uuid);
-        
+        IF order_type = 'slider' THEN
+            UPDATE zipper.finishing_batch
+            SET
+                finishing_prod = finishing_prod - OLD.trx_quantity
+            WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = OLD.stock_uuid);
+        ELSE
+            UPDATE zipper.finishing_batch
+            SET
+                slider_finishing_stock = slider_finishing_stock - OLD.trx_quantity
+            WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = OLD.stock_uuid);
+        END IF;
     END IF;
 
     IF OLD.assembly_stock_uuid IS NOT NULL
@@ -105,7 +131,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION slider.slider_stock_after_transaction_update () RETURNS TRIGGER AS $$
+DECLARE
+    order_type TEXT;
 BEGIN
+    SELECT od.order_type INTO order_type 
+    FROM slider.stock ss
+    LEFT JOIN zipper.finishing_batch fb ON ss.finishing_batch_uuid = fb.uuid
+    LEFT JOIN zipper.order_description od ON fb.order_description_uuid = od.uuid
+    WHERE ss.uuid = NEW.stock_uuid;
     --update slider.stock table
     UPDATE slider.stock
     SET
@@ -136,17 +169,23 @@ BEGIN
     THEN
         UPDATE slider.stock
         SET
-        coloring_prod = coloring_prod - NEW.trx_quantity + OLD.trx_quantity,
-        coloring_prod_weight = coloring_prod_weight - NEW.weight + OLD.weight,
-        trx_to_finishing = trx_to_finishing + NEW.trx_quantity - OLD.trx_quantity,
-        trx_to_finishing_weight = trx_to_finishing_weight + NEW.weight - OLD.weight
+            coloring_prod = coloring_prod - NEW.trx_quantity + OLD.trx_quantity,
+            coloring_prod_weight = coloring_prod_weight - NEW.weight + OLD.weight,
+            trx_to_finishing = trx_to_finishing + NEW.trx_quantity - OLD.trx_quantity,
+            trx_to_finishing_weight = trx_to_finishing_weight + NEW.weight - OLD.weight
         WHERE uuid = NEW.stock_uuid;
 
-        UPDATE zipper.finishing_batch
-        SET
-        slider_finishing_stock = slider_finishing_stock + NEW.trx_quantity - OLD.trx_quantity
-        WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
-        
+        IF order_type = 'slider' THEN
+            UPDATE zipper.finishing_batch
+            SET
+                finishing_prod = finishing_prod - NEW.trx_quantity + OLD.trx_quantity
+            WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
+        ELSE
+            UPDATE zipper.finishing_batch
+            SET
+                slider_finishing_stock = slider_finishing_stock - NEW.trx_quantity + OLD.trx_quantity
+            WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
+        END IF;
     END IF;
 
     -- assembly_stock_uuid -> OLD

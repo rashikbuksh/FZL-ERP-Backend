@@ -1,7 +1,4 @@
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 import { desc, eq, sql } from 'drizzle-orm';
@@ -418,8 +415,8 @@ export async function getTapeAssigned(req, res, next) {
 					) order_entry_counts ON vodf.order_description_uuid = order_entry_counts.order_description_uuid
 					WHERE vodf.order_description_uuid IS NOT NULL AND vodf.is_multi_color = 0  AND swatch_approval_counts.swatch_approval_count>0
 					ORDER BY 
-						vodf.tape_coil_uuid DESC,
-						vodf.created_at DESC;`;
+						vodf.order_number DESC,
+						vodf.item_description ASC;`;
 
 	const tapeAssignedPromise = db.execute(query);
 
