@@ -10,6 +10,14 @@ import { production } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { link } = req.body;
+
+	if (link > 0) {
+		req.body.with_link = 1;
+	} else {
+		req.body.with_link = 0;
+	}
+
 	const resultPromise = db
 		.insert(production)
 		.values(req.body)
@@ -32,6 +40,14 @@ export async function insert(req, res, next) {
 
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	const { link } = req.body;
+
+	if (link > 0) {
+		req.body.with_link = 1;
+	} else {
+		req.body.with_link = 0;
+	}
 
 	const resultPromise = db
 		.update(production)
@@ -134,7 +150,7 @@ export async function selectAll(req, res, next) {
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
 			stock.coloring_stock::float8 + production.production_quantity::float8 as max_coloring_quantity,
-			CASE WHEN stock.link_quantity > 0 THEN true ELSE false END as with_link,
+			production.with_link,
 			CAST(
 				CASE 
 					WHEN stock.link_quantity > 0
@@ -247,7 +263,7 @@ export async function select(req, res, next) {
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
 			stock.coloring_stock::float8 + production.production_quantity::float8 as max_coloring_quantity,
-			CASE WHEN stock.link_quantity > 0 THEN true ELSE false END as with_link,
+			production.with_link,
 			CAST(
 				CASE 
 					WHEN stock.link_quantity > 0
@@ -364,7 +380,7 @@ export async function selectProductionBySection(req, res, next) {
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
 			stock.coloring_stock::float8 + production.production_quantity::float8 as max_coloring_quantity,
-			CASE WHEN stock.link_quantity > 0 THEN true ELSE false END as with_link,
+			production.with_link,
 			CAST(
 				CASE 
 					WHEN stock.link_quantity > 0
