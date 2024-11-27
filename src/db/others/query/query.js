@@ -725,7 +725,6 @@ export async function selectOrderDescription(req, res, next) {
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND 
 					CASE WHEN order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
-				ORDER BY vodf.order_number DESC
 				`;
 
 	if (dyed_tape_required == 'false') {
@@ -752,6 +751,8 @@ export async function selectOrderDescription(req, res, next) {
 			sql` AND coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0) > 0`
 		);
 	}
+
+	query.append(sql` ORDER BY vodf.order_number`);
 
 	// , ' ⇾ ',  vodf.tape_received
 
