@@ -734,7 +734,7 @@ export async function selectOrderDescription(req, res, next) {
 
 	if (swatch_approved === 'true') {
 		query.append(
-			sql` AND swatch_approval_counts.swatch_approval_count > 0`
+			sql` AND CASE WHEN order_type = 'slider' THEN 1=1 ELSE swatch_approval_counts.swatch_approval_count > 0 END`
 		);
 	}
 	if (item == 'nylon') {
