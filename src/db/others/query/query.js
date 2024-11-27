@@ -138,10 +138,16 @@ export async function selectParty(req, res, next) {
 					sql`WHERE vod.marketing_uuid = ${marketing}`
 				);
 			}
-			if (is_cash == 'true') {
-				query = query.append(sql`AND vod.is_cash = 1`);
-			} else if (is_cash == 'false') {
-				query = query.append(sql`AND vod.is_cash = 0`);
+			if (marketing && is_cash == 'true') {
+				query = query.append(sql` AND vod.is_cash = 1`);
+			} else if (marketing && is_cash == 'false') {
+				query = query.append(sql` AND vod.is_cash = 0`);
+			}
+
+			if (!marketing && is_cash == 'true') {
+				query = query.append(sql`WHERE vod.is_cash = 1`);
+			} else if (!marketing && is_cash == 'false') {
+				query = query.append(sql`WHERE vod.is_cash = 0`);
 			}
 			break;
 		case 'thread':
@@ -153,10 +159,16 @@ export async function selectParty(req, res, next) {
 					sql`WHERE oi.marketing_uuid = ${marketing}`
 				);
 			}
-			if (is_cash == 'true') {
-				query = query.append(sql`AND oi.is_cash = 1`);
-			} else if (is_cash == 'false') {
-				query = query.append(sql`AND oi.is_cash = 0`);
+			if (marketing && is_cash == 'true') {
+				query = query.append(sql` AND oi.is_cash = 1`);
+			} else if (marketing && is_cash == 'false') {
+				query = query.append(sql` AND oi.is_cash = 0`);
+			}
+
+			if (!marketing && is_cash == 'true') {
+				query = query.append(sql`WHERE oi.is_cash = 1`);
+			} else if (!marketing && is_cash == 'false') {
+				query = query.append(sql`WHERE oi.is_cash = 0`);
 			}
 			break;
 		case 'all':
@@ -172,13 +184,24 @@ export async function selectParty(req, res, next) {
 					sql`WHERE vod.marketing_uuid = ${marketing} OR oi.marketing_uuid = ${marketing}`
 				);
 			}
-			if (is_cash == 'true') {
+
+			if (marketing && is_cash == 'true') {
 				query = query.append(
 					sql` AND (vod.is_cash = 1 OR oi.is_cash = 1)`
 				);
-			} else if (is_cash == 'false') {
+			} else if (marketing && is_cash == 'false') {
 				query = query.append(
 					sql` AND (vod.is_cash = 0 OR oi.is_cash = 0)`
+				);
+			}
+
+			if (!marketing && is_cash == 'true') {
+				query = query.append(
+					sql`WHERE vod.is_cash = 1 OR oi.is_cash = 1`
+				);
+			} else if (!marketing && is_cash == 'false') {
+				query = query.append(
+					sql`WHERE vod.is_cash = 0 OR oi.is_cash = 0`
 				);
 			}
 			break;
