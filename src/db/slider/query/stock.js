@@ -356,7 +356,6 @@ export async function selectStockByFromSection(req, res, next) {
 		vodf.is_logo_body as logo_is_body,
 		vodf.is_logo_puller as logo_is_puller,
 		vodf.order_type,
-		vodf.is_waterproof,
 		stock.batch_quantity::float8,
 		stock.swatch_approved_quantity::float8,
 		stock.body_quantity::float8,
@@ -399,7 +398,8 @@ export async function selectStockByFromSection(req, res, next) {
 		slider_transaction_given.trx_weight::float8 as trx_weight,
 		slider_production_given.total_production_quantity::float8 as total_production_quantity,
 		slider_production_given.total_production_weight::float8 as total_production_weight,
-		stock.batch_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0) as balance_quantity
+		stock.batch_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0) as balance_quantity,
+		vodf.is_waterproof
 	FROM
 		slider.stock
 	LEFT JOIN
