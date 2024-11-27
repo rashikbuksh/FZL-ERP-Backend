@@ -1,9 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 import * as hrSchema from '../../hr/schema.js';
@@ -137,10 +134,10 @@ export async function selectAll(req, res, next) {
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
 			stock.coloring_stock::float8 + production.production_quantity::float8 as max_coloring_quantity,
-			production.with_link,
+			CASE WHEN stock.link_quantity > 0 THEN true ELSE false END as with_link,
 			CAST(
 				CASE 
-					WHEN production.with_link = 1
+					WHEN stock.link_quantity > 0
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),
@@ -250,10 +247,10 @@ export async function select(req, res, next) {
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
 			stock.coloring_stock::float8 + production.production_quantity::float8 as max_coloring_quantity,
-			production.with_link,
+			CASE WHEN stock.link_quantity > 0 THEN true ELSE false END as with_link,
 			CAST(
 				CASE 
-					WHEN production.with_link = 1
+					WHEN stock.link_quantity > 0
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),
@@ -367,10 +364,10 @@ export async function selectProductionBySection(req, res, next) {
 			stock.coloring_stock::float8,
 			stock.coloring_prod::float8,
 			stock.coloring_stock::float8 + production.production_quantity::float8 as max_coloring_quantity,
-			production.with_link,
+			CASE WHEN stock.link_quantity > 0 THEN true ELSE false END as with_link,
 			CAST(
 				CASE 
-					WHEN production.with_link = 1
+					WHEN stock.link_quantity > 0
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),

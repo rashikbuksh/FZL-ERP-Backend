@@ -295,7 +295,7 @@ export const production = slider.table('production', {
 	weight: PG_DECIMAL('weight').default(0),
 	wastage: PG_DECIMAL('wastage').notNull(),
 	section: text('section'),
-	with_link: integer('with_link').default(1),
+	// with_link: integer('with_link').default(1),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
