@@ -154,7 +154,10 @@ export async function select(req, res, next) {
 export async function selectByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const machineQuery = sql`SELECT name AS machine_name FROM public.machine`;
+	const machineQuery = sql`SELECT 
+		uuid AS machine_uuid,
+		name AS machine_name
+	 FROM public.machine`;
 
 	const dataQuery = sql`
         SELECT
@@ -269,6 +272,7 @@ export async function selectByDate(req, res, next) {
 		const response = {
 			date: results[0]?.date,
 			data: machines.map((machine) => ({
+				machine_uuid: machine.machine_uuid,
 				machine: machine.machine_name,
 				slot_1: groupedResults[machine.machine_name]?.[1] || null,
 				slot_2: groupedResults[machine.machine_name]?.[2] || null,
