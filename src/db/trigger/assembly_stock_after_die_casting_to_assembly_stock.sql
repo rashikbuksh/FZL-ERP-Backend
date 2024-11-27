@@ -28,9 +28,9 @@ BEGIN
 
     -- die casting link
     UPDATE slider.die_casting
-    SET quantity_in_sa = quantity_in_sa - CASE WHEN NEW.with_link = 1 THEN NEW.production_quantity - NEW.wastage ELSE 0 END
+    SET quantity_in_sa = quantity_in_sa - NEW.production_quantity - NEW.wastage
     FROM slider.assembly_stock
-    WHERE slider.die_casting.uuid = assembly_stock.die_casting_link_uuid AND assembly_stock.uuid = NEW.assembly_stock_uuid;
+    WHERE slider.die_casting.uuid = assembly_stock.die_casting_link_uuid AND assembly_stock.uuid = NEW.assembly_stock_uuid AND assembly_stock.die_casting_link_uuid IS NOT NULL;
 
     RETURN NEW;
 END;
@@ -70,9 +70,9 @@ BEGIN
 
     -- die casting link
     UPDATE slider.die_casting
-    SET quantity_in_sa = quantity_in_sa - CASE WHEN NEW.with_link = 1 THEN NEW.production_quantity + NEW.wastage ELSE 0 END + CASE WHEN OLD.with_link = 1 THEN OLD.production_quantity + OLD.wastage ELSE 0 END
+    SET quantity_in_sa = quantity_in_sa - NEW.production_quantity + NEW.wastage +  OLD.production_quantity + OLD.wastage
     FROM slider.assembly_stock
-    WHERE slider.die_casting.uuid = assembly_stock.die_casting_link_uuid AND assembly_stock.uuid = NEW.assembly_stock_uuid;
+    WHERE slider.die_casting.uuid = assembly_stock.die_casting_link_uuid AND assembly_stock.uuid = NEW.assembly_stock_uuid AND assembly_stock.die_casting_link_uuid IS NOT NULL;
 
     RETURN NEW;
 END;
@@ -108,9 +108,9 @@ BEGIN
 
     -- die casting link
     UPDATE slider.die_casting
-    SET quantity_in_sa = quantity_in_sa + CASE WHEN OLD.with_link = 1 THEN OLD.production_quantity + OLD.wastage ELSE 0 END
+    SET quantity_in_sa = quantity_in_sa + OLD.production_quantity + OLD.wastage
     FROM slider.assembly_stock
-    WHERE slider.die_casting.uuid = assembly_stock.die_casting_link_uuid AND assembly_stock.uuid = OLD.assembly_stock_uuid;
+    WHERE slider.die_casting.uuid = assembly_stock.die_casting_link_uuid AND assembly_stock.uuid = OLD.assembly_stock_uuid AND assembly_stock.die_casting_link_uuid IS NOT NULL;
 
     RETURN OLD;
 END;

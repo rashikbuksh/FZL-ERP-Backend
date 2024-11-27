@@ -7,10 +7,12 @@ import { packing_list_entry } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_entry_uuid } = req.body;
+	const { item_for } = req.body;
 
-	if (order_entry_uuid !== null) {
+	if (item_for == 'thread' || item_for == 'sample_thread') {
+		const { order_entry_uuid } = req.body;
 		req.body.thread_order_entry_uuid = order_entry_uuid;
+		req.body.order_entry_uuid = null;
 	}
 
 	const packing_list_entryPromise = db
@@ -34,10 +36,12 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_entry_uuid } = req.body;
+	const { item_for } = req.body;
 
-	if (order_entry_uuid !== null) {
+	if (item_for == 'thread' || item_for == 'sample_thread') {
+		const { order_entry_uuid } = req.body;
 		req.body.thread_order_entry_uuid = order_entry_uuid;
+		req.body.order_entry_uuid = null;
 	}
 
 	const packing_list_entryPromise = db
