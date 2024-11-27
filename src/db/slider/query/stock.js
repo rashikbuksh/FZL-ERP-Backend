@@ -400,10 +400,7 @@ export async function selectStockByFromSection(req, res, next) {
 		slider_production_given.total_production_weight::float8 as total_production_weight,
 		stock.batch_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0) as balance_quantity,
 		vodf.is_waterproof,
-		jsonb_build_object(
-			'value', styles_colors.styles,
-			'label', styles_colors.sfg_uuids
-		) as styles_object
+		styles_colors.style_object
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -417,7 +414,7 @@ export async function selectStockByFromSection(req, res, next) {
 	LEFT JOIN
 		public.party pp ON order_info.party_uuid = pp.uuid
 	LEFT JOIN (
-		SELECT ARRAY_AGG(oe.style) AS styles, ARRAY_AGG(sfg.uuid) as sfg_uuids, oe.order_description_uuid
+		SELECT jsonb_agg(jsonb_build_object('label', oe.style, 'value', sfg.uuid)) as style_object, oe.order_description_uuid
 		FROM zipper.sfg
 		LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		GROUP BY oe.order_description_uuid
