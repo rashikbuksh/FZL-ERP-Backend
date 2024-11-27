@@ -400,8 +400,10 @@ export async function selectStockByFromSection(req, res, next) {
 		slider_production_given.total_production_weight::float8 as total_production_weight,
 		stock.batch_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0) as balance_quantity,
 		vodf.is_waterproof,
-		styles_colors.styles as value,
-		styles_colors.sfg_uuids as label
+		jsonb_build_object(
+			'value', styles_colors.styles,
+			'label', styles_colors.sfg_uuids
+		) as styles_object
 	FROM
 		slider.stock
 	LEFT JOIN

@@ -30,10 +30,10 @@ BEGIN
         WHERE uuid = NEW.stock_uuid;
 
         IF order_type = 'slider' THEN
-            UPDATE zipper.finishing_batch
+            UPDATE zipper.finishing_batch_entry
             SET
                 finishing_prod = finishing_prod + NEW.trx_quantity
-            WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
+            WHERE sfg_uuid = NEW.sfg_uuid;
         ELSE
             UPDATE zipper.finishing_batch
             SET
@@ -99,10 +99,10 @@ BEGIN
         WHERE uuid = OLD.stock_uuid;
 
         IF order_type = 'slider' THEN
-            UPDATE zipper.finishing_batch
+            UPDATE zipper.finishing_batch_entry
             SET
-                finishing_prod = finishing_prod - OLD.trx_quantity
-            WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = OLD.stock_uuid);
+                finishing_prod = finishing_prod + OLD.trx_quantity
+            WHERE sfg_uuid = OLD.sfg_uuid;
         ELSE
             UPDATE zipper.finishing_batch
             SET
@@ -176,10 +176,10 @@ BEGIN
         WHERE uuid = NEW.stock_uuid;
 
         IF order_type = 'slider' THEN
-            UPDATE zipper.finishing_batch
+            UPDATE zipper.finishing_batch_entry
             SET
                 finishing_prod = finishing_prod - NEW.trx_quantity + OLD.trx_quantity
-            WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid);
+            WHERE sfg_uuid = NEW.sfg_uuid;
         ELSE
             UPDATE zipper.finishing_batch
             SET
