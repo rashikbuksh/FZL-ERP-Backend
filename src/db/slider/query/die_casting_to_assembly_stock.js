@@ -105,7 +105,6 @@ export async function selectAll(req, res, next) {
 			max_production_quantity_without_link: decimalToNumber(
 				sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`
 			),
-			with_link: die_casting_to_assembly_stock.with_link,
 			created_by: die_casting_to_assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: die_casting_to_assembly_stock.created_at,
@@ -181,7 +180,6 @@ export async function select(req, res, next) {
 			max_production_quantity_without_link: decimalToNumber(
 				sql`LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa) + die_casting_to_assembly_stock.production_quantity`
 			),
-			with_link: die_casting_to_assembly_stock.with_link,
 			created_by: die_casting_to_assembly_stock.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: die_casting_to_assembly_stock.created_at,
