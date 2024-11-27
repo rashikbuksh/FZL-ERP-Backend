@@ -119,7 +119,7 @@ export async function selectOpenSlotMachine(req, res, next) {
 }
 
 export async function selectParty(req, res, next) {
-	const { marketing, item_for } = req.query;
+	const { marketing, item_for, is_cash } = req.query;
 
 	let query = sql`
 		SELECT DISTINCT
@@ -138,6 +138,11 @@ export async function selectParty(req, res, next) {
 					sql`WHERE vod.marketing_uuid = ${marketing}`
 				);
 			}
+			if (is_cash == 'true') {
+				query = query.append(sql`AND vod.is_cash = 1`);
+			} else if (is_cash == 'false') {
+				query = query.append(sql`AND vod.is_cash = 0`);
+			}
 			break;
 		case 'thread':
 			query = query.append(
@@ -147,6 +152,11 @@ export async function selectParty(req, res, next) {
 				query = query.append(
 					sql`WHERE oi.marketing_uuid = ${marketing}`
 				);
+			}
+			if (is_cash == 'true') {
+				query = query.append(sql`AND oi.is_cash = 1`);
+			} else if (is_cash == 'false') {
+				query = query.append(sql`AND oi.is_cash = 0`);
 			}
 			break;
 		case 'all':
@@ -160,6 +170,15 @@ export async function selectParty(req, res, next) {
 			if (marketing) {
 				query = query.append(
 					sql`WHERE vod.marketing_uuid = ${marketing} OR oi.marketing_uuid = ${marketing}`
+				);
+			}
+			if (is_cash == 'true') {
+				query = query.append(
+					sql`AND (vod.is_cash = 1 OR oi.is_cash = 1)`
+				);
+			} else if (is_cash == 'false') {
+				query = query.append(
+					sql`AND (vod.is_cash = 0 OR oi.is_cash = 0)`
 				);
 			}
 			break;

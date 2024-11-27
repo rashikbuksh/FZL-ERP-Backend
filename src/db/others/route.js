@@ -257,6 +257,7 @@ const pathPublic = {
 					'thread',
 					'all',
 				]),
+				SE.parameter_query('is_cash', 'is_cash', ['true', 'false']),
 			],
 			responses: {
 				200: {
