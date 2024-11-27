@@ -430,6 +430,7 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			null as coloring_stock,
 			null as coloring_prod,
 			null as max_coloring_quantity,
+			CASE WHEN assembly_stock.die_casting_link_uuid IS NULL THEN 0 ELSE 1 END as with_link,
 			0 as max_sa_quantity,
 			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa, diecastinglink.quantity_in_sa)::float8 + die_casting_to_assembly_stock.production_quantity::float8 as max_production_quantity_with_link,
 			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa)::float8 + die_casting_to_assembly_stock.production_quantity::float8 as max_production_quantity_without_link,
