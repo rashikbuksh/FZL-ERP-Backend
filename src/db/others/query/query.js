@@ -853,7 +853,7 @@ export async function selectOrderDescription(req, res, next) {
 	}
 
 	query.append(sql` ORDER BY vodf.order_number`);
-	page ? query.append(page_query) : '';
+	page ? page_query.append(sql` ORDER BY vodf.order_number`) : '';
 
 	const orderEntryPromise = db.execute(query);
 
@@ -863,13 +863,15 @@ export async function selectOrderDescription(req, res, next) {
 	}
 
 	try {
-		const data = await orderEntryPromise;
-		const pageData = page ? await pagePromise : '';
+		const dataData = await orderEntryPromise;
+		const pageData = await pagePromise;
 
-		const response = {
-			...data,
-			pageData: pageData || [],
-		};
+		const data = dataData?.rows;
+
+		// data pass as array and pageData pass as object
+		const response = page
+			? { data: data, pageData: pageData?.rows }
+			: { data: data };
 
 		const toast = {
 			status: 200,
@@ -877,7 +879,7 @@ export async function selectOrderDescription(req, res, next) {
 			message: 'Order Description list',
 		};
 
-		res.status(200).json({ toast, data: response });
+		res.status(200).json({ toast, ...response });
 	} catch (error) {
 		await handleError({ error, res });
 	}

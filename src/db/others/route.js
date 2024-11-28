@@ -900,6 +900,15 @@ const pathZipper = {
 					'false',
 					'true',
 				]),
+				SE.parameter_query('dyed_tape_required', 'dyed_tape_required', [
+					'false',
+					'true',
+				]),
+				SE.parameter_query('is_balance', 'is_balance', [
+					'false',
+					'true',
+				]),
+				SE.parameter_query('page', 'page', ['finishing_batch', 'true']),
 			],
 			responses: {
 				200: {
