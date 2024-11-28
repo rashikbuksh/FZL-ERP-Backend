@@ -119,7 +119,7 @@ export async function selectOpenSlotMachine(req, res, next) {
 }
 
 export async function selectParty(req, res, next) {
-	const { marketing, item_for, is_cash } = req.query;
+	const { marketing, item_for, is_cash, page } = req.query;
 
 	let query = sql`
 		SELECT DISTINCT
@@ -197,7 +197,7 @@ export async function selectParty(req, res, next) {
 			);
 			if (marketing) {
 				query = query.append(
-					sql`WHERE vod.marketing_uuid = ${marketing} OR oi.marketing_uuid = ${marketing}`
+					sql`WHERE (vod.marketing_uuid = ${marketing} OR oi.marketing_uuid = ${marketing})`
 				);
 			}
 
