@@ -658,6 +658,20 @@ export async function selectOrderDescription(req, res, next) {
 					zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN
+						(
+							SELECT
+								oe.order_description_uuid as order_description_uuid,
+								oe.quantity::float8 - SUM(fbe.quantity::float8) AS balance_quantity
+							FROM
+								zipper.finishing_batch_entry fbe
+							LEFT JOIN 
+								zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+							LEFT JOIN
+								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+							GROUP BY
+								oe.order_description_uuid, oe.quantity
+					) AS fbe_given ON oe.order_description_uuid = fbe_given.order_description_uuid
 				LEFT JOIN 
 					(
 						SELECT oe.order_description_uuid, 
@@ -834,14 +848,8 @@ export async function selectOrderDescription(req, res, next) {
 		page ? page_query.append(sql` AND vodf.tape_received > 0`) : '';
 	}
 	if (is_balance == 'true') {
-		query.append(
-			sql` AND coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0) > 0`
-		);
-		page
-			? page_query.append(
-					sql` AND coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0) > 0`
-				)
-			: '';
+		query.append(sql` AND fbe_given.balance_quantity > 0`);
+		page ? page_query.append(sql` AND fbe_given.balance_quantity > 0`) : '';
 	}
 
 	query.append(sql` ORDER BY vodf.order_number`);
