@@ -862,8 +862,6 @@ export async function selectOrderDescription(req, res, next) {
 		pagePromise = db.execute(page_query);
 	}
 
-	console.log(pagePromise);
-
 	try {
 		const data = await orderEntryPromise;
 		const pageData = page ? await pagePromise : '';
