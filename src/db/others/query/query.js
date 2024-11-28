@@ -870,7 +870,7 @@ export async function selectOrderDescription(req, res, next) {
 
 		const response = {
 			...data,
-			pageData: pageData,
+			pageData: pageData || [],
 		};
 
 		const toast = {
