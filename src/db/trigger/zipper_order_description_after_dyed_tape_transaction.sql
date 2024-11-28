@@ -1,9 +1,9 @@
 -- * inserted 
 CREATE OR REPLACE FUNCTION zipper.order_description_after_dyed_tape_transaction_insert() RETURNS TRIGGER AS $$
 DECLARE
-    order_type TEXT;
+    order_type_val TEXT;
 BEGIN
-    SELECT order_type INTO order_type
+    SELECT order_type INTO order_type_val
     FROM zipper.order_description
     WHERE uuid = NEW.order_description_uuid;
 
@@ -14,7 +14,7 @@ BEGIN
         tape_transferred = tape_transferred + NEW.trx_quantity
     WHERE order_description.uuid = NEW.order_description_uuid;
 
-   IF order_type = 'tape' THEN
+   IF order_type_val = 'tape' THEN
         -- Update zipper.sfg
         UPDATE zipper.sfg
         SET
@@ -29,9 +29,9 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper.order_description_after_dyed_tape_transaction_update() RETURNS TRIGGER AS $$
 DECLARE
-    order_type TEXT;
+    order_type_val TEXT;
 BEGIN
-    SELECT order_type INTO order_type
+    SELECT order_type INTO order_type_val
     FROM zipper.order_description
     WHERE uuid = NEW.order_description_uuid;
 
@@ -42,7 +42,7 @@ BEGIN
         tape_transferred = tape_transferred + NEW.trx_quantity - OLD.trx_quantity
     WHERE order_description.uuid = NEW.order_description_uuid;
 
-    IF order_type = 'tape' THEN
+    IF order_type_val = 'tape' THEN
         -- Update zipper.sfg
         UPDATE zipper.sfg
         SET
@@ -57,9 +57,9 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper.order_description_after_dyed_tape_transaction_delete() RETURNS TRIGGER AS $$
 DECLARE
-    order_type TEXT;
+    order_type_val TEXT;
 BEGIN
-    SELECT order_type INTO order_type
+    SELECT order_type INTO order_type_val
     FROM zipper.order_description
     WHERE uuid = OLD.order_description_uuid;
     -- Update order_description
@@ -69,7 +69,7 @@ BEGIN
         tape_transferred = tape_transferred - OLD.trx_quantity
     WHERE order_description.uuid = OLD.order_description_uuid;
 
-    IF order_type = 'tape' THEN
+    IF order_type_val = 'tape' THEN
         -- Update zipper.sfg
         UPDATE zipper.sfg
         SET

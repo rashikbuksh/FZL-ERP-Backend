@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION zipper.tape_coil_and_order_description_after_dyed_tape_transaction_insert_funct() RETURNS TRIGGER AS $$
 DECLARE
-    order_type TEXT;
+    order_type_val TEXT;
 BEGIN
-    SELECT order_type INTO order_type
+    SELECT order_type INTO order_type_val
     FROM zipper.order_description
     WHERE uuid = NEW.order_description_uuid;
 
@@ -17,7 +17,7 @@ BEGIN
         tape_transferred = tape_transferred + NEW.trx_quantity
     WHERE uuid = NEW.order_description_uuid;
 
-    IF order_type = 'tape' THEN
+    IF order_type_val = 'tape' THEN
         -- Update zipper.sfg
         UPDATE zipper.sfg
         SET
@@ -33,9 +33,9 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper.tape_coil_and_order_description_after_dyed_tape_transaction_update_funct() RETURNS TRIGGER AS $$
 DECLARE
-    order_type TEXT;
+    order_type_val TEXT;
 BEGIN
-    SELECT order_type INTO order_type
+    SELECT order_type INTO order_type_val
     FROM zipper.order_description
     WHERE uuid = NEW.order_description_uuid;
 
@@ -50,7 +50,7 @@ BEGIN
         tape_transferred = tape_transferred + NEW.trx_quantity - OLD.trx_quantity
     WHERE uuid = NEW.order_description_uuid;
 
-    IF order_type = 'tape' THEN
+    IF order_type_val = 'tape' THEN
         -- Update zipper.sfg
         UPDATE zipper.sfg
         SET
@@ -66,9 +66,9 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION zipper.tape_coil_and_order_description_after_dyed_tape_transaction_delete_funct() RETURNS TRIGGER AS $$
 DECLARE
-    order_type TEXT;
+    order_type_val TEXT;
 BEGIN
-    SELECT order_type INTO order_type
+    SELECT order_type INTO order_type_val
     FROM zipper.order_description
     WHERE uuid = OLD.order_description_uuid;
 
@@ -83,7 +83,7 @@ BEGIN
         tape_transferred = tape_transferred - OLD.trx_quantity
     WHERE uuid = OLD.order_description_uuid;
 
-    IF order_type = 'tape' THEN
+    IF order_type_val = 'tape' THEN
         -- Update zipper.sfg
         UPDATE zipper.sfg
         SET

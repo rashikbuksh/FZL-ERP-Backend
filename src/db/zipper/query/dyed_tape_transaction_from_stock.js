@@ -1,10 +1,7 @@
 import { desc, eq, ne, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
@@ -124,6 +121,7 @@ export async function selectAll(req, res, next) {
 				dyed_tape_transaction_from_stock.tape_coil_uuid,
 				vodf.order_number,
 				vodf.item_description,
+				vod.order_type,
 				tape_coil.name AS tape_coil_name,
 				tape_coil.stock_quantity::float8,
 				tape_coil.item_uuid,
@@ -134,7 +132,11 @@ export async function selectAll(req, res, next) {
 				users.name AS created_by_name,
 				dyed_tape_transaction_from_stock.created_at,
 				dyed_tape_transaction_from_stock.updated_at,
-				dyed_tape_transaction_from_stock.remarks
+				dyed_tape_transaction_from_stock.remarks,
+				dyed_tape_transaction_from_stock.sfg_uuid,
+				oe.color,
+				oe.style,
+				CONCAT(oe.color, ' - ', oe.style) as color_style
 			FROM 
 				zipper.dyed_tape_transaction_from_stock
 			LEFT JOIN 
@@ -147,6 +149,8 @@ export async function selectAll(req, res, next) {
 				public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 			LEFT JOIN
 				zipper.v_order_details_full vodf ON dyed_tape_transaction_from_stock.order_description_uuid = vodf.order_description_uuid
+			LEFT JOIN zipper.sfg sfg ON dyed_tape_transaction_from_stock.sfg_uuid = sfg.uuid
+			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 			WHERE 
 				${
 					item === 'nylon'
@@ -183,6 +187,9 @@ export async function select(req, res, next) {
 				dyed_tape_transaction_from_stock.order_description_uuid,
 				dyed_tape_transaction_from_stock.trx_quantity::float8,
 				dyed_tape_transaction_from_stock.tape_coil_uuid,
+				vodf.order_number,
+				vodf.item_description,
+				vod.order_type,
 				tape_coil.name AS tape_coil_name,
 				tape_coil.stock_quantity::float8,
 				tape_coil.item_uuid,
@@ -193,7 +200,11 @@ export async function select(req, res, next) {
 				users.name AS created_by_name,
 				dyed_tape_transaction_from_stock.created_at,
 				dyed_tape_transaction_from_stock.updated_at,
-				dyed_tape_transaction_from_stock.remarks
+				dyed_tape_transaction_from_stock.remarks,
+				dyed_tape_transaction_from_stock.sfg_uuid,
+				oe.color,
+				oe.style,
+				CONCAT(oe.color, ' - ', oe.style) as color_style
 			FROM 
 				zipper.dyed_tape_transaction_from_stock
 			LEFT JOIN 
@@ -204,6 +215,10 @@ export async function select(req, res, next) {
 				public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
 			LEFT JOIN 
 				public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
+			LEFT JOIN
+				zipper.v_order_details_full vodf ON dyed_tape_transaction_from_stock.order_description_uuid = vodf.order_description_uuid
+			LEFT JOIN zipper.sfg sfg ON dyed_tape_transaction_from_stock.sfg_uuid = sfg.uuid
+			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 			WHERE 
 				dyed_tape_transaction_from_stock.uuid = ${req.params.uuid};
 	`;
