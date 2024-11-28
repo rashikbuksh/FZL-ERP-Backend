@@ -5,9 +5,10 @@ RETURNS TRIGGER AS $$
 DECLARE 
     item_name TEXT;
     nylon_stopper_name TEXT;
+    order_type TEXT;
 BEGIN
     -- Fetch item_name and finishing_batch_uuid once
-    SELECT vodf.item_name, vodf.nylon_stopper_name INTO item_name, nylon_stopper_name
+    SELECT vodf.item_name, vodf.nylon_stopper_name, vodf.order_type INTO item_name, nylon_stopper_name, order_type
     FROM zipper.finishing_batch_entry finishing_batch_entry
     LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
@@ -65,8 +66,8 @@ BEGIN
             END
     WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
-    -- Update finishing_batch based on item_name and section
-    IF lower(item_name) IN ('metal', 'vislon', 'nylon') THEN
+    -- Update finishing_batch based on item_name and section AND if order_type is not tape
+    IF lower(item_name) IN ('metal', 'vislon', 'nylon') AND order_type != 'tape' THEN
         UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock -
@@ -96,9 +97,10 @@ RETURNS TRIGGER AS $$
 DECLARE 
     item_name TEXT;
     nylon_stopper_name TEXT;
+    order_type TEXT;
 BEGIN
     -- Fetch item_name and finishing_batch_uuid once
-    SELECT vodf.item_name, vodf.nylon_stopper_name INTO item_name, nylon_stopper_name
+    SELECT vodf.item_name, vodf.nylon_stopper_name, vodf.order_type INTO item_name, nylon_stopper_name, order_type
     FROM zipper.finishing_batch_entry finishing_batch_entry
     LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
@@ -156,8 +158,8 @@ BEGIN
             END
     WHERE fbe.uuid = NEW.finishing_batch_entry_uuid;
 
-    -- Update finishing_batch based on item_name and section
-    IF lower(item_name) IN ('metal', 'vislon', 'nylon') THEN
+    -- Update finishing_batch based on item_name and section AND if order_type is not tape
+    IF lower(item_name) IN ('metal', 'vislon', 'nylon') AND order_type != 'tape' THEN
         UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock -
@@ -185,9 +187,10 @@ RETURNS TRIGGER AS $$
 DECLARE 
     item_name TEXT;
     nylon_stopper_name TEXT;
+    order_type TEXT;
 BEGIN
     -- Fetch item_name and finishing_batch_uuid once
-    SELECT vodf.item_name, vodf.nylon_stopper_name INTO item_name, nylon_stopper_name
+    SELECT vodf.item_name, vodf.nylon_stopper_name, vodf.order_type INTO item_name, nylon_stopper_name, order_type
     FROM zipper.finishing_batch_entry finishing_batch_entry
     LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
@@ -245,8 +248,8 @@ BEGIN
             END
     WHERE fbe.uuid = OLD.finishing_batch_entry_uuid;
 
-    -- Update finishing_batch based on item_name and section
-    IF lower(item_name) IN ('metal', 'vislon', 'nylon') THEN
+    -- Update finishing_batch based on item_name and section AND if order_type is not tape
+    IF lower(item_name) IN ('metal', 'vislon', 'nylon') AND order_type != 'tape' THEN
         UPDATE zipper.finishing_batch fb
         SET 
             slider_finishing_stock = slider_finishing_stock + 
