@@ -41,9 +41,9 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { link } = req.body;
+	const { link, with_link } = req.body;
 
-	if (link > 0) {
+	if (link > 0 || with_link == 1) {
 		req.body.with_link = 1;
 	} else {
 		req.body.with_link = 0;
@@ -153,7 +153,7 @@ export async function selectAll(req, res, next) {
 			production.with_link,
 			CAST(
 				CASE 
-					WHEN stock.link_quantity > 0
+					WHEN production.with_link = 1
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),
@@ -266,7 +266,7 @@ export async function select(req, res, next) {
 			production.with_link,
 			CAST(
 				CASE 
-					WHEN stock.link_quantity > 0
+					WHEN production.with_link = 1
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),
@@ -383,7 +383,7 @@ export async function selectProductionBySection(req, res, next) {
 			production.with_link,
 			CAST(
 				CASE 
-					WHEN stock.link_quantity > 0
+					WHEN production.with_link = 1
 						THEN
 							LEAST(
 								CAST(stock.body_quantity AS DOUBLE PRECISION),
