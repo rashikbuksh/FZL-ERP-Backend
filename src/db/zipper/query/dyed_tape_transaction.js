@@ -86,10 +86,16 @@ export async function selectAll(req, res, next) {
 			u.name AS created_by_name,
 			dtt.created_at AS created_at,
 			dtt.updated_at AS updated_at,
-			dtt.remarks AS remarks
+			dtt.remarks AS remarks,
+			dtt.sfg_uuid as sfg_uuid,
+			oe.color,
+			oe.style,
+			CONCAT(oe.color, ' - ', oe.style) as color_style
 		FROM zipper.dyed_tape_transaction dtt
 			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
+			LEFT JOIN zipper.sfg sfg ON dtt.sfg_uuid = sfg.uuid
+			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		ORDER BY dtt.created_at DESC
 	`;
 
@@ -123,10 +129,16 @@ export async function select(req, res, next) {
 			u.name AS created_by_name,
 			dtt.created_at AS created_at,
 			dtt.updated_at AS updated_at,
-			dtt.remarks AS remarks
+			dtt.remarks AS remarks,
+			dtt.sfg_uuid as sfg_uuid,
+			oe.color,
+			oe.style,
+			CONCAT(oe.color, ' - ', oe.style) as color_style
 		FROM zipper.dyed_tape_transaction dtt
 			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
+			LEFT JOIN zipper.sfg sfg ON dtt.sfg_uuid = sfg.uuid
+			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		WHERE dtt.uuid = ${req.params.uuid}
 	`;
 
@@ -162,16 +174,22 @@ export async function selectDyedTapeTransactionBySection(req, res, next) {
 			u.name AS created_by_name,
 			dtt.created_at AS created_at,
 			dtt.updated_at AS updated_at,
-			dtt.remarks AS remarks
+			dtt.remarks AS remarks,
+			dtt.sfg_uuid as sfg_uuid,
+			oe.color,
+			oe.style,
+			CONCAT(oe.color, ' - ', oe.style) as color_style
 		FROM zipper.dyed_tape_transaction dtt
 			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
+			LEFT JOIN zipper.sfg sfg ON dtt.sfg_uuid = sfg.uuid
+			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		WHERE lower(vod.item_name) = ${req.params.item_name}
 	`;
 
 	if (
-		nylon_stopper !== undefined &&
-		nylon_stopper !== null &&
+		nylon_stopper !== undefined ||
+		nylon_stopper !== null ||
 		nylon_stopper !== ''
 	) {
 		query.append(sql`AND lower(vod.nylon_stopper_name) = ${nylon_stopper}`);

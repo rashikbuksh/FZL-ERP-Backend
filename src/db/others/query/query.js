@@ -743,25 +743,18 @@ export async function selectOrderDescription(req, res, next) {
 					tcr.top::float8,
 					tcr.bottom::float8,
 					tape_coil.dyed_per_kg_meter::float8,
-					coalesce(batch_stock.stock,0)::float8 as stock
+					coalesce(batch_stock.stock,0)::float8 as stock,
+					styles_colors.style_color_object
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
-				LEFT JOIN
-						(
-							SELECT
-								oe.order_description_uuid as order_description_uuid,
-								oe.quantity::float8 - SUM(fbe.quantity::float8) AS balance_quantity
-							FROM
-								zipper.finishing_batch_entry fbe
-							LEFT JOIN 
-								zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
-							LEFT JOIN
-								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-							GROUP BY
-								oe.order_description_uuid, oe.quantity
-					) AS fbe_given ON oe.order_description_uuid = fbe_given.order_description_uuid
+				LEFT JOIN (
+					SELECT jsonb_agg(jsonb_build_object('label', CONCAT(oe.style, ' - ', oe.color), 'value', sfg.uuid)) as style_color_object, oe.order_description_uuid
+					FROM zipper.sfg
+					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					GROUP BY oe.order_description_uuid
+				) styles_colors ON vodf.order_description_uuid = styles_colors.order_description_uuid
 				LEFT JOIN 
 					(
 						SELECT oe.order_description_uuid, 

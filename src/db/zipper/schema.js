@@ -343,6 +343,9 @@ export const dyed_tape_transaction = zipper.table('dyed_tape_transaction', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	sfg_uuid: defaultUUID('sfg_uuid')
+		.references(() => sfg.uuid)
+		.default(null),
 });
 
 export const dyed_tape_transaction_from_stock = zipper.table(
@@ -363,6 +366,9 @@ export const dyed_tape_transaction_from_stock = zipper.table(
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
 		remarks: text('remarks').default(null),
+		sfg_uuid: defaultUUID('sfg_uuid')
+			.references(() => sfg.uuid)
+			.default(null),
 	}
 );
 
