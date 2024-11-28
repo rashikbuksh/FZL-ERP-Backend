@@ -185,6 +185,7 @@ export async function selectSwatchInfo(req, res, next) {
 					sfg.remarks as remarks,
 					vod.order_number as order_number,
 					vod.item_description as item_description,
+					vod.order_type,
 					od.created_at
 				FROM
 					zipper.sfg sfg
@@ -259,6 +260,7 @@ export async function selectSfgBySection(req, res, next) {
 			vod.order_number as order_number,
 			vod.item_description as item_description,
 			vod.order_info_uuid,
+			vod.order_type,
 			oe.order_description_uuid as order_description_uuid,
 			oe.style as style,
 			oe.color as color,
