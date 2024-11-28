@@ -18,7 +18,7 @@ BEGIN
         -- Update zipper.sfg
         UPDATE zipper.sfg
         SET
-            finishing_prod = finishing_prod + NEW.trx_quantity
+            finishing_prod = finishing_prod + NEW.trx_quantity_in_meter
         WHERE uuid = NEW.sfg_uuid;
     END IF;
 
@@ -46,7 +46,7 @@ BEGIN
         -- Update zipper.sfg
         UPDATE zipper.sfg
         SET
-            finishing_prod = finishing_prod + NEW.trx_quantity - OLD.trx_quantity
+            finishing_prod = finishing_prod + NEW.trx_quantity_in_meter - OLD.trx_quantity_in_meter
         WHERE uuid = NEW.sfg_uuid;
     END IF;
 
@@ -73,7 +73,7 @@ BEGIN
         -- Update zipper.sfg
         UPDATE zipper.sfg
         SET
-            finishing_prod = finishing_prod - OLD.trx_quantity
+            finishing_prod = finishing_prod - OLD.trx_quantity_in_meter
         WHERE uuid = OLD.sfg_uuid;
     END IF;
 

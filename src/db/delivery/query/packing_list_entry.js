@@ -105,24 +105,28 @@ export async function selectAll(req, res, next) {
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
 			CASE 
-				WHEN ple.sfg_uuid IS NOT NULL THEN 
-					CASE 
-						WHEN vodf.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-							ELSE CAST(oe.size AS NUMERIC)
-					END 
+				WHEN ple.sfg_uuid IS NOT NULL 
+				THEN oe.size::float8 
 				ELSE tc.length 
 			END as size,
-			concat(oe.style, ' / ', oe.color, ' / ', CASE 
-                WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
-            END) as style_color_size,
+			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
 			sfg.uuid as sfg_uuid,
 			CASE WHEN sfg.uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
 			CASE WHEN sfg.uuid IS NOT NULL THEN  sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
-			CASE WHEN sfg.uuid IS NOT NULL THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
+			vodf.order_type,
+			vodf.is_inch,
+			vodf.is_meter,
+			CASE
+				WHEN sfg.uuid IS NOT NULL
+				THEN
+					CASE
+						WHEN order_type = 'tape'
+						THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+						ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+					END
+				ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
+			END as balance_quantity
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN 
@@ -180,24 +184,28 @@ export async function select(req, res, next) {
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
 			CASE 
-				WHEN ple.sfg_uuid IS NOT NULL THEN 
-					CASE 
-						WHEN vodf.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-							ELSE CAST(oe.size AS NUMERIC)
-					END 
+				WHEN ple.sfg_uuid IS NOT NULL 
+				THEN oe.size::float8 
 				ELSE tc.length 
 			END as size,
-			concat(oe.style, ' / ', oe.color, ' / ', CASE 
-                WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
-            END) as style_color_size,
+			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
 			sfg.uuid as sfg_uuid,
 			CASE WHEN sfg.uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
 			CASE WHEN sfg.uuid IS NOT NULL THEN  sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
-			CASE WHEN sfg.uuid IS NOT NULL THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
+			vodf.order_type,
+			vodf.is_inch,
+			vodf.is_meter,
+			CASE
+				WHEN sfg.uuid IS NOT NULL
+				THEN
+					CASE
+						WHEN order_type = 'tape'
+						THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+						ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+					END
+				ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
+			END as balance_quantity
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN 
@@ -272,20 +280,39 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 					tc.length
 			END as size,
 			vodf.is_inch,
-			concat(oe.style, ' / ', oe.color, ' / ', CASE 
-                WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
-            END) as style_color_size,
+			concat(oe.style, ' / ', oe.color, ' / ', CAST(oe.size AS NUMERIC)) as style_color_size,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
-			CASE WHEN ple.sfg_uuid IS NOT NULL THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity,
+			vodf.order_type,
+			vodf.is_inch,
+			vodf.is_meter,
+			CASE
+				WHEN sfg.uuid IS NOT NULL
+				THEN
+					CASE
+						WHEN order_type = 'tape'
+						THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+						ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+					END
+				ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
+			END as balance_quantity,
 			CASE 
 				WHEN ple.sfg_uuid IS NOT NULL THEN 
 					CASE WHEN pl.item_for = 'sample_zipper' 
-						THEN (ple.quantity + (oe.quantity - sfg.warehouse - sfg.delivered)::float8)
-						ELSE (ple.quantity + LEAST((oe.quantity - sfg.warehouse - sfg.delivered), sfg.finishing_prod)::float8)
+						THEN (ple.quantity + 
+											CASE
+												WHEN order_type = 'tape'
+												THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+												ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+											END)::float8
+						ELSE (ple.quantity + LEAST((
+							CASE
+								WHEN order_type = 'tape'
+								THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+								ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+							END
+						), sfg.finishing_prod)::float8)
 					END
 				ELSE 
 					CASE WHEN pl.item_for = 'sample_thread' 
@@ -368,12 +395,8 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
 			CASE 
-				WHEN ple.sfg_uuid IS NOT NULL THEN 
-					CASE 
-						WHEN vodf.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-							ELSE CAST(oe.size AS NUMERIC)
-					END 
+				WHEN ple.sfg_uuid IS NOT NULL 
+				THEN CAST(oe.size AS NUMERIC)
 				ELSE tc.length 
 			END as size_cm,
 			CASE WHEN
@@ -383,16 +406,24 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 					tc.length
 			END as size,
 			vodf.is_inch,
-			concat(oe.style, ' / ', oe.color, ' / ', CASE 
-                WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
-            END) as style_color_size,
+			concat(oe.style, ' / ', oe.color, ' / ', CAST(oe.size AS NUMERIC)) as style_color_size,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
 			sfg.uuid as sfg_uuid,
 			CASE WHEN sfg.uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
 			CASE WHEN sfg.uuid IS NOT NULL THEN  sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
-			CASE WHEN sfg.uuid IS NOT NULL THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
+			vodf.order_type,
+			vodf.is_inch,
+			vodf.is_meter,
+			CASE
+				WHEN sfg.uuid IS NOT NULL
+				THEN
+					CASE
+						WHEN order_type = 'tape'
+						THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+						ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+					END
+				ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
+			END as balance_quantity
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN 

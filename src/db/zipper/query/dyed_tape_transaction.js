@@ -91,7 +91,8 @@ export async function selectAll(req, res, next) {
 			dtt.sfg_uuid as sfg_uuid,
 			oe.color,
 			oe.style,
-			CONCAT(oe.color, ' - ', oe.style) as color_style
+			CONCAT(oe.color, ' - ', oe.style) as color_style,
+			dtt.trx_quantity_in_meter
 		FROM zipper.dyed_tape_transaction dtt
 			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
@@ -135,7 +136,8 @@ export async function select(req, res, next) {
 			dtt.sfg_uuid as sfg_uuid,
 			oe.color,
 			oe.style,
-			CONCAT(oe.color, ' - ', oe.style) as color_style
+			CONCAT(oe.color, ' - ', oe.style) as color_style,
+			dtt.trx_quantity_in_meter
 		FROM zipper.dyed_tape_transaction dtt
 			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
@@ -181,7 +183,8 @@ export async function selectDyedTapeTransactionBySection(req, res, next) {
 			dtt.sfg_uuid as sfg_uuid,
 			oe.color,
 			oe.style,
-			CONCAT(oe.color, ' - ', oe.style) as color_style
+			CONCAT(oe.color, ' - ', oe.style) as color_style,
+			dtt.trx_quantity_in_meter
 		FROM zipper.dyed_tape_transaction dtt
 			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid

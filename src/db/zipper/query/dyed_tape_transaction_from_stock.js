@@ -136,7 +136,8 @@ export async function selectAll(req, res, next) {
 				dyed_tape_transaction_from_stock.sfg_uuid,
 				oe.color,
 				oe.style,
-				CONCAT(oe.color, ' - ', oe.style) as color_style
+				CONCAT(oe.color, ' - ', oe.style) as color_style,
+				dyed_tape_transaction_from_stock.trx_quantity_in_meter
 			FROM 
 				zipper.dyed_tape_transaction_from_stock
 			LEFT JOIN 
@@ -204,7 +205,8 @@ export async function select(req, res, next) {
 				dyed_tape_transaction_from_stock.sfg_uuid,
 				oe.color,
 				oe.style,
-				CONCAT(oe.color, ' - ', oe.style) as color_style
+				CONCAT(oe.color, ' - ', oe.style) as color_style,
+				dyed_tape_transaction_from_stock.trx_quantity_in_meter
 			FROM 
 				zipper.dyed_tape_transaction_from_stock
 			LEFT JOIN 

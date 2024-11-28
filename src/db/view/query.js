@@ -237,29 +237,47 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
         CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN oe.style ELSE toe.style END as style,
         CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN oe.color ELSE toe.color END as color,
-        CASE 
-            WHEN vodf.is_inch = 1 
-              THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-            ELSE CAST(oe.size AS NUMERIC)
-        END as size,
+        oe.size,
         vodf.is_inch,
         vodf.is_meter,
         vodf.is_cm,
-        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN
-            CONCAT(oe.style, ' / ', oe.color, ' / ', 
-                    CASE 
-                      WHEN vodf.is_inch = 1 
-                        THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                      ELSE CAST(oe.size AS NUMERIC)
-                    END) ELSE CONCAT (toe.style, ' / ', toe.color) END as style_color_size,
-            
-        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
+        CASE 
+            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
+            THEN CONCAT(oe.style, ' / ', oe.color, ' / ', oe.size) 
+            ELSE CONCAT (toe.style, ' / ', toe.color) 
+        END as style_color_size,
+        CASE 
+            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
+            THEN oe.quantity::float8 ELSE toe.quantity 
+        END as order_quantity,
         vodf.order_description_uuid,
-        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN vodf.order_number ELSE CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
-        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN vodf.item_description ELSE CONCAT(tc.count, ' - ', tc.length) END as item_description,
-        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
-		CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
-		CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 END as balance_quantity
+        CASE 
+            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
+            THEN vodf.order_number ELSE CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+        END as order_number,
+        CASE 
+            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
+            THEN vodf.item_description ELSE CONCAT(tc.count, ' - ', tc.length) 
+        END as item_description,
+        CASE 
+            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
+            THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 
+        END as warehouse,
+		CASE 
+            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
+            THEN sfg.delivered::float8 ELSE toe.delivered::float8 
+        END as delivered,
+        vodf.order_type,
+		CASE 
+            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
+            THEN 
+                CASE 
+                    WHEN order_type = 'tape' 
+                    THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+                    ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 
+                END
+            ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 
+        END as balance_quantity
     FROM 
         delivery.packing_list_entry ple
         LEFT JOIN delivery.packing_list pl ON pl.uuid = ple.packing_list_uuid

@@ -346,6 +346,7 @@ export const dyed_tape_transaction = zipper.table('dyed_tape_transaction', {
 	sfg_uuid: defaultUUID('sfg_uuid')
 		.references(() => sfg.uuid)
 		.default(null),
+	trx_quantity_in_meter: PG_DECIMAL('trx_quantity_in_meter').default(0),
 });
 
 export const dyed_tape_transaction_from_stock = zipper.table(
@@ -369,6 +370,7 @@ export const dyed_tape_transaction_from_stock = zipper.table(
 		sfg_uuid: defaultUUID('sfg_uuid')
 			.references(() => sfg.uuid)
 			.default(null),
+		trx_quantity_in_meter: PG_DECIMAL('trx_quantity_in_meter').default(0),
 	}
 );
 
