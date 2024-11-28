@@ -130,96 +130,186 @@ export async function selectParty(req, res, next) {
 
 	switch (item_for) {
 		case 'zipper':
+			let hasZipper = false;
 			query = query.append(
 				sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid`
 			);
 			if (marketing) {
 				query = query.append(
-					sql`WHERE vod.marketing_uuid = ${marketing}`
+					hasZipper
+						? sql` AND vod.marketing_uuid = ${marketing}`
+						: sql` WHERE vod.marketing_uuid = ${marketing}`
 				);
+				hasZipper = true;
 			}
-			if (marketing && is_cash == 'true') {
+			if (marketing && is_cash === 'true') {
 				query = query.append(
-					sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
+					hasZipper
+						? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
+						: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
 				);
-			} else if (marketing && is_cash == 'false') {
+			} else if (marketing && is_cash === 'false') {
 				query = query.append(
-					sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
+					hasZipper
+						? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
+						: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
 				);
+				hasZipper = false;
 			}
 
-			if (!marketing && is_cash == 'true') {
+			if (!marketing && is_cash === 'true') {
 				query = query.append(
-					sql`WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+					hasZipper
+						? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
+						: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
 				);
-			} else if (!marketing && is_cash == 'false') {
+			} else if (!marketing && is_cash === 'false') {
 				query = query.append(
-					sql`WHERE vod.is_cash = 0 AND vod.is_sample = 0`
+					hasZipper
+						? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
+						: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
 				);
 			}
 			break;
+
 		case 'thread':
+			let hasThread = false;
 			query = query.append(
 				sql`LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid`
 			);
 			if (marketing) {
 				query = query.append(
-					sql`WHERE oi.marketing_uuid = ${marketing}`
+					hasThread
+						? sql` AND oi.marketing_uuid = ${marketing}`
+						: sql` WHERE oi.marketing_uuid = ${marketing}`
 				);
+				hasThread = true;
 			}
-			if (marketing && is_cash == 'true') {
+
+			if (marketing && is_cash === 'true') {
 				query = query.append(
-					sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
+					hasThread
+						? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
+						: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
 				);
-			} else if (marketing && is_cash == 'false') {
+			} else if (marketing && is_cash === 'false') {
 				query = query.append(
-					sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
+					hasThread
+						? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
+						: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
+				);
+				hasThread = false;
+			}
+
+			if (!marketing && is_cash === 'true') {
+				query = query.append(
+					hasThread
+						? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
+						: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
+				);
+			} else if (!marketing && is_cash === 'false') {
+				query = query.append(
+					hasThread
+						? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
+						: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
 				);
 			}
 
-			if (!marketing && is_cash == 'true') {
-				query = query.append(
-					sql`WHERE oi.is_cash = 1 AND oi.is_sample = 0`
-				);
-			} else if (!marketing && is_cash == 'false') {
-				query = query.append(
-					sql`WHERE oi.is_cash = 0 AND oi.is_sample = 0`
-				);
-			}
 			break;
 		case 'all':
 		default:
+			let hasWhere = false;
+
 			query = query.append(
-				sql`
-				LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid 
-				LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid
-				`
+				sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid`
 			);
+
 			if (marketing) {
 				query = query.append(
-					sql`WHERE (vod.marketing_uuid = ${marketing} OR oi.marketing_uuid = ${marketing})`
+					hasWhere
+						? sql` AND vod.marketing_uuid = ${marketing}`
+						: sql` WHERE vod.marketing_uuid = ${marketing}`
+				);
+				hasWhere = true;
+			}
+			if (marketing && is_cash === 'true') {
+				query = query.append(
+					hasWhere
+						? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
+						: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+				);
+			} else if (marketing && is_cash === 'false') {
+				query = query.append(
+					hasWhere
+						? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
+						: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
+				);
+				hasWhere = false;
+			}
+
+			if (!marketing && is_cash === 'true') {
+				query = query.append(
+					hasWhere
+						? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
+						: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+				);
+			} else if (!marketing && is_cash === 'false') {
+				query = query.append(
+					hasWhere
+						? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
+						: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
 				);
 			}
 
-			if (marketing && is_cash == 'true') {
+			query = query.append(sql` UNION `);
+			hasWhere = false;
+
+			query = query.append(
+				sql`SELECT DISTINCT
+						party.uuid AS value,
+						party.name AS label
+					FROM public.party
+					LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid`
+			);
+
+			if (marketing) {
 				query = query.append(
-					sql` AND (vod.is_cash = 1 OR oi.is_cash = 1) AND (vod.is_sample = 0 OR oi.is_sample = 0)`
+					hasWhere
+						? sql` AND oi.marketing_uuid = ${marketing}`
+						: sql` WHERE oi.marketing_uuid = ${marketing}`
 				);
-			} else if (marketing && is_cash == 'false') {
+				hasWhere = true;
+			}
+
+			if (marketing && is_cash === 'true') {
 				query = query.append(
-					sql` AND (vod.is_cash = 0 OR oi.is_cash = 0) AND (vod.is_sample = 0 OR oi.is_sample = 0)`
+					hasWhere
+						? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
+						: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
+				);
+			} else if (marketing && is_cash === 'false') {
+				query = query.append(
+					hasWhere
+						? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
+						: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
+				);
+				hasWhere = false;
+			}
+
+			if (!marketing && is_cash === 'true') {
+				query = query.append(
+					hasWhere
+						? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
+						: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
+				);
+			} else if (!marketing && is_cash === 'false') {
+				query = query.append(
+					hasWhere
+						? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
+						: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
 				);
 			}
 
-			if (!marketing && is_cash == 'true') {
-				query = query.append(
-					sql`WHERE (vod.is_cash = 1 OR oi.is_cash = 1) AND (vod.is_sample = 0 OR oi.is_sample = 0)`
-				);
-			} else if (!marketing && is_cash == 'false') {
-				query = query.append(
-					sql`WHERE (vod.is_cash = 0 OR oi.is_cash = 0) AND (vod.is_sample = 0 OR oi.is_sample = 0)`
-				);
-			}
 			break;
 	}
 
