@@ -794,6 +794,7 @@ export const pathDeliveryChallan = {
 			summary: 'Get all challans',
 			description: 'Get all challans',
 			// operationId: "getChallan",
+			parameters: [SE.parameter_query('delivery_date', 'delivery_date')],
 			responses: {
 				200: {
 					description: 'Return list of challans',

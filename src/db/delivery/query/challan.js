@@ -126,6 +126,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { delivery_date } = req.query;
 	const query = sql`
 	SELECT
 		main_query.*,
@@ -228,6 +229,8 @@ export async function selectAll(req, res, next) {
 				GROUP BY
 					packing_list.challan_uuid
 			) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
+			WHERE
+			  ${delivery_date ? sql`DATE(challan.delivery_date) = ${delivery_date}` : sql`TRUE`}
 		) AS main_query
 	LEFT JOIN (
 		SELECT
