@@ -656,6 +656,8 @@ export async function selectOrderDescription(req, res, next) {
 					coalesce(batch_stock.stock,0)::float8 as stock
 				FROM
 					zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
 				LEFT JOIN 
 					(
 						SELECT oe.order_description_uuid, 
@@ -697,30 +699,6 @@ export async function selectOrderDescription(req, res, next) {
 					CASE WHEN order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
 				`;
 
-	if (dyed_tape_required == 'false') {
-	} else {
-		query.append(sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`);
-	}
-
-	if (swatch_approved === 'true') {
-		query.append(
-			sql` AND CASE WHEN order_type = 'slider' THEN 1=1 ELSE swatch_approval_counts.swatch_approval_count > 0 END`
-		);
-	}
-	if (item == 'nylon') {
-		query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`);
-	} else if (item == 'without-nylon') {
-		query.append(sql` AND LOWER(vodf.item_name) != 'nylon'`);
-	}
-
-	if (tape_received == 'true') {
-		query.append(sql` AND vodf.tape_received > 0`);
-	}
-	if (is_balance == 'true') {
-		query.append(
-			sql` AND coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0) > 0`
-		);
-	}
 	let page_query = '';
 	if (page == 'finishing_batch') {
 		page_query = sql` 
@@ -819,7 +797,55 @@ export async function selectOrderDescription(req, res, next) {
 		`;
 	}
 
+	if (dyed_tape_required == 'false') {
+	} else {
+		query.append(sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`);
+		page
+			? page_query.append(
+					sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`
+				)
+			: '';
+	}
+
+	if (swatch_approved === 'true') {
+		query.append(
+			sql` AND CASE WHEN order_type = 'slider' THEN 1=1 ELSE swatch_approval_counts.swatch_approval_count > 0 END`
+		);
+		page
+			? page_query.append(
+					sql` AND CASE WHEN order_type = 'slider' THEN 1=1 ELSE swatch_approval_counts.swatch_approval_count > 0 END`
+				)
+			: '';
+	}
+	if (item == 'nylon') {
+		query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`);
+		page
+			? page_query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`)
+			: '';
+	} else if (item == 'without-nylon') {
+		query.append(sql` AND LOWER(vodf.item_name) != 'nylon'`);
+		page
+			? page_query.append(sql` AND LOWER(vodf.item_name) != 'nylon'`)
+			: '';
+	}
+
+	if (tape_received == 'true') {
+		query.append(sql` AND vodf.tape_received > 0`);
+		page ? page_query.append(sql` AND vodf.tape_received > 0`) : '';
+	}
+	if (is_balance == 'true') {
+		query.append(
+			sql` AND coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0) > 0`
+		);
+		page
+			? page_query.append(
+					sql` AND coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0) > 0`
+				)
+			: '';
+	}
+
 	query.append(sql` ORDER BY vodf.order_number`);
+	page ? query.append(page_query) : '';
 
 	const orderEntryPromise = db.execute(query);
 
@@ -832,6 +858,12 @@ export async function selectOrderDescription(req, res, next) {
 
 	try {
 		const data = await orderEntryPromise;
+		const pageData = page ? await pagePromise : '';
+
+		const response = {
+			...data,
+			pageData: pageData,
+		};
 
 		const toast = {
 			status: 200,
@@ -839,7 +871,7 @@ export async function selectOrderDescription(req, res, next) {
 			message: 'Order Description list',
 		};
 
-		res.status(200).json({ toast, data: data?.rows });
+		res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}
