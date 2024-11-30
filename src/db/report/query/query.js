@@ -433,35 +433,38 @@ export async function PiToBeRegister(req, res, next) {
             SELECT 
                 party.uuid,
                 party.name,
+                vodf_grouped.order_object,
                 vodf_grouped.total_quantity::float8,
-                vodf_grouped.total_pi::float8,
-                vodf_grouped.total_balance_pi_quantity::float8,
-                vodf_grouped.total_balance_pi_value::float8,
-                vodf_grouped.total_delivered::float8,
-                vodf_grouped.total_undelivered_balance_quantity::float8
+                vodf_grouped.total_balance_delivery_quantity::float8,
+                vodf_grouped.total_balance_delivery_value::float8,
+                vodf_grouped.total_delivered::float8
             FROM
                 public.party party
             LEFT JOIN (
                 SELECT 
+                    jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', vodf.order_number)) as order_object,
                     SUM(order_entry.quantity) AS total_quantity,
-                    SUM(order_entry.quantity - sfg.pi) AS total_balance_pi_quantity,
-                    SUM((order_entry.quantity - sfg.pi) * order_entry.party_price) AS total_balance_pi_value,
-                    SUM(sfg.pi) AS total_pi,
+                    SUM(order_entry.quantity - sfg.delivered) AS total_balance_delivery_quantity,
+                    SUM((order_entry.quantity - sfg.delivered) * order_entry.party_price) AS total_balance_delivery_value,
                     SUM(sfg.delivered) AS total_delivered,
-                    SUM(sfg.pi - sfg.delivered) AS total_undelivered_balance_quantity,
-                    vodf.party_uuid,
-                    vodf.party_name
+                    vodf.party_uuid
                 FROM
                     zipper.sfg
+                LEFT JOIN 
+                    commercial.pi_cash_entry pce ON pce.sfg_uuid != sfg.uuid
                 LEFT JOIN
                     zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
                 LEFT JOIN 
                     zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                WHERE pce.sfg_uuid IS NULL
                 GROUP BY
-                    vodf.party_uuid, vodf.party_name
+                    vodf.party_uuid
             ) vodf_grouped ON party.uuid = vodf_grouped.party_uuid
             WHERE 
-                vodf_grouped.total_quantity > 0 OR vodf_grouped.total_delivered > 0 OR vodf_grouped.total_balance_pi_quantity > 0 OR vodf_grouped.total_undelivered_balance_quantity > 0
+                vodf_grouped.total_quantity > 0 OR 
+                vodf_grouped.total_delivered > 0 OR 
+                vodf_grouped.total_balance_delivery_quantity > 0 OR 
+                vodf_grouped.total_balance_delivery_value > 0
         `;
 
 	const resultPromise = db.execute(query);
