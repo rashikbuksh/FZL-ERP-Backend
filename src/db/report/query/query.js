@@ -361,6 +361,7 @@ export async function PiRegister(req, res, next) {
                 pi_cash.conversion_rate,
                 pi_cash_entry_order_numbers.total_pi_quantity::float8,
                 (pi_cash_entry_order_numbers.total_zipper_pi_price + pi_cash_entry_order_numbers.total_thread_pi_price)::float8 as total_pi_value,
+                pi_cash_entry_order_numbers.order_type,
                 pi_cash.lc_uuid,
                 lc.lc_number,
                 lc.lc_date,
@@ -384,10 +385,12 @@ export async function PiRegister(req, res, next) {
             LEFT JOIN (
 				SELECT 
                     array_agg(DISTINCT vodf.order_number) as order_numbers, 
+                    jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', vodf.order_number)) as order_object,
                     array_agg(DISTINCT CASE WHEN toi.uuid is NOT NULL THEN concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, 
+                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CASE WHEN toi.uuid is NOT NULL THEN concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END)) as thread_order_object,
                     pi_cash_uuid, 
                     SUM(pe.pi_cash_quantity)::float8 as total_pi_quantity,
-                    SUM(pe.pi_cash_quantity * (oe.party_price/12))::float8 as total_zipper_pi_price, 
+                    SUM(pe.pi_cash_quantity * coalesce(CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE oe.party_price/12 END, 0))::float8 as total_zipper_pi_price, 
                     SUM(pe.pi_cash_quantity * toe.party_price)::float8 as total_thread_pi_price
 				FROM
 					commercial.pi_cash_entry pe 
@@ -450,13 +453,18 @@ export async function PiToBeRegister(req, res, next) {
                     vodf.party_uuid
                 FROM
                     zipper.sfg
-                LEFT JOIN 
-                    commercial.pi_cash_entry pce ON pce.sfg_uuid = sfg.uuid
                 LEFT JOIN
                     zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
                 LEFT JOIN 
                     zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-                WHERE pce.sfg_uuid IS NULL
+                LEFT JOIN (
+                    SELECT DISTINCT vodf.order_info_uuid
+                    FROM commercial.pi_cash_entry
+                    LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
+                WHERE order_exists_in_pi.order_info_uuid IS NULL
                 GROUP BY
                     vodf.party_uuid
             ) vodf_grouped ON party.uuid = vodf_grouped.party_uuid

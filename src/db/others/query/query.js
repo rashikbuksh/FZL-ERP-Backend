@@ -1360,15 +1360,17 @@ export async function selectPi(req, res, next) {
 		pi_cash.uuid AS value,
 		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
 		bank.name AS pi_bank,
-		ROUND(
-			SUM(
-				CASE 
-					WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
-					THEN coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12 
-					ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
-				END
-			)
-		,2)::float8 AS pi_value,
+		SUM(
+			CASE 
+				WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
+				THEN coalesce(pi_cash_entry.pi_cash_quantity,0)  * 
+						CASE WHEN v_order_details.order_type = 'tape' 
+							THEN order_entry.size::float8 * (order_entry.party_price::float8)::float8 
+							ELSE pi_cash_entry.pi_cash_quantity::float8  * order_entry.party_price::float8/12
+						END
+				ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
+			END
+		)::float8 AS pi_value,
 		ARRAY_AGG(DISTINCT CASE WHEN pi_cash_entry.sfg_uuid IS NOT NULL THEN v_order_details.order_number ELSE concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END) AS order_number,
 		marketing.name AS marketing_name
 	FROM
@@ -1391,7 +1393,15 @@ export async function selectPi(req, res, next) {
 		public.marketing ON toi.marketing_uuid = marketing.uuid OR v_order_details.marketing_uuid = marketing.uuid
 	WHERE
 		pi_cash.is_pi = 1
-		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
+		${
+			is_update === 'true'
+				? sql``
+				: sql`AND lc_uuid IS NULL AND (coalesce(pi_cash_entry.pi_cash_quantity,0)  * 
+							CASE WHEN v_order_details.order_type = 'tape' 
+								THEN order_entry.size::float8 * (order_entry.party_price::float8)::float8 
+								ELSE pi_cash_entry.pi_cash_quantity::float8  * (order_entry.party_price::float8 /12)
+							END > 0 OR coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) > 0)`
+		}
 		AND (marketing.name is not null)
 		${party_uuid ? sql`AND pi_cash.party_uuid = ${party_uuid}` : sql``}
 	GROUP BY

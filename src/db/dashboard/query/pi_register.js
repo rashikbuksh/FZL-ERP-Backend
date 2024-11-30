@@ -35,7 +35,11 @@ export async function selectPiRegister(req, res, next) {
                     SELECT 
                         pi_cash_uuid, 
                         SUM(pe.pi_cash_quantity)::float8 as total_pi_quantity,
-                        SUM(pe.pi_cash_quantity * coalesce(CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE oe.party_price/12 END, 0))::float8 as total_zipper_pi_price, 
+                        SUM(
+                            CASE WHEN vodf.order_type = 'tape' 
+                            THEN oe.size * coalesce(oe.party_price/12 , 0) 
+                            ELSE pe.pi_cash_quantity * coalesce(oe.party_price/12 , 0) 
+                        END)::float8 as total_zipper_pi_price, 
                         SUM(pe.pi_cash_quantity * coalesce(toe.party_price, 0))::float8 as total_thread_pi_price
                     FROM
                         commercial.pi_cash_entry pe 
