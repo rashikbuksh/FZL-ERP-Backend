@@ -451,7 +451,7 @@ export async function PiToBeRegister(req, res, next) {
                 FROM
                     zipper.sfg
                 LEFT JOIN 
-                    commercial.pi_cash_entry pce ON pce.sfg_uuid != sfg.uuid
+                    commercial.pi_cash_entry pce ON pce.sfg_uuid = sfg.uuid
                 LEFT JOIN
                     zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
                 LEFT JOIN 
