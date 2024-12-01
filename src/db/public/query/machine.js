@@ -225,7 +225,7 @@ export async function selectByDate(req, res, next) {
 			0 as total_quantity,
 			tb.status as batch_status,
 			0 as expected_kg,
-			0 as total_actual_production_quantity,
+			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 as total_actual_production_quantity,
 			null as received,
 			CONCAT(tcl.count,'-',tcl.length) as item_description
 		FROM public.machine pm
@@ -234,6 +234,14 @@ export async function selectByDate(req, res, next) {
 		LEFT JOIN thread.order_entry toe ON toe.uuid = tbe.order_entry_uuid
 		LEFT JOIN thread.order_info toi ON toi.uuid = toe.order_info_uuid
 		LEFT JOIN thread.count_length tcl ON tcl.uuid = toe.count_length_uuid
+		LEFT JOIN (
+			SELECT
+				SUM(tbe.coning_production_quantity::float8) as total_actual_production_quantity,
+				tbe.batch_uuid
+			FROM thread.batch_entry tbe
+			GROUP BY tbe.batch_uuid
+		) AS expected ON tb.uuid = expected.batch_uuid
+
 		WHERE DATE(tb.production_date) = ${req.params.date}
     `;
 
