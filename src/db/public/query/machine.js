@@ -256,7 +256,7 @@ export async function selectByDate(req, res, next) {
 					order_no: item.order_number,
 					order_uuid: item.order_uuid,
 					color: item.color,
-					weight: item.weight,
+					production_quantity_in_kg: item.production_quantity_in_kg,
 					total_quantity: item.total_quantity,
 					expected_kg: item.expected_kg,
 					batch_status: item.batch_status,
