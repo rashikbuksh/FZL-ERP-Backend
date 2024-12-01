@@ -215,7 +215,7 @@ export async function selectByDate(req, res, next) {
 	UNION 
 		SELECT 
 			DATE(tb.production_date) as date,
-			pm.name AS machine_name,
+			CONCAT(pm.name, '(', pm.min_capacity::float8, '-', pm.max_capacity::float8, ')') AS machine_name,
 			tb.slot,
 			CONCAT('TB', to_char(tb.created_at, 'YY'), '-', LPAD(tb.id::text, 4, '0')) AS batch_no,
 			tb.uuid AS batch_uuid,
