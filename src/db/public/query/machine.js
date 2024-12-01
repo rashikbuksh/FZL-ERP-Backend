@@ -223,7 +223,7 @@ export async function selectByDate(req, res, next) {
 			toi.uuid as order_uuid,
 			toe.color,
 			toe.production_quantity_in_kg::float8,
-			0 as total_quantity,
+			expected.total_quantity::float8,
 			tb.status as batch_status,
 			0 as expected_kg,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 as total_actual_production_quantity,
@@ -239,6 +239,7 @@ export async function selectByDate(req, res, next) {
 		LEFT JOIN (
 			SELECT
 				SUM(tbe.coning_production_quantity::float8) as total_actual_production_quantity,
+				SUM(tbe.quantity::float8) as total_quantity,
 				tbe.batch_uuid
 			FROM thread.batch_entry tbe
 			GROUP BY tbe.batch_uuid
