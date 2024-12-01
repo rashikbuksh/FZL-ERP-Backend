@@ -169,7 +169,8 @@ export async function selectAll(req, res, next) {
 			pi_cash.conversion_rate::float8,
 			pi_cash.weight::float8,
 			pi_cash.receive_amount::float8,
-			CASE WHEN pi_cash.is_pi = 1 THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 END AS total_amount
+			CASE WHEN pi_cash.is_pi = 1 THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 END AS total_amount,
+			od.order_type
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
@@ -188,6 +189,12 @@ export async function selectAll(req, res, next) {
 			commercial.lc ON pi_cash.lc_uuid = lc.uuid
 		LEFT JOIN
 			commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+		LEFT JOIN 
+			zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+		LEFT JOIN
+			zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+		LEFT JOIN
+			zipper.order_description od ON order_entry.order_description_uuid = od.uuid
 		LEFT JOIN
 				(
 					SELECT
@@ -275,7 +282,8 @@ export async function selectAll(req, res, next) {
 			pi_cash.created_by,
 			pi_cash.id,
 			total_pi_amount.total_amount,
-			total_pi_amount_thread.total_amount
+			total_pi_amount_thread.total_amount,
+			od.order_type
 		ORDER BY 
 			pi_cash.created_at DESC;`;
 
