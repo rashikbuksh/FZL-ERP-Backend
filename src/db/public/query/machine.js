@@ -156,7 +156,7 @@ export async function selectByDate(req, res, next) {
 
 	const machineQuery = sql`SELECT 
 		uuid AS machine_uuid,
-		name AS machine_name
+		CONCAT(name, '(', min_capacity::float8, '-', max_capacity::float8, ')') AS machine_name
 	 FROM public.machine`;
 
 	const dataQuery = sql`
