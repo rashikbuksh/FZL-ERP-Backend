@@ -162,7 +162,7 @@ export async function selectByDate(req, res, next) {
 	const dataQuery = sql`
         SELECT
             DATE(zdb.production_date) as date,
-            pm.name AS machine_name,
+			CONCAT(pm.name, '(', pm.min_capacity::float8, '-', pm.max_capacity::float8, ')') AS machine_name,
             zdb.slot,
             CONCAT('B', to_char(zdb.created_at, 'YY'), '-', LPAD(zdb.id::text, 4, '0')) AS batch_no,
 			zdb.uuid AS batch_uuid,
