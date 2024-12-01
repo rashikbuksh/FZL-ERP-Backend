@@ -1363,11 +1363,11 @@ export async function selectPi(req, res, next) {
 		SUM(
 			CASE 
 				WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
-				THEN coalesce(pi_cash_entry.pi_cash_quantity,0)  * 
-						CASE WHEN v_order_details.order_type = 'tape' 
-							THEN order_entry.size::float8 * (order_entry.party_price::float8)::float8 
-							ELSE pi_cash_entry.pi_cash_quantity::float8  * order_entry.party_price::float8/12
-						END
+				THEN 
+					CASE WHEN v_order_details.order_type = 'tape' 
+						THEN order_entry.size::float8 * (order_entry.party_price::float8)::float8 
+						ELSE pi_cash_entry.pi_cash_quantity::float8  * order_entry.party_price::float8/12
+					END
 				ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
 			END
 		)::float8 AS pi_value,
@@ -1396,11 +1396,7 @@ export async function selectPi(req, res, next) {
 		${
 			is_update === 'true'
 				? sql``
-				: sql`AND lc_uuid IS NULL AND (coalesce(pi_cash_entry.pi_cash_quantity,0)  * 
-							CASE WHEN v_order_details.order_type = 'tape' 
-								THEN order_entry.size::float8 * (order_entry.party_price::float8)::float8 
-								ELSE pi_cash_entry.pi_cash_quantity::float8  * (order_entry.party_price::float8 /12)
-							END > 0 OR coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) > 0)`
+				: sql`AND lc_uuid IS NULL AND (order_entry.quantity - sfg.pi)::float8 > 0 OR (toe.quantity - toe.pi)::float8 > 0`
 		}
 		AND (marketing.name is not null)
 		${party_uuid ? sql`AND pi_cash.party_uuid = ${party_uuid}` : sql``}
