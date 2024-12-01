@@ -175,7 +175,8 @@ export async function selectByDate(req, res, next) {
 			expected.expected_kg::float8 as expected_kg,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
 			zdb.received,
-			vodf.item_description
+			vodf.item_description,
+			1 as is_zipper
         FROM public.machine pm
         LEFT JOIN zipper.dyeing_batch zdb ON zdb.machine_uuid = pm.uuid
         LEFT JOIN zipper.dyeing_batch_entry zbe ON zbe.dyeing_batch_uuid = zdb.uuid
@@ -222,12 +223,13 @@ export async function selectByDate(req, res, next) {
 			toi.uuid as order_uuid,
 			toe.color,
 			toe.production_quantity_in_kg::float8,
-			0 as total_quantity,
+			expected.total_quantity::float8,
 			tb.status as batch_status,
 			0 as expected_kg,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 as total_actual_production_quantity,
 			null as received,
-			CONCAT(tcl.count,'-',tcl.length) as item_description
+			CONCAT(tcl.count,'-',tcl.length) as item_description,
+			0 as is_zipper
 		FROM public.machine pm
 		LEFT JOIN thread.batch tb ON tb.machine_uuid = pm.uuid
 		LEFT JOIN thread.batch_entry tbe ON tbe.batch_uuid = tb.uuid
@@ -237,6 +239,7 @@ export async function selectByDate(req, res, next) {
 		LEFT JOIN (
 			SELECT
 				SUM(tbe.coning_production_quantity::float8) as total_actual_production_quantity,
+				SUM(tbe.quantity::float8) as total_quantity,
 				tbe.batch_uuid
 			FROM thread.batch_entry tbe
 			GROUP BY tbe.batch_uuid
@@ -272,6 +275,7 @@ export async function selectByDate(req, res, next) {
 						item.total_actual_production_quantity,
 					received: item.received,
 					item_description: item.item_description,
+					is_zipper: item.is_zipper,
 				};
 			}
 			return acc;
