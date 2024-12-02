@@ -1108,6 +1108,8 @@ export async function selectOrderNumberForPi(req, res, next) {
 			FROM
 				zipper.v_order_details vod
 				LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
+				LEFT JOIN zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 			WHERE
 				vod.is_cash = 1 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
