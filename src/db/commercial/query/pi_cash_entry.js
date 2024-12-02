@@ -176,6 +176,13 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					CONCAT(vodf.item_name, ' Zipper', '-', vodf.zipper_number_short_name, '-', vodf.end_type_short_name, '-', vodf.puller_type_short_name) as pi_item_description,
 					vodf.is_inch,
 					oe.size::float8,
+					CASE
+						WHEN vodf.is_inch = 1
+							THEN 'Inch'
+						WHEN vodf.order_type = 'tape'
+							THEN 'Meter'
+						ELSE 'CM'
+					END as size_unit,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity::float8 ELSE toe.quantity::float8 END as max_quantity,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as unit_price,
 					CASE 
@@ -209,6 +216,11 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							END
 						ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 4)::float8 
 					END as value_dzn,
+					CASE 
+						WHEN vodf.order_type = 'tape'
+						THEN 'Meter'
+						ELSE 'Dzn'
+					END as price_unit,
 					CASE 
 						WHEN pe.thread_order_entry_uuid IS NULL 
 						THEN (oe.quantity - sfg.pi)::float8 
@@ -326,6 +338,13 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             oe.style as style,
             oe.color as color,
 			oe.size,
+			CASE 
+				WHEN vod.is_inch = 1
+					THEN 'Inch'
+				WHEN vod.order_type = 'tape' 
+					THEN 'Meter' 
+				ELSE 'CM' 
+			END as size_unit,
 			vod.is_inch,
 			vod.is_meter,
 			vod.order_type,
@@ -340,6 +359,11 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             (oe.quantity - sfg.pi)::float8 as balance_quantity,
 			oe.party_price::float8 as unit_price,
 			CASE WHEN vod.order_type = 'tape' THEN oe.party_price::float8 ELSE oe.party_price/12::float8 END as unit_price_pcs,
+			CASE 
+				WHEN vod.order_type = 'tape'
+				THEN 'Meter'
+				ELSE 'Dzn'
+			END as price_unit,
             CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked,
 			false as is_thread_order
         FROM
