@@ -226,17 +226,30 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN 
 			(
 				SELECT 
-					(SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12))::float8 as total_amount, pi_cash.uuid as pi_cash_uuid
+					SUM(
+						CASE 
+							WHEN od.order_type = 'tape' 
+							THEN order_entry.size::float8 * coalesce(order_entry.party_price,0)
+							ELSE coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(order_entry.party_price/12,0)
+						END)::float8 
+					as total_amount, 
+					pi_cash.uuid as pi_cash_uuid
 				FROM commercial.pi_cash 
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+					LEFT JOIN zipper.order_description od ON order_entry.order_description_uuid = od.uuid
 				GROUP BY pi_cash.uuid
 		) total_pi_amount ON total_pi_amount.pi_cash_uuid = pi_cash.uuid
 		LEFT JOIN 
 			(
 				SELECT 
-					(SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)))::float8 as total_amount, pi_cash.uuid as pi_cash_uuid
+					(
+						SUM(
+							coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)
+						)
+					)::float8 as total_amount, 
+					pi_cash.uuid as pi_cash_uuid
 				FROM commercial.pi_cash 
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN thread.order_entry ON pi_cash_entry.thread_order_entry_uuid = order_entry.uuid 
@@ -245,7 +258,6 @@ export async function selectAll(req, res, next) {
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${own_uuid}` : sql`TRUE`}
-		
 		GROUP BY
 			pi_cash.uuid, 
 			lc.lc_number, 

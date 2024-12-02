@@ -178,18 +178,42 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					oe.size::float8,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity::float8 ELSE toe.quantity::float8 END as max_quantity,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as unit_price,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN ROUND(oe.party_price/12, 4)::float8 ELSE toe.party_price::float8 END as unit_price_pcs,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi::float8 ELSE toe.pi::float8 END as given_pi_cash_quantity,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL 
+					CASE 
+						WHEN pe.thread_order_entry_uuid IS NULL 
 						THEN 
-							CASE WHEN vodf.order_type = 'tape' 
+							CASE 
+								WHEN vodf.order_type = 'tape' 
+								THEN oe.party_price::float8 
+								ELSE oe.party_price/12::float8 
+							END
+						ELSE toe.party_price::float8 
+					END as unit_price_pcs,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN sfg.pi::float8 ELSE toe.pi::float8 END as given_pi_cash_quantity,
+					CASE 
+						WHEN pe.thread_order_entry_uuid IS NULL 
+						THEN 
+							CASE 
+								WHEN vodf.order_type = 'tape' 
 								THEN oe.size::float8 * (oe.party_price::float8)::float8 
 								ELSE ROUND(pe.pi_cash_quantity * oe.party_price/12, 4)::float8 
 							END
 						ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 4)::float8 
 					END as value,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN ROUND((pe.pi_cash_quantity/12) * oe.party_price, 4)::float8 ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 4)::float8 END as value_dzn,
-					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN (oe.quantity - sfg.pi)::float8 ELSE (toe.quantity - toe.pi)::float8 END as balance_quantity,
+					CASE 
+						WHEN pe.thread_order_entry_uuid IS NULL 
+						THEN 
+							CASE 
+								WHEN vodf.order_type = 'tape'
+								THEN oe.size::float8 * (oe.party_price::float8)::float8
+								ELSE ROUND(pe.pi_cash_quantity/12 * oe.party_price, 4)::float8
+							END
+						ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 4)::float8 
+					END as value_dzn,
+					CASE 
+						WHEN pe.thread_order_entry_uuid IS NULL 
+						THEN (oe.quantity - sfg.pi)::float8 
+						ELSE (toe.quantity - toe.pi)::float8 
+					END as balance_quantity,
 					pe.thread_order_entry_uuid as thread_order_entry_uuid,
 					toe.count_length_uuid as count_length_uuid,
 					CONCAT(count_length.count,' ', count_length.length) as count_length_name,
