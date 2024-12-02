@@ -1,8 +1,9 @@
 import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
-import * as reportOperations from './query/query.js';
 import { order_description, order_info } from '../zipper/schema.js';
+import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
+import * as reportOperations from './query/query.js';
 
 const reportRouter = Router();
 
@@ -64,6 +65,12 @@ reportRouter.get(
 reportRouter.get(
 	'/delivery-statement-report',
 	reportOperations.deliveryStatementReport
+);
+
+//* Party Wise Production Report Thread
+reportRouter.get(
+	'/production-report-thread-party-wise',
+	ProductionReportThreadPartyWise
 );
 
 export const pathReport = {
@@ -351,6 +358,23 @@ export const pathReport = {
 					size: SE.string('Size'),
 					total_close_end_quantity: SE.number(610),
 					total_open_end_quantity: SE.number(610),
+					total_quantity: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/production-report-thread-party-wise': {
+		get: {
+			summary: 'Party Wise Production Report Thread',
+			description: 'Party Wise Production Report Thread',
+			tags: ['report'],
+			operationId: 'ProductionReportThreadPartyWise',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					party_uuid: SE.uuid(),
+					party_name: SE.string('Party Name'),
+					count_length_name: SE.string('Count Length Name'),
 					total_quantity: SE.number(610),
 				}),
 			},
