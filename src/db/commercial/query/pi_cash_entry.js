@@ -305,11 +305,11 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 			vod.is_inch,
 			vod.is_meter,
             CASE 
-                WHEN vod.is_inch = 1 THEN (oe.size::numeric * 2.54)::float8 
+                WHEN vod.order_type = 'tape' THEN (oe.size::numeric * 2.54)::float8 
                 ELSE 0
             END as size_inch,
-			CASE WHEN 
-				vod.is_meter = 1 THEN (oe.size::numeric * 100)::float8
+			CASE 
+				WHEN vod.order_type = 'tape' THEN (oe.size::numeric * 100)::float8
 				ELSE 0
 			END as size_meter,
             oe.quantity::float8 as quantity,
@@ -317,6 +317,8 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             (oe.quantity - sfg.pi)::float8 as max_quantity,
             (oe.quantity - sfg.pi)::float8 as pi_cash_quantity,
             (oe.quantity - sfg.pi)::float8 as balance_quantity,
+			oe.party_price::float8 as unit_price,
+			oe.party_price/12::float8 as unit_price_pcs,
             CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked,
 			false as is_thread_order
         FROM
@@ -372,6 +374,7 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
             (toe.quantity - toe.pi)::float8 as max_quantity,
             (toe.quantity - toe.pi)::float8 as pi_cash_quantity,
             (toe.quantity - toe.pi)::float8 as balance_quantity,
+			toe.party_price::float8 as unit_price,
             CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked,
 			true as is_thread_order
         FROM
