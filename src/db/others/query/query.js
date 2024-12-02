@@ -838,19 +838,19 @@ export async function selectOrderDescription(req, res, next) {
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
 				LEFT JOIN lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
-				LEFT JOIN
+				LEFT JOIN 
 						(
 							SELECT
 								oe.order_description_uuid as order_description_uuid,
-								oe.quantity::float8 - SUM(fbe.quantity::float8) AS balance_quantity
-							FROM
-								zipper.finishing_batch_entry fbe
-							LEFT JOIN 
-								zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
-							LEFT JOIN
-								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-							GROUP BY
-								oe.order_description_uuid, oe.quantity
+								oe.quantity::float8 - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
+						FROM
+							zipper.finishing_batch_entry fbe
+						LEFT JOIN 
+							zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+						LEFT JOIN
+							zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+						GROUP BY
+							oe.order_description_uuid, oe.quantity
 					) AS fbe_given ON oe.order_description_uuid = fbe_given.order_description_uuid
 				LEFT JOIN 
 					(
@@ -931,7 +931,6 @@ export async function selectOrderDescription(req, res, next) {
 		page ? page_query.append(sql` AND vodf.tape_received > 0`) : '';
 	}
 	if (is_balance == 'true') {
-		query.append(sql` AND fbe_given.balance_quantity > 0`);
 		page ? page_query.append(sql` AND fbe_given.balance_quantity > 0`) : '';
 	}
 
@@ -947,7 +946,7 @@ export async function selectOrderDescription(req, res, next) {
 
 	try {
 		const dataData = await orderEntryPromise;
-		const pageData = await pagePromise;
+		const pageData = pagePromise ? await pagePromise : null;
 
 		const data = dataData?.rows;
 
