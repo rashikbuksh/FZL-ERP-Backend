@@ -304,7 +304,7 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 			oe.size,
 			vod.is_inch,
 			vod.is_meter,
-			vodf.order_type,
+			vod.order_type,
             CASE 
                 WHEN vod.order_type = 'tape' THEN (oe.size::numeric * 2.54)::float8 
                 ELSE 0
@@ -319,7 +319,7 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
             (oe.quantity - sfg.pi)::float8 as pi_cash_quantity,
             (oe.quantity - sfg.pi)::float8 as balance_quantity,
 			oe.party_price::float8 as unit_price,
-			CASE WHEN vod.order_type = 'tape' THEN oe.party_price::float8 ELSE oe.party_price/12::float8 as unit_price_pcs,
+			CASE WHEN vod.order_type = 'tape' THEN oe.party_price::float8 ELSE oe.party_price/12::float8 END as unit_price_pcs,
             CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked,
 			false as is_thread_order
         FROM
