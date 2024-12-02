@@ -1927,7 +1927,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 			toi.marketing_uuid = ${marketing_uuid} AND
 			toi.party_uuid = ${party_uuid} AND 
 			toi.is_sample = 0
-		${pi_uuid ? sql`AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql``}
+		${pi_uuid ? sql`AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql`AND toe.quantity - toe.pi > 0`}
 		ORDER BY toi.id ASC
 	`;
 	}
