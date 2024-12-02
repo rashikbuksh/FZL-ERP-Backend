@@ -306,13 +306,9 @@ export async function selectPiEntryByOrderInfoUuid(req, res, next) {
 			vod.is_meter,
 			vod.order_type,
             CASE 
-                WHEN vod.order_type = 'tape' THEN (oe.size::numeric * 2.54)::float8 
+                WHEN vod.is_inch = 1 THEN (oe.size::numeric * 2.54)::float8 
                 ELSE 0
             END as size_inch,
-			CASE 
-				WHEN vod.order_type = 'tape' THEN (oe.size::numeric * 100)::float8
-				ELSE 0
-			END as size_meter,
             oe.quantity::float8 as quantity,
             sfg.pi::float8 as given_pi_cash_quantity,
             (oe.quantity - sfg.pi)::float8 as max_quantity,
