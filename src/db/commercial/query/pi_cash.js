@@ -173,7 +173,7 @@ export async function selectAll(req, res, next) {
 				WHEN pi_cash.is_pi = 1 
 				THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) 
 				ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 END AS total_amount,
-			ARRAY_AGG(DISTINCT od.order_type) AS order_type
+			jsonb_agg(DISTINCT od.order_type) AS order_type
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
