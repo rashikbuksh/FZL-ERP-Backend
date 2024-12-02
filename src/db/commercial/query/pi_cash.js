@@ -169,8 +169,11 @@ export async function selectAll(req, res, next) {
 			pi_cash.conversion_rate::float8,
 			pi_cash.weight::float8,
 			pi_cash.receive_amount::float8,
-			CASE WHEN pi_cash.is_pi = 1 THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 END AS total_amount,
-			od.order_type
+			CASE 
+				WHEN pi_cash.is_pi = 1 
+				THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) 
+				ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 END AS total_amount,
+			ARRAY_AGG(DISTINCT od.order_type) AS order_type
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
@@ -294,8 +297,7 @@ export async function selectAll(req, res, next) {
 			pi_cash.created_by,
 			pi_cash.id,
 			total_pi_amount.total_amount,
-			total_pi_amount_thread.total_amount,
-			od.order_type
+			total_pi_amount_thread.total_amount
 		ORDER BY 
 			pi_cash.created_at DESC;`;
 
