@@ -126,7 +126,14 @@ export async function selectAll(req, res, next) {
 					AND vodf.end_type = tcr.end_type_uuid
 				LEFT JOIN
 					zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid AND vodf.zipper_number = tc.zipper_number_uuid 
-			WHERE CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END
+			WHERE 
+				CASE 
+					WHEN vodf.order_type = 'tape' THEN TRUE
+					ELSE CASE 
+						WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid 
+						ELSE TRUE 
+					END 
+				END
 			GROUP BY be.dyeing_batch_uuid
 		) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
 		ORDER BY dyeing_batch.created_at DESC
