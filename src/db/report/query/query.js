@@ -391,7 +391,8 @@ export async function PiRegister(req, res, next) {
                     pi_cash_uuid, 
                     SUM(pe.pi_cash_quantity)::float8 as total_pi_quantity,
                     SUM(pe.pi_cash_quantity * coalesce(CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE oe.party_price/12 END, 0))::float8 as total_zipper_pi_price, 
-                    SUM(pe.pi_cash_quantity * toe.party_price)::float8 as total_thread_pi_price
+                    SUM(pe.pi_cash_quantity * toe.party_price)::float8 as total_thread_pi_price,
+                    vodf.order_type
 				FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
@@ -399,7 +400,7 @@ export async function PiRegister(req, res, next) {
 					LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 					LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
 					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-				GROUP BY pi_cash_uuid
+				GROUP BY pi_cash_uuid, vodf.order_type
 			) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
             WHERE pi_cash_entry_order_numbers.order_numbers IS NOT NULL OR pi_cash_entry_order_numbers.thread_order_numbers IS NOT NULL
         `;
