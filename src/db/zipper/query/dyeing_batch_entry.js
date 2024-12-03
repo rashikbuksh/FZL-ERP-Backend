@@ -256,10 +256,10 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			oe.style,
 			oe.color,
 			CASE 
-                WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)::float8
-                ELSE CAST(oe.size AS NUMERIC)::float8
-            END as size,
+				WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)::float8  
+				WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+				ELSE CAST(oe.size AS NUMERIC)::float8
+			END as size,
 			oe.quantity::float8 as order_quantity,
 			oe.bleaching,
 			vodf.order_number,
