@@ -1,8 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { dyeing_batch, dyeing_batch_entry, sfg } from '../schema.js';
@@ -293,7 +290,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid 
 		AND vodf.item = tcr.item_uuid 
         AND vodf.zipper_number = tcr.zipper_number_uuid 
-        AND vodf.end_type = tcr.end_type_uuid 
+        AND CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END 
 		LEFT JOIN
 			zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid 
 		AND vodf.zipper_number = tc.zipper_number_uuid 
@@ -319,6 +316,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 						lower(vodf.item_name) != 'nylon' 
 						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 					) `;
+	// vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END
+	// for tape order, specific end type is set to close_end
 
 	const batchEntryPromise = db.execute(query);
 

@@ -439,18 +439,26 @@ export async function PiToBeRegister(req, res, next) {
                 party.name,
                 vodf_grouped.order_object,
                 vodf_grouped.total_quantity::float8,
-                vodf_grouped.total_balance_delivery_quantity::float8,
-                vodf_grouped.total_balance_delivery_value::float8,
-                vodf_grouped.total_delivered::float8
+                vodf_grouped.total_delivered::float8,
+                vodf_grouped.total_pi::float8,
+                vodf_grouped.total_non_pi::float8,
+                vodf_grouped.total_quantity_value::float8,
+                vodf_grouped.total_delivered_value::float8,
+                vodf_grouped.total_pi_value::float8,
+                vodf_grouped.total_non_pi_value::float8
             FROM
                 public.party party
             LEFT JOIN (
                 SELECT 
                     jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', vodf.order_number)) as order_object,
                     SUM(order_entry.quantity) AS total_quantity,
-                    SUM(order_entry.quantity - sfg.delivered) AS total_balance_delivery_quantity,
-                    SUM((order_entry.quantity - sfg.delivered) * order_entry.party_price) AS total_balance_delivery_value,
                     SUM(sfg.delivered) AS total_delivered,
+                    SUM(sfg.pi) AS total_pi,
+                    SUM(order_entry.quantity - sfg.pi) AS total_non_pi,
+                    SUM(order_entry.quantity * order_entry.party_price) AS total_quantity_value,
+                    SUM(sfg.delivered * order_entry.party_price) AS total_delivered_value,
+                    SUM(sfg.pi * order_entry.party_price) AS total_pi_value,
+                    SUM((order_entry.quantity - sfg.pi) * order_entry.party_price) AS total_non_pi_value,
                     vodf.party_uuid
                 FROM
                     zipper.sfg
@@ -472,8 +480,8 @@ export async function PiToBeRegister(req, res, next) {
             WHERE 
                 vodf_grouped.total_quantity > 0 OR 
                 vodf_grouped.total_delivered > 0 OR 
-                vodf_grouped.total_balance_delivery_quantity > 0 OR 
-                vodf_grouped.total_balance_delivery_value > 0
+                vodf_grouped.total_pi > 0 OR
+                vodf_grouped.total_non_pi > 0
         `;
 
 	const resultPromise = db.execute(query);
