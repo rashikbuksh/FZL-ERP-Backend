@@ -1958,7 +1958,7 @@ export async function selectCountLength(req, res, next) {
 	const query = sql`
 	SELECT
 		count_length.uuid AS value,
-		concat(count_length.count, '/', count_length.length) AS label
+		concat(count_length.count, ' - ', count_length.length) AS label
 	FROM
 		thread.count_length;`;
 
