@@ -316,8 +316,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 						lower(vodf.item_name) != 'nylon' 
 						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 					) `;
-	// vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END
-	// for tape order, specific end type is set to close_end
+	// NOTE: vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END
+	// NOTE: for tape order, specific end type is set to close_end
 
 	const batchEntryPromise = db.execute(query);
 
