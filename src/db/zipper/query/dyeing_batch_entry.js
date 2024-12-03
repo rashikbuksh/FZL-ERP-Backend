@@ -226,8 +226,17 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 				LEFT JOIN zipper.sfg ON be.sfg_uuid = sfg.uuid
 				GROUP BY sfg.order_entry_uuid
 			) AS be_total ON oe.uuid = be_total.order_entry_uuid
-		WHERE
-			be.dyeing_batch_uuid = ${dyeing_batch_uuid} AND CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END`;
+		WHERE 
+			be.dyeing_batch_uuid = ${dyeing_batch_uuid} 
+			AND (
+				CASE 
+					WHEN vodf.order_type = 'tape' THEN TRUE
+					ELSE CASE 
+						WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid 
+						ELSE TRUE 
+					END 
+				END
+			)`;
 
 	const batchEntryPromise = db.execute(query);
 
