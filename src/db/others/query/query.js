@@ -1160,7 +1160,7 @@ export async function selectFinishingBatch(req, res, next) {
 		SELECT
 			finishing_batch.uuid AS value,
 			concat('FB', to_char(finishing_batch.created_at, 'YY'::text),
-				'-', lpad((finishing_batch.id)::text, 4, '0'::text), ' -> ', vodf.order_number, ' -> ', vodf.item_description) as label
+				'-', lpad((finishing_batch.id)::text, 4, '0'::text), ' -> ', MAX(vodf.order_number), ' -> ', MAX(vodf.item_description)) as label
 		FROM
 			zipper.finishing_batch
 		LEFT JOIN 
