@@ -1,8 +1,5 @@
 import { eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { die_casting, die_casting_production } from '../schema.js';
@@ -126,7 +123,10 @@ export async function selectAll(req, res, next) {
 			dcp.push::float8,
 			(dcp.cavity_goods * dcp.push)::float8 AS production_quantity,
 			dcp.weight::float8,
-			((dcp.cavity_goods * dcp.push) / dcp.weight)::float8 AS pcs_per_kg,
+			CASE 
+				WHEN dcp.weight = 0 THEN 0 
+				ELSE ((dcp.cavity_goods * dcp.push) / dcp.weight)::float8 
+			END AS pcs_per_kg,
 			dcp.created_by,
 			users.name AS created_by_name,
 			dcp.created_at,
