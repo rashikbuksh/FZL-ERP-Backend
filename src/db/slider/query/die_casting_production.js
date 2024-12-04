@@ -72,7 +72,7 @@ export async function remove(req, res, next) {
 
 export async function selectAll(req, res, next) {
 	const query = sql`
-		SELECT
+		SELECT DISTINCT
 			dcp.uuid,
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,

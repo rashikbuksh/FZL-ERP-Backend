@@ -7,7 +7,7 @@ import * as otherOperations from './query/query.js';
 
 const otherRouter = Router();
 
-// public
+// * public * //
 otherRouter.get('/party/value/label', otherOperations.selectParty);
 otherRouter.get(
 	'/marketing-user/value/label',
@@ -30,7 +30,7 @@ otherRouter.get(
 
 // thread
 
-// zipper
+// * zipper * //
 otherRouter.get('/tape-coil/value/label', otherOperations.selectTapeCoil);
 otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
 otherRouter.get(
@@ -62,7 +62,7 @@ otherRouter.get(
 // purchase
 otherRouter.get('/vendor/value/label', otherOperations.selectVendor);
 
-// material
+// * material * //
 otherRouter.get(
 	'/material-section/value/label',
 	otherOperations.selectMaterialSection
@@ -76,7 +76,7 @@ otherRouter.get(
 	otherOperations.selectMaterial
 );
 
-// commercial
+// * commercial * //
 otherRouter.get('/bank/value/label', otherOperations.selectBank);
 otherRouter.get(
 	'/lc/value/label/:party_uuid',
@@ -84,12 +84,12 @@ otherRouter.get(
 );
 otherRouter.get('/pi/value/label', otherOperations.selectPi);
 
-// hr
+// * hr * //
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);
 otherRouter.get('/hr/user/value/label', otherOperations.selectHrUser);
 otherRouter.get('/designation/value/label', otherOperations.selectDesignation);
 
-// lab_dip
+// * lab_dip * //
 otherRouter.get(
 	'/lab-dip/shade-recipe/value/label',
 	otherOperations.selectLabDipShadeRecipe
@@ -114,7 +114,7 @@ otherRouter.get(
 	otherOperations.selectDieCastingUsingType
 );
 
-// * Thread
+// * Thread * //
 
 // order info
 otherRouter.get('/thread/value/label', otherOperations.selectThreadOrder);
