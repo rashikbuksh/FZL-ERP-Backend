@@ -1165,6 +1165,7 @@ export async function selectFinishingBatch(req, res, next) {
 			zipper.finishing_batch
 		LEFT JOIN 
 			zipper.v_order_details_full vodf ON finishing_batch.order_description_uuid = vodf.order_description_uuid
+		GROUP BY finishing_batch.uuid, finishing_batch.created_at, finishing_batch.id
 		ORDER BY
 			finishing_batch.created_at DESC
 	`;
