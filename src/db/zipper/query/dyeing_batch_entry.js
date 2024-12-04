@@ -320,15 +320,9 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 		WHERE 
 			be.dyeing_batch_uuid = ${dyeing_batch_uuid}
 			AND (
-				CASE 
-					WHEN od.order_type = 'tape' THEN TRUE
-					ELSE CASE 
-						WHEN lower(op_item.name)= 'nylon' THEN od.nylon_stopper = tcr.nylon_stopper_uuid 
-						ELSE TRUE 
-					END 
-				END
-			)
-	`;
+				 		lower(op_item.name) != 'nylon' 
+						OR od.nylon_stopper = tcr.nylon_stopper_uuid
+				)`;
 
 	const batchEntryPromise = db.execute(query);
 
