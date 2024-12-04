@@ -123,7 +123,7 @@ export async function selectAll(req, res, next) {
 				LEFT JOIN 
 					zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid AND vodf.item = tcr.item_uuid 
 					AND vodf.zipper_number = tcr.zipper_number_uuid 
-					AND (CASE WHEN vodf.order_type = 'tape' THEN TRUE ELSE vodf.end_type = tcr.end_type_uuid END)
+					AND (CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END)
 				LEFT JOIN
 					zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid AND vodf.zipper_number = tc.zipper_number_uuid 
 			WHERE 
