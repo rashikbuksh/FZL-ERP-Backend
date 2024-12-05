@@ -152,8 +152,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
       order_info.marketing_priority,
       order_info.factory_priority,
       order_description.garments_remarks,
-      stock.uuid as stock_uuid,
-      stock.batch_quantity::float8 as stock_order_quantity,
       order_description.tape_coil_uuid,
       tc.name as tape_name,
       order_description.teeth_type,
@@ -191,8 +189,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
       LEFT JOIN public.properties op_slider_link ON op_slider_link.uuid = order_description.slider_link
       LEFT JOIN public.properties op_end_user ON op_end_user.uuid = order_description.end_user
       LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
-      LEFT JOIN zipper.finishing_batch ON finishing_batch.order_description_uuid = order_description.uuid
-      LEFT JOIN slider.stock ON stock.finishing_batch_uuid = finishing_batch.uuid
       LEFT JOIN zipper.tape_coil tc ON tc.uuid = order_description.tape_coil_uuid
       LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type;
 	`; // required order_description changes

@@ -182,8 +182,6 @@ export const v_order_details_full = zipper
 		marketing_priority: text('marketing_priority'),
 		factory_priority: text('factory_priority'),
 		garments_remarks: text('garments_remarks'),
-		stock_uuid: text('stock_uuid'),
-		stock_order_quantity: PG_DECIMAL('stock_order_quantity'),
 		stock_swatch_approved_quantity: PG_DECIMAL(
 			'stock_swatch_approved_quantity'
 		),
