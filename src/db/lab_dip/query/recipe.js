@@ -113,6 +113,7 @@ export async function selectAll(req, res, next) {
 			created_at: recipe.created_at,
 			updated_at: recipe.updated_at,
 			remarks: recipe.remarks,
+			approved_date: recipe.approved_date,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
@@ -167,6 +168,7 @@ export async function select(req, res, next) {
 			created_at: recipe.created_at,
 			updated_at: recipe.updated_at,
 			remarks: recipe.remarks,
+			approved_date: recipe.approved_date,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))

@@ -45,6 +45,7 @@ export const recipe = lab_dip.table('recipe', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	approved_date: DateTime('approved_date').default(null),
 });
 
 export const recipe_entry = lab_dip.table('recipe_entry', {
