@@ -72,7 +72,7 @@ export async function remove(req, res, next) {
 
 export async function selectAll(req, res, next) {
 	const query = sql`
-		SELECT DISTINCT
+		SELECT
 			dcp.uuid,
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
@@ -125,7 +125,7 @@ export async function selectAll(req, res, next) {
 			dcp.weight::float8,
 			CASE 
 				WHEN dcp.weight = 0 THEN 0 
-				ELSE ((dcp.cavity_goods * dcp.push) / dcp.weight)::float8 
+				ELSE ROUND((dcp.cavity_goods * dcp.push) / dcp.weight, 2)::float8 
 			END AS pcs_per_kg,
 			dcp.created_by,
 			users.name AS created_by_name,

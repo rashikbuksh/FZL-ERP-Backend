@@ -218,10 +218,9 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN
-			zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid 
-		AND vodf.item = tcr.item_uuid 
-        AND vodf.zipper_number = tcr.zipper_number_uuid 
-        AND vodf.end_type = tcr.end_type_uuid 
+			zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid 
+        	AND vodf.zipper_number = tcr.zipper_number_uuid 
+        	AND vodf.end_type = tcr.end_type_uuid 
 		LEFT JOIN
 			zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid 
 		AND vodf.zipper_number = tc.zipper_number_uuid 
@@ -238,7 +237,6 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 					sfg.uuid
 		) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
 		WHERE CASE WHEN vodf.order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
-
 			AND vodf.order_description_uuid = ${req.params.order_description_uuid}`;
 
 	// AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0

@@ -602,6 +602,8 @@ export async function selectOrderInfo(req, res, next) {
 
 	orderInfoPromise = orderInfoPromise.where(filterCondition);
 
+	console.log(orderInfoPromise.toSQL());
+
 	try {
 		const data = await orderInfoPromise;
 		const toast = {
