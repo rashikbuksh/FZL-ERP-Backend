@@ -352,4 +352,173 @@
         pl.uuid AS value,
         concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS label
     FROM
-        delivery.packing_list pl
+        delivery.packing_list pl;
+
+		SELECT
+					DISTINCT vodf.order_description_uuid AS value,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, 
+						CASE 
+							WHEN vodf.order_type = 'slider' 
+							THEN ' - Slider' 
+							ELSE ''
+							END
+						) AS label,
+					vodf.order_number,
+					vodf.item_description,
+					vodf.order_description_uuid,
+					vodf.item_name,
+					vodf.tape_received::float8,
+					vodf.tape_transferred::float8,
+					vodf.order_type,
+					totals_of_oe.total_size::float8,
+					totals_of_oe.total_quantity::float8,
+					tcr.top::float8,
+					tcr.bottom::float8,
+					tape_coil.dyed_per_kg_meter::float8,
+					coalesce(batch_stock.stock,0)::float8 as stock,
+					sfg.uuid as sfg_uuid,
+					sfg.recipe_uuid as recipe_uuid,
+					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+					oe.style,
+					oe.color,
+					CASE 
+						WHEN vodf.is_inch = 1 
+							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+						ELSE CAST(oe.size AS NUMERIC)
+					END as size,
+					oe.quantity::float8 as order_quantity,
+					fbe_given.balance_quantity
+				FROM
+					zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
+				LEFT JOIN 
+						(
+							SELECT
+								oe.order_description_uuid as order_description_uuid,
+								oe.quantity::float8 - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
+						FROM
+							zipper.finishing_batch_entry fbe
+						LEFT JOIN 
+							zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+						LEFT JOIN
+							zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+						GROUP BY
+							oe.order_description_uuid, oe.quantity
+					) AS fbe_given ON oe.order_description_uuid = fbe_given.order_description_uuid
+				LEFT JOIN 
+					(
+						SELECT oe.order_description_uuid, 
+						SUM(CASE 
+							WHEN vodf.is_inch = 1 
+								THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+							ELSE CAST(oe.size AS NUMERIC)
+						END * oe.quantity::numeric) as total_size, 
+						SUM(oe.quantity::numeric) as total_quantity
+						FROM zipper.order_entry oe 
+						LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+				        group by oe.order_description_uuid
+					) AS totals_of_oe ON totals_of_oe.order_description_uuid = vodf.order_description_uuid 
+				LEFT JOIN zipper.tape_coil_required tcr ON
+					vodf.item = tcr.item_uuid  
+					AND vodf.zipper_number = tcr.zipper_number_uuid 
+					AND vodf.end_type = tcr.end_type_uuid 
+					AND (
+						lower(vodf.item_name) != 'nylon' 
+						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+					)
+				LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
+				LEFT JOIN (
+					SELECT oe.order_description_uuid, SUM(be.production_quantity_in_kg) as stock
+					FROM zipper.order_entry oe
+						LEFT JOIN zipper.sfg ON oe.uuid = sfg.order_entry_uuid
+						LEFT JOIN zipper.dyeing_batch_entry be ON be.sfg_uuid = sfg.uuid
+						LEFT JOIN zipper.dyeing_batch b ON b.uuid = be.dyeing_batch_uuid
+					WHERE b.received = 1
+					GROUP BY oe.order_description_uuid
+				) batch_stock ON vodf.order_description_uuid = batch_stock.order_description_uuid
+				LEFT JOIN (
+						SELECT COUNT(oe.swatch_approval_date) AS swatch_approval_count, oe.order_description_uuid
+						FROM zipper.order_entry oe
+						GROUP BY oe.order_description_uuid
+				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
+				WHERE 
+					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND 
+					CASE WHEN order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END  AND CASE WHEN order_type = 'slider' THEN 1=1 ELSE swatch_approval_counts.swatch_approval_count > 0 END 
+					ORDER BY vodf.order_number DESC;
+
+
+					SELECT
+					DISTINCT vodf.order_description_uuid AS value,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, 
+						CASE 
+							WHEN vodf.order_type = 'slider' 
+							THEN ' - Slider' 
+							ELSE ''
+							END
+						) AS label,
+					vodf.order_number,
+					vodf.item_description,
+					vodf.order_description_uuid,
+					vodf.item_name,
+					vodf.tape_received::float8,
+					vodf.tape_transferred::float8,
+					vodf.order_type,
+					totals_of_oe.total_size::float8,
+					totals_of_oe.total_quantity::float8,
+					tcr.top::float8,
+					tcr.bottom::float8,
+					tape_coil.dyed_per_kg_meter::float8,
+					coalesce(batch_stock.stock,0)::float8 as stock,
+					styles_colors.style_color_object
+				FROM
+					zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN (
+					SELECT jsonb_agg(jsonb_build_object('label', CONCAT(oe.style, ' - ', oe.color), 'value', sfg.uuid)) as style_color_object, oe.order_description_uuid
+					FROM zipper.sfg
+					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					GROUP BY oe.order_description_uuid
+				) styles_colors ON vodf.order_description_uuid = styles_colors.order_description_uuid
+				LEFT JOIN 
+					(
+						SELECT oe.order_description_uuid, 
+						SUM(CASE 
+							WHEN vodf.is_inch = 1 
+								THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+							ELSE CAST(oe.size AS NUMERIC)
+						END * oe.quantity::numeric) as total_size, 
+						SUM(oe.quantity::numeric) as total_quantity
+						FROM zipper.order_entry oe 
+						LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+				        group by oe.order_description_uuid
+					) AS totals_of_oe ON totals_of_oe.order_description_uuid = vodf.order_description_uuid 
+				LEFT JOIN zipper.tape_coil_required tcr ON
+					vodf.item = tcr.item_uuid  
+					AND vodf.zipper_number = tcr.zipper_number_uuid 
+					AND vodf.end_type = tcr.end_type_uuid 
+					AND (
+						lower(vodf.item_name) != 'nylon' 
+						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+					)
+				LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
+				LEFT JOIN (
+					SELECT oe.order_description_uuid, SUM(be.production_quantity_in_kg) as stock
+					FROM zipper.order_entry oe
+						LEFT JOIN zipper.sfg ON oe.uuid = sfg.order_entry_uuid
+						LEFT JOIN zipper.dyeing_batch_entry be ON be.sfg_uuid = sfg.uuid
+						LEFT JOIN zipper.dyeing_batch b ON b.uuid = be.dyeing_batch_uuid
+					WHERE b.received = 1
+					GROUP BY oe.order_description_uuid
+				) batch_stock ON vodf.order_description_uuid = batch_stock.order_description_uuid
+				LEFT JOIN (
+						SELECT COUNT(oe.swatch_approval_date) AS swatch_approval_count, oe.order_description_uuid
+						FROM zipper.order_entry oe
+						GROUP BY oe.order_description_uuid
+				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
+				WHERE 
+					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND 
+					CASE WHEN order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
+				ORDER BY vodf.order_number DESC;

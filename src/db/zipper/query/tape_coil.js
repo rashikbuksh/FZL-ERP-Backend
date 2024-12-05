@@ -1,4 +1,4 @@
-import { and, desc, eq, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -133,6 +133,7 @@ export async function selectAll(req, res, next) {
 			uuid: tape_coil.uuid,
 			item_uuid: tape_coil.item_uuid,
 			item_name: item_properties.name,
+			is_nylon: eq(sql`lower(item_properties.name)`, 'nylon'),
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
 			zipper_number_name: zipper_number_properties.name,
 			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
@@ -172,7 +173,11 @@ export async function selectAll(req, res, next) {
 			materialSchema.info,
 			eq(tape_coil.material_uuid, materialSchema.info.uuid)
 		)
-		.orderBy(desc(tape_coil.created_at));
+		.orderBy(
+			asc(tape_coil.is_nylon),
+			asc(tape_coil.item_name),
+			asc(tape_coil.zipper_number_name)
+		);
 
 	try {
 		const data = await resultPromise;
