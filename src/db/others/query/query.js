@@ -119,13 +119,18 @@ export async function selectOpenSlotMachine(req, res, next) {
 }
 
 export async function selectParty(req, res, next) {
-	const { marketing, item_for, is_cash, page } = req.query;
+	const { marketing, item_for, is_cash, page, has_factory } = req.query;
 
 	let query = sql`
 		SELECT DISTINCT
 			party.uuid AS value,
 			party.name AS label
 		FROM public.party
+		LEFT JOIN (
+			SELECT COUNT(uuid) as fac_count, party_uuid 
+			FROM public.factory
+			GROUP BY party_uuid
+		) pub_fac ON party.uuid = pub_fac.party_uuid
 	`;
 
 	switch (item_for) {
@@ -220,94 +225,123 @@ export async function selectParty(req, res, next) {
 		default:
 			let hasWhere = false;
 
-			query = query.append(
-				sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid`
-			);
+			if (marketing || is_cash) {
+				query = query.append(
+					sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid`
+				);
 
-			if (marketing) {
-				query = query.append(
-					hasWhere
-						? sql` AND vod.marketing_uuid = ${marketing}`
-						: sql` WHERE vod.marketing_uuid = ${marketing}`
-				);
-				hasWhere = true;
+				if (marketing) {
+					query = query.append(
+						hasWhere
+							? sql` AND vod.marketing_uuid = ${marketing}`
+							: sql` WHERE vod.marketing_uuid = ${marketing}`
+					);
+					hasWhere = true;
+				}
+				if (marketing && is_cash === 'true') {
+					query = query.append(
+						hasWhere
+							? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
+							: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+					);
+				} else if (marketing && is_cash === 'false') {
+					query = query.append(
+						hasWhere
+							? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
+							: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
+					);
+					hasWhere = false;
+				}
+
+				if (!marketing && is_cash === 'true') {
+					query = query.append(
+						hasWhere
+							? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
+							: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+					);
+				} else if (!marketing && is_cash === 'false') {
+					query = query.append(
+						hasWhere
+							? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
+							: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
+					);
+				}
 			}
-			if (marketing && is_cash === 'true') {
-				query = query.append(
+
+			if (has_factory === 'true') {
+				query.append(
 					hasWhere
-						? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
-						: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+						? sql`
+				AND pub_fac.fac_count > 0
+				`
+						: sql`
+				WHERE pub_fac.fac_count > 0
+				`
 				);
-			} else if (marketing && is_cash === 'false') {
-				query = query.append(
-					hasWhere
-						? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
-						: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
-				);
+			}
+
+			if (marketing || is_cash) {
+				query = query.append(sql` UNION `);
 				hasWhere = false;
-			}
-
-			if (!marketing && is_cash === 'true') {
 				query = query.append(
-					hasWhere
-						? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
-						: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
-				);
-			} else if (!marketing && is_cash === 'false') {
-				query = query.append(
-					hasWhere
-						? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
-						: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
-				);
-			}
-
-			query = query.append(sql` UNION `);
-			hasWhere = false;
-
-			query = query.append(
-				sql`SELECT DISTINCT
+					sql`SELECT DISTINCT
 						party.uuid AS value,
 						party.name AS label
 					FROM public.party
-					LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid`
-			);
+					LEFT JOIN (
+						SELECT COUNT(uuid) as fac_count, party_uuid
+						FROM public.factory
+						GROUP BY party_uuid
+					) pub_fac ON party.uuid = pub_fac.party_uuid
+					LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid
+					`
+				);
 
-			if (marketing) {
-				query = query.append(
-					hasWhere
-						? sql` AND oi.marketing_uuid = ${marketing}`
-						: sql` WHERE oi.marketing_uuid = ${marketing}`
-				);
-				hasWhere = true;
-			}
+				if (marketing) {
+					query = query.append(
+						hasWhere
+							? sql` AND oi.marketing_uuid = ${marketing}`
+							: sql` WHERE oi.marketing_uuid = ${marketing}`
+					);
+					hasWhere = true;
+				}
 
-			if (marketing && is_cash === 'true') {
-				query = query.append(
-					hasWhere
-						? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
-						: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
-				);
-			} else if (marketing && is_cash === 'false') {
-				query = query.append(
-					hasWhere
-						? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
-						: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
-				);
-				hasWhere = false;
-			}
+				if (marketing && is_cash === 'true') {
+					query = query.append(
+						hasWhere
+							? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
+							: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
+					);
+				} else if (marketing && is_cash === 'false') {
+					query = query.append(
+						hasWhere
+							? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
+							: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
+					);
+					hasWhere = false;
+				}
 
-			if (!marketing && is_cash === 'true') {
-				query = query.append(
-					hasWhere
-						? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
-						: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
-				);
-			} else if (!marketing && is_cash === 'false') {
-				query = query.append(
-					hasWhere
-						? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
-						: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
-				);
+				if (!marketing && is_cash === 'true') {
+					query = query.append(
+						hasWhere
+							? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
+							: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
+					);
+				} else if (!marketing && is_cash === 'false') {
+					query = query.append(
+						hasWhere
+							? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
+							: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
+					);
+				}
+
+				if (has_factory === 'true') {
+					query.append(
+						hasWhere
+							? sql` AND pub_fac.fac_count > 0`
+							: sql` WHERE pub_fac.fac_count > 0`
+					);
+				}
 			}
 
 			break;

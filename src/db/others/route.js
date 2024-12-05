@@ -258,6 +258,10 @@ const pathPublic = {
 					'all',
 				]),
 				SE.parameter_query('is_cash', 'is_cash', ['true', 'false']),
+				SE.parameter_query('has_factory', 'has_factory', [
+					'true',
+					'false',
+				]),
 			],
 			responses: {
 				200: {
