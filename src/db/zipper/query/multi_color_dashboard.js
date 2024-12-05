@@ -1,8 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
@@ -95,6 +92,7 @@ export async function selectAll(req, res, next) {
 			vodf.tape_name,
 			mcd.tape_quantity::float8,
 			vodf.tape_received::float8 AS tape_received,
+			vodf.tape_transferred::float8 AS tape_transferred,
 			mcd.coil_uuid,
 			mi.name AS coil_name,
 			mcd.coil_quantity::float8 AS coil_quantity,
@@ -146,6 +144,7 @@ export async function select(req, res, next) {
 			vodf.tape_name,
 			mcd.tape_quantity::float8,
 			vodf.tape_received::float8 AS tape_received,
+			vodf.tape_transferred::float8 AS tape_transferred,
 			mcd.coil_uuid,
 			mi.name AS coil_name,
 			mcd.coil_quantity::float8 AS coil_quantity,
