@@ -1,9 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
@@ -67,14 +64,15 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	const tapeCoilRequiredPromise = db
 		.delete(tape_coil_required)
-		.where(eq(tape_coil_required.uuid, req.params.uuid));
+		.where(eq(tape_coil_required.uuid, req.params.uuid))
+		.returning({ deletedId: tape_coil_required.uuid });
 
 	try {
 		const data = await tapeCoilRequiredPromise;
 		const toast = {
 			status: 201,
 			type: 'delete',
-			message: `${data} deleted`,
+			message: `${data[0].deletedId} deleted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {

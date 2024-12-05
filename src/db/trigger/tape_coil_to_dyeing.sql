@@ -8,10 +8,11 @@ BEGIN
     FROM public.properties
     WHERE tape_coil.uuid = NEW.tape_coil_uuid AND properties.uuid = tape_coil.item_uuid;
     -- TODO: if is_multi_color is 1 then Do not update the zipper.order_description
+    --* INFO: Condition changed, multicolor will be treated as normal tape
     UPDATE zipper.order_description
     SET
         tape_received = tape_received + NEW.trx_quantity
-    WHERE uuid = NEW.order_description_uuid AND is_multi_color = 0;
+    WHERE uuid = NEW.order_description_uuid;
 
     RETURN NEW;
 END;
@@ -29,7 +30,7 @@ BEGIN
         UPDATE zipper.order_description
         SET
             tape_received = tape_received - OLD.trx_quantity
-        WHERE uuid = OLD.order_description_uuid AND is_multi_color = 0;
+        WHERE uuid = OLD.order_description_uuid;
 
         RETURN OLD;
     END;
@@ -47,7 +48,7 @@ BEGIN
     UPDATE zipper.order_description
     SET
         tape_received = tape_received - OLD.trx_quantity + NEW.trx_quantity
-    WHERE uuid = NEW.order_description_uuid AND is_multi_color = 0;
+    WHERE uuid = NEW.order_description_uuid;
 
     RETURN NEW;
 END;

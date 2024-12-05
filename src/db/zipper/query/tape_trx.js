@@ -1,9 +1,6 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
@@ -235,7 +232,8 @@ export async function selectBySection(req, res, next) {
 				: section.toLowerCase() === 'coil'
 					? sql`(LOWER(${item_properties.name}) = 'nylon' AND LOWER(${tape_trx.to_section}) != 'coil')`
 					: sql`true`
-		);
+		)
+		.orderBy(desc(tape_trx.created_at));
 	try {
 		const data = await tapeToCoilPromise;
 		const toast = {
