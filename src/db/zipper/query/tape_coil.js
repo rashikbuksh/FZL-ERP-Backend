@@ -1,9 +1,6 @@
 import { and, desc, eq, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
@@ -299,7 +296,8 @@ export async function selectByNylon(req, res, next) {
 			materialSchema.info,
 			eq(tape_coil.material_uuid, materialSchema.info.uuid)
 		)
-		.where(eq(sql`lower(item_properties.name)`, 'nylon'));
+		.where(eq(sql`lower(item_properties.name)`, 'nylon'))
+		.orderBy(desc(tape_coil.created_at));
 
 	try {
 		const data = await tapeCoilPromise;
