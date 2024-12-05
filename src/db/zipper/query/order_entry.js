@@ -134,12 +134,18 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const sfgPromise = db
+		.delete(sfg)
+		.where(eq(sfg.order_entry_uuid, req.params.uuid))
+		.returning({ deletedUuidSfg: sfg.uuid });
+
 	const orderEntryPromise = db
 		.delete(order_entry)
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ deletedUuid: order_entry.uuid });
 
 	try {
+		await sfgPromise;
 		const data = await orderEntryPromise;
 
 		const toast = {
