@@ -191,7 +191,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							CASE 
 								WHEN vodf.order_type = 'tape' 
 								THEN oe.party_price::float8 
-								ELSE oe.party_price/12::float8 
+								ELSE ROUND(oe.party_price/12,2)::float8 
 							END
 						ELSE toe.party_price::float8 
 					END as unit_price_pcs,
