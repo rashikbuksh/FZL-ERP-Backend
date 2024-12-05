@@ -133,7 +133,7 @@ export async function selectAll(req, res, next) {
 			uuid: tape_coil.uuid,
 			item_uuid: tape_coil.item_uuid,
 			item_name: item_properties.name,
-			is_nylon: sql`lower(item_properties.name) = 'nylon'` ? 1 : 0,
+			is_nylon: eq(sql`lower(item_properties.name)`, 'nylon'),
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
 			zipper_number_name: zipper_number_properties.name,
 			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
@@ -174,9 +174,9 @@ export async function selectAll(req, res, next) {
 			eq(tape_coil.material_uuid, materialSchema.info.uuid)
 		)
 		.orderBy(
-			asc(is_nylon),
-			asc(tape_coil.item_name),
-			asc(tape_coil.zipper_number_name)
+			asc(sql`lower(item_properties.name) = 'nylon'`),
+			asc(item_properties.name),
+			asc(zipper_number_properties.name)
 		);
 
 	try {
