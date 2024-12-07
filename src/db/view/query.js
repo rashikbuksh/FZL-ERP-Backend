@@ -1,56 +1,60 @@
 export const OrderDetailsView = `
     CREATE OR REPLACE VIEW zipper.v_order_details AS
     SELECT
-      order_info.uuid AS order_info_uuid,
-      order_info.reference_order_info_uuid,
-      concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
-      concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
-      op_item.name AS item_name,
-      op_nylon_stopper.name AS nylon_stopper_name,
-      op_zipper.name AS zipper_number_name,
-      op_end.name AS end_type_name,
-      op_puller.name AS puller_type_name,
-      order_description.uuid as order_description_uuid,
-      order_info.buyer_uuid,
-      buyer.name AS buyer_name,
-      order_info.party_uuid,
-      party.name AS party_name,
-      order_info.marketing_uuid,
-      marketing.name AS marketing_name,
-      order_info.merchandiser_uuid,
-      merchandiser.name AS merchandiser_name,
-      order_info.factory_uuid,
-      factory.name AS factory_name,
-      order_info.is_sample,
-      order_info.is_bill,
-	    order_info.is_cash,
-      order_info.marketing_priority,
-      order_info.factory_priority,
-      order_info.status,
-      order_info.created_by AS created_by_uuid,
-      users.name AS created_by_name,
-      order_info.created_at AS created_at,
-      order_info.updated_at AS updated_at,
-      order_info.remarks,
-      order_description.is_inch,
-      order_description.is_meter,
-      order_description.is_cm,
-      order_description.order_type,
-      order_description.is_multi_color
+        order_info.uuid AS order_info_uuid,
+        order_info.reference_order_info_uuid,
+        concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+        concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
+        op_item.name AS item_name,
+        op_nylon_stopper.name AS nylon_stopper_name,
+        op_zipper.name AS zipper_number_name,
+        op_end.name AS end_type_name,
+        op_puller.name AS puller_type_name,
+        order_description.uuid as order_description_uuid,
+        order_info.buyer_uuid,
+        buyer.name AS buyer_name,
+        order_info.party_uuid,
+        party.name AS party_name,
+        order_info.marketing_uuid,
+        marketing.name AS marketing_name,
+        order_info.merchandiser_uuid,
+        merchandiser.name AS merchandiser_name,
+        order_info.factory_uuid,
+        factory.name AS factory_name,
+        order_info.is_sample,
+        order_info.is_bill,
+        order_info.is_cash,
+        order_info.marketing_priority,
+        order_info.factory_priority,
+        order_info.status,
+        order_info.created_by AS created_by_uuid,
+        users.name AS created_by_name,
+        order_info.created_at AS created_at,
+        order_info.updated_at AS updated_at,
+        order_info.remarks,
+        order_description.is_inch,
+        order_description.is_meter,
+        order_description.is_cm,
+        order_description.order_type,
+        order_description.is_multi_color,
+        order_description.created_at AS order_description_created_at,
+        order_description.updated_at AS order_description_updated_at,
+        order_description.tape_received,
+        order_description.tape_transferred
     FROM
-      zipper.order_info
-      LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
-      LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
-      LEFT JOIN public.buyer ON buyer.uuid = order_info.buyer_uuid
-	    LEFT JOIN public.merchandiser ON merchandiser.uuid = order_info.merchandiser_uuid
-	    LEFT JOIN public.factory ON factory.uuid = order_info.factory_uuid
-	    LEFT JOIN hr.users ON users.uuid = order_info.created_by
-	    LEFT JOIN public.party ON party.uuid = order_info.party_uuid
-      LEFT JOIN public.properties op_item ON op_item.uuid = order_description.item
-      LEFT JOIN public.properties op_zipper ON op_zipper.uuid = order_description.zipper_number
-      LEFT JOIN public.properties op_end ON op_end.uuid = order_description.end_type
-      LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type
-      LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = order_description.nylon_stopper;
+        zipper.order_info
+        LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
+        LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
+        LEFT JOIN public.buyer ON buyer.uuid = order_info.buyer_uuid
+        LEFT JOIN public.merchandiser ON merchandiser.uuid = order_info.merchandiser_uuid
+        LEFT JOIN public.factory ON factory.uuid = order_info.factory_uuid
+        LEFT JOIN hr.users ON users.uuid = order_info.created_by
+        LEFT JOIN public.party ON party.uuid = order_info.party_uuid
+        LEFT JOIN public.properties op_item ON op_item.uuid = order_description.item
+        LEFT JOIN public.properties op_zipper ON op_zipper.uuid = order_description.zipper_number
+        LEFT JOIN public.properties op_end ON op_end.uuid = order_description.end_type
+        LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type
+        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = order_description.nylon_stopper;
   `;
 
 export const OrderDetailsFullView = `

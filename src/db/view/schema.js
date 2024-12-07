@@ -65,6 +65,10 @@ export const v_order_details = zipper
 		is_cm: integer('is_cm'),
 		order_type: text('order_type'),
 		is_multi_color: integer('is_multi_color'),
+		order_description_created_at: DateTime('order_description_created_at'),
+		order_description_updated_at: DateTime('order_description_updated_at'),
+		tape_received: PG_DECIMAL('tape_received'),
+		tape_transferred: PG_DECIMAL('tape_transferred'),
 	})
 	.existing();
 
