@@ -780,8 +780,7 @@ export async function selectOrderDescription(req, res, next) {
 					tcr.bottom::float8,
 					tape_coil.dyed_per_kg_meter::float8,
 					coalesce(batch_stock.stock,0)::float8 as stock,
-					styles_colors.style_color_object,
-					fbe_given.balance_quantity
+					styles_colors.style_color_object
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
