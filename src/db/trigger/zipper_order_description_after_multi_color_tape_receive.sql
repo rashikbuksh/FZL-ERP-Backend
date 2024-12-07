@@ -5,6 +5,7 @@ BEGIN
     -- Update order_description
     UPDATE zipper.order_description
     SET
+    -- multi_color_tape_received will be updated 
         tape_transferred = tape_transferred + NEW.quantity
     WHERE order_description.uuid = NEW.order_description_uuid;
 
