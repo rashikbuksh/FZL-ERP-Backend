@@ -351,15 +351,19 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
         subquery.zipper_number,
         subquery.end_type,
 		subquery.production_date,
-		SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum
+		SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum,
+		json_agg(subquery.order_numbers) AS order_numbers,
+		json_agg(subquery.batch_numbers) AS batch_numbers
 			FROM (
-				SELECT DISTINCT
+				SELECT 
 					vodf.item,
 					vodf.nylon_stopper,
 					vodf.zipper_number,
 					vodf.end_type,
 					finishing_batch.production_date,
-					SUM(finishing_batch_entry.quantity) AS total_batch_quantity
+					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
+					json_agg(DISTINCT vodf.order_number) AS order_numbers,
+					json_agg(DISTINCT CONCAT('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))) AS batch_numbers
 				FROM
 					zipper.finishing_batch
 				LEFT JOIN
@@ -412,6 +416,12 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				production_quantity: matchingDataRow
 					? matchingDataRow.total_batch_quantity_sum
 					: 0,
+				order_numbers: matchingDataRow
+					? matchingDataRow.order_numbers
+					: [],
+				batch_numbers: matchingDataRow
+					? matchingDataRow.batch_numbers
+					: [],
 			};
 		});
 
