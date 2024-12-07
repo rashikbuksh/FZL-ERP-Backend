@@ -1007,9 +1007,6 @@ export async function selectOrderDescription(req, res, next) {
 			? { data: data, pageData: pageData?.rows }
 			: { data: data };
 
-		console.table(dataData);
-		console.log(pageData);
-
 		const toast = {
 			status: 200,
 			type: 'select_all',
