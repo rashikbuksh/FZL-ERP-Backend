@@ -8,6 +8,7 @@ import * as manualPiOperations from './query/manual_pi.js';
 import * as manualPiEntryOperations from './query/manual_pi_entry.js';
 import * as piCashOperations from './query/pi_cash.js';
 import * as piCashEntryOperations from './query/pi_cash_entry.js';
+import * as cashReceiveOperations from './query/cash_receive.js';
 
 const commercialRouter = Router();
 
@@ -154,5 +155,12 @@ commercialRouter.get(
 	'/pi-cash/thread-details/by/order-info-ids/:order_info_uuids/:party_uuid/:marketing_uuid',
 	piCashEntryOperations.selectPiEntryByPiDetailsByThreadOrderInfoUuids
 );
+
+// * cash_receive routes
+commercialRouter.get('/cash-receive', cashReceiveOperations.selectAll);
+commercialRouter.get('/cash-receive/:uuid', cashReceiveOperations.select);
+commercialRouter.post('/cash-receive', cashReceiveOperations.insert);
+commercialRouter.put('/cash-receive/:uuid', cashReceiveOperations.update);
+commercialRouter.delete('/cash-receive/:uuid', cashReceiveOperations.remove);
 
 export { commercialRouter };

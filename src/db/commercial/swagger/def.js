@@ -243,6 +243,20 @@ export const defCommercialPiCashEntry = SED({
 	xml: 'Commercial/PiCashEntry',
 });
 
+export const defCommercialCashReceive = SED({
+	type: 'object',
+	required: ['uuid', 'pi_cash_uuid', 'amount', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		pi_cash_uuid: SE.uuid(),
+		amount: SE.number(1000.0),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Commercial/CashReceive',
+});
+
 // * Marge All
 export const defCommercial = {
 	bank: defCommercialBank,
@@ -253,6 +267,7 @@ export const defCommercial = {
 	pi_cash_entry: defCommercialPiCashEntry,
 	manual_pi: defCommercialManualPi,
 	manual_pi_entry: defCommercialManualPiEntry,
+	cash_receive: defCommercialCashReceive,
 };
 
 // * Tag
@@ -316,6 +331,14 @@ export const tagCommercial = [
 	{
 		name: 'commercial.manual_pi_entry',
 		description: 'Operations about commercial manual_pi_entry',
+		externalDocs: {
+			description: 'Find out more',
+			url: 'http://swagger.io',
+		},
+	},
+	{
+		name: 'commercial.cash_receive',
+		description: 'Operations about commercial cash_receive',
 		externalDocs: {
 			description: 'Find out more',
 			url: 'http://swagger.io',

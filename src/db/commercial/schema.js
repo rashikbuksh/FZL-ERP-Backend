@@ -215,4 +215,16 @@ export const pi_cash_entry = commercial.table('pi_cash_entry', {
 	),
 });
 
+export const cash_receive = commercial.table('cash_receive', {
+	uuid: uuid_primary,
+	pi_cash_uuid: defaultUUID('pi_cash_uuid')
+		.references(() => pi_cash.uuid)
+		.default(null),
+	amount: PG_DECIMAL('amount').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
 export default commercial;

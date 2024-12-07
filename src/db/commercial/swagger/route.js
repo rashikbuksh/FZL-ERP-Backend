@@ -1485,6 +1485,81 @@ export const pathCommercialPiCashEntry = {
 			},
 		},
 };
+export const pathCommercialCashReceive = {
+	'/commercial/cash-receive': {
+		get: {
+			tags: ['commercial.cash_receive'],
+			summary: 'Get all cash receives',
+			description: 'All cash receives',
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/cash_receive'),
+			},
+		},
+		post: {
+			tags: ['commercial.cash_receive'],
+			summary: 'Create a cash receive',
+			description: 'Create a cash receive',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			requestBody: SE.requestBody_schema_ref('commercial/cash_receive'),
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/cash_receive'),
+				405: SE.response(405),
+			},
+		},
+	},
+
+	'/commercial/cash-receive/{uuid}': {
+		get: {
+			tags: ['commercial.cash_receive'],
+			summary: 'Get a cash receive',
+			description: ' Get a cash receive by uuid',
+			//operationId: "getPet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Get data using uuid', 'uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/cash_receive'),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['commercial.cash_receive'],
+			summary: 'Update a cash receive',
+			description: 'Update a cash receive by uuid',
+			//operationId: "updatePet",
+			consume: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Update data using uuid', 'uuid', 'uuid'),
+			],
+			requestBody: SE.requestBody_schema_ref('commercial/cash_receive'),
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/cash_receive'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['commercial.cash_receive'],
+			summary: 'Delete a cash receive',
+			description: 'Delete a cash receive by uuid',
+			//operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Delete data using uuid', 'uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
 
 export const pathCommercial = {
 	...pathCommercialBank,
@@ -1495,4 +1570,5 @@ export const pathCommercial = {
 	...pathCommercialPiCashEntry,
 	...pathCommercialManualPi,
 	...pathCommercialManualPiEntry,
+	...pathCommercialCashReceive,
 };
