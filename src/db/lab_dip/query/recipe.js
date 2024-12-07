@@ -303,6 +303,7 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 			approved: recipe.approved,
 			recipe_created_at: recipe.created_at,
 			recipe_updated_at: recipe.updated_at,
+			approved_date: recipe.approved_date,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
