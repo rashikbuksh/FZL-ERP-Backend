@@ -376,12 +376,12 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				LEFT JOIN
 					zipper.finishing_batch ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
 				WHERE
-					DATE(finishing_batch.production_date)  BETWEEN ${from_date} AND ${to_date}
+					DATE(finishing_batch.production_date)  BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 				GROUP BY
 					finishing_batch.uuid
 				) as fbe ON fbe.finishing_batch_uuid = finishing_batch.uuid
 				WHERE
-					DATE(finishing_batch.production_date) BETWEEN ${from_date} AND ${to_date} AND pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
+					DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
 			) subquery
             GROUP BY 
 				subquery.item,
@@ -394,8 +394,8 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 	try {
 		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
 		const dataResult = await db.execute(resultPromise); // Fetch main query results
-		console.log('capacityQueryResult:', capacityQueryResult.rows);
-		console.log('dataResult:', dataResult.rows);
+		// console.log('capacityQueryResult:', capacityQueryResult.rows);
+		// console.log('dataResult:', dataResult.rows);
 
 		const formattedData = capacityQueryResult.rows.map((capacityRow) => {
 			const matchingDataRow = dataResult.rows.find(

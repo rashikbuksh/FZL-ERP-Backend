@@ -1028,7 +1028,7 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				tcr.top::float8,
 				tcr.bottom::float8,
 				vodf.tape_received::float8,
-				CASE WHEN vodf.is_multi_color = 0 THEN vodf.tape_transferred::float8 ELSE coalesce(multi_tape.total_multi_tape_quantity::float8, 0) END as tape_transferred,
+				vodf.tape_transferred::float8,
 				vodf.is_multi_color,
 				styles_colors.style_color_object,
 				vodf.order_type
@@ -1047,7 +1047,10 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				GROUP BY oe.order_description_uuid
 			) totals_of_oe ON vodf.order_description_uuid = totals_of_oe.order_description_uuid
 			LEFT JOIN (
-					SELECT jsonb_agg(jsonb_build_object('label', CONCAT(oe.style, ' - ', oe.color), 'value', sfg.uuid)) as style_color_object, oe.order_description_uuid
+					SELECT 
+						jsonb_agg(
+							jsonb_build_object('label', CONCAT(oe.style, ' - ', oe.color), 'value', sfg.uuid)
+						) as style_color_object, oe.order_description_uuid
 					FROM zipper.sfg
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					GROUP BY oe.order_description_uuid
@@ -1072,6 +1075,8 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 			WHERE
 				(vodf.tape_coil_uuid = ${coil_uuid} OR (vodf.item = ${item_uuid} AND vodf.zipper_number = ${zipper_number_uuid} AND vodf.tape_coil_uuid IS NULL)) AND vodf.order_description_uuid IS NOT NULL
 		`;
+
+		// CASE WHEN vodf.is_multi_color = 0 THEN vodf.tape_transferred::float8 ELSE coalesce(multi_tape.total_multi_tape_quantity::float8, 0) END as tape_transferred,
 
 		const orderEntryPromise = db.execute(query);
 
