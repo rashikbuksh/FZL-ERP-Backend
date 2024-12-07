@@ -354,34 +354,28 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum
 			FROM (
 				SELECT DISTINCT
-					finishing_batch.uuid AS finishing_batch_uuid,
 					vodf.item,
 					vodf.nylon_stopper,
 					vodf.zipper_number,
 					vodf.end_type,
 					finishing_batch.production_date,
-					fbe.total_batch_quantity 
+					SUM(finishing_batch_entry.quantity) AS total_batch_quantity
 				FROM
 					zipper.finishing_batch
 				LEFT JOIN
 					zipper.v_order_details_full vodf ON vodf.order_description_uuid = finishing_batch.order_description_uuid
 				LEFT JOIN
 					public.production_capacity pc ON pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
-				LEFT JOIN 
-				( SELECT 
-					finishing_batch.uuid AS finishing_batch_uuid,
-					SUM(finishing_batch_entry.quantity) AS total_batch_quantity
-				FROM
-					zipper.finishing_batch_entry
 				LEFT JOIN
-					zipper.finishing_batch ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
+					zipper.finishing_batch_entry ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
 				WHERE
-					DATE(finishing_batch.production_date)  BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+					DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP AND pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
 				GROUP BY
-					finishing_batch.uuid
-				) as fbe ON fbe.finishing_batch_uuid = finishing_batch.uuid
-				WHERE
-					DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
+					vodf.item,
+					vodf.nylon_stopper,
+					vodf.zipper_number,
+					vodf.end_type,
+					finishing_batch.production_date
 			) subquery
             GROUP BY 
 				subquery.item,
@@ -395,7 +389,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
 		const dataResult = await db.execute(resultPromise); // Fetch main query results
 		// console.log('capacityQueryResult:', capacityQueryResult.rows);
-		// console.log('dataResult:', dataResult.rows);
+		console.log('dataResult:', dataResult.rows);
 
 		const formattedData = capacityQueryResult.rows.map((capacityRow) => {
 			const matchingDataRow = dataResult.rows.find(
