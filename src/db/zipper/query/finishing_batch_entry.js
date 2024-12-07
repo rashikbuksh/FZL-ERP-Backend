@@ -540,7 +540,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 				od.tape_coil_uuid IS NOT NULL
 				${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
 				${nylon_stopper ? sql`AND lower(vod.nylon_stopper_name) = lower(${nylon_stopper})` : sql``}
-			ORDER BY oe.created_at, sfg.uuid DESC
+			ORDER BY zfbe.created_at DESC
 		`;
 
 	const sfgPromise = db.execute(query);
