@@ -780,7 +780,8 @@ export async function selectOrderDescription(req, res, next) {
 					tcr.bottom::float8,
 					tape_coil.dyed_per_kg_meter::float8,
 					coalesce(batch_stock.stock,0)::float8 as stock,
-					styles_colors.style_color_object
+					styles_colors.style_color_object,
+					fbe_given.balance_quantity
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -804,6 +805,20 @@ export async function selectOrderDescription(req, res, next) {
 						LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 				        group by oe.order_description_uuid
 					) AS totals_of_oe ON totals_of_oe.order_description_uuid = vodf.order_description_uuid 
+				LEFT JOIN 
+						(
+							SELECT
+								oe.order_description_uuid as order_description_uuid,
+								oe.quantity::float8 - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
+							FROM
+								zipper.finishing_batch_entry fbe
+							LEFT JOIN 
+								zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+							LEFT JOIN
+								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+							GROUP BY
+								oe.order_description_uuid, oe.quantity
+					) AS fbe_given ON oe.order_description_uuid = fbe_given.order_description_uuid
 				LEFT JOIN zipper.tape_coil_required tcr ON
 					vodf.item = tcr.item_uuid  
 					AND vodf.zipper_number = tcr.zipper_number_uuid 
@@ -967,6 +982,7 @@ export async function selectOrderDescription(req, res, next) {
 		page ? page_query.append(sql` AND vodf.tape_received > 0`) : '';
 	}
 	if (is_balance == 'true') {
+		query.append(sql` AND fbe_given.balance_quantity > 0`);
 		page ? page_query.append(sql` AND fbe_given.balance_quantity > 0`) : '';
 	}
 
