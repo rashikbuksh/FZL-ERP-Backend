@@ -2820,3 +2820,4 @@
 {"code":"42P01","file":"parse_relation.c","length":122,"level":"\u001b[31merror\u001b[39m","line":"3599","name":"error","position":"3355","routine":"errorMissingRTE","severity":"ERROR","timestamp":"2024-12-02 10:03:49 PM"}
 {"code":"42P01","file":"parse_relation.c","length":122,"level":"\u001b[31merror\u001b[39m","line":"3599","name":"error","position":"3355","routine":"errorMissingRTE","severity":"ERROR","timestamp":"2024-12-02 10:03:54 PM"}
 {"code":"42703","file":"parse_relation.c","length":137,"level":"\u001b[31merror\u001b[39m","line":"3647","name":"error","position":"994","routine":"errorMissingColumn","severity":"ERROR","timestamp":"2024-12-02 10:06:48 PM"}
+{"code":"42601","file":"scan.l","length":92,"level":"\u001b[31merror\u001b[39m","line":"1245","name":"error","position":"966","routine":"scanner_yyerror","severity":"ERROR","timestamp":"2024-12-07 04:52:20 PM"}
