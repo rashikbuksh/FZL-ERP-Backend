@@ -11,7 +11,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION commercial.pi_cash_after_cash_receive_update_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE commercial.pi_cash
-    SET receive_amount = receive_amount - OLD.receive_amount + NEW.amount
+    SET receive_amount = receive_amount - OLD.amount + NEW.amount
     WHERE uuid = NEW.pi_cash_uuid;
     RETURN NEW;
 END;
