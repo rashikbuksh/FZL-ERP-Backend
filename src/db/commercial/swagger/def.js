@@ -245,11 +245,12 @@ export const defCommercialPiCashEntry = SED({
 
 export const defCommercialCashReceive = SED({
 	type: 'object',
-	required: ['uuid', 'pi_cash_uuid', 'amount', 'created_at'],
+	required: ['uuid', 'pi_cash_uuid', 'amount', 'created_by' 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
 		pi_cash_uuid: SE.uuid(),
 		amount: SE.number(1000.0),
+		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
