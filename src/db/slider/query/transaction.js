@@ -122,6 +122,7 @@ export async function selectAll(req, res, next) {
 			stock.swatch_approved_quantity::float8,
 			sfg.uuid as sfg_uuid,
 			oe.style,
+			coalesce(fbe.finishing_prod, 0) as given_quantity,
 			coalesce(stock.batch_quantity - fbe.finishing_prod, 0) as left_quantity,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.order_info_uuid ELSE vodf_sfg_trx.order_info_uuid END as order_info_uuid,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.order_number ELSE vodf_sfg_trx.order_number END as order_number,
@@ -231,6 +232,8 @@ export async function select(req, res, next) {
 			stock.swatch_approved_quantity::float8,
 			sfg.uuid as sfg_uuid,
 			oe.style,
+			coalesce(fbe.finishing_prod, 0) as given_quantity,
+			coalesce(stock.batch_quantity - fbe.finishing_prod, 0) as left_quantity,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.order_info_uuid ELSE vodf_sfg_trx.order_info_uuid END as order_info_uuid,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.order_number ELSE vodf_sfg_trx.order_number END as order_number,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.item_description ELSE vodf_sfg_trx.item_description END as item_description,
@@ -258,6 +261,7 @@ export async function select(req, res, next) {
 		LEFT JOIN 
 			slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
 		LEFT JOIN zipper.sfg ON sfg.uuid = transaction.sfg_uuid
+		LEFT JOIN zipper.finishing_batch_entry fbe ON sfg.uuid = fbe.sfg_uuid
 		LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN zipper.v_order_details_full vodf_sfg_trx ON oe.order_description_uuid = vodf_sfg_trx.order_description_uuid
 		WHERE
@@ -335,6 +339,8 @@ export async function selectTransactionByFromSection(req, res, next) {
 			stock.swatch_approved_quantity::float8,
 			sfg.uuid as sfg_uuid,
 			oe.style,
+			coalesce(fbe.finishing_prod, 0) as given_quantity,
+			coalesce(stock.batch_quantity - fbe.finishing_prod, 0) as left_quantity,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.order_info_uuid ELSE vodf_sfg_trx.order_info_uuid END as order_info_uuid,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.order_number ELSE vodf_sfg_trx.order_number END as order_number,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.item_description ELSE vodf_sfg_trx.item_description END as item_description,
@@ -372,6 +378,7 @@ export async function selectTransactionByFromSection(req, res, next) {
 			) as st_given ON transaction.stock_uuid = st_given.uuid
 		LEFT JOIN slider.assembly_stock ON transaction.assembly_stock_uuid = assembly_stock.uuid
 		LEFT JOIN zipper.sfg ON sfg.uuid = transaction.sfg_uuid
+		LEFT JOIN zipper.finishing_batch_entry fbe ON sfg.uuid = fbe.sfg_uuid
 		LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN zipper.v_order_details_full vodf_sfg_trx ON oe.order_description_uuid = vodf_sfg_trx.order_description_uuid
 		WHERE 
