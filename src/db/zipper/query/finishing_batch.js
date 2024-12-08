@@ -352,8 +352,8 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
         subquery.end_type,
 		subquery.production_date,
 		SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum,
-		json_agg(subquery.order_numbers) AS order_numbers,
-		json_agg(subquery.batch_numbers) AS batch_numbers
+		subquery.order_numbers AS order_numbers,
+		subquery.batch_numbers AS batch_numbers
 			FROM (
 				SELECT 
 					vodf.item,
@@ -362,8 +362,8 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					vodf.end_type,
 					finishing_batch.production_date,
 					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
-					json_agg(DISTINCT vodf.order_number) AS order_numbers,
-					json_agg(DISTINCT CONCAT('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))) AS batch_numbers
+					array_agg(DISTINCT vodf.order_number) AS order_numbers,
+        array_agg(DISTINCT CONCAT('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))) AS batch_numbers
 				FROM
 					zipper.finishing_batch
 				LEFT JOIN
@@ -386,7 +386,9 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				subquery.nylon_stopper,
 				subquery.zipper_number,
 				subquery.end_type,
-				subquery.production_date
+				subquery.production_date,
+				subquery.order_numbers,
+				subquery.batch_numbers
 	`;
 
 	try {
