@@ -412,6 +412,7 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
             CONCAT('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
             toe.style as style,
             toe.color as color,
+			CONCAT(count_length.count,' ', count_length.length) as count_length_name,
             toe.quantity::float8 as quantity,
             toe.pi::float8 as given_pi_cash_quantity,
             (toe.quantity - toe.pi)::float8 as max_quantity,
@@ -422,6 +423,7 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
 			true as is_thread_order
         FROM
             thread.order_entry toe
+			LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
             LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 			LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
         WHERE
