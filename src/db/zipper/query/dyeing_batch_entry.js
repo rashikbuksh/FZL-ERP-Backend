@@ -267,7 +267,9 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
-			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
+			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
+			vodf.order_type
+
 		FROM
 			zipper.dyeing_batch_entry be
 		LEFT JOIN
