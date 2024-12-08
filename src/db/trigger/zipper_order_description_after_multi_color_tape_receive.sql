@@ -6,7 +6,7 @@ BEGIN
     UPDATE zipper.order_description
     SET
     -- multi_color_tape_received will be updated 
-        tape_transferred = tape_transferred + NEW.quantity
+        multi_color_tape_received = multi_color_tape_received + NEW.quantity
     WHERE order_description.uuid = NEW.order_description_uuid;
 
     RETURN NEW;
@@ -19,7 +19,7 @@ BEGIN
     -- Update order_description
     UPDATE zipper.order_description
     SET
-        tape_transferred = tape_transferred - OLD.quantity + NEW.quantity
+        multi_color_tape_received = multi_color_tape_received - OLD.quantity + NEW.quantity
     WHERE order_description.uuid = NEW.order_description_uuid;
 
     RETURN NEW;
@@ -32,7 +32,7 @@ BEGIN
     -- Update order_description
     UPDATE zipper.order_description
     SET
-        tape_transferred = tape_transferred - OLD.quantity
+        multi_color_tape_received = multi_color_tape_received - OLD.quantity
     WHERE order_description.uuid = OLD.order_description_uuid;
 
     RETURN OLD;

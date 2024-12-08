@@ -39,8 +39,10 @@ export const OrderDetailsView = `
         order_description.is_multi_color,
         order_description.created_at AS order_description_created_at,
         order_description.updated_at AS order_description_updated_at,
-        order_description.tape_received,
-        order_description.tape_transferred
+        order_description.tape_received::float8,
+        order_description.multi_color_tape_received::float8,
+        order_description.tape_transferred::float8,
+        order_description.remarks as order_description_remarks
     FROM
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
@@ -64,6 +66,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
       concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
       order_description.uuid AS order_description_uuid,
       order_description.tape_received::float8,
+      order_description.multi_color_tape_received::float8,
       order_description.tape_transferred::float8,
       order_description.slider_finishing_stock::float8,
       order_info.marketing_uuid,

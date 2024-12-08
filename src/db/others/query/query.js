@@ -780,7 +780,8 @@ export async function selectOrderDescription(req, res, next) {
 					tcr.top::float8,
 					tcr.bottom::float8,
 					tape_coil.dyed_per_kg_meter::float8,
-					coalesce(batch_stock.stock,0)::float8 as stock,
+					vodf.is_multi_color,
+					CASE WHEN vodf.is_multi_color = 1 THEN vodf.multi_color_tape_received ELSE coalesce(batch_stock.stock,0)::float8 END as stock,
 					styles_colors.style_color_object
 				FROM
 					zipper.v_order_details_full vodf
@@ -844,7 +845,9 @@ export async function selectOrderDescription(req, res, next) {
 				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND 
-					CASE WHEN order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
+					CASE WHEN order_type = 'slider' THEN 1=1 
+					WHEN vodf.is_multi_color = 1 THEN 1=1
+					ELSE sfg.recipe_uuid IS NOT NULL END
 				`;
 
 	let page_query = '';
@@ -871,7 +874,7 @@ export async function selectOrderDescription(req, res, next) {
 					tcr.top::float8,
 					tcr.bottom::float8,
 					tape_coil.dyed_per_kg_meter::float8,
-					coalesce(batch_stock.stock,0)::float8 as stock,
+					CASE WHEN vodf.is_multi_color = 1 THEN vodf.multi_color_tape_received ELSE coalesce(batch_stock.stock,0)::float8 END as stock,
 					sfg.uuid as sfg_uuid,
 					sfg.recipe_uuid as recipe_uuid,
 					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
@@ -941,12 +944,16 @@ export async function selectOrderDescription(req, res, next) {
 				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND 
-					CASE WHEN order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
+					CASE 
+						WHEN order_type = 'slider' THEN 1=1 
+						WHEN vodf.is_multi_color = 1 THEN 1=1
+						ELSE sfg.recipe_uuid IS NOT NULL 
+					END
 		`;
 	}
 
 	if (dyed_tape_required == 'false') {
-	} else {
+	} else if (dyed_tape_required == 'true') {
 		query.append(sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`);
 		page
 			? page_query.append(
@@ -957,11 +964,18 @@ export async function selectOrderDescription(req, res, next) {
 
 	if (swatch_approved === 'true') {
 		query.append(
-			sql` AND CASE WHEN order_type = 'slider' THEN 1=1 ELSE swatch_approval_counts.swatch_approval_count > 0 END`
+			sql` AND CASE 
+			WHEN order_type = 'slider' THEN 1=1 
+			WHEN vodf.is_multi_color = 1 THEN 1=1
+			ELSE swatch_approval_counts.swatch_approval_count > 0 END`
 		);
 		page
 			? page_query.append(
-					sql` AND CASE WHEN order_type = 'slider' THEN 1=1 ELSE swatch_approval_counts.swatch_approval_count > 0 END`
+					sql` AND CASE 
+						WHEN order_type = 'slider' THEN 1=1
+						WHEN vodf.is_multi_color = 1 THEN 1=1
+						ELSE swatch_approval_counts.swatch_approval_count > 0 
+					END`
 				)
 			: '';
 	}
@@ -978,8 +992,14 @@ export async function selectOrderDescription(req, res, next) {
 	}
 
 	if (tape_received == 'true') {
-		query.append(sql` AND vodf.tape_received > 0`);
-		page ? page_query.append(sql` AND vodf.tape_received > 0`) : '';
+		query.append(
+			sql` AND CASE WHEN is_multi_color = 1 THEN 1=1 ELSE tape_received > 0 END`
+		);
+		page
+			? page_query.append(
+					sql` AND CASE WHEN is_multi_color = 1 THEN 1=1 ELSE tape_received > 0 END`
+				)
+			: '';
 	}
 	if (is_balance == 'true' && !is_update) {
 		query.append(sql` AND fbe_given.balance_quantity > 0`);
@@ -1007,8 +1027,8 @@ export async function selectOrderDescription(req, res, next) {
 
 		// data pass as array and pageData pass as object
 		const response = page
-			? { data: data, pageData: pageData?.rows }
-			: { data: data };
+			? { data: dataData?.rows, pageData: pageData?.rows }
+			: { data: dataData?.rows };
 
 		const toast = {
 			status: 200,

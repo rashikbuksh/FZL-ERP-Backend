@@ -87,6 +87,7 @@ export const def_zipper_order_description = SED({
 		order_info_uuid: SE.uuid(),
 		tape_coil_uuid: SE.uuid(),
 		tape_received: SE.number(10),
+		multi_color_tape_received: SE.number(10),
 		tape_transferred: SE.number(10),
 		item: SE.string(),
 		nylon_stopper: SE.uuid(),

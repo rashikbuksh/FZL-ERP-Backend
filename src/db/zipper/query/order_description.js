@@ -312,6 +312,9 @@ export async function selectAll(req, res, next) {
 			uuid: order_description.uuid,
 			order_info_uuid: order_description.order_info_uuid,
 			tape_received: decimalToNumber(order_description.tape_received),
+			multi_color_tape_received: decimalToNumber(
+				order_description.multi_color_tape_received
+			),
 			tape_transferred: decimalToNumber(
 				order_description.tape_transferred
 			),
@@ -518,6 +521,9 @@ export async function select(req, res, next) {
 			uuid: order_description.uuid,
 			order_info_uuid: order_description.order_info_uuid,
 			tape_received: decimalToNumber(order_description.tape_received),
+			multi_color_tape_received: decimalToNumber(
+				order_description.multi_color_tape_received
+			),
 			tape_transferred: decimalToNumber(
 				order_description.tape_transferred
 			),
