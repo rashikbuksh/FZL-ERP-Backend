@@ -7,7 +7,7 @@ import * as publicSchema from '../../public/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as viewSchema from '../../view/schema.js';
-import { finishing_batch } from '../schema.js';
+import { finishing_batch, order_description } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -353,7 +353,9 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		subquery.production_date,
 		SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum,
 		subquery.order_numbers AS order_numbers,
-		subquery.batch_numbers AS batch_numbers
+		subquery.batch_numbers AS batch_numbers,
+		subquery.order_description_uuid,
+		subquery.finishing_batch_uuid
 			FROM (
 				SELECT 
 					vodf.item,
@@ -363,7 +365,9 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					finishing_batch.production_date,
 					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
 					array_agg(DISTINCT vodf.order_number) AS order_numbers,
-        array_agg(DISTINCT CONCAT('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))) AS batch_numbers
+        			array_agg(DISTINCT CONCAT('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))) AS batch_numbers,
+					vodf.order_description_uuid,
+					finishing_batch.uuid AS finishing_batch_uuid
 				FROM
 					zipper.finishing_batch
 				LEFT JOIN
@@ -379,7 +383,9 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					vodf.nylon_stopper,
 					vodf.zipper_number,
 					vodf.end_type,
-					finishing_batch.production_date
+					finishing_batch.production_date,
+					vodf.order_description_uuid,
+					finishing_batch.uuid
 			) subquery
             GROUP BY 
 				subquery.item,
@@ -388,7 +394,9 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				subquery.end_type,
 				subquery.production_date,
 				subquery.order_numbers,
-				subquery.batch_numbers
+				subquery.batch_numbers,
+				subquery.order_description_uuid,
+				subquery.finishing_batch_uuid
 	`;
 
 	try {
@@ -424,6 +432,12 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				batch_numbers: matchingDataRow
 					? matchingDataRow.batch_numbers
 					: [],
+				order_description_uuid: matchingDataRow
+					? matchingDataRow.order_description_uuid
+					: null,
+				finishing_batch_uuid: matchingDataRow
+					? matchingDataRow.finishing_batch_uuid
+					: null,
 			};
 		});
 
@@ -459,6 +473,10 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 							item.item_description_quantity,
 						production_date: date,
 						production_quantity: 0,
+						order_numbers: [],
+						batch_numbers: [],
+						order_description_uuid: null,
+						finishing_batch_uuid: null,
 					};
 				}
 			});
