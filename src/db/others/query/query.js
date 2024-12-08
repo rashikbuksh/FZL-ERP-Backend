@@ -755,6 +755,7 @@ export async function selectOrderDescription(req, res, next) {
 		swatch_approved,
 		is_balance,
 		page,
+		is_update,
 	} = req.query;
 
 	const query = sql`
@@ -980,7 +981,7 @@ export async function selectOrderDescription(req, res, next) {
 		query.append(sql` AND vodf.tape_received > 0`);
 		page ? page_query.append(sql` AND vodf.tape_received > 0`) : '';
 	}
-	if (is_balance == 'true' && !is_update ) {
+	if (is_balance == 'true' && !is_update) {
 		query.append(sql` AND fbe_given.balance_quantity > 0`);
 		page ? page_query.append(sql` AND fbe_given.balance_quantity > 0`) : '';
 	}
