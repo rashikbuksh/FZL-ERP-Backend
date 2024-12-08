@@ -122,7 +122,7 @@ export async function selectAll(req, res, next) {
 			stock.swatch_approved_quantity::float8,
 			sfg.uuid as sfg_uuid,
 			oe.style,
-			coalesce(stock.batch_quantity - fbe.finishing_prod, 0) as left_quantity
+			coalesce(stock.batch_quantity - fbe.finishing_prod, 0) as left_quantity,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.order_info_uuid ELSE vodf_sfg_trx.order_info_uuid END as order_info_uuid,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.order_number ELSE vodf_sfg_trx.order_number END as order_number,
 			CASE WHEN transaction.sfg_uuid IS NULL THEN vodf.item_description ELSE vodf_sfg_trx.item_description END as item_description,
