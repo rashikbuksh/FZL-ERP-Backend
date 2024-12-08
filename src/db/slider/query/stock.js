@@ -151,7 +151,9 @@ export async function selectAll(req, res, next) {
 		vodf.is_logo_body,
 		vodf.is_logo_puller,
 		vodf.order_type,
-		vodf.is_waterproof
+		vodf.is_waterproof,
+		finishing_batch.slider_lead_time,
+		finishing_batch.production_date
 	FROM
 		slider.stock
 	LEFT JOIN

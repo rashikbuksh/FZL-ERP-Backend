@@ -7,7 +7,7 @@ import * as publicSchema from '../../public/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as viewSchema from '../../view/schema.js';
-import { finishing_batch } from '../schema.js';
+import { finishing_batch, order_description } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -362,8 +362,8 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					vodf.end_type,
 					finishing_batch.production_date,
 					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
-					array_agg(DISTINCT vodf.order_number) AS order_numbers,
-        array_agg(DISTINCT CONCAT('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))) AS batch_numbers
+					 jsonb_agg(DISTINCT jsonb_build_object('value', finishing_batch.uuid, 'label', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')))) AS batch_numbers,
+					 jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_description_uuid, 'label', vodf.order_number)) AS order_numbers
 				FROM
 					zipper.finishing_batch
 				LEFT JOIN
@@ -424,6 +424,12 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				batch_numbers: matchingDataRow
 					? matchingDataRow.batch_numbers
 					: [],
+				order_description_uuid: matchingDataRow
+					? matchingDataRow.order_description_uuid
+					: null,
+				finishing_batch_uuid: matchingDataRow
+					? matchingDataRow.finishing_batch_uuid
+					: null,
 			};
 		});
 
@@ -459,6 +465,10 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 							item.item_description_quantity,
 						production_date: date,
 						production_quantity: 0,
+						order_numbers: [],
+						batch_numbers: [],
+						order_description_uuid: null,
+						finishing_batch_uuid: null,
 					};
 				}
 			});

@@ -106,7 +106,7 @@ export async function select(req, res, next) {
 			message: `cash_receive`,
 		};
 
-		return await res.status(200).json({ toast, data });
+		return await res.status(200).json({ toast, data: data[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
