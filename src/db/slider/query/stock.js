@@ -416,7 +416,7 @@ export async function selectStockByFromSection(req, res, next) {
 	LEFT JOIN
 		public.party pp ON order_info.party_uuid = pp.uuid
 	LEFT JOIN (
-		SELECT jsonb_agg(jsonb_build_object('label', oe.style, 'value', sfg.uuid, 'given_quantity', fbe.finishing_prod, 'left_quantity', (stock.batch_quantity - fbe.finishing_prod))) as style_object, stock.uuid
+		SELECT jsonb_agg(jsonb_build_object('label', oe.style, 'value', sfg.uuid, 'given_quantity', fbe.finishing_prod, 'left_quantity', (fbe.quantity - fbe.finishing_prod))) as style_object, stock.uuid
 		FROM zipper.sfg
 		LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN zipper.finishing_batch_entry fbe ON sfg.uuid = fbe.sfg_uuid
