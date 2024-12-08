@@ -444,11 +444,18 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					item.production_date === date
 						? item.production_quantity
 						: 0;
-				return {
-					...item,
-					production_date: date,
-					production_quantity: productionQuantity,
-				};
+				if (productionQuantity > 0) {
+					return {
+						...item,
+						production_date: date,
+						production_quantity: productionQuantity,
+					};
+				} else {
+					return {
+						production_date: date,
+						production_quantity: 0,
+					};
+				}
 			});
 			return acc;
 		}, {});

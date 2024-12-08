@@ -352,7 +352,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 				WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
 				ELSE CAST(oe.size AS NUMERIC)::float8
 			END as size,
-			oe.quantity::float8 as order_quantity,
+			CASE WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 ELSE oe.quantity::float8 END as order_quantity,
 			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
@@ -360,10 +360,20 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			coalesce(be_given.given_production_quantity, 0)::float8 as given_production_quantity,
 			coalesce(be_given.given_production_quantity_in_kg, 0)::float8 as given_production_quantity_in_kg,
 			coalesce(
-				coalesce(oe.quantity::float8,0) - coalesce(be_given.given_quantity::float8,0)
+				CASE 
+					WHEN vodf.order_type = 'tape' 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+					ELSE oe.quantity::float8 
+				END
+				- coalesce(be_given.given_quantity::float8,0)
 			,0)::float8 as balance_quantity,
 				coalesce(
-				coalesce(oe.quantity::float8,0) - coalesce(be_given.given_quantity::float8,0)
+				CASE 
+					WHEN vodf.order_type = 'tape' 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+					ELSE oe.quantity::float8 
+				END
+				- coalesce(be_given.given_quantity::float8,0)
 			,0)::float8 as max_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
