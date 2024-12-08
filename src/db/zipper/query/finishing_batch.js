@@ -452,6 +452,11 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					};
 				} else {
 					return {
+						production_capacity_quantity:
+							item.production_capacity_quantity,
+						item_description: item.item_description,
+						item_description_quantity:
+							item.item_description_quantity,
 						production_date: date,
 						production_quantity: 0,
 					};
