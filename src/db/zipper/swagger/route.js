@@ -630,6 +630,67 @@ export const pathZipperOrderDescription = {
 			},
 		},
 	},
+	'/zipper/order/details/single-order/by/{order_number}/marketing/{marketing_uuid}':
+		{
+			get: {
+				tags: ['zipper.order_description'],
+				summary:
+					'Gets a Order Number to get Order Description and Order Entry',
+				description: '',
+				// operationId: "deletePet",
+				produces: ['application/json'],
+				parameters: [
+					SE.parameter_params(
+						'orderDescription to get',
+						'order_number'
+					),
+					SE.parameter_params(
+						'orderDescription to get',
+						'marketing_uuid'
+					),
+				],
+				responses: {
+					200: SE.response_schema(200, {
+						...order_description_merge_schema_fields,
+						order_entry: SE.sub_response_schema({
+							order_entry_uuid: SE.uuid(),
+							order_description_uuid: SE.uuid(),
+							style: SE.string('style 1'),
+							color: SE.string('black'),
+							size: SE.number(10),
+							is_inch: SE.number(0),
+							quantity: SE.number(100),
+							company_price: SE.number(10.5),
+							party_price: SE.number(10.5),
+							status: SE.number(0),
+							swatch_status: SE.string('Pending'),
+							swatch_approval_date: SE.date_time(),
+							created_by: SE.uuid(),
+							created_at: SE.date_time(),
+							updated_at: SE.date_time(),
+							teeth_molding_stock: SE.number(10),
+							teeth_molding_prod: SE.number(10),
+							total_teeth_molding: SE.number(10),
+							teeth_coloring_stock: SE.number(10),
+							teeth_coloring_prod: SE.number(10),
+							total_teeth_coloring: SE.number(10),
+							finishing_stock: SE.number(10),
+							finishing_prod: SE.number(10),
+							total_finishing: SE.number(10),
+							coloring_prod: SE.number(10),
+							created_by: SE.uuid(),
+							created_by_name: SE.string('John Doe'),
+						}),
+					}),
+					400: {
+						description: 'Invalid UUID supplied',
+					},
+					404: {
+						description: 'User not found',
+					},
+				},
+			},
+		},
 	'/zipper/order/description/update/by/{tape_coil_uuid}': {
 		put: {
 			tags: ['zipper.order_description'],

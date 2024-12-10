@@ -872,6 +872,57 @@ export async function selectOrderNumberToGetOrderDescriptionAndOrderEntry(
 	}
 }
 
+export async function selectOrderNumberToGetOrderDescriptionAndOrderEntryOfMarketing(
+	req,
+	res,
+	next
+) {
+	if (!validateRequest(req, next)) return;
+
+	const { order_number, marketing_uuid } = req.params;
+
+	try {
+		const api = await createApi(req);
+
+		const { data: get_order_description_uuid } = await api.get(
+			`/other/order/order_description_uuid/by/${order_number}?marketing_uuid=${marketing_uuid}`
+		);
+
+		const fetchDetailsAndEntries = async (order_description_uuid) => {
+			const fetchData = async (endpoint) =>
+				await api.get(`${endpoint}/by/${order_description_uuid}`);
+
+			const [order_description, order_entry] = await Promise.all([
+				fetchData('/zipper/order/description/full/uuid'),
+				fetchData('/zipper/order/entry/full/uuid'),
+			]);
+
+			const response = {
+				...order_description?.data?.data[0],
+				order_entry: order_entry?.data?.data || [],
+			};
+
+			return response;
+		};
+
+		const responses = await Promise.all(
+			get_order_description_uuid?.data?.map((uuid) =>
+				fetchDetailsAndEntries(uuid.order_description_uuid)
+			)
+		);
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			msg: 'Order Description list',
+		};
+
+		res.status(200).json({ toast, data: responses });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function updateOrderDescriptionByTapeCoil(req, res, next) {
 	if (!validateRequest(req, next)) return;
 

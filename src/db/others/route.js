@@ -756,7 +756,17 @@ const pathZipper = {
 			description: 'Order description uuid by order number',
 			operationId: 'getOrderDescriptionUuid',
 			parameters: [
-				SE.parameter_query('order_number', 'order_number', 'Z24-0001'),
+				SE.parameter_params(
+					'order_number',
+					'order_number',
+					'string',
+					'Z24-0001'
+				),
+				SE.parameter_query(
+					'marketing_uuid',
+					'marketing_uuid',
+					'2ggcphnwHGzEUGy'
+				),
 			],
 			responses: {
 				200: {
