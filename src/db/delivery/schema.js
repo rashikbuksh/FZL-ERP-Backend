@@ -30,14 +30,16 @@ export const item_for_enum = delivery.enum('item_for_enum', [
 export const packing_list = delivery.table('packing_list', {
 	id: integer('id').default(sql`nextval('delivery.packing_list_sequence')`),
 	uuid: uuid_primary,
-	carton_weight: text('carton_weight').notNull(),
+	carton_weight: text('carton_weight').default(null),
 	order_info_uuid: defaultUUID('order_info_uuid')
 		.references(() => zipperSchema.order_info.uuid)
 		.default(null),
 	challan_uuid: defaultUUID('challan_uuid')
 		.references(() => challan.uuid)
 		.default(null),
-	carton_uuid: defaultUUID('carton_uuid').references(() => carton.uuid),
+	carton_uuid: defaultUUID('carton_uuid')
+		.references(() => carton.uuid)
+		.default(null),
 	is_warehouse_received: boolean('is_warehouse_received').default(false),
 	gate_pass: integer('gate_pass').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
