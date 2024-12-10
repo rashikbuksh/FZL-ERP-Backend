@@ -104,16 +104,20 @@ export async function selectAll(req, res, next) {
 				LEFT JOIN
 					(
 						SELECT 
-							(
 								SUM(
-									coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)
-								)
-							)::float8 as total_amount, 
-							pi_cash.uuid as pi_cash_uuid
-						FROM commercial.pi_cash 
-							LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
-							LEFT JOIN thread.order_entry ON pi_cash_entry.thread_order_entry_uuid = order_entry.uuid 
-						GROUP BY pi_cash.uuid
+									CASE 
+										WHEN od.order_type = 'tape' 
+										THEN order_entry.size::float8 * coalesce(order_entry.party_price,0)
+										ELSE coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(order_entry.party_price/12,0)
+									END)::float8 
+								as total_amount, 
+								pi_cash.uuid as pi_cash_uuid
+							FROM commercial.pi_cash 
+								LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+								LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+								LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+								LEFT JOIN zipper.order_description od ON order_entry.order_description_uuid = od.uuid
+							GROUP BY pi_cash.uuid
 					) as total_pi_amount ON total_pi_amount.pi_cash_uuid = cash_receive.pi_cash_uuid
 				LEFT JOIN 
 				(
@@ -185,15 +189,19 @@ export async function select(req, res, next) {
 				LEFT JOIN
 					(
 						SELECT 
-							(
-								SUM(
-									coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)
-								)
-							)::float8 as total_amount, 
+							SUM(
+								CASE 
+									WHEN od.order_type = 'tape' 
+									THEN order_entry.size::float8 * coalesce(order_entry.party_price,0)
+									ELSE coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(order_entry.party_price/12,0)
+								END)::float8 
+							as total_amount, 
 							pi_cash.uuid as pi_cash_uuid
 						FROM commercial.pi_cash 
 							LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
-							LEFT JOIN thread.order_entry ON pi_cash_entry.thread_order_entry_uuid = order_entry.uuid 
+							LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+							LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+							LEFT JOIN zipper.order_description od ON order_entry.order_description_uuid = od.uuid
 						GROUP BY pi_cash.uuid
 					) as total_pi_amount ON total_pi_amount.pi_cash_uuid = cash_receive.pi_cash_uuid
 				LEFT JOIN
