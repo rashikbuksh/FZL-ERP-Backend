@@ -375,6 +375,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 				THEN (toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 
 				ELSE LEAST(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8, toe.production_quantity::float8)
 			END as max_quantity,
+			cl.cone_per_carton,
 			0 as quantity,
 			0 as poli_quantity,
 			0 as short_quantity,
