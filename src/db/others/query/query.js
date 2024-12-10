@@ -1080,7 +1080,7 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 					CASE 
 						WHEN vodf.is_multi_color = 1 THEN ' - Multi Color', 
 						ELSE ''
-						) AS label,
+					END ) AS label,
 				totals_of_oe.total_size::float8,
 				totals_of_oe.total_quantity::float8,
 				tcr.top::float8,
