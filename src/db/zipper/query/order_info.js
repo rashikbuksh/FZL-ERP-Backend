@@ -361,7 +361,7 @@ export async function getOrderDetails(req, res, next) {
 								: sql`
                     ${approved === 'true' ? sql`swatch_approval_counts.swatch_approval_count > 0` : sql`1=1`}`
 						}
-					ORDER BY vod.order_number DESC, order_number_wise_rank ASC;`;
+					ORDER BY vod.id DESC, order_number_wise_rank ASC;`;
 
 	const orderInfoPromise = db.execute(query);
 
