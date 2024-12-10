@@ -1888,18 +1888,8 @@ export async function selectThreadOrder(req, res, next) {
 				thread.order_info oi
 			LEFT JOIN
 				thread.order_entry oe ON oi.uuid = oe.order_info_uuid
-			LEFT JOIN
-				(
-					SELECT
-						tbe.order_entry_uuid,
-						SUM(tbe.coning_production_quantity) AS total_coning_quantity
-					FROM
-						thread.batch_entry tbe
-					GROUP BY
-						tbe.order_entry_uuid
-				) AS total_coning ON total_coning.order_entry_uuid = oe.uuid
 			WHERE
-				${is_sample === 'true' ? sql`oe.quantity - oe.warehouse - oe.delivered > 0` : sql`total_coning.total_coning_quantity > 0`}
+				${is_sample === 'true' ? sql`oe.quantity - oe.warehouse - oe.delivered > 0` : sql`toe.production_quantity::float8 > 0`}
 		)
 	`;
 	} else {
