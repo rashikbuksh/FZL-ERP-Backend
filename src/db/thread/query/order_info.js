@@ -15,7 +15,7 @@ export async function insert(req, res, next) {
 		.insert(order_info)
 		.values(req.body)
 		.returning({
-			insertedId: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			insertedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -41,7 +41,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -66,7 +66,7 @@ export async function remove(req, res, next) {
 		.delete(order_info)
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			deletedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -89,7 +89,7 @@ export async function selectAll(req, res, next) {
 		SELECT 
 			order_info.uuid,
 			order_info.id,
-			CONCAT('TO', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+			CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 			pi_cash_grouped.pi_numbers,
 			order_info.party_uuid,
 			party.name AS party_name,
@@ -181,7 +181,7 @@ export async function select(req, res, next) {
 		SELECT 
 			order_info.uuid,
 			order_info.id,
-			CONCAT('TO', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+			CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 			pi_cash_grouped.pi_numbers,
 			order_info.party_uuid,
 			party.name AS party_name,
@@ -298,7 +298,7 @@ export async function selectThreadSwatch(req, res, next) {
 		.select({
 			uuid: order_info.uuid,
 			id: order_info.id,
-			order_number: sql`concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			order_number: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			order_entry_uuid: order_entry.uuid,
 			style: order_entry.style,
 			color: order_entry.color,

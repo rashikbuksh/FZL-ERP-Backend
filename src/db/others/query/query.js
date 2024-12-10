@@ -617,7 +617,7 @@ export async function selectOrderInfo(req, res, next) {
 	let orderInfoPromise = db
 		.select({
 			value: zipperSchema.order_info.uuid,
-			label: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			label: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		})
 		.from(zipperSchema.order_info);
 
@@ -656,7 +656,7 @@ export async function selectOrderZipperThread(req, res, next) {
 
 	const query = sql`SELECT
 							oz.uuid AS value,
-							CONCAT('Z', to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label
+							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label
 						FROM
 							zipper.order_info oz
 						LEFT JOIN zipper.v_order_details vodf ON oz.uuid = vodf.order_info_uuid
@@ -665,7 +665,7 @@ export async function selectOrderZipperThread(req, res, next) {
 						UNION 
 						SELECT
 							ot.uuid AS value,
-							CONCAT('TO', to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
+							CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
 						FROM
 							thread.order_info ot`;
 
@@ -1421,7 +1421,16 @@ export async function selectPi(req, res, next) {
 				ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
 			END
 		)::float8 AS pi_value,
-		ARRAY_AGG(DISTINCT CASE WHEN pi_cash_entry.sfg_uuid IS NOT NULL THEN v_order_details.order_number ELSE concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END) AS order_number,
+		ARRAY_AGG(DISTINCT 
+				CASE 
+					WHEN pi_cash_entry.sfg_uuid IS NOT NULL 
+					THEN v_order_details.order_number 
+					ELSE concat('ST', CASE 
+										WHEN toi.is_sample = 1 
+										THEN 'S' 
+										ELSE '' 
+									END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+				END) AS order_number,
 		marketing.name AS marketing_name
 	FROM
 		commercial.pi_cash
@@ -1899,7 +1908,7 @@ export async function selectThreadOrder(req, res, next) {
 	const query = sql`
 				SELECT
 					ot.uuid AS value,
-					CONCAT('TO', to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
+					CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
 				FROM
 					thread.order_info ot
 				WHERE
@@ -1937,7 +1946,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		query = sql`
 		SELECT
 			DISTINCT toi.uuid AS value,
-			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label,
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label,
 			toi.id
 		FROM
 			thread.order_info toi
@@ -1955,7 +1964,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		query = sql`
 		SELECT
 			DISTINCT toi.uuid AS value,
-			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label,
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label,
 			toi.id
 		FROM
 			thread.order_info toi

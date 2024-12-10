@@ -7,7 +7,7 @@ export async function selectOrderEntryFeed(req, res, next) {
 
 	const query = sql`
         SELECT 
-            CONCAT('Z', to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')) as order_no,
+            CONCAT('Z', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')) as order_no,
             pp.name as party_name,
             pm.name as marketing_name,
             vodf.item_description as item,
@@ -26,7 +26,7 @@ export async function selectOrderEntryFeed(req, res, next) {
             
             UNION 
             SELECT 
-                CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_no,
+                CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_no,
                 pp.name as party_name,
                 pm.name as marketing_name,
                 'Sewing Thread' as item,

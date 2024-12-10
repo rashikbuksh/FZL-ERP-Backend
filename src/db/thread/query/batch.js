@@ -240,7 +240,14 @@ export async function selectAll(req, res, next) {
 						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity,
 						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight,
 						SUM(batch_entry.quantity)::float8 as total_cone,
-						jsonb_agg(DISTINCT jsonb_build_object('order_info_uuid', order_info.uuid, 'order_number', concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')))) AS order_numbers,
+						jsonb_agg(DISTINCT 
+							jsonb_build_object('order_info_uuid', order_info.uuid, 
+												'order_number', concat('ST', CASE 
+																WHEN order_info.is_sample = 1 
+																THEN 'S' ELSE '' 
+																END, 
+															to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')))
+						) AS order_numbers,
 						jsonb_agg(
 							DISTINCT order_info.uuid ) as order_uuids,
 						batch.production_date

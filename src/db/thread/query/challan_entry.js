@@ -1,8 +1,5 @@
 import { asc, desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -156,7 +153,7 @@ export async function selectThreadChallanEntryByChallanUuid(req, res, next) {
 			challan_entry.created_at,
 			challan_entry.updated_at,
 			order_entry.count_length_uuid,
-			concat('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+			concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
 			count_length.count,
 			count_length.length,
 			order_entry.quantity::float8 as order_quantity,

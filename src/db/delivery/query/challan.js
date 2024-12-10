@@ -147,8 +147,8 @@ export async function selectAll(req, res, next) {
 					challan.order_info_uuid ELSE
 					challan.thread_order_info_uuid END AS order_info_uuid,
 				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN
-					CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE
-					CONCAT('T', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
+					CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE
+					CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
 				packing_list_count.packing_list_count AS total_carton_quantity,
 				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN
 					zipper.order_info.buyer_uuid ELSE
@@ -293,8 +293,8 @@ export async function select(req, res, next) {
 										challan.order_info_uuid ELSE
 										challan.thread_order_info_uuid END AS order_info_uuid,
 									CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN
-										CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE
-										CONCAT('T', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
+										CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE
+										CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
 									packing_list_count.packing_list_count AS total_carton_quantity,
 									CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' THEN
 										zipper.order_info.buyer_uuid ELSE

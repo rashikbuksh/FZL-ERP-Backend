@@ -3,7 +3,10 @@ export const OrderDetailsView = `
     SELECT
         order_info.uuid AS order_info_uuid,
         order_info.reference_order_info_uuid,
-        concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+        concat('Z', 
+            CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
+            to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+        ) AS order_number,
         concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
         op_item.name AS item_name,
         op_nylon_stopper.name AS nylon_stopper_name,
@@ -63,7 +66,10 @@ export const OrderDetailsFullView = `
 CREATE OR REPLACE VIEW zipper.v_order_details_full AS
   SELECT 
       order_info.uuid AS order_info_uuid,
-      concat('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+      concat('Z', 
+            CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
+            to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+        ) AS order_number,
       order_description.uuid AS order_description_uuid,
       order_description.tape_received::float8,
       order_description.multi_color_tape_received::float8,
@@ -256,7 +262,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         vodf.order_description_uuid,
         CASE 
             WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
-            THEN vodf.order_number ELSE CONCAT('T', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+            THEN vodf.order_number ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
         END as order_number,
         CASE 
             WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' 
@@ -314,8 +320,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')) AS packing_number,
         CASE 
             WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' 
-                THEN CONCAT('Z', TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
-                ELSE CONCAT('T', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+                THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
+                ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
             END AS order_number,
         packing_list.challan_uuid,
         CASE

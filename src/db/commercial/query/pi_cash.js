@@ -217,7 +217,7 @@ export async function selectAll(req, res, next) {
 				(
 					SELECT
 						DISTINCT toi.uuid::text AS order_info_uuid,
-						CONCAT('TO', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS thread_order_number
+						CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS thread_order_number
 					FROM
 						thread.order_info toi
 				) AS thread_order_numbers 
@@ -405,7 +405,11 @@ export async function select(req, res, next) {
 				commercial.lc ON pi_cash.lc_uuid = lc.uuid
 			LEFT JOIN 
 			(
-				SELECT array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, jsonb_agg(DISTINCT vodf.order_number) AS order_numbers, array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, jsonb_agg(DISTINCT CONCAT('TO', TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0'))) as thread_order_numbers, pi_cash_uuid
+				SELECT 
+						array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, 
+						jsonb_agg(DISTINCT vodf.order_number) AS order_numbers, 
+						array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, 
+						jsonb_agg(DISTINCT CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0'))) as thread_order_numbers, pi_cash_uuid
 				FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid

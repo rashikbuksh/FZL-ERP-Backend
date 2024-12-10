@@ -109,7 +109,7 @@ export async function selectAll(req, res, next) {
 			challan.is_hand_delivery,
 			challan.name,
 			challan.delivery_cost::float8,
-			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
 			SUM(tce.quantity)::float8 AS total_quantity
 		FROM 
 			thread.challan
@@ -205,7 +205,7 @@ export async function select(req, res, next) {
 			challan.is_hand_delivery,
 			challan.name,
 			challan.delivery_cost::float8,
-			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number
 		FROM 
 			thread.challan
 		LEFT JOIN 
@@ -246,7 +246,7 @@ export async function select(req, res, next) {
 export async function selectByOrderInfoUuid(req, res, next) {
 	const query = sql`
 		SELECT
-			concat('TO', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
+			concat('ST', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS order_number,
 			toe.order_info_uuid as order_info_uuid,
 			toe.uuid as order_entry_uuid,
 			toe.count_length_uuid,

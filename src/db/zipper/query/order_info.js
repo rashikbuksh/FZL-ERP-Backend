@@ -54,7 +54,7 @@ export async function insert(req, res, next) {
 			print_in,
 		})
 		.returning({
-			insertedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			insertedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -119,7 +119,7 @@ export async function update(req, res, next) {
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -143,7 +143,7 @@ export async function remove(req, res, next) {
 		.delete(order_info)
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			deletedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {
@@ -165,7 +165,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: order_info.uuid,
 			id: order_info.id,
-			order_number: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			order_number: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 			reference_order_info_uuid: order_info.reference_order_info_uuid,
 			buyer_uuid: order_info.buyer_uuid,
 			buyer_name: publicSchema.buyer.name,
@@ -512,7 +512,7 @@ export async function updatePrintIn(req, res, next) {
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CONCAT('Z', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		});
 
 	try {

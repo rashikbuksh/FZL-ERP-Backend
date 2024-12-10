@@ -194,8 +194,8 @@ export async function selectAll(req, res, next) {
 			is_thread_order: sql`CASE WHEN info.thread_order_info_uuid IS NOT NULL THEN TRUE ELSE FALSE END`,
 			order_number: sql`
 				CASE 
-					WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.created_at, 'YY'), '-', LPAD(zipper.id::text, 4, '0'))
-					WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+					WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', CASE WHEN zipper.is_sample = 1 THEN 'S' ELSE '' END, to_char(zipper.created_at, 'YY'), '-', LPAD(zipper.id::text, 4, '0'))
+					WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('ST', CASE WHEN thread.is_sample = 1 THEN 'S' ELSE '' END, to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
 					ELSE NULL
 				END
 			`,
@@ -270,8 +270,8 @@ export async function select(req, res, next) {
 			is_thread_order: sql`CASE WHEN info.thread_order_info_uuid IS NOT NULL THEN TRUE ELSE FALSE END`,
 			order_number: sql`
         CASE 
-            WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', to_char(zipper.created_at, 'YY'), '-', LPAD(zipper.id::text, 4, '0'))
-            WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('TO', to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+            WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', CASE WHEN zipper.is_sample = 1 THEN 'S' ELSE '' END, to_char(zipper.created_at, 'YY'), '-', LPAD(zipper.id::text, 4, '0'))
+            WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('ST', CASE WHEN thread.is_sample = 1 THEN 'S' ELSE '' END, to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
             ELSE NULL
         END
     `,

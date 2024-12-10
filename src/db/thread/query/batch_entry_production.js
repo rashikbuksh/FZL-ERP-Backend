@@ -162,7 +162,7 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		be.batch_uuid,
 		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
 		be.order_entry_uuid, 
-		CONCAT('TO', to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 	    oe.color as color,
 		oe.po as po,
 		oe.style as style,
