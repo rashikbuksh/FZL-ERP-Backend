@@ -1889,7 +1889,7 @@ export async function selectThreadOrder(req, res, next) {
 			LEFT JOIN
 				thread.order_entry oe ON oi.uuid = oe.order_info_uuid
 			WHERE
-				${is_sample === 'true' ? sql`oe.quantity - oe.warehouse - oe.delivered > 0` : sql`(toe.quantity - toe.warehouse - toe.delivered) > 0 AND oe.production_quantity::float8 > 0`}
+				${is_sample === 'true' ? sql`oe.quantity - oe.warehouse - oe.delivered > 0` : sql`(oe.quantity - oe.warehouse - oe.delivered) > 0 AND oe.production_quantity::float8 > 0`}
 		)
 	`;
 	} else {
