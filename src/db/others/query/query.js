@@ -756,6 +756,7 @@ export async function selectOrderDescription(req, res, next) {
 		is_balance,
 		page,
 		is_update,
+		is_slider_needed,
 	} = req.query;
 
 	const query = sql`
@@ -765,6 +766,8 @@ export async function selectOrderDescription(req, res, next) {
 						CASE 
 							WHEN vodf.order_type = 'slider' 
 							THEN ' - Slider' 
+							WHEN vodf.is_multi_color = 1
+							THEN ' - Multi Color'
 							ELSE ''
 							END
 						) AS label,
@@ -859,6 +862,8 @@ export async function selectOrderDescription(req, res, next) {
 						CASE 
 							WHEN vodf.order_type = 'slider' 
 							THEN ' - Slider' 
+							WHEN vodf.is_multi_color = 1
+							THEN ' - Multi Color'
 							ELSE ''
 							END
 						) AS label,
@@ -874,7 +879,11 @@ export async function selectOrderDescription(req, res, next) {
 					tcr.top::float8,
 					tcr.bottom::float8,
 					tape_coil.dyed_per_kg_meter::float8,
-					CASE WHEN vodf.is_multi_color = 1 THEN vodf.multi_color_tape_received ELSE coalesce(batch_stock.stock,0)::float8 END as stock,
+					CASE 
+						WHEN vodf.is_multi_color = 1 
+						THEN vodf.multi_color_tape_received 
+						ELSE coalesce(batch_stock.stock,0)::float8 
+					END as stock,
 					sfg.uuid as sfg_uuid,
 					sfg.recipe_uuid as recipe_uuid,
 					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
@@ -950,6 +959,11 @@ export async function selectOrderDescription(req, res, next) {
 						ELSE sfg.recipe_uuid IS NOT NULL 
 					END
 		`;
+	}
+
+	if (is_slider_needed == 'false') {
+		query.append(sql` AND vodf.order_type != 'slider'`);
+		page ? page_query.append(sql` AND vodf.order_type != 'slider'`) : '';
 	}
 
 	if (dyed_tape_required == 'false') {
