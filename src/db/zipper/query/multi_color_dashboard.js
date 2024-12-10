@@ -112,8 +112,6 @@ export async function selectAll(req, res, next) {
 			material.info m_thread ON mcd.thread_uuid = m_thread.uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON mcd.order_description_uuid = vodf.order_description_uuid
-		LEFT JOIN
-			zipper.v_order_details_full vodf ON mcd.order_description_uuid = vodf.order_description_uuid
 		ORDER BY
 			vodf.created_at DESC;
 	`;
