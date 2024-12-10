@@ -90,7 +90,8 @@ export async function selectAll(req, res, next) {
 			mctr.created_at,
 			mctr.updated_at,
 			mctr.remarks,
-			mcd.expected_tape_quantity::float8 AS expected_tape_quantity
+			mcd.expected_tape_quantity::float8 AS expected_tape_quantity,
+			(mcd.expected_tape_quantity + vodf.multi_color_tape_received) :: float8 AS max_tap_receive_quantity
 		FROM
 			zipper.multi_color_tape_receive mctr
 		LEFT JOIN hr.users u ON mctr.created_by = u.uuid
@@ -133,7 +134,8 @@ export async function select(req, res, next) {
 			mctr.created_at,
 			mctr.updated_at,
 			mctr.remarks,
-			mcd.expected_tape_quantity::float8 AS expected_tape_quantity
+			mcd.expected_tape_quantity::float8 AS expected_tape_quantity,
+			(mcd.expected_tape_quantity + vodf.multi_color_tape_received) :: float8 AS max_tap_receive_quantity
 		FROM
 			zipper.multi_color_tape_receive mctr
 		LEFT JOIN hr.users u ON mctr.created_by = u.uuid
