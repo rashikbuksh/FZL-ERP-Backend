@@ -134,7 +134,7 @@ export async function selectAll(req, res, next) {
 	`;
 	// const cashReceivePromise = db.select(cash_receive).from(cash_receive);
 
-	const cashReceivePromise = db.query(query);
+	const cashReceivePromise = db.execute(query);
 
 	try {
 		const data = await cashReceivePromise;
@@ -143,7 +143,7 @@ export async function selectAll(req, res, next) {
 			type: 'select all',
 			message: 'cash_receive list',
 		};
-		return await res.status(200).json({ toast, data });
+		return await res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -214,7 +214,7 @@ export async function select(req, res, next) {
 				WHERE cash_receive.uuid = ${req.params.uuid}
 	`;
 
-	const cashReceivePromise = db.query(query);
+	const cashReceivePromise = db.execute(query);
 
 	try {
 		const data = await cashReceivePromise;
@@ -224,7 +224,7 @@ export async function select(req, res, next) {
 			message: `cash_receive`,
 		};
 
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
