@@ -1078,7 +1078,7 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				vodf.order_description_uuid AS value,
 				CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' ⇾ ', vodf.tape_received, 
 					CASE 
-						WHEN vodf.is_multi_color = 1 THEN ' - Multi Color', 
+						WHEN vodf.is_multi_color = 1 THEN ' - Multi Color'
 						ELSE ''
 					END ) AS label,
 				totals_of_oe.total_size::float8,
