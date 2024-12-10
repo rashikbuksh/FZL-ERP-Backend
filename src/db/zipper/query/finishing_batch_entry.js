@@ -237,7 +237,8 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 					sfg.uuid
 		) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
 		WHERE CASE WHEN vodf.order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
-			AND vodf.order_description_uuid = ${req.params.order_description_uuid}`;
+		AND (coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0)) > 0
+		AND vodf.order_description_uuid = ${req.params.order_description_uuid}`;
 
 	// AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0
 	// AND
