@@ -97,7 +97,8 @@ export async function selectAll(req, res, next) {
 			mcd.coil_uuid,
 			mi.name AS coil_name,
 			mcd.coil_quantity::float8 AS coil_quantity,
-			mcd.thread_name,
+			mcd.thread_uuid,
+			m_thread.name AS thread_name,
 			mcd.thread_quantity::float8,
 			mcd.is_coil_received_sewing,
 			mcd.is_thread_received_sewing,
@@ -107,6 +108,10 @@ export async function selectAll(req, res, next) {
 			zipper.multi_color_dashboard mcd
 		LEFT JOIN
 			material.info mi ON mcd.coil_uuid = mi.uuid
+		LEFT JOIN
+			material.info m_thread ON mcd.thread_uuid = m_thread.uuid
+		LEFT JOIN
+			zipper.v_order_details_full vodf ON mcd.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON mcd.order_description_uuid = vodf.order_description_uuid
 		ORDER BY
@@ -150,7 +155,8 @@ export async function select(req, res, next) {
 			mcd.coil_uuid,
 			mi.name AS coil_name,
 			mcd.coil_quantity::float8 AS coil_quantity,
-			mcd.thread_name,
+			mcd.thread_uuid,
+			m_thread.name AS thread_name,
 			mcd.thread_quantity::float8,
 			mcd.is_coil_received_sewing,
 			mcd.is_thread_received_sewing,
@@ -160,6 +166,8 @@ export async function select(req, res, next) {
 			zipper.multi_color_dashboard mcd
 		LEFT JOIN
 			material.info mi ON mcd.coil_uuid = mi.uuid
+		LEFT JOIN
+			material.info m_thread ON mcd.thread_uuid = m_thread.uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON mcd.order_description_uuid = vodf.order_description_uuid
 		WHERE

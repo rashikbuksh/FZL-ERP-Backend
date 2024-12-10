@@ -639,7 +639,9 @@ export const multi_color_dashboard = zipper.table('multi_color_dashboard', {
 		precision: 20,
 		scale: 4,
 	}).default(0),
-	thread_name: text('thread_name').default(null),
+	thread_uuid: defaultUUID('thread_uuid').references(
+		() => materialSchema.info.uuid
+	),
 	thread_quantity: decimal('thread_quantity', {
 		precision: 20,
 		scale: 4,
