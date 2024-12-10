@@ -1058,6 +1058,7 @@ export async function selectOrderDescription(req, res, next) {
 
 export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 	const { coil_uuid } = req.params;
+	const { is_slider_needed } = req.query;
 	const tapeCOilQuery = sql`
 			SELECT
 				item_uuid,
@@ -1127,6 +1128,7 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 			) multi_tape ON vodf.order_description_uuid = multi_tape.order_description_uuid
 			WHERE
 				(vodf.tape_coil_uuid = ${coil_uuid} OR (vodf.item = ${item_uuid} AND vodf.zipper_number = ${zipper_number_uuid} AND vodf.tape_coil_uuid IS NULL)) AND vodf.order_description_uuid IS NOT NULL
+				${is_slider_needed == 'false' ? sql` AND vodf.order_type != 'slider'` : sql``}
 		`;
 
 		// CASE WHEN vodf.is_multi_color = 0 THEN vodf.tape_transferred::float8 ELSE coalesce(multi_tape.total_multi_tape_quantity::float8, 0) END as tape_transferred,

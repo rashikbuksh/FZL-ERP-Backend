@@ -991,14 +991,11 @@ const pathZipper = {
 			description: 'Order description by coil uuid',
 			operationId: 'getOrderDescriptionByCoilUuid',
 			parameters: [
-				{
-					name: 'coil_uuid',
-					in: 'path',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: '2ggcphnwHGzEUGy',
-				},
+				SE.parameter_params('coil_uuid', 'coil_uuid'),
+				SE.parameter_query('is_slider_needed', 'is_slider_needed', [
+					'true',
+					'false',
+				]),
 			],
 			responses: {
 				200: {
