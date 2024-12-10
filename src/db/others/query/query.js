@@ -601,7 +601,7 @@ export async function selectOrderInfo(req, res, next) {
 					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 					WHERE vodf.item_description != '---' 
 					  AND vodf.item_description != '' 
-					  AND ${is_sample === 'true' ? sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0` : sql`sfg.finishing_prod > 0`} 
+					  AND ${is_sample === 'true' ? sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0` : sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0 AND sfg.finishing_prod > 0`} 
 				)
 			`;
 			break;
@@ -1889,7 +1889,7 @@ export async function selectThreadOrder(req, res, next) {
 			LEFT JOIN
 				thread.order_entry oe ON oi.uuid = oe.order_info_uuid
 			WHERE
-				${is_sample === 'true' ? sql`oe.quantity - oe.warehouse - oe.delivered > 0` : sql`oe.production_quantity::float8 > 0`}
+				${is_sample === 'true' ? sql`oe.quantity - oe.warehouse - oe.delivered > 0` : sql`(toe.quantity - toe.warehouse - toe.delivered) > 0 AND oe.production_quantity::float8 > 0`}
 		)
 	`;
 	} else {
