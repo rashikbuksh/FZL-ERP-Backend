@@ -214,6 +214,8 @@ export async function select(req, res, next) {
 				WHERE cash_receive.uuid = ${req.params.uuid}
 	`;
 
+	const cashReceivePromise = db.query(query);
+
 	try {
 		const data = await cashReceivePromise;
 		const toast = {
