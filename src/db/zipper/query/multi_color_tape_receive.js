@@ -1,8 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -92,11 +89,14 @@ export async function selectAll(req, res, next) {
 			u.name AS created_by_name,
 			mctr.created_at,
 			mctr.updated_at,
-			mctr.remarks
+			mctr.remarks,
+			mcd.expected_tape_quantity::float8 AS expected_tape_quantity
+
 		FROM
 			zipper.multi_color_tape_receive mctr
 		LEFT JOIN hr.users u ON mctr.created_by = u.uuid
 		LEFT JOIN zipper.v_order_details_full vodf ON mctr.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN zipper.multi_color_dashboard mcd ON mctr.order_description_uuid = mcd.order_description_uuid
 		ORDER BY
 			mctr.created_at DESC
 	`;
@@ -133,11 +133,14 @@ export async function select(req, res, next) {
 			u.name AS created_by_name,
 			mctr.created_at,
 			mctr.updated_at,
-			mctr.remarks
+			mctr.remarks,
+			mcd.expected_tape_quantity::float8 AS expected_tape_quantity
+			
 		FROM
 			zipper.multi_color_tape_receive mctr
 		LEFT JOIN hr.users u ON mctr.created_by = u.uuid
 		LEFT JOIN zipper.v_order_details_full vodf ON mctr.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN zipper.multi_color_dashboard mcd ON mctr.order_description_uuid = mcd.order_description_uuid
 		WHERE
 			mctr.uuid = ${req.params.uuid}
 	`;
