@@ -232,7 +232,13 @@ export async function selectAll(req, res, next) {
 			) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
 			WHERE
 			  ${delivery_date ? sql`DATE(challan.delivery_date) = ${delivery_date}` : sql`TRUE`}
-			  ${vehicle != null || vehicle != undefined ? sql`AND challan.vehicle_uuid = ${vehicle}` : sql`AND TRUE`}
+			  ${
+					vehicle != 'null' && vehicle != undefined
+						? delivery_date
+							? sql`AND challan.vehicle_uuid = ${vehicle}`
+							: sql`challan.vehicle_uuid = ${vehicle}`
+						: sql``
+				}
 		) AS main_query
 	LEFT JOIN (
 		SELECT
