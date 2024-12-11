@@ -25,6 +25,8 @@ export const item_for_enum = delivery.enum('item_for_enum', [
 	'thread',
 	'sample_zipper',
 	'sample_thread',
+	'slider',
+	'tape',
 ]);
 
 export const packing_list = delivery.table('packing_list', {
