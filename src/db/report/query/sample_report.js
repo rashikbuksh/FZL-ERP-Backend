@@ -1,6 +1,6 @@
+import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { sql } from 'drizzle-orm';
 
 export async function selectSampleReport(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -25,7 +25,7 @@ export async function selectSampleReport(req, res, next) {
         WHERE
             oi.is_sample = 1 AND od.uuid IS NOT NULL
         GROUP BY
-            oi.id, oi.created_at
+            oi.id, oi.created_at, oi.is_sample
     ),
     thread_results AS (
         SELECT
@@ -44,7 +44,7 @@ export async function selectSampleReport(req, res, next) {
         WHERE 
             toi.is_sample = 1
         GROUP BY
-            toi.id, toi.created_at
+            toi.id, toi.created_at, toi.is_sample
     )
     SELECT *, (SELECT COUNT(*) FROM (SELECT * FROM zipper_results UNION ALL SELECT * FROM thread_results) AS combined) AS total_number
     FROM (
