@@ -412,6 +412,28 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/sample-report': {
+		get: {
+			summary: 'Sample Report',
+			description: 'Sample Report',
+			tags: ['report'],
+			operationId: 'selectSampleReport',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					sample_order_no: SE.string('Sample Order No'),
+					issue_date: SE.date_time(),
+					status: SE.string('Status'),
+					delivery_last_date: SE.date_time(),
+					delivery_quantity: SE.number(610),
+					order_quantity: SE.number(610),
+					delivery_order_quantity: SE.string(
+						'Delivery Order Quantity'
+					),
+				}),
+			},
+		},
+	},
 };
 
 export const tagReport = [
