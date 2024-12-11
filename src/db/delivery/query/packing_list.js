@@ -310,7 +310,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 
 	let query;
 
-	if (item_for == 'zipper' || item_for == 'sample_zipper') {
+	if (item_for == 'zipper' || item_for == 'sample_zipper' || item_for == 'slider' || item_for == 'tape') {
 		query = sql`
 		SELECT DISTINCT
 			vodf.order_info_uuid as order_info_uuid,
