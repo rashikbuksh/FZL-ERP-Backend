@@ -5,6 +5,7 @@ import { order_description, order_info } from '../zipper/schema.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
 import * as reportOperations from './query/query.js';
+import { selectSampleReport } from './query/sample_report.js';
 
 const reportRouter = Router();
 
@@ -76,6 +77,9 @@ reportRouter.get(
 
 //* Material Stock Report
 reportRouter.get('/material-stock-report', MaterialStockReport);
+
+// * Sample Report
+reportRouter.get('/sample-report', selectSampleReport);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
