@@ -609,15 +609,14 @@ export async function selectOrderInfo(req, res, next) {
 			break;
 
 		default:
-			filterCondition =
-				(is_sample != undefined
-					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`
-					: sql`1=1`) &&
-				(item_for != undefined
-					? is_sample != undefined
-						? sql`AND order_info.uuid IN (SELECT vodf.order_info_uuid FROM zipper.v_order_details_full vodf WHERE vodf.order_type = ${item_for})`
-						: sql`order_info.uuid IN (SELECT vodf.order_info_uuid FROM zipper.v_order_details_full vodf WHERE vodf.order_type = ${item_for})`
-					: sql`AND 1=1`);
+			filterCondition = sql`
+            ${is_sample != undefined ? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`} AND ` : sql``}
+            order_info.uuid IN (
+                SELECT vodf.order_info_uuid 
+                FROM zipper.v_order_details_full vodf 
+                ${item_for != undefined ? sql`WHERE vodf.order_type = ${item_for}` : sql``}
+            )
+        `;
 			break;
 	}
 
