@@ -233,7 +233,10 @@ export async function selectAll(req, res, next) {
 			WHERE
 			  ${delivery_date ? sql`DATE(challan.delivery_date) = ${delivery_date}` : sql`TRUE`}
 			  ${
-					vehicle != 'null' && vehicle != undefined
+					vehicle != 'null' &&
+					vehicle != undefined &&
+					vehicle != 'undefined' &&
+					vehicle != 'all'
 						? delivery_date
 							? sql`AND challan.vehicle_uuid = ${vehicle}`
 							: sql`challan.vehicle_uuid = ${vehicle}`
