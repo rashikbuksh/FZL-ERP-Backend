@@ -19,10 +19,7 @@ export const pathDeliveryPackingList = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
 									carton_size: {
 										type: 'string',
 										example: '10x10x10',
@@ -31,36 +28,16 @@ export const pathDeliveryPackingList = {
 										type: 'string',
 										example: '10kg',
 									},
-									carton_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									carton_uuid: SE.uuid(),
 									carton_name: {
 										type: 'string',
 										example: 'Carton 1',
 									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									created_by: SE.uuid(),
+									created_at: SE.date_time(),
+									created_by_name: SE.string('merc'),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -220,10 +197,7 @@ export const pathDeliveryPackingList = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
 									carton_size: {
 										type: 'string',
 										example: '10x10x10',
@@ -232,61 +206,24 @@ export const pathDeliveryPackingList = {
 										type: 'string',
 										example: '10kg',
 									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									created_by: SE.uuid(),
+									created_at: SE.date_time(),
+									created_by_name: SE.string('merc'),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 									packing_list_entry: {
 										type: 'object',
 										properties: {
-											uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											packing_list_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											sfg_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
+											uuid: SE.uuid(),
+											packing_list_uuid: SE.uuid(),
+											sfg_uuid: SE.uuid(),
 											quantity: {
 												type: 'number',
 												example: 100,
 											},
-											created_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											updated_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											remarks: {
-												type: 'string',
-												example: 'Remarks',
-											},
+											created_at: SE.date_time(),
+											updated_at: SE.date_time(),
+											remarks: SE.string('remarks'),
 										},
 									},
 								},
@@ -335,34 +272,19 @@ export const pathDeliveryPackingList = {
 							schema: {
 								type: 'object',
 								properties: {
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
+									order_info_uuid: SE.uuid(),
+									order_number: SE.string('Z24-0001'),
 									item_description: {
 										type: 'string',
 										example: 'NP-3-AL-SP',
 									},
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									order_description_uuid: SE.uuid(),
 									style_color_size: {
 										type: 'string',
 										example: 'Style -1 / Black / 20',
 									},
-									order_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									sfg_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									order_quantity: SE.number(0),
+									sfg_uuid: SE.uuid(),
 									warehouse: SE.number(10),
 									delivered: SE.number(10),
 									balance_quantity: SE.number(10),
@@ -414,36 +336,13 @@ export const pathDeliveryPackingListEntry = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									packing_list_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									sfg_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									quantity: {
-										type: 'number',
-										example: 100,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									uuid: SE.uuid(),
+									packing_list_uuid: SE.uuid(),
+									sfg_uuid: SE.uuid(),
+									quantity: SE.number(0),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -603,36 +502,13 @@ export const pathDeliveryPackingListEntry = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									packing_list_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									sfg_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									quantity: {
-										type: 'number',
-										example: 100,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									uuid: SE.uuid(),
+									packing_list_uuid: SE.uuid(),
+									sfg_uuid: SE.uuid(),
+									quantity: SE.number(0),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -673,36 +549,13 @@ export const pathDeliveryPackingListEntry = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									packing_list_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									sfg_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									quantity: {
-										type: 'number',
-										example: 100,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									uuid: SE.uuid(),
+									packing_list_uuid: SE.uuid(),
+									sfg_uuid: SE.uuid(),
+									quantity: SE.number(0),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -803,129 +656,37 @@ export const pathDeliveryChallan = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_number: {
-										type: 'string',
-										example: 'ZC24-0001',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
-									buyer_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									party_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									party_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									merchandiser_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									merchandiser_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									factory_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									factory_address: {
-										type: 'string',
-										example: 'Dhaka, Bangladesh',
-									},
-									factory_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									vehicle_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									vehicle_name: {
-										type: 'string',
-										example: 'DHK-1234',
-									},
-									vehicle_driver_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									carton_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									assign_to: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									assign_to_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									receive_status: {
-										type: 'number',
-										example: 0,
-									},
-									gate_pass: {
-										type: 'string',
-										example: '123456',
-									},
-									name: {
-										type: 'string',
-										example: 'Challan 1',
-									},
-									delivery_cost: {
-										type: 'number',
-										example: 100,
-									},
-									is_hand_delivery: {
-										type: 'boolean',
-										example: false,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									delivery_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
+									uuid: SE.uuid(),
+									challan_number: SE.string('Z24-0001'),
+									order_info_uuid: SE.uuid(),
+									order_number: SE.string('Z24-0001'),
+									buyer_uuid: SE.uuid(),
+									buyer_name: SE.string('merc'),
+									party_uuid: SE.uuid(),
+									party_name: SE.string('merc'),
+									merchandiser_uuid: SE.uuid(),
+									merchandiser_name: SE.string('merc'),
+									factory_uuid: SE.uuid(),
+									factory_address: SE.string('address'),
+									factory_name: SE.string('name'),
+									vehicle_uuid: SE.uuid(),
+									vehicle_name: SE.string('name'),
+									vehicle_driver_name: SE.string('name'),
+									carton_quantity: SE.number(100),
+									assign_to: SE.uuid(),
+									assign_to_name: SE.string('name'),
+									receive_status: SE.number(0),
+									gate_pass: SE.number(0),
+									is_own: SE.boolean(false),
+									name: SE.string('name'),
+									delivery_cost: SE.number(0),
+									is_hand_delivery: SE.boolean(false),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('merc'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
+									delivery_date: SE.date_time(),
 								},
 							},
 						},
@@ -974,17 +735,7 @@ export const pathDeliveryChallan = {
 			description: 'Get a challan by uuid',
 			// operationId: "getChallanByUuid",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' challan to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -1001,17 +752,7 @@ export const pathDeliveryChallan = {
 			// operationId: "updateChallanByUuid",
 			consumes: 'application/json',
 			produces: 'application/json',
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' challan to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			requestBody: {
 				content: {
 					'application/json': {
@@ -1038,17 +779,7 @@ export const pathDeliveryChallan = {
 			description: 'Delete a challan by uuid',
 			// operationId: "deleteChallanByUuid",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'challan to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_params('uuid', 'uuid')],
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',
@@ -1066,17 +797,7 @@ export const pathDeliveryChallan = {
 			description: 'Get a challan details by challan_uuid',
 			// operationId: "getChallanDetailsByChallanUuid",
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'challan_uuid',
-					in: 'path',
-					description: ' challan to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
+			parameters: [SE.parameter_params('challan_uuid', 'challan_uuid')],
 			responses: {
 				200: {
 					description: 'Return challan details',
@@ -1085,178 +806,53 @@ export const pathDeliveryChallan = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									challan_number: {
-										type: 'string',
-										example: 'ZC24-0001',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
-									buyer_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									party_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									party_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									merchandiser_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									merchandiser_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									factory_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									factory_address: {
-										type: 'string',
-										example: 'Dhaka, Bangladesh',
-									},
-									factory_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									vehicle_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									vehicle_name: {
-										type: 'string',
-										example: 'DHK-1234',
-									},
-									vehicle_driver_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									carton_quantity: {
-										type: 'number',
-										example: 100,
-									},
-									assign_to: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									assign_to_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									receive_status: {
-										type: 'number',
-										example: 0,
-									},
-									gate_pass: {
-										type: 'string',
-										example: '123456',
-									},
-									name: {
-										type: 'string',
-										example: 'Challan 1',
-									},
-									delivery_cost: {
-										type: 'number',
-										example: 100,
-									},
-									is_hand_delivery: {
-										type: 'boolean',
-										example: false,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									delivery_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
+									uuid: SE.uuid(),
+									challan_number: SE.string('Z24-0001'),
+									order_info_uuid: SE.uuid(),
+									order_number: SE.string('Z24-0001'),
+									buyer_uuid: SE.uuid(),
+									buyer_name: SE.string('merc'),
+									party_uuid: SE.uuid(),
+									party_name: SE.string('merc'),
+									merchandiser_uuid: SE.uuid(),
+									merchandiser_name: SE.string('merc'),
+									factory_uuid: SE.uuid(),
+									factory_address: SE.string('address'),
+									factory_name: SE.string('merc'),
+									vehicle_uuid: SE.uuid(),
+									vehicle_name: SE.string('DHK-1234'),
+									vehicle_driver_name: SE.string('merc'),
+									carton_quantity: SE.number(0),
+									assign_to: SE.uuid(),
+									assign_to_name: SE.string('merc'),
+									receive_status: SE.number(0),
+									gate_pass: SE.number(0),
+									is_own: SE.boolean(false),
+									name: SE.string('merc'),
+									delivery_cost: SE.number(0),
+									is_hand_delivery: SE.boolean(false),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('merc'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
+									delivery_date: SE.date_time(),
 									challan_entry: {
 										type: 'object',
 										properties: {
-											uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											challan_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											challan_assign_to: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											challan_assign_to_name: {
-												type: 'string',
-												example: 'John Doe',
-											},
-											challan_created_by: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											challan_created_by_name: {
-												type: 'string',
-												example: 'John Doe',
-											},
-											packing_list_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											delivery_quantity: {
-												type: 'number',
-												example: 100,
-											},
-											created_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											updated_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											remarks: {
-												type: 'string',
-												example: 'Remarks',
-											},
+											uuid: SE.uuid(),
+											challan_uuid: SE.uuid(),
+											challan_assign_to: SE.uuid(),
+											challan_assign_to_name:
+												SE.string('merc'),
+											challan_created_by: SE.uuid(),
+											challan_created_by_name:
+												SE.string('merc'),
+											packing_list_uuid: SE.uuid(),
+											delivery_quantity: SE.number(100),
+											created_at: SE.date_time(),
+											updated_at: SE.date_time(),
+											remarks: SE.string('remarks'),
 										},
 									},
 								},
@@ -1290,10 +886,7 @@ export const pathDeliveryVehicle = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
 									type: {
 										type: 'string',
 										example: 'Truck',
@@ -1302,36 +895,16 @@ export const pathDeliveryVehicle = {
 										type: 'string',
 										example: 'KA-01-AB-1234',
 									},
-									driver_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
+									driver_name: SE.string('merc'),
 									active: {
 										type: 'number',
 										example: 1,
 									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									created_by: SE.uuid(),
+									created_by_name: SE.string('merc'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -1544,10 +1117,7 @@ export const pathDeliveryCarton = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
 									size: {
 										type: 'string',
 										example: 'Small',
@@ -1564,28 +1134,11 @@ export const pathDeliveryCarton = {
 										type: 'number',
 										example: 1,
 									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									created_by: SE.uuid(),
+									created_by_name: SE.string('merc'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},

@@ -93,6 +93,7 @@ export const challan = delivery.table('challan', {
 	assign_to: defaultUUID('assign_to').references(() => hrSchema.users.uuid),
 	receive_status: integer('receive_status').default(0),
 	gate_pass: integer('gate_pass').default(0),
+	is_own: boolean('is_own').default(false),
 	name: text('name').default(null),
 	delivery_cost: PG_DECIMAL('delivery_cost').default(0),
 	is_hand_delivery: boolean('is_hand_delivery').default(false),

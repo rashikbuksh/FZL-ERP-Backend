@@ -79,6 +79,7 @@ export const defChallan = SED({
 		carton_quantity: SE.number(100),
 		assign_to: SE.uuid(),
 		get_pass: SE.number(0),
+		is_own: SE.boolean(false),
 		receive_status: SE.number(0),
 		name: SE.string('name'),
 		delivery_cost: SE.number(100),

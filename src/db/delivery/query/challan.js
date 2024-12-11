@@ -191,7 +191,8 @@ export async function selectAll(req, res, next) {
 				challan.updated_at AS updated_at,
 				challan.remarks AS remarks,
 				challan.delivery_date,
-				packing_list.item_for
+				packing_list.item_for,
+				challan.is_own
 			FROM
 				delivery.challan
 			LEFT JOIN
@@ -338,7 +339,8 @@ export async function select(req, res, next) {
 									challan.updated_at AS updated_at,
 									challan.remarks AS remarks,
 									challan.delivery_date,
-									packing_list.item_for
+									packing_list.item_for,
+									challan.is_own
 								FROM
 									delivery.challan
 								LEFT JOIN
