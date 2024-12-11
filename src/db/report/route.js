@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
 import { order_description, order_info } from '../zipper/schema.js';
+import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
 import * as reportOperations from './query/query.js';
 
@@ -72,6 +73,9 @@ reportRouter.get(
 	'/production-report-thread-party-wise',
 	ProductionReportThreadPartyWise
 );
+
+//* Material Stock Report
+reportRouter.get('/material-stock-report', MaterialStockReport);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -376,6 +380,30 @@ export const pathReport = {
 					party_name: SE.string('Party Name'),
 					count_length_name: SE.string('Count Length Name'),
 					total_quantity: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/material-stock-report': {
+		get: {
+			summary: 'Material Stock Report',
+			description: 'Material Stock Report',
+			tags: ['report'],
+			operationId: 'MaterialStockReport',
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					material_uuid: SE.uuid(),
+					material_name: SE.string('Material Name'),
+					material_section_name: SE.string('Section Name'),
+					material_unit: SE.string('Material Unit'),
+					opening_quantity: SE.number(610),
+					purchase_quantity: SE.number(610),
+					consumption_quantity: SE.number(610),
+					closing_quantity: SE.number(610),
 				}),
 			},
 		},
