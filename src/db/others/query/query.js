@@ -819,7 +819,7 @@ export async function selectOrderDescription(req, res, next) {
 				LEFT JOIN 
 						(
 							SELECT
-								oe.order_description_uuid as order_description_uuid,
+								oe.uuid as order_entry_uuid,
 								SUM(oe.quantity::float8) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
 							FROM
 								zipper.sfg
@@ -828,8 +828,8 @@ export async function selectOrderDescription(req, res, next) {
 							LEFT JOIN
 								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 							GROUP BY
-								oe.order_description_uuid
-					) AS fbe_given ON oe.order_description_uuid = fbe_given.order_description_uuid
+								oe.uuid
+					) AS fbe_given ON oe.uuid = fbe_given.order_entry_uuid
 				LEFT JOIN zipper.tape_coil_required tcr ON
 					vodf.item = tcr.item_uuid  
 					AND vodf.zipper_number = tcr.zipper_number_uuid 
@@ -911,7 +911,7 @@ export async function selectOrderDescription(req, res, next) {
 				LEFT JOIN 
 						(
 							SELECT
-								oe.order_description_uuid as order_description_uuid,
+								oe.uuid as order_entry_uuid,
 								SUM(oe.quantity::float8) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
 							FROM
 								zipper.sfg
@@ -920,8 +920,8 @@ export async function selectOrderDescription(req, res, next) {
 							LEFT JOIN
 								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 							GROUP BY
-								oe.order_description_uuid
-					) AS fbe_given ON oe.order_description_uuid = fbe_given.order_description_uuid
+								oe.uuid
+					) AS fbe_given ON oe.uuid = fbe_given.order_entry_uuid
 				LEFT JOIN 
 					(
 						SELECT oe.order_description_uuid, 
