@@ -428,6 +428,11 @@ const pathPublic = {
 			parameters: [
 				SE.parameter_query('page', 'page', ['challan']),
 				SE.parameter_query('is_sample', 'is_sample', ['true', 'false']),
+				SE.parameter_query('item_for', 'item_for', [
+					'full',
+					'slider',
+					'tape',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {

@@ -574,7 +574,7 @@ export async function selectTapeCoil(req, res, next) {
 export async function selectOrderInfo(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { page, is_sample } = req.query;
+	const { page, is_sample, item_for } = req.query;
 
 	let filterCondition;
 
@@ -587,6 +587,7 @@ export async function selectOrderInfo(req, res, next) {
 					FROM delivery.packing_list pl
 					WHERE pl.challan_uuid IS NULL 
 					  AND pl.is_warehouse_received = true
+					  ${item_for != undefined ? sql`AND vodf.order_type = ${item_for}` : sql`AND 1=1`}
 				)
 			`;
 			break;
@@ -602,15 +603,21 @@ export async function selectOrderInfo(req, res, next) {
 					WHERE vodf.item_description != '---' 
 					  AND vodf.item_description != '' 
 					  AND ${is_sample === 'true' ? sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0` : sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0 AND sfg.finishing_prod > 0`} 
+					  ${item_for != undefined ? sql`AND vodf.order_type = ${item_for}` : sql`AND 1=1`}
 				)
 			`;
 			break;
 
 		default:
 			filterCondition =
-				is_sample != undefined
+				(is_sample != undefined
 					? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`}`
-					: sql`1=1`;
+					: sql`1=1`) &&
+				(item_for != undefined
+					? is_sample != undefined
+						? sql`AND order_info.uuid IN (SELECT vodf.order_info_uuid FROM zipper.v_order_details_full vodf WHERE vodf.order_type = ${item_for})`
+						: sql`order_info.uuid IN (SELECT vodf.order_info_uuid FROM zipper.v_order_details_full vodf WHERE vodf.order_type = ${item_for})`
+					: sql`AND 1=1`);
 			break;
 	}
 
