@@ -250,7 +250,10 @@ export async function selectAll(req, res, next) {
 						) AS order_numbers,
 						jsonb_agg(
 							DISTINCT order_info.uuid ) as order_uuids,
-						batch.production_date
+						batch.production_date,
+						party.name as party_name,
+						oe.color as color
+
 					FROM
 						thread.batch
 						LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
@@ -267,6 +270,7 @@ export async function selectAll(req, res, next) {
 						LEFT JOIN thread.order_entry oe ON batch_entry.order_entry_uuid = oe.uuid
 						LEFT JOIN thread.count_length cl ON oe.count_length_uuid = cl.uuid
 						LEFT JOIN thread.order_info order_info ON oe.order_info_uuid = order_info.uuid
+						LEFT JOIN public.party party ON order_info.party_uuid = party.uuid
 					GROUP BY
 						batch.uuid,
 						batch.id,
@@ -302,7 +306,9 @@ export async function selectAll(req, res, next) {
 						createdBy.name,
 						batch.created_at,
 						batch.updated_at,
-						batch.remarks
+						batch.remarks,
+						party.name,
+						oe.color
 					ORDER BY
 						batch.created_at DESC
 				`;

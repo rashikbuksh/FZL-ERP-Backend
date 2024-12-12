@@ -98,10 +98,18 @@ export async function selectAll(req, res, next) {
 			expected.expected_kg::float8,
 			expected.order_numbers,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
-			dyeing_batch.production_date
+			dyeing_batch.production_date,
+			party.name as party_name,
+			order_entry.color as color
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
 		LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
+		LEFT JOIN zipper.dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
+		LEFT JOIN zipper.sfg ON dyeing_batch_entry.sfg_uuid = zipper.sfg.uuid
+		LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+		LEFT JOIN zipper.order_description ON order_entry.order_description_uuid = order_description.uuid
+		LEFT JOIN zipper.order_info ON order_description.order_info_uuid = order_info.uuid
+		LEFT JOIN public.party ON order_info.party_uuid = party.uuid
 		LEFT JOIN (
 			SELECT 
 				ROUND(
