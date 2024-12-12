@@ -3,7 +3,7 @@ import { alias, uuid } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
-
+import db from '../../index.js';
 import { info_entry, info, recipe } from '../schema.js';
 
 export async function insert(req, res, next) {
