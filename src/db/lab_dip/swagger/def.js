@@ -1,5 +1,5 @@
 import SE, { SED } from '../../../util/swagger_example.js';
-//* ./schema.js#info
+
 export const defLabDipInfo = SED({
 	required: [
 		'uuid',
@@ -23,6 +23,30 @@ export const defLabDipInfo = SED({
 		remarks: SE.string('remarks'),
 	},
 	xml: 'LabDip/Info',
+});
+
+export const defLabDipInfoEntry = SED({
+	required: [
+		'uuid',
+		'lab_dip_info_uuid',
+		'recipe_uuid',
+		'approved',
+		'approved_date',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		lab_dip_info_uuid: SE.uuid(),
+		recipe_uuid: SE.uuid(),
+		approved: SE.integer(0),
+		approved_date: SE.date_time(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'LabDip/InfoEntry',
 });
 
 export const defLabDipRecipe = SED({
@@ -107,6 +131,7 @@ export const defShadeRecipeEntry = SED({
 // * Marge All
 export const defLabDip = {
 	info: defLabDipInfo,
+	info_entry: defLabDipInfoEntry,
 	recipe: defLabDipRecipe,
 	recipe_entry: defLabDipRecipeEntry,
 	shade_recipe: defShadeRecipe,
@@ -139,5 +164,9 @@ export const tagLabDip = [
 	{
 		name: 'lab_dip.shade_recipe_entry',
 		description: 'Operations about share recipe entry of Thread',
+	},
+	{
+		name: 'lab_dip.info_entry',
+		description: 'Everything about Lab dip info entry',
 	},
 ];

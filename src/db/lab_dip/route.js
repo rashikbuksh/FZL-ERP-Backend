@@ -5,6 +5,7 @@ import * as recipeOperations from './query/recipe.js';
 import * as recipeEntryOperations from './query/recipe_entry.js';
 import * as shadeRecipeOperations from './query/shade_recipe.js';
 import * as shadeRecipeEntryOperations from './query/shade_recipe_entry.js';
+import * as infoEntryOperations from './query/info_entry.js';
 
 const labDipRouter = Router();
 
@@ -20,16 +21,21 @@ labDipRouter.get(
 	infoOperations.selectInfoRecipeByLabDipInfoUuid
 );
 
+// info_entry routes
+
+labDipRouter.get('/info-entry', infoEntryOperations.selectAll);
+labDipRouter.get('/info-entry/:uuid', infoEntryOperations.select);
+labDipRouter.post('/info-entry', infoEntryOperations.insert);
+labDipRouter.put('/info-entry/:uuid', infoEntryOperations.update);
+labDipRouter.delete('/info-entry/:uuid', infoEntryOperations.remove);
+
 // recipe routes
 
 labDipRouter.get('/recipe', recipeOperations.selectAll);
 labDipRouter.get('/recipe/:uuid', recipeOperations.select);
 labDipRouter.post('/recipe', recipeOperations.insert);
 labDipRouter.put('/recipe/:uuid', recipeOperations.update);
-labDipRouter.delete(
-	'/recipe/:uuid',
-	recipeOperations.remove
-);
+labDipRouter.delete('/recipe/:uuid', recipeOperations.remove);
 labDipRouter.get(
 	'/recipe/details/:recipe_uuid',
 	recipeOperations.selectRecipeDetailsByRecipeUuid

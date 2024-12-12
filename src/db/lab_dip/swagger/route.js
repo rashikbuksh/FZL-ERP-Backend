@@ -488,6 +488,243 @@ export const pathLabDipInfo = {
 	},
 };
 
+// * LabDip Info Entry * //
+
+export const pathLabDipInfoEntry = {
+	'/lab-dip/info-entry': {
+		get: {
+			tags: ['lab_dip.info_entry'],
+			summary: 'Get all lab dip info entry',
+			description: 'Get all lab dip info entry',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'Returns all lab dip info entry',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lab_dip_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									recipe_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									approved: {
+										type: 'number',
+										example: 0,
+									},
+									approved_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['lab_dip.info_entry'],
+			summary: 'Create a lab dip info entry',
+			description: 'Create a lab dip info entry',
+			operationId: 'createLabDipInfoEntry',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/lab_dip/info_entry',
+						},
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Lab dip info entry created successfully',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/lab_dip/info_entry',
+							},
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+	'/lab-dip/info-entry/{uuid}': {
+		get: {
+			tags: ['lab_dip.info_entry'],
+			summary: 'Get lab dip info entry by uuid',
+			description: 'Get lab dip info entry by uuid',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'lab dip info entry to get',
+					required: true,
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Lab dip info entry found',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									lab_dip_info_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									recipe_uuid: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									approved: {
+										type: 'number',
+										example: 0,
+									},
+									approved_date: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									created_by: {
+										type: 'string',
+										example: 'igD0v9DIJQhJeet',
+									},
+									created_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									updated_at: {
+										type: 'string',
+										format: 'date-time',
+										example: '2024-01-01 00:00:00',
+									},
+									remarks: {
+										type: 'string',
+										example: 'Remarks',
+									},
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip info entry not found',
+				},
+			},
+		},
+		put: {
+			tags: ['lab_dip.info_entry'],
+			summary: 'Update an existing lab dip info entry',
+			description: 'Update an existing lab dip info entry',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'Lab dip info entry to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/lab_dip/info_entry',
+						},
+					},
+				},
+			},
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip info entry not found',
+				},
+				405: {
+					description: 'Validation exception',
+				},
+			},
+		},
+		delete: {
+			tags: ['lab_dip.info_entry'],
+			summary: 'Delete a lab dip info entry',
+			description: 'Delete a lab dip info entry',
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'Lab dip info entry to delete',
+					type: 'string',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Lab dip info entry not found',
+				},
+			},
+		},
+	},
+};
+
 // * LabDip Recipe * //
 
 export const pathLabDipRecipe = {
@@ -2116,6 +2353,7 @@ export const pathLabDipShadeRecipeEntry = {
 
 export const pathLabDip = {
 	...pathLabDipInfo,
+	...pathLabDipInfoEntry,
 	...pathLabDipRecipe,
 	...pathLabDipRecipeEntry,
 	...pathLabDipShadeRecipe,

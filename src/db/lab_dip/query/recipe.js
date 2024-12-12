@@ -7,7 +7,7 @@ import * as materialSchema from '../../material/schema.js';
 import * as threadSchema from '../../thread/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { info, recipe } from '../schema.js';
+import { info, info_entry, recipe } from '../schema.js';
 
 import { dyes_category, programs } from '../../thread/schema.js';
 
@@ -92,7 +92,7 @@ export async function selectAll(req, res, next) {
 			uuid: recipe.uuid,
 			id: recipe.id,
 			recipe_id: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'))`,
-			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
+			lab_dip_info_uuid: info_entry.lab_dip_info_uuid,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
@@ -104,7 +104,7 @@ export async function selectAll(req, res, next) {
                 END
             `,
 			name: recipe.name,
-			approved: recipe.approved,
+			approved: info_entry.approved,
 			created_by: recipe.created_by,
 			created_by_name: hrSchema.users.name,
 			status: recipe.status,
@@ -113,16 +113,17 @@ export async function selectAll(req, res, next) {
 			created_at: recipe.created_at,
 			updated_at: recipe.updated_at,
 			remarks: recipe.remarks,
-			approved_date: recipe.approved_date,
+			approved_date: info_entry.approved_date,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
-		.leftJoin(info, eq(recipe.lab_dip_info_uuid, info.uuid))
+		.leftJoin(info, eq(info_entry.lab_dip_info_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
+		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
 		.orderBy(desc(recipe.created_at));
 
 	try {
@@ -147,7 +148,7 @@ export async function select(req, res, next) {
 			uuid: recipe.uuid,
 			id: recipe.id,
 			recipe_id: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'))`,
-			lab_dip_info_uuid: recipe.lab_dip_info_uuid,
+			lab_dip_info_uuid: info_entry.lab_dip_info_uuid,
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
 			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
@@ -159,7 +160,7 @@ export async function select(req, res, next) {
                 END
             `,
 			name: recipe.name,
-			approved: recipe.approved,
+			approved: info_entry.approved,
 			created_by: recipe.created_by,
 			created_by_name: hrSchema.users.name,
 			status: recipe.status,
@@ -168,16 +169,17 @@ export async function select(req, res, next) {
 			created_at: recipe.created_at,
 			updated_at: recipe.updated_at,
 			remarks: recipe.remarks,
-			approved_date: recipe.approved_date,
+			approved_date: info_entry.approved_date,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
-		.leftJoin(info, eq(recipe.lab_dip_info_uuid, info.uuid))
+		.leftJoin(info, eq(info_entry.lab_dip_info_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
+		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
 		.where(eq(recipe.uuid, req.params.uuid));
 
 	try {
@@ -300,10 +302,10 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 			recipe_uuid: recipe.uuid,
 			recipe_name: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name )`,
 			status: recipe.status,
-			approved: recipe.approved,
+			approved: info_entry.approved,
 			recipe_created_at: recipe.created_at,
 			recipe_updated_at: recipe.updated_at,
-			approved_date: recipe.approved_date,
+			approved_date: info_entry.approved_date,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
@@ -312,6 +314,7 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
+		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
 		.where(eq(recipe.lab_dip_info_uuid, req.params.lab_dip_info_uuid))
 		.orderBy(asc(recipe.created_at));
 
