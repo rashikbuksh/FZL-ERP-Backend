@@ -33,11 +33,11 @@ export const info = lab_dip.table('info', {
 export const recipe = lab_dip.table('recipe', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
-	lab_dip_info_uuid: defaultUUID('lab_dip_info_uuid').references(
-		() => info.uuid
-	),
+	// lab_dip_info_uuid: defaultUUID('lab_dip_info_uuid').references(
+	// 	() => info.uuid
+	// ),
 	name: text('name').notNull(),
-	approved: integer('approved').default(0),
+	// approved: integer('approved').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	status: integer('status').default(0),
 	sub_streat: text('sub_streat').default(null),
@@ -45,7 +45,7 @@ export const recipe = lab_dip.table('recipe', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
-	approved_date: DateTime('approved_date').default(null),
+	// approved_date: DateTime('approved_date').default(null),
 });
 
 export const recipe_entry = lab_dip.table('recipe_entry', {
@@ -96,6 +96,20 @@ export const shade_recipe_entry = lab_dip.table('shade_recipe_entry', {
 		() => materialSchema.info.uuid
 	),
 	quantity: PG_DECIMAL('quantity'),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const info_entry = lab_dip.table('info_entry', {
+	uuid: uuid_primary,
+	lab_dip_info_uuid: defaultUUID('lab_dip_info_uuid').references(
+		() => info.uuid
+	),
+	recipe_uuid: defaultUUID('recipe_uuid').references(() => recipe.uuid),
+	approved: integer('approved').default(0),
+	approved_date: DateTime('approved_date').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
