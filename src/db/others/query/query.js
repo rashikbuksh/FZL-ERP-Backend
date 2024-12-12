@@ -587,7 +587,7 @@ export async function selectOrderInfo(req, res, next) {
 					FROM delivery.packing_list pl
 					WHERE pl.challan_uuid IS NULL 
 					  AND pl.is_warehouse_received = true
-					  ${item_for != undefined ? sql`AND vodf.order_type = ${item_for}` : sql`AND 1=1`}
+					  ${item_for != undefined ? sql`AND pl.item_for = ${item_for}` : sql`AND 1=1`}
 				)
 			`;
 			break;
