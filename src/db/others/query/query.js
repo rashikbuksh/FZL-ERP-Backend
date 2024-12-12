@@ -1670,6 +1670,8 @@ export async function selectLabDipRecipe(req, res, next) {
 			approved: null,
 			status: null,
 			info: null,
+			bleaching: null,
+			order_info_uuid: null,
 		});
 
 		const toast = {
