@@ -1511,6 +1511,14 @@ const pathDelivery = {
 						'2ggcphnwHGzEUGy'
 					),
 					SE.parameter_query('received', 'received', [true, false]),
+					SE.parameter_query('item_for', 'item_for', [
+						'zipper',
+						'thread',
+						'tape',
+						'slider',
+						'sample_zipper',
+						'sample_thread',
+					]),
 				],
 				responses: {
 					200: {
