@@ -1029,8 +1029,7 @@ export async function selectOrderDescription(req, res, next) {
 	if (is_balance == 'true' && !is_update) {
 		query.append(sql` AND fbe_given.balance_quantity > 0`);
 		page ? page_query.append(sql` AND fbe_given.balance_quantity > 0`) : '';
-	}
-	if (is_balance == 'true' && is_update == 'true') {
+	} else if (is_balance == 'true' && is_update == 'true') {
 		page ? page_query.append(sql` AND fbe_given.balance_quantity > 0`) : '';
 	}
 

@@ -310,7 +310,12 @@ export async function selectAllOrderForPackingList(req, res, next) {
 
 	let query;
 
-	if (item_for == 'zipper' || item_for == 'sample_zipper' || item_for == 'slider' || item_for == 'tape') {
+	if (
+		item_for == 'zipper' ||
+		item_for == 'sample_zipper' ||
+		item_for == 'slider' ||
+		item_for == 'tape'
+	) {
 		query = sql`
 		SELECT DISTINCT
 			vodf.order_info_uuid as order_info_uuid,
@@ -352,6 +357,14 @@ export async function selectAllOrderForPackingList(req, res, next) {
 				THEN (oe.quantity - sfg.warehouse - sfg.delivered) > 0 
 				ELSE sfg.finishing_prod > 0 
 			END
+			AND 
+				CASE 
+					WHEN ${item_for} = 'zipper' THEN (oe.is_sample = 0 AND vodf.order_type = 'full')
+					WHEN ${item_for} = 'sample_zipper' THEN oe.is_sample = 1
+					WHEN ${item_for} = 'slider' THEN (vodf.order_type = 'slider' AND oe.is_sample = 0)
+					WHEN ${item_for} = 'tape' THEN (vodf.order_type = 'tape' AND oe.is_sample = 0)
+					ELSE TRUE
+				END
 		ORDER BY
 			oe.created_at, oe.uuid DESC
 		`;
