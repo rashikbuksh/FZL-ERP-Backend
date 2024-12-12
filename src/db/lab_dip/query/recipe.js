@@ -309,14 +309,13 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
-		.leftJoin(info, eq(recipe.lab_dip_info_uuid, info.uuid))
+		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
+		.leftJoin(info, eq(info_entry.lab_dip_info_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
-		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
-		.where(eq(recipe.lab_dip_info_uuid, req.params.lab_dip_info_uuid))
-		.orderBy(asc(recipe.created_at));
+		.where(eq(info_entry.lab_dip_info_uuid, req.params.lab_dip_info_uuid));
 
 	try {
 		const data = await recipePromise;

@@ -1601,13 +1601,15 @@ export async function selectLabDipRecipe(req, res, next) {
 	const conditions = [];
 
 	if (info_uuid === 'false') {
-		conditions.push(sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`);
+		conditions.push(
+			sql`${labDipSchema.info_entry.lab_dip_info_uuid} is null`
+		);
 	} else {
 		conditions.push(
 			and(
 				or(
 					eq(labDipSchema.info.uuid, info_uuid),
-					sql`${labDipSchema.recipe.lab_dip_info_uuid} is null`
+					sql`${labDipSchema.info_entry.lab_dip_info_uuid} is null`
 				),
 				bleaching
 					? eq(labDipSchema.recipe.bleaching, bleaching)
@@ -1619,13 +1621,13 @@ export async function selectLabDipRecipe(req, res, next) {
 	conditions.push(
 		approved === 'true'
 			? and(
-					eq(labDipSchema.recipe.approved, 1),
+					eq(labDipSchema.info_entry.approved, 1),
 					bleaching
 						? eq(labDipSchema.recipe.bleaching, bleaching)
 						: sql`1=1`
 				)
 			: and(
-					eq(labDipSchema.recipe.approved, 0),
+					eq(labDipSchema.info_entry.approved, 0),
 					bleaching
 						? eq(labDipSchema.recipe.bleaching, bleaching)
 						: sql`1=1`
@@ -1638,16 +1640,23 @@ export async function selectLabDipRecipe(req, res, next) {
 		.select({
 			value: labDipSchema.recipe.uuid,
 			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name, ' - ', recipe.bleaching::text)`,
-			approved: labDipSchema.recipe.approved,
+			approved: labDipSchema.info_entry.approved,
 			status: labDipSchema.recipe.status,
-			info: labDipSchema.recipe.lab_dip_info_uuid,
+			info: labDipSchema.info_entry.lab_dip_info_uuid,
 			bleaching: labDipSchema.recipe.bleaching,
 			order_info_uuid: labDipSchema.info.order_info_uuid,
 		})
 		.from(labDipSchema.recipe)
 		.leftJoin(
+			labDipSchema.info_entry,
+			eq(labDipSchema.recipe.uuid, labDipSchema.info_entry.recipe_uuid)
+		)
+		.leftJoin(
 			labDipSchema.info,
-			eq(labDipSchema.recipe.lab_dip_info_uuid, labDipSchema.info.uuid)
+			eq(
+				labDipSchema.info_entry.lab_dip_info_uuid,
+				labDipSchema.info.uuid
+			)
 		)
 		.where(finalCondition);
 
@@ -1686,10 +1695,12 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	FROM
 		lab_dip.recipe
 	LEFT JOIN
-		lab_dip.info ON recipe.lab_dip_info_uuid = lab_dip.info.uuid
+		lab_dip.info_entry ON recipe.uuid = lab_dip.info_entry.recipe_uuid
+	LEFT JOIN
+		lab_dip.info ON info_entry.lab_dip_info_uuid = lab_dip.info.uuid
 	WHERE 
-	  lab_dip.recipe.approved = 1 AND
-	  ${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.recipe.approved = 1 ` : sql`1=1`}
+	  lab_dip.info_entry.approved = 1 AND
+	  ${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.info_entry.approved = 1 ` : sql`1=1`}
 	  AND
 	  ${bleaching ? sql` recipe.bleaching = ${bleaching}` : sql`1=1`}
 	`;
