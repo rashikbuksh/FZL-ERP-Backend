@@ -359,10 +359,10 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			END
 			AND 
 				CASE 
-					WHEN ${item_for} = 'zipper' THEN (oe.is_sample = 0 AND vodf.order_type = 'full')
-					WHEN ${item_for} = 'sample_zipper' THEN oe.is_sample = 1
-					WHEN ${item_for} = 'slider' THEN (vodf.order_type = 'slider' AND oe.is_sample = 0)
-					WHEN ${item_for} = 'tape' THEN (vodf.order_type = 'tape' AND oe.is_sample = 0)
+					WHEN ${item_for} = 'zipper' THEN (vodf.is_sample = 0 AND vodf.order_type = 'full')
+					WHEN ${item_for} = 'sample_zipper' THEN vodf.is_sample = 1
+					WHEN ${item_for} = 'slider' THEN (vodf.order_type = 'slider' AND vodf.is_sample = 0)
+					WHEN ${item_for} = 'tape' THEN (vodf.order_type = 'tape' AND vodf.is_sample = 0)
 					ELSE TRUE
 				END
 		ORDER BY
