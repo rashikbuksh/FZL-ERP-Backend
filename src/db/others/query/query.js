@@ -1627,7 +1627,6 @@ export async function selectLabDipRecipe(req, res, next) {
 						: sql`1=1`
 				)
 			: and(
-					eq(labDipSchema.info_entry.approved, 0),
 					bleaching
 						? eq(labDipSchema.recipe.bleaching, bleaching)
 						: sql`1=1`
