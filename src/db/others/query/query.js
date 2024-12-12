@@ -642,8 +642,6 @@ export async function selectOrderInfo(req, res, next) {
 
 	orderInfoPromise = orderInfoPromise.where(filterCondition);
 
-	console.log(orderInfoPromise.toSQL());
-
 	try {
 		const data = await orderInfoPromise;
 		const toast = {
@@ -866,7 +864,7 @@ export async function selectOrderDescription(req, res, next) {
 					ELSE sfg.recipe_uuid IS NOT NULL END
 				`;
 
-	let page_query = '';
+	let page_query = sql``;
 	if (page == 'finishing_batch') {
 		page_query = sql` 
 				SELECT
