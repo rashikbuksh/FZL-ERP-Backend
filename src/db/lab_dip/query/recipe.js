@@ -306,6 +306,8 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 			recipe_created_at: recipe.created_at,
 			recipe_updated_at: recipe.updated_at,
 			approved_date: info_entry.approved_date,
+			info_entry_uuid: info_entry.uuid,
+			lad_dip_info_uuid: info_entry.lab_dip_info_uuid,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
