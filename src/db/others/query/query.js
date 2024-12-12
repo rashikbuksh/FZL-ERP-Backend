@@ -2124,8 +2124,8 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 
 	// Conditionally add the challan_uuid part
 	if (
-		challan_uuid != undefined ||
-		challan_uuid != '' ||
+		challan_uuid != undefined &&
+		challan_uuid != '' &&
 		challan_uuid != 'null'
 	) {
 		query.append(
