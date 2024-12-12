@@ -522,3 +522,91 @@
 					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND 
 					CASE WHEN order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
 				ORDER BY vodf.order_number DESC;
+
+
+SELECT 
+    dyeing_batch.uuid,
+    dyeing_batch.id,
+    concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as batch_id,
+    dyeing_batch.batch_status,
+    dyeing_batch.machine_uuid,
+    concat(public.machine.name, ' (', public.machine.min_capacity::float8, '-', public.machine.max_capacity::float8, ')') as machine_name,
+    dyeing_batch.slot,
+    dyeing_batch.received,
+    dyeing_batch.created_by,
+    users.name as created_by_name,
+    dyeing_batch.created_at,
+    dyeing_batch.updated_at,
+    dyeing_batch.remarks,
+    expected.total_quantity::float8,
+    expected.expected_kg::float8,
+    expected.order_numbers,
+    ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
+    dyeing_batch.production_date,
+    array_agg(DISTINCT party.name) AS party_names,
+    array_agg(DISTINCT order_entry.color) AS color
+FROM zipper.dyeing_batch
+LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
+LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
+LEFT JOIN zipper.dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
+LEFT JOIN zipper.sfg ON dyeing_batch_entry.sfg_uuid = zipper.sfg.uuid
+LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+LEFT JOIN zipper.order_description ON order_entry.order_description_uuid = order_description.uuid
+LEFT JOIN zipper.order_info ON order_description.order_info_uuid = order_info.uuid
+LEFT JOIN public.party ON order_info.party_uuid = party.uuid
+LEFT JOIN (
+    SELECT 
+        ROUND(
+            CAST(SUM(((tcr.top + tcr.bottom + CASE 
+                WHEN vodf.is_inch = 1 
+                    THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC) 
+                ELSE CAST(oe.size AS NUMERIC)
+                END) * be.quantity::float8) / 100) / MAX(tc.dyed_per_kg_meter::float8) AS NUMERIC)
+        , 3) AS expected_kg,
+        be.dyeing_batch_uuid, 
+        jsonb_agg(vodf.order_number) AS order_numbers,
+        SUM(be.quantity::float8) AS total_quantity,
+        SUM(be.production_quantity_in_kg::float8) AS total_actual_production_quantity
+    FROM zipper.dyeing_batch_entry be
+    LEFT JOIN zipper.sfg ON be.sfg_uuid = zipper.sfg.uuid
+    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+    LEFT JOIN zipper.tape_coil_required tcr 
+        ON oe.order_description_uuid = vodf.order_description_uuid 
+        AND vodf.item = tcr.item_uuid 
+        AND vodf.zipper_number = tcr.zipper_number_uuid 
+        AND (CASE 
+                WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' 
+                ELSE vodf.end_type = tcr.end_type_uuid 
+            END)
+    LEFT JOIN zipper.tape_coil tc 
+        ON vodf.tape_coil_uuid = tc.uuid 
+        AND vodf.item = tc.item_uuid 
+        AND vodf.zipper_number = tc.zipper_number_uuid 
+    WHERE 
+        lower(vodf.item_name) != 'nylon' 
+        OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+    GROUP BY be.dyeing_batch_uuid
+) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
+GROUP BY 
+    dyeing_batch.uuid,
+    dyeing_batch.id,
+    dyeing_batch.created_at,
+    dyeing_batch.batch_status,
+    dyeing_batch.machine_uuid,
+    public.machine.name,
+    public.machine.min_capacity,
+    public.machine.max_capacity,
+    dyeing_batch.slot,
+    dyeing_batch.received,
+    dyeing_batch.created_by,
+    users.name,
+    dyeing_batch.updated_at,
+    dyeing_batch.remarks,
+    expected.total_quantity,
+    expected.expected_kg,
+    expected.order_numbers,
+    expected.total_actual_production_quantity,
+    dyeing_batch.production_date
+ORDER BY dyeing_batch.created_at DESC;
+
