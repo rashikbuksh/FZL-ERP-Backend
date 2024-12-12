@@ -117,13 +117,13 @@ export async function selectAll(req, res, next) {
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
+		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
 		.leftJoin(info, eq(info_entry.lab_dip_info_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
-		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
 		.orderBy(desc(recipe.created_at));
 
 	try {
@@ -131,7 +131,7 @@ export async function selectAll(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'Recipe',
+			message: 'Recipe list',
 		};
 
 		return res.status(200).json({ toast, data });
@@ -173,13 +173,13 @@ export async function select(req, res, next) {
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
+		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
 		.leftJoin(info, eq(info_entry.lab_dip_info_uuid, info.uuid))
 		.leftJoin(
 			zipperSchema.order_info,
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
-		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
 		.where(eq(recipe.uuid, req.params.uuid));
 
 	try {
