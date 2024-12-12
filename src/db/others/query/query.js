@@ -1026,7 +1026,10 @@ export async function selectOrderDescription(req, res, next) {
 				)
 			: '';
 	}
-	if (is_balance == 'true' && !is_update) {
+	if (
+		is_balance == 'true' &&
+		(is_update == 'false' || is_update == undefined || is_update == null)
+	) {
 		query.append(sql` AND fbe_given.balance_quantity > 0`);
 		page ? page_query.append(sql` AND fbe_given.balance_quantity > 0`) : '';
 	} else if (is_balance == 'true' && is_update == 'true') {
@@ -1046,8 +1049,6 @@ export async function selectOrderDescription(req, res, next) {
 	try {
 		const dataData = await orderEntryPromise;
 		const pageData = pagePromise ? await pagePromise : null;
-
-		const data = dataData?.rows;
 
 		// data pass as array and pageData pass as object
 		const response = page
