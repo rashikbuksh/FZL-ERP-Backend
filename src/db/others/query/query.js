@@ -2141,7 +2141,7 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 			: sql`)`
 	);
 
-	if (item_for != undefined || item_for != '' || item_for != 'null') {
+	if (item_for != undefined && item_for != '' && item_for != 'null') {
 		query.append(sql` AND pl.item_for = ${item_for}`);
 	}
 
