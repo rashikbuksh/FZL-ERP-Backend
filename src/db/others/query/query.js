@@ -2133,10 +2133,6 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 		);
 	}
 
-	if (item_for != undefined || item_for != '' || item_for != 'null') {
-		query.append(sql` AND pl.item_for = ${item_for}`);
-	}
-
 	query.append(
 		challan_uuid == 'null' ||
 			challan_uuid == undefined ||
@@ -2144,6 +2140,10 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 			? sql`))`
 			: sql`)`
 	);
+
+	if (item_for != undefined || item_for != '' || item_for != 'null') {
+		query.append(sql` AND pl.item_for = ${item_for}`);
+	}
 
 	if (received == 'true') {
 		query.append(sql` AND pl.is_warehouse_received = true`);
