@@ -253,8 +253,8 @@ export const transaction = slider.table('transaction', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
-	sfg_uuid: defaultUUID('sfg_uuid')
-		.references(() => zipperSchema.sfg.uuid)
+	finishing_batch_entry_uuid: defaultUUID('finishing_batch_entry_uuid')
+		.references(() => zipperSchema.finishing_batch_entry.uuid)
 		.default(null),
 });
 

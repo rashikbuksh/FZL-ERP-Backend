@@ -11,7 +11,7 @@ BEGIN
         SELECT finishing_batch_entry.sfg_uuid, SUM(finishing_batch_entry.warehouse), SUM(finishing_batch_entry.dyed_tape_used_in_kg), SUM(finishing_batch_entry.teeth_molding_prod), SUM(finishing_batch_entry.teeth_coloring_stock), SUM(finishing_batch_entry.finishing_stock), SUM(finishing_batch_entry.finishing_prod)
         INTO sfg_uuid_val, warehouse_val, dyed_tape_used_in_kg_val, teeth_molding_prod_val, teeth_coloring_stock_val, finishing_stock_val, finishing_prod_val
         FROM zipper.finishing_batch_entry
-        WHERE finishing_batch_entry.sfg_uuid = NEW.sfg_uuid
+        WHERE finishing_batch_entry.uuid = NEW.uuid
         GROUP BY finishing_batch_entry.sfg_uuid;
     UPDATE zipper.sfg
     SET
@@ -21,7 +21,8 @@ BEGIN
         teeth_coloring_stock = teeth_coloring_stock_val,
         finishing_stock = finishing_stock_val,
         finishing_prod = finishing_prod_val
-    WHERE uuid = sfg_uuid_val;
+    FROM zipper.finishing_batch_entry fbe
+    WHERE fbe.uuid = NEW.uuid AND fbe.sfg_uuid = zipper.sfg.uuid;
 
     RETURN NEW;
 END;

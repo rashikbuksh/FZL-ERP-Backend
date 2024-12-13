@@ -33,7 +33,7 @@ BEGIN
             UPDATE zipper.finishing_batch_entry
             SET
                 finishing_prod = finishing_prod + NEW.trx_quantity
-            WHERE sfg_uuid = NEW.sfg_uuid;
+            WHERE finishing_batch_entry_uuid = NEW.finishing_batch_entry_uuid;
         ELSE
             UPDATE zipper.finishing_batch
             SET
@@ -101,8 +101,8 @@ BEGIN
         IF order_type = 'slider' THEN
             UPDATE zipper.finishing_batch_entry
             SET
-                finishing_prod = finishing_prod + OLD.trx_quantity
-            WHERE sfg_uuid = OLD.sfg_uuid;
+                finishing_prod = finishing_prod - OLD.trx_quantity
+            WHERE finishing_batch_entry_uuid = OLD.finishing_batch_entry_uuid;
         ELSE
             UPDATE zipper.finishing_batch
             SET
@@ -178,8 +178,8 @@ BEGIN
         IF order_type = 'slider' THEN
             UPDATE zipper.finishing_batch_entry
             SET
-                finishing_prod = finishing_prod - NEW.trx_quantity + OLD.trx_quantity
-            WHERE sfg_uuid = NEW.sfg_uuid;
+                finishing_prod = finishing_prod + NEW.trx_quantity - OLD.trx_quantity
+            WHERE finishing_batch_entry_uuid = NEW.finishing_batch_entry_uuid;
         ELSE
             UPDATE zipper.finishing_batch
             SET
