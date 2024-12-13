@@ -1688,7 +1688,7 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	const query = sql`
 	SELECT
 		recipe.uuid AS value,
-		concat( recipe.name, '-', recipe.bleaching) AS label,
+		concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name, ' - ', recipe.bleaching::text) AS label,
 		lab_dip.info.thread_order_info_uuid,
 		recipe.bleaching
 	FROM
@@ -1698,10 +1698,10 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	LEFT JOIN
 		lab_dip.info ON info_entry.lab_dip_info_uuid = lab_dip.info.uuid
 	WHERE 
-	  lab_dip.info_entry.approved = 1 AND
-	  ${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.info_entry.approved = 1 ` : sql`1=1`}
-	  AND
-	  ${bleaching ? sql` recipe.bleaching = ${bleaching}` : sql`1=1`}
+		lab_dip.info_entry.approved = 1 AND
+		${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.info_entry.approved = 1 ` : sql`1=1`}
+		AND
+		${bleaching ? sql` recipe.bleaching = ${bleaching}` : sql`1=1`}
 	`;
 
 	const RecipePromise = db.execute(query);
