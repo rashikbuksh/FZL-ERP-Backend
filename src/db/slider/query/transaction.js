@@ -137,7 +137,8 @@ export async function selectAll(req, res, next) {
 			transaction.assembly_stock_uuid,
 			assembly_stock.name as assembly_stock_name,
 			assembly_stock.quantity::float8 as assembly_stock_quantity,
-			assembly_stock.quantity::float8 + transaction.trx_quantity::float8 as max_assembly_stock_quantity
+			assembly_stock.quantity::float8 + transaction.trx_quantity::float8 as max_assembly_stock_quantity,
+			transaction.finishing_batch_entry_uuid
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -247,7 +248,8 @@ export async function select(req, res, next) {
 			transaction.assembly_stock_uuid,
 			assembly_stock.name as assembly_stock_name,
 			assembly_stock.quantity::float8 as assembly_stock_quantity,
-			assembly_stock.quantity::float8 + transaction.trx_quantity::float8 as max_assembly_stock_quantity
+			assembly_stock.quantity::float8 + transaction.trx_quantity::float8 as max_assembly_stock_quantity,
+			transaction.finishing_batch_entry_uuid
 		FROM
 			slider.transaction
 		LEFT JOIN
@@ -357,7 +359,8 @@ export async function selectTransactionByFromSection(req, res, next) {
 			transaction.assembly_stock_uuid,
 			assembly_stock.name as assembly_stock_name,
 			assembly_stock.quantity::float8 as assembly_stock_quantity,
-			assembly_stock.quantity::float8 + transaction.trx_quantity::float8 as max_assembly_stock_quantity
+			assembly_stock.quantity::float8 + transaction.trx_quantity::float8 as max_assembly_stock_quantity,
+			transaction.finishing_batch_entry_uuid
 		FROM
 			slider.transaction
 		LEFT JOIN
