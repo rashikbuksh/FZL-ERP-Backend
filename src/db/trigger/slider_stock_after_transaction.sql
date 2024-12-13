@@ -33,7 +33,7 @@ BEGIN
             UPDATE zipper.finishing_batch_entry
             SET
                 finishing_prod = finishing_prod + NEW.trx_quantity
-            WHERE finishing_batch_entry_uuid = NEW.finishing_batch_entry_uuid;
+            WHERE uuid = NEW.finishing_batch_entry_uuid;
         ELSE
             UPDATE zipper.finishing_batch
             SET
@@ -102,7 +102,7 @@ BEGIN
             UPDATE zipper.finishing_batch_entry
             SET
                 finishing_prod = finishing_prod - OLD.trx_quantity
-            WHERE finishing_batch_entry_uuid = OLD.finishing_batch_entry_uuid;
+            WHERE uuid = OLD.finishing_batch_entry_uuid;
         ELSE
             UPDATE zipper.finishing_batch
             SET
@@ -179,7 +179,7 @@ BEGIN
             UPDATE zipper.finishing_batch_entry
             SET
                 finishing_prod = finishing_prod + NEW.trx_quantity - OLD.trx_quantity
-            WHERE finishing_batch_entry_uuid = NEW.finishing_batch_entry_uuid;
+            WHERE uuid = NEW.finishing_batch_entry_uuid;
         ELSE
             UPDATE zipper.finishing_batch
             SET
