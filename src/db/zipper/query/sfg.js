@@ -193,7 +193,9 @@ export async function selectSwatchInfo(req, res, next) {
 					LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
 					LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
 					LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
-					ORDER BY 
+				WHERE 
+					od.order_type != 'slider'
+				ORDER BY 
 					od.created_at DESC,
 					sfg.recipe_uuid ASC`;
 
