@@ -1608,10 +1608,7 @@ export async function selectLabDipRecipe(req, res, next) {
 	} else {
 		conditions.push(
 			and(
-				or(
-					eq(labDipSchema.info.uuid, info_uuid),
-					sql`${labDipSchema.info_entry.lab_dip_info_uuid} is null`
-				),
+				eq(labDipSchema.info.uuid, info_uuid),
 				bleaching
 					? eq(labDipSchema.recipe.bleaching, bleaching)
 					: sql`1=1`
