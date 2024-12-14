@@ -38,7 +38,7 @@ BEGIN
             END,
         finishing_stock = finishing_stock - 
             CASE 
-                WHEN NEW.section = 'finishing' THEN 
+                WHEN (NEW.section = 'finishing' AND lower(item_name) != 'vislon') THEN 
                     CASE
                         WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity
                         ELSE NEW.production_quantity_in_kg
@@ -130,7 +130,7 @@ BEGIN
             END,
         finishing_stock = finishing_stock - 
             CASE 
-                WHEN NEW.section = 'finishing' THEN 
+                WHEN (NEW.section = 'finishing' AND lower(item_name) != 'vislon') THEN 
                     CASE
                         WHEN NEW.production_quantity_in_kg = 0 THEN NEW.production_quantity - OLD.production_quantity
                         ELSE NEW.production_quantity_in_kg - OLD.production_quantity_in_kg
@@ -220,7 +220,7 @@ BEGIN
             END,
         finishing_stock = finishing_stock + 
             CASE 
-                WHEN OLD.section = 'finishing' THEN 
+                WHEN (OLD.section = 'finishing' AND lower(item_name) != 'vislon') THEN 
                     CASE
                         WHEN OLD.production_quantity_in_kg = 0 THEN OLD.production_quantity
                         ELSE OLD.production_quantity_in_kg
