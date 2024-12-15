@@ -1133,9 +1133,10 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 					SUM(
 					CASE 
 						WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+						WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)
 						ELSE CAST(oe.size AS NUMERIC)
 					END * oe.quantity::numeric) as total_size, 
-					SUM(oe.quantity::numeric) as total_quantity
+					SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::numeric * 100 ELSE oe.quantity::numeric END) as total_quantity
 				FROM zipper.order_entry oe
 				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 				GROUP BY oe.order_description_uuid
