@@ -837,6 +837,8 @@ export async function selectOrderDescription(req, res, next) {
 								zipper.finishing_batch_entry fbe ON fbe.sfg_uuid = sfg.uuid
 							LEFT JOIN
 								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+							LEFT JOIN 
+								zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 							GROUP BY
 								oe.uuid
 					) AS fbe_given ON oe.uuid = fbe_given.order_entry_uuid
@@ -940,6 +942,8 @@ export async function selectOrderDescription(req, res, next) {
 								zipper.finishing_batch_entry fbe ON fbe.sfg_uuid = sfg.uuid
 							LEFT JOIN
 								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+							LEFT JOIN 
+								zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 							GROUP BY
 								oe.uuid
 					) AS fbe_given ON oe.uuid = fbe_given.order_entry_uuid
