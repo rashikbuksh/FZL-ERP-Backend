@@ -685,8 +685,8 @@ export const finishing_batch = zipper.table('finishing_batch', {
 	order_description_uuid: defaultUUID('order_description_uuid').references(
 		() => order_description.uuid
 	),
-	slider_lead_time: integer('slider_lead_time').notNull(),
-	dyeing_lead_time: integer('dyeing_lead_time'),
+	slider_lead_time: integer('slider_lead_time').default(null),
+	dyeing_lead_time: integer('dyeing_lead_time').default(null),
 	status: finishBatchStatusEnum('status').default('running'),
 	slider_finishing_stock: decimal('slider_finishing_stock', {
 		precision: 20,
