@@ -1625,7 +1625,12 @@ const pathDelivery = {
 			summary: 'get all packing list',
 			description: 'All packing list',
 			operationId: 'getAllPackingList',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('is_received', 'is_received', [
+					'true',
+					' false',
+				]),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all packing list.',

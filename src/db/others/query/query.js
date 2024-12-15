@@ -2292,12 +2292,15 @@ export async function selectChallan(req, res, next) {
 }
 
 export async function selectPackingList(req, res, next) {
+	const { is_received } = req.query;
 	const query = sql`
 	SELECT
 		pl.uuid AS value,
 		concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS label
 	FROM
-		delivery.packing_list pl `;
+		delivery.packing_list pl 
+		WHERE
+		${is_received === 'false' ? sql`pl.is_warehouse_received = false` : sql`1=1`}`;
 
 	const packingListPromise = db.execute(query);
 
