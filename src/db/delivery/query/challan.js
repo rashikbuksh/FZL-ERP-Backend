@@ -360,7 +360,8 @@ export async function select(req, res, next) {
 									challan.remarks AS remarks,
 									challan.delivery_date,
 									packing_list.item_for,
-									challan.is_own
+									challan.is_own,
+									pi_cash.pi_cash_numbers
 								FROM
 									delivery.challan
 								LEFT JOIN
@@ -393,6 +394,32 @@ export async function select(req, res, next) {
 									public.factory pf on toi.factory_uuid = pf.uuid
 								LEFT JOIN 
 									public.marketing pmm on toi.marketing_uuid = pmm.uuid
+								LEFT JOIN (
+											SELECT 
+												array_agg(DISTINCT CASE 
+													WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+													ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+												END ) AS pi_cash_numbers,
+												vodf.order_info_uuid,
+												toi.uuid AS thread_order_info_uuid
+											FROM
+												commercial.pi_cash
+											LEFT JOIN
+												commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+											LEFT JOIN
+												zipper.sfg ON pi_cash_entry.sfg_uuid = zipper.sfg.uuid
+											LEFT JOIN
+												zipper.order_entry ON sfg.order_entry_uuid = zipper.order_entry.uuid
+											LEFT JOIN
+												zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+											LEFT JOIN
+												thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+											LEFT JOIN
+												thread.order_info toi ON toe.order_info_uuid = toi.uuid
+											GROUP BY
+												vodf.order_info_uuid, toi.uuid
+											
+										) AS pi_cash ON challan.order_info_uuid = pi_cash.order_info_uuid OR challan.thread_order_info_uuid = pi_cash.thread_order_info_uuid
 								LEFT JOIN (
 									SELECT
 										COUNT(packing_list.uuid) AS packing_list_count,
