@@ -107,6 +107,7 @@ export const challan = delivery.table('challan', {
 	),
 	remarks: text('remarks').default(null),
 	delivery_date: DateTime('delivery_date').default(null),
+	delivery_type: text('delivery_type').default(null),
 });
 
 export const vehicle = delivery.table('vehicle', {

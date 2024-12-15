@@ -840,6 +840,7 @@ export const pathDeliveryChallan = {
 									updated_at: SE.date_time(),
 									remarks: SE.string('remarks'),
 									delivery_date: SE.date_time(),
+									delivery_type: SE.string('delivery_type'),
 									challan_entry: {
 										type: 'object',
 										properties: {

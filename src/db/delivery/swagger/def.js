@@ -89,6 +89,7 @@ export const defChallan = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 		delivery_date: SE.date_time(),
+		delivery_type: SE.string('delivery_type'),
 	},
 	xml: 'Delivery/Challan',
 });
