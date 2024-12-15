@@ -2,7 +2,6 @@ import { Router } from 'express';
 
 import { param } from 'express-validator';
 import SE, { SED } from '../../util/swagger_example.js';
-import zipper from '../zipper/schema.js';
 import * as otherOperations from './query/query.js';
 
 const otherRouter = Router();
@@ -159,6 +158,12 @@ otherRouter.get('/delivery/vehicle/value/label', otherOperations.selectVehicle);
 
 // carton
 otherRouter.get('/delivery/carton/value/label', otherOperations.selectCarton);
+
+// packing list
+otherRouter.get(
+	'/delivery/packing-list/value/label',
+	otherOperations.selectPackingList
+);
 
 const pathPublic = {
 	'/other/machine/value/label': {
@@ -1606,6 +1611,31 @@ const pathDelivery = {
 								properties: {
 									value: SE.uuid(),
 									label: SE.string('CH24-0001'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/other/delivery/packing-list/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all packing list',
+			description: 'All packing list',
+			operationId: 'getAllPackingList',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'Returns a all packing list.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('PL24-0001'),
 								},
 							},
 						},

@@ -2290,3 +2290,28 @@ export async function selectChallan(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectPackingList(req, res, next) {
+	const query = sql`
+	SELECT
+		pl.uuid AS value,
+		concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) AS label
+	FROM
+		delivery.packing_list pl `;
+
+	const packingListPromise = db.execute(query);
+
+	try {
+		const data = await packingListPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Packing List list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
