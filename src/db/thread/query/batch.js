@@ -94,102 +94,6 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	// const resultPromise = db
-	// 	.select({
-	// 		uuid: batch.uuid,
-	// 		id: batch.id,
-	// 		batch_id: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
-	// 		machine_uuid: batch.machine_uuid,
-	// 		machine_name: publicSchema.machine.name,
-	// 		slot: batch.slot,
-	// 		lab_created_by: batch.lab_created_by,
-	// 		lab_created_by_name: labCreated.name,
-	// 		lab_created_at: batch.lab_created_at,
-	// 		lab_updated_at: batch.lab_updated_at,
-	// 		dyeing_operator: batch.dyeing_operator,
-	// 		dyeing_operator_name: dyeingOperator.name,
-	// 		reason: batch.reason,
-	// 		category: batch.category,
-	// 		status: batch.status,
-	// 		pass_by: batch.pass_by,
-	// 		pass_by_name: passBy.name,
-	// 		shift: batch.shift,
-	// 		dyeing_supervisor: batch.dyeing_supervisor,
-	// 		dyeing_supervisor_name: dyeingSupervisor.name,
-	// 		dyeing_created_at: batch.dyeing_created_at,
-	// 		dyeing_updated_at: batch.dyeing_updated_at,
-	// 		yarn_quantity: decimalToNumber(batch.yarn_quantity),
-	// 		yarn_issue_created_by: batch.yarn_issue_created_by,
-	// 		yarn_issue_created_by_name: yarnIssueCreated.name,
-	// 		yarn_issue_created_at: batch.yarn_issue_created_at,
-	// 		yarn_issue_updated_at: batch.yarn_issue_updated_at,
-	// 		is_drying_complete: batch.is_drying_complete,
-	// 		drying_created_at: batch.drying_created_at,
-	// 		drying_updated_at: batch.drying_updated_at,
-	// 		coning_operator: batch.coning_operator,
-	// 		coning_operator_name: coningOperator.name,
-	// 		coning_supervisor: batch.coning_supervisor,
-	// 		coning_supervisor_name: coningSupervisor.name,
-	// 		coning_machines: batch.coning_machines,
-	// 		coning_created_by: batch.coning_created_by,
-	// 		coning_created_by_name: coningCreatedBy.name,
-	// 		coning_created_at: batch.coning_created_at,
-	// 		coning_updated_at: batch.coning_updated_at,
-	// 		created_by: batch.created_by,
-	// 		created_by_name: hrSchema.users.name,
-	// 		created_at: batch.created_at,
-	// 		updated_at: batch.updated_at,
-	// 		remarks: batch.remarks,
-	// 		total_yarn_quantity: db
-	// 			.sum('batch_entry.yarn_quantity')
-	// 			.as('total_yarn_quantity'),
-	// 	})
-	// 	.from(batch)
-	// 	.leftJoin(hrSchema.users, eq(batch.created_by, hrSchema.users.uuid))
-	// 	.leftJoin(
-	// 		publicSchema.machine,
-	// 		eq(batch.machine_uuid, publicSchema.machine.uuid)
-	// 	)
-	// 	.leftJoin(labCreated, eq(batch.lab_created_by, labCreated.uuid))
-	// 	.leftJoin(
-	// 		yarnIssueCreated,
-	// 		eq(batch.yarn_issue_created_by, yarnIssueCreated.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		dyeingOperator,
-	// 		eq(batch.dyeing_operator, dyeingOperator.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		dyeingSupervisor,
-	// 		eq(batch.dyeing_supervisor, dyeingSupervisor.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		coningCreatedBy,
-	// 		eq(batch.coning_created_by, coningCreatedBy.uuid)
-	// 	)
-	// 	.leftJoin(passBy, eq(batch.pass_by, passBy.uuid))
-	// 	.leftJoin(
-	// 		coningOperator,
-	// 		eq(batch.coning_operator, coningOperator.uuid)
-	// 	)
-	// 	.leftJoin(
-	// 		coningSupervisor,
-	// 		eq(batch.coning_supervisor, coningSupervisor.uuid)
-	// 	)
-	// 	.leftJoin('batch_entry', 'batch.uuid', 'batch_entry.batch_uuid') // Join with batch_entry table
-	// 	.groupBy(
-	// 		batch.coning_machines,
-	// 		batch.coning_created_by,
-	// 		coningCreatedBy.name,
-	// 		batch.coning_created_at,
-	// 		batch.coning_updated_at,
-	// 		batch.created_by,
-	// 		hrSchema.users.name,
-	// 		batch.created_at,
-	// 		batch.updated_at,
-	// 		batch.remarks
-	// 	)
-	// 	.orderBy(desc(batch.created_at));
 
 	const query = sql`
 					SELECT
@@ -241,11 +145,12 @@ export async function selectAll(req, res, next) {
 						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight,
 						SUM(batch_entry.quantity)::float8 as total_cone,
 						jsonb_agg(DISTINCT 
-							jsonb_build_object('order_info_uuid', order_info.uuid, 
-												'order_number', concat('ST', CASE 
+							jsonb_build_object(
+								'order_info_uuid', order_info.uuid, 
+								'order_number', concat('ST', CASE 
 																WHEN order_info.is_sample = 1 
 																THEN 'S' ELSE '' 
-																END, 
+															END, 
 															to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')))
 						) AS order_numbers,
 						jsonb_agg(
@@ -253,7 +158,6 @@ export async function selectAll(req, res, next) {
 						batch.production_date,
 						party.name as party_name,
 						oe.color as color
-
 					FROM
 						thread.batch
 						LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid

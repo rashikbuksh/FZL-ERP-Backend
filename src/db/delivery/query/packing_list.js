@@ -332,9 +332,13 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
-			(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as balance_quantity,
-			CASE WHEN ${item_for} = 'sample_zipper' 
-				THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 
+			CASE 
+				WHEN vodf.order_type = 'tape' THEN (oe.size::float8 * 100 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 
+				ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 
+			END as balance_quantity,
+			CASE 
+				WHEN ${item_for} = 'sample_zipper' THEN (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 
+				WHEN vodf.order_type = 'tape' THEN LEAST(oe.size::float8 * 100 - sfg.warehouse::float8 - sfg.delivered::float8, sfg.finishing_prod::float8) 
 				ELSE LEAST(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8, sfg.finishing_prod::float8) 
 			END as max_quantity,
 			0 as quantity,
