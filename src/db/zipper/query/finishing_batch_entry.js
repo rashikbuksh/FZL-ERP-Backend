@@ -547,7 +547,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 						COALESCE(sfg.delivered, 0)
 					))::float8
 				ELSE (
-					zfbe.quantity - COALESCE(zfbe.warehouse, 0) - COALESCE(sfg.delivered, 0)
+					zfbe.quantity::float8 - COALESCE(zfbe.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8
 				)::float8 END 
 			as balance_quantity,
 			COALESCE((
@@ -578,8 +578,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 							THEN zfbp.section = 'teeth_molding'
 						ELSE zfbp.section = ${section} END
 			), 0)::float8 as total_production_quantity,
-			od.tape_transferred,
-			sfg.dyed_tape_used_in_kg,
+			od.tape_transferred::float8,
+			sfg.dyed_tape_used_in_kg::float8,
 			COALESCE(od.tape_received,0)::float8 as tape_received,
 			COALESCE(od.tape_transferred,0)::float8 - COALESCE(sfg.dyed_tape_used_in_kg,0) as tape_stock,
 			od.is_multi_color,
