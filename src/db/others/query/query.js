@@ -950,11 +950,13 @@ export async function selectOrderDescription(req, res, next) {
 				LEFT JOIN 
 					(
 						SELECT oe.order_description_uuid, 
-						SUM(CASE 
-							WHEN vodf.is_inch = 1 
-								THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-							ELSE CAST(oe.size AS NUMERIC)
-						END * oe.quantity::numeric) as total_size, 
+						SUM(
+							CASE 
+								WHEN vodf.is_inch = 1 
+									THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+								ELSE CAST(oe.size AS NUMERIC)
+							END 
+						* oe.quantity::numeric) as total_size, 
 						SUM(oe.quantity::numeric) as total_quantity
 						FROM zipper.order_entry oe 
 						LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
