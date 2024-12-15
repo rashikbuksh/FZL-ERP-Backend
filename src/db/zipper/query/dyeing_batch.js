@@ -81,7 +81,7 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const query = sql`
 		SELECT 
-			DISTINCT dyeing_batch.uuid,
+			dyeing_batch.uuid,
 			dyeing_batch.id,
 			concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as batch_id,
 			dyeing_batch.batch_status,
@@ -99,7 +99,7 @@ export async function selectAll(req, res, next) {
 			expected.order_numbers,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
 			dyeing_batch.production_date,
-			vodf.party_name,
+			expected.party_name,
 			oe_colors.colors as color
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
@@ -107,7 +107,6 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN zipper.dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
 		LEFT JOIN zipper.sfg ON dyeing_batch_entry.sfg_uuid = zipper.sfg.uuid
 		LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-		LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
 		LEFT JOIN (
 			SELECT 
 				ARRAY_AGG(DISTINCT order_entry.color) as colors,
@@ -127,6 +126,7 @@ export async function selectAll(req, res, next) {
 				, 3) as expected_kg, 
 				be.dyeing_batch_uuid, 
 				jsonb_agg(DISTINCT vodf.order_number) as order_numbers, 
+				jsonb_agg(DISTINCT vodf.party_name) as party_name,
 				SUM(be.quantity::float8) as total_quantity, 
 				SUM(be.production_quantity_in_kg::float8) as total_actual_production_quantity
 			FROM zipper.dyeing_batch_entry be
@@ -145,6 +145,7 @@ export async function selectAll(req, res, next) {
 
 			GROUP BY be.dyeing_batch_uuid
 		) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
+		GROUP BY dyeing_batch.uuid, public.machine.name, public.machine.min_capacity, public.machine.max_capacity, users.name, expected.total_quantity, expected.expected_kg, expected.order_numbers, expected.total_actual_production_quantity, expected.party_name, oe_colors.colors
 		ORDER BY dyeing_batch.created_at DESC
 	`;
 	const resultPromise = db.execute(query);

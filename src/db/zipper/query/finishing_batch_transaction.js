@@ -1,8 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -257,7 +254,11 @@ export async function selectByTrxFrom(req, res, next) {
                         WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
                         ELSE CAST(oe.size AS NUMERIC)
                     END) AS style_color_size, 
-			oe.quantity::float8 as order_quantity,
+			CASE 
+				WHEN vodf.order_type = 'tape' 
+				THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+				ELSE oe.quantity::float8 
+			END as order_quantity,
 			fbe.quantity::float8 as batch_quantity,
 			finishing_batch_transaction.trx_from,
 			finishing_batch_transaction.trx_to,

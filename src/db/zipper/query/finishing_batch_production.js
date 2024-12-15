@@ -238,7 +238,11 @@ export async function selectBySection(req, res, next) {
 							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
                         ELSE CAST(oe.size AS NUMERIC)
                     END) AS style_color_size,
-			oe.quantity::float8 as order_quantity,
+			CASE 
+				WHEN vodf.order_type = 'tape' 
+				THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+				ELSE oe.quantity::float8 
+			END as order_quantity,
 			fbe.quantity::float8 as batch_quantity,
 			finishing_batch_production.section,
 			COALESCE(finishing_batch_production.dyed_tape_used_in_kg,0)::float8 as dyed_tape_used_in_kg,

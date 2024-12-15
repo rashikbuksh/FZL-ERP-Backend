@@ -197,11 +197,21 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			vodf.item_description,
 			coalesce(fbe_given.given_quantity::float8, 0) as given_quantity,
 			coalesce(
-				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+				CASE 
+					WHEN vodf.order_type = 'tape' 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+					ELSE oe.quantity::float8 
+				END 
+				- coalesce(fbe_given.given_quantity::float8,0)
 			,0) as balance_quantity,
 			0 as quantity,
 			coalesce(
-				coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)
+				CASE 
+					WHEN vodf.order_type = 'tape' 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+					ELSE oe.quantity::float8 
+				END 
+				- coalesce(fbe_given.given_quantity::float8,0)
 			,0) as max_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
@@ -220,7 +230,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 		LEFT JOIN
 			zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid 
         	AND vodf.zipper_number = tcr.zipper_number_uuid 
-        	AND vodf.end_type = tcr.end_type_uuid 
+			AND CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END 
 		LEFT JOIN
 			zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid 
 		AND vodf.zipper_number = tc.zipper_number_uuid 
@@ -237,7 +247,14 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 					sfg.uuid
 		) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
 		WHERE CASE WHEN vodf.order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
-		AND (coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0)) > 0
+		AND (
+			CASE 
+				WHEN vodf.order_type = 'tape' 
+				THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+				ELSE oe.quantity::float8 
+			END
+			- coalesce(fbe_given.given_quantity,0)
+			) > 0
 		AND vodf.order_description_uuid = ${req.params.order_description_uuid}`;
 
 	// AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0
@@ -246,6 +263,11 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 	// 		lower(vodf.item_name) != 'nylon'
 	// 		OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 	// 	)
+
+	// NOTE: vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END
+	// NOTE: for tape order, specific end type is set to close_end
+
+	// NOTE: CASE WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 ELSE oe.quantity::float8 END
 
 	const batchEntryPromise = db.execute(query);
 
@@ -358,10 +380,24 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			fbe.updated_at,
 			fbe.remarks,
 			coalesce(
-				(coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0))
+				(
+					CASE 
+						WHEN vodf.order_type = 'tape' 
+						THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+						ELSE oe.quantity::float8 
+					END 
+					- coalesce(fbe_given.given_quantity::float8,0)
+				)
 			,0) as balance_quantity,
 			coalesce(
-				(coalesce(oe.quantity::float8,0) - coalesce(fbe_given.given_quantity::float8,0)) + coalesce(fbe.quantity::float8,0)
+				(
+					CASE 
+						WHEN vodf.order_type = 'tape' 
+						THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+						ELSE oe.quantity::float8 
+					END 
+					- coalesce(fbe_given.given_quantity::float8,0)
+				) + coalesce(fbe.quantity::float8,0)
 			,0) as max_quantity
 		FROM
 			zipper.finishing_batch_entry fbe
@@ -439,7 +475,11 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
                         ELSE CAST(oe.size AS NUMERIC)
                     END
 			) as style_color_size,
-			oe.quantity::float8 as order_quantity,
+			CASE 
+				WHEN od.order_type = 'tape' 
+				THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+				ELSE oe.quantity::float8 
+			END as order_quantity,
 			zfbe.quantity::float8 as batch_quantity,
 			sfg.recipe_uuid as recipe_uuid,
 			recipe.name as recipe_name,
@@ -491,7 +531,9 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 						COALESCE(zfbe.warehouse, 0) + 
 						COALESCE(sfg.delivered, 0)
 					))::float8
-				ELSE (zfbe.quantity - COALESCE(zfbe.warehouse, 0) - COALESCE(sfg.delivered, 0))::float8 END 
+				ELSE (
+					zfbe.quantity - COALESCE(zfbe.warehouse, 0) - COALESCE(sfg.delivered, 0)
+				)::float8 END 
 			as balance_quantity,
 			COALESCE((
 				SELECT 

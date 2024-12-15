@@ -343,18 +343,20 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 export async function getOrderDetailsForBatchEntry(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`SELECT
+	const query = sql`
+		SELECT
 			sfg.uuid as sfg_uuid,
 			sfg.recipe_uuid as recipe_uuid,
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
 			oe.style,
 			oe.color,
+			vodf.order_type,
 			CASE 
 				WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)::float8  
 				WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
 				ELSE CAST(oe.size AS NUMERIC)::float8
 			END as size,
-			CASE WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 ELSE oe.quantity::float8 END as order_quantity,
+			oe.quantity::float8 as order_quantity,
 			oe.bleaching,
 			vodf.order_number,
 			vodf.item_description,
@@ -381,8 +383,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			tcr.bottom::float8,
 			0 as quantity,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
-			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
-			vodf.order_type
+			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
 		FROM
 			zipper.sfg sfg
 		LEFT JOIN 
@@ -424,14 +425,25 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
         WHERE
 			vodf.tape_coil_uuid IS NOT NULL AND 
 				sfg.recipe_uuid IS NOT NULL AND 
-					coalesce(oe.quantity,0) - coalesce(be_given.given_quantity,0) > 0 AND 
-					(
-						lower(op_item.name) != 'nylon' 
-						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-					) `;
+				(
+					CASE 
+						WHEN vodf.order_type = 'tape' 
+						THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+						ELSE oe.quantity::float8 
+					END 
+			- coalesce(be_given.given_quantity,0)
+				) > 0 
+				AND 
+				(
+					lower(op_item.name) != 'nylon' 
+					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+				) 
+		`;
 
 	// NOTE: vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END
 	// NOTE: for tape order, specific end type is set to close_end
+
+	// NOTE: CASE WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 ELSE oe.quantity::float8 END
 
 	const batchEntryPromise = db.execute(query);
 
