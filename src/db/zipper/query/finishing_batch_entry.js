@@ -191,6 +191,11 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
                 ELSE CAST(oe.size AS NUMERIC)
             END as size,
+			CASE 
+				WHEN vodf.order_type = 'tape' THEN 'Meter' 
+				WHEN vodf.order_type = 'slider' THEN 'Pcs'
+				ELSE 'CM' 
+			END as unit,
 			oe.quantity::float8 as order_quantity,
 			oe.bleaching,
 			vodf.order_number,
@@ -362,6 +367,11 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 				ELSE CAST(oe.size AS NUMERIC)
 			END as size,
 			oe.quantity::float8 as order_quantity,
+			CASE 
+				WHEN vodf.order_type = 'tape' THEN 'Meter' 
+				WHEN vodf.order_type = 'slider' THEN 'Pcs'
+				ELSE 'CM' 
+			END as unit,
 			fbe.quantity::float8 as batch_quantity,
 			oe.bleaching,
 			vodf.order_number,
@@ -463,6 +473,11 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			oe.order_description_uuid as order_description_uuid,
 			oe.style as style,
 			oe.color as color,
+			CASE 
+				WHEN vod.order_type = 'tape' THEN 'Meter' 
+				WHEN vod.order_type = 'slider' THEN 'Pcs'
+				ELSE 'CM' 
+			END as unit,
 			CASE 
                 WHEN vod.is_inch = 1 
 					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
@@ -594,7 +609,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'sfg list',
+			message: 'finishing_batch_entry list',
 		};
 
 		return res.status(200).json({ toast, data: data?.rows });
