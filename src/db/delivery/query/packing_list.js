@@ -104,8 +104,8 @@ export async function selectAll(req, res, next) {
 
 	const query = sql`
 		SELECT dvl.*,
-		SUM(ple.quantity)::float8 as total_quantity,
-		SUM(ple.poli_quantity)::float8 as total_poly_quantity
+			SUM(ple.quantity)::float8 as total_quantity,
+			SUM(ple.poli_quantity)::float8 as total_poly_quantity
 		FROM delivery.v_packing_list dvl
 		LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 		${challan_uuid ? sql`WHERE dvl.challan_uuid = ${challan_uuid}` : sql``}
@@ -135,7 +135,8 @@ export async function selectAll(req, res, next) {
 			dvl.created_at,
 			dvl.updated_at,
 			dvl.remarks,
-			dvl.gate_pass
+			dvl.gate_pass,
+			od.order_type
 		ORDER BY 
 			dvl.created_at DESC
 	`;
