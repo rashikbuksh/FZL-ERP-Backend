@@ -824,7 +824,13 @@ export async function selectOrderDescription(req, res, next) {
 						(
 							SELECT
 								oe.uuid as order_entry_uuid,
-								SUM(oe.quantity::float8) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
+								SUM(
+									CASE 
+										WHEN vodf.order_type = 'tape' 
+										THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+										ELSE oe.quantity::float8 
+									END
+									) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
 							FROM
 								zipper.sfg
 							LEFT JOIN 
@@ -878,13 +884,18 @@ export async function selectOrderDescription(req, res, next) {
 							ELSE ''
 							END
 						) AS label,
+					CASE 
+						WHEN vodf.order_type = 'tape' THEN 'Meter' 
+						WHEN vodf.order_type = 'slider' THEN 'Pcs'
+						ELSE 'CM' 
+					END as unit,
+					vodf.order_type,
 					vodf.order_number,
 					vodf.item_description,
 					vodf.order_description_uuid,
 					vodf.item_name,
 					vodf.tape_received::float8,
 					vodf.tape_transferred::float8,
-					vodf.order_type,
 					totals_of_oe.total_size::float8,
 					totals_of_oe.total_quantity::float8,
 					tcr.top::float8,
@@ -916,7 +927,13 @@ export async function selectOrderDescription(req, res, next) {
 						(
 							SELECT
 								oe.uuid as order_entry_uuid,
-								SUM(oe.quantity::float8) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
+								SUM(
+									CASE 
+										WHEN vodf.order_type = 'tape' 
+										THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+										ELSE oe.quantity::float8 
+									END
+								) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
 							FROM
 								zipper.sfg
 							LEFT JOIN 
