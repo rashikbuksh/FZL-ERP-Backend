@@ -135,8 +135,7 @@ export async function selectAll(req, res, next) {
 			dvl.created_at,
 			dvl.updated_at,
 			dvl.remarks,
-			dvl.gate_pass,
-			od.order_type
+			dvl.gate_pass
 		ORDER BY 
 			dvl.created_at DESC
 	`;
