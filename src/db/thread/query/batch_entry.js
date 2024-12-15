@@ -1,8 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { batch_entry, order_entry } from '../schema.js';
@@ -259,6 +256,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		cl.max_weight::float8,
 		oe.recipe_uuid as recipe_uuid,
 		re.name as recipe_name,
+		re.sub_streat,
 		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 		CASE WHEN be_given.total_quantity IS NULL THEN 0 ELSE
 			be_given.total_quantity::float8
@@ -335,6 +333,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 		cl.max_weight::float8,
 		oe.recipe_uuid as recipe_uuid,
 		re.name as recipe_name,
+		re.sub_streat,
 		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 		be.quantity::float8 as quantity,
 		be.coning_production_quantity::float8,

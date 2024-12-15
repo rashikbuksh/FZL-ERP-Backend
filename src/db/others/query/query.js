@@ -796,7 +796,8 @@ export async function selectOrderDescription(req, res, next) {
 					tape_coil.dyed_per_kg_meter::float8,
 					vodf.is_multi_color,
 					CASE WHEN vodf.is_multi_color = 1 THEN vodf.multi_color_tape_received ELSE coalesce(batch_stock.stock,0)::float8 END as stock,
-					styles_colors.style_color_object
+					styles_colors.style_color_object,
+					vodf.slider_provided
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -919,7 +920,8 @@ export async function selectOrderDescription(req, res, next) {
 						ELSE CAST(oe.size AS NUMERIC)
 					END as size,
 					oe.quantity::float8 as order_quantity,
-					fbe_given.balance_quantity
+					fbe_given.balance_quantity,
+					vodf.slider_provided
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
