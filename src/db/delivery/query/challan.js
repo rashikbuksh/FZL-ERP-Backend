@@ -338,6 +338,12 @@ export async function select(req, res, next) {
 									CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
 										public.factory.address ELSE
 										pf.address END AS factory_address,
+									CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+										zipper.order_info.marketing_uuid ELSE
+										toi.marketing_uuid END AS marketing_uuid,
+									CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+										public.marketing.name ELSE
+										pmm.name END AS marketing_name,
 									challan.vehicle_uuid,
 									vehicle.name AS vehicle_name,
 									vehicle.driver_name AS vehicle_driver_name,
@@ -372,6 +378,8 @@ export async function select(req, res, next) {
 								LEFT JOIN
 									public.factory ON zipper.order_info.factory_uuid = public.factory.uuid
 								LEFT JOIN
+									public.marketing ON zipper.order_info.marketing_uuid = public.marketing.uuid
+								LEFT JOIN
 									delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
 								LEFT JOIN
 									thread.order_info toi on delivery.packing_list.thread_order_info_uuid = toi.uuid
@@ -383,6 +391,8 @@ export async function select(req, res, next) {
 									public.merchandiser pm on toi.merchandiser_uuid = pm.uuid
 								LEFT JOIN
 									public.factory pf on toi.factory_uuid = pf.uuid
+								LEFT JOIN 
+									public.marketing pmm on toi.marketing_uuid = pmm.uuid
 								LEFT JOIN (
 									SELECT
 										COUNT(packing_list.uuid) AS packing_list_count,
