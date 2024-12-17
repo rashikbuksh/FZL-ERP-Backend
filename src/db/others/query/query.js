@@ -1215,7 +1215,7 @@ export async function selectOrderNumberForPi(req, res, next) {
 				vod.is_cash = 1 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
 				oi.party_uuid = ${req.params.party_uuid} AND 
-				oi.is_sample = 0
+				(oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))
 				${pi_uuid ? sql`AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql`AND oe.quantity - sfg.pi > 0`}
 			ORDER BY
 				vod.order_number ASC
@@ -1234,7 +1234,7 @@ export async function selectOrderNumberForPi(req, res, next) {
 				vod.is_cash = 0 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
 				oi.party_uuid = ${req.params.party_uuid} AND 
-				oi.is_sample = 0
+				(oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))
 				${pi_uuid ? sql`AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql`AND oe.quantity - sfg.pi > 0`}
 			ORDER BY
 				vod.order_number ASC`;
