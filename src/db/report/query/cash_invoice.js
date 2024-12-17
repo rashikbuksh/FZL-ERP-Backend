@@ -30,8 +30,7 @@ export async function selectCashInvoice(req, res, next) {
                                     END
                                 ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 2)::float8 
                             END) as value,
-                            array_agg(DISTINCT vodf.order_number) AS order_number
-                        
+                            array_agg(DISTINCT CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_number ELSE  CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END) as order_number
                         FROM
                             commercial.pi_cash_entry pe
                             LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
@@ -43,8 +42,10 @@ export async function selectCashInvoice(req, res, next) {
                         GROUP BY
                             pe.pi_cash_uuid
                     ) AS pe ON pi_cash.uuid = pe.pi_cash_uuid
+                    WHERE 
+                        pi_cash.is_pi = 0
+                    ORDER BY pi_cash.created_at DESC
                     
-                    ORDER BY pi_cash.created_at DESC;
                     `;
 
 	const resultPromise = db.execute(query);
