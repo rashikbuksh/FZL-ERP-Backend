@@ -289,7 +289,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	 LEFT JOIN 
 	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
 	WHERE
-		oe.recipe_uuid IS NOT NULL AND  (oe.quantity - coalesce(be_given.total_quantity,0)) > 0
+		oe.recipe_uuid IS NOT NULL AND (oe.quantity - coalesce(be_given.total_quantity,0)) > 0
 	ORDER BY
 		oe.created_at DESC
 	`;
