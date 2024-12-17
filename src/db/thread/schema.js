@@ -155,7 +155,7 @@ export const batch = thread.table('batch', {
 		.default(null),
 	reason: text('reason').default(null),
 	category: text('category').default(null),
-	status: text('status').default(null),
+	status: text('status').default('pending'),
 	pass_by: defaultUUID('pass_by')
 		.references(() => hrSchema.users.uuid)
 		.default(null),
