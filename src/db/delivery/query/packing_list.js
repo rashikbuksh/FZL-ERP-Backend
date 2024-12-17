@@ -347,7 +347,8 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			0 as reject_quantity,
 			COALESCE(sfg.finishing_prod::float8, 0) as finishing_prod,
 			oe.uuid as order_entry_uuid,
-			oe.created_at
+			oe.created_at,
+			vodf.order_type
 		FROM
 			zipper.v_order_details_full vodf
 		LEFT JOIN
