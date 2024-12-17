@@ -23,15 +23,6 @@ BEGIN
                     END 
                 ELSE 0 
             END,
-        warehouse = warehouse + 
-            CASE 
-                WHEN NEW.trx_to = 'warehouse' THEN 
-                    CASE 
-                        WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity 
-                        ELSE NEW.trx_quantity_in_kg 
-                    END 
-                ELSE 0 
-            END,
         teeth_molding_prod = teeth_molding_prod - 
             CASE 
                 WHEN NEW.trx_from = 'teeth_molding_prod' THEN 
@@ -88,15 +79,6 @@ BEGIN
                     END 
                 ELSE 0 
             END,
-        warehouse = warehouse - 
-            CASE 
-                WHEN OLD.trx_to = 'warehouse' THEN 
-                    CASE 
-                        WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity 
-                        ELSE OLD.trx_quantity_in_kg 
-                    END 
-                ELSE 0 
-            END,
         teeth_molding_prod = teeth_molding_prod + 
             CASE 
                 WHEN OLD.trx_from = 'teeth_molding_prod' THEN 
@@ -141,9 +123,6 @@ BEGIN
         finishing_stock = finishing_stock 
             - CASE WHEN OLD.trx_to = 'finishing_stock' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
             + CASE WHEN NEW.trx_to = 'finishing_stock' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-        warehouse = warehouse 
-            - CASE WHEN OLD.trx_to = 'warehouse' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
-            + CASE WHEN NEW.trx_to = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
         teeth_molding_prod = teeth_molding_prod 
             + CASE WHEN OLD.trx_from = 'teeth_molding_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
             - CASE WHEN NEW.trx_from = 'teeth_molding_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,

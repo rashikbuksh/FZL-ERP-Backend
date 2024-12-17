@@ -10,7 +10,7 @@ BEGIN
     -- Update order_description
     UPDATE zipper.order_description
     SET
-        tape_received = tape_received - NEW.trx_quantity,
+        -- tape_received = tape_received - NEW.trx_quantity,
         tape_transferred = tape_transferred + NEW.trx_quantity
     WHERE order_description.uuid = NEW.order_description_uuid;
 
@@ -38,7 +38,7 @@ BEGIN
     -- Update order_description
     UPDATE zipper.order_description
     SET
-        tape_received = tape_received + OLD.trx_quantity - NEW.trx_quantity,
+        -- tape_received = tape_received + OLD.trx_quantity - NEW.trx_quantity,
         tape_transferred = tape_transferred + NEW.trx_quantity - OLD.trx_quantity
     WHERE order_description.uuid = NEW.order_description_uuid;
 
@@ -65,7 +65,7 @@ BEGIN
     -- Update order_description
     UPDATE zipper.order_description
     SET
-        tape_received = tape_received + OLD.trx_quantity,
+        -- tape_received = tape_received + OLD.trx_quantity,
         tape_transferred = tape_transferred - OLD.trx_quantity
     WHERE order_description.uuid = OLD.order_description_uuid;
 

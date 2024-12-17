@@ -2,11 +2,11 @@ import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
 import { order_description, order_info } from '../zipper/schema.js';
+import { selectCashInvoice } from './query/cash_invoice.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
 import * as reportOperations from './query/query.js';
 import { selectSampleReport } from './query/sample_report.js';
-import { selectCashInvoice } from './query/cash_invoice.js';
 
 const reportRouter = Router();
 
@@ -353,7 +353,10 @@ export const pathReport = {
 			description: 'Delivery Statement Report',
 			tags: ['report'],
 			operationId: 'deliveryStatementReport',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					order_info_uuid: SE.uuid(),

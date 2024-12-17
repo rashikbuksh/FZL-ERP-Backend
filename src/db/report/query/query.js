@@ -1241,6 +1241,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
 }
 
 export async function deliveryStatementReport(req, res, next) {
+	const { from_date, to_date } = req.query;
 	const query = sql`
             SELECT 
                 vodf.order_info_uuid,
@@ -1261,7 +1262,6 @@ export async function deliveryStatementReport(req, res, next) {
                 coalesce(opening_all_sum.total_close_end_value,0)::float8 as opening_total_close_end_value,
                 coalesce(opening_all_sum.total_open_end_value,0)::float8 as opening_total_open_end_value,
                 coalesce(opening_all_sum.total_close_end_value + opening_all_sum.total_open_end_value,0)::float8 as opening_total_value,
-                CONCAT('2024-09-01'::TIMESTAMP, ' to ', '2024-09-30'::TIMESTAMP + interval '23 hours 59 minutes 59 seconds') as running_period,
                 running_all_sum.challan_numbers,
                 running_all_sum.created_at as challan_date,
                 coalesce(running_all_sum.total_close_end_quantity,0)::float8 as running_total_close_end_quantity,
@@ -1292,7 +1292,7 @@ export async function deliveryStatementReport(req, res, next) {
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
                     LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid AND oe.order_description_uuid = vodf.order_description_uuid
                 WHERE 
-                    vpl.challan_uuid IS NOT NULL AND ch.created_at < '2024-10-01'::TIMESTAMP
+                    vpl.challan_uuid IS NOT NULL AND ${from_date ? sql`ch.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                 GROUP BY
                     vpl.order_description_uuid, oe.company_price
             ) opening_all_sum ON vodf.order_description_uuid = opening_all_sum.order_description_uuid
@@ -1313,7 +1313,7 @@ export async function deliveryStatementReport(req, res, next) {
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
                     LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid AND oe.order_description_uuid = vodf.order_description_uuid
                 WHERE 
-                    vpl.challan_uuid IS NOT NULL AND ch.created_at between '2024-10-01'::TIMESTAMP and '2024-10-30'::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+                    vpl.challan_uuid IS NOT NULL AND ${from_date && to_date ? sql`ch.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 GROUP BY
                     vpl.order_description_uuid, oe.company_price, ch.id, ch.created_at
             ) running_all_sum ON vodf.order_description_uuid = running_all_sum.order_description_uuid
