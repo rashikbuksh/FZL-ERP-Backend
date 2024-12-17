@@ -6,6 +6,7 @@ import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
 import * as reportOperations from './query/query.js';
 import { selectSampleReport } from './query/sample_report.js';
+import { selectCashInvoice } from './query/cash_invoice.js';
 
 const reportRouter = Router();
 
@@ -80,6 +81,9 @@ reportRouter.get('/material-stock-report', MaterialStockReport);
 
 // * Sample Report
 reportRouter.get('/sample-report', selectSampleReport);
+
+// * Cash Invoice Report
+reportRouter.get('/cash-invoice-report', selectCashInvoice);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -430,6 +434,24 @@ export const pathReport = {
 					delivery_order_quantity: SE.string(
 						'Delivery Order Quantity'
 					),
+				}),
+			},
+		},
+	},
+	'/report/cash-invoice-report': {
+		get: {
+			summary: 'Cash Invoice Report',
+			description: 'Cash Invoice Report',
+			tags: ['report'],
+			operationId: 'selectCashInvoice',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.string('ID'),
+					value: SE.number(610),
+					order_number: SE.string('Order Number'),
+					receive_amount: SE.number(610),
 				}),
 			},
 		},
