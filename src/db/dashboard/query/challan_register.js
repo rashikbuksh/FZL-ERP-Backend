@@ -54,7 +54,7 @@ export async function selectChallanRegister(req, res, next) {
                     GROUP BY packing_list.thread_order_info_uuid
                 ) AS pl_count ON pl.thread_order_info_uuid = pl_count.thread_order_info_uuid
             WHERE
-                ${start_date ? sql`ce.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} AND pl.challan_uuid IS NOT NULL AND ple.thread_order_entry_uuid IS NOT NULL
+                ${start_date ? sql`pl.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} AND pl.challan_uuid IS NOT NULL AND ple.thread_order_entry_uuid IS NOT NULL
             GROUP BY
                 item_name, pl_count.count
         )
