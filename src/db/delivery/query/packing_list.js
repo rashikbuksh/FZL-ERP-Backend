@@ -389,10 +389,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			toe.warehouse::float8 as warehouse,
 			toe.delivered::float8 as delivered,
 			(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 as balance_quantity,
-			CASE WHEN ${item_for} = 'sample_thread' 
-				THEN (toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 
-				ELSE LEAST(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8, toe.production_quantity::float8)
-			END as max_quantity,
+			LEAST(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8, toe.production_quantity::float8) as max_quantity,
 			cl.cone_per_carton,
 			0 as quantity,
 			0 as poli_quantity,
