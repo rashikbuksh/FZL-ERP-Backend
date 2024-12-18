@@ -36,8 +36,8 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                         THEN 
                             CASE 
                                 WHEN vodf.order_type = 'tape'
-                                THEN coalesce(oe.size::float8 * oe.company_price,0)::float8
-                                ELSE coalesce(ple.quantity * oe.company_price,0)::float8
+                                THEN coalesce(ple.quantity::float8 * oe.company_price::float8,0)::float8
+                                ELSE coalesce(ple.quantity::float8 * oe.company_price::float8/12,0)::float8
                             END
                         ELSE 0
                     END
@@ -95,8 +95,8 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                         THEN 
                             CASE 
                                 WHEN vodf.order_type = 'tape'
-                                THEN coalesce(oe.size::float8 * oe.company_price,0)::float8
-                                ELSE coalesce(ple.quantity * oe.company_price,0)::float8
+                                THEN coalesce(ple.quantity::float8 * oe.company_price::float8,0)::float8
+                                ELSE coalesce(ple.quantity::float8 * oe.company_price::float8/12,0)::float8
                             END
                         ELSE 0
                     END

@@ -15,11 +15,19 @@ export async function selectDocumentRcvLog(req, res, next) {
                 marketing.name as marketing_name,
                 CASE WHEN is_old_pi = 0 THEN(	
 				SELECT 
-					SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12)
+					SUM(
+						coalesce(pi_cash_entry.pi_cash_quantity,0)  
+						* CASE 
+							WHEN vodf.order_type = 'tape' 
+							THEN coalesce(order_entry.party_price,0) 
+							ELSE coalesce(order_entry.party_price,0)/12 
+						END
+					)
 				FROM commercial.pi_cash 
 					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
 					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+					LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
 				WHERE pi_cash.lc_uuid = lc.uuid
 			) ELSE lc.lc_value::float8 END AS lc_value,
              lc.lc_date

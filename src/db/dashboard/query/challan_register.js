@@ -60,12 +60,12 @@ export async function selectChallanRegister(req, res, next) {
         )
         SELECT
             SUM(amount) as amount,
-            number_of_challan,
+            SUM(number_of_challan) as number_of_challan,
             item_name,
             (SELECT SUM(number_of_challan) FROM challan_data) as total_number
         FROM challan_data
         GROUP BY
-                item_name, number_of_challan;
+                item_name;
         `;
 
 	const resultPromise = db.execute(query);

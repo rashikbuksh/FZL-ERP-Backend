@@ -447,7 +447,7 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 		WHERE 
 			pl.challan_uuid = ${req.params.challan_uuid}
 		ORDER BY
-			ple.created_at, ple.uuid DESC
+			pl.id, vodf.item_description, oe.style, oe.color, oe.size ASC
 	`;
 
 	const packing_list_entryPromise = db.execute(query);
