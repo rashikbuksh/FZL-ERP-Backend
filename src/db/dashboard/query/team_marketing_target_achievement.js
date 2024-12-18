@@ -13,14 +13,13 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
 		query = sql`
             SELECT
                 marketing_team.name as team_name,
-                marketing_team_entry.marketing_uuid,
-                marketing.name as marketing_name,
-                coalesce(marketing_team_member_target.zipper_amount,0) as zipper_target,
-                coalesce(marketing_team_member_target.thread_amount,0) as thread_target,
-                coalesce(marketing_team_member_target.year,0) as year,
+                ARRAY_AGG(marketing.name) as marketing_name,
+                SUM(marketing_team_member_target.zipper_amount) as zipper_target,
+                SUM(marketing_team_member_target.thread_amount) as thread_target,
+                coalesce(marketing_team_member_target.year) as year,
                 marketing_team_member_target.month,
-                coalesce(achievement.zipper_achievement,0) as zipper_achievement,
-                coalesce(achievement.thread_achievement,0) as thread_achievement
+                SUM(achievement.zipper_achievement) as zipper_achievement,
+                SUM(achievement.thread_achievement) as thread_achievement
             FROM
                 public.marketing
             LEFT JOIN
@@ -69,7 +68,9 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                 GROUP BY marketing.uuid
             ) as achievement ON marketing.uuid = achievement.marketing_uuid
             WHERE 
-                marketing_team_member_target.year = ${year}
+                marketing_team_member_target.year = ${year} AND marketing_team.name IS NOT NULL
+            GROUP BY
+                marketing_team.name, marketing_team_member_target.year, marketing_team_member_target.month
             `;
 	} else if (type === 'marketing') {
 		query = sql`
