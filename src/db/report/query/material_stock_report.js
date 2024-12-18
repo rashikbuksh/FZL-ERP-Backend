@@ -4,7 +4,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function MaterialStockReport(req, res, next) {
-    const { from_date, to_date } = req.query;
+	const { from_date, to_date } = req.query;
 	const query = sql`
             SELECT 
                 m.uuid as material_uuid,
@@ -59,6 +59,7 @@ export async function MaterialStockReport(req, res, next) {
                     GROUP BY 
                         mi.uuid
                 ) consumption ON m.uuid = consumption.material_uuid
+                ORDER BY ms.name, m.name;
     `;
 
 	const resultPromise = db.execute(query);
