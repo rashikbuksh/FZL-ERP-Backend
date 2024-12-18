@@ -412,7 +412,7 @@ export const pathReport = {
 			},
 		},
 	},
-	'/material-stock-report': {
+	'/report/material-stock-report': {
 		get: {
 			summary: 'Material Stock Report',
 			description: 'Material Stock Report',
