@@ -11,45 +11,61 @@ export async function selectChallanRegister(req, res, next) {
             SELECT 
                 sum(ple.quantity)::float8 as amount,
                 pl_count.count as number_of_challan,
-                CASE 
+                TRIM(BOTH ' ' FROM LOWER(CASE 
                     WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name || CONCAT(' ', vodf.nylon_stopper_name)
                     WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
                     ELSE vodf.item_name
-                END as item_name
+                END)) as item_name
             FROM
                 delivery.packing_list pl
                 LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
-				LEFT JOIN zipper.sfg ON ple.sfg_uuid = sfg.uuid
-				LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                LEFT JOIN zipper.sfg ON ple.sfg_uuid = sfg.uuid
+                LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
                 LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
                 LEFT JOIN (
                     SELECT COUNT(*) as count, packing_list.order_info_uuid
                     FROM delivery.packing_list 
-					WHERE packing_list.challan_uuid IS NOT NULL
+                    WHERE packing_list.challan_uuid IS NOT NULL AND packing_list.order_info_uuid IS NOT NULL
                     GROUP BY packing_list.order_info_uuid
                 ) AS pl_count ON pl.order_info_uuid = pl_count.order_info_uuid
             WHERE
-                ${start_date ? sql`pl.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} AND pl.challan_uuid IS NOT NULL
+                ${start_date ? sql`pl.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} AND pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL
             GROUP BY
-                item_name, vodf.nylon_stopper_name, vodf.item_name, pl_count.count
+                TRIM(BOTH ' ' FROM LOWER(CASE 
+                    WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name || CONCAT(' ', vodf.nylon_stopper_name)
+                    WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                    ELSE vodf.item_name
+                END)),
+                item_name,
+                pl_count.count
             UNION 
             SELECT 
-                sum(ce.quantity)::float8 as amount,
-                count(*) as number_of_challan,
+                sum(ple.quantity)::float8 as amount,
+                pl_count.count as number_of_challan,
                 'Sewing Thread' as item_name
             FROM
-                thread.challan c 
-                LEFT JOIN thread.order_info oi ON c.order_info_uuid = oi.uuid
-                LEFT JOIN thread.challan_entry ce ON c.uuid = ce.challan_uuid
+                delivery.packing_list pl
+                LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
+                LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+                LEFT JOIN (
+                    SELECT COUNT(*) as count, packing_list.thread_order_info_uuid
+                    FROM delivery.packing_list 
+					WHERE packing_list.challan_uuid IS NOT NULL AND packing_list.thread_order_info_uuid IS NOT NULL
+                    GROUP BY packing_list.thread_order_info_uuid
+                ) AS pl_count ON pl.thread_order_info_uuid = pl_count.thread_order_info_uuid
             WHERE
-                ${start_date ? sql`ce.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                ${start_date ? sql`ce.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} AND pl.challan_uuid IS NOT NULL AND ple.thread_order_entry_uuid IS NOT NULL
             GROUP BY
-                item_name
+                item_name, pl_count.count
         )
         SELECT
-            *,
+            SUM(amount) as amount,
+            number_of_challan,
+            item_name,
             (SELECT SUM(number_of_challan) FROM challan_data) as total_number
-        FROM challan_data;
+        FROM challan_data
+        GROUP BY
+                item_name, number_of_challan;
         `;
 
 	const resultPromise = db.execute(query);
