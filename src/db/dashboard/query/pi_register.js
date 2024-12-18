@@ -37,8 +37,8 @@ export async function selectPiRegister(req, res, next) {
                         SUM(pe.pi_cash_quantity::float8)::float8 as total_pi_quantity,
                         SUM(
                             CASE WHEN vodf.order_type = 'tape' 
-                            THEN oe.size::float8 * coalesce(oe.party_price::float8/12 , 0) 
-                            ELSE pe.pi_cash_quantity::float8 * coalesce(oe.party_price::float8/12 , 0) 
+                            THEN oe.size::float8 * coalesce(oe.party_price::float8, 0) 
+                            ELSE pe.pi_cash_quantity::float8 * coalesce(oe.party_price::float8/12, 0) 
                         END)::float8 as total_zipper_pi_price, 
                         SUM(pe.pi_cash_quantity::float8 * coalesce(toe.party_price::float8, 0))::float8 as total_thread_pi_price
                     FROM

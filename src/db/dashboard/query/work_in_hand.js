@@ -6,7 +6,7 @@ export async function selectWorkInHand(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-               SELECT 
+                    SELECT 
                         CASE 
                             WHEN vodf.item_name = 'Nylon' 
                             THEN vodf.item_name || ' ' || vodf.nylon_stopper_name 
@@ -14,13 +14,15 @@ export async function selectWorkInHand(req, res, next) {
                         END as item_name,
                         sum(
                             CASE 
-                                WHEN sfg.recipe_uuid IS NULL 
+                                WHEN vodf.order_type != 'slider' AND sfg.recipe_uuid IS NULL 
                                 THEN oe.quantity::float8  
                                 ELSE 0 
                             END
                         ) as Not_Approved,
                         sum(
                             CASE 
+                                WHEN vodf.order_type = 'slider' 
+                                THEN oe.quantity::float8  
                                 WHEN sfg.recipe_uuid IS NOT NULL 
                                 THEN oe.quantity::float8  
                                 ELSE 0 

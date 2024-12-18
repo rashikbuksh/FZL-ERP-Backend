@@ -6,7 +6,7 @@ export async function selectStockStatus(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-            SELECT
+            	SELECT
                     mi.name,
                     mi.threshold::float8,
                     ms.stock::float8,
@@ -16,11 +16,11 @@ export async function selectStockStatus(req, res, next) {
                         WHERE pe.material_uuid = mi.uuid
                         ORDER BY pd.created_at DESC LIMIT 1) as last_purchase_date,
                     mi.average_lead_time as lead_time
-                    FROM
-                        material.info mi
-                    LEFT JOIN
-                        material.stock ms ON mi.uuid = ms.material_uuid
-                        ORDER BY mi.created_at DESC LIMIT 10
+                FROM
+                    material.info mi
+                LEFT JOIN
+                    material.stock ms ON mi.uuid = ms.material_uuid
+                ORDER BY mi.created_at DESC LIMIT 10
                         `;
 	const resultPromise = db.execute(query);
 
