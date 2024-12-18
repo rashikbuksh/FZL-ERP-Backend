@@ -95,7 +95,7 @@ dashBoardRouter.get(
 dashBoardRouter.get('/no-of-doc', amountAndDocOperations.selectNoOfDoc);
 
 dashBoardRouter.get(
-	'/team-marketing-target-achievement/:type',
+	'/team-marketing-target-achievement/:year/:type',
 	selectTeamOrMarketingTargetAchievement
 );
 
@@ -869,12 +869,22 @@ const pathDashboard = {
 			},
 		},
 	},
-	'/dashboard/team-marketing-target-achievement/{type}': {
+	'/dashboard/team-marketing-target-achievement/{year}/{type}': {
 		get: {
 			tags: ['Dashboard'],
 			summary: 'Get team marketing target achievement summary',
 			description: 'Get team marketing target achievement summary',
 			parameters: [
+				{
+					name: 'year',
+					in: 'path',
+					required: true,
+					description: 'Year of the target',
+					schema: {
+						type: 'number',
+						example: 2021,
+					},
+				},
 				{
 					name: 'type',
 					in: 'path',
@@ -886,7 +896,6 @@ const pathDashboard = {
 					},
 				},
 			],
-
 			responses: {
 				200: {
 					description: 'Successful operation',

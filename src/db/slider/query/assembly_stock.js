@@ -355,7 +355,8 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			0 as max_production_quantity_without_link,
 			TRUE as against_order,
 			null as material_uuid,
-			null as material_name
+			null as material_name,
+			production.created_at as prod_created_at
 		FROM
 			slider.production
 		LEFT JOIN
@@ -436,7 +437,8 @@ export async function selectProductionLogForAssembly(req, res, next) {
 			LEAST(diecastingbody.quantity_in_sa, diecastingpuller.quantity_in_sa, diecastingcap.quantity_in_sa)::float8 + die_casting_to_assembly_stock.production_quantity::float8 as max_production_quantity_without_link,
 			FALSE as against_order,
 			assembly_stock.material_uuid,
-			info.name as material_name
+			info.name as material_name,
+			die_casting_to_assembly_stock.created_at as prod_created_at
 		FROM
 			slider.die_casting_to_assembly_stock
 		LEFT JOIN 
@@ -454,7 +456,7 @@ export async function selectProductionLogForAssembly(req, res, next) {
 		LEFT JOIN
 			material.info ON assembly_stock.material_uuid = info.uuid
 		ORDER BY
-			created_at DESC;
+			prod_created_at DESC;
 	`;
 
 	const productionLogPromise = db.execute(query);

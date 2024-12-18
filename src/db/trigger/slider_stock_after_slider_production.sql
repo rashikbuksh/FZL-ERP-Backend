@@ -72,6 +72,7 @@ BEGIN
         SET
             sa_prod = sa_prod + NEW.production_quantity - OLD.production_quantity,
             sa_prod_weight = sa_prod_weight + NEW.weight - OLD.weight,
+            body_quantity = body_quantity - NEW.production_quantity + OLD.production_quantity,
             cap_quantity = cap_quantity - NEW.production_quantity + OLD.production_quantity,
             puller_quantity = puller_quantity - NEW.production_quantity + OLD.production_quantity,
             link_quantity = link_quantity - CASE WHEN NEW.with_link = 1 THEN NEW.production_quantity ELSE 0 END + CASE WHEN OLD.with_link = 1 THEN OLD.production_quantity ELSE 0 END
@@ -118,7 +119,7 @@ BEGIN
     FROM slider.stock ss
     LEFT JOIN zipper.finishing_batch fb ON fb.uuid = ss.finishing_batch_uuid
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = fb.order_description_uuid
-    WHERE ss.uuid = NEW.stock_uuid;
+    WHERE ss.uuid = OLD.stock_uuid;
    
     -- Update slider.stock table for 'sa_prod' section
     IF OLD.section = 'sa_prod' THEN
@@ -132,7 +133,7 @@ BEGIN
             link_quantity = link_quantity + CASE WHEN OLD.with_link = 1 THEN OLD.production_quantity ELSE 0 END
         FROM zipper.finishing_batch fb
         LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = fb.order_description_uuid
-        WHERE fb.uuid = slider.stock.finishing_batch_uuid AND slider.stock.uuid = NEW.stock_uuid;
+        WHERE fb.uuid = slider.stock.finishing_batch_uuid AND slider.stock.uuid = OLD.stock_uuid;
     END IF;
 
     -- Update slider.stock table for 'coloring' section
@@ -146,7 +147,7 @@ BEGIN
                 coloring_prod_weight = coloring_prod_weight - OLD.weight
             FROM zipper.finishing_batch fb
             LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = fb.order_description_uuid
-            WHERE fb.uuid = slider.stock.finishing_batch_uuid AND slider.stock.uuid = NEW.stock_uuid;
+            WHERE fb.uuid = slider.stock.finishing_batch_uuid AND slider.stock.uuid = OLD.stock_uuid;
         ELSE
             UPDATE slider.stock
             SET
@@ -159,7 +160,7 @@ BEGIN
                 coloring_prod_weight = coloring_prod_weight - OLD.weight
             FROM zipper.finishing_batch fb
             LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = fb.order_description_uuid
-            WHERE fb.uuid = slider.stock.finishing_batch_uuid AND slider.stock.uuid = NEW.stock_uuid;
+            WHERE fb.uuid = slider.stock.finishing_batch_uuid AND slider.stock.uuid = OLD.stock_uuid;
         END IF;
     END IF;
 

@@ -1,9 +1,6 @@
 import { and, desc, eq, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
@@ -344,7 +341,8 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				null as order_number,
 				null as item_description,
 				null as finishing_batch_uuid,
-				null as batch_number
+				null as batch_number,
+				trx_against_stock.created_at as trx_created_at
 			FROM 
 				slider.trx_against_stock
 			LEFT JOIN
@@ -414,7 +412,8 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				vod.order_number,
 				vod.item_description,
 				zfb.uuid as finishing_batch_uuid,
-				concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number
+				concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
+				die_casting_transaction.created_at as trx_created_at
 			FROM 
 				slider.die_casting_transaction
 			LEFT JOIN
@@ -441,6 +440,8 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
 			LEFT JOIN 
 				zipper.v_order_details vod ON zfb.order_description_uuid = vod.order_description_uuid
+			ORDER BY 
+    			trx_created_at DESC
 	`;
 
 	const resultPromise = db.execute(query);

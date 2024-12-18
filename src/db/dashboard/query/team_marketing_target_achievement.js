@@ -5,7 +5,7 @@ import db from '../../index.js';
 export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { type } = req.params;
+	const { year, type } = req.params;
 
 	let query;
 
@@ -15,10 +15,10 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                 marketing_team.name as team_name,
                 marketing_team_entry.marketing_uuid,
                 marketing.name as marketing_name,
-                marketing_team_entry.is_team_leader,
                 coalesce(marketing_team_member_target.zipper_amount,0) as zipper_target,
                 coalesce(marketing_team_member_target.thread_amount,0) as thread_target,
                 coalesce(marketing_team_member_target.year,0) as year,
+                marketing_team_member_target.month,
                 coalesce(achievement.zipper_achievement,0) as zipper_achievement,
                 coalesce(achievement.thread_achievement,0) as thread_achievement
             FROM
@@ -30,26 +30,27 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
             LEFT JOIN
                 public.marketing_team_member_target ON marketing.uuid = marketing_team_member_target.marketing_uuid
             LEFT JOIN (
-                SELECT SUM(
-                    CASE 
-                        WHEN pl.item_for = 'zipper' 
-                        THEN 
-                            CASE 
-                                WHEN vodf.order_type = 'tape'
-                                THEN coalesce(ple.quantity::float8 * oe.company_price::float8,0)::float8
-                                ELSE coalesce(ple.quantity::float8 * oe.company_price::float8/12,0)::float8
-                            END
-                        ELSE 0
-                    END
-                ) as zipper_achievement, 
-                SUM(
-                    CASE 
-                        WHEN pl.item_for = 'thread'
-                        THEN coalesce(ple.quantity * toe.company_price,0)::float8
-                        ELSE 0
-                    END
-                ) as thread_achievement,
-                marketing.uuid as marketing_uuid
+                SELECT 
+                    SUM(
+                        CASE 
+                            WHEN pl.item_for = 'zipper' 
+                            THEN 
+                                CASE 
+                                    WHEN vodf.order_type = 'tape'
+                                    THEN coalesce(oe.size::float8 * oe.company_price::float8,0)::float8
+                                    ELSE coalesce(ple.quantity::float8 * oe.company_price::float8/12,0)::float8
+                                END
+                            ELSE 0
+                        END
+                    ) as zipper_achievement, 
+                    SUM(
+                        CASE 
+                            WHEN pl.item_for = 'thread'
+                            THEN coalesce(ple.quantity * toe.company_price,0)::float8
+                            ELSE 0
+                        END
+                    ) as thread_achievement,
+                    marketing.uuid as marketing_uuid
                 FROM
                     delivery.challan
                 LEFT JOIN 
@@ -67,6 +68,8 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                 LEFT JOIN public.marketing ON vodf.marketing_uuid = marketing.uuid OR toi.marketing_uuid = marketing.uuid
                 GROUP BY marketing.uuid
             ) as achievement ON marketing.uuid = achievement.marketing_uuid
+            WHERE 
+                marketing_team_member_target.year = ${year}
             `;
 	} else if (type === 'marketing') {
 		query = sql`
@@ -78,6 +81,7 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                 coalesce(marketing_team_member_target.zipper_amount,0) as zipper_target,
                 coalesce(marketing_team_member_target.thread_amount,0) as thread_target,
                 coalesce(marketing_team_member_target.year,0) as year,
+                marketing_team_member_target.month,
                 coalesce(achievement.zipper_achievement,0) as zipper_achievement,
                 coalesce(achievement.thread_achievement,0) as thread_achievement
             FROM
@@ -95,7 +99,7 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                         THEN 
                             CASE 
                                 WHEN vodf.order_type = 'tape'
-                                THEN coalesce(ple.quantity::float8 * oe.company_price::float8,0)::float8
+                                THEN coalesce(oe.size::float8 * oe.company_price::float8,0)::float8
                                 ELSE coalesce(ple.quantity::float8 * oe.company_price::float8/12,0)::float8
                             END
                         ELSE 0
@@ -126,6 +130,8 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                 LEFT JOIN public.marketing ON vodf.marketing_uuid = marketing.uuid OR toi.marketing_uuid = marketing.uuid
                 GROUP BY marketing.uuid
             ) as achievement ON marketing.uuid = achievement.marketing_uuid
+            WHERE 
+                marketing_team_member_target.year = ${year}
             `;
 	}
 
