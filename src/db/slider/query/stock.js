@@ -421,6 +421,7 @@ export async function selectStockByFromSection(req, res, next) {
 		LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN zipper.finishing_batch_entry fbe ON sfg.uuid = fbe.sfg_uuid
 		LEFT JOIN slider.stock ON fbe.finishing_batch_uuid = stock.finishing_batch_uuid
+		WHERE (fbe.quantity - fbe.finishing_prod) > 0
 		GROUP BY stock.uuid
 	) styles_colors ON stock.uuid = styles_colors.uuid
 	LEFT JOIN
