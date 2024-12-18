@@ -139,7 +139,7 @@ export async function select(req, res, next) {
 			CONCAT(oe.color, ' - ', oe.style) as color_style,
 			dtt.trx_quantity_in_meter::float8,
 			CASE WHEN vodf.is_multi_color = 1 THEN vodf.multi_color_tape_received ELSE coalesce(batch_stock.stock,0)::float8 END as stock,
-			CASE WHEN vodf.is_multi_color = 1 THEN vodf.multi_color_tape_received ELSE coalesce(batch_stock.stock,0)::float8 END + dtt.trx_quantity::float8 as max_trx_quantity
+			CASE WHEN vodf.is_multi_color = 1 THEN vodf.multi_color_tape_received ELSE coalesce(batch_stock.stock,0)::float8 - vodf.tape_transferred::float8 END + dtt.trx_quantity::float8 as max_trx_quantity
 		FROM zipper.dyed_tape_transaction dtt
 			LEFT JOIN hr.users u ON dtt.created_by = u.uuid
 			LEFT JOIN zipper.v_order_details_full vodf ON dtt.order_description_uuid = vodf.order_description_uuid
