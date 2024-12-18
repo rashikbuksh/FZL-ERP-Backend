@@ -12,16 +12,17 @@ export async function selectSampleLeadTime(req, res, next) {
             oi.created_at AS issue_date,
             CASE WHEN MAX(pl.challan_uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
             MAX(c.created_at) AS delivery_last_date,
-            SUM(CASE WHEN pl.challan_uuid IS NOT NULL THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) AS delivery_quantity,
+            SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) AS delivery_quantity,
             SUM(CASE WHEN od.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END) AS order_quantity,
-            CONCAT(SUM(CASE WHEN pl.challan_uuid IS NOT NULL THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END), '/', SUM(CASE WHEN od.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END)) AS delivery_order_quantity
+            CONCAT(SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END), '/', SUM(CASE WHEN od.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END)) AS delivery_order_quantity
         FROM
             zipper.order_info oi
-            LEFT JOIN delivery.packing_list pl ON oi.uuid = pl.order_info_uuid
-            LEFT JOIN delivery.challan c ON pl.challan_uuid = c.uuid
-            LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
             LEFT JOIN zipper.order_description od ON oi.uuid = od.order_info_uuid
             LEFT JOIN zipper.order_entry oe ON od.uuid = oe.order_description_uuid
+            LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+            LEFT JOIN delivery.packing_list_entry ple ON sfg.uuid = ple.sfg_uuid
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            LEFT JOIN delivery.challan c ON pl.challan_uuid = c.uuid
         WHERE
             oi.is_sample = 1 AND od.uuid IS NOT NULL
         GROUP BY
@@ -33,14 +34,15 @@ export async function selectSampleLeadTime(req, res, next) {
             toi.created_at AS issue_date,
             CASE WHEN MAX(tc.uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
             MAX(tc.created_at) AS delivery_last_date,
-            SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE tce.quantity::float8 END) AS delivery_quantity,
+            SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) AS delivery_quantity,
             SUM(toe.quantity::float8) AS order_quantity,
-            CONCAT(SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE tce.quantity::float8 END), '/', SUM(toe.quantity::float8)) AS delivery_order_quantity
+            CONCAT(SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END), '/', SUM(toe.quantity::float8)) AS delivery_order_quantity
         FROM
             thread.order_info toi
             LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
-            LEFT JOIN thread.challan_entry tce ON tce.order_entry_uuid = toe.uuid
-            LEFT JOIN thread.challan tc ON tce.challan_uuid = tc.uuid
+            LEFT JOIN delivery.packing_list_entry ple ON toe.uuid = ple.thread_order_entry_uuid
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            LEFT JOIN delivery.challan tc ON pl.challan_uuid = tc.uuid
         WHERE 
             toi.is_sample = 1
         GROUP BY
