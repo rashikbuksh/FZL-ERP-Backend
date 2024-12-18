@@ -1,4 +1,10 @@
 -- * Inserted 
+
+
+---* NOTE: NOT NEEDED ANYMORE ---
+
+-- * TRIGGER DROPPED FROM ALL SERVER ---
+
 CREATE OR REPLACE FUNCTION delivery.sfg_and_packing_list_after_challan_insert_function() RETURNS TRIGGER AS $$
 DECLARE 
     pl_sfg RECORD;

@@ -4,11 +4,12 @@ RETURNS TRIGGER AS $$
 DECLARE
     challan_uuid_gp TEXT;
     old_gate_pass INTEGER;
+    item_for_gp TEXT;
 BEGIN
     SELECT 
-        uuid, gate_pass 
+        uuid, gate_pass, item_for
     INTO 
-        challan_uuid_gp, old_gate_pass
+        challan_uuid_gp, old_gate_pass, item_for_gp
     FROM 
         delivery.challan 
     WHERE 
@@ -31,16 +32,31 @@ BEGIN
             uuid = challan_uuid_gp;
 
         IF old_gate_pass = 1 THEN
-            UPDATE 
-                zipper.sfg
-            SET 
-                warehouse = warehouse + ple.quantity,
-                delivered = delivered - ple.quantity
-            FROM 
-                delivery.packing_list pl
-            LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid 
-            WHERE 
-                pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
+
+            IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
+                UPDATE thread.order_entry
+                SET
+                    warehouse = warehouse + ple.quantity,
+                    delivered = delivered - ple.quantity
+                FROM
+                    delivery.packing_list pl
+                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
+                WHERE
+                    pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = thread.order_entry.uuid;
+            ELSE
+                UPDATE 
+                    zipper.sfg
+                SET 
+                    warehouse = warehouse + ple.quantity,
+                    delivered = delivered - ple.quantity
+                FROM 
+                    delivery.packing_list pl
+                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid 
+                WHERE 
+                    pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
+
+            END IF;
+
         END IF;
     ELSE
         UPDATE 
@@ -51,16 +67,30 @@ BEGIN
             uuid = challan_uuid_gp;
 
         IF old_gate_pass = 0 THEN
-            UPDATE 
-                zipper.sfg
-            SET 
-                warehouse = warehouse - ple.quantity,
-                delivered = delivered + ple.quantity
-            FROM 
-                delivery.packing_list pl
-            LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid 
-            WHERE 
-                pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
+
+            IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
+                UPDATE thread.order_entry
+                SET
+                    warehouse = warehouse - ple.quantity,
+                    delivered = delivered + ple.quantity
+                FROM
+                    delivery.packing_list pl
+                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
+                WHERE
+                    pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = thread.order_entry.uuid;
+            ELSE
+                UPDATE 
+                    zipper.sfg
+                SET 
+                    warehouse = warehouse - ple.quantity,
+                    delivered = delivered + ple.quantity
+                FROM 
+                    delivery.packing_list pl
+                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid 
+                WHERE 
+                    pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
+            END IF;
+            
         END IF;
     END IF;
 
