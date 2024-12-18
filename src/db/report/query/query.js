@@ -719,16 +719,18 @@ export async function threadProductionStatusBatchWise(req, res, next) {
              LEFT JOIN (
                 SELECT 
                     toe.uuid as order_entry_uuid,
-                    SUM(CASE WHEN challan.gate_pass = 1 THEN challan_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
-                    SUM(CASE WHEN challan.gate_pass = 0 THEN challan_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
-                    SUM(challan_entry.short_quantity)AS total_short_quantity,
-                    SUM(challan_entry.reject_quantity) AS total_reject_quantity
+                    SUM(CASE WHEN (pl.gate_pass = 1 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
+                    SUM(CASE WHEN (pl.gate_pass = 0 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_balance_quantity,
+                    SUM(ple.short_quantity)AS total_short_quantity,
+                    SUM(ple.reject_quantity) AS total_reject_quantity
                 FROM
-                    thread.challan
+                    delivery.challan
                 LEFT JOIN
-                    thread.challan_entry ON challan.uuid = challan_entry.challan_uuid
+                    delivery.packing_list pl ON challan.uuid = pl.challan_uuid
+                LEFT JOIN 
+                    delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
                 LEFT JOIN
-                    thread.order_entry toe ON challan_entry.order_entry_uuid = toe.uuid
+                    thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
                 GROUP BY
                     toe.uuid
             ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid

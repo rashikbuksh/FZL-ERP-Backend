@@ -12,9 +12,9 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
 	if (type === 'team') {
 		query = sql`
             SELECT
-                marketing_team.name,
+                marketing_team.name as team_name,
                 marketing_team_entry.marketing_uuid,
-                marketing.name,
+                marketing.name as marketing_name,
                 marketing_team_entry.is_team_leader,
                 coalesce(marketing_team_member_target.zipper_amount,0) as zipper_target,
                 coalesce(marketing_team_member_target.thread_amount,0) as thread_target,

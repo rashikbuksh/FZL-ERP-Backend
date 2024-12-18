@@ -1,20 +1,21 @@
 import { Router } from 'express';
 import SE, { SED } from '../../util/swagger_example.js';
 
+import * as amountAndDocOperations from './query/amount_and_doc.js';
 import * as challanRegistrationOperations from './query/challan_register.js';
 import * as documentRcvLogOperations from './query/document_rcv_log.js';
 import * as goodsInWarehouseOperations from './query/goods_in_warehouse.js';
 import * as lcFeedOperations from './query/lc_feed.js';
+import * as orderEntryOperations from './query/order_entry.js';
 import * as orderEntryFeedOperations from './query/order_entry_feed.js';
 import * as piRegisterOperations from './query/pi_register.js';
 import * as piToBeSubmittedOperations from './query/pi_to_be_submitted.js';
 import * as productionStatusOperations from './query/production_status.js';
 import * as sampleLeadTimeOperations from './query/sample_lead_time.js';
-import * as workInHandOperations from './query/work_in_hand.js';
 import * as stockStatusOperations from './query/stock_status.js';
-import * as orderEntryOperations from './query/order_entry.js';
-import * as amountAndDocOperations from './query/amount_and_doc.js';
+import { selectTeamOrMarketingTargetAchievement } from './query/team_marketing_target_achievement.js';
 import * as topSalesOperations from './query/top_sales.js';
+import * as workInHandOperations from './query/work_in_hand.js';
 
 const dashBoardRouter = Router();
 
@@ -92,6 +93,11 @@ dashBoardRouter.get(
 );
 
 dashBoardRouter.get('/no-of-doc', amountAndDocOperations.selectNoOfDoc);
+
+dashBoardRouter.get(
+	'/team-marketing-target-achievement/:type',
+	selectTeamOrMarketingTargetAchievement
+);
 
 const pathDashboard = {
 	'/dashboard/challan-register': {
@@ -854,6 +860,50 @@ const pathDashboard = {
 								properties: {
 									name: SE.string('Vislon'),
 									no_of_doc: SE.number(1000),
+								},
+							},
+						},
+					},
+				},
+				500: SE.response(500),
+			},
+		},
+	},
+	'/dashboard/team-marketing-target-achievement/{type}': {
+		get: {
+			tags: ['Dashboard'],
+			summary: 'Get team marketing target achievement summary',
+			description: 'Get team marketing target achievement summary',
+			parameters: [
+				{
+					name: 'type',
+					in: 'path',
+					required: true,
+					description: 'Type of the target',
+					schema: {
+						type: 'string',
+						enum: ['team', 'marketing'],
+					},
+				},
+			],
+
+			responses: {
+				200: {
+					description: 'Successful operation',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									team_name: SE.string('Team 1'),
+									marketing_uuid: SE.uuid(),
+									marketing_name: SE.string('Marketing 1'),
+									is_team_leader: SE.boolean(true),
+									zipper_target: SE.number(1000),
+									thread_target: SE.number(1000),
+									year: SE.number(2021),
+									zipper_achievement: SE.number(1000),
+									thread_achievement: SE.number(1000),
 								},
 							},
 						},
