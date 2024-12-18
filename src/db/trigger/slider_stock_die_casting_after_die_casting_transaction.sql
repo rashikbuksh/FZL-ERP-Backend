@@ -61,7 +61,7 @@ BEGIN
         two_way_pin_quantity = two_way_pin_quantity 
             - CASE WHEN dc.type = 'two_way_pin' THEN OLD.trx_quantity ELSE 0 END
     FROM slider.die_casting dc
-    WHERE stock.uuid = NEW.stock_uuid AND dc.uuid = NEW.die_casting_uuid;
+    WHERE stock.uuid = OLD.stock_uuid AND dc.uuid = OLD.die_casting_uuid;
 
 
 RETURN OLD;
