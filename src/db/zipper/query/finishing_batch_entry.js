@@ -511,7 +511,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			zfbe.teeth_coloring_stock::float8 as teeth_coloring_stock,
 			zfbe.finishing_stock::float8 as finishing_stock,
 			zfbe.finishing_prod::float8 as finishing_prod,
-			zfbe.warehouse::float8 as warehouse,
+			sfg.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
 			sfg.pi::float8 as pi,
 			sfg.short_quantity::float8 as short_quantity,
@@ -521,13 +521,13 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 				WHEN lower(${item_name}) = 'vislon'
 					THEN (zfbe.quantity - (
 						COALESCE(zfbe.finishing_prod, 0) + 
-						COALESCE(zfbe.warehouse, 0) + 
+						COALESCE(sfg.warehouse, 0) + 
 						COALESCE(sfg.delivered, 0)
 					))::float8 
 				WHEN ${section} = 'finishing_prod'
 					THEN (zfbe.quantity - (
 						COALESCE(zfbe.finishing_prod, 0) + 
-						COALESCE(zfbe.warehouse, 0) + 
+						COALESCE(sfg.warehouse, 0) + 
 						COALESCE(sfg.delivered, 0)
 					))::float8 
 				WHEN ${section} = 'teeth_coloring_prod'
@@ -543,11 +543,11 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 						COALESCE(zfbe.teeth_coloring_stock, 0) + 
 						COALESCE(zfbe.finishing_stock, 0) + 
 						COALESCE(zfbe.finishing_prod, 0) + 
-						COALESCE(zfbe.warehouse, 0) + 
+						COALESCE(sfg.warehouse, 0) + 
 						COALESCE(sfg.delivered, 0)
 					))::float8
 				ELSE (
-					zfbe.quantity::float8 - COALESCE(zfbe.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8
+					zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8
 				)::float8 END 
 			as balance_quantity,
 			COALESCE((

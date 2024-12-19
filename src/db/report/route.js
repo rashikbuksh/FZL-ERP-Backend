@@ -1,12 +1,12 @@
 import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
-import { order_description, order_info } from '../zipper/schema.js';
 import { selectCashInvoice } from './query/cash_invoice.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
 import * as reportOperations from './query/query.js';
 import { selectSampleReport } from './query/sample_report.js';
+import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
 
 const reportRouter = Router();
 
@@ -84,6 +84,12 @@ reportRouter.get('/sample-report', selectSampleReport);
 
 // * Cash Invoice Report
 reportRouter.get('/cash-invoice-report', selectCashInvoice);
+
+// * Thread Production Status Order Wise
+reportRouter.get(
+	'/thread-production-status-order-wise',
+	threadProductionStatusOrderWise
+);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -472,6 +478,43 @@ export const pathReport = {
 					value: SE.number(610),
 					order_number: SE.string('Order Number'),
 					receive_amount: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/thread-production-status-order-wise': {
+		get: {
+			summary: 'Thread Production Status Order Wise',
+			description: 'Thread Production Status Order Wise',
+			tags: ['report'],
+			operationId: 'threadProductionStatusOrderWise',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					order_entry_uuid: SE.uuid(),
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					order_created_at: SE.date_time(),
+					order_updated_at: SE.date_time(),
+					party_uuid: SE.uuid(),
+					party_name: SE.string('Party Name'),
+					marketing_uuid: SE.uuid(),
+					marketing_name: SE.string('Marketing Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					swatch_approval_date: SE.date_time(),
+					count_length_uuid: SE.uuid(),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					total_quantity: SE.number(610),
+					total_weight: SE.number(610),
+					yarn_quantity: SE.number(610),
+					total_coning_production_quantity: SE.number(610),
+					warehouse: SE.number(610),
+					total_delivery_delivered_quantity: SE.number(610),
+					total_delivery_balance_quantity: SE.number(610),
+					total_short_quantity: SE.number(610),
+					total_reject_quantity: SE.number(610),
 				}),
 			},
 		},
