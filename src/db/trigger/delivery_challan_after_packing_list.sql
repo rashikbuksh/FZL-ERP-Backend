@@ -6,6 +6,7 @@ DECLARE
     old_gate_pass INTEGER;
     item_for_gp TEXT;
 BEGIN
+    -- For Challan
     SELECT 
         challan.uuid, challan.gate_pass, pl.item_for
     INTO 
@@ -92,6 +93,56 @@ BEGIN
                     pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
             END IF;
             
+        END IF;
+    END IF;
+
+    -- For packing_list_entry
+
+    IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
+        IF OLD.is_warehouse_received = FALSE AND NEW.is_warehouse_received = TRUE THEN
+            UPDATE 
+                thread.order_entry
+            SET 
+                warehouse = warehouse + ple.quantity,
+                production_quantity = production_quantity - ple.quantity
+            FROM delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = order_entry.uuid;
+        ELSIF OLD.is_warehouse_received = TRUE AND NEW.is_warehouse_received = FALSE THEN 
+            UPDATE 
+                thread.order_entry
+            SET 
+                warehouse = warehouse - ple.quantity,
+                production_quantity = production_quantity + ple.quantity
+            FROM delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = order_entry.uuid;
+        END IF;
+    ELSE
+        IF OLD.is_warehouse_received = FALSE AND NEW.is_warehouse_received = TRUE THEN
+            UPDATE 
+                zipper.sfg
+            SET 
+                warehouse = warehouse + ple.quantity,
+                finishing_prod = finishing_prod - ple.quantity
+            FROM 
+                delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
+        ELSIF OLD.is_warehouse_received = TRUE AND NEW.is_warehouse_received = FALSE THEN 
+            UPDATE 
+                zipper.sfg
+            SET 
+                warehouse = warehouse - ple.quantity,
+                finishing_prod = finishing_prod + ple.quantity
+            FROM 
+                delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
         END IF;
     END IF;
 
