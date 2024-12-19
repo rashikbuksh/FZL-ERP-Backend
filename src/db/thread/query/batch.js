@@ -157,7 +157,7 @@ export async function selectAll(req, res, next) {
 							DISTINCT order_info.uuid ) as order_uuids,
 						batch.production_date,
 						party.name as party_name,
-						oe.color as color
+						ARRAY_AGG(DISTINCT oe.color) as color
 					FROM
 						thread.batch
 						LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
@@ -211,8 +211,7 @@ export async function selectAll(req, res, next) {
 						batch.created_at,
 						batch.updated_at,
 						batch.remarks,
-						party.name,
-						oe.color
+						party.name
 					ORDER BY
 						batch.created_at DESC
 				`;
