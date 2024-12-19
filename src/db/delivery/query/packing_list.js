@@ -36,7 +36,7 @@ export async function insert(req, res, next) {
 
 		const packing_list_promise = db
 			.update(packing_list)
-			.set({ is_warehouse_received: true })
+			.set({ is_warehouse_received: req.body.is_warehouse_received })
 			.where(eq(packing_list.uuid, data[0].insertedUuid))
 			.returning({
 				updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
