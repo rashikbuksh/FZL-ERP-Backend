@@ -5,7 +5,10 @@ import { selectCashInvoice } from './query/cash_invoice.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
 import * as reportOperations from './query/query.js';
-import { selectSampleReport } from './query/sample_report.js';
+import {
+	selectSampleReport,
+	selectSampleReportByDate,
+} from './query/sample_report.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
 
 const reportRouter = Router();
@@ -81,6 +84,7 @@ reportRouter.get('/material-stock-report', MaterialStockReport);
 
 // * Sample Report
 reportRouter.get('/sample-report', selectSampleReport);
+reportRouter.get('/sample-report-by-date', selectSampleReportByDate);
 
 // * Cash Invoice Report
 reportRouter.get('/cash-invoice-report', selectCashInvoice);
@@ -449,6 +453,28 @@ export const pathReport = {
 			tags: ['report'],
 			operationId: 'selectSampleReport',
 			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					sample_order_no: SE.string('Sample Order No'),
+					issue_date: SE.date_time(),
+					status: SE.string('Status'),
+					delivery_last_date: SE.date_time(),
+					delivery_quantity: SE.number(610),
+					order_quantity: SE.number(610),
+					delivery_order_quantity: SE.string(
+						'Delivery Order Quantity'
+					),
+				}),
+			},
+		},
+	},
+	'/report/sample-report-by-date': {
+		get: {
+			summary: 'Sample Report By Date',
+			description: 'Sample Report By Date',
+			tags: ['report'],
+			operationId: 'selectSampleReportByDate',
+			parameters: [SE.parameter_query('date', 'date', '2024-10-01')],
 			responses: {
 				200: SE.response_schema(200, {
 					sample_order_no: SE.string('Sample Order No'),
