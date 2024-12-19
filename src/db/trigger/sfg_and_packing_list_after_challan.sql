@@ -1,6 +1,3 @@
--- * Inserted 
-
-
 ---* NOTE: NOT NEEDED ANYMORE ---
 
 -- * TRIGGER DROPPED FROM ALL SERVER ---
