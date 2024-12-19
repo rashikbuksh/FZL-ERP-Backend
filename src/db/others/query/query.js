@@ -1833,7 +1833,7 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
 			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) , ' ⇾ ',
 			vodf.order_number, ' ⇾ ',
 			vodf.item_description, ' ⇾ ',
-			'Balance: ', (stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)
+			'Balance: ', (stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0))::float8
 		) AS label
 	FROM
 		slider.stock
