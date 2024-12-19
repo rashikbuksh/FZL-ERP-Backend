@@ -326,10 +326,10 @@ export async function selectAll(req, res, next) {
 			).filter((x) => x !== null && x !== 'null');
 
 			// Convert back to JSON strings if needed
-			item.order_info_uuids = JSON.stringify(item.order_info_uuids);
-			item.thread_order_info_uuids = JSON.stringify(
-				item.thread_order_info_uuids
-			);
+			item.order_info_uuids =
+				JSON.stringify(item.order_info_uuids) || '[]';
+			item.thread_order_info_uuids =
+				JSON.stringify(item.thread_order_info_uuids) || '[]';
 		});
 
 		const toast = {
