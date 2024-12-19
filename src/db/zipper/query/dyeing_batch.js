@@ -110,11 +110,13 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN (
 			SELECT 
 				ARRAY_AGG(DISTINCT order_entry.color) as colors,
-				sfg.uuid
+				dyeing_batch.uuid
 			FROM zipper.order_entry
-				LEFT JOIN zipper.sfg ON order_entry.uuid = sfg.order_entry_uuid
-			GROUP BY sfg.uuid
-		) AS oe_colors ON dyeing_batch_entry.sfg_uuid = oe_colors.uuid
+			LEFT JOIN zipper.sfg ON order_entry.uuid = sfg.order_entry_uuid
+			LEFT JOIN zipper.dyeing_batch_entry on dyeing_batch_entry.sfg_uuid = sfg.uuid
+			LEFT JOIN zipper.dyeing_batch on dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
+			GROUP BY dyeing_batch.uuid
+		) AS oe_colors ON dyeing_batch.uuid = oe_colors.uuid
 		LEFT JOIN (
 			SELECT 
 				ROUND(
