@@ -283,7 +283,14 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			END as size,
 			vodf.is_inch,
 			concat(oe.style, ' / ', oe.color, ' / ', CAST(oe.size AS NUMERIC)) as style_color_size,
-			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
+			CASE 
+				WHEN ple.sfg_uuid IS NOT NULL THEN 
+					CASE
+						WHEN order_type = 'tape' THEN oe.size::float8 
+						ELSE oe.quantity::float8 
+					END
+				ELSE toe.quantity::float8 
+			END as order_quantity,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
 			tc.cone_per_carton,
@@ -295,7 +302,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 				THEN
 					CASE
 						WHEN order_type = 'tape'
-						THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+						THEN (CAST(oe.size AS NUMERIC) * 100 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
 						ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
 					END
 				ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
