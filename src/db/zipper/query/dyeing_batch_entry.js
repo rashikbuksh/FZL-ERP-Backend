@@ -157,88 +157,8 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 
 	const { dyeing_batch_uuid } = req.params;
 
-	// const query = sql`
-	// 	SELECT
-	// 		be.uuid as dyeing_batch_entry_uuid,
-	// 		bp_given.dyeing_batch_production_uuid,
-	// 		be.dyeing_batch_uuid,
-	// 		be.sfg_uuid,
-	// 		be.quantity::float8,
-	// 		be.production_quantity::float8,
-	// 		be.production_quantity_in_kg::float8,
-	// 		be.created_at,
-	// 		be.updated_at,
-	// 		be.remarks,
-	// 		oe.style,
-	// 		oe.color,
-	// 		CASE
-	//             WHEN vodf.is_inch = 1
-	// 				THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-	// 			ELSE CAST(oe.size AS NUMERIC)
-	//         END as size,
-	// 		oe.quantity::float8 as order_quantity,
-	// 		oe.bleaching,
-	// 		vodf.order_number,
-	// 		vodf.item_description,
-	// 		bp_given.given_production_quantity::float8,
-	// 		bp_given.given_production_quantity_in_kg::float8,
-	// 		COALESCE(oe.quantity::float8 - be_total.total_quantity ,0) as balance_quantity,
-	// 		COALESCE(oe.quantity::float8 - be_total.total_quantity ,0)+be.quantity::float8 as max_quantity,
-	// 		tcr.top::float8,
-	// 		tcr.bottom::float8,
-	// 		tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
-	// 		tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
-	// 	FROM
-	// 		zipper.dyeing_batch_entry be
-	// 	LEFT JOIN
-	// 		zipper.dyeing_batch b ON be.dyeing_batch_uuid = b.uuid
-	// 	LEFT JOIN
-	// 		zipper.sfg sfg ON be.sfg_uuid = sfg.uuid
-	// 	LEFT JOIN
-	// 		zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-	// 	LEFT JOIN
-	// 		zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-	// 	LEFT JOIN
-	// 		zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid AND vodf.item = tcr.item_uuid
-	//     AND vodf.zipper_number = tcr.zipper_number_uuid
-	//    AND (CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END)
-	// 	LEFT JOIN
-	// 		zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid
-	// 	AND vodf.zipper_number = tc.zipper_number_uuid
-	// 	LEFT JOIN
-	// 		(
-	// 			SELECT
-	// 				dyeing_batch_entry.uuid as dyeing_batch_entry_uuid,
-	// 				bp.uuid as dyeing_batch_production_uuid,
-	// 				SUM(bp.production_quantity::float8) AS given_production_quantity,
-	// 				SUM(bp.production_quantity_in_kg::float8) AS given_production_quantity_in_kg
-	// 			FROM
-	// 				zipper.dyeing_batch_production bp
-	// 			LEFT JOIN
-	// 				zipper.dyeing_batch_entry ON bp.dyeing_batch_entry_uuid = dyeing_batch_entry.uuid
-	// 			GROUP BY
-	// 				dyeing_batch_entry.uuid, bp.uuid
-	// 		) AS bp_given ON be.uuid = bp_given.dyeing_batch_entry_uuid
-	// 	LEFT JOIN
-	// 		(
-	// 			SELECT sfg.order_entry_uuid, SUM(be.quantity::float8) as total_quantity
-	// 			FROM zipper.dyeing_batch_entry be
-	// 			LEFT JOIN zipper.sfg ON be.sfg_uuid = sfg.uuid
-	// 			GROUP BY sfg.order_entry_uuid
-	// 		) AS be_total ON oe.uuid = be_total.order_entry_uuid
-	// 	WHERE
-	// 		be.dyeing_batch_uuid = ${dyeing_batch_uuid}
-	// 		AND (
-	// 			CASE
-	// 				WHEN vodf.order_type = 'tape' THEN TRUE
-	// 				ELSE CASE
-	// 					WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid
-	// 					ELSE TRUE
-	// 				END
-	// 			END
-	// 		)`;
-
-	const query = sql`SELECT
+	const query = sql`
+		SELECT
 			be.uuid as dyeing_batch_entry_uuid,
 			bp_given.dyeing_batch_production_uuid,
 			be.dyeing_batch_uuid,
@@ -262,14 +182,13 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			vodf.item_description,
 			bp_given.given_production_quantity::float8,
 			bp_given.given_production_quantity_in_kg::float8,
-			COALESCE(oe.quantity::float8 - be_total.total_quantity ,0) as balance_quantity,
-			COALESCE(oe.quantity::float8 - be_total.total_quantity ,0)+be.quantity::float8 as max_quantity,
+			COALESCE(CASE WHEN vodf.order_type = 'tape' THEN oe.size ELSE oe.quantity::float8 END - be_total.total_quantity, 0) as balance_quantity,
+			COALESCE(CASE WHEN vodf.order_type = 'tape' THEN oe.size ELSE oe.quantity::float8 END - be_total.total_quantity, 0) + be.quantity::float8 as max_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
 			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
 			vodf.order_type
-
 		FROM
 			zipper.dyeing_batch_entry be
 		LEFT JOIN
@@ -320,8 +239,8 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 		WHERE 
 			be.dyeing_batch_uuid = ${dyeing_batch_uuid}
 			AND (
-				 		lower(op_item.name) != 'nylon' 
-						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+				 	lower(op_item.name) != 'nylon' 
+					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 				)`;
 
 	const batchEntryPromise = db.execute(query);
