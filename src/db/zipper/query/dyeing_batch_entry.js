@@ -174,6 +174,8 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			CASE 
                 WHEN vodf.is_inch = 1 
 					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC) 
+				WHEN vodf.order_type = 'tape'
+					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)
 				ELSE CAST(oe.size AS NUMERIC)
             END as size,
 			oe.quantity::float8 as order_quantity,
@@ -182,8 +184,8 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			vodf.item_description,
 			bp_given.given_production_quantity::float8,
 			bp_given.given_production_quantity_in_kg::float8,
-			COALESCE(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END - be_total.total_quantity, 0) as balance_quantity,
-			COALESCE(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END - be_total.total_quantity, 0) + be.quantity::float8 as max_quantity,
+			COALESCE(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 * 100 ELSE oe.quantity::float8 END - be_total.total_quantity, 0) as balance_quantity,
+			COALESCE(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 * 100 ELSE oe.quantity::float8 END - be_total.total_quantity, 0) + be.quantity::float8 as max_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
