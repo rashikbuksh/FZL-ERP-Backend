@@ -589,7 +589,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			COALESCE(od.tape_received,0)::float8 as tape_received,
 			(COALESCE(od.tape_transferred,0) - COALESCE(sfg.dyed_tape_used_in_kg,0))::float8 as tape_stock,
 			od.is_multi_color,
-			od.order_type
+			od.order_type,
+			vodf.party_name
 		FROM
 			zipper.finishing_batch_entry zfbe
 			LEFT JOIN zipper.sfg sfg ON zfbe.sfg_uuid = sfg.uuid
