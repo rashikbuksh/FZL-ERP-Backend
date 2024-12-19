@@ -13,7 +13,8 @@ BEGIN
         challan_uuid_gp, old_gate_pass
     FROM 
         delivery.challan 
-    LEFT JOIN delivery.packing_list pl ON challan_uuid = challan.uuid
+    LEFT JOIN 
+        delivery.packing_list pl ON challan_uuid = challan.uuid
     WHERE 
        challan.uuid = NEW.challan_uuid;
 
@@ -163,3 +164,50 @@ CREATE OR REPLACE TRIGGER delivery_challan_after_packing_list_update
 AFTER UPDATE ON delivery.packing_list
 FOR EACH ROW
 EXECUTE FUNCTION delivery.delivery_challan_after_packing_list_update_funct();
+
+CREATE OR REPLACE FUNCTION delivery.delivery_challan_after_packing_list_insert_funct()
+RETURNS TRIGGER AS $$
+DECLARE
+    item_for_gp TEXT;
+BEGIN
+    -- For Challan And zipper, thread
+    SELECT
+        pl.item_for INTO item_for_gp
+    FROM
+        delivery.packing_list pl
+    WHERE
+        pl.uuid = NEW.uuid;
+
+    IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
+        IF NEW.is_warehouse_received = TRUE THEN
+            UPDATE 
+                thread.order_entry
+            SET 
+                warehouse = warehouse + ple.quantity,
+                production_quantity = production_quantity - ple.quantity
+            FROM delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = order_entry.uuid;
+        END IF;
+    ELSE
+        IF NEW.is_warehouse_received = TRUE THEN
+            UPDATE 
+                zipper.sfg
+            SET 
+                warehouse = warehouse + ple.quantity,
+                finishing_prod = finishing_prod - ple.quantity
+            FROM 
+                delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
+        END IF;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER delivery_challan_after_packing_list_insert
+AFTER INSERT ON delivery.packing_list
+FOR EACH ROW
+EXECUTE FUNCTION delivery.delivery_challan_after_packing_list_insert_funct();

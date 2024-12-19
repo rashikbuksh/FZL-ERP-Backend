@@ -15,6 +15,10 @@ export async function insert(req, res, next) {
 		req.body.order_info_uuid = null;
 	}
 
+	if (item_for == 'sample_thread' || item_for == 'sample_zipper') {
+		req.body.is_warehouse_received = true;
+	}
+
 	const packing_listPromise = db
 		.insert(packing_list)
 		.values(req.body)
@@ -29,21 +33,6 @@ export async function insert(req, res, next) {
 			type: 'insert',
 			message: `${data[0].insertedId} inserted`,
 		};
-
-		if (item_for == 'sample_thread' || item_for == 'sample_zipper') {
-			req.body.is_warehouse_received = true;
-		}
-
-		const packing_list_promise = db
-			.update(packing_list)
-			.set({ is_warehouse_received: req.body.is_warehouse_received })
-			.where(eq(packing_list.uuid, data[0].insertedUuid))
-			.returning({
-				updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
-			});
-
-		await packing_list_promise;
-
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
 		console.error(error);
