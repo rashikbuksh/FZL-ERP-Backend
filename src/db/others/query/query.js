@@ -150,14 +150,14 @@ export async function selectParty(req, res, next) {
 			if (marketing && is_cash === 'true') {
 				query = query.append(
 					hasZipper
-						? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
-						: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+						? sql` AND vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
+						: sql` WHERE vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 				);
 			} else if (marketing && is_cash === 'false') {
 				query = query.append(
 					hasZipper
-						? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
-						: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
+						? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
+						: sql` WHERE vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 				);
 				hasZipper = false;
 			}
@@ -165,14 +165,14 @@ export async function selectParty(req, res, next) {
 			if (!marketing && is_cash === 'true') {
 				query = query.append(
 					hasZipper
-						? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
-						: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+						? sql` AND vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
+						: sql` WHERE vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 				);
 			} else if (!marketing && is_cash === 'false') {
 				query = query.append(
 					hasZipper
-						? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
-						: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
+						? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
+						: sql` WHERE vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 				);
 			}
 			break;
@@ -194,14 +194,14 @@ export async function selectParty(req, res, next) {
 			if (marketing && is_cash === 'true') {
 				query = query.append(
 					hasThread
-						? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
-						: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
+						? sql` AND oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
+						: sql` WHERE oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 				);
 			} else if (marketing && is_cash === 'false') {
 				query = query.append(
 					hasThread
-						? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
-						: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
+						? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
+						: sql` WHERE oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 				);
 				hasThread = false;
 			}
@@ -209,14 +209,14 @@ export async function selectParty(req, res, next) {
 			if (!marketing && is_cash === 'true') {
 				query = query.append(
 					hasThread
-						? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
-						: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
+						? sql` AND oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
+						: sql` WHERE oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 				);
 			} else if (!marketing && is_cash === 'false') {
 				query = query.append(
 					hasThread
-						? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
-						: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
+						? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
+						: sql` WHERE oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 				);
 			}
 
@@ -241,14 +241,14 @@ export async function selectParty(req, res, next) {
 				if (marketing && is_cash === 'true') {
 					query = query.append(
 						hasWhere
-							? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
-							: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+							? sql` AND vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
+							: sql` WHERE vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 					);
 				} else if (marketing && is_cash === 'false') {
 					query = query.append(
 						hasWhere
-							? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
-							: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
+							? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
+							: sql` WHERE vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 					);
 					hasWhere = false;
 				}
@@ -256,14 +256,14 @@ export async function selectParty(req, res, next) {
 				if (!marketing && is_cash === 'true') {
 					query = query.append(
 						hasWhere
-							? sql` AND vod.is_cash = 1 AND vod.is_sample = 0`
-							: sql` WHERE vod.is_cash = 1 AND vod.is_sample = 0`
+							? sql` AND vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
+							: sql` WHERE vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 					);
 				} else if (!marketing && is_cash === 'false') {
 					query = query.append(
 						hasWhere
-							? sql` AND vod.is_cash = 0 AND vod.is_sample = 0`
-							: sql` WHERE vod.is_cash = 0 AND vod.is_sample = 0`
+							? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
+							: sql` WHERE vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 					);
 				}
 			}
@@ -309,14 +309,14 @@ export async function selectParty(req, res, next) {
 				if (marketing && is_cash === 'true') {
 					query = query.append(
 						hasWhere
-							? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
-							: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
+							? sql` AND oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
+							: sql` WHERE oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 					);
 				} else if (marketing && is_cash === 'false') {
 					query = query.append(
 						hasWhere
-							? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
-							: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
+							? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
+							: sql` WHERE oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 					);
 					hasWhere = false;
 				}
@@ -324,14 +324,14 @@ export async function selectParty(req, res, next) {
 				if (!marketing && is_cash === 'true') {
 					query = query.append(
 						hasWhere
-							? sql` AND oi.is_cash = 1 AND oi.is_sample = 0`
-							: sql` WHERE oi.is_cash = 1 AND oi.is_sample = 0`
+							? sql` AND oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
+							: sql` WHERE oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 					);
 				} else if (!marketing && is_cash === 'false') {
 					query = query.append(
 						hasWhere
-							? sql` AND oi.is_cash = 0 AND oi.is_sample = 0`
-							: sql` WHERE oi.is_cash = 0 AND oi.is_sample = 0`
+							? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
+							: sql` WHERE oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 					);
 				}
 
