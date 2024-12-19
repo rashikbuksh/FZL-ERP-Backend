@@ -26,50 +26,13 @@ BEGIN
     WHERE
         pl.uuid = NEW.uuid;
 
-    IF  (
-            SELECT 
-                COUNT(*) 
-            FROM 
-                delivery.packing_list 
-            WHERE 
-                challan_uuid = challan_uuid_gp AND gate_pass = 0
-        ) > 0 THEN
-
-        UPDATE 
-            delivery.challan
-        SET 
-            gate_pass = 0 
+    IF (SELECT 
+            COUNT(*) 
+        FROM 
+            delivery.packing_list 
         WHERE 
-            uuid = challan_uuid_gp;
+            challan_uuid = challan_uuid_gp AND gate_pass != 1) = 0 THEN
 
-        IF old_gate_pass = 1 THEN
-
-            IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
-                UPDATE thread.order_entry
-                SET
-                    warehouse = warehouse + ple.quantity,
-                    delivered = delivered - ple.quantity
-                FROM
-                    delivery.packing_list pl
-                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
-                WHERE
-                    pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = thread.order_entry.uuid;
-            ELSE
-                UPDATE 
-                    zipper.sfg
-                SET 
-                    warehouse = warehouse + ple.quantity,
-                    delivered = delivered - ple.quantity
-                FROM 
-                    delivery.packing_list pl
-                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid 
-                WHERE 
-                    pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
-
-            END IF;
-
-        END IF;
-    ELSE
         UPDATE 
             delivery.challan
         SET 
@@ -77,7 +40,7 @@ BEGIN
         WHERE 
             uuid = challan_uuid_gp;
 
-        IF old_gate_pass = 0 THEN
+        IF (old_gate_pass = 0 AND OLD.challan_uuid IS NOT NULL) THEN
 
             IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
                 UPDATE thread.order_entry
@@ -102,6 +65,42 @@ BEGIN
                     pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
             END IF;
             
+        END IF;
+        
+    ELSE
+        UPDATE 
+            delivery.challan
+        SET 
+            gate_pass = 0 
+        WHERE 
+            uuid = challan_uuid_gp;
+
+        IF (old_gate_pass = 1 AND OLD.challan_uuid IS NOT NULL) THEN
+
+            IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
+                UPDATE thread.order_entry
+                SET
+                    warehouse = warehouse + ple.quantity,
+                    delivered = delivered - ple.quantity
+                FROM
+                    delivery.packing_list pl
+                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
+                WHERE
+                    pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = thread.order_entry.uuid;
+            ELSE
+                UPDATE 
+                    zipper.sfg
+                SET 
+                    warehouse = warehouse + ple.quantity,
+                    delivered = delivered - ple.quantity
+                FROM 
+                    delivery.packing_list pl
+                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid 
+                WHERE 
+                    pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
+
+            END IF;
+
         END IF;
     END IF;
 
