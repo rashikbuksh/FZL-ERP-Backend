@@ -777,6 +777,8 @@ export async function selectOrderDescription(req, res, next) {
 						CASE 
 							WHEN vodf.order_type = 'slider' 
 							THEN ' - Slider' 
+							WHEN vodf.order_type = 'tape'
+							THEN ' - Tape'
 							WHEN vodf.is_multi_color = 1
 							THEN ' - Multi Color'
 							ELSE ''
@@ -883,6 +885,8 @@ export async function selectOrderDescription(req, res, next) {
 						CASE 
 							WHEN vodf.order_type = 'slider' 
 							THEN ' - Slider' 
+							WHEN vodf.order_type = 'tape'
+							THEN ' - Tape'
 							WHEN vodf.is_multi_color = 1
 							THEN ' - Multi Color'
 							ELSE ''

@@ -60,7 +60,7 @@ export async function update(req, res, next) {
 		const data = await finishingBatchProductionPromise;
 		const orderDescription = sql`
 			SELECT
-				concat(vodf.order_number, ' - ', vodf.item_description) as inserted_id
+				concat(vodf.order_number, ' - ', vodf.item_description) as updated_id
 			FROM
 				zipper.finishing_batch_entry fbe 
 				LEFT JOIN zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
@@ -97,7 +97,7 @@ export async function remove(req, res, next) {
 		const data = await finishingBatchProductionPromise;
 		const orderDescription = sql`
 			SELECT
-				concat(vodf.order_number, ' - ', vodf.item_description) as inserted_id
+				concat(vodf.order_number, ' - ', vodf.item_description) as deleted_id
 			FROM
 				zipper.finishing_batch_entry fbe 
 				LEFT JOIN zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid

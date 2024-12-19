@@ -232,6 +232,8 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN 
+            zipper.multi_color_dashboard mcd ON oe.order_description_uuid = mcd.order_description_uuid
 		LEFT JOIN
 			zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid 
         	AND vodf.zipper_number = tcr.zipper_number_uuid 
@@ -251,7 +253,14 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 				GROUP BY
 					sfg.uuid
 		) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
-		WHERE CASE WHEN vodf.order_type = 'slider' THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
+		WHERE 
+			CASE 
+                WHEN vodf.order_type = 'slider' 
+                THEN 1=1 
+                WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1)
+                THEN 1=1
+                ELSE sfg.recipe_uuid IS NOT NULL 
+            END
 		AND (
 			CASE 
 				WHEN vodf.order_type = 'tape' 
@@ -260,7 +269,12 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			END
 			- coalesce(fbe_given.given_quantity,0)
 			) > 0
-		AND vodf.order_description_uuid = ${req.params.order_description_uuid}`;
+		AND vodf.order_description_uuid = ${req.params.order_description_uuid}
+		AND
+	 	(
+	 		lower(vodf.item_name) != 'nylon'
+	 		OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+	 	)`;
 
 	// AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0
 	// AND
