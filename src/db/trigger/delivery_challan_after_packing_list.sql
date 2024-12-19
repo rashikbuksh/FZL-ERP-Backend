@@ -8,14 +8,22 @@ DECLARE
 BEGIN
     -- For Challan
     SELECT 
-        challan.uuid, challan.gate_pass, pl.item_for
+        challan.uuid, challan.gate_pass
     INTO 
-        challan_uuid_gp, old_gate_pass, item_for_gp
+        challan_uuid_gp, old_gate_pass
     FROM 
         delivery.challan 
     LEFT JOIN delivery.packing_list pl ON challan_uuid = challan.uuid
     WHERE 
        challan.uuid = NEW.challan_uuid;
+
+    -- For Challan And zipper, thread
+    SELECT
+        pl.item_for INTO item_for_gp
+    FROM
+        delivery.packing_list pl
+    WHERE
+        pl.uuid = NEW.uuid;
 
     IF  (
             SELECT 
