@@ -131,12 +131,12 @@ export async function selectAll(req, res, next) {
 			END AS id,
 			pi_cash.lc_uuid,
 			lc.lc_number,
-			pi_cash.order_info_uuids,
+			COALESCE(pi_cash.order_info_uuids, '[]') AS order_info_uuids,
 			COALESCE(
 				jsonb_agg(DISTINCT jsonb_build_object('order_info_uuid', zipper_order_numbers.order_info_uuid, 'order_number', zipper_order_numbers.order_number))
 				FILTER (WHERE zipper_order_numbers.order_number IS NOT NULL), '[]'
 			) AS order_numbers,
-			pi_cash.thread_order_info_uuids,
+			COALESCE(pi_cash.thread_order_info_uuids, '[]') AS thread_order_info_uuids,
 			COALESCE(
 				jsonb_agg(DISTINCT jsonb_build_object('thread_order_info_uuid', thread_order_numbers.order_info_uuid, 'thread_order_number', thread_order_numbers.thread_order_number))
 				FILTER (WHERE thread_order_numbers.thread_order_number IS NOT NULL), '[]'
