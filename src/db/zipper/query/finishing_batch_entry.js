@@ -546,7 +546,6 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 					THEN (zfbe.quantity - (
 						COALESCE(zfbe.finishing_stock, 0) + 
 						COALESCE(zfbe.finishing_prod, 0) + 
-						COALESCE(zfbe.teeth_coloring_prod, 0) + 
 						COALESCE(sfg.delivered, 0)
 					))::float8
 				WHEN ${section} = 'teeth_molding_prod'
