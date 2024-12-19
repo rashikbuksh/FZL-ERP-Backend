@@ -866,10 +866,11 @@ export async function selectOrderDescription(req, res, next) {
 						FROM zipper.order_entry oe
 						GROUP BY oe.order_description_uuid
 				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
+				LEFT JOIN zipper.multi_color_dashboard mcd ON vodf.order_description_uuid = mcd.order_description_uuid
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND 
 					CASE WHEN order_type = 'slider' THEN 1=1 
-					WHEN vodf.is_multi_color = 1 THEN 1=1
+					WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1) THEN 1=1
 					ELSE sfg.recipe_uuid IS NOT NULL END
 				`;
 
@@ -987,11 +988,12 @@ export async function selectOrderDescription(req, res, next) {
 						FROM zipper.order_entry oe
 						GROUP BY oe.order_description_uuid
 				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
+				LEFT JOIN zipper.multi_color_dashboard mcd ON vodf.order_description_uuid = mcd.order_description_uuid
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND 
 					CASE 
 						WHEN order_type = 'slider' THEN 1=1 
-						WHEN vodf.is_multi_color = 1 THEN 1=1
+						WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1) THEN 1=1
 						ELSE sfg.recipe_uuid IS NOT NULL 
 					END
 		`;

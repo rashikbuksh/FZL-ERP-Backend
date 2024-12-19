@@ -713,7 +713,7 @@ export const finishing_batch_entry = zipper.table('finishing_batch_entry', {
 	teeth_coloring_stock: PG_DECIMAL('teeth_coloring_stock').default(0.0),
 	finishing_stock: PG_DECIMAL('finishing_stock').default(0.0),
 	finishing_prod: PG_DECIMAL('finishing_prod').default(0.0),
-	warehouse: PG_DECIMAL('warehouse').notNull().default(0.0),
+	// warehouse: PG_DECIMAL('warehouse').notNull().default(0.0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

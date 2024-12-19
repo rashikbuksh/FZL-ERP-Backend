@@ -40,15 +40,6 @@ BEGIN
                         ELSE NEW.trx_quantity_in_kg 
                     END 
                 ELSE 0 
-            END,
-        warehouse = warehouse - 
-            CASE 
-                WHEN NEW.trx_from = 'warehouse' THEN 
-                    CASE 
-                        WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity 
-                        ELSE NEW.trx_quantity_in_kg 
-                    END 
-                ELSE 0 
             END
     WHERE uuid = NEW.finishing_batch_entry_uuid;
 
@@ -96,15 +87,6 @@ BEGIN
                         ELSE OLD.trx_quantity_in_kg 
                     END 
                 ELSE 0 
-            END,
-        warehouse = warehouse + 
-            CASE 
-                WHEN OLD.trx_from = 'warehouse' THEN 
-                    CASE 
-                        WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity 
-                        ELSE OLD.trx_quantity_in_kg 
-                    END 
-                ELSE 0 
             END
     WHERE uuid = OLD.finishing_batch_entry_uuid;
 
@@ -128,10 +110,7 @@ BEGIN
             - CASE WHEN NEW.trx_from = 'teeth_molding_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
         finishing_prod = finishing_prod 
             + CASE WHEN OLD.trx_from = 'finishing_prod' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
-            - CASE WHEN NEW.trx_from = 'finishing_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END,
-        warehouse = warehouse 
-            + CASE WHEN OLD.trx_from = 'warehouse' THEN CASE WHEN OLD.trx_quantity_in_kg = 0 THEN OLD.trx_quantity ELSE OLD.trx_quantity_in_kg END ELSE 0 END
-            - CASE WHEN NEW.trx_from = 'warehouse' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
+            - CASE WHEN NEW.trx_from = 'finishing_prod' THEN CASE WHEN NEW.trx_quantity_in_kg = 0 THEN NEW.trx_quantity ELSE NEW.trx_quantity_in_kg END ELSE 0 END
     WHERE uuid = NEW.finishing_batch_entry_uuid;
 
     RETURN NEW;
