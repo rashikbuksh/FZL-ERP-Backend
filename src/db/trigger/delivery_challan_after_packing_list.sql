@@ -7,13 +7,14 @@ DECLARE
     item_for_gp TEXT;
 BEGIN
     SELECT 
-        uuid, gate_pass, item_for
+        challan.uuid, challan.gate_pass, pl.item_for
     INTO 
         challan_uuid_gp, old_gate_pass, item_for_gp
     FROM 
         delivery.challan 
+    LEFT JOIN delivery.packing_list pl ON challan_uuid = challan.uuid
     WHERE 
-       uuid = NEW.challan_uuid;
+       challan.uuid = NEW.challan_uuid;
 
     IF  (
             SELECT 
