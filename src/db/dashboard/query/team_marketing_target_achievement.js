@@ -141,13 +141,41 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
 	try {
 		const data = await resultPromise;
 
+		const formattedData = data.rows.reduce((acc, row) => {
+			const monthIndex = acc.findIndex(
+				(item) => item.month === row.month
+			);
+			const teamOrMarketing = {
+				name: row.team_name || row.name,
+				target_for_zipper: row.zipper_target,
+				target_for_thread: row.thread_target,
+				achievement_for_zipper: row.zipper_achievement,
+				achievement_for_thread: row.thread_achievement,
+			};
+
+			if (monthIndex === -1) {
+				acc.push({
+					month: row.month,
+					[type === 'team' ? 'teams' : 'marketing']: [
+						teamOrMarketing,
+					],
+				});
+			} else {
+				acc[monthIndex][type === 'team' ? 'teams' : 'marketing'].push(
+					teamOrMarketing
+				);
+			}
+
+			return acc;
+		}, []);
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'Stock status',
 		};
 
-		return await res.status(200).json({ toast, data: data.rows });
+		return await res.status(200).json({ toast, data: formattedData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
