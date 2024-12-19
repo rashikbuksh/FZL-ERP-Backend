@@ -319,7 +319,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 						ELSE (ple.quantity + LEAST((
 							CASE
 								WHEN order_type = 'tape'
-								THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+								THEN (oe.size::float8*100 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
 								ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
 							END
 						), sfg.finishing_prod)::float8)

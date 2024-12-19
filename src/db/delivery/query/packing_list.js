@@ -328,7 +328,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			vodf.is_inch,
 			vodf.is_meter,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
-			oe.quantity::float8  as order_quantity,
+			CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8  ELSE oe.quantity::float8 END as order_quantity,
 			sfg.uuid as sfg_uuid,
 			sfg.warehouse::float8 as warehouse,
 			sfg.delivered::float8 as delivered,
