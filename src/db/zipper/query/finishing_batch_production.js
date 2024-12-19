@@ -289,6 +289,8 @@ export async function selectBySection(req, res, next) {
 		WHERE
 			finishing_batch_production.section = ${req.params.section} ${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? sql`AND lower(vodf.nylon_stopper_name) = lower(${nylon_stopper})` : sql``}
+		ORDER BY 
+			finishing_batch_production.created_at DESC
 	`;
 
 	const finishingBatchProductionPromise = db.execute(query);
