@@ -1,8 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -255,8 +252,8 @@ export async function selectBySection(req, res, next) {
 			finishing_batch_production.updated_at,
 			finishing_batch_production.remarks,
 			CASE WHEN fbe.finishing_prod != 0 
-			THEN (fbe.quantity - COALESCE(fbe.finishing_prod, 0) - COALESCE(fbe.warehouse, 0)) 
-			ELSE (fbe.quantity - COALESCE(fbe.warehouse, 0))::float8 END as balance_quantity,
+			THEN (fbe.quantity - COALESCE(fbe.finishing_prod, 0) - COALESCE(sfg.warehouse, 0)) 
+			ELSE (fbe.quantity - COALESCE(sfg.warehouse, 0))::float8 END as balance_quantity,
 			COALESCE(sfg.dying_and_iron_prod,0)::float8 as dying_and_iron_prod,
 			COALESCE(sfg.teeth_molding_stock,0)::float8 as teeth_molding_stock,
 			COALESCE(sfg.teeth_molding_prod,0)::float8 as teeth_molding_prod,

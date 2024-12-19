@@ -383,7 +383,7 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			fbe.teeth_coloring_stock::float8 as teeth_coloring_stock,
 			fbe.finishing_stock::float8 as finishing_stock,
 			fbe.finishing_prod::float8 as finishing_prod,
-			fbe.warehouse::float8 as warehouse,
+			sfg.warehouse::float8 as warehouse,
 			fbe.created_by,
 			users.name as created_by_name,
 			fbe.created_at,
