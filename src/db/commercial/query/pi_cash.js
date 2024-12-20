@@ -428,30 +428,6 @@ export async function select(req, res, next) {
 	try {
 		const data = await piPromise;
 
-		data.rows.forEach((item) => {
-			item.order_numbers = item.order_numbers.filter(
-				(x) => x !== null && x !== 'null'
-			);
-			item.thread_order_numbers = item.thread_order_numbers.filter(
-				(x) => x !== null && x !== 'null'
-			);
-		});
-
-		data?.rows?.forEach((item) => {
-			item.order_info_uuids = JSON.parse(item.order_info_uuids).filter(
-				(x) => x !== null && x !== 'null'
-			);
-			item.thread_order_info_uuids = JSON.parse(
-				item.thread_order_info_uuids
-			).filter((x) => x !== null && x !== 'null');
-
-			// Convert back to JSON strings if needed
-			item.order_info_uuids =
-				JSON.stringify(item.order_info_uuids) || '[]';
-			item.thread_order_info_uuids =
-				JSON.stringify(item.thread_order_info_uuids) || '[]';
-		});
-
 		const toast = {
 			status: 200,
 			type: 'select',
