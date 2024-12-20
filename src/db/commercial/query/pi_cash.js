@@ -406,10 +406,10 @@ export async function select(req, res, next) {
 			LEFT JOIN 
 			(
 				SELECT 
-						array_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, 
+						jsonb_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, 
 						jsonb_agg(DISTINCT vodf.order_number) AS order_numbers, 
-						array_agg(DISTINCT toi.uuid) as thread_order_info_uuids, 
-						jsonb_agg(DISTINCT CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0'))) as thread_order_numbers, pi_cash_uuid
+						jsonb_agg(DISTINCT toi.uuid) as thread_order_info_uuids, 
+						jsonb_agg(DISTINCT CASE WHEN toi.id IS NOT NULL THEN CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, pi_cash_uuid
 				FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
@@ -427,6 +427,30 @@ export async function select(req, res, next) {
 
 	try {
 		const data = await piPromise;
+
+		data.rows.forEach((item) => {
+			item.order_numbers = item.order_numbers.filter(
+				(x) => x !== null && x !== 'null'
+			);
+			item.thread_order_numbers = item.thread_order_numbers.filter(
+				(x) => x !== null && x !== 'null'
+			);
+		});
+
+		data?.rows?.forEach((item) => {
+			item.order_info_uuids = JSON.parse(item.order_info_uuids).filter(
+				(x) => x !== null && x !== 'null'
+			);
+			item.thread_order_info_uuids = JSON.parse(
+				item.thread_order_info_uuids
+			).filter((x) => x !== null && x !== 'null');
+
+			// Convert back to JSON strings if needed
+			item.order_info_uuids =
+				JSON.stringify(item.order_info_uuids) || '[]';
+			item.thread_order_info_uuids =
+				JSON.stringify(item.thread_order_info_uuids) || '[]';
+		});
 
 		const toast = {
 			status: 200,
