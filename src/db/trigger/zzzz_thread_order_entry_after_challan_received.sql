@@ -1,3 +1,7 @@
+---* NOTE: NOT NEEDED ANYMORE ---
+
+-- * TRIGGER DROPPED FROM ALL SERVER ---
+
 CREATE OR REPLACE FUNCTION thread_order_entry_after_challan_received() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE thread.order_entry

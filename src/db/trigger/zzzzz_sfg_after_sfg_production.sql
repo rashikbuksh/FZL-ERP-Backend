@@ -1,5 +1,6 @@
--- //* Inserted
--- Function for INSERT trigger
+---* NOTE: NOT NEEDED ANYMORE ---
+
+-- * TRIGGER DROPPED FROM ALL SERVER ---
 CREATE OR REPLACE FUNCTION zipper.sfg_after_sfg_production_insert_function() 
 RETURNS TRIGGER AS $$
 DECLARE 
