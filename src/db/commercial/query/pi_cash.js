@@ -327,9 +327,9 @@ export async function selectAll(req, res, next) {
 
 			// Convert back to JSON strings if needed
 			item.order_info_uuids =
-				JSON.stringify(item.order_info_uuids) || '[]';
+				JSON.stringify(item.order_info_uuids) || [];
 			item.thread_order_info_uuids =
-				JSON.stringify(item.thread_order_info_uuids) || '[]';
+				JSON.stringify(item.thread_order_info_uuids) || [];
 		});
 
 		const toast = {
