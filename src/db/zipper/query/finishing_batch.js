@@ -112,7 +112,7 @@ export async function selectAll(req, res, next) {
 			),
 			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity::float8`,
 			colors: sql`finishing_batch_entry_total.colors`,
-			production_date: sql`finishing_batch.production_date::`,
+			production_date: sql`finishing_batch.production_date::date`,
 		})
 		.from(finishing_batch)
 		.leftJoin(
