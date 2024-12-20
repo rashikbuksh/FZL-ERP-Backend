@@ -155,7 +155,7 @@ export async function selectAll(req, res, next) {
 						) AS order_numbers,
 						jsonb_agg(
 							DISTINCT order_info.uuid ) as order_uuids,
-						batch.production_date,
+						batch.production_date::date as production_date,
 						party.name as party_name,
 						ARRAY_AGG(DISTINCT oe.color) as color
 					FROM
@@ -284,7 +284,7 @@ export async function select(req, res, next) {
 						batch.remarks,
 						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity,
 						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight,
-						batch.production_date
+						batch.production_date::date as production_date
 					FROM
 						thread.batch
 					LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid

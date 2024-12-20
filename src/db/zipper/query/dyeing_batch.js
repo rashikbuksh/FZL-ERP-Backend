@@ -98,7 +98,7 @@ export async function selectAll(req, res, next) {
 			expected.expected_kg::float8,
 			expected.order_numbers,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
-			dyeing_batch.production_date,
+			dyeing_batch.production_date::date as production_date,
 			expected.party_name,
 			oe_colors.colors as color
 		FROM zipper.dyeing_batch
@@ -184,7 +184,7 @@ export async function select(req, res, next) {
 			created_at: dyeing_batch.created_at,
 			updated_at: dyeing_batch.updated_at,
 			remarks: dyeing_batch.remarks,
-			production_date: dyeing_batch.production_date,
+			production_date: sql`dyeing_batch.production_date::date`,
 		})
 		.from(dyeing_batch)
 		.leftJoin(

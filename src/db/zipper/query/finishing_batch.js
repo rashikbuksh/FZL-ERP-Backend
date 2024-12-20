@@ -112,7 +112,7 @@ export async function selectAll(req, res, next) {
 			),
 			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity::float8`,
 			colors: sql`finishing_batch_entry_total.colors`,
-			production_date: finishing_batch.production_date,
+			production_date: sql`finishing_batch.production_date::`,
 		})
 		.from(finishing_batch)
 		.leftJoin(
@@ -195,7 +195,7 @@ export async function select(req, res, next) {
 			),
 			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity::float8`,
 			colors: sql`finishing_batch_entry_total.colors`,
-			production_date: finishing_batch.production_date,
+			production_date: sql`finishing_batch.production_date::date`,
 		})
 		.from(finishing_batch)
 		.leftJoin(
@@ -360,7 +360,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					vodf.nylon_stopper,
 					vodf.zipper_number,
 					vodf.end_type,
-					finishing_batch.production_date,
+					finishing_batch.production_date::date as production_date,
 					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
 					 jsonb_agg(DISTINCT jsonb_build_object('value', finishing_batch.uuid, 'label', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')))) AS batch_numbers,
 					 jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_description_uuid, 'label', vodf.order_number)) AS order_numbers
