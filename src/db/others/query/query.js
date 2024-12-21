@@ -359,7 +359,7 @@ export async function selectParty(req, res, next) {
 		};
 
 		// add a null value and label
-		data.unshift({ value: null, label: '---' });
+		data?.rows.unshift({ value: null, label: '---' });
 
 		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
