@@ -97,51 +97,50 @@ export async function selectSampleReportByDate(req, res, next) {
                            od.order_type,
                            oe.style,
                            oe.color,
-                           CONCAT(op_item.name, ',', op_nylon_stopper.name, ',', op_zipper.name, ',', op_end.name, ',', op_puller.name, ',', op_lock.name, ',', op_teeth_color.name, ',', op_puller_color.name, ',', op_hand.name, ',', op_coloring.name, ',', op_slider.name, ',', op_top_stopper.name, ',', op_bottom_stopper.name, ',', op_logo.name, ',', op_slider_body_shape.name, ',', op_slider_link.name, ',', op_end_user.name, ',', op_light_preference.name, ',', op_teeth_type.name) AS item_details,
                            CONCAT(
-                                    COALESCE(op_item.name, ''),
-                                    CASE WHEN op_item.name IS NOT NULL THEN ',' ELSE '' END,
-                                    COALESCE(op_nylon_stopper.name, ''),
-                                    CASE WHEN op_nylon_stopper.name IS NOT NULL THEN ',' ELSE '' END,
-                                    COALESCE(op_zipper.name, ''),
-                                    CASE WHEN op_zipper.name IS NOT NULL THEN ',' ELSE '' END,
-                                    COALESCE(op_end.name, ''),
-                                    CASE WHEN op_end.name IS NOT NULL THEN ',' ELSE '' END,
-                                    COALESCE(op_puller.name, ''),
-                                    CASE WHEN op_puller.name IS NOT NULL THEN ',' ELSE '' END
-                                    
-                                ) AS item_details_short,
-
-                        CONCAT(
-                                COALESCE(op_slider.name, ''),
-                                CASE WHEN op_slider.name IS NOT NULL THEN ',' ELSE '' END,
-                                COALESCE(op_slider_body_shape.name, ''),
-                                CASE WHEN op_slider_body_shape.name IS NOT NULL THEN ',' ELSE '' END,
-                                COALESCE(op_slider_link.name, '')
-                            ) AS slider_details,
-                        CONCAT(
-                                COALESCE(op_lock.name, ''),
-                                CASE WHEN op_lock.name IS NOT NULL THEN ',' ELSE '' END,
-                                COALESCE(op_teeth_color.name, ''),
-                                CASE WHEN op_teeth_color.name IS NOT NULL THEN ',' ELSE '' END,
-                                COALESCE(op_puller_color.name, ''),
-                                CASE WHEN op_puller_color.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_item.name, ''),
+                                CASE WHEN op_item.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_zipper.name, ''),
+                                CASE WHEN op_zipper.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_end.name, ''),
+                                CASE WHEN op_end.name IS NOT NULL THEN ',' ELSE '' END,
                                 COALESCE(op_hand.name, ''),
                                 CASE WHEN op_hand.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_teeth_type.name, ''),
+                                CASE WHEN op_teeth_type.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_teeth_color.name, ''),
+                                CASE WHEN op_teeth_color.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_nylon_stopper.name, ''),
+                                CASE WHEN op_nylon_stopper.name IS NOT NULL THEN ',' ELSE '' END
+                                ) AS item_details,
+
+                        CONCAT(
+                                COALESCE(op_puller.name, ''),
+                                CASE WHEN op_puller.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_puller_color.name, ''),
+                                CASE WHEN op_puller_color.name IS NOT NULL THEN ',' ELSE '' END,
                                 COALESCE(op_coloring.name, ''),
+                                CASE WHEN op_coloring.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_slider.name, ''),
+                                CASE WHEN op_slider.name IS NOT NULL THEN ',' ELSE '' END,
                                 COALESCE(op_top_stopper.name, ''),
                                 CASE WHEN op_top_stopper.name IS NOT NULL THEN ',' ELSE '' END,
                                 COALESCE(op_bottom_stopper.name, ''),
                                 CASE WHEN op_bottom_stopper.name IS NOT NULL THEN ',' ELSE '' END,
                                 COALESCE(op_logo.name, ''),
                                 CASE WHEN op_logo.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_slider_body_shape.name, ''),
+                                CASE WHEN op_slider_body_shape.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_slider_link.name, ''),
+                                CASE WHEN op_slider_link.name IS NOT NULL THEN ',' ELSE '' END
+                            ) AS slider_details,
+                        CONCAT(
+                                od.garment,
                                 COALESCE(op_end_user.name, ''),
                                 CASE WHEN op_end_user.name IS NOT NULL THEN ',' ELSE '' END,
                                 COALESCE(op_light_preference.name, ''),
-                                CASE WHEN op_light_preference.name IS NOT NULL THEN ',' ELSE '' END,
-                                COALESCE(op_teeth_type.name, '')
+                                CASE WHEN op_light_preference.name IS NOT NULL THEN ',' ELSE '' END
                             ) AS other_details
-
                         FROM
                             zipper.order_info oi
                         LEFT JOIN zipper.order_description od ON od.order_info_uuid = oi.uuid
@@ -149,14 +148,15 @@ export async function selectSampleReportByDate(req, res, next) {
                         LEFT JOIN public.marketing pm ON pm.uuid = oi.marketing_uuid
                         LEFT JOIN public.party pp ON pp.uuid = oi.party_uuid
                         LEFT JOIN public.properties op_item ON op_item.uuid = od.item
-                        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = od.nylon_stopper
                         LEFT JOIN public.properties op_zipper ON op_zipper.uuid = od.zipper_number
                         LEFT JOIN public.properties op_end ON op_end.uuid = od.end_type
-                        LEFT JOIN public.properties op_puller ON op_puller.uuid = od.puller_type
-                        LEFT JOIN public.properties op_lock ON op_lock.uuid = od.lock_type
-                        LEFT JOIN public.properties op_teeth_color ON op_teeth_color.uuid = od.teeth_color
-                        LEFT JOIN public.properties op_puller_color ON op_puller_color.uuid = od.puller_color
                         LEFT JOIN public.properties op_hand ON op_hand.uuid = od.hand
+                        LEFT JOIN public.properties op_lock ON op_lock.uuid = od.lock_type
+                        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = od.teeth_type
+                        LEFT JOIN public.properties op_teeth_color ON op_teeth_color.uuid = od.teeth_color
+                        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = od.nylon_stopper
+                        LEFT JOIN public.properties op_puller ON op_puller.uuid = od.puller_type
+                        LEFT JOIN public.properties op_puller_color ON op_puller_color.uuid = od.puller_color
                         LEFT JOIN public.properties op_coloring ON op_coloring.uuid = od.coloring_type
                         LEFT JOIN public.properties op_slider ON op_slider.uuid = od.slider
                         LEFT JOIN public.properties op_top_stopper ON op_top_stopper.uuid = od.top_stopper
@@ -166,7 +166,6 @@ export async function selectSampleReportByDate(req, res, next) {
                         LEFT JOIN public.properties op_slider_link ON op_slider_link.uuid = od.slider_link
                         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
-                        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = od.teeth_type
                         WHERE
                             oi.is_sample = 1 AND oe.created_at::date = ${date}
                         ORDER BY
