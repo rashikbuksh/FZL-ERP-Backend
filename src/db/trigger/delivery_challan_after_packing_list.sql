@@ -43,26 +43,30 @@ BEGIN
         IF (old_gate_pass = 0 AND OLD.challan_uuid IS NOT NULL) THEN
 
             IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
-                UPDATE thread.order_entry
+                UPDATE thread.order_entry te
                 SET
-                    warehouse = warehouse - ple.quantity,
-                    delivered = delivered + ple.quantity
-                FROM
-                    delivery.packing_list pl
-                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
-                WHERE
-                    pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = thread.order_entry.uuid;
+                    warehouse = warehouse - subquery.total_quantity,
+                    delivered = delivered + subquery.total_quantity
+                FROM (
+                    SELECT ple.thread_order_entry_uuid, SUM(ple.quantity) AS total_quantity
+                    FROM delivery.packing_list_entry ple
+                    WHERE ple.packing_list_uuid IN (SELECT uuid FROM delivery.packing_list WHERE challan_uuid = challan_uuid_gp)
+                    GROUP BY ple.thread_order_entry_uuid
+                ) subquery
+                WHERE te.uuid = subquery.thread_order_entry_uuid;
             ELSE
                 UPDATE 
-                    zipper.sfg
+                    zipper.sfg zs
                 SET 
-                    warehouse = warehouse - ple.quantity,
-                    delivered = delivered + ple.quantity
-                FROM 
-                    delivery.packing_list pl
-                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid 
-                WHERE 
-                    pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
+                    warehouse = warehouse - subquery.total_quantity,
+                    delivered = delivered + subquery.total_quantity
+                FROM (
+                    SELECT ple.sfg_uuid, SUM(ple.quantity) AS total_quantity
+                    FROM delivery.packing_list_entry ple
+                    WHERE ple.packing_list_uuid IN (SELECT uuid FROM delivery.packing_list WHERE challan_uuid = challan_uuid_gp)
+                    GROUP BY ple.sfg_uuid
+                ) subquery
+                WHERE zs.uuid = subquery.sfg_uuid;
             END IF;
             
         END IF;
@@ -78,27 +82,30 @@ BEGIN
         IF (old_gate_pass = 1 AND OLD.challan_uuid IS NOT NULL) THEN
 
             IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
-                UPDATE thread.order_entry
+                UPDATE thread.order_entry te
                 SET
-                    warehouse = warehouse + ple.quantity,
-                    delivered = delivered - ple.quantity
-                FROM
-                    delivery.packing_list pl
-                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid
-                WHERE
-                    pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = thread.order_entry.uuid;
+                    warehouse = warehouse + subquery.total_quantity,
+                    delivered = delivered - subquery.total_quantity
+                FROM (
+                    SELECT ple.thread_order_entry_uuid, SUM(ple.quantity) AS total_quantity
+                    FROM delivery.packing_list_entry ple
+                    WHERE ple.packing_list_uuid IN (SELECT uuid FROM delivery.packing_list WHERE challan_uuid = challan_uuid_gp)
+                    GROUP BY ple.thread_order_entry_uuid
+                ) subquery
+                WHERE te.uuid = subquery.thread_order_entry_uuid;
             ELSE
                 UPDATE 
-                    zipper.sfg
+                    zipper.sfg zs
                 SET 
-                    warehouse = warehouse + ple.quantity,
-                    delivered = delivered - ple.quantity
-                FROM 
-                    delivery.packing_list pl
-                LEFT JOIN delivery.packing_list_entry ple ON ple.packing_list_uuid = pl.uuid 
-                WHERE 
-                    pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
-
+                    warehouse = warehouse + subquery.total_quantity,
+                    delivered = delivered - subquery.total_quantity
+                FROM (
+                    SELECT ple.sfg_uuid, SUM(ple.quantity) AS total_quantity
+                    FROM delivery.packing_list_entry ple
+                    WHERE ple.packing_list_uuid IN (SELECT uuid FROM delivery.packing_list WHERE challan_uuid = challan_uuid_gp)
+                    GROUP BY ple.sfg_uuid
+                ) subquery
+                WHERE zs.uuid = subquery.sfg_uuid;
             END IF;
 
         END IF;
