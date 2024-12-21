@@ -97,7 +97,51 @@ export async function selectSampleReportByDate(req, res, next) {
                            od.order_type,
                            oe.style,
                            oe.color,
-                           CONCAT(op_item.name, ',', op_nylon_stopper.name, ',', op_zipper.name, ',', op_end.name, ',', op_puller.name, ',', op_lock.name, ',', op_teeth_color.name, ',', op_puller_color.name, ',', op_hand.name, ',', op_coloring.name, ',', op_slider.name, ',', op_top_stopper.name, ',', op_bottom_stopper.name, ',', op_logo.name, ',', op_slider_body_shape.name, ',', op_slider_link.name, ',', op_end_user.name, ',', op_light_preference.name, ',', op_teeth_type.name) AS item_details
+                           CONCAT(op_item.name, ',', op_nylon_stopper.name, ',', op_zipper.name, ',', op_end.name, ',', op_puller.name, ',', op_lock.name, ',', op_teeth_color.name, ',', op_puller_color.name, ',', op_hand.name, ',', op_coloring.name, ',', op_slider.name, ',', op_top_stopper.name, ',', op_bottom_stopper.name, ',', op_logo.name, ',', op_slider_body_shape.name, ',', op_slider_link.name, ',', op_end_user.name, ',', op_light_preference.name, ',', op_teeth_type.name) AS item_details,
+                           CONCAT(
+                                    COALESCE(op_item.name, ''),
+                                    CASE WHEN op_item.name IS NOT NULL THEN ',' ELSE '' END,
+                                    COALESCE(op_nylon_stopper.name, ''),
+                                    CASE WHEN op_nylon_stopper.name IS NOT NULL THEN ',' ELSE '' END,
+                                    COALESCE(op_zipper.name, ''),
+                                    CASE WHEN op_zipper.name IS NOT NULL THEN ',' ELSE '' END,
+                                    COALESCE(op_end.name, ''),
+                                    CASE WHEN op_end.name IS NOT NULL THEN ',' ELSE '' END,
+                                    COALESCE(op_puller.name, ''),
+                                    CASE WHEN op_puller.name IS NOT NULL THEN ',' ELSE '' END
+                                    
+                                ) AS item_details_short,
+
+                        CONCAT(
+                                COALESCE(op_slider.name, ''),
+                                CASE WHEN op_slider.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_slider_body_shape.name, ''),
+                                CASE WHEN op_slider_body_shape.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_slider_link.name, '')
+                            ) AS slider_details,
+                        CONCAT(
+                                COALESCE(op_lock.name, ''),
+                                CASE WHEN op_lock.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_teeth_color.name, ''),
+                                CASE WHEN op_teeth_color.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_puller_color.name, ''),
+                                CASE WHEN op_puller_color.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_hand.name, ''),
+                                CASE WHEN op_hand.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_coloring.name, ''),
+                                COALESCE(op_top_stopper.name, ''),
+                                CASE WHEN op_top_stopper.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_bottom_stopper.name, ''),
+                                CASE WHEN op_bottom_stopper.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_logo.name, ''),
+                                CASE WHEN op_logo.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_end_user.name, ''),
+                                CASE WHEN op_end_user.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_light_preference.name, ''),
+                                CASE WHEN op_light_preference.name IS NOT NULL THEN ',' ELSE '' END,
+                                COALESCE(op_teeth_type.name, '')
+                            ) AS other_details
+
                         FROM
                             zipper.order_info oi
                         LEFT JOIN zipper.order_description od ON od.order_info_uuid = oi.uuid
