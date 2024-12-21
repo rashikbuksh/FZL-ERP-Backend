@@ -111,8 +111,7 @@ BEGIN
             UPDATE 
                 thread.order_entry
             SET 
-                warehouse = warehouse + ple.quantity,
-                production_quantity = production_quantity - ple.quantity
+                warehouse = warehouse + ple.quantity
             FROM delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
             WHERE 
@@ -121,8 +120,7 @@ BEGIN
             UPDATE 
                 thread.order_entry
             SET 
-                warehouse = warehouse - ple.quantity,
-                production_quantity = production_quantity + ple.quantity
+                warehouse = warehouse - ple.quantity
             FROM delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
             WHERE 
@@ -133,8 +131,7 @@ BEGIN
             UPDATE 
                 zipper.sfg
             SET 
-                warehouse = warehouse + ple.quantity,
-                finishing_prod = finishing_prod - ple.quantity
+                warehouse = warehouse + ple.quantity
             FROM 
                 delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -144,8 +141,7 @@ BEGIN
             UPDATE 
                 zipper.sfg
             SET 
-                warehouse = warehouse - ple.quantity,
-                finishing_prod = finishing_prod + ple.quantity
+                warehouse = warehouse - ple.quantity
             FROM 
                 delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -179,23 +175,40 @@ BEGIN
         pl.uuid = NEW.packing_list_uuid;
 
     IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
+
+        UPDATE 
+            thread.order_entry
+        SET 
+            production_quantity = production_quantity - ple.quantity
+        FROM delivery.packing_list_entry ple
+        WHERE 
+            order_entry.uuid = NEW.thread_order_entry_uuid AND ple.uuid = NEW.uuid;
+
         IF is_warehouse_received_gp = TRUE THEN
             UPDATE 
                 thread.order_entry
             SET 
-                warehouse = warehouse + ple.quantity,
-                production_quantity = production_quantity - ple.quantity
+                warehouse = warehouse + ple.quantity
             FROM delivery.packing_list_entry ple
             WHERE 
                 order_entry.uuid = NEW.thread_order_entry_uuid AND ple.uuid = NEW.uuid;
         END IF;
     ELSE
+
+        UPDATE 
+            zipper.sfg
+        SET 
+            finishing_prod = finishing_prod - ple.quantity
+        FROM 
+            delivery.packing_list_entry ple
+        WHERE 
+            sfg.uuid = NEW.sfg_uuid AND ple.uuid = NEW.uuid;
+
         IF is_warehouse_received_gp = TRUE THEN
             UPDATE 
                 zipper.sfg
             SET 
-                warehouse = warehouse + ple.quantity,
-                finishing_prod = finishing_prod - ple.quantity
+                warehouse = warehouse + ple.quantity
             FROM 
                 delivery.packing_list_entry ple
             WHERE 
@@ -207,7 +220,61 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER delivery_challan_after_packing_list_entry_insert
-AFTER INSERT ON delivery.packing_list_entry
+CREATE OR REPLACE FUNCTION delivery.delivery_challan_after_packing_list_entry_delete_funct()
+RETURNS TRIGGER AS $$
+DECLARE
+    item_for_gp TEXT;
+    is_warehouse_received_gp BOOLEAN;
+BEGIN
+    -- For Challan And zipper, thread
+    SELECT
+        pl.item_for, pl.is_warehouse_received INTO item_for_gp, is_warehouse_received_gp
+    FROM
+        delivery.packing_list pl
+    WHERE
+        pl.uuid = OLD.packing_list_uuid;
+
+    IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
+
+        UPDATE 
+            thread.order_entry
+        SET 
+            production_quantity = production_quantity + OLD.quantity
+        WHERE 
+            order_entry.uuid = OLD.thread_order_entry_uuid;
+
+        IF is_warehouse_received_gp = TRUE THEN
+            UPDATE 
+                thread.order_entry
+            SET 
+                warehouse = warehouse - OLD.quantity
+            WHERE 
+                order_entry.uuid = OLD.thread_order_entry_uuid;
+        END IF;
+    ELSE
+
+        UPDATE 
+            zipper.sfg
+        SET 
+            finishing_prod = finishing_prod + OLD.quantity
+        WHERE 
+            sfg.uuid = OLD.sfg_uuid;
+            
+        IF is_warehouse_received_gp = TRUE THEN
+            UPDATE 
+                zipper.sfg
+            SET 
+                warehouse = warehouse - OLD.quantity
+            WHERE 
+                sfg.uuid = OLD.sfg_uuid;
+        END IF;
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER delivery_challan_after_packing_list_entry_delete
+AFTER DELETE ON delivery.packing_list_entry
 FOR EACH ROW
-EXECUTE FUNCTION delivery.delivery_challan_after_packing_list_entry_insert_funct();
+EXECUTE FUNCTION delivery.delivery_challan_after_packing_list_entry_delete_funct();
