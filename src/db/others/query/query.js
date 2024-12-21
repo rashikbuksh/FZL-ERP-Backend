@@ -358,6 +358,9 @@ export async function selectParty(req, res, next) {
 			message: 'Party list',
 		};
 
+		// add a null value and label
+		data.unshift({ value: null, label: '---' });
+
 		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
@@ -414,6 +417,10 @@ export async function selectBuyer(req, res, next) {
 			type: 'select_all',
 			message: 'Buyer list',
 		};
+
+		// add a null value and label
+		data.unshift({ value: null, label: '---' });
+
 		return await res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
@@ -442,6 +449,10 @@ export async function selectSpecificMerchandiser(req, res, next) {
 			type: 'select',
 			message: 'Merchandiser',
 		};
+
+		// add a null value and label
+		data.unshift({ value: null, label: '---' });
+
 		res.status(200).json({ toast, data: data });
 	} catch (error) {
 		await handleError({ error, res });
@@ -470,6 +481,10 @@ export async function selectSpecificFactory(req, res, next) {
 			type: 'select',
 			message: 'Factory',
 		};
+
+		// add a null value and label
+		data.unshift({ value: null, label: '---' });
+
 		res.status(200).json({ toast, data: data });
 	} catch (error) {
 		await handleError({ error, res });
@@ -522,6 +537,10 @@ export async function selectOrderProperties(req, res, next) {
 			type: 'select',
 			message: 'Order Properties',
 		};
+
+		// add a null value and label
+		data.unshift({ value: null, label: '---' });
+
 		res.status(200).json({ toast, data: data });
 	} catch (error) {
 		await handleError({ error, res });
