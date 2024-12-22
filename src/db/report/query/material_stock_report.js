@@ -11,10 +11,10 @@ export async function MaterialStockReport(req, res, next) {
                 ms.name as material_section_name,
                 m.name as material_name,
                 m.unit as material_unit,
-                coalesce(opening.total_purchase_quantity, 0) as opening_quantity,
+                coalesce(opening_purchase.total_purchase_quantity, 0) - COALESCE(opening_consumption.total_issue_quantity,0) as opening_quantity,
                 coalesce(purchase.total_purchase_quantity, 0) as purchase_quantity,
                 coalesce(consumption.total_issue_quantity, 0) as consumption_quantity,
-                (coalesce(opening.total_purchase_quantity, 0) + coalesce(purchase.total_purchase_quantity, 0) - coalesce(consumption.total_issue_quantity, 0)) as closing_quantity
+                (coalesce(opening_purchase.total_purchase_quantity, 0) - COALESCE(opening_consumption.total_issue_quantity,0) + coalesce(purchase.total_purchase_quantity, 0) - coalesce(consumption.total_issue_quantity, 0)) as closing_quantity
             FROM 
                 material.info m 
             LEFT JOIN
@@ -30,7 +30,7 @@ export async function MaterialStockReport(req, res, next) {
                         created_at < ${from_date}::TIMESTAMP
                     GROUP BY 
                         material_uuid
-                ) opening ON m.uuid = opening.material_uuid
+                ) opening_purchase ON m.uuid = opening_purchase.material_uuid
             LEFT JOIN 
                 (
                     SELECT 
@@ -47,18 +47,32 @@ export async function MaterialStockReport(req, res, next) {
                 (
                     SELECT 
                         mi.uuid as material_uuid,
-                        SUM(COALESCE(s2s.trx_quantity, 0) + COALESCE(mtrx.trx_quantity, 0))::float8 as total_issue_quantity
+                        SUM(COALESCE(mtrx.trx_quantity, 0))::float8 as total_issue_quantity,
+                        SUM(COALESCE(s2s.trx_quantity, 0))::float8 as total_s2s_issue_quantity
                     FROM 
                         material.info mi
                     LEFT JOIN 
-                        material.trx mtrx ON mi.uuid = mtrx.material_uuid
+                        material.trx mtrx ON (mi.uuid = mtrx.material_uuid AND mtrx.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
                     LEFT JOIN 
-                        material.stock_to_sfg s2s ON mi.uuid = s2s.material_uuid
-                    WHERE 
-                        (mtrx.created_at >= ${from_date}::TIMESTAMP AND mtrx.created_at <= ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds') AND (s2s.created_at >= ${from_date}::TIMESTAMP AND s2s.created_at <= ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
+                        material.stock_to_sfg s2s ON (mi.uuid = s2s.material_uuid AND s2s.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
                     GROUP BY 
                         mi.uuid
                 ) consumption ON m.uuid = consumption.material_uuid
+                LEFT JOIN 
+                    (
+                        SELECT 
+                        mi.uuid as material_uuid,
+                        SUM(COALESCE(mtrx.trx_quantity, 0))::float8 as total_issue_quantity,
+                        SUM(COALESCE(s2s.trx_quantity, 0))::float8 as total_s2s_issue_quantity
+                    FROM 
+                        material.info mi
+                    LEFT JOIN 
+                        material.trx mtrx ON mi.uuid = mtrx.material_uuid AND mtrx.created_at <= ${from_date}::TIMESTAMP
+                    LEFT JOIN 
+                        material.stock_to_sfg s2s ON mi.uuid = s2s.material_uuid AND s2s.created_at <= ${from_date}::TIMESTAMP
+                    GROUP BY 
+                        mi.uuid
+                    ) opening_consumption ON m.uuid = opening_consumption.material_uuid
                 ORDER BY ms.name, m.name;
     `;
 
