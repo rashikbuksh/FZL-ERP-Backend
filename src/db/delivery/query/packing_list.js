@@ -361,7 +361,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			CASE 
 				WHEN ${item_for} = 'sample_zipper' 
 				THEN (oe.quantity - sfg.warehouse - sfg.delivered) > 0 
-				ELSE sfg.finishing_prod > 0 
+				ELSE sfg.dying_and_iron_prod > 0 
 			END
 			AND 
 				CASE 
@@ -406,15 +406,20 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN 
 			thread.count_length cl ON toe.count_length_uuid = cl.uuid
 		WHERE
-			(toe.quantity - toe.warehouse - toe.delivered) > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} AND 
-			CASE 
-				WHEN ${item_for} = 'sample_thread' 
-				THEN (toe.quantity - toe.warehouse - toe.delivered) > 0 
-				ELSE toe.production_quantity::float8 > 0 
-			END
+			(toe.quantity - toe.warehouse - toe.delivered) > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} 
 		ORDER BY
 			toe.created_at, toe.uuid DESC
 		`;
+
+		// AND
+		// CASE
+		// 	WHEN ${item_for} = 'sample_thread'
+		// 	THEN (toe.quantity - toe.warehouse - toe.delivered) > 0
+		// 	ELSE toe.production_quantity::float8 > 0
+		// END -- // * NOTE: this is for the sample thread
+
+		// sfg.dying_and_iron_prod > 0
+		// * NOTE: this is for the sample zipper
 	}
 
 	try {
