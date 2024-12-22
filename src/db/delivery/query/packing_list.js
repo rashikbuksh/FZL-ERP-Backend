@@ -360,8 +360,8 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			(oe.quantity - sfg.warehouse - sfg.delivered) > 0 AND vodf.order_info_uuid = ${req.params.order_info_uuid} AND 
 			CASE 
 				WHEN ${item_for} = 'sample_zipper' 
-				THEN (oe.quantity - sfg.warehouse - sfg.delivered) > 0 
-				ELSE sfg.dying_and_iron_prod > 0 
+				THEN (oe.quantity - sfg.warehouse - sfg.delivered) > 0 AND sfg.dying_and_iron_prod > 0 
+				ELSE sfg.finishing_prod > 0 
 			END
 			AND 
 				CASE 
