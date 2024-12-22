@@ -83,11 +83,13 @@ export async function selectSampleReportByDate(req, res, next) {
                                     CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
                                     to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')
                                 ) AS order_number,
+                            oi.uuid as order_info_uuid,
                            pm.name AS marketing_name,
                            pp.name AS party_name,
                            op_item.name AS item_name,
                            oe.created_at::date AS issue_date,
                            CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
+                           od.uuid as order_description_uuid,
                            oe.size,
                            od.is_inch,
                            od.is_meter,
@@ -99,47 +101,43 @@ export async function selectSampleReportByDate(req, res, next) {
                            oe.color,
                            CONCAT(
                                 COALESCE(op_item.name, ''),
-                                CASE WHEN op_item.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_zipper.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_zipper.name, ''),
-                                CASE WHEN op_zipper.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_end.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_end.name, ''),
-                                CASE WHEN op_end.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_hand.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_hand.name, ''),
-                                CASE WHEN op_hand.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_teeth_type.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_teeth_type.name, ''),
-                                CASE WHEN op_teeth_type.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_teeth_color.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_teeth_color.name, ''),
-                                CASE WHEN op_teeth_color.name IS NOT NULL THEN ',' ELSE '' END,
-                                COALESCE(op_nylon_stopper.name, ''),
-                                CASE WHEN op_nylon_stopper.name IS NOT NULL THEN ',' ELSE '' END
+                                CASE WHEN op_nylon_stopper.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_nylon_stopper.name, '')
                                 ) AS item_details,
-
                         CONCAT(
                                 COALESCE(op_puller.name, ''),
-                                CASE WHEN op_puller.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_puller_color.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_puller_color.name, ''),
-                                CASE WHEN op_puller_color.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_coloring.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_coloring.name, ''),
-                                CASE WHEN op_coloring.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_slider.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_slider.name, ''),
-                                CASE WHEN op_slider.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_top_stopper.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_top_stopper.name, ''),
-                                CASE WHEN op_top_stopper.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_bottom_stopper.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_bottom_stopper.name, ''),
-                                CASE WHEN op_bottom_stopper.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_logo.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_logo.name, ''),
-                                CASE WHEN op_logo.name IS NOT NULL THEN ',' ELSE '' END,
+                                CASE WHEN op_slider_body_shape.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_slider_body_shape.name, ''),
-                                CASE WHEN op_slider_body_shape.name IS NOT NULL THEN ',' ELSE '' END,
-                                COALESCE(op_slider_link.name, ''),
-                                CASE WHEN op_slider_link.name IS NOT NULL THEN ',' ELSE '' END
+                                CASE WHEN op_slider_link.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_slider_link.name, '')
                             ) AS slider_details,
                         CONCAT(
                                 od.garment,
                                 COALESCE(op_end_user.name, ''),
-                                CASE WHEN op_end_user.name IS NOT NULL THEN ',' ELSE '' END,
-                                COALESCE(op_light_preference.name, ''),
-                                CASE WHEN op_light_preference.name IS NOT NULL THEN ',' ELSE '' END
+                                CASE WHEN op_light_preference.name IS NOT NULL THEN ' ,' ELSE '' END,
+                                COALESCE(op_light_preference.name, '')
                             ) AS other_details
                         FROM
                             zipper.order_info oi
