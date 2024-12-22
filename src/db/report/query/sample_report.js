@@ -167,7 +167,7 @@ export async function selectSampleReportByDate(req, res, next) {
                         WHERE
                             oi.is_sample = 1 AND oe.created_at::date = ${date}
                         ORDER BY
-                            oe.created_at DESC;                 
+                            order_number ASC, item_description ASC;               
     `;
 
 	const resultPromise = db.execute(query);
