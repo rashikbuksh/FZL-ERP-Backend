@@ -330,6 +330,102 @@ export async function dailyChallanReport(req, res, next) {
                 commercial.lc ON pi_cash.lc_uuid = lc.uuid
         `;
 
+	const query2 = sql`
+            SELECT
+                challan.uuid,
+                challan.created_at AS challan_date,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) END AS challan_id,
+                packing_list_grouped.gate_pass,
+                challan.created_by,
+                users.name AS created_by_name,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN toi.uuid ELSE vodf.order_info_uuid END AS order_info_uuid,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN CONCAT('Z', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE vodf.order_number END AS order_number,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN tpc.uuid ELSE pi_cash.uuid END AS pi_cash_uuid,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN  CASE WHEN tpc.uuid IS NOT NULL THEN concat('PI', to_char(tpc.created_at, 'YY'), '-', LPAD(tpc.id::text, 4, '0')) ELSE NULL END ELSE CASE WHEN pi_cash.uuid IS NOT NULL THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE NULL END END AS pi_cash_number,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN tlc.uuid ELSE lc.uuid END AS lc_uuid,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN tlc.lc_number ELSE lc.lc_number END AS lc_number,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN tpm.uuid ELSE vodf.marketing_uuid END AS marketing_uuid,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN tpm.name ELSE vodf.marketing_name END AS marketing_name,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN tpp.uuid ELSE vodf.party_uuid END AS party_uuid,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN tpp.name ELSE vodf.party_name END AS party_name,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN tpf.uuid ELSE vodf.factory_uuid END AS factory_uuid,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN tpf.name ELSE vodf.factory_name END AS factory_name,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN toe.uuid ELSE oe.uuid END AS order_entry_uuid,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN CONCAT(toe.style, ' - ', toe.color) ELSE
+                CONCAT(oe.style, ' - ', oe.color, ' - ',
+                    CASE
+                        WHEN vodf.is_inch = 1
+                            THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                        ELSE CAST(oe.size AS NUMERIC)
+                    END) END AS style_color_size,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN CONCAT(tcl.count, ' - ', tcl.length) ELSE null END AS count_length_name,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN thread_challan_entry_grouped.total_quantity::float8 ELSE packing_list_grouped.total_quantity::float8 END AS total_quantity,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN thread_challan.received ELSE challan.receive_status END AS receive_status,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN thread_challan_entry_grouped.total_short_quantity::float8 ELSE packing_list_grouped.total_short_quantity::float8 END AS total_short_quantity,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN thread_challan_entry_grouped.total_reject_quantity::float8 ELSE packing_list_grouped.total_reject_quantity::float8 END AS total_reject_quantity,
+                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN 'thread' ELSE 'zipper' END AS product
+            FROM 
+                delivery.challan challan
+            LEFT JOIN
+                hr.users ON challan.created_by = users.uuid
+            LEFT JOIN delivery.packing_list pl ON challan.uuid = pl.challan_uuid
+            LEFT JOIN (
+                SELECT
+                    packing_list.challan_uuid,
+                    SUM(packing_list_entry.quantity)::float8 AS total_quantity,
+                    SUM(packing_list_entry.short_quantity)::float8 AS total_short_quantity,
+                    SUM(packing_list_entry.reject_quantity)::float8 AS total_reject_quantity,
+                    oe.quantity::float8 AS order_quantity,
+                    oe.uuid AS order_entry_uuid
+                FROM
+                    delivery.packing_list packing_list
+                LEFT JOIN
+                    delivery.packing_list_entry packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+                LEFT JOIN
+                    zipper.sfg sfg ON packing_list_entry.sfg_uuid = sfg.uuid
+                LEFT JOIN
+                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                GROUP BY
+                    packing_list.challan_uuid, oe.uuid
+            ) packing_list_grouped ON challan.uuid = packing_list_grouped.challan_uuid
+            LEFT JOIN
+                zipper.order_entry zoe ON packing_list_grouped.order_entry_uuid = zoe.uuid
+            LEFT JOIN
+                zipper.v_order_details_full vodf ON zoe.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN
+                commercial.pi_cash pi_cash ON pi_cash.order_info_uuids IN (vodf.order_info_uuid)
+            LEFT JOIN
+                commercial.lc ON pi_cash.lc_uuid = lc.uuid
+            LEFT JOIN (
+                SELECT
+                    challan_entry.challan_uuid,
+                    SUM(challan_entry.quantity)::float8 AS total_quantity,
+                    SUM(challan_entry.short_quantity)::float8 AS total_short_quantity,
+                    SUM(challan_entry.reject_quantity)::float8 AS total_reject_quantity,
+                    challan_entry.order_entry_uuid
+                FROM
+                    thread.challan_entry challan_entry
+                GROUP BY
+                    challan_entry.challan_uuid, challan_entry.order_entry_uuid
+            ) thread_challan_entry_grouped ON challan.uuid = thread_challan_entry_grouped.challan_uuid
+            LEFT JOIN
+                thread.order_entry toe ON thread_challan_entry_grouped.order_entry_uuid = toe.uuid
+            LEFT JOIN
+                thread.order_info toi ON toe.order_info_uuid = toi.uuid
+            LEFT JOIN
+                thread.count_length tcl ON toe.count_length_uuid = tcl.uuid
+            LEFT JOIN
+                public.marketing tpm ON toi.marketing_uuid = tpm.uuid
+            LEFT JOIN
+                public.party tpp ON toi.party_uuid = tpp.uuid
+            LEFT JOIN
+                public.factory tpf ON toi.factory_uuid = tpf.uuid
+            LEFT JOIN
+                commercial.pi_cash tpc ON tpc.thread_order_info_uuids IN (toi.uuid)
+            LEFT JOIN
+                commercial.lc tlc ON tpc.lc_uuid = tlc.uuid
+        `;
+
 	const resultPromise = db.execute(query);
 
 	try {
