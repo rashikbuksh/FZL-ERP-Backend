@@ -329,7 +329,8 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 				END as max_quantity,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN sfg.finishing_prod::float8 ELSE toe.production_quantity END as finishing_prod,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN zlr.name ELSE tlr.name END as recipe_name,
-			CASE WHEN ple.sfg_uuid IS NOT NULL THEN zlr.uuid ELSE tlr.uuid END as recipe_uuid
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN zlr.uuid ELSE tlr.uuid END as recipe_uuid,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN zlr.sub_streat ELSE tlr.sub_streat END as sub_streat
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN
