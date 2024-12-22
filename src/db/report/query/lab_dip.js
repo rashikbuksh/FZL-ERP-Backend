@@ -13,7 +13,8 @@ export async function selectLabDip(req, res, next) {
                         concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name ) as recipe_id,
                         recipe.name as recipe_name,
                         recipe.status as recipe_status,
-                        order_entry.created_at as order_entry_created_at
+                        order_entry.swatch_approval_date::date,
+                        order_entry.created_at::date as order_entry_created_at
                     FROM lab_dip.info
                     LEFT JOIN lab_dip.info_entry ON info.uuid = info_entry.lab_dip_info_uuid
                     LEFT JOIN lab_dip.recipe ON recipe.uuid = info_entry.recipe_uuid
