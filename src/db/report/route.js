@@ -10,7 +10,7 @@ import {
 	selectSampleReportByDate,
 } from './query/sample_report.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
-
+import { selectLabDip } from './query/lab_dip.js';
 const reportRouter = Router();
 
 // * Zipper Production Status Report
@@ -94,6 +94,9 @@ reportRouter.get(
 	'/thread-production-status-order-wise',
 	threadProductionStatusOrderWise
 );
+
+// * lab dip data
+reportRouter.get('/lab-dip', selectLabDip);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -541,6 +544,26 @@ export const pathReport = {
 					total_delivery_balance_quantity: SE.number(610),
 					total_short_quantity: SE.number(610),
 					total_reject_quantity: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/lab-dip': {
+		get: {
+			summary: 'lab dip data',
+			description: 'lab dip data',
+			tags: ['report'],
+			operationId: 'selectLabDip',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					info_id: SE.string('Info ID'),
+					lab_dip_name: SE.string('Lab Dip Name'),
+					lab_status: SE.number(610),
+					recipe_id: SE.string('Recipe ID'),
+					recipe_name: SE.string('Recipe Name'),
+					recipe_status: SE.number(610),
+					order_entry_created_at: SE.date_time(),
 				}),
 			},
 		},
