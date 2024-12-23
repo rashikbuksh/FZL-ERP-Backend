@@ -14,14 +14,6 @@ BEGIN
         tape_transferred = tape_transferred + NEW.trx_quantity
     WHERE order_description.uuid = NEW.order_description_uuid;
 
-   IF order_type_val = 'tape' THEN
-        -- Update zipper.sfg
-        UPDATE zipper.sfg
-        SET
-            finishing_prod = finishing_prod + NEW.trx_quantity_in_meter
-        WHERE uuid = NEW.sfg_uuid;
-    END IF;
-
     RETURN NEW;
 END;
 
@@ -42,14 +34,6 @@ BEGIN
         tape_transferred = tape_transferred + NEW.trx_quantity - OLD.trx_quantity
     WHERE order_description.uuid = NEW.order_description_uuid;
 
-    IF order_type_val = 'tape' THEN
-        -- Update zipper.sfg
-        UPDATE zipper.sfg
-        SET
-            finishing_prod = finishing_prod + NEW.trx_quantity_in_meter - OLD.trx_quantity_in_meter
-        WHERE uuid = NEW.sfg_uuid;
-    END IF;
-
     RETURN NEW;
 END;
 
@@ -68,14 +52,6 @@ BEGIN
         -- tape_received = tape_received + OLD.trx_quantity,
         tape_transferred = tape_transferred - OLD.trx_quantity
     WHERE order_description.uuid = OLD.order_description_uuid;
-
-    IF order_type_val = 'tape' THEN
-        -- Update zipper.sfg
-        UPDATE zipper.sfg
-        SET
-            finishing_prod = finishing_prod - OLD.trx_quantity_in_meter
-        WHERE uuid = OLD.sfg_uuid;
-    END IF;
 
     RETURN OLD;
 END;
