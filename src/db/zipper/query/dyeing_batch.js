@@ -248,7 +248,7 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 		if (is_update === 'true') {
 			const dyeing_order_batch = await api.get(
 				batch_type == 'extra'
-					? `/zipper/dyeing-order-batch/batch_type=${batch_type}&order_info_uuid=${order_info_uuid}`
+					? `/zipper/dyeing-order-batch?batch_type=${batch_type}&order_info_uuid=${order_info_uuid}`
 					: `/zipper/dyeing-order-batch`
 			);
 
