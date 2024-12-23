@@ -295,8 +295,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
 	WHERE
 		oe.recipe_uuid IS NOT NULL 
-		${batch_type == 'extra' ? sql`` : sql`AND (oe.quantity - coalesce(be_given.total_quantity,0)) > 0`}
-		${order_info_uuid ? sql`AND order_info.uuid = ${order_info_uuid}` : sql``}
+		${batch_type == 'extra' ? sql`` : sql` AND (oe.quantity - coalesce(be_given.total_quantity,0)) > 0`}
+		${order_info_uuid ? sql` AND order_info.uuid = ${order_info_uuid}` : sql``}
 	ORDER BY
 		oe.created_at DESC
 	`;
