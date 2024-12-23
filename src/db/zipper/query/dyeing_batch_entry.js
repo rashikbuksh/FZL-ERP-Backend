@@ -307,7 +307,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			0 as quantity,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
 			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
-			${batch_type == 'extra' ? sql`extra` : sql`normal`} as batch_type
+			${batch_type == 'extra' ? sql`'extra'` : sql`'normal'`} as batch_type
 		FROM
 			zipper.sfg sfg
 		LEFT JOIN 
