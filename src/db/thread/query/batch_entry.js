@@ -270,6 +270,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		CASE WHEN be.yarn_quantity IS NULL THEN 0 ELSE
 			be.yarn_quantity::float8
 		END as yarn_quantity,
+		0 as quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as max_quantity,
 		${batch_type == 'extra' ? sql`'extra'` : sql`'normal'`} as batch_type
