@@ -27,6 +27,8 @@ export async function selectSampleLeadTime(req, res, next) {
             oi.is_sample = 1 AND od.uuid IS NOT NULL
         GROUP BY
             oi.id, oi.is_sample, oi.created_at
+        HAVING
+            SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) < SUM(CASE WHEN od.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END)
     ),
     thread_results AS (
         SELECT
@@ -47,6 +49,8 @@ export async function selectSampleLeadTime(req, res, next) {
             toi.is_sample = 1
         GROUP BY
             toi.id, toi.is_sample, toi.created_at
+        HAVING
+            SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) < SUM(toe.quantity::float8)
     )
     SELECT *, (SELECT COUNT(*) FROM (SELECT * FROM zipper_results UNION ALL SELECT * FROM thread_results) AS combined) AS total_number
     FROM (
