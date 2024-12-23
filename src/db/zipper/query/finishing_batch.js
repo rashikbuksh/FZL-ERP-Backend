@@ -111,6 +111,7 @@ export async function selectAll(req, res, next) {
 				sliderSchema.stock.batch_quantity
 			),
 			total_batch_quantity: sql`finishing_batch_entry_total.total_batch_quantity::float8`,
+			total_batch_production_quantity: sql`finishing_batch_entry_total.total_batch_production_quantity::float8`,
 			colors: sql`finishing_batch_entry_total.colors`,
 			production_date: sql`finishing_batch.production_date::date`,
 		})
@@ -132,18 +133,19 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(
 			sql`(
-			SELECT 
-				DISTINCT finishing_batch_uuid, 
-				SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
-				ARRAY_AGG(DISTINCT order_entry.color) as colors
-			FROM 
-				zipper.finishing_batch_entry
-			LEFT JOIN 
-				zipper.sfg ON finishing_batch_entry.sfg_uuid = sfg.uuid
-			LEFT JOIN 
-				zipper.order_entry ON order_entry.uuid = sfg.order_entry_uuid
-			GROUP BY 
-				finishing_batch_entry.finishing_batch_uuid
+				SELECT 
+					DISTINCT finishing_batch_uuid, 
+					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
+					SUM(finishing_batch_entry.finishing_prod) as total_batch_production_quantity,
+					ARRAY_AGG(DISTINCT order_entry.color) as colors
+				FROM 
+					zipper.finishing_batch_entry
+				LEFT JOIN 
+					zipper.sfg ON finishing_batch_entry.sfg_uuid = sfg.uuid
+				LEFT JOIN 
+					zipper.order_entry ON order_entry.uuid = sfg.order_entry_uuid
+				GROUP BY 
+					finishing_batch_entry.finishing_batch_uuid
 			) as finishing_batch_entry_total`,
 			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid`
 		)
