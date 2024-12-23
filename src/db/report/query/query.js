@@ -331,8 +331,7 @@ export async function dailyChallanReport(req, res, next) {
         `;
 
 	const query2 = sql`
-            SELECT
-                challan.uuid,
+             challan.uuid,
                 challan.created_at AS challan_date,
                 CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) END AS challan_id,
                 packing_list_grouped.gate_pass,
@@ -372,6 +371,7 @@ export async function dailyChallanReport(req, res, next) {
             LEFT JOIN (
                 SELECT
                     packing_list.challan_uuid,
+	 				packing_list.gate_pass,
                     SUM(packing_list_entry.quantity)::float8 AS total_quantity,
                     SUM(packing_list_entry.short_quantity)::float8 AS total_short_quantity,
                     SUM(packing_list_entry.reject_quantity)::float8 AS total_reject_quantity,
@@ -386,7 +386,7 @@ export async function dailyChallanReport(req, res, next) {
                 LEFT JOIN
                     zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                 GROUP BY
-                    packing_list.challan_uuid, oe.uuid
+                    packing_list.challan_uuid, oe.uuid ,packing_list.gate_pass
             ) packing_list_grouped ON challan.uuid = packing_list_grouped.challan_uuid
             LEFT JOIN
                 zipper.order_entry zoe ON packing_list_grouped.order_entry_uuid = zoe.uuid

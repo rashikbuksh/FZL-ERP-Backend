@@ -352,7 +352,8 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 							oe.carton_quantity,
 							pp.name as party_name,
 							pb.name as buyer_name,
-							order_info.delivery_date
+							order_info.delivery_date,
+							order_info.created_at as order_created_at
 						FROM
 							thread.batch_entry be
 						LEFT JOIN 
