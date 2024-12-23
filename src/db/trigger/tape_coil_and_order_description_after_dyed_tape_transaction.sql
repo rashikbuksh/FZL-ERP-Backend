@@ -21,14 +21,6 @@ BEGIN
         tape_transferred = tape_transferred + NEW.trx_quantity
     WHERE uuid = NEW.order_description_uuid;
 
-    IF order_type_val = 'tape' THEN
-        -- Update zipper.sfg
-        UPDATE zipper.sfg
-        SET
-            finishing_prod = finishing_prod + NEW.trx_quantity_in_meter
-        WHERE uuid = NEW.sfg_uuid;
-    END IF;
-
     RETURN NEW;
 END;
 
@@ -56,14 +48,6 @@ BEGIN
         tape_transferred = tape_transferred + NEW.trx_quantity - OLD.trx_quantity
     WHERE uuid = NEW.order_description_uuid;
 
-    IF order_type_val = 'tape' THEN
-        -- Update zipper.sfg
-        UPDATE zipper.sfg
-        SET
-            finishing_prod = finishing_prod + NEW.trx_quantity_in_meter - OLD.trx_quantity_in_meter
-        WHERE uuid = NEW.sfg_uuid;
-    END IF;
-
     RETURN NEW;
 END;
 
@@ -90,14 +74,6 @@ BEGIN
         -- multi_color_tape_received = multi_color_tape_received + CASE WHEN is_multi_color_tape = 1 THEN OLD.trx_quantity ELSE 0 END,
         tape_transferred = tape_transferred - OLD.trx_quantity
     WHERE uuid = OLD.order_description_uuid;
-
-    IF order_type_val = 'tape' THEN
-        -- Update zipper.sfg
-        UPDATE zipper.sfg
-        SET
-            finishing_prod = finishing_prod - OLD.trx_quantity_in_meter
-        WHERE uuid = OLD.sfg_uuid;
-    END IF;
 
     RETURN OLD;
 END;
