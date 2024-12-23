@@ -230,9 +230,19 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 
 		let new_dyeing_batch_entry = null;
 
+		const { batch_type, order_info_uuid } = dyeing_batch?.data?.data;
+
+		console.log(
+			'page: dyeing_batch.js function: selectBatchDetailsByBatchUuid'
+		);
+		console.log('batch_type', batch_type);
+		console.log('order_info_uuid', order_info_uuid);
+
 		if (is_update === 'true') {
 			const dyeing_order_batch = await api.get(
-				`/zipper/dyeing-order-batch`
+				batch_type == 'extra'
+					? `/zipper/dyeing-order-batch/batch_type=${batch_type}&order_info_uuid=${order_info_uuid}`
+					: `/zipper/dyeing-order-batch`
 			);
 
 			const sfg_uuid = dyeing_batch_entry?.data?.data?.map(
