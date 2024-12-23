@@ -1539,7 +1539,13 @@ export async function selectPi(req, res, next) {
 		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
 		AND (marketing.name is not null)
 		${party_uuid ? sql`AND pi_cash.party_uuid = ${party_uuid}` : sql``}
-		${page == 'lc' || page == 'manual_pi' ? sql`` : sql`AND (order_entry.quantity - sfg.pi)::float8 > 0 OR (toe.quantity - toe.pi)::float8 > 0`}
+		${
+			page == 'lc' || page == 'manual_pi'
+				? sql``
+				: is_update === 'true'
+					? sql``
+					: sql`AND (order_entry.quantity - sfg.pi)::float8 > 0 OR (toe.quantity - toe.pi)::float8 > 0`
+		}
 	GROUP BY
 		pi_cash.uuid,
 		pi_cash.created_at,
