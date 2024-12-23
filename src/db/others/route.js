@@ -1321,6 +1321,10 @@ const pathThread = {
 			parameters: [
 				SE.parameter_query('page', 'page', ['challan']),
 				SE.parameter_query('is_sample', 'is_sample', ['true', 'false']),
+				SE.parameter_query('recipe_required', 'recipe_required', [
+					'true',
+					'false',
+				]),
 			],
 			responses: {
 				200: {
