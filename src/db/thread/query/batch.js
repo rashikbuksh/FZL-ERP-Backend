@@ -94,7 +94,6 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-
 	const query = sql`
 					SELECT
 						batch.uuid,
@@ -157,7 +156,10 @@ export async function selectAll(req, res, next) {
 							DISTINCT order_info.uuid ) as order_uuids,
 						batch.production_date::date as production_date,
 						party.name as party_name,
-						ARRAY_AGG(DISTINCT oe.color) as color
+						ARRAY_AGG(DISTINCT oe.color) as color,
+						batch.batch_type,
+						batch.order_info_uuid,
+						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number
 					FROM
 						thread.batch
 						LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
@@ -175,6 +177,7 @@ export async function selectAll(req, res, next) {
 						LEFT JOIN thread.count_length cl ON oe.count_length_uuid = cl.uuid
 						LEFT JOIN thread.order_info order_info ON oe.order_info_uuid = order_info.uuid
 						LEFT JOIN public.party party ON order_info.party_uuid = party.uuid
+						LEFT JOIN thread.order_info oi_v2 ON batch.order_info_uuid = oi_v2.uuid
 					GROUP BY
 						batch.uuid,
 						batch.id,
@@ -211,7 +214,10 @@ export async function selectAll(req, res, next) {
 						batch.created_at,
 						batch.updated_at,
 						batch.remarks,
-						party.name
+						party.name,
+						oi_v2.is_sample,
+						oi_v2.created_at,
+						oi_v2.id
 					ORDER BY
 						batch.created_at DESC
 				`;
@@ -284,7 +290,10 @@ export async function select(req, res, next) {
 						batch.remarks,
 						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity,
 						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight,
-						batch.production_date::date as production_date
+						batch.production_date::date as production_date,
+						batch.batch_type,
+						batch.order_info_uuid,
+						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number
 					FROM
 						thread.batch
 					LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
@@ -300,6 +309,7 @@ export async function select(req, res, next) {
 					LEFT JOIN thread.batch_entry ON batch.uuid = batch_entry.batch_uuid
 					LEFT JOIN thread.order_entry oe ON batch_entry.order_entry_uuid = oe.uuid
 					LEFT JOIN thread.count_length cl ON oe.count_length_uuid = cl.uuid
+					LEFT JOIN thread.order_info oi_v2 ON batch.order_info_uuid = oi_v2.uuid
 					WHERE
 						batch.uuid = ${req.params.uuid}
 					GROUP BY
@@ -336,7 +346,10 @@ export async function select(req, res, next) {
 						createdBy.name,
 						batch.created_at,
 						batch.updated_at,
-						batch.remarks
+						batch.remarks,
+						oi_v2.is_sample,
+						oi_v2.created_at,
+						oi_v2.id
 				`;
 
 	const resultPromise = db.execute(query);
@@ -374,8 +387,14 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 
 		let new_batch_entry = null;
 
+		const { batch_type, order_info_uuid } = batch?.data?.data || {};
+
 		if (is_update === 'true') {
-			const order_entry = await api.get(`/thread/order-batch`);
+			const order_entry = await api.get(
+				batch_type == 'extra'
+					? `/thread/order-batch?batch_type=${batch_type}&order_info_uuid=${order_info_uuid}`
+					: `/thread/order-batch`
+			);
 
 			new_batch_entry = order_entry?.data?.data?.batch_entry || [];
 

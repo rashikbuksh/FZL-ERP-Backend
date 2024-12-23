@@ -1941,10 +1941,11 @@ export async function selectDieCastingUsingType(req, res, next) {
 export async function selectThreadOrder(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { page, is_sample } = req.query;
+	const { page, is_sample, recipe_required } = req.query;
 
 	let condition;
 	let sample_condition;
+	let recipe_condition;
 
 	if (is_sample === 'true') {
 		sample_condition = sql`
@@ -2005,6 +2006,24 @@ export async function selectThreadOrder(req, res, next) {
 		condition = sql`1=1`;
 	}
 
+	if (recipe_required === 'true') {
+		recipe_condition = sql`
+		ot.uuid IN (
+			SELECT
+				oi.uuid
+			FROM
+				thread.order_info oi
+			LEFT JOIN
+				thread.order_entry oe ON oi.uuid = oe.order_info_uuid
+			WHERE
+				oe.recipe_uuid IS NOT NULL
+			GROUP BY
+				oi.uuid
+		)`;
+	} else {
+		recipe_condition = sql`1=1`;
+	}
+
 	const query = sql`
 				SELECT
 					ot.uuid AS value,
@@ -2012,7 +2031,7 @@ export async function selectThreadOrder(req, res, next) {
 				FROM
 					thread.order_info ot
 				WHERE
-					${condition} AND ${sample_condition}
+					${condition} AND ${sample_condition} AND ${recipe_condition}
 				`;
 
 	const orderThreadPromise = db.execute(query);

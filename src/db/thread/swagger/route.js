@@ -368,6 +368,18 @@ export const pathThreadBatchEntry = {
 			summary: 'Get Order Details for Batch Entry',
 			description: 'Get Order Details for Batch Entry',
 			produces: ['application/json'],
+			parameters: [
+				SE.parameter_query('batch_type', 'batch_type', [
+					'normal',
+					'extra',
+				]),
+				SE.parameter_query(
+					'order_info_uuid',
+					'order_info_uuid',
+					'uuid',
+					'6fm2IOdfSc5p3nJ'
+				),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					order_entry_uuid: SE.uuid(),

@@ -239,6 +239,9 @@ export async function select(req, res, next) {
 
 export async function getOrderDetailsForBatchEntry(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	const { batch_type, order_info_uuid } = req.query;
+
 	const query = sql`
 	SELECT 
 		oe.uuid as order_entry_uuid,
@@ -267,8 +270,10 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		CASE WHEN be.yarn_quantity IS NULL THEN 0 ELSE
 			be.yarn_quantity::float8
 		END as yarn_quantity,
+		0 as quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
-		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as max_quantity
+		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as max_quantity,
+		${batch_type == 'extra' ? sql`'extra'` : sql`'normal'`} as batch_type
 	FROM
 		thread.order_entry oe
 	LEFT JOIN
@@ -290,7 +295,9 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	 LEFT JOIN 
 	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
 	WHERE
-		oe.recipe_uuid IS NOT NULL AND (oe.quantity - coalesce(be_given.total_quantity,0)) > 0
+		oe.recipe_uuid IS NOT NULL 
+		${batch_type == 'extra' ? sql`` : sql` AND (oe.quantity - coalesce(be_given.total_quantity,0)) > 0`}
+		${order_info_uuid ? sql` AND order_info.uuid = ${order_info_uuid}` : sql``}
 	ORDER BY
 		oe.created_at DESC
 	`;
@@ -355,9 +362,12 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 							pp.name as party_name,
 							pb.name as buyer_name,
 							order_info.delivery_date,
-							order_info.created_at as order_created_at
+							order_info.created_at as order_created_at,
+							batch.batch_type
 						FROM
 							thread.batch_entry be
+						LEFT JOIN 
+							thread.batch ON be.batch_uuid = batch.uuid
 						LEFT JOIN 
 							thread.order_entry oe ON be.order_entry_uuid = oe.uuid
 						LEFT JOIN
@@ -428,7 +438,8 @@ export async function getBatchEntryDetails(req, res, next) {
 		be.updated_at,
 		be.remarks as batch_remarks,
 		be.yarn_quantity::float8 as yarn_quantity,
-		batch.is_drying_complete
+		batch.is_drying_complete,
+		batch.batch_type
 	FROM
 		thread.batch_entry be
 	LEFT JOIN 
