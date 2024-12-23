@@ -101,7 +101,7 @@ export async function selectAll(req, res, next) {
 			dyeing_batch.production_date::date as production_date,
 			expected.party_name,
 			oe_colors.colors as color,
-			dyeing_batch.batch_type,
+			dyeing_batch.batch_type_enum as batch_type,
 			dyeing_batch.order_info_uuid
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
