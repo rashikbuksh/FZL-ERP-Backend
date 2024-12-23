@@ -383,6 +383,11 @@ export const batchStatusEnum = zipper.enum('batch_status', [
 	'cancelled',
 ]);
 
+export const dyeing_batch_type_enum = zipper.enum('dyeing_batch_type_enum', [
+	'normal',
+	'extra',
+]);
+
 // zipper batch
 export const dyeing_batch = zipper.table('dyeing_batch', {
 	// rename to dyeing batch
@@ -401,6 +406,10 @@ export const dyeing_batch = zipper.table('dyeing_batch', {
 	production_date: DateTime('production_date')
 		.notNull()
 		.default('2024-01-01 00:00:00'),
+	batch_type: dyeing_batch_type_enum('batch_type_enum').default('normal'),
+	order_info_uuid: defaultUUID('order_info_uuid').references(
+		() => order_info.uuid
+	).default(null),
 });
 
 export const dyeing_batch_entry = zipper.table('dyeing_batch_entry', {

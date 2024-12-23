@@ -328,11 +328,9 @@ export const def_zipper_dyeing_batch = SED({
 		'machine_uuid',
 		'slot',
 		'received',
-		'id',
 	],
 	properties: {
 		uuid: SE.uuid(),
-		id: SE.integer(),
 		batch_status: SE.string('pending'),
 		machine_uuid: SE.uuid(),
 		slot: SE.number(),
@@ -341,6 +339,8 @@ export const def_zipper_dyeing_batch = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
+		batch_type: SE.string('normal'),
+		order_info_uuid: SE.uuid(),
 	},
 	xml: 'Zipper/Dyeing-Batch',
 });

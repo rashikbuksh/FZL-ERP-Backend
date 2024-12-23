@@ -264,6 +264,10 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 export async function getOrderDetailsForBatchEntry(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { batch_type, order_info_uuid } = req.query;
+
+	console.log(batch_type, order_info_uuid);
+
 	const query = sql`
 		SELECT
 			sfg.uuid as sfg_uuid,
@@ -345,20 +349,27 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			) AS be_given ON sfg.uuid = be_given.sfg_uuid
         WHERE
 			vodf.tape_coil_uuid IS NOT NULL AND 
-				sfg.recipe_uuid IS NOT NULL AND 
-				(
-					CASE 
-						WHEN vodf.order_type = 'tape' 
-						THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
-						ELSE oe.quantity::float8 
-					END 
-			- coalesce(be_given.given_quantity,0)
-				) > 0 
+				sfg.recipe_uuid IS NOT NULL  
+				${
+					batch_type == 'extra'
+						? sql``
+						: sql`
+							AND (
+								CASE 
+									WHEN vodf.order_type = 'tape' 
+									THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+									ELSE oe.quantity::float8 
+								END 
+								- coalesce(be_given.given_quantity,0)
+									) > 0
+							`
+				}
 				AND 
 				(
 					lower(op_item.name) != 'nylon' 
 					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 				) 
+				${order_info_uuid ? sql`AND vodf.order_info_uuid = ${order_info_uuid}` : sql``}
 		`;
 
 	// NOTE: vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END

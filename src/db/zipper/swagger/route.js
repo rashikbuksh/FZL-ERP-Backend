@@ -1991,6 +1991,17 @@ export const pathZipperDyeingBatchEntry = {
 			summary: 'Get Order Details for Dyeing Batch Entry',
 			description: '',
 			produces: ['application/json'],
+			parameters: [
+				SE.parameter_query('batch_type', 'batch_type', [
+					'normal',
+					'extra',
+				]),
+				SE.parameter_query(
+					'order_info_uuid',
+					'order_info_uuid',
+					'uuid'
+				),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					order_entry: SE.sub_response_schema({
