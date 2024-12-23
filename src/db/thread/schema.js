@@ -136,6 +136,8 @@ export const thread_batch_sequence = thread.sequence('thread_batch_sequence', {
 	increment: 1,
 });
 
+export const batch_type_enum = thread.enum('batch_type', ['normal', 'extra']);
+
 export const batch = thread.table('batch', {
 	uuid: uuid_primary,
 	id: integer('id')
@@ -192,6 +194,10 @@ export const batch = thread.table('batch', {
 	production_date: DateTime('production_date')
 		.notNull()
 		.default('2024-01-01 00:00:00'),
+	batch_type: batch_type_enum('batch_type').default('normal'),
+	order_info_uuid: defaultUUID('order_info_uuid')
+		.references(() => order_info.uuid)
+		.default(null),
 });
 
 export const batch_entry = thread.table('batch_entry', {
