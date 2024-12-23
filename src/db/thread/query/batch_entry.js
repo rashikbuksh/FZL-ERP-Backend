@@ -315,64 +315,70 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-	SELECT 
-		be.uuid as batch_entry_uuid,
-		be.batch_uuid,
-		oe.uuid as order_entry_uuid,
-	    oe.color as color,
-		oe.po as po,
-		oe.style as style,
-		oe.count_length_uuid as count_length_uuid,
-		oe.quantity::float8 as order_quantity,
-		oe.bleaching as bleaching,
-		cl.count,
-		cl.length,
-		CONCAT(cl.count, '/', cl.length) as count_length,
-		cl.cone_per_carton,
-		cl.min_weight::float8,
-		cl.max_weight::float8,
-		oe.recipe_uuid as recipe_uuid,
-		re.name as recipe_name,
-		re.sub_streat,
-		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
-		be.quantity::float8 as quantity,
-		be.coning_production_quantity::float8,
-		be.coning_carton_quantity::float8,
-		CASE WHEN be.transfer_quantity IS NULL THEN 0 ELSE be.transfer_quantity::float8 END as transfer_quantity,
-		CASE WHEN be.transfer_carton_quantity IS NULL THEN 0 ELSE be.transfer_carton_quantity::float8 END as transfer_carton_quantity,
-		be_given.total_quantity::float8 as total_quantity,
-		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
-		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 + be.quantity::float8 as max_quantity,
-		(oe.quantity - coalesce(be_given.total_quantity,0) + be.quantity)::float8 as can_trx_quantity,
-		CEIL(be.quantity / cl.cone_per_carton)::float8 as total_carton,
-		be.created_at,
-		be.updated_at,
-		be.remarks as batch_remarks,
-		CASE WHEN be.yarn_quantity IS NULL THEN 0 ELSE be.yarn_quantity::float8 END as yarn_quantity,
-		oe.carton_quantity
-	FROM
-		thread.batch_entry be
-	LEFT JOIN 
-		thread.order_entry oe ON be.order_entry_uuid = oe.uuid
-	LEFT JOIN
-		thread.count_length cl ON oe.count_length_uuid = cl.uuid
-	LEFT JOIN
-		lab_dip.recipe re ON oe.recipe_uuid = re.uuid
-	LEFT JOIN 
-		thread.order_info ON oe.order_info_uuid = order_info.uuid
-	LEFT JOIN 
-	(
-		SELECT 
-			batch_entry.order_entry_uuid,
-			SUM(batch_entry.quantity) as total_quantity
-		FROM 
-			thread.batch_entry
-		GROUP BY 
-			batch_entry.order_entry_uuid
-	) as be_given ON be_given.order_entry_uuid = oe.uuid
-	WHERE
-		be.batch_uuid = ${req.params.batch_uuid}
-	`;
+						SELECT 
+							be.uuid as batch_entry_uuid,
+							be.batch_uuid,
+							oe.uuid as order_entry_uuid,
+							oe.color as color,
+							oe.po as po,
+							oe.style as style,
+							oe.count_length_uuid as count_length_uuid,
+							oe.quantity::float8 as order_quantity,
+							oe.bleaching as bleaching,
+							cl.count,
+							cl.length,
+							CONCAT(cl.count, '/', cl.length) as count_length,
+							cl.cone_per_carton,
+							cl.min_weight::float8,
+							cl.max_weight::float8,
+							oe.recipe_uuid as recipe_uuid,
+							re.name as recipe_name,
+							re.sub_streat,
+							CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+							be.quantity::float8 as quantity,
+							be.coning_production_quantity::float8,
+							be.coning_carton_quantity::float8,
+							CASE WHEN be.transfer_quantity IS NULL THEN 0 ELSE be.transfer_quantity::float8 END as transfer_quantity,
+							CASE WHEN be.transfer_carton_quantity IS NULL THEN 0 ELSE be.transfer_carton_quantity::float8 END as transfer_carton_quantity,
+							be_given.total_quantity::float8 as total_quantity,
+							(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
+							(oe.quantity - coalesce(be_given.total_quantity,0))::float8 + be.quantity::float8 as max_quantity,
+							(oe.quantity - coalesce(be_given.total_quantity,0) + be.quantity)::float8 as can_trx_quantity,
+							CEIL(be.quantity / cl.cone_per_carton)::float8 as total_carton,
+							be.created_at,
+							be.updated_at,
+							be.remarks as batch_remarks,
+							CASE WHEN be.yarn_quantity IS NULL THEN 0 ELSE be.yarn_quantity::float8 END as yarn_quantity,
+							oe.carton_quantity,
+							pp.name as party_name,
+							pb.name as buyer_name,
+							order_info.delivery_date
+						FROM
+							thread.batch_entry be
+						LEFT JOIN 
+							thread.order_entry oe ON be.order_entry_uuid = oe.uuid
+						LEFT JOIN
+							thread.count_length cl ON oe.count_length_uuid = cl.uuid
+						LEFT JOIN
+							lab_dip.recipe re ON oe.recipe_uuid = re.uuid
+						LEFT JOIN 
+							thread.order_info ON oe.order_info_uuid = order_info.uuid
+						LEFT JOIN 
+							public.party pp ON order_info.party_uuid = pp.uuid 
+						LEFT JOIN
+						    public.buyer pb ON order_info.buyer_uuid = pb.uuid
+						LEFT JOIN 
+						(
+							SELECT 
+								batch_entry.order_entry_uuid,
+								SUM(batch_entry.quantity) as total_quantity
+							FROM 
+								thread.batch_entry
+							GROUP BY 
+								batch_entry.order_entry_uuid
+						) as be_given ON be_given.order_entry_uuid = oe.uuid
+						WHERE
+							be.batch_uuid = ${req.params.batch_uuid}`;
 
 	const resultPromise = db.execute(query);
 	try {
