@@ -5,7 +5,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { dyeing_batch } from '../schema.js';
+import { dyeing_batch, order_info } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -100,10 +100,13 @@ export async function selectAll(req, res, next) {
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
 			dyeing_batch.production_date::date as production_date,
 			expected.party_name,
-			oe_colors.colors as color
+			oe_colors.colors as color,
+			dyeing_batch.batch_type_enum as batch_type,
+			dyeing_batch.order_info_uuid
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
 		LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
+		LEFT JOIN zipper.v_order_details_full vodf ON dyeing_batch.order_info_uuid = vodf.order_info_uuid
 		LEFT JOIN zipper.dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
 		LEFT JOIN zipper.sfg ON dyeing_batch_entry.sfg_uuid = zipper.sfg.uuid
 		LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
@@ -185,6 +188,9 @@ export async function select(req, res, next) {
 			updated_at: dyeing_batch.updated_at,
 			remarks: dyeing_batch.remarks,
 			production_date: sql`dyeing_batch.production_date::date`,
+			batch_type: dyeing_batch.batch_type,
+			order_info_uuid: dyeing_batch.order_info_uuid,
+			order_number: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
 		})
 		.from(dyeing_batch)
 		.leftJoin(
@@ -195,6 +201,7 @@ export async function select(req, res, next) {
 			publicSchema.machine,
 			eq(dyeing_batch.machine_uuid, publicSchema.machine.uuid)
 		)
+		.leftJoin(order_info, eq(dyeing_batch.order_info_uuid, order_info.uuid))
 		.where(eq(dyeing_batch.uuid, req.params.uuid));
 
 	try {
@@ -232,16 +239,10 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 
 		const { batch_type, order_info_uuid } = dyeing_batch?.data?.data;
 
-		console.log(
-			'page: dyeing_batch.js function: selectBatchDetailsByBatchUuid'
-		);
-		console.log('batch_type', batch_type);
-		console.log('order_info_uuid', order_info_uuid);
-
 		if (is_update === 'true') {
 			const dyeing_order_batch = await api.get(
 				batch_type == 'extra'
-					? `/zipper/dyeing-order-batch/batch_type=${batch_type}&order_info_uuid=${order_info_uuid}`
+					? `/zipper/dyeing-order-batch?batch_type=${batch_type}&order_info_uuid=${order_info_uuid}`
 					: `/zipper/dyeing-order-batch`
 			);
 

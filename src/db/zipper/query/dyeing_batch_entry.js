@@ -190,7 +190,8 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			tcr.bottom::float8,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
 			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
-			vodf.order_type
+			vodf.order_type,
+			b.batch_type_enum as batch_type
 		FROM
 			zipper.dyeing_batch_entry be
 		LEFT JOIN
@@ -266,8 +267,6 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 
 	const { batch_type, order_info_uuid } = req.query;
 
-	console.log(batch_type, order_info_uuid);
-
 	const query = sql`
 		SELECT
 			sfg.uuid as sfg_uuid,
@@ -308,7 +307,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			tcr.bottom::float8,
 			0 as quantity,
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
-			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg
+			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
+			${batch_type == 'extra' ? sql`'extra'` : sql`'normal'`} as batch_type
 		FROM
 			zipper.sfg sfg
 		LEFT JOIN 
