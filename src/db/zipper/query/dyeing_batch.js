@@ -239,12 +239,6 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 
 		const { batch_type, order_info_uuid } = dyeing_batch?.data?.data;
 
-		console.log(
-			'page: dyeing_batch.js function: selectBatchDetailsByBatchUuid'
-		);
-		console.log('batch_type', batch_type);
-		console.log('order_info_uuid', order_info_uuid);
-
 		if (is_update === 'true') {
 			const dyeing_order_batch = await api.get(
 				batch_type == 'extra'
