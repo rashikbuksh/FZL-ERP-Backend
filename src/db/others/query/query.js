@@ -835,6 +835,8 @@ export async function selectOrderDescription(req, res, next) {
 						SUM(CASE 
 							WHEN vodf.is_inch = 1 
 								THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+							WHEN vodf.order_type = 'tape'
+								THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)
 							ELSE CAST(oe.size AS NUMERIC)
 						END * oe.quantity::numeric) as total_size, 
 						SUM(oe.quantity::numeric) as total_quantity
