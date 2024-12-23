@@ -191,7 +191,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
 			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
 			vodf.order_type,
-			be.batch_type_enum as batch_type
+			b.batch_type_enum as batch_type
 		FROM
 			zipper.dyeing_batch_entry be
 		LEFT JOIN
