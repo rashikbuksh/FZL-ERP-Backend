@@ -86,6 +86,10 @@ deliveryRouter.get(
 	'/challan/details/:challan_uuid',
 	challanOperations.selectChallanDetailsByChallanUuid
 );
+deliveryRouter.put(
+	'/challan/update-receive-status/:uuid',
+	challanOperations.updateReceivedStatus
+);
 
 // * vehicle routes
 

@@ -873,6 +873,27 @@ export const pathDeliveryChallan = {
 			},
 		},
 	},
+	'/delivery/challan/update-receive-status/{uuid}': {
+		put: {
+			tags: ['delivery.challan'],
+			summary: 'Update receive status for challan',
+			description: 'Update receive status for challan',
+			// operationId: "updateReceiveStatusForChallan",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody('receive_status', 'receive_status'),
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Challan not found',
+				},
+				405: { description: 'Validation exception' },
+			},
+		},
+	},
 };
 
 export const pathDeliveryVehicle = {
