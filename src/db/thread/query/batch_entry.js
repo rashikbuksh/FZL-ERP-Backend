@@ -439,7 +439,8 @@ export async function getBatchEntryDetails(req, res, next) {
 		be.remarks as batch_remarks,
 		be.yarn_quantity::float8 as yarn_quantity,
 		batch.is_drying_complete,
-		batch.batch_type
+		batch.batch_type,
+		recipe.name as recipe_name
 	FROM
 		thread.batch_entry be
 	LEFT JOIN 
@@ -450,6 +451,8 @@ export async function getBatchEntryDetails(req, res, next) {
 		thread.order_info ON oe.order_info_uuid = order_info.uuid
 	LEFT JOIN
 		thread.batch ON be.batch_uuid = batch.uuid
+	LEFT JOIN
+	    lab_dip.recipe re ON oe.recipe_uuid = re.uuid
 )
 	SELECT * FROM calculated_balance
 	WHERE transfer_quantity != batch_quantity AND is_drying_complete = 'true' AND balance_quantity > 0
