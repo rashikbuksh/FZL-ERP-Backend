@@ -208,8 +208,8 @@ export async function selectByDate(req, res, next) {
 				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 				LEFT JOIN 
 					zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid AND vodf.item = tcr.item_uuid 
-					AND vodf.zipper_number = tcr.zipper_number_uuid 
-					AND vodf.end_type = tcr.end_type_uuid
+						AND vodf.zipper_number = tcr.zipper_number_uuid 
+						AND (CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END)
 				LEFT JOIN
 					zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid AND vodf.zipper_number = tc.zipper_number_uuid 
 			WHERE CASE WHEN lower(vodf.item_name) = 'nylon' THEN vodf.nylon_stopper = tcr.nylon_stopper_uuid ELSE TRUE END
