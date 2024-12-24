@@ -30,26 +30,26 @@ export async function selectCashInvoice(req, res, next) {
                                         END
                                     ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 2)::float8 
                                 END) as value,
-                                jsonb_agg(DISTINCT 
-                                    CASE 
-                                        WHEN pe.thread_order_entry_uuid IS NULL THEN 
-                                            json_build_object(
-                                                'order_number', vodf.order_number, 
-                                                'order_info_uuid', vodf.order_info_uuid
-                                            )::text
-                                        ELSE 
-                                            json_build_object(
-                                                'order_number', CONCAT(
-                                                    'ST', 
-                                                    CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, 
-                                                    TO_CHAR(toi.created_at, 'YY'), 
-                                                    '-', 
-                                                    LPAD(toi.id::text, 4, '0')
-                                                ), 
-                                                'thread_order_info_uuid', toe.uuid
-                                            )::text
-                                    END
-                                )::jsonb AS order_number
+                               jsonb_agg(
+                                        CASE 
+                                            WHEN pe.thread_order_entry_uuid IS NULL THEN 
+                                                json_build_object(
+                                                    'order_number', vodf.order_number, 
+                                                    'order_info_uuid', vodf.order_info_uuid
+                                                )
+                                            ELSE 
+                                                json_build_object(
+                                                    'order_number', CONCAT(
+                                                        'ST', 
+                                                        CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, 
+                                                        TO_CHAR(toi.created_at, 'YY'), 
+                                                        '-', 
+                                                        LPAD(toi.id::text, 4, '0')
+                                                    ), 
+                                                    'thread_order_info_uuid', toe.uuid
+                                                )
+                                        END
+                                    ) AS order_number
                             FROM
                                 commercial.pi_cash_entry pe
                                 LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
