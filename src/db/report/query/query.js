@@ -5,6 +5,7 @@ import db from '../../index.js';
 
 // * Zipper Production Status Report
 
+// multiple rows shows for stock.uuid, assembly_production_quantity,coloring_production_quantity, teeth_molding_quantity,teeth_coloring_quantity,finishing_quantity columns
 export async function zipperProductionStatusReport(req, res, next) {
 	const query = sql`
             SELECT 
@@ -744,6 +745,9 @@ export async function LCReport(req, res, next) {
 	}
 }
 
+// shows multiple rows for order_entry.count_length_uuid, count_length.count,count_length.length,order_entry.uuid as order_entry_uuid,order_info.uuid as order_info_uuid columns
+                
+                
 export async function threadProductionStatusBatchWise(req, res, next) {
 	const query = sql`
             SELECT
