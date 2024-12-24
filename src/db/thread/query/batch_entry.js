@@ -440,7 +440,7 @@ export async function getBatchEntryDetails(req, res, next) {
 		be.yarn_quantity::float8 as yarn_quantity,
 		batch.is_drying_complete,
 		batch.batch_type,
-		recipe.name as recipe_name
+		re.name as recipe_name
 	FROM
 		thread.batch_entry be
 	LEFT JOIN 
