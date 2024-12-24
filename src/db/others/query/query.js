@@ -1619,10 +1619,10 @@ export async function selectHrUser(req, res, next) {
 			or(
 				designation
 					? eq(sql`lower(designation.designation)`, designation)
-					: null,
+					: sql`1=1`,
 				department
 					? eq(sql`lower(department.department)`, department)
-					: null
+					: sql`1=1`
 			)
 		);
 
