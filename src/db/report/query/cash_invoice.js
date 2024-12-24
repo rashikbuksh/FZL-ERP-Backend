@@ -6,46 +6,64 @@ export async function selectCashInvoice(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-                     SELECT 
-                         pi_cash.uuid,
-                         CASE 
-                            WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-                            ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-                         END AS id,
-                         pe.value,
-                         pe.order_number,
-                         pi_cash.receive_amount::float8
-                    FROM
-                        commercial.pi_cash pi_cash
-                    LEFT JOIN (
-                        SELECT
-                            pe.pi_cash_uuid,
-                           SUM(CASE 
-                                WHEN pe.thread_order_entry_uuid IS NULL 
-                                THEN 
-                                    CASE 
-                                        WHEN vodf.order_type = 'tape' 
-                                        THEN oe.size::float8 * (oe.party_price::float8)::float8 
-                                        ELSE ROUND(pe.pi_cash_quantity * oe.party_price/12, 2)::float8 
-                                    END
-                                ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 2)::float8 
-                            END) as value,
-                            array_agg(DISTINCT CASE WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_number ELSE  CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END) as order_number
+                    SELECT 
+                            pi_cash.uuid,
+                            CASE 
+                                WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+                                ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+                            END AS id,
+                            pe.value,
+                            pe.order_number,
+                            pi_cash.receive_amount::float8
                         FROM
-                            commercial.pi_cash_entry pe
-                            LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
-                            LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                            LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                            LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
-                            LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-                            LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
-                        GROUP BY
-                            pe.pi_cash_uuid
-                    ) AS pe ON pi_cash.uuid = pe.pi_cash_uuid
-                    WHERE 
-                        pi_cash.is_pi = 0
-                    ORDER BY pi_cash.created_at DESC
-                    
+                            commercial.pi_cash pi_cash
+                        LEFT JOIN (
+                            SELECT
+                                pe.pi_cash_uuid,
+                                SUM(CASE 
+                                    WHEN pe.thread_order_entry_uuid IS NULL 
+                                    THEN 
+                                        CASE 
+                                            WHEN vodf.order_type = 'tape' 
+                                            THEN oe.size::float8 * (oe.party_price::float8)::float8 
+                                            ELSE ROUND(pe.pi_cash_quantity * oe.party_price/12, 2)::float8 
+                                        END
+                                    ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 2)::float8 
+                                END) as value,
+                                jsonb_agg(DISTINCT 
+                                    CASE 
+                                        WHEN pe.thread_order_entry_uuid IS NULL THEN 
+                                            json_build_object(
+                                                'order_number', vodf.order_number, 
+                                                'order_info_uuid', vodf.order_info_uuid
+                                            )::text
+                                        ELSE 
+                                            json_build_object(
+                                                'order_number', CONCAT(
+                                                    'ST', 
+                                                    CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, 
+                                                    TO_CHAR(toi.created_at, 'YY'), 
+                                                    '-', 
+                                                    LPAD(toi.id::text, 4, '0')
+                                                ), 
+                                                'thread_order_info_uuid', toe.uuid
+                                            )::text
+                                    END
+                                )::jsonb AS order_number
+                            FROM
+                                commercial.pi_cash_entry pe
+                                LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
+                                LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                                LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                                LEFT JOIN thread.order_entry toe ON pe.thread_order_entry_uuid = toe.uuid
+                                LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                                LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
+                            GROUP BY
+                                pe.pi_cash_uuid
+                        ) AS pe ON pi_cash.uuid = pe.pi_cash_uuid
+                        WHERE 
+                            pi_cash.is_pi = 0
+                        ORDER BY pi_cash.created_at DESC
                     `;
 
 	const resultPromise = db.execute(query);
