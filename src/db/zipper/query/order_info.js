@@ -387,6 +387,7 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.party_uuid,
 						vodf.party_name,
 						vodf.item_description,
+						vodf.description,
 						vodf.item,
 						vodf.item_name,
 						vodf.zipper_number,
@@ -423,6 +424,7 @@ export async function getTapeAssigned(req, res, next) {
 					) order_entry_counts ON vodf.order_description_uuid = order_entry_counts.order_description_uuid
 					WHERE vodf.order_description_uuid IS NOT NULL AND vodf.is_multi_color = 0
 					ORDER BY 
+						vodf.tape_coil_uuid ASC NULLS FIRST,
 						vodf.order_number DESC,
 						vodf.item_description ASC;`;
 
