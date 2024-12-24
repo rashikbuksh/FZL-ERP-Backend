@@ -1597,23 +1597,33 @@ export async function selectDepartment(req, res, next) {
 }
 //* HR User *//
 export async function selectHrUser(req, res, next) {
-	const { designation } = req.query;
+	const { designation, department } = req.query;
 
 	const userPromise = db
 		.select({
 			value: hrSchema.users.uuid,
 			label: hrSchema.users.name,
 			designation: hrSchema.designation.designation,
+			department: hrSchema.department.department,
 		})
 		.from(hrSchema.users)
 		.leftJoin(
 			hrSchema.designation,
 			eq(hrSchema.users.designation_uuid, hrSchema.designation.uuid)
 		)
+		.leftJoin(
+			hrSchema.department,
+			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
+		)
 		.where(
-			designation
-				? eq(sql`lower(designation.designation)`, designation)
-				: null
+			or(
+				designation
+					? eq(sql`lower(designation.designation)`, designation)
+					: null,
+				department
+					? eq(sql`lower(department.department)`, department)
+					: null
+			)
 		);
 
 	try {

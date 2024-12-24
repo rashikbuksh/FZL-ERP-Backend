@@ -1100,6 +1100,11 @@ const pathHr = {
 					'driver',
 					'executive',
 				]),
+				SE.parameter_query('department', 'department', [
+					'admin',
+					'hr',
+					'thread',
+				]),
 			],
 			responses: {
 				200: {
