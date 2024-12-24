@@ -176,7 +176,8 @@ export async function selectRecipeEntryByRecipeUuid(req, res, next) {
 			materialSchema.info,
 			eq(materialSchema.info.uuid, recipe_entry.material_uuid)
 		)
-		.where(eq(recipe_entry.recipe_uuid, req.params.recipe_uuid));
+		.where(eq(recipe_entry.recipe_uuid, req.params.recipe_uuid))
+		.orderBy(desc(materialSchema.info.name));
 
 	try {
 		const data = await recipe_entryPromise;

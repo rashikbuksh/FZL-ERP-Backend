@@ -272,7 +272,8 @@ export async function selectRecipeDetailsByRecipeUuid(req, res, next) {
 					// 	lte(dyes_category.upto_percentage, 0.5)
 					// )
 				)
-			);
+			)
+			.orderBy(desc(materialSchema.info.name));
 
 		programsData = await dataPromise;
 
