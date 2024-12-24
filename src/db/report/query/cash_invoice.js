@@ -46,7 +46,7 @@ export async function selectCashInvoice(req, res, next) {
                                                         '-', 
                                                         LPAD(toi.id::text, 4, '0')
                                                     ), 
-                                                    'thread_order_info_uuid', toe.uuid
+                                                    'thread_order_info_uuid', toi.uuid
                                                 )
                                         END
                                     ) AS order_number
