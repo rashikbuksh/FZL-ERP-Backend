@@ -1616,7 +1616,7 @@ export async function selectHrUser(req, res, next) {
 			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
 		)
 		.where(
-			or(
+			and(
 				designation
 					? eq(sql`lower(designation.designation)`, designation)
 					: sql`1=1`,
