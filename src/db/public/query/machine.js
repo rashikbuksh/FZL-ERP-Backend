@@ -229,7 +229,7 @@ export async function selectByDate(req, res, next) {
 			toe.production_quantity_in_kg::float8,
 			expected.total_quantity::float8,
 			tb.status as batch_status,
-			expected.total_quantity::float8 * tcl.max_weight as expected_kg,
+			ROUND((expected.total_quantity::float8 * tcl.max_weight)::numeric,3) as expected_kg,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 as total_actual_production_quantity,
 			null as received,
 			CONCAT(tcl.count, '-', tcl.length) as item_description,
