@@ -891,6 +891,7 @@ export const pathThreadBatchEntryProduction = {
 					batch_number: SE.string('TB24-0001'),
 					order_entry_uuid: SE.uuid(),
 					order_number: SE.string('TO24-0001'),
+					order_info_uuid: SE.uuid(),
 					color: SE.string('black'),
 					po: SE.string('po 1'),
 					style: SE.string('style 1'),
