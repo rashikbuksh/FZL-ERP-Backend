@@ -229,10 +229,10 @@ export async function selectByDate(req, res, next) {
 			toe.production_quantity_in_kg::float8,
 			expected.total_quantity::float8,
 			tb.status as batch_status,
-			ROUND((expected.total_quantity::float8 * tcl.max_weight)::numeric,3) as expected_kg,
+			ROUND(expected.total_quantity::numeric * tcl.max_weight::numeric, 3) as expected_kg,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 as total_actual_production_quantity,
 			null as received,
-			CONCAT(tcl.count, '-', tcl.length) as item_description,
+			CONCAT(tcl.count, ' - ', tcl.length) as item_description,
 			0 as is_zipper
 		FROM public.machine pm
 		LEFT JOIN thread.batch tb ON tb.machine_uuid = pm.uuid
