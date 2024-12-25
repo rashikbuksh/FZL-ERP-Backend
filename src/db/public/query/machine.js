@@ -2,10 +2,10 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
-import * as zipperSchema from '../../zipper/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import { machine } from '../../public/schema.js';
+import { decimalToNumber } from '../../variables.js';
+import * as zipperSchema from '../../zipper/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -229,10 +229,10 @@ export async function selectByDate(req, res, next) {
 			toe.production_quantity_in_kg::float8,
 			expected.total_quantity::float8,
 			tb.status as batch_status,
-			0 as expected_kg,
+			expected.total_quantity::float8 * tcl.max_weight as expected_kg,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 as total_actual_production_quantity,
 			null as received,
-			CONCAT(tcl.count,'-',tcl.length) as item_description,
+			CONCAT(tcl.count, '-', tcl.length) as item_description,
 			0 as is_zipper
 		FROM public.machine pm
 		LEFT JOIN thread.batch tb ON tb.machine_uuid = pm.uuid
