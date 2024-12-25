@@ -1,8 +1,5 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -163,6 +160,7 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
 		be.order_entry_uuid, 
 		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+		order_info.uuid as order_info_uuid,
 	    oe.color as color,
 		oe.po as po,
 		oe.style as style,
