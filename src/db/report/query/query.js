@@ -38,7 +38,6 @@ export async function zipperProductionStatusReport(req, res, next) {
                 END)) AS sizes,
                 COUNT(DISTINCT oe.size) AS size_count,
                 SUM(oe.quantity)::float8 AS total_quantity,
-                stock.uuid as stock_uuid,
                 COALESCE(production_sum.assembly_production_quantity, 0)::float8 AS assembly_production_quantity,
                 COALESCE(production_sum.coloring_production_quantity, 0)::float8 AS coloring_production_quantity,
                 COALESCE(tape_coil_to_dyeing_sum.total_tape_coil_to_dyeing_quantity, 0)::float8 AS total_tape_coil_to_dyeing_quantity,
@@ -65,16 +64,17 @@ export async function zipperProductionStatusReport(req, res, next) {
 						FROM zipper.order_entry oe
 						GROUP BY oe.order_description_uuid
 			) order_entry_counts ON vodf.order_description_uuid = order_entry_counts.order_description_uuid
-            LEFT JOIN zipper.finishing_batch fb ON vodf.order_description_uuid = fb.order_description_uuid
-            LEFT JOIN slider.stock ON stock.finishing_batch_uuid = fb.uuid
             LEFT JOIN (
                 SELECT 
-                    stock_uuid,
+                    oe.order_description_uuid,
                     SUM(CASE WHEN section = 'sa_prod' THEN production_quantity ELSE 0 END) AS assembly_production_quantity,
                     SUM(CASE WHEN section = 'coloring' THEN production_quantity ELSE 0 END) AS coloring_production_quantity
                 FROM slider.production
-                GROUP BY stock_uuid
-            ) production_sum ON production_sum.stock_uuid = stock.uuid
+                LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
+                LEFT JOIN zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
+                LEFT JOIN zipper.order_entry oe ON finishing_batch.order_description_uuid = oe.order_description_uuid
+                GROUP BY oe.order_description_uuid
+            ) production_sum ON production_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
                 SELECT 
                     SUM(dtt.trx_quantity) AS total_trx_quantity, dtt.order_description_uuid
@@ -93,8 +93,6 @@ export async function zipperProductionStatusReport(req, res, next) {
             ) tape_coil_to_dyeing_sum ON tape_coil_to_dyeing_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
                 SELECT 
-                    fbe.sfg_uuid AS sfg_uuid,
-                    oe.uuid AS order_entry_uuid,
                     od.uuid as order_description_uuid,
                     SUM(CASE 
                         WHEN sfg_prod.section = 'teeth_molding' THEN 
@@ -123,13 +121,11 @@ export async function zipperProductionStatusReport(req, res, next) {
                 LEFT JOIN 
                     zipper.order_description od ON oe.order_description_uuid = od.uuid
                 GROUP BY 
-                    fbe.sfg_uuid, oe.uuid, od.uuid
+                   od.uuid
             ) sfg_production_sum ON sfg_production_sum.order_description_uuid = oe.order_description_uuid
             LEFT JOIN (
                 SELECT 
-                    sfg.uuid as sfg_uuid,
                     od.uuid as order_description_uuid,
-                    oe.uuid as order_entry_uuid,
                     SUM(CASE WHEN packing_list.gate_pass = 1 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
                     SUM(CASE WHEN packing_list.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
                     SUM(packing_list_entry.short_quantity)AS total_short_quantity,
@@ -147,7 +143,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 LEFT JOIN
                     zipper.order_description od ON oe.order_description_uuid = od.uuid
                 GROUP BY
-                    sfg.uuid, oe.uuid, od.uuid
+                    od.uuid
             ) delivery_sum ON delivery_sum.order_description_uuid = oe.order_description_uuid
             WHERE vodf.order_description_uuid IS NOT NULL
             GROUP BY
@@ -166,7 +162,6 @@ export async function zipperProductionStatusReport(req, res, next) {
                 vodf.item_description,
                 swatch_approval_counts.swatch_approval_count,
                 order_entry_counts.order_entry_count,
-                stock.uuid,
                 production_sum.assembly_production_quantity,
                 production_sum.coloring_production_quantity,
                 tape_coil_to_dyeing_sum.total_tape_coil_to_dyeing_quantity,
@@ -746,8 +741,7 @@ export async function LCReport(req, res, next) {
 }
 
 // shows multiple rows for order_entry.count_length_uuid, count_length.count,count_length.length,order_entry.uuid as order_entry_uuid,order_info.uuid as order_info_uuid columns
-                
-                
+
 export async function threadProductionStatusBatchWise(req, res, next) {
 	const query = sql`
             SELECT
