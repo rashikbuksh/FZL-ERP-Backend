@@ -662,6 +662,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
                 order_info.created_at as order_created_at,
                 order_info.updated_at as order_updated_at,
+                order_info.is_sample,
                 order_info.party_uuid,
                 party.name as party_name,
                 order_info.marketing_uuid,
