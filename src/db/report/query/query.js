@@ -47,6 +47,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 CASE WHEN lower(vodf.item_name) = 'vislon' THEN 'KG' ELSE 'PCS' END AS teeth_molding_unit,
                 COALESCE(sfg_production_sum.teeth_coloring_quantity, 0)::float8 AS teeth_coloring_quantity,
                 COALESCE(sfg_production_sum.finishing_quantity, 0)::float8 AS finishing_quantity,
+                COALESCE(packing_list_sum.total_packing_list_quantity, 0)::float8 AS total_packing_list_quantity,
                 COALESCE(delivery_sum.total_delivery_delivered_quantity, 0)::float8 AS total_delivery_delivered_quantity,
                 COALESCE(delivery_sum.total_delivery_balance_quantity, 0)::float8 AS total_delivery_balance_quantity,
                 COALESCE(delivery_sum.total_short_quantity, 0)::float8 AS total_short_quantity,
@@ -127,6 +128,21 @@ export async function zipperProductionStatusReport(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     od.uuid as order_description_uuid,
+                    SUM(ple.quantity) as total_packing_list_quantity
+                FROM 
+                    delivery.packing_list_entry ple
+                LEFT JOIN
+                    zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+                LEFT JOIN
+                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                LEFT JOIN
+                    zipper.order_description od ON oe.order_description_uuid = od.uuid
+                GROUP BY
+                    od.uuid
+            ) packing_list_sum ON packing_list_sum.order_description_uuid = oe.order_description_uuid
+            LEFT JOIN (
+                SELECT 
+                    od.uuid as order_description_uuid,
                     SUM(CASE WHEN packing_list.gate_pass = 1 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
                     SUM(CASE WHEN packing_list.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
                     SUM(packing_list_entry.short_quantity)AS total_short_quantity,
@@ -173,6 +189,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 sfg_production_sum.teeth_coloring_quantity,
                 sfg_production_sum.finishing_quantity,
                 vodf.item_name,
+                packing_list_sum.total_packing_list_quantity,
                 delivery_sum.total_delivery_delivered_quantity,
                 delivery_sum.total_delivery_balance_quantity,
                 delivery_sum.total_short_quantity,
@@ -628,6 +645,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 batch.is_drying_complete,
                 batch_entry_coning.total_coning_production_quantity::float8,
                 order_entry.warehouse::float8,
+                coalesce(thread_packing_list_sum.total_packing_list_quantity,0)::float8 as total_packing_list_quantity,
                 coalesce(thread_challan_sum.total_delivery_delivered_quantity,0)::float8 as total_delivery_delivered_quantity,
                 coalesce(thread_challan_sum.total_delivery_balance_quantity,0)::float8 as total_delivery_balance_quantity,
                 coalesce(thread_challan_sum.total_short_quantity,0)::float8 as total_short_quantity,
@@ -669,7 +687,18 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 GROUP BY
                     batch_uuid
             ) batch_entry_coning ON batch.uuid = batch_entry_coning.batch_uuid
-             LEFT JOIN (
+            LEFT JOIN (
+                SELECT
+                    toe.uuid as order_entry_uuid,
+                    SUM(ple.quantity) as total_packing_list_quantity
+                FROM
+                    delivery.packing_list_entry ple
+                LEFT JOIN
+                    thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+                GROUP BY
+                    toe.uuid
+            ) thread_packing_list_sum ON thread_packing_list_sum.order_entry_uuid = order_entry.uuid
+            LEFT JOIN (
                 SELECT 
                     toe.uuid as order_entry_uuid,
                     SUM(CASE WHEN (pl.gate_pass = 1 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
