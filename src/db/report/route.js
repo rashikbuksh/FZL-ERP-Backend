@@ -260,7 +260,7 @@ export const pathReport = {
 			description: 'Thread Batch Wise Report',
 			tags: ['report'],
 			operationId: 'threadProductionStatusBatchWise',
-			parameters: [],
+			parameters: [SE.parameter_query('status', 'status', [])],
 			responses: {
 				200: SE.response_schema(200, {
 					batch_number: SE.string('Batch Number'),
