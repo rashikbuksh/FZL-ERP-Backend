@@ -651,6 +651,7 @@ export async function LCReport(req, res, next) {
 // shows multiple rows for order_entry.count_length_uuid, count_length.count,count_length.length,order_entry.uuid as order_entry_uuid,order_info.uuid as order_info_uuid columns
 
 export async function threadProductionStatusBatchWise(req, res, next) {
+	const { status } = req.query;
 	const query = sql`
             SELECT
                 batch.uuid,
@@ -750,6 +751,32 @@ export async function threadProductionStatusBatchWise(req, res, next) {
             ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid
             WHERE batch.uuid IS NOT NULL
             `;
+
+	if (status === 'completed') {
+		query.append(
+			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity = batch_entry_quantity_length.total_quantity AND order_info.is_sample = 0`
+		);
+	} else if (status === 'pending') {
+		query.append(
+			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity < batch_entry_quantity_length.total_quantity AND order_info.is_sample = 0`
+		);
+	} else if (status === 'over_delivered') {
+		query.append(
+			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity > batch_entry_quantity_length.total_quantity AND order_info.is_sample = 0`
+		);
+	} else if (status === 'sample_completed') {
+		query.append(
+			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity = batch_entry_quantity_length.total_quantity AND order_info.is_sample = 1`
+		);
+	} else if (status === 'sample_pending') {
+		query.append(
+			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity < batch_entry_quantity_length.total_quantity AND order_info.is_sample = 1`
+		);
+	} else if (status === 'sample_over_delivered') {
+		query.append(
+			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity > batch_entry_quantity_length.total_quantity AND order_info.is_sample = 1`
+		);
+	}
 
 	const resultPromise = db.execute(query);
 
