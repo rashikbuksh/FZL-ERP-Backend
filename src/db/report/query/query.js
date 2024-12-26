@@ -205,15 +205,15 @@ export async function zipperProductionStatusReport(req, res, next) {
 
 	if (status === 'completed') {
 		query.append(
-			sql` HAVING delivery_sum.total_delivery_delivered_quantity = SUM(oe.quantity)`
+			sql` HAVING delivery_sum.total_delivery_delivered_quantity = SUM(oe.quantity) AND vodf.is_sample = 0`
 		);
 	} else if (status === 'pending') {
 		query.append(
-			sql` HAVING delivery_sum.total_delivery_delivered_quantity < SUM(oe.quantity)`
+			sql` HAVING delivery_sum.total_delivery_delivered_quantity < SUM(oe.quantity) AND vodf.is_sample = 0`
 		);
 	} else if (status === 'over_delivered') {
 		query.append(
-			sql` HAVING delivery_sum.total_delivery_delivered_quantity > SUM(oe.quantity)`
+			sql` HAVING delivery_sum.total_delivery_delivered_quantity > SUM(oe.quantity) AND vodf.is_sample = 0`
 		);
 	} else if (status === 'sample_completed') {
 		query.append(
