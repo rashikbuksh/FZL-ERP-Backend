@@ -754,27 +754,27 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 
 	if (status === 'completed') {
 		query.append(
-			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity = batch_entry_quantity_length.total_quantity AND order_info.is_sample = 0`
+			sql` AND thread_challan_sum.total_delivery_delivered_quantity = batch_entry_quantity_length.total_quantity AND order_info.is_sample = 0`
 		);
 	} else if (status === 'pending') {
 		query.append(
-			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity < batch_entry_quantity_length.total_quantity AND order_info.is_sample = 0`
+			sql` AND thread_challan_sum.total_delivery_delivered_quantity < batch_entry_quantity_length.total_quantity AND order_info.is_sample = 0`
 		);
 	} else if (status === 'over_delivered') {
 		query.append(
-			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity > batch_entry_quantity_length.total_quantity AND order_info.is_sample = 0`
+			sql` AND thread_challan_sum.total_delivery_delivered_quantity > batch_entry_quantity_length.total_quantity AND order_info.is_sample = 0`
 		);
 	} else if (status === 'sample_completed') {
 		query.append(
-			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity = batch_entry_quantity_length.total_quantity AND order_info.is_sample = 1`
+			sql` AND thread_challan_sum.total_delivery_delivered_quantity = batch_entry_quantity_length.total_quantity AND order_info.is_sample = 1`
 		);
 	} else if (status === 'sample_pending') {
 		query.append(
-			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity < batch_entry_quantity_length.total_quantity AND order_info.is_sample = 1`
+			sql` AND thread_challan_sum.total_delivery_delivered_quantity < batch_entry_quantity_length.total_quantity AND order_info.is_sample = 1`
 		);
 	} else if (status === 'sample_over_delivered') {
 		query.append(
-			sql` HAVING thread_challan_sum.total_delivery_delivered_quantity > batch_entry_quantity_length.total_quantity AND order_info.is_sample = 1`
+			sql` AND thread_challan_sum.total_delivery_delivered_quantity > batch_entry_quantity_length.total_quantity AND order_info.is_sample = 1`
 		);
 	}
 
