@@ -205,27 +205,27 @@ export async function zipperProductionStatusReport(req, res, next) {
 
 	if (status === 'completed') {
 		query.append(
-			sql` HAVING delivery_sum.total_delivery_delivered_quantity = SUM(oe.quantity) AND vodf.is_sample = 0`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(oe.quantity) AND vodf.is_sample = 0`
 		);
 	} else if (status === 'pending') {
 		query.append(
-			sql` HAVING delivery_sum.total_delivery_delivered_quantity < SUM(oe.quantity) AND vodf.is_sample = 0`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(oe.quantity) AND vodf.is_sample = 0`
 		);
 	} else if (status === 'over_delivered') {
 		query.append(
-			sql` HAVING delivery_sum.total_delivery_delivered_quantity > SUM(oe.quantity) AND vodf.is_sample = 0`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(oe.quantity) AND vodf.is_sample = 0`
 		);
 	} else if (status === 'sample_completed') {
 		query.append(
-			sql` HAVING delivery_sum.total_delivery_delivered_quantity = SUM(oe.quantity) AND vodf.is_sample = 1`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(oe.quantity) AND vodf.is_sample = 1`
 		);
 	} else if (status === 'sample_pending') {
 		query.append(
-			sql` HAVING delivery_sum.total_delivery_delivered_quantity < SUM(oe.quantity) AND vodf.is_sample = 1`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(oe.quantity) AND vodf.is_sample = 1`
 		);
 	} else if (status === 'sample_over_delivered') {
 		query.append(
-			sql` HAVING delivery_sum.total_delivery_delivered_quantity > SUM(oe.quantity) AND vodf.is_sample = 1`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(oe.quantity) AND vodf.is_sample = 1`
 		);
 	}
 
@@ -686,11 +686,11 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 coalesce(thread_challan_sum.total_reject_quantity,0)::float8 as total_reject_quantity,
                 batch.remarks
             FROM
-                thread.order_entry
+                thread.batch_entry
             LEFT JOIN 
-                thread.batch_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
             LEFT JOIN
-                 thread.batch ON batch.uuid = batch_entry.batch_uuid
+                thread.batch ON batch.uuid = batch_entry.batch_uuid
             LEFT JOIN
                 thread.order_info ON order_entry.order_info_uuid = order_info.uuid
             LEFT JOIN
@@ -755,27 +755,27 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 
 	if (status === 'completed') {
 		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity = thread_challan_sum.total_delivery_delivered_quantity AND order_info.is_sample = 0`
+			sql` AND batch_entry_quantity_length.total_quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
 		);
 	} else if (status === 'pending') {
 		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity > thread_challan_sum.total_delivery_delivered_quantity AND order_info.is_sample = 0`
+			sql` AND batch_entry_quantity_length.total_quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
 		);
 	} else if (status === 'over_delivered') {
 		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity < thread_challan_sum.total_delivery_delivered_quantity AND order_info.is_sample = 0`
+			sql` AND batch_entry_quantity_length.total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
 		);
 	} else if (status === 'sample_completed') {
 		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity = thread_challan_sum.total_delivery_delivered_quantity AND order_info.is_sample = 1`
+			sql` AND batch_entry_quantity_length.total_quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 		);
 	} else if (status === 'sample_pending') {
 		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity > thread_challan_sum.total_delivery_delivered_quantity AND order_info.is_sample = 1`
+			sql` AND batch_entry_quantity_length.total_quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 		);
 	} else if (status === 'sample_over_delivered') {
 		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity < thread_challan_sum.total_delivery_delivered_quantity AND order_info.is_sample = 1`
+			sql` AND batch_entry_quantity_length.total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 		);
 	}
 
