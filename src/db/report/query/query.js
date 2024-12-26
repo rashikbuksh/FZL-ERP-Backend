@@ -7,6 +7,9 @@ import db from '../../index.js';
 
 // multiple rows shows for stock.uuid, assembly_production_quantity,coloring_production_quantity, teeth_molding_quantity,teeth_coloring_quantity,finishing_quantity columns
 export async function zipperProductionStatusReport(req, res, next) {
+	const { status } = req.query;
+	console.log(status);
+
 	const query = sql`
             SELECT 
                 vodf.order_info_uuid,
@@ -163,7 +166,10 @@ export async function zipperProductionStatusReport(req, res, next) {
                     od.uuid
             ) delivery_sum ON delivery_sum.order_description_uuid = oe.order_description_uuid
             WHERE vodf.order_description_uuid IS NOT NULL
-            GROUP BY
+        `;
+
+	query.append(
+		sql` GROUP BY
                 vodf.order_info_uuid,
                 vodf.order_number,
                 vodf.created_at,
@@ -194,8 +200,34 @@ export async function zipperProductionStatusReport(req, res, next) {
                 delivery_sum.total_delivery_balance_quantity,
                 delivery_sum.total_short_quantity,
                 delivery_sum.total_reject_quantity,
-                vodf.remarks
-        `;
+                vodf.remarks`
+	);
+
+	if (status === 'completed') {
+		query.append(
+			sql` HAVING delivery_sum.total_delivery_delivered_quantity = SUM(oe.quantity)`
+		);
+	} else if (status === 'pending') {
+		query.append(
+			sql` HAVING delivery_sum.total_delivery_delivered_quantity < SUM(oe.quantity)`
+		);
+	} else if (status === 'over_delivered') {
+		query.append(
+			sql` HAVING delivery_sum.total_delivery_delivered_quantity > SUM(oe.quantity)`
+		);
+	} else if (status === 'sample_completed') {
+		query.append(
+			sql` HAVING delivery_sum.total_delivery_delivered_quantity = SUM(oe.quantity) AND vodf.is_sample = 1`
+		);
+	} else if (status === 'sample_pending') {
+		query.append(
+			sql` HAVING delivery_sum.total_delivery_delivered_quantity < SUM(oe.quantity) AND vodf.is_sample = 1`
+		);
+	} else if (status === 'sample_over_delivered') {
+		query.append(
+			sql` HAVING delivery_sum.total_delivery_delivered_quantity > SUM(oe.quantity) AND vodf.is_sample = 1`
+		);
+	}
 
 	const resultPromise = db.execute(query);
 

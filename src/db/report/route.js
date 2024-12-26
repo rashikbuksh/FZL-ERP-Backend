@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
 import { selectCashInvoice } from './query/cash_invoice.js';
+import { selectLabDip } from './query/lab_dip.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
 import * as reportOperations from './query/query.js';
@@ -10,7 +11,6 @@ import {
 	selectSampleReportByDate,
 } from './query/sample_report.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
-import { selectLabDip } from './query/lab_dip.js';
 const reportRouter = Router();
 
 // * Zipper Production Status Report
@@ -105,7 +105,7 @@ export const pathReport = {
 			description: 'Zipper Production Status Report',
 			tags: ['report'],
 			operationId: 'zipperProductionStatusReport',
-			parameters: [],
+			parameters: [SE.parameter_query('status', 'status', [])],
 			responses: {
 				200: {
 					description: 'Zipper Production Status Report',
