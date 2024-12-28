@@ -113,7 +113,7 @@ export async function selectAll(req, res, next) {
 	`;
 
 	// can_show contains comma separated values like zipper,thread or zipper,sample_zipper but if it is thread then show both thread and sample_thread
-	if (can_show) {
+	if (can_show && can_show != 'all') {
 		const can_show_array = can_show.split(',');
 		if (can_show_array.includes('thread')) {
 			can_show_array.push('sample_thread');
