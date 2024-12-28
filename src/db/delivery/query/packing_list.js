@@ -101,7 +101,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { challan_uuid } = req.query;
+	const { challan_uuid, can_show } = req.query;
 
 	const query = sql`
 		SELECT dvl.*,
@@ -110,6 +110,30 @@ export async function selectAll(req, res, next) {
 		FROM delivery.v_packing_list dvl
 		LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 		${challan_uuid ? sql`WHERE dvl.challan_uuid = ${challan_uuid}` : sql``}
+	`;
+
+	// can_show contains comma separated values like zipper,thread or zipper,sample_zipper but if it is thread then show both thread and sample_thread
+	if (can_show) {
+		const can_show_array = can_show.split(',');
+		if (can_show_array.includes('thread')) {
+			can_show_array.push('sample_thread');
+		}
+
+		can_show_array.forEach((item, index) => {
+			console.log(item, index, 'item, index');
+
+			if (index == 0 && !challan_uuid) {
+				query.append(sql`WHERE dvl.item_for = ${item}`);
+			} else {
+				query.append(sql` OR dvl.item_for = ${item}`);
+			}
+		});
+	}
+
+	console.log(query.queryChunks);
+
+	query.append(
+		sql`
 		GROUP BY 
 			dvl.uuid,
 			dvl.order_info_uuid,
@@ -138,8 +162,8 @@ export async function selectAll(req, res, next) {
 			dvl.remarks,
 			dvl.gate_pass
 		ORDER BY 
-			dvl.created_at DESC
-	`;
+			dvl.created_at DESC`
+	);
 
 	const resultPromise = db.execute(query);
 

@@ -9,8 +9,10 @@ export const pathDeliveryPackingList = {
 			summary: 'Get all packing lists',
 			description: 'Get all packing lists',
 			// operationId: "getPackingList",
-			parameters: [SE.parameter_query('challan_uuid', 'challan_uuid')],
-
+			parameters: [
+				SE.parameter_query('challan_uuid', 'challan_uuid'),
+				SE.parameter_query('can_show', 'can_show'),
+			],
 			responses: {
 				200: {
 					description: 'Return list of packing lists',
