@@ -119,9 +119,12 @@ export async function selectAll(req, res, next) {
 			can_show_array.push('sample_thread');
 		}
 
-		can_show_array.forEach((item, index) => {
-			console.log(item, index, 'item, index');
+		if (can_show_array.includes('zipper')) {
+			can_show_array.push('tape');
+			can_show_array.push('slider');
+		}
 
+		can_show_array.forEach((item, index) => {
 			if (index == 0 && !challan_uuid) {
 				query.append(sql`WHERE dvl.item_for = ${item}`);
 			} else {
