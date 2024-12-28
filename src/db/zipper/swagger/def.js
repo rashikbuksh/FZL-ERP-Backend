@@ -1,4 +1,3 @@
-import { index } from 'drizzle-orm/mysql-core/indexes.js';
 import SE, { SED } from '../../../util/swagger_example.js';
 import { finishing_batch_entry } from '../schema.js';
 
