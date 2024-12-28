@@ -32,6 +32,7 @@ export async function insert(req, res, next) {
 		created_at,
 		remarks,
 		is_inch,
+		index,
 	} = req.body;
 
 	const order_entryPromise = db
@@ -53,6 +54,7 @@ export async function insert(req, res, next) {
 			created_at,
 			remarks,
 			is_inch,
+			index,
 		})
 		.returning({ insertedUuid: order_entry.uuid });
 
@@ -91,6 +93,7 @@ export async function update(req, res, next) {
 		updated_at,
 		remarks,
 		is_inch,
+		index,
 	} = req.body;
 
 	const order_entryPromise = db
@@ -112,6 +115,7 @@ export async function update(req, res, next) {
 			updated_at,
 			remarks,
 			is_inch,
+			index,
 		})
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_entry.uuid });
@@ -250,6 +254,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			total_delivery_quantity: decimalToNumber(sfg.delivered),
 			total_reject_quantity: decimalToNumber(sfg.reject_quantity),
 			total_short_quantity: decimalToNumber(sfg.short_quantity),
+			index: order_entry.index,
 		})
 		.from(order_entry)
 		.leftJoin(

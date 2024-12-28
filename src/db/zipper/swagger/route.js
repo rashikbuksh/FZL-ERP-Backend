@@ -570,6 +570,7 @@ export const pathZipperOrderDescription = {
 						coloring_prod: SE.number(10),
 						created_by: SE.uuid(),
 						created_by_name: SE.string('John Doe'),
+						index: SE.number(1),
 					}),
 				}),
 				400: SE.response(400),
@@ -619,6 +620,7 @@ export const pathZipperOrderDescription = {
 						coloring_prod: SE.number(10),
 						created_by: SE.uuid(),
 						created_by_name: SE.string('John Doe'),
+						index: SE.number(1),
 					}),
 				}),
 				400: {
@@ -680,6 +682,7 @@ export const pathZipperOrderDescription = {
 							coloring_prod: SE.number(10),
 							created_by: SE.uuid(),
 							created_by_name: SE.string('John Doe'),
+							index: SE.number(1),
 						}),
 					}),
 					400: {
@@ -762,6 +765,7 @@ const order_entry_merge_schema_fields = {
 	finishing_prod: SE.number(10),
 	total_finishing: SE.number(10),
 	coloring_prod: SE.number(10),
+	index: SE.number(1),
 };
 
 // * Zipper Order Entry * //

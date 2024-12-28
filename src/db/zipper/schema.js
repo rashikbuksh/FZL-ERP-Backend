@@ -208,6 +208,7 @@ export const order_entry = zipper.table('order_entry', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 	is_inch: integer('is_inch').default(0),
+	index: integer('index').notNull().default(1),
 });
 
 export const sfg = zipper.table('sfg', {
@@ -407,9 +408,9 @@ export const dyeing_batch = zipper.table('dyeing_batch', {
 		.notNull()
 		.default('2024-01-01 00:00:00'),
 	batch_type: dyeing_batch_type_enum('batch_type').default('normal'),
-	order_info_uuid: defaultUUID('order_info_uuid').references(
-		() => order_info.uuid
-	).default(null),
+	order_info_uuid: defaultUUID('order_info_uuid')
+		.references(() => order_info.uuid)
+		.default(null),
 });
 
 export const dyeing_batch_entry = zipper.table('dyeing_batch_entry', {

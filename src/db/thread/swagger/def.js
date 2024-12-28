@@ -100,6 +100,7 @@ export const defThreadOrderEntry = {
 		'reject_quantity',
 		'production_quantity_in_kg',
 		'carton_quantity',
+		'index',
 	],
 
 	properties: {
@@ -129,6 +130,7 @@ export const defThreadOrderEntry = {
 		reject_quantity: SE.number(10),
 		production_quantity_in_kg: SE.number(10),
 		carton_quantity: SE.number(10),
+		index: SE.integer(1),
 	},
 	xml: {
 		name: 'Thread/OrderEntry',

@@ -1,3 +1,4 @@
+import { index } from 'drizzle-orm/mysql-core/indexes.js';
 import SE, { SED } from '../../../util/swagger_example.js';
 import { finishing_batch_entry } from '../schema.js';
 
@@ -144,6 +145,7 @@ export const def_zipper_order_entry = SED({
 		'bleaching',
 		'created_at',
 		'is_inch',
+		'index',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -162,6 +164,7 @@ export const def_zipper_order_entry = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
+		index: SE.integer(),
 	},
 	xml: 'Zipper/Order-Entry',
 });

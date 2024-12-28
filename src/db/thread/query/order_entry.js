@@ -1,9 +1,6 @@
 import { asc, desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
@@ -126,6 +123,7 @@ export async function selectAll(req, res, next) {
 				order_entry.production_quantity_in_kg
 			),
 			carton_quantity: order_entry.carton_quantity,
+			index: order_entry.index,
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -195,6 +193,7 @@ export async function select(req, res, next) {
 				order_entry.production_quantity_in_kg
 			),
 			carton_quantity: order_entry.carton_quantity,
+			index: order_entry.index,
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -265,6 +264,7 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 				order_entry.production_quantity_in_kg
 			),
 			carton_quantity: order_entry.carton_quantity,
+			index: order_entry.index,
 		})
 		.from(order_entry)
 		.leftJoin(
