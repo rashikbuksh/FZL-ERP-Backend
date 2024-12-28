@@ -43,7 +43,7 @@ export const marketing = pgTable('marketing', {
 export const merchandiser = pgTable('merchandiser', {
 	uuid: uuid_primary,
 	party_uuid: defaultUUID('party_uuid').references(() => party.uuid),
-	name: text('name').notNull().unique(),
+	name: text('name').notNull(),
 	email: text('email').default(null),
 	phone: text('phone').default(null),
 	address: text('address').default(null),
