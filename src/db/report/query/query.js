@@ -1415,27 +1415,39 @@ export async function deliveryStatementReport(req, res, next) {
                 vodf.item_description,
                 vodf.end_type,
                 vodf.end_type_name,
-                CASE WHEN MIN(oe.size) = MAX(oe.size) THEN MAX(oe.size) ELSE CONCAT(MIN(oe.size), ' - ', MAX(oe.size)) END as size,
+				-- starts OE
+				oe.style,
+				oe.color,
+                oe.size,
+				ROUND(oe.company_price::numeric,3) as company_price_dzn,
+                ROUND(oe.company_price/12::numeric,3) as company_price_pcs,
+				-- opening CALC
+				'opening' as opening,
                 coalesce(opening_all_sum.total_close_end_quantity,0)::float8 as opening_total_close_end_quantity,
                 coalesce(opening_all_sum.total_open_end_quantity,0)::float8 as opening_total_open_end_quantity,
                 coalesce(opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity,0)::float8 as opening_total_quantity,
                 (coalesce(opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity,0)/12)::float8 as opening_total_quantity_dzn,
-                coalesce(opening_all_sum.unit_price_dzn::float8,0) as opening_unit_price_dzn,
-                coalesce(opening_all_sum.unit_price_pcs::float8,0) as opening_unit_price_pcs,
                 coalesce(opening_all_sum.total_close_end_value,0)::float8 as opening_total_close_end_value,
                 coalesce(opening_all_sum.total_open_end_value,0)::float8 as opening_total_open_end_value,
                 coalesce(opening_all_sum.total_close_end_value + opening_all_sum.total_open_end_value,0)::float8 as opening_total_value,
-                running_all_sum.challan_numbers,
-                running_all_sum.created_at as challan_date,
+				-- running CALC
+				'running' as running,
                 coalesce(running_all_sum.total_close_end_quantity,0)::float8 as running_total_close_end_quantity,
                 coalesce(running_all_sum.total_open_end_quantity,0)::float8 as running_total_open_end_quantity,
                 coalesce(running_all_sum.total_close_end_quantity + running_all_sum.total_open_end_quantity,0)::float8 as running_total_quantity,
                 (coalesce(running_all_sum.total_close_end_quantity + running_all_sum.total_open_end_quantity,0)/12)::float8 as running_total_quantity_dzn,
-                coalesce(running_all_sum.unit_price_dzn::float8,0) as running_unit_price_dzn,
-                coalesce(running_all_sum.unit_price_pcs::float8,0) as running_unit_price_pcs,
                 coalesce(running_all_sum.total_close_end_value,0)::float8 as running_total_close_end_value,
                 coalesce(running_all_sum.total_open_end_value,0)::float8 as running_total_open_end_value,
-                coalesce(running_all_sum.total_close_end_value + running_all_sum.total_open_end_value,0)::float8 as running_total_value
+                coalesce(running_all_sum.total_close_end_value + running_all_sum.total_open_end_value,0)::float8 as running_total_value,
+				-- closing CALC
+				'closing' as closing,
+				coalesce(running_all_sum.total_close_end_quantity + opening_all_sum.total_close_end_quantity,0)::float8 as closing_total_close_end_quantity,
+				coalesce(running_all_sum.total_open_end_quantity + opening_all_sum.total_open_end_quantity,0)::float8 as closing_total_open_end_quantity,
+				coalesce(running_all_sum.total_close_end_quantity + running_all_sum.total_open_end_quantity + opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity,0)::float8 as closing_total_quantity,
+				(coalesce(running_all_sum.total_close_end_quantity + running_all_sum.total_open_end_quantity + opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity,0)/12)::float8 as closing_total_quantity_dzn,
+				coalesce(running_all_sum.total_close_end_value + opening_all_sum.total_close_end_value,0)::float8 as closing_total_close_end_value,
+				coalesce(running_all_sum.total_open_end_value + opening_all_sum.total_open_end_value,0)::float8 as closing_total_open_end_value,
+				coalesce(running_all_sum.total_close_end_value + running_all_sum.total_open_end_value + opening_all_sum.total_close_end_value + opening_all_sum.total_open_end_value,0)::float8 as closing_total_value
             FROM
                 zipper.v_order_details_full vodf 
             LEFT JOIN 
@@ -1444,66 +1456,33 @@ export async function deliveryStatementReport(req, res, next) {
                 SELECT 
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
-                    oe.company_price as unit_price_dzn,
-                    (oe.company_price/12) as unit_price_pcs,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_close_end_value,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_open_end_value,
-                    vpl.order_description_uuid
+                    oe.uuid as order_entry_uuid
                 FROM
                     delivery.v_packing_list_details vpl
-                    LEFT JOIN delivery.challan ch ON vpl.challan_uuid = ch.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
                     LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid AND oe.order_description_uuid = vodf.order_description_uuid
-                WHERE 
-                    vpl.challan_uuid IS NOT NULL AND ${from_date ? sql`ch.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
+			    WHERE vpl.is_warehouse_received = true AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                 GROUP BY
-                    vpl.order_description_uuid, oe.company_price
-            ) opening_all_sum ON vodf.order_description_uuid = opening_all_sum.order_description_uuid
+                    oe.uuid
+            ) opening_all_sum ON oe.uuid = opening_all_sum.order_entry_uuid
             LEFT JOIN (
                 SELECT 
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
-                    oe.company_price as unit_price_dzn,
-                    (oe.company_price/12) as unit_price_pcs,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_close_end_value,
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity::float8 ELSE 0 END) * (oe.company_price/12), 0)::float8 as total_open_end_value,
-                    CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) as challan_numbers,
-                    ch.created_at,
-                    vpl.order_description_uuid
+                    oe.uuid as order_entry_uuid
                 FROM
                     delivery.v_packing_list_details vpl
-                    LEFT JOIN delivery.challan ch ON vpl.challan_uuid = ch.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid
                     LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid AND oe.order_description_uuid = vodf.order_description_uuid
-                WHERE 
-                    vpl.challan_uuid IS NOT NULL AND ${from_date && to_date ? sql`ch.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+				WHERE vpl.is_warehouse_received = true AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 GROUP BY
-                    vpl.order_description_uuid, oe.company_price, ch.id, ch.created_at
-            ) running_all_sum ON vodf.order_description_uuid = running_all_sum.order_description_uuid
-            WHERE (running_all_sum.total_close_end_quantity + running_all_sum.total_open_end_quantity > 0 OR opening_all_sum.total_close_end_quantity + opening_all_sum.total_open_end_quantity > 0)
-            GROUP BY 
-                vodf.order_info_uuid,
-                vodf.order_number,
-                vodf.party_uuid,
-                vodf.party_name,
-                vodf.order_description_uuid,
-                vodf.item_description,
-                vodf.end_type,
-                vodf.end_type_name,
-                opening_all_sum.total_close_end_quantity,
-                opening_all_sum.total_open_end_quantity,
-                opening_all_sum.unit_price_dzn,
-                opening_all_sum.unit_price_pcs,
-                opening_all_sum.total_close_end_value,
-                opening_all_sum.total_open_end_value,
-                running_all_sum.challan_numbers,
-                running_all_sum.total_close_end_quantity,
-                running_all_sum.total_open_end_quantity,
-                running_all_sum.unit_price_dzn,
-                running_all_sum.unit_price_pcs,
-                running_all_sum.total_close_end_value,
-                running_all_sum.total_open_end_value,
-                running_all_sum.created_at
+                    oe.uuid
+            ) running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid
+            WHERE vodf.is_bill = 1
             ORDER BY vodf.party_name DESC
     `;
 	const resultPromise = db.execute(query);

@@ -721,8 +721,9 @@ export async function selectOrderInfoToGetOrderDescription(req, res, next) {
 		FROM zipper.v_order_details 
 		WHERE 
 			v_order_details.order_number = ${order_number} 
-			${marketing_uuid ? sql`AND v_order_details.marketing_uuid = ${marketing_uuid}` : sql``}`;
-
+			${marketing_uuid ? sql`AND v_order_details.marketing_uuid = ${marketing_uuid}` : sql``}
+		ORDER BY v_order_details.order_description_created_at ASC	
+		`;
 	const orderInfoPromise = db.execute(query);
 
 	try {
