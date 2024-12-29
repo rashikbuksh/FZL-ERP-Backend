@@ -173,11 +173,13 @@ export async function selectSwatchInfo(req, res, next) {
 					oe.style as style,
 					oe.color as color,
 					od.is_inch,
+					oe.size,
 					CASE 
-                        WHEN od.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                        ELSE CAST(oe.size AS NUMERIC)
-                    END as size,
+						WHEN vod.order_type = 'tape' THEN 'Meter' 
+						WHEN vod.order_type = 'slider' THEN 'Pcs'
+						WHEN vod.is_inch = 1 THEN 'Inch'
+						ELSE 'CM' 
+					END as unit,
 					oe.bleaching,
 					oe.quantity::float8 as quantity,
 					sfg.recipe_uuid as recipe_uuid,
@@ -266,18 +268,14 @@ export async function selectSfgBySection(req, res, next) {
 			oe.order_description_uuid as order_description_uuid,
 			oe.style as style,
 			oe.color as color,
+			oe.size,
 			CASE 
-                WHEN vod.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
-            END as size,
-			concat(oe.style, '/', oe.color, '/', 
-					CASE 
-                        WHEN vod.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                        ELSE CAST(oe.size AS NUMERIC)
-                    END
-			) as style_color_size,
+				WHEN vod.order_type = 'tape' THEN 'Meter' 
+				WHEN vod.order_type = 'slider' THEN 'Pcs'
+				WHEN vod.is_inch = 1 THEN 'Inch'
+				ELSE 'CM' 
+			END as unit,
+			concat(oe.style, '/', oe.color, '/', oe.size) as style_color_size,
 			oe.quantity::float8 as order_quantity,
 			sfg.recipe_uuid as recipe_uuid,
 			recipe.name as recipe_name,

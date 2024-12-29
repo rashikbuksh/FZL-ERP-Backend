@@ -1,8 +1,5 @@
 import { and, desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { planning, planning_entry, sfg } from '../schema.js';
@@ -233,11 +230,13 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			pe.factory_remarks as factory_remarks,
 			oe.style,
 			oe.color,
+			oe.size,
 			CASE 
-                WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
-            END as size,,
+				WHEN vod.order_type = 'tape' THEN 'Meter' 
+				WHEN vod.order_type = 'slider' THEN 'Pcs'
+				WHEN vod.is_inch = 1 THEN 'Inch'
+				ELSE 'CM' 
+			END as unit,
 			oe.quantity::float8 as order_quantity,
 			vod.order_number,
 			vod.item_description,
@@ -292,7 +291,14 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			pe_given.given_sno_quantity::float8,
 			pe_given.given_factory_quantity::float8,
 			pe_given.given_production_quantity::float8,
-			pe_given.given_batch_production_quantity::float8
+			pe_given.given_batch_production_quantity::float8,
+			pe.sno_quantity::float8,
+			pe.factory_quantity::float8,
+			pe.production_quantity::float8,
+			pe.batch_production_quantity::float8,
+			vod.order_type,
+			vod.is_inch,
+			oe.quantity
 	`;
 
 	//  AND oe.swatch_status_enum = 'approved' // removed because of development purpose
@@ -321,11 +327,13 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			oe.style,
 			oe.color,
+			oe.size,
 			CASE 
-                WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
-            END as size,,
+				WHEN vod.order_type = 'tape' THEN 'Meter' 
+				WHEN vod.order_type = 'slider' THEN 'Pcs'
+				WHEN vod.is_inch = 1 THEN 'Inch'
+				ELSE 'CM' 
+			END as unit,
 			oe.quantity::float8 as order_quantity,
 			vod.order_number,
 			vod.item_description,
@@ -373,7 +381,10 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			pe_given.given_sno_quantity::float8,
 			pe_given.given_factory_quantity::float8,
 			pe_given.given_production_quantity::float8,
-			pe_given.given_batch_production_quantity::float8
+			pe_given.given_batch_production_quantity::float8,
+			vod.order_type,
+			vod.is_inch,
+			oe.quantity
 	`;
 
 	const orderDetailsPromise = db.execute(query);

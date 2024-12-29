@@ -186,14 +186,11 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
 			oe.style,
 			oe.color,
-			CASE 
-                WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
-            END as size,
+			oe.size,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 
 				WHEN vodf.order_type = 'slider' THEN 'Pcs'
+				WHEN vodf.is_inch = 1 THEN 'Inch'
 				ELSE 'CM' 
 			END as unit,
 			oe.quantity::float8 as order_quantity,
@@ -375,17 +372,14 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
 			oe.style,
 			oe.color,
-			CASE 
-				WHEN vodf.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-				ELSE CAST(oe.size AS NUMERIC)
-			END as size,
-			oe.quantity::float8 as order_quantity,
+			oe.size,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 
 				WHEN vodf.order_type = 'slider' THEN 'Pcs'
+				WHEN vodf.is_inch = 1 THEN 'Inch'
 				ELSE 'CM' 
 			END as unit,
+			oe.quantity::float8 as order_quantity,
 			fbe.quantity::float8 as batch_quantity,
 			oe.bleaching,
 			vodf.order_number,
@@ -487,23 +481,14 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			oe.order_description_uuid as order_description_uuid,
 			oe.style as style,
 			oe.color as color,
+			oe.size,
 			CASE 
 				WHEN vod.order_type = 'tape' THEN 'Meter' 
 				WHEN vod.order_type = 'slider' THEN 'Pcs'
+				WHEN vod.is_inch = 1 THEN 'Inch'
 				ELSE 'CM' 
 			END as unit,
-			CASE 
-                WHEN vod.is_inch = 1 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                ELSE CAST(oe.size AS NUMERIC)
-            END as size,
-			concat(oe.style, '/', oe.color, '/', 
-					CASE 
-                        WHEN vod.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                        ELSE CAST(oe.size AS NUMERIC)
-                    END
-			) as style_color_size,
+			concat(oe.style, '/', oe.color, '/', oe.size) as style_color_size,
 			CASE 
 				WHEN od.order_type = 'tape' 
 				THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 

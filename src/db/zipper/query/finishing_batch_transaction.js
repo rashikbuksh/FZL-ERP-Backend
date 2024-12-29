@@ -250,10 +250,13 @@ export async function selectByTrxFrom(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size,
-			concat(oe.style, '-', oe.color, '-', CASE 
-                        WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-                        ELSE CAST(oe.size AS NUMERIC)
-                    END) AS style_color_size, 
+			CASE 
+				WHEN vodf.order_type = 'tape' THEN 'Meter' 
+				WHEN vodf.order_type = 'slider' THEN 'Pcs'
+				WHEN vodf.is_inch = 1 THEN 'Inch'
+				ELSE 'CM' 
+			END as unit,
+			concat(oe.style, '-', oe.color, '-', oe.size) AS style_color_size, 
 			CASE 
 				WHEN vodf.order_type = 'tape' 
 				THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
