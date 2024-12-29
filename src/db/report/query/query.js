@@ -1498,8 +1498,8 @@ export async function deliveryStatementReport(req, res, next) {
 					vodf.order_type,
 					vodf.is_inch,
                     oe.size::float8,
-                    ROUND(oe.company_price :: numeric, 3) as company_price_dzn, 
-                    ROUND(oe.company_price / 12 :: numeric, 3) as company_price_pcs, 
+                    ROUND(oe.company_price::numeric, 3) as company_price_dzn, 
+                    ROUND(oe.company_price / 12::numeric, 3) as company_price_pcs, 
                     'opening' as opening, 
                     coalesce(
                         opening_all_sum.total_close_end_quantity, 
@@ -1715,6 +1715,8 @@ export async function deliveryStatementReport(req, res, next) {
 				order_number,
 				item_description,
 				size,
+				company_price_dzn,
+				company_price_pcs,
 				opening_total_close_end_quantity,
 				opening_total_open_end_quantity,
 				opening_total_quantity,
@@ -1786,6 +1788,8 @@ export async function deliveryStatementReport(req, res, next) {
 
 			item.other.push({
 				size,
+				company_price_dzn,
+				company_price_pcs,
 				opening_total_close_end_quantity,
 				opening_total_open_end_quantity,
 				opening_total_quantity,
