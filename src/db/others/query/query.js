@@ -917,6 +917,7 @@ export async function selectOrderDescription(req, res, next) {
 					CASE 
 						WHEN vodf.order_type = 'tape' THEN 'Meter' 
 						WHEN vodf.order_type = 'slider' THEN 'Pcs'
+						WHEN vodf.is_inch = 1 THEN 'Inch'
 						ELSE 'CM' 
 					END as unit,
 					vodf.order_type,
@@ -941,11 +942,7 @@ export async function selectOrderDescription(req, res, next) {
 					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
 					oe.style,
 					oe.color,
-					CASE 
-						WHEN vodf.is_inch = 1 
-							THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-						ELSE CAST(oe.size AS NUMERIC)
-					END as size,
+					oe.size,
 					oe.quantity::float8 as order_quantity,
 					fbe_given.balance_quantity,
 					vodf.slider_provided
