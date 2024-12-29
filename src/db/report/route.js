@@ -67,6 +67,12 @@ reportRouter.get(
 	reportOperations.ProductionReportThreadSnm
 );
 
+//* Daily Production Report
+reportRouter.get(
+	'/daily-production-report',
+	reportOperations.dailyProductionReport
+);
+
 //* Delivery Statement Report
 reportRouter.get(
 	'/delivery-statement-report',
@@ -356,6 +362,54 @@ export const pathReport = {
 					production_remarks: SE.string('Production Remarks'),
 					created_at: SE.date_time(),
 					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/daily-production-report': {
+		get: {
+			summary: 'Daily Production Report',
+			description: 'Daily Production Report',
+			tags: ['report'],
+			operationId: 'dailyProductionReport',
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					item: SE.uuid(),
+					item_name: SE.string('Item Name'),
+					order_number: SE.string('Order Number'),
+					party_uuid: SE.uuid(),
+					party_name: SE.string('Party Name'),
+					order_description_uuid: SE.uuid(),
+					item_description: SE.string('Item Description'),
+					end_type: SE.uuid(),
+					end_type_name: SE.string('End Type Name'),
+					order_entry_uuid: SE.uuid(),
+					size: SE.string('Size'),
+					opening_total_close_end_quantity: SE.number(610),
+					opening_total_open_end_quantity: SE.number(610),
+					opening_total_quantity: SE.number(610),
+					opening_total_quantity_dzn: SE.number(610),
+					opening_unit_price_dzn: SE.number(610),
+					opening_unit_price_pcs: SE.number(610),
+					opening_total_close_end_value: SE.number(610),
+					opening_total_open_end_value: SE.number(610),
+					opening_total_value: SE.number(610),
+					challan_numbers: SE.string('Challan Numbers'),
+					challan_date: SE.date_time(),
+					running_total_close_end_quantity: SE.number(610),
+					running_total_open_end_quantity: SE.number(610),
+					running_total_quantity: SE.number(610),
+					running_total_quantity_dzn: SE.number(610),
+					running_unit_price_dzn: SE.number(610),
+					running_unit_price_pcs: SE.number(610),
+					running_total_close_end_value: SE.number(610),
+					running_total_open_end_value: SE.number(610),
+					running_total_value: SE.number(610),
 				}),
 			},
 		},

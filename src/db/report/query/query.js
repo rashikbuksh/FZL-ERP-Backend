@@ -1403,7 +1403,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
 	}
 }
 
-export async function deliveryStatementReport(req, res, next) {
+export async function dailyProductionReport(req, res, next) {
 	const { from_date, to_date } = req.query;
 	const query = sql`
             WITH opening_all_sum AS (
@@ -1784,8 +1784,6 @@ export async function deliveryStatementReport(req, res, next) {
 				})
 			);
 
-			console.log(size);
-
 			item.other.push({
 				size,
 				company_price_dzn,
@@ -1823,6 +1821,373 @@ export async function deliveryStatementReport(req, res, next) {
 		};
 
 		res.status(200).json({ toast, data: groupedData });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function deliveryStatementReport(req, res, next) {
+	const { from_date, to_date } = req.query;
+	const query = sql`
+            WITH opening_all_sum AS (
+                SELECT 
+                    oe.uuid as order_entry_uuid, 
+                    coalesce(
+                    SUM(
+                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                    ), 
+                    0
+                    )::float8 AS total_close_end_quantity, 
+                    coalesce(
+                    SUM(
+                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                    ), 
+                    0
+                    )::float8 AS total_open_end_quantity, 
+                    coalesce(
+                    SUM(
+                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                    ) * (oe.company_price / 12), 
+                    0
+                    )::float8 as total_close_end_value, 
+                    coalesce(
+                    SUM(
+                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                    ) * (oe.company_price / 12), 
+                    0
+                    )::float8 as total_open_end_value 
+                FROM 
+                    delivery.v_packing_list_details vpl 
+                    LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
+                    LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
+                    AND oe.order_description_uuid = vodf.order_description_uuid 
+                WHERE 
+                    vpl.is_warehouse_received = true 
+                    AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
+                GROUP BY 
+                    oe.uuid
+                ), 
+                running_all_sum AS (
+                SELECT 
+                    oe.uuid as order_entry_uuid, 
+                    coalesce(
+                    SUM(
+                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                    ), 
+                    0
+                    )::float8 AS total_close_end_quantity, 
+                    coalesce(
+                    SUM(
+                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                    ), 
+                    0
+                    )::float8 AS total_open_end_quantity, 
+                    coalesce(
+                    SUM(
+                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                    ) * (oe.company_price / 12), 
+                    0
+                    )::float8 as total_close_end_value, 
+                    coalesce(
+                    SUM(
+                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                    ) * (oe.company_price / 12), 
+                    0
+                    )::float8 as total_open_end_value 
+                FROM 
+                    delivery.v_packing_list_details vpl 
+                    LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
+                    LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
+                    AND oe.order_description_uuid = vodf.order_description_uuid 
+                WHERE 
+                    vpl.is_warehouse_received = true 
+                    AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} 
+                GROUP BY 
+                    oe.uuid
+                ) 
+                SELECT 
+                    vodf.marketing_uuid,
+					vodf.marketing_name,
+					vodf.order_info_uuid,
+					vodf.order_number,
+					vodf.item_name,
+					CASE WHEN vodf.order_type = 'slider' THEN 'Slider' ELSE vodf.item_name END as type,
+					vodf.party_uuid,
+					vodf.party_name,
+					vodf.order_description_uuid,
+					vodf.item_description,
+					vodf.end_type,
+					vodf.end_type_name,
+					vodf.order_type,
+					vodf.is_inch,
+                    oe.size::float8,
+                    ROUND(oe.company_price::numeric, 3) as company_price_dzn, 
+                    ROUND(oe.company_price / 12::numeric, 3) as company_price_pcs, 
+                    'opening' as opening, 
+                    coalesce(
+                        opening_all_sum.total_close_end_quantity, 
+                        0
+                    )::float8 as opening_total_close_end_quantity, 
+                    coalesce(
+                        opening_all_sum.total_open_end_quantity, 
+                        0
+                    )::float8 as opening_total_open_end_quantity, 
+                    coalesce(
+                        coalesce(
+                        opening_all_sum.total_close_end_quantity, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_open_end_quantity, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as opening_total_quantity, 
+                    (
+                        coalesce(
+                        coalesce(
+                            opening_all_sum.total_close_end_quantity, 
+                            0
+                        )::float8 + coalesce(
+                            opening_all_sum.total_open_end_quantity, 
+                            0
+                        )::float8, 
+                        0
+                        )/ 12
+                    )::float8 as opening_total_quantity_dzn, 
+                    coalesce(
+                        opening_all_sum.total_close_end_value, 
+                        0
+                    )::float8 as opening_total_close_end_value, 
+                    coalesce(
+                        opening_all_sum.total_open_end_value, 
+                        0
+                    )::float8 as opening_total_open_end_value, 
+                    coalesce(
+                        coalesce(
+                        opening_all_sum.total_close_end_value, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_open_end_value, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as opening_total_value, 
+                    'running' as running, 
+                    coalesce(
+                        running_all_sum.total_close_end_quantity, 
+                        0
+                    )::float8 as running_total_close_end_quantity, 
+                    coalesce(
+                        running_all_sum.total_open_end_quantity, 
+                        0
+                    )::float8 as running_total_open_end_quantity, 
+                    coalesce(
+                        coalesce(
+                        running_all_sum.total_close_end_quantity, 
+                        0
+                        )::float8 + coalesce(
+                        running_all_sum.total_open_end_quantity, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as running_total_quantity, 
+                    (
+                        coalesce(
+                        coalesce(
+                            running_all_sum.total_close_end_quantity, 
+                            0
+                        )::float8 + coalesce(
+                            running_all_sum.total_open_end_quantity, 
+                            0
+                        )::float8, 
+                        0
+                        )/ 12
+                    )::float8 as running_total_quantity_dzn, 
+                    coalesce(
+                        running_all_sum.total_close_end_value, 
+                        0
+                    )::float8 as running_total_close_end_value, 
+                    coalesce(
+                        running_all_sum.total_open_end_value, 
+                        0
+                    )::float8 as running_total_open_end_value, 
+                    coalesce(
+                        coalesce(
+                        running_all_sum.total_close_end_value, 
+                        0
+                        )::float8 + coalesce(
+                        running_all_sum.total_open_end_value, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as running_total_value, 
+                    'closing' as closing, 
+                    coalesce(
+                        coalesce(
+                        running_all_sum.total_close_end_quantity, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_close_end_quantity, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as closing_total_close_end_quantity, 
+                    coalesce(
+                        coalesce(
+                        running_all_sum.total_open_end_quantity, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_open_end_quantity, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as closing_total_open_end_quantity, 
+                    coalesce(
+                        coalesce(
+                        running_all_sum.total_close_end_quantity, 
+                        0
+                        )::float8 + coalesce(
+                        running_all_sum.total_open_end_quantity, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_close_end_quantity, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_open_end_quantity, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as closing_total_quantity, 
+                    (
+                        coalesce(
+                        coalesce(
+                            running_all_sum.total_close_end_quantity, 
+                            0
+                        )::float8 + coalesce(
+                            running_all_sum.total_open_end_quantity, 
+                            0
+                        )::float8 + coalesce(
+                            opening_all_sum.total_close_end_quantity, 
+                            0
+                        )::float8 + coalesce(
+                            opening_all_sum.total_open_end_quantity, 
+                            0
+                        )::float8, 
+                        0
+                        )/ 12
+                    )::float8 as closing_total_quantity_dzn, 
+                    coalesce(
+                        coalesce(
+                        running_all_sum.total_close_end_value, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_close_end_value, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as closing_total_close_end_value, 
+                    coalesce(
+                        coalesce(
+                        running_all_sum.total_open_end_value, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_open_end_value, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as closing_total_open_end_value, 
+                    coalesce(
+                        coalesce(
+                        running_all_sum.total_close_end_value, 
+                        0
+                        )::float8 + coalesce(
+                        running_all_sum.total_open_end_value, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_close_end_value, 
+                        0
+                        )::float8 + coalesce(
+                        opening_all_sum.total_open_end_value, 
+                        0
+                        )::float8, 
+                        0
+                    )::float8 as closing_total_value 
+                FROM 
+                    zipper.v_order_details_full vodf 
+                LEFT JOIN 
+                    zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid 
+                LEFT JOIN 
+                    opening_all_sum ON oe.uuid = opening_all_sum.order_entry_uuid 
+                LEFT JOIN 
+                    running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
+                WHERE 
+                    vodf.is_bill = 1 AND vodf.item_description IS NOT NULL
+                ORDER BY 
+                    vodf.party_name, vodf.marketing_name DESC;
+    `;
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		// first group by type, then party_name, then order_number, then item_description, then size
+		// const groupedData = data?.rows.reduce((acc, row) => {
+		// 	const {
+		// 		type,
+		// 		party_name,
+		// 		order_number,
+		// 		item_description,
+		// 		size,
+		// 		company_price_dzn,
+		// 		company_price_pcs,
+		// 		opening_total_close_end_quantity,
+		// 		opening_total_open_end_quantity,
+		// 		opening_total_quantity,
+		// 		opening_total_quantity_dzn,
+		// 		opening_total_close_end_value,
+		// 		opening_total_open_end_value,
+		// 		opening_total_value,
+		// 		running_total_close_end_quantity,
+		// 		running_total_open_end_quantity,
+		// 		running_total_quantity,
+		// 		running_total_quantity_dzn,
+		// 		running_total_close_end_value,
+		// 		running_total_open_end_value,
+		// 		running_total_value,
+		// 		closing_total_close_end_quantity,
+		// 		closing_total_open_end_quantity,
+		// 		closing_total_quantity,
+		// 		closing_total_quantity_dzn,
+		// 		closing_total_close_end_value,
+		// 		closing_total_open_end_value,
+		// 		closing_total_value,
+		// 	} = row;
+
+		// 	// filter using type, party and marketing together then order_number, item_description, size
+		//     const findOrCreate = (array, key, value, createFn) => {
+		//         let index = array.findIndex((item) => item[key] === value);
+		//         if (index === -1) {
+		//             array.push(createFn());
+		//             index = array.length - 1;
+		//         }
+		//         return array[index];
+		//     };
+
+		//     const typeEntry = findOrCreate(acc, 'type', type, () => ({
+		//         type,
+		//         parties: [],
+		//     }));
+
+		// 	return acc;
+		// }, []);
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Delivery Statement Report',
+		};
+
+		res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
