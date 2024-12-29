@@ -1698,7 +1698,8 @@ export async function dailyProductionReport(req, res, next) {
                 LEFT JOIN 
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
                 WHERE 
-                    vodf.is_bill = 1 AND vodf.item_description IS NOT NULL
+                    vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---'
+                    AND closing_total_quantity > 0
                 ORDER BY 
                     vodf.party_name, vodf.marketing_name DESC;
     `;
@@ -2121,7 +2122,8 @@ export async function deliveryStatementReport(req, res, next) {
                 LEFT JOIN 
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
                 WHERE 
-                    vodf.is_bill = 1 AND vodf.item_description IS NOT NULL
+                    vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---' 
+                    AND closing_total_quantity > 0
                 ORDER BY 
                     vodf.party_name, vodf.marketing_name DESC;
     `;
@@ -2131,55 +2133,122 @@ export async function deliveryStatementReport(req, res, next) {
 		const data = await resultPromise;
 
 		// first group by type, then party_name, then order_number, then item_description, then size
-		// const groupedData = data?.rows.reduce((acc, row) => {
-		// 	const {
-		// 		type,
-		// 		party_name,
-		// 		order_number,
-		// 		item_description,
-		// 		size,
-		// 		company_price_dzn,
-		// 		company_price_pcs,
-		// 		opening_total_close_end_quantity,
-		// 		opening_total_open_end_quantity,
-		// 		opening_total_quantity,
-		// 		opening_total_quantity_dzn,
-		// 		opening_total_close_end_value,
-		// 		opening_total_open_end_value,
-		// 		opening_total_value,
-		// 		running_total_close_end_quantity,
-		// 		running_total_open_end_quantity,
-		// 		running_total_quantity,
-		// 		running_total_quantity_dzn,
-		// 		running_total_close_end_value,
-		// 		running_total_open_end_value,
-		// 		running_total_value,
-		// 		closing_total_close_end_quantity,
-		// 		closing_total_open_end_quantity,
-		// 		closing_total_quantity,
-		// 		closing_total_quantity_dzn,
-		// 		closing_total_close_end_value,
-		// 		closing_total_open_end_value,
-		// 		closing_total_value,
-		// 	} = row;
+		const groupedData = data?.rows.reduce((acc, row) => {
+			const {
+				type,
+				party_name,
+				marketing_name,
+				order_number,
+				item_description,
+				size,
+				company_price_dzn,
+				company_price_pcs,
+				opening_total_close_end_quantity,
+				opening_total_open_end_quantity,
+				opening_total_quantity,
+				opening_total_quantity_dzn,
+				opening_total_close_end_value,
+				opening_total_open_end_value,
+				opening_total_value,
+				running_total_close_end_quantity,
+				running_total_open_end_quantity,
+				running_total_quantity,
+				running_total_quantity_dzn,
+				running_total_close_end_value,
+				running_total_open_end_value,
+				running_total_value,
+				closing_total_close_end_quantity,
+				closing_total_open_end_quantity,
+				closing_total_quantity,
+				closing_total_quantity_dzn,
+				closing_total_close_end_value,
+				closing_total_open_end_value,
+				closing_total_value,
+			} = row;
 
-		// 	// filter using type, party and marketing together then order_number, item_description, size
-		//     const findOrCreate = (array, key, value, createFn) => {
-		//         let index = array.findIndex((item) => item[key] === value);
-		//         if (index === -1) {
-		//             array.push(createFn());
-		//             index = array.length - 1;
-		//         }
-		//         return array[index];
-		//     };
+			// group using (type, party and marketing) together then order_number, item_description, size
 
-		//     const typeEntry = findOrCreate(acc, 'type', type, () => ({
-		//         type,
-		//         parties: [],
-		//     }));
+			const findOrCreateArray = (array, key, value, createFn) => {
+				let index = array.findIndex(
+					(item, index) => item[key[index]] === value[index]
+				);
+				if (index === -1) {
+					array.push(createFn());
+					index = array.length - 1;
+				}
+				return array[index];
+			};
 
-		// 	return acc;
-		// }, []);
+			const findOrCreate = (array, key, value, createFn) => {
+				let index = array.findIndex((item) => item[key] === value);
+				if (index === -1) {
+					array.push(createFn());
+					index = array.length - 1;
+				}
+				return array[index];
+			};
+
+			const typeEntry = findOrCreateArray(
+				acc,
+				['type', 'party_name', 'marketing_name'],
+				[type, party_name, marketing_name],
+				() => ({
+					type,
+					party_name,
+					marketing_name,
+					orders: [],
+				})
+			);
+
+			const order = findOrCreate(
+				typeEntry.orders,
+				'order_number',
+				order_number,
+				() => ({
+					order_number,
+					items: [],
+				})
+			);
+
+			const item = findOrCreate(
+				order.items,
+				'item_description',
+				item_description,
+				() => ({
+					item_description,
+					other: [],
+				})
+			);
+
+			item.other.push({
+				size,
+				company_price_dzn,
+				company_price_pcs,
+				opening_total_close_end_quantity,
+				opening_total_open_end_quantity,
+				opening_total_quantity,
+				opening_total_quantity_dzn,
+				opening_total_close_end_value,
+				opening_total_open_end_value,
+				opening_total_value,
+				running_total_close_end_quantity,
+				running_total_open_end_quantity,
+				running_total_quantity,
+				running_total_quantity_dzn,
+				running_total_close_end_value,
+				running_total_open_end_value,
+				running_total_value,
+				closing_total_close_end_quantity,
+				closing_total_open_end_quantity,
+				closing_total_quantity,
+				closing_total_quantity_dzn,
+				closing_total_close_end_value,
+				closing_total_open_end_value,
+				closing_total_value,
+			});
+
+			return acc;
+		}, []);
 
 		const toast = {
 			status: 200,
@@ -2187,7 +2256,7 @@ export async function deliveryStatementReport(req, res, next) {
 			message: 'Delivery Statement Report',
 		};
 
-		res.status(200).json({ toast, data: data.rows });
+		res.status(200).json({ toast, data: groupedData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
