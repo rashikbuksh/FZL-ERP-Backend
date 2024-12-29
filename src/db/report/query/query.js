@@ -1407,14 +1407,20 @@ export async function deliveryStatementReport(req, res, next) {
 	const { from_date, to_date } = req.query;
 	const query = sql`
             SELECT 
+                vodf.marketing_uuid,
+                vodf.marketing_name,
                 vodf.order_info_uuid,
                 vodf.order_number,
+                vodf.item_name,
+                CASE WHEN vodf.order_type = 'slider' THEN 'Slider' ELSE vodf.item_name END as type,
                 vodf.party_uuid,
                 vodf.party_name,
                 vodf.order_description_uuid,
                 vodf.item_description,
                 vodf.end_type,
                 vodf.end_type_name,
+                vodf.order_type,
+                vodf.is_inch,
 				-- starts OE
 				oe.style,
 				oe.color,
@@ -1483,7 +1489,7 @@ export async function deliveryStatementReport(req, res, next) {
                     oe.uuid
             ) running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid
             WHERE vodf.is_bill = 1
-            ORDER BY vodf.party_name DESC
+            ORDER BY vodf.party_name DESC, vodf.marketing_name DESC
     `;
 	const resultPromise = db.execute(query);
 
