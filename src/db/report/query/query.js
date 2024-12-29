@@ -1703,17 +1703,11 @@ export async function dailyProductionReport(req, res, next) {
                             coalesce(
                             running_all_sum.total_close_end_value, 
                             0
-                            )::float8 + coalesce(
+                            )::float8 + 
+                            coalesce(
                             running_all_sum.total_open_end_value, 
                             0
-                            )::float8 + coalesce(
-                            opening_all_sum.total_close_end_value, 
-                            0
-                            )::float8 + coalesce(
-                            opening_all_sum.total_open_end_value, 
-                            0
-                            )::float8, 
-                            0
+                            )::float8
                         )::float8 > 0
                 ORDER BY 
                     vodf.party_name, vodf.marketing_name DESC;
