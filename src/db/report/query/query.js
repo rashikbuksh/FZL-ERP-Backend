@@ -1497,6 +1497,7 @@ export async function deliveryStatementReport(req, res, next) {
 					vodf.end_type_name,
 					vodf.order_type,
 					vodf.is_inch,
+                    oe.size::float8,
                     ROUND(oe.company_price :: numeric, 3) as company_price_dzn, 
                     ROUND(oe.company_price / 12 :: numeric, 3) as company_price_pcs, 
                     'opening' as opening, 
@@ -1697,7 +1698,7 @@ export async function deliveryStatementReport(req, res, next) {
                 LEFT JOIN 
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
                 WHERE 
-                    vodf.is_bill = 1 
+                    vodf.is_bill = 1 AND vodf.item_description IS NOT NULL
                 ORDER BY 
                     vodf.party_name, vodf.marketing_name DESC;
     `;
@@ -1780,6 +1781,8 @@ export async function deliveryStatementReport(req, res, next) {
 					other: [],
 				})
 			);
+
+			console.log(size);
 
 			item.other.push({
 				size,
