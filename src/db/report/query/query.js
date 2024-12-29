@@ -1699,7 +1699,22 @@ export async function dailyProductionReport(req, res, next) {
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
                 WHERE 
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---'
-                    AND closing_total_quantity > 0
+                    AND coalesce(
+                            coalesce(
+                            running_all_sum.total_close_end_value, 
+                            0
+                            )::float8 + coalesce(
+                            running_all_sum.total_open_end_value, 
+                            0
+                            )::float8 + coalesce(
+                            opening_all_sum.total_close_end_value, 
+                            0
+                            )::float8 + coalesce(
+                            opening_all_sum.total_open_end_value, 
+                            0
+                            )::float8, 
+                            0
+                        )::float8 > 0
                 ORDER BY 
                     vodf.party_name, vodf.marketing_name DESC;
     `;
@@ -2123,7 +2138,22 @@ export async function deliveryStatementReport(req, res, next) {
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
                 WHERE 
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---' 
-                    AND closing_total_quantity > 0
+                    AND coalesce(
+                            coalesce(
+                            running_all_sum.total_close_end_value, 
+                            0
+                            )::float8 + coalesce(
+                            running_all_sum.total_open_end_value, 
+                            0
+                            )::float8 + coalesce(
+                            opening_all_sum.total_close_end_value, 
+                            0
+                            )::float8 + coalesce(
+                            opening_all_sum.total_open_end_value, 
+                            0
+                            )::float8, 
+                            0
+                        )::float8 > 0
                 ORDER BY 
                     vodf.party_name, vodf.marketing_name DESC;
     `;
