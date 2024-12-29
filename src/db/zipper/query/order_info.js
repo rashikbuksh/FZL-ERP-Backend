@@ -397,8 +397,8 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.order_description_uuid,
 						vodf.is_sample,
 						ROW_NUMBER() OVER (
-							PARTITION BY vod.order_number
-							ORDER BY vod.order_description_created_at
+							PARTITION BY vodf.order_number
+							ORDER BY vodf.order_description_created_at
 						) AS order_number_wise_rank, 
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
@@ -422,7 +422,7 @@ export async function getTapeAssigned(req, res, next) {
 						FROM zipper.order_entry oe
 						GROUP BY oe.order_description_uuid
 					) order_entry_counts ON vodf.order_description_uuid = order_entry_counts.order_description_uuid
-					WHERE vodf.order_description_uuid IS NOT NULL AND vodf.is_multi_color = 0
+					WHERE vodf.order_description_uuid IS NOT NULL AND vodf.is_multi_color = 0 AND vodf.order_type != 'slider'
 					ORDER BY 
 						vodf.tape_coil_uuid ASC NULLS FIRST,
 						vodf.order_number DESC,
