@@ -279,7 +279,8 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			count_length,
 			eq(order_entry.count_length_uuid, count_length.uuid)
 		)
-		.where(eq(order_entry.order_info_uuid, req.params.order_info_uuid));
+		.where(eq(order_entry.order_info_uuid, req.params.order_info_uuid))
+		.orderBy(asc(order_entry.index));
 
 	try {
 		const data = await resultPromise;
