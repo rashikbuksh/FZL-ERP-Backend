@@ -1406,45 +1406,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
 export async function dailyProductionReport(req, res, next) {
 	const { from_date, to_date } = req.query;
 	const query = sql`
-            WITH opening_all_sum AS (
-                SELECT 
-                    oe.uuid as order_entry_uuid, 
-                    coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ), 
-                    0
-                    )::float8 AS total_close_end_quantity, 
-                    coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ), 
-                    0
-                    )::float8 AS total_open_end_quantity, 
-                    coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ) * (oe.company_price / 12), 
-                    0
-                    )::float8 as total_close_end_value, 
-                    coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ) * (oe.company_price / 12), 
-                    0
-                    )::float8 as total_open_end_value 
-                FROM 
-                    delivery.v_packing_list_details vpl 
-                    LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
-                    LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
-                    AND oe.order_description_uuid = vodf.order_description_uuid 
-                WHERE 
-                    vpl.is_warehouse_received = true 
-                    AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
-                GROUP BY 
-                    oe.uuid
-                ), 
-                running_all_sum AS (
+            WITH running_all_sum AS (
                 SELECT 
                     oe.uuid as order_entry_uuid, 
                     coalesce(
@@ -1498,57 +1460,13 @@ export async function dailyProductionReport(req, res, next) {
 					vodf.order_type,
 					vodf.is_inch,
                     oe.size::float8,
+                    CASE 
+                        WHEN vodf.is_inch = 1 THEN 'Inch'
+                        WHEN vodf.order_type = 'tape' THEN 'Meter'
+                        ELSE 'Pcs'
+                    END as unit,
                     ROUND(oe.company_price::numeric, 3) as company_price_dzn, 
                     ROUND(oe.company_price / 12::numeric, 3) as company_price_pcs, 
-                    'opening' as opening, 
-                    coalesce(
-                        opening_all_sum.total_close_end_quantity, 
-                        0
-                    )::float8 as opening_total_close_end_quantity, 
-                    coalesce(
-                        opening_all_sum.total_open_end_quantity, 
-                        0
-                    )::float8 as opening_total_open_end_quantity, 
-                    coalesce(
-                        coalesce(
-                        opening_all_sum.total_close_end_quantity, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_open_end_quantity, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as opening_total_quantity, 
-                    (
-                        coalesce(
-                        coalesce(
-                            opening_all_sum.total_close_end_quantity, 
-                            0
-                        )::float8 + coalesce(
-                            opening_all_sum.total_open_end_quantity, 
-                            0
-                        )::float8, 
-                        0
-                        )/ 12
-                    )::float8 as opening_total_quantity_dzn, 
-                    coalesce(
-                        opening_all_sum.total_close_end_value, 
-                        0
-                    )::float8 as opening_total_close_end_value, 
-                    coalesce(
-                        opening_all_sum.total_open_end_value, 
-                        0
-                    )::float8 as opening_total_open_end_value, 
-                    coalesce(
-                        coalesce(
-                        opening_all_sum.total_close_end_value, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_open_end_value, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as opening_total_value, 
                     'running' as running, 
                     coalesce(
                         running_all_sum.total_close_end_quantity, 
@@ -1597,104 +1515,11 @@ export async function dailyProductionReport(req, res, next) {
                         0
                         )::float8, 
                         0
-                    )::float8 as running_total_value, 
-                    'closing' as closing, 
-                    coalesce(
-                        coalesce(
-                        running_all_sum.total_close_end_quantity, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_close_end_quantity, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as closing_total_close_end_quantity, 
-                    coalesce(
-                        coalesce(
-                        running_all_sum.total_open_end_quantity, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_open_end_quantity, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as closing_total_open_end_quantity, 
-                    coalesce(
-                        coalesce(
-                        running_all_sum.total_close_end_quantity, 
-                        0
-                        )::float8 + coalesce(
-                        running_all_sum.total_open_end_quantity, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_close_end_quantity, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_open_end_quantity, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as closing_total_quantity, 
-                    (
-                        coalesce(
-                        coalesce(
-                            running_all_sum.total_close_end_quantity, 
-                            0
-                        )::float8 + coalesce(
-                            running_all_sum.total_open_end_quantity, 
-                            0
-                        )::float8 + coalesce(
-                            opening_all_sum.total_close_end_quantity, 
-                            0
-                        )::float8 + coalesce(
-                            opening_all_sum.total_open_end_quantity, 
-                            0
-                        )::float8, 
-                        0
-                        )/ 12
-                    )::float8 as closing_total_quantity_dzn, 
-                    coalesce(
-                        coalesce(
-                        running_all_sum.total_close_end_value, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_close_end_value, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as closing_total_close_end_value, 
-                    coalesce(
-                        coalesce(
-                        running_all_sum.total_open_end_value, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_open_end_value, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as closing_total_open_end_value, 
-                    coalesce(
-                        coalesce(
-                        running_all_sum.total_close_end_value, 
-                        0
-                        )::float8 + coalesce(
-                        running_all_sum.total_open_end_value, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_close_end_value, 
-                        0
-                        )::float8 + coalesce(
-                        opening_all_sum.total_open_end_value, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as closing_total_value 
+                    )::float8 as running_total_value
                 FROM 
                     zipper.v_order_details_full vodf 
                 LEFT JOIN 
                     zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid 
-                LEFT JOIN 
-                    opening_all_sum ON oe.uuid = opening_all_sum.order_entry_uuid 
                 LEFT JOIN 
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
                 WHERE 
@@ -1724,7 +1549,9 @@ export async function dailyProductionReport(req, res, next) {
 				party_name,
 				order_number,
 				item_description,
+				is_inch,
 				size,
+				unit,
 				company_price_dzn,
 				company_price_pcs,
 				opening_total_close_end_quantity,
@@ -1795,7 +1622,9 @@ export async function dailyProductionReport(req, res, next) {
 			);
 
 			item.other.push({
+				is_inch,
 				size,
+				unit,
 				company_price_dzn,
 				company_price_pcs,
 				opening_total_close_end_quantity,
@@ -1931,6 +1760,11 @@ export async function deliveryStatementReport(req, res, next) {
 					vodf.order_type,
 					vodf.is_inch,
                     oe.size::float8,
+                    CASE 
+                        WHEN vodf.is_inch = 1 THEN 'Inch'
+                        WHEN vodf.order_type = 'tape' THEN 'Meter'
+                        ELSE 'Pcs'
+                    END as unit,
                     ROUND(oe.company_price::numeric, 3) as company_price_dzn, 
                     ROUND(oe.company_price / 12::numeric, 3) as company_price_pcs, 
                     'opening' as opening, 
@@ -2164,7 +1998,9 @@ export async function deliveryStatementReport(req, res, next) {
 				marketing_name,
 				order_number,
 				item_description,
+				is_inch,
 				size,
+				unit,
 				company_price_dzn,
 				company_price_pcs,
 				opening_total_close_end_quantity,
@@ -2247,7 +2083,9 @@ export async function deliveryStatementReport(req, res, next) {
 			);
 
 			item.other.push({
+				is_inch,
 				size,
+				unit,
 				company_price_dzn,
 				company_price_pcs,
 				opening_total_close_end_quantity,
