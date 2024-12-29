@@ -1535,7 +1535,7 @@ export async function dailyProductionReport(req, res, next) {
                             )::float8
                         )::float8 > 0
                 ORDER BY 
-                    vodf.party_name, vodf.marketing_name DESC;
+                    vodf.party_name, vodf.marketing_name DESC, oe.size ASC;
     `;
 	const resultPromise = db.execute(query);
 
@@ -1983,7 +1983,7 @@ export async function deliveryStatementReport(req, res, next) {
                             0
                         )::float8 > 0
                 ORDER BY 
-                    vodf.party_name, vodf.marketing_name DESC;
+                    vodf.party_name, vodf.marketing_name DESC, oe.size ASC;
     `;
 	const resultPromise = db.execute(query);
 
