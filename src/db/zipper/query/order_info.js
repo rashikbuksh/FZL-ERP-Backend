@@ -315,7 +315,7 @@ export async function getOrderDetails(req, res, next) {
 						vod.*, 
 						ROW_NUMBER() OVER (
 							PARTITION BY vod.order_number
-							ORDER BY vod.order_info_uuid
+							ORDER BY vod.order_description_created_at
 						) AS order_number_wise_rank, 
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
@@ -397,8 +397,8 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.order_description_uuid,
 						vodf.is_sample,
 						ROW_NUMBER() OVER (
-							PARTITION BY vodf.order_number
-							ORDER BY vodf.order_info_uuid
+							PARTITION BY vod.order_number
+							ORDER BY vod.order_description_created_at
 						) AS order_number_wise_rank, 
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
@@ -453,8 +453,8 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 						vod.*, 
 						ROW_NUMBER() OVER (
 							PARTITION BY vod.order_number
-							ORDER BY vod.order_info_uuid
-						) AS order_number_wise_rank, 
+							ORDER BY vod.order_description_created_at
+						) AS order_number_wise_rank,
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
 						order_entry_counts.order_entry_count,
