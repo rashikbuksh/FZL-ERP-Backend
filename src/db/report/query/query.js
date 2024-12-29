@@ -1701,11 +1701,11 @@ export async function dailyProductionReport(req, res, next) {
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---'
                     AND coalesce(
                             coalesce(
-                            running_all_sum.total_close_end_value, 
+                            running_all_sum.total_close_end_quantity, 
                             0
                             )::float8 + 
                             coalesce(
-                            running_all_sum.total_open_end_value, 
+                            running_all_sum.total_open_end_quantity, 
                             0
                             )::float8
                         )::float8 > 0
@@ -2134,16 +2134,16 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---' 
                     AND coalesce(
                             coalesce(
-                            running_all_sum.total_close_end_value, 
+                            running_all_sum.total_close_end_quantity, 
                             0
                             )::float8 + coalesce(
-                            running_all_sum.total_open_end_value, 
+                            running_all_sum.total_open_end_quantity, 
                             0
                             )::float8 + coalesce(
-                            opening_all_sum.total_close_end_value, 
+                            opening_all_sum.total_close_end_quantity, 
                             0
                             )::float8 + coalesce(
-                            opening_all_sum.total_open_end_value, 
+                            opening_all_sum.total_open_end_quantity, 
                             0
                             )::float8, 
                             0
@@ -2193,8 +2193,10 @@ export async function deliveryStatementReport(req, res, next) {
 			// group using (type, party and marketing) together then order_number, item_description, size
 
 			const findOrCreateArray = (array, key, value, createFn) => {
-				let index = array.findIndex(
-					(item, index) => item[key[index]] === value[index]
+				let index = array.findIndex((item) =>
+					key
+						.map((indKey, index) => item[indKey] === value[index])
+						.every((item) => item)
 				);
 				if (index === -1) {
 					array.push(createFn());
