@@ -1771,6 +1771,7 @@ export async function deliveryStatementReport(req, res, next) {
 					CASE WHEN vodf.order_type = 'slider' THEN 'Slider' ELSE vodf.item_name END as type,
 					vodf.party_uuid,
 					vodf.party_name,
+                    order_info_total_quantity.total_quantity,
 					vodf.order_description_uuid,
 					vodf.item_description,
 					vodf.end_type,
@@ -1818,6 +1819,17 @@ export async function deliveryStatementReport(req, res, next) {
                 LEFT JOIN 
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
                 LEFT JOIN (
+                    SELECT
+                        vodf.order_info_uuid,
+                        SUM(oe.quantity) as total_quantity
+                    FROM
+                        zipper.order_entry oe
+                    LEFT JOIN
+                        zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    GROUP BY
+                        vodf.order_info_uuid
+                ) order_info_total_quantity ON vodf.order_info_uuid = order_info_total_quantity.order_info_uuid
+                LEFT JOIN (
 					SELECT 
 						oe.order_description_uuid, 
 						oe.company_price,
@@ -1860,6 +1872,7 @@ export async function deliveryStatementReport(req, res, next) {
 					vodf.order_type,
 					vodf.party_uuid,
 					vodf.party_name,
+                    order_info_total_quantity.total_quantity,
 					vodf.order_description_uuid,
 					vodf.item_description,
 					vodf.end_type,
@@ -1880,6 +1893,7 @@ export async function deliveryStatementReport(req, res, next) {
 			const {
 				type,
 				party_name,
+				total_quantity,
 				marketing_name,
 				order_number,
 				item_description,
@@ -1947,12 +1961,13 @@ export async function deliveryStatementReport(req, res, next) {
 				})
 			);
 
-			const order = findOrCreate(
+			const order = findOrCreateArray(
 				typeEntry.orders,
-				'order_number',
-				order_number,
+				['order_number'],
+				[order_number],
 				() => ({
 					order_number,
+					total_quantity,
 					items: [],
 				})
 			);
