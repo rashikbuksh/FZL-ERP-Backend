@@ -493,7 +493,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 export async function getDailyProductionPlan(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { date } = req.query;
+	const { date, item } = req.query;
 
 	const query = sql`
 							SELECT
@@ -522,7 +522,7 @@ export async function getDailyProductionPlan(req, res, next) {
 							LEFT JOIN
 								zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
 							WHERE
-								DATE(zfb.production_date) = ${date}
+								DATE(zfb.production_date) = ${date} AND (${item == 'all' || item == '' ? sql`1=1` : sql`vodf.item = ${item}`})
 							ORDER BY
 								zfb.production_date	
 							`;
