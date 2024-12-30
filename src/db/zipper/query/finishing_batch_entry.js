@@ -201,7 +201,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			coalesce(
 				CASE 
 					WHEN vodf.order_type = 'tape' 
-					CAST(oe.size AS NUMERIC) 
+					THEN oe.size::float8
 					ELSE oe.quantity::float8 
 				END 
 				- coalesce(fbe_given.given_quantity::float8,0)
