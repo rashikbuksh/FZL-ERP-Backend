@@ -3807,7 +3807,10 @@ export const pathZipperFinishingBatch = {
 		get: {
 			tags: ['zipper.finishing_batch'],
 			summary: 'Get all Daily Production Plan',
-			parameters: [SE.parameter_query('date', 'date', ['2024-01-01'])],
+			parameters: [
+				SE.parameter_query('date', 'date', ['2024-01-01']),
+				SE.parameter_query('item', 'item', ['igD0v9DIJQhJeet']),
+			],
 
 			responses: {
 				200: SE.response_schema(200, {
