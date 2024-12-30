@@ -133,8 +133,6 @@ export async function selectAll(req, res, next) {
 		});
 	}
 
-	console.log(query.queryChunks);
-
 	query.append(
 		sql`
 		GROUP BY 

@@ -8,7 +8,6 @@ import db from '../../index.js';
 // multiple rows shows for stock.uuid, assembly_production_quantity,coloring_production_quantity, teeth_molding_quantity,teeth_coloring_quantity,finishing_quantity columns
 export async function zipperProductionStatusReport(req, res, next) {
 	const { status } = req.query;
-	console.log(status);
 
 	const query = sql`
             SELECT 
