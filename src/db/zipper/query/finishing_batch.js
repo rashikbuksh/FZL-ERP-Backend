@@ -508,7 +508,13 @@ export async function getDailyProductionPlan(req, res, next) {
 								zoe.style,
 								zoe.color,
 								zoe.size,
-								zfbe.quantity::float8
+								zfbe.quantity::float8,
+								vodf.order_type,
+								CASE 
+									WHEN vodf.order_type = 'tape' THEN 'Meter'
+									WHEN vodf.is_inch = 1 THEN 'Inch'
+									ELSE 'Pcs'
+								END AS unit
 							FROM 
 								zipper.finishing_batch zfb
 							LEFT JOIN
