@@ -627,6 +627,21 @@ export async function selectOrderInfo(req, res, next) {
 			`;
 			break;
 
+		case 'dyeing_batch':
+			filterCondition = sql`
+				AND order_info.uuid IN (
+					SELECT vodf.order_info_uuid, vodf.order_number
+					FROM zipper.v_order_details_full vodf
+					LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+					WHERE vodf.item_description != '---' 
+						AND vodf.item_description != '' 
+						AND CASE WHEN vodf.is_sample = 1 THEN oe.quantity - (sfg.warehouse + sfg.delivered) > 0 ELSE oe.quantity - (sfg.warehouse + sfg.delivered) > 0 AND sfg.finishing_prod > 0 END
+						AND CASE WHEN vodf.is_sample = 1 THEN 1=1 ELSE sfg.recipe_uuid IS NOT NULL END
+				)
+			`;
+			break;
+
 		default:
 			filterCondition = sql`
             ${is_sample != undefined ? sql`order_info.is_sample = ${is_sample === 'true' ? sql`1` : sql`0`} AND ` : sql``}
