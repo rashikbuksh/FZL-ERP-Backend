@@ -1547,6 +1547,7 @@ export async function dailyProductionReport(req, res, next) {
 			const {
 				type,
 				party_name,
+				marketing_name,
 				order_number,
 				item_description,
 				is_inch,
@@ -1577,6 +1578,19 @@ export async function dailyProductionReport(req, res, next) {
 				closing_total_value,
 			} = row;
 
+			const findOrCreateArray = (array, key, value, createFn) => {
+				let index = array.findIndex((item) =>
+					key
+						.map((indKey, index) => item[indKey] === value[index])
+						.every((item) => item)
+				);
+				if (index === -1) {
+					array.push(createFn());
+					index = array.length - 1;
+				}
+				return array[index];
+			};
+
 			const findOrCreate = (array, key, value, createFn) => {
 				let index = array.findIndex((item) => item[key] === value);
 				if (index === -1) {
@@ -1586,10 +1600,15 @@ export async function dailyProductionReport(req, res, next) {
 				return array[index];
 			};
 
-			const typeEntry = findOrCreate(acc, 'type', type, () => ({
-				type,
-				parties: [],
-			}));
+			const typeEntry = findOrCreateArray(
+				acc,
+				['type', 'marketing_name'],
+				[type, marketing_name],
+				() => ({
+					type,
+					parties: [],
+				})
+			);
 
 			const party = findOrCreate(
 				typeEntry.parties,
