@@ -292,7 +292,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			coalesce(
 				CASE 
 					WHEN vodf.order_type = 'tape' 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+					THEN oe.size::float8 
 					ELSE oe.quantity::float8 
 				END
 				- coalesce(be_given.given_quantity::float8,0)
@@ -300,7 +300,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 				coalesce(
 				CASE 
 					WHEN vodf.order_type = 'tape' 
-					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+					THEN oe.size::float8 
 					ELSE oe.quantity::float8 
 				END
 				- coalesce(be_given.given_quantity::float8,0)
