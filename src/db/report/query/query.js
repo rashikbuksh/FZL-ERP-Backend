@@ -204,27 +204,27 @@ export async function zipperProductionStatusReport(req, res, next) {
 
 	if (status === 'completed') {
 		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size ELSE oe.quantity END) AND vodf.is_sample = 0`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
 		);
 	} else if (status === 'pending') {
 		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size ELSE oe.quantity END) AND vodf.is_sample = 0`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
 		);
 	} else if (status === 'over_delivered') {
 		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size ELSE oe.quantity END) AND vodf.is_sample = 0`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
 		);
 	} else if (status === 'sample_completed') {
 		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size ELSE oe.quantity END) AND vodf.is_sample = 1`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 1`
 		);
 	} else if (status === 'sample_pending') {
 		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size ELSE oe.quantity END) AND vodf.is_sample = 1`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 1`
 		);
 	} else if (status === 'sample_over_delivered') {
 		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size ELSE oe.quantity END) AND vodf.is_sample = 1`
+			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 1`
 		);
 	}
 
