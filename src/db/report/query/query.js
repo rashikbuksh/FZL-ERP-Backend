@@ -1409,29 +1409,31 @@ export async function dailyProductionReport(req, res, next) {
                 SELECT 
                     oe.uuid as order_entry_uuid, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ), 
-                    0
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ), 
+                        0
                     )::float8 AS total_close_end_quantity, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ), 
-                    0
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ), 
+                        0
                     )::float8 AS total_open_end_quantity, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ) * (oe.company_price / 12), 
-                    0
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * (oe.company_price / 12), 
+                        0
                     )::float8 as total_close_end_value, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ) * (oe.company_price / 12), 
-                    0
-                    )::float8 as total_open_end_value 
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * (oe.company_price / 12), 
+                        0
+                    )::float8 as total_open_end_value,
+                    coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
+                    coalesce(SUM(vpl.quantity) * (oe.company_price / 12), 0)::float8 as total_prod_value
                 FROM 
                     delivery.v_packing_list_details vpl 
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
@@ -1475,27 +1477,9 @@ export async function dailyProductionReport(req, res, next) {
                         running_all_sum.total_open_end_quantity, 
                         0
                     )::float8 as running_total_open_end_quantity, 
-                    coalesce(
-                        coalesce(
-                        running_all_sum.total_close_end_quantity, 
-                        0
-                        )::float8 + coalesce(
-                        running_all_sum.total_open_end_quantity, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as running_total_quantity, 
+                    coalesce(running_all_sum.total_prod_quantity)::float8 as running_total_quantity, 
                     (
-                        coalesce(
-                        coalesce(
-                            running_all_sum.total_close_end_quantity, 
-                            0
-                        )::float8 + coalesce(
-                            running_all_sum.total_open_end_quantity, 
-                            0
-                        )::float8, 
-                        0
-                        )/ 12
+                        coalesce(running_all_sum.total_prod_quantity, 0) / 12
                     )::float8 as running_total_quantity_dzn, 
                     coalesce(
                         running_all_sum.total_close_end_value, 
@@ -1505,16 +1489,7 @@ export async function dailyProductionReport(req, res, next) {
                         running_all_sum.total_open_end_value, 
                         0
                     )::float8 as running_total_open_end_value, 
-                    coalesce(
-                        coalesce(
-                        running_all_sum.total_close_end_value, 
-                        0
-                        )::float8 + coalesce(
-                        running_all_sum.total_open_end_value, 
-                        0
-                        )::float8, 
-                        0
-                    )::float8 as running_total_value
+                    coalesce(total_prod_value, 0)::float8 as running_total_value
                 FROM 
                     zipper.v_order_details_full vodf 
                 LEFT JOIN 
@@ -1523,16 +1498,7 @@ export async function dailyProductionReport(req, res, next) {
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
                 WHERE 
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---'
-                    AND coalesce(
-                            coalesce(
-                            running_all_sum.total_close_end_quantity, 
-                            0
-                            )::float8 + 
-                            coalesce(
-                            running_all_sum.total_open_end_quantity, 
-                            0
-                            )::float8
-                        )::float8 > 0
+                    AND coalesce(running_all_sum.total_prod_quantity, 0)::float8 > 0
                 ORDER BY 
                     vodf.party_name, vodf.marketing_name DESC, oe.size ASC;
     `;
@@ -1690,29 +1656,31 @@ export async function deliveryStatementReport(req, res, next) {
                 SELECT 
                     oe.uuid as order_entry_uuid, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ), 
-                    0
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ), 
+                        0
                     )::float8 AS total_close_end_quantity, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ), 
-                    0
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ), 
+                        0
                     )::float8 AS total_open_end_quantity, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ) * (oe.company_price / 12), 
-                    0
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * (oe.company_price / 12), 
+                        0
                     )::float8 as total_close_end_value, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ) * (oe.company_price / 12), 
-                    0
-                    )::float8 as total_open_end_value 
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * (oe.company_price / 12), 
+                        0
+                    )::float8 as total_open_end_value,
+                    coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
+                    coalesce(SUM(vpl.quantity) * (oe.company_price / 12), 0)::float8 as total_prod_value
                 FROM 
                     delivery.v_packing_list_details vpl 
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
@@ -1728,29 +1696,31 @@ export async function deliveryStatementReport(req, res, next) {
                 SELECT 
                     oe.uuid as order_entry_uuid, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ), 
-                    0
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ), 
+                        0
                     )::float8 AS total_close_end_quantity, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ), 
-                    0
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ), 
+                        0
                     )::float8 AS total_open_end_quantity, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ) * (oe.company_price / 12), 
-                    0
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * (oe.company_price / 12), 
+                        0
                     )::float8 as total_close_end_value, 
                     coalesce(
-                    SUM(
-                        CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                    ) * (oe.company_price / 12), 
-                    0
-                    )::float8 as total_open_end_value 
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * (oe.company_price / 12), 
+                        0
+                    )::float8 as total_open_end_value,
+                    coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
+                    coalesce(SUM(vpl.quantity) * (oe.company_price / 12), 0)::float8 as total_prod_value
                 FROM 
                     delivery.v_packing_list_details vpl 
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
@@ -1787,29 +1757,29 @@ export async function deliveryStatementReport(req, res, next) {
                     ROUND(description_wise_price_size.company_price::numeric, 3) as company_price_dzn, 
                     ROUND(description_wise_price_size.company_price / 12::numeric, 3) as company_price_pcs, 
                     'opening' as opening, 
-                    SUM(coalesce(opening_all_sum.total_close_end_quantity, 0)::float8) as opening_total_close_end_quantity, 
-                    SUM(coalesce(opening_all_sum.total_open_end_quantity, 0)::float8) as opening_total_open_end_quantity, 
-                    SUM(coalesce(opening_all_sum.total_close_end_quantity, 0)::float8 + coalesce(opening_all_sum.total_open_end_quantity, 0)::float8) as opening_total_quantity, 
-                    SUM((coalesce(opening_all_sum.total_close_end_quantity, 0)::float8 + coalesce(opening_all_sum.total_open_end_quantity, 0)::float8) / 12) as opening_total_quantity_dzn, 
-                    SUM(coalesce(opening_all_sum.total_close_end_value, 0)::float8) as opening_total_close_end_value, 
-                    SUM(coalesce(opening_all_sum.total_open_end_value, 0)::float8) as opening_total_open_end_value, 
-                    SUM(coalesce(opening_all_sum.total_close_end_value, 0)::float8 + coalesce(opening_all_sum.total_open_end_value, 0)::float8) as opening_total_value, 
+                    SUM(opening_all_sum.total_close_end_quantity::float8) as opening_total_close_end_quantity, 
+                    SUM(opening_all_sum.total_open_end_quantity::float8) as opening_total_open_end_quantity, 
+                    SUM(opening_all_sum.total_prod_quantity::float8) as opening_total_quantity, 
+                    SUM(opening_all_sum.total_prod_quantity::float8 / 12) as opening_total_quantity_dzn, 
+                    SUM(opening_all_sum.total_close_end_value::float8) as opening_total_close_end_value, 
+                    SUM(opening_all_sum.total_open_end_value::float8) as opening_total_open_end_value, 
+                    SUM(opening_all_sum.total_prod_value::float8) as opening_total_value, 
                     'running' as running, 
-                    SUM(coalesce(running_all_sum.total_close_end_quantity, 0)::float8) as running_total_close_end_quantity, 
-                    SUM(coalesce(running_all_sum.total_open_end_quantity, 0)::float8) as running_total_open_end_quantity, 
-                    SUM(coalesce(running_all_sum.total_close_end_quantity, 0)::float8 + coalesce(running_all_sum.total_open_end_quantity, 0)::float8) as running_total_quantity, 
-                    SUM((coalesce(running_all_sum.total_close_end_quantity, 0)::float8 + coalesce(running_all_sum.total_open_end_quantity, 0)::float8) / 12) as running_total_quantity_dzn, 
-                    SUM(coalesce(running_all_sum.total_close_end_value, 0)::float8) as running_total_close_end_value, 
-                    SUM(coalesce(running_all_sum.total_open_end_value, 0)::float8) as running_total_open_end_value, 
-                    SUM(coalesce(running_all_sum.total_close_end_value, 0)::float8 + coalesce(running_all_sum.total_open_end_value, 0)::float8) as running_total_value, 
+                    SUM(running_all_sum.total_close_end_quantity::float8) as running_total_close_end_quantity, 
+                    SUM(running_all_sum.total_open_end_quantity::float8) as running_total_open_end_quantity, 
+                    SUM(running_all_sum.total_prod_quantity::float8) as running_total_quantity, 
+                    SUM(running_all_sum.total_prod_quantity::float8 / 12) as running_total_quantity_dzn, 
+                    SUM(running_all_sum.total_close_end_value::float8) as running_total_close_end_value, 
+                    SUM(running_all_sum.total_open_end_value::float8) as running_total_open_end_value, 
+                    SUM(running_all_sum.total_prod_value::float8) as running_total_value, 
                     'closing' as closing, 
-                    SUM(coalesce(running_all_sum.total_close_end_quantity, 0)::float8 + coalesce(opening_all_sum.total_close_end_quantity, 0)::float8) as closing_total_close_end_quantity, 
-                    SUM(coalesce(running_all_sum.total_open_end_quantity, 0)::float8 + coalesce(opening_all_sum.total_open_end_quantity, 0)::float8) as closing_total_open_end_quantity, 
-                    SUM(coalesce(running_all_sum.total_close_end_quantity, 0)::float8 + coalesce(running_all_sum.total_open_end_quantity, 0)::float8 + coalesce(opening_all_sum.total_close_end_quantity, 0)::float8 + coalesce(opening_all_sum.total_open_end_quantity, 0)::float8) as closing_total_quantity, 
-                    SUM((coalesce(running_all_sum.total_close_end_quantity, 0)::float8 + coalesce(running_all_sum.total_open_end_quantity, 0)::float8 + coalesce(opening_all_sum.total_close_end_quantity, 0)::float8 + coalesce(opening_all_sum.total_open_end_quantity, 0)::float8) / 12) as closing_total_quantity_dzn, 
-                    SUM(coalesce(running_all_sum.total_close_end_value, 0)::float8 + coalesce(opening_all_sum.total_close_end_value, 0)::float8) as closing_total_close_end_value, 
-                    SUM(coalesce(running_all_sum.total_open_end_value, 0)::float8 + coalesce(opening_all_sum.total_open_end_value, 0)::float8) as closing_total_open_end_value, 
-                    SUM(coalesce(running_all_sum.total_close_end_value, 0)::float8 + coalesce(running_all_sum.total_open_end_value, 0)::float8 + coalesce(opening_all_sum.total_close_end_value, 0)::float8 + coalesce(opening_all_sum.total_open_end_value, 0)::float8) as closing_total_value
+                    SUM(running_all_sum.total_close_end_quantity::float8 + opening_all_sum.total_close_end_quantity::float8) as closing_total_close_end_quantity, 
+                    SUM(running_all_sum.total_open_end_quantity::float8 + opening_all_sum.total_open_end_quantity::float8) as closing_total_open_end_quantity, 
+                    SUM(running_all_sum.total_prod_quantity::float8 + opening_all_sum.total_prod_quantity::float8) as closing_total_quantity, 
+                    SUM((running_all_sum.total_prod_quantity::float8 + opening_all_sum.total_prod_quantity::float8) / 12) as closing_total_quantity_dzn, 
+                    SUM(running_all_sum.total_close_end_value::float8 + opening_all_sum.total_close_end_value::float8) as closing_total_close_end_value, 
+                    SUM(running_all_sum.total_open_end_value::float8 + opening_all_sum.total_open_end_value::float8) as closing_total_open_end_value, 
+                    SUM(running_all_sum.total_prod_value::float8 + opening_all_sum.total_prod_value::float8) as closing_total_value
                 FROM 
                     zipper.v_order_details_full vodf 
                 LEFT JOIN 
