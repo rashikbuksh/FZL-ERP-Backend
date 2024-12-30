@@ -317,8 +317,7 @@ export async function getFinishingBatchByFinishingBatchUuid(req, res, next) {
 export async function getFinishingBatchCapacityDetails(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { from_date, to_date } = req.query;
-	console.log('from_date:', from_date);
-	console.log('to_date:', to_date);
+
 	const CapacityQuery = sql`
 		SELECT
 			item_properties.uuid AS item,
@@ -397,7 +396,6 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
 		const dataResult = await db.execute(resultPromise); // Fetch main query results
 		// console.log('capacityQueryResult:', capacityQueryResult.rows);
-		console.log('dataResult:', dataResult.rows);
 
 		const formattedData = capacityQueryResult.rows.map((capacityRow) => {
 			const matchingDataRow = dataResult.rows.find(
@@ -434,8 +432,6 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					: null,
 			};
 		});
-
-		console.log('formattedData:', formattedData);
 
 		const dateRange = [];
 		let currentDate = new Date(from_date);

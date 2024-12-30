@@ -341,7 +341,6 @@ export async function selectMaxProductionQuantityForFinishingBatch(
 		const max_possible_quantity = await db.execute(
 			max_possible_quantity_query
 		);
-		console.log(max_possible_quantity);
 
 		const toast = {
 			status: 200,
