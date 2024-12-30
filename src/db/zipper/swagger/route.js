@@ -3803,6 +3803,26 @@ export const pathZipperFinishingBatch = {
 			},
 		},
 	},
+	'/zipper/daily-production-plan': {
+		get: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'Get all Daily Production Plan',
+			parameters: [SE.parameter_query('date', 'date', ['2024-01-01'])],
+
+			responses: {
+				200: SE.response_schema(200, {
+					production_date: SE.date_time(),
+					item_description: SE.string('Item 1'),
+					order_number: SE.string('Z24-0001'),
+					party_name: SE.string('Party 1'),
+					style: SE.string('Style 1'),
+					color: SE.string('Color 1'),
+					size: SE.number(100),
+					quantity: SE.number(100),
+				}),
+			},
+		},
+	},
 };
 
 // * Zipper Finishing Batch Entry * //

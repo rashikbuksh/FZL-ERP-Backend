@@ -493,3 +493,51 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function getDailyProductionPlan(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { date } = req.query;
+
+	const query = sql`
+							SELECT
+								production_date,
+								vodf.item_description,
+								vodf.order_number,
+								vodf.party_name,
+								zoe.style,
+								zoe.color,
+								zoe.size,
+								zfbe.quantity::float8
+							FROM 
+								zipper.finishing_batch zfb
+							LEFT JOIN
+								zipper.finishing_batch_entry zfbe ON zfb.uuid = zfbe.finishing_batch_uuid
+							LEFT JOIN
+								zipper.sfg zs ON zfbe.sfg_uuid = zs.uuid
+							LEFT JOIN
+								zipper.order_entry zoe ON zs.order_entry_uuid = zoe.uuid
+							LEFT JOIN
+								zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
+							WHERE
+								zfb.production_date = ${date}
+							ORDER BY
+								zfb.production_date	
+							`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'production_plan',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

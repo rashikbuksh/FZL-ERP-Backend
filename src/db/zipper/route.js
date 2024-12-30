@@ -487,6 +487,10 @@ zipperRouter.get(
 	'/finishing-batch-capacity-details',
 	finishingBatchOperations.getFinishingBatchCapacityDetails
 );
+zipperRouter.get(
+	'/daily-production-plan',
+	finishingBatchOperations.getDailyProductionPlan
+);
 
 // --------------------- FINISHING BATCH ENTRY ROUTES ---------------------
 
