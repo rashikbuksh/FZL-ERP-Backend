@@ -501,7 +501,7 @@ export async function getDailyProductionPlan(req, res, next) {
 
 	const query = sql`
 							SELECT
-								production_date,
+								DATE(production_date),
 								vodf.item_description,
 								vodf.order_number,
 								vodf.party_name,
@@ -526,7 +526,7 @@ export async function getDailyProductionPlan(req, res, next) {
 							LEFT JOIN
 								zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
 							WHERE
-								zfb.production_date = ${date}
+								DATE(zfb.production_date) = ${date}
 							ORDER BY
 								zfb.production_date	
 							`;
