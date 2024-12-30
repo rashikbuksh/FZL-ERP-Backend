@@ -351,6 +351,12 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size,
+			CASE 
+				WHEN vodf.order_type = 'tape' THEN 'Meter' 
+				WHEN vodf.order_type = 'slider' THEN 'Pcs'
+				WHEN vodf.is_inch = 1 THEN 'Inch'
+				ELSE 'CM' 
+			END as unit,
 			vodf.is_inch,
 			vodf.is_meter,
 			concat(oe.style, ' / ', oe.color, ' / ', oe.size) as style_color_size,
