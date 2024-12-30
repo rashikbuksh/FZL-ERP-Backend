@@ -522,7 +522,7 @@ export async function getDailyProductionPlan(req, res, next) {
 							LEFT JOIN
 								zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
 							WHERE
-								DATE(zfb.production_date) = ${date} AND (${item == 'all' || item == null ? 'TRUE' : `vodf.item = '${item}'`})
+								DATE(zfb.production_date) = ${date} AND (${item == 'all' || item == '' ? sql`1=1` : sql`vodf.item = ${item}`})
 							ORDER BY
 								zfb.production_date	
 							`;
