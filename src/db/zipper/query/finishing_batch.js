@@ -513,7 +513,7 @@ export async function getDailyProductionPlan(req, res, next) {
 								CASE 
 									WHEN vodf.order_type = 'tape' THEN 'Meter'
 									WHEN vodf.is_inch = 1 THEN 'Inch'
-									ELSE 'Pcs'
+									ELSE 'Cm'
 								END AS unit
 							FROM 
 								zipper.finishing_batch zfb
