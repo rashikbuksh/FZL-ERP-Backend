@@ -1571,6 +1571,7 @@ export async function dailyProductionReport(req, res, next) {
 				[type, marketing_name],
 				() => ({
 					type,
+					marketing_name,
 					parties: [],
 				})
 			);
