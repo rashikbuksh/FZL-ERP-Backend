@@ -40,6 +40,7 @@ BEGIN
         DELETE FROM zipper.multi_color_dashboard
         WHERE order_description_uuid = OLD.uuid;
     END IF;
+    RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 

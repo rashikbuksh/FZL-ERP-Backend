@@ -156,7 +156,7 @@ export async function selectAll(req, res, next) {
 			GROUP BY be.dyeing_batch_uuid
 		) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
 		GROUP BY dyeing_batch.uuid, public.machine.name, public.machine.min_capacity, public.machine.max_capacity, users.name, expected.total_quantity, expected.expected_kg, expected.order_numbers, expected.total_actual_production_quantity, expected.party_name, oe_colors.colors
-		ORDER BY dyeing_batch.created_at DESC
+		ORDER BY expected.order_numbers DESC, dyeing_batch.id DESC
 	`;
 	const resultPromise = db.execute(query);
 
