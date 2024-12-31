@@ -630,7 +630,7 @@ export async function selectOrderInfo(req, res, next) {
 		case 'dyeing_batch':
 			filterCondition = sql`
 				order_info.uuid IN (
-					SELECT vodf.order_info_uuid, vodf.order_number
+					SELECT vodf.order_info_uuid
 					FROM zipper.v_order_details_full vodf
 					LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
