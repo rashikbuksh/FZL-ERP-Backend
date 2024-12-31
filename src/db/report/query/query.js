@@ -809,7 +809,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
             LEFT JOIN 
                 thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
             LEFT JOIN 
-                lab_dip.recipe ON order_entry.lab_dip_recipe_uuid = recipe.uuid
+                lab_dip.recipe ON order_entry.recipe_uuid = recipe.uuid
             LEFT JOIN
                 thread.batch ON batch.uuid = batch_entry.batch_uuid
             LEFT JOIN
