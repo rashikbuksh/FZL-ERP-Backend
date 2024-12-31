@@ -787,6 +787,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 marketing.name as marketing_name,
                 order_entry.style,
                 order_entry.color,
+                recipe.name as recipe_name,
                 order_entry.swatch_approval_date,
                 order_entry.count_length_uuid,
                 count_length.count,
@@ -807,6 +808,8 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 thread.batch_entry
             LEFT JOIN 
                 thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+            LEFT JOIN 
+                lab_dip.recipe ON order_entry.lab_dip_recipe_uuid = recipe.uuid
             LEFT JOIN
                 thread.batch ON batch.uuid = batch_entry.batch_uuid
             LEFT JOIN
