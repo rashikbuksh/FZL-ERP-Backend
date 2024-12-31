@@ -292,7 +292,8 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			)
 		)
 		.where(eq(order_description.uuid, order_description_uuid))
-		.groupBy(order_entry.uuid, sfg.uuid);
+		.groupBy(order_entry.uuid, sfg.uuid)
+		.orderBy(asc(order_entry.index));
 
 	try {
 		const data = await orderEntryPromise;
