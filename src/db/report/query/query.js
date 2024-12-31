@@ -1504,7 +1504,7 @@ export async function dailyProductionReport(req, res, next) {
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---'
                     AND coalesce(running_all_sum.total_prod_quantity, 0)::float8 > 0
                 ORDER BY 
-                    vodf.party_name, vodf.marketing_name DESC, oe.size ASC;
+                    vodf.party_name DESC, oe.size ASC;
     `;
 	const resultPromise = db.execute(query);
 
@@ -1516,7 +1516,6 @@ export async function dailyProductionReport(req, res, next) {
 			const {
 				type,
 				party_name,
-				marketing_name,
 				order_number,
 				item_description,
 				is_inch,
@@ -1570,16 +1569,10 @@ export async function dailyProductionReport(req, res, next) {
 				return array[index];
 			};
 
-			const typeEntry = findOrCreateArray(
-				acc,
-				['type', 'marketing_name'],
-				[type, marketing_name],
-				() => ({
-					type,
-					marketing_name,
-					parties: [],
-				})
-			);
+			const typeEntry = findOrCreateArray(acc, ['type'], [type], () => ({
+				type,
+				parties: [],
+			}));
 
 			const party = findOrCreate(
 				typeEntry.parties,
