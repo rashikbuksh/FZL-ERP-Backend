@@ -153,10 +153,12 @@ export async function selectAll(req, res, next) {
 															to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')))
 						) AS order_numbers,
 						jsonb_agg(
-							DISTINCT order_info.uuid ) as order_uuids,
+							DISTINCT order_info.uuid 
+						) as order_uuids,
 						batch.production_date::date as production_date,
 						party.name as party_name,
 						ARRAY_AGG(DISTINCT oe.color) as color,
+						ARRAY_AGG(DISTINCT recipe.name) as recipe_name,
 						batch.batch_type,
 						batch.order_info_uuid,
 						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number
@@ -174,6 +176,7 @@ export async function selectAll(req, res, next) {
 						LEFT JOIN public.machine pm ON batch.machine_uuid = pm.uuid
 						LEFT JOIN thread.batch_entry ON batch.uuid = batch_entry.batch_uuid
 						LEFT JOIN thread.order_entry oe ON batch_entry.order_entry_uuid = oe.uuid
+						LEFT JOIN lab_dip.recipe recipe ON oe.recipe_uuid = recipe.uuid
 						LEFT JOIN thread.count_length cl ON oe.count_length_uuid = cl.uuid
 						LEFT JOIN thread.order_info order_info ON oe.order_info_uuid = order_info.uuid
 						LEFT JOIN public.party party ON order_info.party_uuid = party.uuid

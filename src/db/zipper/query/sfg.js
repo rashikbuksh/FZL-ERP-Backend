@@ -188,7 +188,8 @@ export async function selectSwatchInfo(req, res, next) {
 					vod.order_number as order_number,
 					vod.item_description as item_description,
 					vod.order_type,
-					od.created_at
+					od.created_at,
+					oe.swatch_approval_date
 				FROM
 					zipper.sfg sfg
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid

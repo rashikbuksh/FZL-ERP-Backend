@@ -314,6 +314,7 @@ export async function selectThreadSwatch(req, res, next) {
 			created_at: order_info.created_at,
 			updated_at: order_info.updated_at,
 			remarks: order_info.remarks,
+			swatch_approval_date: order_entry.swatch_approval_date,
 		})
 		.from(order_info)
 		.leftJoin(order_entry, eq(order_info.uuid, order_entry.order_info_uuid))
