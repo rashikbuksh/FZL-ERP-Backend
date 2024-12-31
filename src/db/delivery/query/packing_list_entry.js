@@ -331,7 +331,14 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN zlr.name ELSE tlr.name END as recipe_name,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN zlr.uuid ELSE tlr.uuid END as recipe_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN zlr.sub_streat ELSE tlr.sub_streat END as sub_streat,
-			pl.item_for
+			pl.item_for,
+			CASE 
+				WHEN ple.sfg_uuid IS NULL THEN 'Meter'
+				WHEN vodf.order_type = 'tape' THEN 'Meter' 
+				WHEN vodf.order_type = 'slider' THEN 'Pcs'
+				WHEN vodf.is_inch = 1 THEN 'Inch'
+				ELSE 'Cm'
+			END as unit
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN
