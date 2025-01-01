@@ -9,7 +9,6 @@ import {
 	uuid_primary,
 } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
-import { int } from 'drizzle-orm/mysql-core/index.js';
 
 export const delivery = pgSchema('delivery');
 
