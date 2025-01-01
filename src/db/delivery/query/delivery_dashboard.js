@@ -23,9 +23,14 @@ export async function selectDelivery(req, res, next) {
                 WHEN (vpl.is_warehouse_received = 'true' AND vpl.gate_pass = 1 AND vpl.receive_status = 0) THEN 'in vehicle'
                 WHEN (vpl.is_warehouse_received = 'true' AND vpl.gate_pass = 0) THEN 'in warehouse'
                 ELSE 'in floor'
-            END as status
+            END as status,
+            p.name as party_name
         FROM
             delivery.v_packing_list_details vpl
+        LEFT JOIN 
+            zipper.order_info oi ON vpl.order_info_uuid = oi.uuid
+        LEFT JOIN
+            public.party p ON oi.party_uuid = p.uuid
         WHERE 
             vpl.item_for = 'zipper' OR vpl.item_for = 'sample_zipper'`;
 
@@ -63,9 +68,14 @@ export async function selectDeliveryThread(req, res, next) {
                         WHEN (vpl.is_warehouse_received = 'true' AND vpl.gate_pass = 1 AND vpl.receive_status = 0) THEN 'in vehicle'
                         WHEN (vpl.is_warehouse_received = 'true' AND vpl.gate_pass = 0) THEN 'in warehouse'
                         ELSE 'in floor'
-                    END as status
+                    END as status,
+                    p.name as party_name
                 FROM
                     delivery.v_packing_list_details vpl
+                LEFT JOIN
+                    thread.order_info oi ON vpl.order_info_uuid = oi.uuid
+                LEFT JOIN
+                    public.party p ON oi.party_uuid = p.uuid
                 WHERE 
                     vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread'`;
 
