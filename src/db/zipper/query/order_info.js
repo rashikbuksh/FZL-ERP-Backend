@@ -454,13 +454,13 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 	// get marketing_uuid from own_uuid
 
 	const marketingUuidQuery = sql`
-		SELECT marketing_uuid
+		SELECT uuid
 		FROM public.marketing
 		WHERE user_uuid = ${own_uuid};`;
 
 	try {
 		const marketingUuidData = await db.execute(marketingUuidQuery);
-		marketingUuid = marketingUuidData?.rows[0]?.marketing_uuid;
+		marketingUuid = marketingUuidData?.rows[0]?.uuid;
 
 		const query = sql`
 					SELECT 

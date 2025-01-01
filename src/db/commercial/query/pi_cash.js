@@ -125,14 +125,14 @@ export async function selectAll(req, res, next) {
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
 	const marketingUuidQuery = sql`
-		SELECT marketing_uuid
+		SELECT uuid
 		FROM public.marketing
 		WHERE user_uuid = ${own_uuid};`;
 
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.marketing_uuid;
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
 		}
 
 		const query = sql`
