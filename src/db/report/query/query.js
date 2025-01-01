@@ -8,8 +8,22 @@ import db from '../../index.js';
 // multiple rows shows for stock.uuid, assembly_production_quantity,coloring_production_quantity, teeth_molding_quantity,teeth_coloring_quantity,finishing_quantity columns
 export async function zipperProductionStatusReport(req, res, next) {
 	const { status } = req.query;
+	const { own_uuid } = req?.query;
 
-	const query = sql`
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
             SELECT 
                 vodf.order_info_uuid,
                 vodf.order_number,
@@ -164,11 +178,11 @@ export async function zipperProductionStatusReport(req, res, next) {
                 GROUP BY
                     od.uuid
             ) delivery_sum ON delivery_sum.order_description_uuid = oe.order_description_uuid
-            WHERE vodf.order_description_uuid IS NOT NULL
+            WHERE vodf.order_description_uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
         `;
 
-	query.append(
-		sql` GROUP BY
+		query.append(
+			sql` GROUP BY
                 vodf.order_info_uuid,
                 vodf.order_number,
                 vodf.created_at,
@@ -200,37 +214,36 @@ export async function zipperProductionStatusReport(req, res, next) {
                 delivery_sum.total_short_quantity,
                 delivery_sum.total_reject_quantity,
                 vodf.remarks`
-	);
+		);
 
-	if (status === 'completed') {
-		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
-		);
-	} else if (status === 'pending') {
-		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
-		);
-	} else if (status === 'over_delivered') {
-		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
-		);
-	} else if (status === 'sample_completed') {
-		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 1`
-		);
-	} else if (status === 'sample_pending') {
-		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 1`
-		);
-	} else if (status === 'sample_over_delivered') {
-		query.append(
-			sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 1`
-		);
-	}
+		if (status === 'completed') {
+			query.append(
+				sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
+			);
+		} else if (status === 'pending') {
+			query.append(
+				sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
+			);
+		} else if (status === 'over_delivered') {
+			query.append(
+				sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
+			);
+		} else if (status === 'sample_completed') {
+			query.append(
+				sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 1`
+			);
+		} else if (status === 'sample_pending') {
+			query.append(
+				sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) < SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 1`
+			);
+		} else if (status === 'sample_over_delivered') {
+			query.append(
+				sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) > SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 1`
+			);
+		}
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {
@@ -246,7 +259,21 @@ export async function zipperProductionStatusReport(req, res, next) {
 }
 
 export async function dailyChallanReport(req, res, next) {
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
                     SELECT 
                         challan.uuid,
                         challan.created_at AS challan_date,
@@ -406,6 +433,8 @@ export async function dailyChallanReport(req, res, next) {
                     LEFT JOIN public.factory tpf ON toi.factory_uuid = tpf.uuid
                     LEFT JOIN commercial.pi_cash tpc ON tpc.thread_order_info_uuids IN (toi.uuid)
                     LEFT JOIN commercial.lc tlc ON tpc.lc_uuid = tlc.uuid 
+                    WHERE
+                        ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
                     GROUP BY
                         challan.uuid,
                         challan.created_at,
@@ -448,9 +477,8 @@ export async function dailyChallanReport(req, res, next) {
                         challan.created_at DESC; 
         `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {
@@ -466,7 +494,21 @@ export async function dailyChallanReport(req, res, next) {
 }
 
 export async function PiRegister(req, res, next) {
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             SELECT 
                 pi_cash.uuid,
                 CASE WHEN is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END AS pi_cash_number,
@@ -523,12 +565,11 @@ export async function PiRegister(req, res, next) {
 					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 				GROUP BY pi_cash_uuid, vodf.order_type
 			) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
-            WHERE pi_cash_entry_order_numbers.order_numbers IS NOT NULL OR pi_cash_entry_order_numbers.thread_order_numbers IS NOT NULL
+            WHERE  pi_cash_entry_order_numbers.order_numbers IS NOT NULL OR pi_cash_entry_order_numbers.thread_order_numbers IS NOT NULL  AND ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
         `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		// * remove the null values in order_numbers and thread_order_numbers
@@ -554,7 +595,21 @@ export async function PiRegister(req, res, next) {
 }
 
 export async function PiToBeRegister(req, res, next) {
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             SELECT 
                 party.uuid,
                 party.name,
@@ -602,12 +657,11 @@ export async function PiToBeRegister(req, res, next) {
                 vodf_grouped.total_quantity > 0 OR 
                 vodf_grouped.total_delivered > 0 OR 
                 vodf_grouped.total_pi > 0 OR
-                vodf_grouped.total_non_pi > 0
+                vodf_grouped.total_non_pi > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
         `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {
@@ -623,7 +677,21 @@ export async function PiToBeRegister(req, res, next) {
 }
 
 export async function PiToBeRegisterThread(req, res, next) {
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             SELECT 
                 party.uuid,
                 party.name,
@@ -652,12 +720,11 @@ export async function PiToBeRegisterThread(req, res, next) {
                     toi.party_uuid
             ) toi_grouped ON party.uuid = toi_grouped.party_uuid
             WHERE 
-                toi_grouped.total_quantity > 0 OR toi_grouped.total_delivered > 0 OR toi_grouped.total_balance_pi_quantity > 0 OR toi_grouped.total_undelivered_balance_quantity > 0
+                toi_grouped.total_quantity > 0 OR toi_grouped.total_delivered > 0 OR toi_grouped.total_balance_pi_quantity > 0 OR toi_grouped.total_undelivered_balance_quantity > 0 AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
         `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {
@@ -675,7 +742,22 @@ export async function PiToBeRegisterThread(req, res, next) {
 export async function LCReport(req, res, next) {
 	const { document_receiving, acceptance, maturity, payment } = req.query;
 
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
             SELECT 
                 CONCAT('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) AS file_number,
                 lc.uuid,
@@ -730,28 +812,27 @@ export async function LCReport(req, res, next) {
             LEFT JOIN
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             WHERE
-                lc_entry.handover_date IS NOT NULL
+                lc_entry.handover_date IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
         `;
 
-	if (document_receiving) {
-		query.append(sql`AND lc_entry.document_receive_date IS NULL`);
-	} else if (acceptance) {
-		query.append(
-			sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NULL`
-		);
-	} else if (maturity) {
-		query.append(
-			sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NOT NULL AND lc_entry.maturity_date IS NULL`
-		);
-	} else if (payment) {
-		query.append(
-			sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NOT NULL AND lc_entry.maturity_date IS NOT NULL AND lc_entry.payment_date IS NULL`
-		);
-	}
+		if (document_receiving) {
+			query.append(sql`AND lc_entry.document_receive_date IS NULL`);
+		} else if (acceptance) {
+			query.append(
+				sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NULL`
+			);
+		} else if (maturity) {
+			query.append(
+				sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NOT NULL AND lc_entry.maturity_date IS NULL`
+			);
+		} else if (payment) {
+			query.append(
+				sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NOT NULL AND lc_entry.maturity_date IS NOT NULL AND lc_entry.payment_date IS NULL`
+			);
+		}
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {
@@ -770,7 +851,21 @@ export async function LCReport(req, res, next) {
 
 export async function threadProductionStatusBatchWise(req, res, next) {
 	const { status } = req.query;
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             SELECT
                 batch.uuid,
                 CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) AS batch_number,
@@ -871,38 +966,37 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 GROUP BY
                     toe.uuid
             ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid
-            WHERE batch.uuid IS NOT NULL
+            WHERE batch.uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
             `;
 
-	if (status === 'completed') {
-		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
-		);
-	} else if (status === 'pending') {
-		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
-		);
-	} else if (status === 'over_delivered') {
-		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
-		);
-	} else if (status === 'sample_completed') {
-		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
-		);
-	} else if (status === 'sample_pending') {
-		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
-		);
-	} else if (status === 'sample_over_delivered') {
-		query.append(
-			sql` AND batch_entry_quantity_length.total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
-		);
-	}
+		if (status === 'completed') {
+			query.append(
+				sql` AND batch_entry_quantity_length.total_quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+			);
+		} else if (status === 'pending') {
+			query.append(
+				sql` AND batch_entry_quantity_length.total_quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+			);
+		} else if (status === 'over_delivered') {
+			query.append(
+				sql` AND batch_entry_quantity_length.total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+			);
+		} else if (status === 'sample_completed') {
+			query.append(
+				sql` AND batch_entry_quantity_length.total_quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+			);
+		} else if (status === 'sample_pending') {
+			query.append(
+				sql` AND batch_entry_quantity_length.total_quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+			);
+		} else if (status === 'sample_over_delivered') {
+			query.append(
+				sql` AND batch_entry_quantity_length.total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+			);
+		}
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {
@@ -918,8 +1012,23 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 }
 
 export async function ProductionReportDirector(req, res, next) {
-	// OKAY
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		// OKAY
+		const query = sql`
             SELECT 
                 vodf.order_info_uuid,
                 vodf.item,
@@ -962,13 +1071,12 @@ export async function ProductionReportDirector(req, res, next) {
                 GROUP BY
                     oe.order_description_uuid
             ) open_end_sum ON vodf.order_description_uuid = open_end_sum.order_description_uuid
-            WHERE vodf.order_description_uuid IS NOT NULL
+            WHERE vodf.order_description_uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
             ORDER BY vodf.item_name DESC
     `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		// row group using item_name, then party_name, then order_number, then item_description
@@ -1040,7 +1148,21 @@ export async function ProductionReportDirector(req, res, next) {
 }
 
 export async function ProductionReportThreadDirector(req, res, next) {
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             SELECT 
                 order_info.uuid,
                 'Sewing Thread' as item_name,
@@ -1072,14 +1194,14 @@ export async function ProductionReportThreadDirector(req, res, next) {
                 GROUP BY
                     order_entry.order_info_uuid
             ) prod_quantity ON order_info.uuid = prod_quantity.order_info_uuid
+            WHERE ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
             GROUP BY 
                 order_info.uuid, party.name, order_info.created_at, count_length.count, count_length.length, prod_quantity.total_quantity, prod_quantity.total_coning_carton_quantity
             ORDER BY party.name DESC
     `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		// first group by item_name, then party_name, then order_number, then count_length_name
@@ -1149,7 +1271,21 @@ export async function ProductionReportThreadDirector(req, res, next) {
 }
 
 export async function ProductionReportSnm(req, res, next) {
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             SELECT 
                 vodf.order_info_uuid,
                 vodf.item,
@@ -1196,13 +1332,12 @@ export async function ProductionReportSnm(req, res, next) {
                 GROUP BY
                     oe.uuid
             ) open_end_sum ON oe.uuid = open_end_sum.order_entry_uuid
-            WHERE vodf.order_description_uuid IS NOT NULL
+            WHERE vodf.order_description_uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
             ORDER BY vodf.item_name DESC
     `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		// row group using firstly item_name, secondly party_name, thirdly order_number, fourthly item_description, fifth size
@@ -1286,7 +1421,21 @@ export async function ProductionReportSnm(req, res, next) {
 }
 
 export async function ProductionReportThreadSnm(req, res, next) {
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             SELECT 
                 order_info.uuid,
                 'Sewing Thread' as item_name,
@@ -1320,12 +1469,12 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 GROUP BY
                     order_entry.uuid
             ) prod_quantity ON order_entry.uuid = prod_quantity.order_entry_uuid
+            WHERE ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
             ORDER BY party.name DESC
     `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		// first group by item_name, then party_name, then order_number, then count_length_name
@@ -1407,7 +1556,21 @@ export async function ProductionReportThreadSnm(req, res, next) {
 
 export async function dailyProductionReport(req, res, next) {
 	const { from_date, to_date } = req.query;
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             WITH running_all_sum AS (
                 SELECT 
                     oe.uuid as order_entry_uuid, 
@@ -1505,13 +1668,12 @@ export async function dailyProductionReport(req, res, next) {
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
                 WHERE 
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---'
-                    AND coalesce(running_all_sum.total_prod_quantity, 0)::float8 > 0
+                    AND coalesce(running_all_sum.total_prod_quantity, 0)::float8 > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
                 ORDER BY 
                     vodf.party_name DESC, oe.size ASC;
     `;
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		// first group by type, then party_name, then order_number, then item_description, then size
@@ -1654,7 +1816,22 @@ export async function dailyProductionReport(req, res, next) {
 
 export async function deliveryStatementReport(req, res, next) {
 	const { from_date, to_date } = req.query;
-	const query = sql`
+
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             WITH opening_all_sum AS (
                 SELECT 
                     oe.uuid as order_entry_uuid, 
@@ -1837,7 +2014,7 @@ export async function deliveryStatementReport(req, res, next) {
                             0
                             )::float8, 
                             0
-                        )::float8 > 0
+                        )::float8 > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
                 GROUP BY 
                     description_wise_price_size.company_price, 
                     description_wise_price_size.size,
@@ -1859,9 +2036,8 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.party_name, vodf.marketing_name DESC;
                 
     `;
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		// first group by type, then party_name, then order_number, then item_description, then size

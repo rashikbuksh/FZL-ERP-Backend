@@ -4,7 +4,24 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function ProductionReportThreadPartyWise(req, res, next) {
-	const query = sql`
+	if (!(await validateRequest(req, next))) return;
+
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
             SELECT 
                 party.uuid as party_uuid,
                 party.name as party_name,
@@ -32,14 +49,15 @@ export async function ProductionReportThreadPartyWise(req, res, next) {
                 GROUP BY
                     order_entry.order_info_uuid, order_entry.count_length_uuid
             ) prod_quantity ON order_info.uuid = prod_quantity.order_info_uuid AND order_entry.count_length_uuid = prod_quantity.count_length_uuid
+			WHERE
+				${own_uuid == null ? sql`TRUE` : sql`marketing.uuid = ${marketingUuid}`}
             GROUP BY 
                 party.uuid, party.name, count_length.count, count_length.length, prod_quantity.total_quantity
             ORDER BY party.name DESC, count_length.count ASC, count_length.length ASC
     `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		// count_length_names will be column names and its values will be the total quantity

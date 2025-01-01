@@ -5,7 +5,20 @@ import db from '../../index.js';
 
 export async function MaterialStockReport(req, res, next) {
 	const { from_date, to_date } = req.query;
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
             SELECT 
                 m.uuid as material_uuid,
                 ms.name as material_section_name,
@@ -76,9 +89,8 @@ export async function MaterialStockReport(req, res, next) {
                 ORDER BY ms.name, m.name;
     `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {
