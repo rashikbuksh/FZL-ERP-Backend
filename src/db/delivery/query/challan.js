@@ -535,3 +535,37 @@ export async function updateReceivedStatus(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+// Its running but not completed yet
+export async function updateDelivered(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { receive_status } = req.body;
+
+	const query = sql`
+		UPDATE
+			delivery.challan
+		SET
+			receive_status = ${receive_status}
+		WHERE
+			uuid = ${req.params.uuid}
+		RETURNING
+			concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) as challan_number,
+			receive_status
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `Challan Receive Status Updated`,
+		};
+
+		return await res.status(200).json({ toast, data: data.rows[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
