@@ -9,6 +9,7 @@ import {
 	uuid_primary,
 } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
+import { int } from 'drizzle-orm/mysql-core/index.js';
 
 export const delivery = pgSchema('delivery');
 
@@ -108,6 +109,7 @@ export const challan = delivery.table('challan', {
 	remarks: text('remarks').default(null),
 	delivery_date: DateTime('delivery_date').default(null),
 	delivery_type: text('delivery_type').default(null),
+	is_delivered: integer('is_delivered').default(0),
 });
 
 export const vehicle = delivery.table('vehicle', {

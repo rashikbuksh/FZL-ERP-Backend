@@ -197,7 +197,8 @@ export async function selectAll(req, res, next) {
 				challan.delivery_date,
 				packing_list.item_for,
 				challan.is_own,
-				challan.delivery_type
+				challan.delivery_type,
+				challan.is_delivered
 			FROM
 				delivery.challan
 			LEFT JOIN
@@ -363,7 +364,8 @@ export async function select(req, res, next) {
 									packing_list.item_for,
 									challan.is_own,
 									pi_cash.pi_cash_numbers,
-									challan.delivery_type
+									challan.delivery_type,
+									challan.is_delivered
 								FROM
 									delivery.challan
 								LEFT JOIN
