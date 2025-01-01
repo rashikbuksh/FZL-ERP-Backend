@@ -73,21 +73,18 @@ export async function selectAll(req, res, next) {
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
-	if (own_uuid) {
-		const marketingUuidQuery = sql`
+	const marketingUuidQuery = sql`
 		SELECT marketing_uuid
 		FROM public.marketing
 		WHERE user_uuid = ${own_uuid};`;
 
-		try {
+	try {
+		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
 			marketingUuid = marketingUuidData?.rows[0]?.marketing_uuid;
-		} catch (error) {
-			await handleError({ error, res });
 		}
-	}
 
-	const query = sql`
+		const query = sql`
 		SELECT
 			lc.uuid,
 			lc.party_uuid,
@@ -148,9 +145,8 @@ export async function selectAll(req, res, next) {
 		GROUP BY lc.uuid, party.name, users.name
 		ORDER BY lc.created_at DESC
 		`;
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {

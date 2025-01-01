@@ -453,21 +453,16 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 
 	// get marketing_uuid from own_uuid
 
-	if (own_uuid) {
-		const marketingUuidQuery = sql`
+	const marketingUuidQuery = sql`
 		SELECT marketing_uuid
 		FROM public.marketing
 		WHERE user_uuid = ${own_uuid};`;
 
-		try {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.marketing_uuid;
-		} catch (error) {
-			await handleError({ error, res });
-		}
-	}
+	try {
+		const marketingUuidData = await db.execute(marketingUuidQuery);
+		marketingUuid = marketingUuidData?.rows[0]?.marketing_uuid;
 
-	const query = sql`
+		const query = sql`
 					SELECT 
 						vod.*, 
 						ROW_NUMBER() OVER (
@@ -504,9 +499,8 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 						}
 					ORDER BY vod.created_at DESC;`;
 
-	const orderInfoPromise = db.execute(query);
+		const orderInfoPromise = db.execute(query);
 
-	try {
 		const data = await orderInfoPromise;
 
 		const toast = {
