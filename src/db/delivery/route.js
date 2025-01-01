@@ -91,6 +91,11 @@ deliveryRouter.put(
 	challanOperations.updateReceivedStatus
 );
 
+deliveryRouter.get(
+	'/challan/update-delivered/:uuid',
+	challanOperations.updateDelivered
+);
+
 // * vehicle routes
 
 deliveryRouter.get('/vehicle', vehicleOperations.selectAll);

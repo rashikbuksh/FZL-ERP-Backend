@@ -896,6 +896,26 @@ export const pathDeliveryChallan = {
 			},
 		},
 	},
+	'/delivery/challan/update-delivered/{uuid}': {
+		put: {
+			tags: ['delivery.challan'],
+			summary: 'Update delivered for challan',
+			description: 'Update delivered for challan',
+			// operationId: "updateDeliveredForChallan",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Challan not found',
+				},
+				405: { description: 'Validation exception' },
+			},
+		},
+	},
 };
 
 export const pathDeliveryVehicle = {

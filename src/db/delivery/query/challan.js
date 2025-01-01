@@ -536,17 +536,17 @@ export async function updateReceivedStatus(req, res, next) {
 	}
 }
 
-// Its running but not completed yet
 export async function updateDelivered(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { receive_status } = req.body;
+	const { is_delivered, updated_at } = req.body;
 
 	const query = sql`
 		UPDATE
 			delivery.challan
 		SET
-			receive_status = ${receive_status}
+			updated_at = ${updated_at},
+			is_delivered = ${is_delivered}
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
@@ -561,7 +561,7 @@ export async function updateDelivered(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'update',
-			message: `Challan Receive Status Updated`,
+			message: `Challan is delivered Updated`,
 		};
 
 		return await res.status(200).json({ toast, data: data.rows[0] });
