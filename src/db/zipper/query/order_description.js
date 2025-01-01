@@ -890,7 +890,7 @@ export async function selectOrderNumberToGetOrderDescriptionAndOrderEntryOfMarke
 		FROM public.marketing
 		WHERE user_uuid = ${marketing_uuid};`;
 
-		if (own_uuid) {
+		if (marketing_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
 			marketingUuid = marketingUuidData?.rows[0]?.uuid;
 		}
