@@ -14,8 +14,8 @@ export async function selectDelivery(req, res, next) {
             vpl.order_description_uuid,
             vpl.order_number,
             vpl.item_description,
-            vodf.party_name,
-            vodf.party_uuid,
+            p.name as party_name,
+            p.uuid as party_uuid,
             vpl.style,
             vpl.color,
             vpl.size,
@@ -28,6 +28,14 @@ export async function selectDelivery(req, res, next) {
             END as status
         FROM
             delivery.v_packing_list_details vpl
+        LEFT JOIN
+            zipper.order_entry zoe ON vpl.order_entry_uuid = zoe.uuid
+        LEFT JOIN 
+            zipper.order_description zod ON zoe.order_description_uuid = zod.uuid
+        LEFT JOIN
+            zipper.order_info zoi ON zod.order_info_uuid = zoi.uuid
+        LEFT JOIN
+            public.party p ON zoi.party_uuid = p.uuid
         WHERE 
             vpl.item_for = 'zipper' OR vpl.item_for = 'sample_zipper' OR vpl.item_for = 'tape' OR vpl.item_for = 'slider'`;
 
@@ -56,8 +64,8 @@ export async function selectDeliveryThread(req, res, next) {
                     vpl.order_description_uuid,
                     vpl.order_number,
                     vpl.item_description,
-                    vodf.party_name,
-                    vodf.party_uuid,
+                    p.name as party_name,
+                    p.uuid as party_uuid,
                     vpl.style,
                     vpl.color,
                     vpl.size,
@@ -70,6 +78,12 @@ export async function selectDeliveryThread(req, res, next) {
                     END as status
                 FROM
                     delivery.v_packing_list_details vpl
+                LEFT JOIN 
+                    thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
+                LEFT JOIN
+                    thread.order_info oi ON toe.order_info_uuid = oi.uuid
+                LEFT JOIN
+                    public.party p ON oi.party_uuid = p.uuid
                 WHERE 
                     vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread'`;
 
