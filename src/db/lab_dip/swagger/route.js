@@ -1,3 +1,5 @@
+import SE, { SED } from '../../../util/swagger_example.js';
+
 // * LabDip Info * //
 export const pathLabDipInfo = {
 	'/lab-dip/info': {
@@ -482,6 +484,41 @@ export const pathLabDipInfo = {
 				},
 				404: {
 					description: 'Lab dip info not found',
+				},
+			},
+		},
+	},
+	'/lab-dip/info-recipe-dashboard': {
+		get: {
+			tags: ['lab_dip.info'],
+			summary: 'Get lab dip info recipe dashboard',
+			description: 'Get lab dip info recipe dashboard',
+			produces: ['application/json'],
+			parameters: [],
+			responses: {
+				200: {
+					description: 'Lab dip info recipe dashboard found',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									info_uuid: SE.uuid(),
+									order_number: SE.string('ZS25-0001'),
+									order_info_uuid: SE.uuid(),
+									info_name: SE.string('Lab Dip 1'),
+									info_entry_uuid: SE.uuid(),
+									approved: SE.number(0),
+									approved_date: SE.date_time(),
+									recipe_uuid: SE.uuid(),
+									recipe_name: SE.string(
+										'LDR25-0001 - Recipe 1'
+									),
+									is_zipper_order: SE.number(0),
+								},
+							},
+						},
+					},
 				},
 			},
 		},

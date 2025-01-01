@@ -1,11 +1,11 @@
 import { request, Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
 import * as infoOperations from './query/info.js';
+import * as infoEntryOperations from './query/info_entry.js';
 import * as recipeOperations from './query/recipe.js';
 import * as recipeEntryOperations from './query/recipe_entry.js';
 import * as shadeRecipeOperations from './query/shade_recipe.js';
 import * as shadeRecipeEntryOperations from './query/shade_recipe_entry.js';
-import * as infoEntryOperations from './query/info_entry.js';
 
 const labDipRouter = Router();
 
@@ -19,6 +19,10 @@ labDipRouter.delete('/info/:uuid', infoOperations.remove);
 labDipRouter.get(
 	'/info/details/:lab_dip_info_uuid',
 	infoOperations.selectInfoRecipeByLabDipInfoUuid
+);
+labDipRouter.get(
+	'/info-recipe-dashboard',
+	infoOperations.infoRecipeWithOrderDashboard
 );
 
 // info_entry routes

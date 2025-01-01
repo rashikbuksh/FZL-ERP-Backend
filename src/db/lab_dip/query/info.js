@@ -368,3 +368,46 @@ export async function selectInfoRecipeByLabDipInfoUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function infoRecipeWithOrderDashboard(req, res, next) {
+	const query = sql`
+		SELECT 
+			info.uuid as info_uuid,
+			CASE 
+				WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0'))
+				ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+			END as order_number,
+			CASE WHEN info.order_info_uuid IS NOT NULL THEN oi.uuid ELSE toi.uuid END as order_info_uuid,
+			info.name as info_name,
+			info_entry.uuid as info_entry_uuid,
+			info_entry.approved,
+			info_entry.approved_date,
+			recipe.uuid as recipe_uuid,
+			recipe.name as recipe_name,
+			CASE 
+				WHEN info.order_info_uuid IS NOT NULL THEN TRUE 
+				ELSE FALSE
+			END as is_zipper_order
+		FROM lab_dip.info_entry
+		LEFT JOIN lab_dip.info ON info.uuid = info_entry.lab_dip_info_uuid
+		LEFT JOIN lab_dip.recipe ON info_entry.recipe_uuid = recipe.uuid
+		LEFT JOIN zipper.order_info oi ON info.order_info_uuid = oi.uuid
+		LEFT JOIN thread.order_info toi ON info.thread_order_info_uuid = toi.uuid
+		ORDER BY info_entry.created_at DESC;
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Info Recipe',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
