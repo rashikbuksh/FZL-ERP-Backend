@@ -884,8 +884,19 @@ export async function selectOrderNumberToGetOrderDescriptionAndOrderEntryOfMarke
 	try {
 		const api = await createApi(req);
 
+		let marketingUuid = null;
+		const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${marketing_uuid};`;
+
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
 		const { data: get_order_description_uuid } = await api.get(
-			`/other/order/order_description_uuid/by/${order_number}?marketing_uuid=${marketing_uuid}`
+			`/other/order/order_description_uuid/by/${order_number}?marketing_uuid=${marketingUuid}`
 		);
 
 		const fetchDetailsAndEntries = async (order_description_uuid) => {
