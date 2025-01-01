@@ -905,6 +905,7 @@ export const pathDeliveryChallan = {
 			consumes: 'application/json',
 			produces: 'application/json',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody('is_delivered', 'is_delivered'),
 			responses: {
 				400: {
 					description: 'Invalid UUID supplied',

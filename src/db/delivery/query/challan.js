@@ -540,7 +540,8 @@ export async function updateDelivered(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { is_delivered, updated_at } = req.body;
-
+	// console.log('is_delivered', is_delivered);
+	// console.log('updated_at', updated_at);
 	const query = sql`
 		UPDATE
 			delivery.challan
@@ -561,7 +562,7 @@ export async function updateDelivered(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'update',
-			message: `Challan is delivered Updated`,
+			message: `Challan is_delivered Updated`,
 		};
 
 		return await res.status(200).json({ toast, data: data.rows[0] });
