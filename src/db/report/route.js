@@ -5,6 +5,10 @@ import { selectCashInvoice } from './query/cash_invoice.js';
 import { selectLabDip } from './query/lab_dip.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
+import {
+	threadProductionReportByDate,
+	threadProductionReportPartyWiseByDate,
+} from './query/thread_production_report_by_date.js';
 import * as reportOperations from './query/query.js';
 import {
 	selectSampleReport,
@@ -41,6 +45,17 @@ reportRouter.get('/lc-report', reportOperations.LCReport);
 reportRouter.get(
 	'/thread-production-batch-wise-report',
 	reportOperations.threadProductionStatusBatchWise
+);
+//* Thread Production Status By Date
+reportRouter.get(
+	'/thread-production-report-by-date',
+	threadProductionReportByDate
+);
+
+//* Thread Production Status Party Wise By Date
+reportRouter.get(
+	'/thread-production-report-party-wise-by-date',
+	threadProductionReportPartyWiseByDate
 );
 
 // * Production Report Director
@@ -618,6 +633,49 @@ export const pathReport = {
 					recipe_name: SE.string('Recipe Name'),
 					recipe_status: SE.number(610),
 					order_entry_created_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/thread-production-report-by-date': {
+		get: {
+			summary: 'Thread Production Status By Date',
+			description: 'Thread Production Status By Date',
+			tags: ['report'],
+			operationId: 'threadProductionReportByDate',
+			parameters: [
+				SE.parameter_query('date', 'date', '2024-10-01'),
+				SE.parameter_query('own_uuid', 'own_uuid', '2024-10-01'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					party_name: SE.string('Party Name'),
+					total_quantity: SE.number(610),
+					total_weight: SE.number(610),
+					yarn_quantity: SE.number(610),
+					total_coning_production_quantity: SE.number(610),
+				}),
+			},
+		},
+	},
+
+	'/report/thread-production-report-party-wise-by-date': {
+		get: {
+			summary: 'Thread Production Status Party Wise By Date',
+			description: 'Thread Production Status Party Wise By Date',
+			tags: ['report'],
+			operationId: 'threadProductionReportPartyWiseByDate',
+			parameters: [
+				SE.parameter_query('date', 'date', '2024-10-01'),
+				SE.parameter_query('own_uuid', 'own_uuid', '2024-10-01'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					party_name: SE.string('Party Name'),
+					total_quantity: SE.number(610),
+					total_weight: SE.number(610),
+					yarn_quantity: SE.number(610),
+					total_coning_production_quantity: SE.number(610),
 				}),
 			},
 		},
