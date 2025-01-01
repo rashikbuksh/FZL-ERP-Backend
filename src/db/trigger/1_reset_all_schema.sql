@@ -6,6 +6,7 @@ BEGIN
     FOR seq IN
         SELECT sequence_schema, sequence_name
         FROM information_schema.sequences
+        WHERE sequence_schema != 'drizzle'
     LOOP
         EXECUTE 'ALTER SEQUENCE ' || quote_ident(seq.sequence_schema) || '.' || quote_ident(seq.sequence_name) || ' RESTART WITH 1;';
     END LOOP;
