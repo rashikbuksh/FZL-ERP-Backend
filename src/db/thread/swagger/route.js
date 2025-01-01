@@ -73,6 +73,7 @@ export const pathThreadOrderInfo = {
 			tags: ['thread.order_info'],
 			summary: 'Get all Thread Order Info',
 			description: 'Get all Thread Order Info',
+			parameters: [SE.parameter_query('own_uuid', 'own_uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'thread/order_info'),
 			},
