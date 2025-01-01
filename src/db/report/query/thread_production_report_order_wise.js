@@ -4,7 +4,24 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function threadProductionStatusOrderWise(req, res, next) {
-	const query = sql`
+	if (!(await validateRequest(req, next))) return;
+
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
             SELECT
                 order_entry.uuid as order_entry_uuid,
                 order_info.uuid as order_info_uuid,
@@ -83,13 +100,15 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 GROUP BY
                     toe.uuid
             ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid
+            WHERE
+                ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
+
             ORDER BY 
                 order_info.created_at DESC
             `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {

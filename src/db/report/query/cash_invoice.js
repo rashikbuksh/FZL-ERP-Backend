@@ -5,7 +5,22 @@ import db from '../../index.js';
 export async function selectCashInvoice(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
                     SELECT 
                             pi_cash.uuid,
                             CASE 
@@ -62,13 +77,12 @@ export async function selectCashInvoice(req, res, next) {
                                 pe.pi_cash_uuid
                         ) AS pe ON pi_cash.uuid = pe.pi_cash_uuid
                         WHERE 
-                            pi_cash.is_pi = 0
+                            pi_cash.is_pi = 0 AND ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
                         ORDER BY pi_cash.created_at DESC
                     `;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 
 		const toast = {

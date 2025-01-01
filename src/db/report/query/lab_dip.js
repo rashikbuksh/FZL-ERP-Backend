@@ -5,7 +5,21 @@ import db from '../../index.js';
 export async function selectLabDip(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
                     SELECT DISTINCT
                         concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0')) as info_id,
                         info.name as lab_dip_name,
@@ -22,11 +36,10 @@ export async function selectLabDip(req, res, next) {
                     LEFT JOIN zipper.order_info ON info.order_info_uuid = zipper.order_info.uuid
                     LEFT JOIN zipper.order_description ON zipper.order_info.uuid = zipper.order_description.order_info_uuid
                     LEFT JOIN zipper.order_entry ON zipper.order_description.uuid = zipper.order_entry.order_description_uuid
+                    WHERE ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}`;
 
-                    `;
+		const resultPromise = db.execute(query);
 
-	const resultPromise = db.execute(query);
-	try {
 		const data = await resultPromise;
 
 		const toast = {
