@@ -14,6 +14,8 @@ export async function selectDelivery(req, res, next) {
             vpl.order_description_uuid,
             vpl.order_number,
             vpl.item_description,
+            vodf.party_name,
+            vodf.party_uuid,
             vpl.style,
             vpl.color,
             vpl.size,
@@ -27,7 +29,7 @@ export async function selectDelivery(req, res, next) {
         FROM
             delivery.v_packing_list_details vpl
         WHERE 
-            vpl.item_for = 'zipper' OR vpl.item_for = 'sample_zipper'`;
+            vpl.item_for = 'zipper' OR vpl.item_for = 'sample_zipper' OR vpl.item_for = 'tape' OR vpl.item_for = 'slider'`;
 
 	try {
 		const data = await db.execute(query);
@@ -54,6 +56,8 @@ export async function selectDeliveryThread(req, res, next) {
                     vpl.order_description_uuid,
                     vpl.order_number,
                     vpl.item_description,
+                    vodf.party_name,
+                    vodf.party_uuid,
                     vpl.style,
                     vpl.color,
                     vpl.size,

@@ -27,7 +27,7 @@ export async function selectCashInvoice(req, res, next) {
                                 WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
                                 ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
                             END AS id,
-                            pe.value,
+                            (pe.value * pi_cash.conversion_rate)::float8 as value,
                             pe.order_number,
                             pi_cash.receive_amount::float8
                         FROM
