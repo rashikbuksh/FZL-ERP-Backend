@@ -383,7 +383,7 @@ export async function infoRecipeWithOrderDashboard(req, res, next) {
 			info_entry.approved,
 			info_entry.approved_date,
 			recipe.uuid as recipe_uuid,
-			recipe.name as recipe_name,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name) as recipe_name,
 			CASE 
 				WHEN info.order_info_uuid IS NOT NULL THEN TRUE 
 				ELSE FALSE
