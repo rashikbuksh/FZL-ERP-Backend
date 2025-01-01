@@ -510,7 +510,8 @@ export async function getDailyProductionPlan(req, res, next) {
 									WHEN vodf.order_type = 'tape' THEN 'Meter'
 									WHEN vodf.is_inch = 1 THEN 'Inch'
 									ELSE 'Cm'
-								END AS unit
+								END AS unit,
+								CONCAT('FB', to_char(zfb.created_at, 'YY'), '-', lpad(zfb.id::text, 4, '0')) AS batch_number
 							FROM 
 								zipper.finishing_batch zfb
 							LEFT JOIN
