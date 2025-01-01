@@ -122,6 +122,22 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { is_cash, own_uuid } = req?.query;
 
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	if (own_uuid) {
+		const marketingUuidQuery = sql`
+		SELECT marketing_uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+		try {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.marketing_uuid;
+		} catch (error) {
+			await handleError({ error, res });
+		}
+	}
+
 	const query = sql`
 		SELECT 
 			pi_cash.uuid,
@@ -260,7 +276,7 @@ export async function selectAll(req, res, next) {
 		) total_pi_amount_thread ON total_pi_amount_thread.pi_cash_uuid = pi_cash.uuid
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
-    		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${own_uuid}` : sql`TRUE`}
+    		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
 		GROUP BY
 			pi_cash.uuid, 
 			lc.lc_number, 
@@ -326,8 +342,7 @@ export async function selectAll(req, res, next) {
 			).filter((x) => x !== null && x !== 'null');
 
 			// Convert back to JSON strings if needed
-			item.order_info_uuids =
-				JSON.stringify(item.order_info_uuids) || [];
+			item.order_info_uuids = JSON.stringify(item.order_info_uuids) || [];
 			item.thread_order_info_uuids =
 				JSON.stringify(item.thread_order_info_uuids) || [];
 		});

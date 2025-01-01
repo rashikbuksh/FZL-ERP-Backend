@@ -448,6 +448,25 @@ export async function getTapeAssigned(req, res, next) {
 export async function getOrderDetailsByOwnUuid(req, res, next) {
 	const { own_uuid } = req.params;
 	const { approved } = req.query;
+
+	let marketingUuid = null;
+
+	// get marketing_uuid from own_uuid
+
+	if (own_uuid) {
+		const marketingUuidQuery = sql`
+		SELECT marketing_uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+		try {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.marketing_uuid;
+		} catch (error) {
+			await handleError({ error, res });
+		}
+	}
+
 	const query = sql`
 					SELECT 
 						vod.*, 
@@ -478,7 +497,7 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 						GROUP BY oe.order_description_uuid
 					) order_entry_counts ON vod.order_description_uuid = order_entry_counts.order_description_uuid
 					WHERE vod.order_description_uuid IS NOT NULL 
-						AND oi.marketing_uuid = ${own_uuid} AND ${
+						AND oi.marketing_uuid = ${marketingUuid} AND ${
 							approved === 'true'
 								? sql`swatch_approval_counts.swatch_approval_count > 0`
 								: sql`1=1`

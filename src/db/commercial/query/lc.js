@@ -71,6 +71,22 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { own_uuid } = req?.query;
 
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	if (own_uuid) {
+		const marketingUuidQuery = sql`
+		SELECT marketing_uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+		try {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.marketing_uuid;
+		} catch (error) {
+			await handleError({ error, res });
+		}
+	}
+
 	const query = sql`
 		SELECT
 			lc.uuid,
@@ -128,7 +144,7 @@ export async function selectAll(req, res, next) {
 			public.party ON lc.party_uuid = party.uuid
 		LEFT JOIN
 			commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
-		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${own_uuid}`}
+		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
 		GROUP BY lc.uuid, party.name, users.name
 		ORDER BY lc.created_at DESC
 		`;
