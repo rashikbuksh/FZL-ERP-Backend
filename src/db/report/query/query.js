@@ -259,7 +259,7 @@ export async function zipperProductionStatusReport(req, res, next) {
 }
 
 export async function dailyChallanReport(req, res, next) {
-	const { own_uuid } = req?.query;
+	const { own_uuid, status } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -435,6 +435,11 @@ export async function dailyChallanReport(req, res, next) {
                     LEFT JOIN commercial.lc tlc ON tpc.lc_uuid = tlc.uuid 
                     WHERE
                         ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
+                        AND ${(status = 'pending'
+							? sql`challan.receive_status = 0`
+							: (status = 'completed'
+									? sql`challan.receive_status = 1`
+									: sql`TRUE`))}
                     GROUP BY
                         challan.uuid,
                         challan.created_at,
