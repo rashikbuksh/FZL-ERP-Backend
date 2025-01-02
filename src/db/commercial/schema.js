@@ -171,15 +171,15 @@ export const pi_cash = commercial.table('pi_cash', {
 	party_uuid: defaultUUID('party_uuid').references(
 		() => publicSchema.party.uuid
 	),
-	merchandiser_uuid: defaultUUID('merchandiser_uuid').references(
-		() => publicSchema.merchandiser.uuid
-	),
+	merchandiser_uuid: defaultUUID('merchandiser_uuid')
+		.references(() => publicSchema.merchandiser.uuid)
+		.default(null),
 	factory_uuid: defaultUUID('factory_uuid').references(
 		() => publicSchema.factory.uuid
 	),
 	bank_uuid: defaultUUID('bank_uuid')
-		.default(null)
-		.references(() => bank.uuid),
+		.references(() => bank.uuid)
+		.notNull(),
 	validity: integer('validity').default(0),
 	payment: integer('payment').default(0),
 	is_pi: integer('is_pi').default(0),
