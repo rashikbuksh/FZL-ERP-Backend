@@ -546,7 +546,10 @@ export const pathReport = {
 			description: 'Sample Report By Date',
 			tags: ['report'],
 			operationId: 'selectSampleReportByDate',
-			parameters: [SE.parameter_query('date', 'date', '2024-10-01')],
+			parameters: [
+				SE.parameter_query('date', 'date', '2024-10-01'),
+				SE.parameter_query('is_sample', 'is_sample', [0, 1]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					sample_order_no: SE.string('Sample Order No'),

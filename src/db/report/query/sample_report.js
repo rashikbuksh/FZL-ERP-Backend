@@ -92,7 +92,7 @@ export async function selectSampleReport(req, res, next) {
 export async function selectSampleReportByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { date } = req.query;
+	const { date, is_sample } = req.query;
 	const { own_uuid } = req?.query;
 
 	// get marketing_uuid from own_uuid
@@ -196,7 +196,7 @@ export async function selectSampleReportByDate(req, res, next) {
                         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
                         WHERE
-                            oi.is_sample = 1 AND oe.created_at::date = ${date} AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
+                            oi.is_sample = ${is_sample} AND oe.created_at::date = ${date} AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
