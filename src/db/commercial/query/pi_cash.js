@@ -497,16 +497,7 @@ export async function selectPiUuidByPiId(req, res, next) {
 
 	const { pi_cash_id } = req.params;
 
-	const prefix = pi_cash_id.slice(0, 2);
-
-	let is_pi;
-	if (prefix === 'PI') {
-		is_pi = 1;
-	} else if (prefix === 'CI') {
-		is_pi = 0;
-	} else {
-		throw new Error('Invalid ID prefix');
-	}
+	const postfix = pi_cash_id.slice(2, 4);
 
 	const piPromise = db
 		.select({
@@ -516,11 +507,12 @@ export async function selectPiUuidByPiId(req, res, next) {
 		.where(
 			and(
 				eq(pi_cash.id, sql`split_part(${pi_cash_id}, '-', 2)::int`),
-				eq(pi_cash.is_pi, is_pi)
+				eq(sql`TO_CHAR(${pi_cash.created_at}, 'YY')`, postfix)
 			)
 		);
 	try {
 		const data = await piPromise;
+		console.log(data);
 		const toast = {
 			status: 200,
 			type: 'select',
