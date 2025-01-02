@@ -562,7 +562,7 @@ export async function updateDelivered(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'update',
-			message: `Challan is_delivered Updated`,
+			message: `${data.rows[0].challan_number} Delivered Status Updated`,
 		};
 
 		return await res.status(200).json({ toast, data: data.rows[0] });

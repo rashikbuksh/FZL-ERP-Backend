@@ -91,7 +91,7 @@ deliveryRouter.put(
 	challanOperations.updateReceivedStatus
 );
 
-deliveryRouter.get(
+deliveryRouter.put(
 	'/challan/update-delivered/:uuid',
 	challanOperations.updateDelivered
 );
