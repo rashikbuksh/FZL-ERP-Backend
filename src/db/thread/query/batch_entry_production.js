@@ -161,6 +161,8 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		be.order_entry_uuid, 
 		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
 		order_info.uuid as order_info_uuid,
+		order_info.party_uuid,
+		party.name as party_name,
 	    oe.color as color,
 		oe.po as po,
 		oe.style as style,
@@ -191,6 +193,8 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		thread.count_length cl ON oe.count_length_uuid = cl.uuid
 	LEFT JOIN 
 		thread.order_info ON oe.order_info_uuid = order_info.uuid
+	LEFT JOIN 
+		public.party ON order_info.party_uuid = party.uuid
 	LEFT JOIN
 		thread.batch ON be.batch_uuid = batch.uuid
 	)
