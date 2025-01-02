@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, and } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -497,12 +497,28 @@ export async function selectPiUuidByPiId(req, res, next) {
 
 	const { pi_cash_id } = req.params;
 
+	const prefix = pi_cash_id.slice(0, 2);
+
+	let is_pi;
+	if (prefix === 'PI') {
+		is_pi = 1;
+	} else if (prefix === 'CI') {
+		is_pi = 0;
+	} else {
+		throw new Error('Invalid ID prefix');
+	}
+
 	const piPromise = db
 		.select({
 			uuid: pi_cash.uuid,
 		})
 		.from(pi_cash)
-		.where(eq(pi_cash.id, sql`split_part(${pi_cash_id}, '-', 2)::int`));
+		.where(
+			and(
+				eq(pi_cash.id, sql`split_part(${pi_cash_id}, '-', 2)::int`),
+				eq(pi_cash.is_pi, is_pi)
+			)
+		);
 	try {
 		const data = await piPromise;
 		const toast = {
