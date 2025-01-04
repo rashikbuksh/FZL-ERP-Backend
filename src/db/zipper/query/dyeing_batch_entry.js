@@ -159,7 +159,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 
 	const query = sql`
 		SELECT
-			be.uuid as dyeing_batch_entry_uuid,
+			DISTINCT be.uuid as dyeing_batch_entry_uuid,
 			bp_given.dyeing_batch_production_uuid,
 			be.dyeing_batch_uuid,
 			be.sfg_uuid,
