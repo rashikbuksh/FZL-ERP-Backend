@@ -269,7 +269,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 
 	const query = sql`
 		SELECT
-			sfg.uuid as sfg_uuid,
+			DISTINCT sfg.uuid as sfg_uuid,
 			sfg.recipe_uuid as recipe_uuid,
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
 			oe.style,

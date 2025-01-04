@@ -397,43 +397,41 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		const dataResult = await db.execute(resultPromise); // Fetch main query results
 		// console.log('capacityQueryResult:', capacityQueryResult.rows);
 
-		const formattedData = capacityQueryResult.rows
-			.map((capacityRow) => {
-				const matchingDataRows = dataResult.rows.filter(
-					(dataRow) =>
-						dataRow.item === capacityRow.item &&
-						dataRow.nylon_stopper === capacityRow.nylon_stopper &&
-						dataRow.zipper_number === capacityRow.zipper_number &&
-						dataRow.end_type === capacityRow.end_type
-				);
+		const formattedData = capacityQueryResult.rows.map((capacityRow) => {
+			const matchingDataRow = dataResult.rows.find(
+				(dataRow) =>
+					dataRow.item === capacityRow.item &&
+					dataRow.nylon_stopper === capacityRow.nylon_stopper &&
+					dataRow.zipper_number === capacityRow.zipper_number &&
+					dataRow.end_type === capacityRow.end_type
+			);
 
-				return matchingDataRows.map((matchingDataRow) => ({
-					item_description_quantity:
-						capacityRow.item_description_quantity,
-					item_description: capacityRow.item_description,
-					production_capacity_quantity:
-						capacityRow.production_capacity_quantity,
-					production_date: matchingDataRow
-						? matchingDataRow.production_date.split(' ')[0]
-						: null,
-					production_quantity: matchingDataRow
-						? matchingDataRow.total_batch_quantity_sum
-						: 0,
-					order_numbers: matchingDataRow
-						? matchingDataRow.order_numbers
-						: [],
-					batch_numbers: matchingDataRow
-						? matchingDataRow.batch_numbers
-						: [],
-					order_description_uuid: matchingDataRow
-						? matchingDataRow.order_description_uuid
-						: null,
-					finishing_batch_uuid: matchingDataRow
-						? matchingDataRow.finishing_batch_uuid
-						: null,
-				}));
-			})
-			.flat();
+			return {
+				item_description_quantity:
+					capacityRow.item_description_quantity,
+				item_description: capacityRow.item_description,
+				production_capacity_quantity:
+					capacityRow.production_capacity_quantity,
+				production_date: matchingDataRow
+					? matchingDataRow.production_date.split(' ')[0]
+					: null,
+				production_quantity: matchingDataRow
+					? matchingDataRow.total_batch_quantity_sum
+					: 0,
+				order_numbers: matchingDataRow
+					? matchingDataRow.order_numbers
+					: [],
+				batch_numbers: matchingDataRow
+					? matchingDataRow.batch_numbers
+					: [],
+				order_description_uuid: matchingDataRow
+					? matchingDataRow.order_description_uuid
+					: null,
+				finishing_batch_uuid: matchingDataRow
+					? matchingDataRow.finishing_batch_uuid
+					: null,
+			};
+		});
 
 		const dateRange = [];
 		let currentDate = new Date(from_date);
