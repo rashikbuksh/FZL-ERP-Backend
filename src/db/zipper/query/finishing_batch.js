@@ -341,16 +341,18 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		LEFT JOIN
 			public.properties zipper_number_properties ON production_capacity.zipper_number = zipper_number_properties.uuid
 		LEFT JOIN
-			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid
-			
+			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid	
 	`;
 
 	const resultPromise = sql`
 	SELECT 
 		subquery.item,
+		subquery.item_name,
         subquery.nylon_stopper,
         subquery.zipper_number,
+		subquery.zipper_number_name,
         subquery.end_type,
+		subquery.end_type_name,
 		subquery.production_date,
 		SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum,
 		subquery.order_numbers AS order_numbers,
@@ -358,9 +360,12 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 			FROM (
 				SELECT 
 					vodf.item,
+					vodf.item_name,
 					vodf.nylon_stopper,
 					vodf.zipper_number,
+					vodf.zipper_number_name,
 					vodf.end_type,
+					vodf.end_type_name,
 					finishing_batch.production_date::date as production_date,
 					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
 					 jsonb_agg(DISTINCT jsonb_build_object('value', finishing_batch.uuid, 'label', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')))) AS batch_numbers,
@@ -377,16 +382,22 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 				GROUP BY
 					vodf.item,
+					vodf.item_name,
 					vodf.nylon_stopper,
 					vodf.zipper_number,
+					vodf.zipper_number_name,
 					vodf.end_type,
+					vodf.end_type_name,
 					finishing_batch.production_date
 			) subquery
             GROUP BY 
 				subquery.item,
+				subquery.item_name,
 				subquery.nylon_stopper,
 				subquery.zipper_number,
+				subquery.zipper_number_name,
 				subquery.end_type,
+				subquery.end_type_name,
 				subquery.production_date,
 				subquery.order_numbers,
 				subquery.batch_numbers
@@ -395,43 +406,84 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 	try {
 		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
 		const dataResult = await db.execute(resultPromise); // Fetch main query results
-		// console.log('capacityQueryResult:', capacityQueryResult.rows);
+		// console.log('dataResult:', dataResult.rows);
 
-		const formattedData = capacityQueryResult.rows.map((capacityRow) => {
-			const matchingDataRow = dataResult.rows.find(
-				(dataRow) =>
-					dataRow.item === capacityRow.item &&
-					dataRow.nylon_stopper === capacityRow.nylon_stopper &&
-					dataRow.zipper_number === capacityRow.zipper_number &&
-					dataRow.end_type === capacityRow.end_type
-			);
+		const dateWiseData = {};
 
-			return {
-				item_description_quantity:
-					capacityRow.item_description_quantity,
-				item_description: capacityRow.item_description,
-				production_capacity_quantity:
-					capacityRow.production_capacity_quantity,
-				production_date: matchingDataRow
-					? matchingDataRow.production_date.split(' ')[0]
-					: null,
-				production_quantity: matchingDataRow
-					? matchingDataRow.total_batch_quantity_sum
-					: 0,
-				order_numbers: matchingDataRow
-					? matchingDataRow.order_numbers
-					: [],
-				batch_numbers: matchingDataRow
-					? matchingDataRow.batch_numbers
-					: [],
-				order_description_uuid: matchingDataRow
-					? matchingDataRow.order_description_uuid
-					: null,
-				finishing_batch_uuid: matchingDataRow
-					? matchingDataRow.finishing_batch_uuid
-					: null,
-			};
+		dataResult.rows.forEach((dataRow) => {
+			const productionDate = dataRow.production_date.split(' ')[0];
+			if (!dateWiseData[productionDate]) {
+				dateWiseData[productionDate] = [];
+			}
+			dateWiseData[productionDate].push(dataRow);
 		});
+
+		const zipperNumberUUID = capacityQueryResult.rows.find(
+			(row) => row.zipper_number_name === '3'
+		).zipper_number;
+
+		const formattedData = capacityQueryResult.rows
+			.map((capacityRow) => {
+				const matchingDataRows = Object.keys(dateWiseData).reduce(
+					(acc, date) => {
+						const filteredRows = dateWiseData[date].filter(
+							(dataRow) => {
+								const itemName =
+									dataRow.item_name.toLowerCase();
+								const endTypeName =
+									dataRow.end_type_name.toLowerCase();
+								const zipperNumberName =
+									dataRow.zipper_number_name.toLowerCase();
+
+								if (
+									itemName == 'metal' &&
+									endTypeName == 'close end' &&
+									zipperNumberName == '4.5'
+								) {
+									return (
+										dataRow.item === capacityRow.item &&
+										dataRow.end_type ===
+											capacityRow.end_type &&
+										capacityRow.zipper_number ===
+											zipperNumberUUID
+									);
+								} else {
+									// Default matching criteria
+									return (
+										dataRow.item === capacityRow.item &&
+										dataRow.nylon_stopper ===
+											capacityRow.nylon_stopper &&
+										dataRow.zipper_number ===
+											capacityRow.zipper_number &&
+										dataRow.end_type ===
+											capacityRow.end_type
+									);
+								}
+							}
+						);
+						return acc.concat(filteredRows);
+					},
+					[]
+				);
+
+				return matchingDataRows.map((matchingDataRow) => ({
+					item_description_quantity:
+						capacityRow.item_description_quantity,
+					item_description: capacityRow.item_description,
+					production_capacity_quantity:
+						capacityRow.production_capacity_quantity,
+					production_date:
+						matchingDataRow.production_date.split(' ')[0],
+					production_quantity:
+						matchingDataRow.total_batch_quantity_sum,
+					order_numbers: matchingDataRow.order_numbers,
+					batch_numbers: matchingDataRow.batch_numbers,
+					order_description_uuid:
+						matchingDataRow.order_description_uuid,
+					finishing_batch_uuid: matchingDataRow.finishing_batch_uuid,
+				}));
+			})
+			.flat();
 
 		const dateRange = [];
 		let currentDate = new Date(from_date);
@@ -443,33 +495,39 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		}
 
 		const groupedData = dateRange.reduce((acc, date) => {
-			acc[date] = formattedData.map((item) => {
-				const productionQuantity =
-					item.production_date === date
-						? item.production_quantity
-						: 0;
-				if (productionQuantity > 0) {
-					return {
-						...item,
-						production_date: date,
-						production_quantity: productionQuantity,
-					};
-				} else {
-					return {
+			acc[date] = (
+				formattedData.filter((item) => item.production_date === date) ||
+				[]
+			).map((item) => ({
+				...item,
+				production_date: date,
+				production_quantity: item.production_quantity,
+			}));
+
+			// Add items with zero production quantity if they are not present for the current date
+			capacityQueryResult.rows.forEach((capacityRow) => {
+				const itemDescription = capacityRow.item_description;
+				if (
+					!acc[date].some(
+						(d) => d.item_description === itemDescription
+					)
+				) {
+					acc[date].push({
 						production_capacity_quantity:
-							item.production_capacity_quantity,
-						item_description: item.item_description,
+							capacityRow.production_capacity_quantity,
+						item_description: itemDescription,
 						item_description_quantity:
-							item.item_description_quantity,
+							capacityRow.item_description_quantity,
 						production_date: date,
 						production_quantity: 0,
 						order_numbers: [],
 						batch_numbers: [],
 						order_description_uuid: null,
 						finishing_batch_uuid: null,
-					};
+					});
 				}
 			});
+
 			return acc;
 		}, {});
 
