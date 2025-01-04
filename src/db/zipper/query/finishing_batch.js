@@ -374,7 +374,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 				LEFT JOIN
 					zipper.finishing_batch_entry ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
 				WHERE
-					DATE(finishing_batch.production_date) BETWEEN ${from_date} AND ${to_date} 
+					DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 				GROUP BY
 					vodf.item,
 					vodf.nylon_stopper,
