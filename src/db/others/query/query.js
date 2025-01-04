@@ -870,7 +870,8 @@ export async function selectOrderDescription(req, res, next) {
 										THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
 										ELSE oe.quantity::float8 
 									END
-									) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
+									) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity,
+								SUM(fbe.quantity::float8) as given_quantity
 							FROM
 								zipper.sfg
 							LEFT JOIN 
@@ -976,7 +977,8 @@ export async function selectOrderDescription(req, res, next) {
 										THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
 										ELSE oe.quantity::float8 
 									END
-								) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity
+								) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity,
+								SUM(fbe.quantity::float8) as given_quantity
 							FROM
 								zipper.sfg
 							LEFT JOIN 
@@ -1095,10 +1097,38 @@ export async function selectOrderDescription(req, res, next) {
 		is_balance == 'true' &&
 		(is_update == 'false' || is_update == undefined || is_update == null)
 	) {
-		query.append(sql` AND fbe_given.balance_quantity > 0`);
-		page ? page_query.append(sql` AND fbe_given.balance_quantity > 0`) : '';
+		query.append(sql` AND (
+				CASE 
+					WHEN vodf.order_type = 'tape' 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+					ELSE oe.quantity::float8 
+				END
+				- coalesce(fbe_given.given_quantity,0)
+				) > 0
+			`);
+		page
+			? page_query.append(sql` AND (
+				CASE 
+					WHEN vodf.order_type = 'tape' 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+					ELSE oe.quantity::float8 
+				END
+				- coalesce(fbe_given.given_quantity,0)
+				) > 0
+			`)
+			: '';
 	} else if (is_balance == 'true' && is_update == 'true') {
-		page ? page_query.append(sql` AND fbe_given.balance_quantity > 0`) : '';
+		page
+			? page_query.append(sql` AND (
+				CASE 
+					WHEN vodf.order_type = 'tape' 
+					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+					ELSE oe.quantity::float8 
+				END
+				- coalesce(fbe_given.given_quantity,0)
+				) > 0
+			`)
+			: '';
 	}
 
 	query.append(sql` ORDER BY vodf.order_number`);
