@@ -1839,7 +1839,7 @@ export async function deliveryStatementReport(req, res, next) {
 			marketingUuid = marketingUuidData?.rows[0]?.uuid;
 		}
 		const query = sql`
-            WITH opening_all_sum AS (
+           WITH opening_all_sum AS (
                 SELECT 
                     oe.uuid as order_entry_uuid, 
                     coalesce(
@@ -1915,10 +1915,72 @@ export async function deliveryStatementReport(req, res, next) {
                     AND oe.order_description_uuid = vodf.order_description_uuid 
                 WHERE 
                     vpl.is_warehouse_received = true 
-                    AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} 
+                    AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+
                 GROUP BY 
                     oe.uuid, vodf.order_type
-                ) 
+                ),
+                opening_all_sum_thread AS (
+                    SELECT 
+                        toe.uuid as order_entry_uuid,
+                        coalesce(
+                            SUM(
+                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                            ), 
+                            0
+                        )::float8 AS total_close_end_quantity,
+                        0 as total_open_end_quantity,
+                        coalesce(
+                            SUM(
+                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                            ) * toe.company_price, 
+                            0
+                        )::float8 as total_close_end_value,
+                        0 as total_open_end_value,
+                        coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
+                        coalesce(SUM(vpl.quantity) * toe.company_price, 0)::float8 as total_prod_value
+                    FROM
+                        delivery.v_packing_list_details vpl
+                        LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
+                        LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
+                        AND toi.uuid = toe.order_info_uuid
+                    WHERE
+                        vpl.is_warehouse_received = true
+                        AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
+                    GROUP BY
+                        toe.uuid, toe.company_price
+                ),
+                running_all_sum_thread AS (
+                    SELECT 
+                        toe.uuid as order_entry_uuid,
+                        coalesce(
+                            SUM(
+                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                            ),
+                            0
+                        )::float8 AS total_close_end_quantity,
+                        0 as total_open_end_quantity,
+                        coalesce(
+                            SUM(
+                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                            ) * toe.company_price,
+                            0
+                        )::float8 as total_close_end_value,
+                        0 as total_open_end_value,
+                        coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
+                        coalesce(SUM(vpl.quantity) * toe.company_price, 0)::float8 as total_prod_value
+                    FROM
+                        delivery.v_packing_list_details vpl
+                        LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
+                        LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
+                        AND toi.uuid = toe.order_info_uuid
+                    WHERE
+                        vpl.is_warehouse_received = true
+                        AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+
+                    GROUP BY
+                        toe.uuid, toe.company_price
+				)
                 SELECT 
                     vodf.marketing_uuid,
 					vodf.marketing_name,
@@ -2021,10 +2083,10 @@ export async function deliveryStatementReport(req, res, next) {
                             0
                             )::float8, 
                             0
-                        )::float8 > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                        )::float8 > 0
                 GROUP BY 
-                    description_wise_price_size.company_price, 
-                    description_wise_price_size.size,
+                    description_wise_price_size.company_price,
+					description_wise_price_size.size,
                     vodf.marketing_uuid,
 					vodf.marketing_name,
 					vodf.order_info_uuid,
@@ -2039,9 +2101,101 @@ export async function deliveryStatementReport(req, res, next) {
 					vodf.end_type_name,
 					vodf.order_type,
 					vodf.is_inch
-                ORDER BY 
-                    vodf.party_name, vodf.marketing_name DESC;
-                
+                UNION 
+                SELECT 
+                    toi.marketing_uuid,
+                    marketing.name as marketing_name,
+                    toi.uuid as order_info_uuid,
+                    CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+                    'Sewing Thread' as item_name,
+                    'Thread' as type,
+                    toi.party_uuid,
+                    party.name as party_name,
+                    order_info_total_quantity.total_quantity,
+                    count_length.uuid as order_description_uuid,
+                    CONCAT(count_length.count, ' - ', count_length.length) as item_description,
+                    null as end_type,
+                    null as end_type_name,
+                    null as order_type,
+                    null as is_inch,
+                    count_length.length::text as size,
+                    'Mtr' as unit,
+                    'Mtr' as price_unit,
+                    ROUND(toe.company_price::numeric, 3) as company_price_dzn,
+                    ROUND(toe.company_price, 3) as company_price_pcs,
+                    'opening' as opening,
+                    SUM(COALESCE(opening_all_sum_thread.total_close_end_quantity, 0)::float8) as opening_total_close_end_quantity,
+                    0 as opening_total_open_end_quantity,
+                    SUM(COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8) as opening_total_quantity,
+                    SUM(COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8 / 12) as opening_total_quantity_dzn,
+                    SUM(COALESCE(opening_all_sum_thread.total_close_end_value, 0)::float8) as opening_total_close_end_value,
+                    0 as opening_total_open_end_value,
+                    SUM(COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8) as opening_total_value,
+                    'running' as running,
+                    SUM(COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8) as running_total_close_end_quantity,
+                    0 as running_total_open_end_quantity,
+                    SUM(COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8) as running_total_quantity,
+                    SUM(COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 / 12) as running_total_quantity_dzn,
+                    SUM(COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8) as running_total_close_end_value,
+                    0 as running_total_open_end_value,
+                    SUM(COALESCE(running_all_sum_thread.total_prod_value, 0)::float8) as running_total_value,
+                    'closing' as closing,
+                    SUM(COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_quantity, 0)::float8) as closing_total_close_end_quantity,
+                    0 as closing_total_open_end_quantity,
+                    SUM(COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8) as closing_total_quantity,
+                    SUM((COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8) / 12) as closing_total_quantity_dzn,
+                    SUM(COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_value, 0)::float8) as closing_total_close_end_value,
+                    0 as closing_total_open_end_value,
+                    SUM(COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8) as closing_total_value
+                FROM
+                    thread.order_info toi
+                    LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+                    LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
+                    LEFT JOIN public.party party ON toi.party_uuid = party.uuid
+                    LEFT JOIN public.marketing marketing ON toi.marketing_uuid = marketing.uuid
+                    LEFT JOIN opening_all_sum_thread ON toe.uuid = opening_all_sum_thread.order_entry_uuid
+                    LEFT JOIN running_all_sum_thread ON toe.uuid = running_all_sum_thread.order_entry_uuid
+                    LEFT JOIN (
+                        SELECT 
+                            toi.uuid as order_info_uuid,
+                            SUM(toe.quantity) as total_quantity
+                        FROM
+                            thread.order_entry toe
+                            LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                        GROUP BY
+                            toi.uuid
+                    ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
+                WHERE
+                    toi.is_bill = 1
+                    AND coalesce(
+                            coalesce(
+                            running_all_sum_thread.total_close_end_quantity, 
+                            0
+                            )::float8 + coalesce(
+                            running_all_sum_thread.total_open_end_quantity, 
+                            0
+                            )::float8 + coalesce(
+                            opening_all_sum_thread.total_close_end_quantity, 
+                            0
+                            )::float8 + coalesce(
+                            opening_all_sum_thread.total_open_end_quantity, 
+                            0
+                            )::float8, 
+                            0
+                        )::float8 > 0 
+                GROUP BY
+                    toe.company_price,
+                    toi.marketing_uuid,
+                    marketing.name,
+                    order_info_total_quantity.total_quantity,
+                    toi.uuid,
+                    toi.party_uuid,
+                    count_length.uuid,
+                    party.name,
+                    count_length.count,
+                    count_length.length
+                ORDER BY
+                    party_name, marketing_name, item_name DESC;
     `;
 		const resultPromise = db.execute(query);
 
