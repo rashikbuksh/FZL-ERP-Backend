@@ -2056,6 +2056,7 @@ export async function deliveryStatementReport(req, res, next) {
 				marketing_name,
 				order_number,
 				item_description,
+				order_description_uuid,
 				is_inch,
 				size,
 				unit,
@@ -2134,8 +2135,8 @@ export async function deliveryStatementReport(req, res, next) {
 
 			const item = findOrCreate(
 				order.items,
-				'item_description',
-				item_description,
+				'order_description_uuid',
+				order_description_uuid,
 				() => ({
 					item_description,
 					other: [],
