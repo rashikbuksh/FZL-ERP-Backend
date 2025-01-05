@@ -217,7 +217,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 				AND vodf.zipper_number = tcr.zipper_number_uuid 
 				AND CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END 
         LEFT JOIN
-			zipper.tape_coil tc ON tc.uuid = vodf.tape_coil_uuid AND tc.item_uuid = vodf.item AND tc.zipper_number_uuid = vodf.zipper_number
+			zipper.tape_coil tc ON tc.uuid = vodf.tape_coil_uuid
 		LEFT JOIN
 			(
 				SELECT
