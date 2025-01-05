@@ -1627,7 +1627,37 @@ export async function dailyProductionReport(req, res, next) {
                     AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} 
                 GROUP BY 
                     oe.uuid, vodf.order_type
-                ) 
+                ),
+                running_all_sum_thread AS (
+                        SELECT 
+                            toe.uuid as order_entry_uuid,
+                             coalesce(
+                            SUM(
+                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                            ),
+                            0
+                        )::float8 AS total_close_end_quantity,
+                        0 as total_open_end_quantity,
+                        coalesce(
+                            SUM(
+                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                            ) * toe.company_price,
+                            0
+                        )::float8 as total_close_end_value,
+                        0 as total_open_end_value,
+                        coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
+                        coalesce(SUM(vpl.quantity) * toe.company_price, 0)::float8 as total_prod_value
+                    FROM
+                        delivery.v_packing_list_details vpl
+                        LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
+                        LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
+                        AND toi.uuid = toe.order_info_uuid
+                    WHERE
+                        vpl.is_warehouse_received = true
+                        AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    GROUP BY
+                        toe.uuid, toe.company_price
+                )
                 SELECT 
                     vodf.marketing_uuid,
 					vodf.marketing_name,
@@ -1686,8 +1716,45 @@ export async function dailyProductionReport(req, res, next) {
                 WHERE 
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---'
                     AND coalesce(running_all_sum.total_prod_quantity, 0)::float8 > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
-                ORDER BY 
-                    vodf.party_name DESC, oe.size ASC;
+            UNION
+                SELECT 
+                    toi.marketing_uuid,
+                    marketing.name as marketing_name,
+                    toi.uuid as order_info_uuid,
+                    CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+                    'Sewing Thread' as item_name,
+                    'Thread' as type,
+                    toi.party_uuid,
+                    party.name as party_name,
+                    count_length.uuid as order_description_uuid,
+                    CONCAT(count_length.count, ' - ', count_length.length) as item_description,
+                    null as end_type,
+                    null as end_type_name,
+                    null as order_type,
+                    null as is_inch,
+                    count_length.length::float8 as size,
+                    'Mtr' as unit,
+                    'Mtr' as price_unit,
+                    ROUND(toe.company_price::numeric, 3) as company_price_dzn,
+                    ROUND(toe.company_price, 3) as company_price_pcs,
+                    'running' as running,
+                    COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8 as running_total_close_end_quantity,
+                    0 as running_total_open_end_quantity,
+                    COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 as running_total_quantity,
+                    COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 / 12 as running_total_quantity_dzn,
+                    COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 as running_total_close_end_value,
+                    0 as running_total_open_end_value,
+                    COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 as running_total_value
+                FROM
+                    thread.order_info toi
+                    LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+                    LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
+                    LEFT JOIN public.party party ON toi.party_uuid = party.uuid
+                    LEFT JOIN public.marketing marketing ON toi.marketing_uuid = marketing.uuid
+                    LEFT JOIN running_all_sum_thread ON toe.uuid = running_all_sum_thread.order_entry_uuid
+                WHERE
+                    toi.is_bill = 1
+                    AND coalesce(running_all_sum_thread.total_prod_quantity, 0)::float8  > 0 AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
     `;
 		const resultPromise = db.execute(query);
 
