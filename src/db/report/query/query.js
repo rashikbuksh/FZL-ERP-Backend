@@ -1793,6 +1793,8 @@ export async function dailyProductionReport(req, res, next) {
                     party.name,
                     count_length.count,
                     count_length.length
+                ORDER BY
+                    type DESC
     `;
 		const resultPromise = db.execute(query);
 
