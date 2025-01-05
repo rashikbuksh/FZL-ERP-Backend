@@ -1668,6 +1668,7 @@ export async function dailyProductionReport(req, res, next) {
 					vodf.party_uuid,
 					vodf.party_name,
 					vodf.order_description_uuid,
+                    order_info_total_quantity.total_quantity,
 					vodf.item_description,
 					vodf.end_type,
 					vodf.end_type_name,
@@ -1686,36 +1687,50 @@ export async function dailyProductionReport(req, res, next) {
                     ROUND(oe.company_price::numeric, 3) as company_price_dzn, 
                     ROUND(oe.company_price / 12::numeric, 3) as company_price_pcs, 
                     'running' as running, 
-                    coalesce(
-                        running_all_sum.total_close_end_quantity, 
-                        0
-                    )::float8 as running_total_close_end_quantity, 
-                    coalesce(
-                        running_all_sum.total_open_end_quantity, 
-                        0
-                    )::float8 as running_total_open_end_quantity, 
-                    coalesce(running_all_sum.total_prod_quantity)::float8 as running_total_quantity, 
-                    (
-                        coalesce(running_all_sum.total_prod_quantity, 0) / 12
-                    )::float8 as running_total_quantity_dzn, 
-                    coalesce(
-                        running_all_sum.total_close_end_value, 
-                        0
-                    )::float8 as running_total_close_end_value, 
-                    coalesce(
-                        running_all_sum.total_open_end_value, 
-                        0
-                    )::float8 as running_total_open_end_value, 
-                    coalesce(total_prod_value, 0)::float8 as running_total_value
+                    SUM(COALESCE(running_all_sum.total_close_end_quantity, 0)::float8) as running_total_close_end_quantity, 
+                    SUM(COALESCE(running_all_sum.total_open_end_quantity, 0)::float8) as running_total_open_end_quantity, 
+                    SUM(COALESCE(running_all_sum.total_prod_quantity, 0)::float8) as running_total_quantity, 
+                    SUM(COALESCE(running_all_sum.total_prod_quantity, 0)::float8 / 12) as running_total_quantity_dzn, 
+                    SUM(COALESCE(running_all_sum.total_close_end_value, 0)::float8) as running_total_close_end_value, 
+                    SUM(COALESCE(running_all_sum.total_open_end_value, 0)::float8) as running_total_open_end_value, 
+                    SUM(COALESCE(running_all_sum.total_prod_value, 0)::float8) as running_total_value
                 FROM 
                     zipper.v_order_details_full vodf 
                 LEFT JOIN 
                     zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid 
                 LEFT JOIN 
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
+                LEFT JOIN (
+                        SELECT
+                            vodf.order_info_uuid,
+                            SUM(oe.quantity) as total_quantity
+                        FROM
+                            zipper.order_entry oe
+                        LEFT JOIN
+                            zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                        GROUP BY
+                            vodf.order_info_uuid
+                    ) order_info_total_quantity ON vodf.order_info_uuid = order_info_total_quantity.order_info_uuid
                 WHERE 
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---'
                     AND coalesce(running_all_sum.total_prod_quantity, 0)::float8 > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                GROUP BY 
+                    oe.company_price,
+                    oe.size,
+                    vodf.marketing_uuid,
+					vodf.marketing_name,
+					vodf.order_info_uuid,
+					vodf.order_number,
+					vodf.item_name,
+					vodf.party_uuid,
+					vodf.party_name,
+                    order_info_total_quantity.total_quantity,
+					vodf.order_description_uuid,
+					vodf.item_description,
+					vodf.end_type,
+					vodf.end_type_name,
+					vodf.order_type,
+					vodf.is_inch
             UNION
                 SELECT 
                     toi.marketing_uuid,
@@ -1727,6 +1742,7 @@ export async function dailyProductionReport(req, res, next) {
                     toi.party_uuid,
                     party.name as party_name,
                     count_length.uuid as order_description_uuid,
+                    order_info_total_quantity.total_quantity,
                     CONCAT(count_length.count, ' - ', count_length.length) as item_description,
                     null as end_type,
                     null as end_type_name,
@@ -1738,13 +1754,13 @@ export async function dailyProductionReport(req, res, next) {
                     ROUND(toe.company_price::numeric, 3) as company_price_dzn,
                     ROUND(toe.company_price, 3) as company_price_pcs,
                     'running' as running,
-                    COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8 as running_total_close_end_quantity,
+                    SUM(COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8) as running_total_close_end_quantity,
                     0 as running_total_open_end_quantity,
-                    COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 as running_total_quantity,
-                    COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 / 12 as running_total_quantity_dzn,
-                    COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 as running_total_close_end_value,
+                    SUM(COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8) as running_total_quantity,
+                    SUM(COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 / 12) as running_total_quantity_dzn,
+                    SUM(COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8) as running_total_close_end_value,
                     0 as running_total_open_end_value,
-                    COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 as running_total_value
+                    SUM(COALESCE(running_all_sum_thread.total_prod_value, 0)::float8) as running_total_value
                 FROM
                     thread.order_info toi
                     LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
@@ -1752,9 +1768,31 @@ export async function dailyProductionReport(req, res, next) {
                     LEFT JOIN public.party party ON toi.party_uuid = party.uuid
                     LEFT JOIN public.marketing marketing ON toi.marketing_uuid = marketing.uuid
                     LEFT JOIN running_all_sum_thread ON toe.uuid = running_all_sum_thread.order_entry_uuid
+                    LEFT JOIN (
+                        SELECT 
+                            toi.uuid as order_info_uuid,
+                            SUM(toe.quantity) as total_quantity
+                        FROM
+                            thread.order_entry toe
+                            LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                        GROUP BY
+                            toi.uuid
+                    ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
                 WHERE
                     toi.is_bill = 1
                     AND coalesce(running_all_sum_thread.total_prod_quantity, 0)::float8  > 0 AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
+                GROUP BY
+                    toe.company_price,
+                    count_length.length,
+                    toi.marketing_uuid,
+                    marketing.name,
+                    order_info_total_quantity.total_quantity,
+                    toi.uuid,
+                    toi.party_uuid,
+                    count_length.uuid,
+                    party.name,
+                    count_length.count,
+                    count_length.length
     `;
 		const resultPromise = db.execute(query);
 
@@ -1767,19 +1805,14 @@ export async function dailyProductionReport(req, res, next) {
 				party_name,
 				order_number,
 				item_description,
+				total_quantity,
+				order_description_uuid,
 				is_inch,
 				size,
 				unit,
 				price_unit,
 				company_price_dzn,
 				company_price_pcs,
-				opening_total_close_end_quantity,
-				opening_total_open_end_quantity,
-				opening_total_quantity,
-				opening_total_quantity_dzn,
-				opening_total_close_end_value,
-				opening_total_open_end_value,
-				opening_total_value,
 				running_total_close_end_quantity,
 				running_total_open_end_quantity,
 				running_total_quantity,
@@ -1787,13 +1820,6 @@ export async function dailyProductionReport(req, res, next) {
 				running_total_close_end_value,
 				running_total_open_end_value,
 				running_total_value,
-				closing_total_close_end_quantity,
-				closing_total_open_end_quantity,
-				closing_total_quantity,
-				closing_total_quantity_dzn,
-				closing_total_close_end_value,
-				closing_total_open_end_value,
-				closing_total_value,
 			} = row;
 
 			const findOrCreateArray = (array, key, value, createFn) => {
@@ -1839,6 +1865,7 @@ export async function dailyProductionReport(req, res, next) {
 				order_number,
 				() => ({
 					order_number,
+					total_quantity,
 					items: [],
 				})
 			);
@@ -1860,13 +1887,6 @@ export async function dailyProductionReport(req, res, next) {
 				price_unit,
 				company_price_dzn,
 				company_price_pcs,
-				opening_total_close_end_quantity,
-				opening_total_open_end_quantity,
-				opening_total_quantity,
-				opening_total_quantity_dzn,
-				opening_total_close_end_value,
-				opening_total_open_end_value,
-				opening_total_value,
 				running_total_close_end_quantity,
 				running_total_open_end_quantity,
 				running_total_quantity,
@@ -1874,13 +1894,6 @@ export async function dailyProductionReport(req, res, next) {
 				running_total_close_end_value,
 				running_total_open_end_value,
 				running_total_value,
-				closing_total_close_end_quantity,
-				closing_total_open_end_quantity,
-				closing_total_quantity,
-				closing_total_quantity_dzn,
-				closing_total_close_end_value,
-				closing_total_open_end_value,
-				closing_total_value,
 			});
 
 			return acc;
