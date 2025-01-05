@@ -192,7 +192,7 @@ export const pathReport = {
 			description: 'Pi To Be Register Report',
 			tags: ['report'],
 			operationId: 'PiToBeRegister',
-			parameters: [],
+			parameters: [SE.parameter_query('own_uuid', 'own_uuid', '[]')],
 			responses: {
 				200: SE.response_schema(200, {
 					party_uuid: SE.uuid(),

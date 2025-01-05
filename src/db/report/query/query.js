@@ -603,6 +603,7 @@ export async function PiRegister(req, res, next) {
 
 export async function PiToBeRegister(req, res, next) {
 	const { own_uuid } = req?.query;
+	//console.log(own_uuid);
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -614,7 +615,15 @@ export async function PiToBeRegister(req, res, next) {
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+			if (
+				marketingUuidData &&
+				marketingUuidData.rows &&
+				marketingUuidData.rows.length > 0
+			) {
+				marketingUuid = marketingUuidData.rows[0].uuid;
+			} else {
+				marketingUuid = null;
+			}
 		}
 		const query = sql`
             SELECT 
@@ -642,7 +651,8 @@ export async function PiToBeRegister(req, res, next) {
                     SUM(sfg.delivered * order_entry.party_price) AS total_delivered_value,
                     SUM(sfg.pi * order_entry.party_price) AS total_pi_value,
                     SUM((order_entry.quantity - sfg.pi) * order_entry.party_price) AS total_non_pi_value,
-                    vodf.party_uuid
+                    vodf.party_uuid,
+                    vodf.marketing_uuid
                 FROM
                     zipper.sfg
                 LEFT JOIN
@@ -658,13 +668,13 @@ export async function PiToBeRegister(req, res, next) {
                 ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
                 WHERE order_exists_in_pi.order_info_uuid IS NULL
                 GROUP BY
-                    vodf.party_uuid
+                    vodf.party_uuid, vodf.marketing_uuid
             ) vodf_grouped ON party.uuid = vodf_grouped.party_uuid
             WHERE 
-                vodf_grouped.total_quantity > 0 OR 
+                (vodf_grouped.total_quantity > 0 OR 
                 vodf_grouped.total_delivered > 0 OR 
                 vodf_grouped.total_pi > 0 OR
-                vodf_grouped.total_non_pi > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                vodf_grouped.total_non_pi > 0) AND ${own_uuid == null ? sql`TRUE` : sql`vodf_grouped.marketing_uuid = ${marketingUuid}`}
         `;
 
 		const resultPromise = db.execute(query);
