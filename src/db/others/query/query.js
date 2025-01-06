@@ -1905,6 +1905,9 @@ export async function selectNameFromDieCastingStock(req, res, next) {
 }
 
 export async function selectSliderStockWithOrderDescription(req, res, next) {
+	
+	const { section } = req.query;
+
 	const query = sql`
 	SELECT
 		stock.uuid AS value,
