@@ -1750,7 +1750,7 @@ export async function dailyProductionReport(req, res, next) {
                     null as is_inch,
                     count_length.length::float8 as size,
                     'Mtr' as unit,
-                    'Mtr' as price_unit,
+                    'Cone' as price_unit,
                     ROUND(toe.company_price::numeric, 3) as company_price_dzn,
                     ROUND(toe.company_price, 3) as company_price_pcs,
                     'running' as running,
