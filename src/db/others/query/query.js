@@ -1905,7 +1905,6 @@ export async function selectNameFromDieCastingStock(req, res, next) {
 }
 
 export async function selectSliderStockWithOrderDescription(req, res, next) {
-	
 	const { section } = req.query;
 
 	const query = sql`
@@ -1934,7 +1933,7 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
         LEFT JOIN
             slider.stock ON transaction.stock_uuid = stock.uuid
         WHERE
-            transaction.from_section = 'coloring_prod'
+            transaction.from_section = ${section == 'assembly_stock' ? 'assembly_stock' : 'coloring_prod'}
         GROUP BY
             stock.uuid
     ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid

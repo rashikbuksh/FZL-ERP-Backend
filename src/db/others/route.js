@@ -1295,6 +1295,9 @@ const pathSlider = {
 			summary: 'get all slider stock with order description',
 			description: 'All slider stock with order description',
 			operationId: 'getAllSliderStockWithOrderDescription',
+			parameters: [
+				SE.parameter_query('section', 'section', ['assembly_stock']),
+			],
 			responses: {
 				200: {
 					description:
