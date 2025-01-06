@@ -187,7 +187,7 @@ export const order_description = zipper.table('order_description', {
 	order_type: order_type_enum('order_type').default('full'),
 	is_multi_color: integer('is_multi_color').default(0),
 	is_waterproof: boolean('is_waterproof').default(false),
-	revision_no: text('revision_no').default(null),
+	revision_no: integer('revision_no').default(0),
 });
 
 export const order_entry = zipper.table('order_entry', {
