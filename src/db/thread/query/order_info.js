@@ -142,7 +142,8 @@ export async function selectAll(req, res, next) {
 			swatch_approval_counts.swatch_approval_count,
 			order_entry_counts.order_entry_count,
 			CASE WHEN price_approval_counts.price_approval_count IS NULL THEN 0 ELSE price_approval_counts.price_approval_count END AS price_approval_count,
-			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved
+			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
+			order_info.revision_no
 		FROM 
 			thread.order_info
 		LEFT JOIN 
@@ -234,7 +235,8 @@ export async function select(req, res, next) {
 			order_info.remarks,
 			swatch_approval_counts.swatch_approval_count,
 			order_entry_counts.order_entry_count,
-			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved
+			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
+			order_info.revision_no
 		FROM 
 			thread.order_info
 		LEFT JOIN 
