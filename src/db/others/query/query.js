@@ -594,7 +594,11 @@ export async function selectOrderInfo(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
 	const { page, is_sample, item_for } = req.query;
+	let { party_name } = req.query;
 
+	if (typeof party_name === 'undefined') {
+		party_name = false;
+	}
 	let filterCondition;
 
 	switch (page) {
@@ -657,9 +661,13 @@ export async function selectOrderInfo(req, res, next) {
 	let orderInfoPromise = db
 		.select({
 			value: zipperSchema.order_info.uuid,
-			label: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			label: sql`CASE WHEN ${party_name} = 'true' THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name) ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) END`,
 		})
-		.from(zipperSchema.order_info);
+		.from(zipperSchema.order_info)
+		.leftJoin(
+			publicSchema.party,
+			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
+		);
 
 	// if (is_sample == 'true') {
 	// 	orderInfoPromise = orderInfoPromise.leftJoin(
@@ -1997,6 +2005,12 @@ export async function selectThreadOrder(req, res, next) {
 
 	const { page, is_sample, recipe_required } = req.query;
 
+	let { party_name } = req.query;
+
+	if (typeof party_name === 'undefined') {
+		party_name = false;
+	}
+
 	let condition;
 	let sample_condition;
 	let recipe_condition;
@@ -2081,9 +2095,11 @@ export async function selectThreadOrder(req, res, next) {
 	const query = sql`
 				SELECT
 					ot.uuid AS value,
-					CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
+					CASE WHEN ${party_name} = 'true' THEN CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0'), ' - ', tp.name) ELSE CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) END as label
 				FROM
 					thread.order_info ot
+				LEFT JOIN
+					public.party tp ON ot.party_uuid = tp.uuid
 				WHERE
 					${condition} AND ${sample_condition} AND ${recipe_condition}
 				`;

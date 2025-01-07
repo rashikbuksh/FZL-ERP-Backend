@@ -438,6 +438,10 @@ const pathPublic = {
 					'slider',
 					'tape',
 				]),
+				SE.parameter_query('party_name', 'party_name', [
+					'true',
+					'false',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -1330,6 +1334,10 @@ const pathThread = {
 				SE.parameter_query('page', 'page', ['challan']),
 				SE.parameter_query('is_sample', 'is_sample', ['true', 'false']),
 				SE.parameter_query('recipe_required', 'recipe_required', [
+					'true',
+					'false',
+				]),
+				SE.parameter_query('party_name', 'party_name', [
 					'true',
 					'false',
 				]),
