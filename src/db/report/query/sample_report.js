@@ -215,3 +215,146 @@ export async function selectSampleReportByDate(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectSampleReportByDateCombined(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { date, is_sample } = req.query;
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
+                     SELECT 
+                           CONCAT('Z', 
+                                    CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
+                                    to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')
+                                ) AS order_number,
+                            oi.uuid as order_info_uuid,
+                           pm.name AS marketing_name,
+                           pp.name AS party_name,
+                           op_item.name AS item_name,
+                           oe.created_at::date AS issue_date,
+                           CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
+                           od.uuid as order_description_uuid,
+                           od.is_inch,
+                           od.is_meter,
+                           od.is_cm,
+                           oe.remarks,
+                           od.order_type,
+                           ARRAY_AGG(json_build_array(oe.size,oe.style, oe.color)) size_style_color,
+                           SUM(oe.quantity) as total_quantity,
+                           CONCAT(
+                                CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
+                                CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN op_zipper.name ELSE '' END,
+                                CASE WHEN op_end.name IS NOT NULL AND op_end.name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN op_end.name IS NOT NULL AND op_end.name != '---' THEN op_end.name ELSE '' END,
+                                CASE WHEN op_hand.name IS NOT NULL AND op_hand.name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN op_hand.name IS NOT NULL AND op_hand.name != '---' THEN op_hand.name ELSE '' END,
+                                CASE WHEN op_teeth_type.name IS NOT NULL AND op_teeth_type.name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN op_teeth_type.name IS NOT NULL AND op_teeth_type.name != '---' THEN op_teeth_type.name ELSE '' END,
+                                CASE WHEN op_teeth_color.name IS NOT NULL AND op_teeth_color.name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN op_teeth_color.name IS NOT NULL AND op_teeth_color.name != '---' THEN op_teeth_color.name ELSE '' END,
+                                CASE WHEN op_nylon_stopper.name IS NOT NULL AND op_nylon_stopper.name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN op_nylon_stopper.name IS NOT NULL AND op_nylon_stopper.name != '---' THEN op_nylon_stopper.name ELSE '' END
+                                ) AS item_details,
+                        CONCAT(
+                                COALESCE(op_puller.name, ''),
+                                CASE WHEN op_puller_color.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_puller_color.name, ''),
+                                CASE WHEN op_coloring.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_coloring.name, ''),
+                                CASE WHEN op_slider.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_slider.name, ''),
+                                CASE WHEN op_top_stopper.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_top_stopper.name, ''),
+                                CASE WHEN op_bottom_stopper.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_bottom_stopper.name, ''),
+                                CASE WHEN op_logo.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_logo.name, ''),
+                                CASE WHEN op_slider_body_shape.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_slider_body_shape.name, ''),
+                                CASE WHEN op_slider_link.name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(op_slider_link.name, '')
+                            ) AS slider_details,
+                        CONCAT(
+                                od.garment,
+                                COALESCE(op_end_user.name, ''),
+                                CASE WHEN op_light_preference.name IS NOT NULL THEN ' ,' ELSE '' END,
+                                COALESCE(op_light_preference.name, '')
+                            ) AS other_details
+                        FROM
+                            zipper.order_info oi
+                        LEFT JOIN zipper.order_description od ON od.order_info_uuid = oi.uuid
+                        LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid 
+                        LEFT JOIN public.marketing pm ON pm.uuid = oi.marketing_uuid
+                        LEFT JOIN public.party pp ON pp.uuid = oi.party_uuid
+                        LEFT JOIN public.properties op_item ON op_item.uuid = od.item
+                        LEFT JOIN public.properties op_zipper ON op_zipper.uuid = od.zipper_number
+                        LEFT JOIN public.properties op_end ON op_end.uuid = od.end_type
+                        LEFT JOIN public.properties op_hand ON op_hand.uuid = od.hand
+                        LEFT JOIN public.properties op_lock ON op_lock.uuid = od.lock_type
+                        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = od.teeth_type
+                        LEFT JOIN public.properties op_teeth_color ON op_teeth_color.uuid = od.teeth_color
+                        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = od.nylon_stopper
+                        LEFT JOIN public.properties op_puller ON op_puller.uuid = od.puller_type
+                        LEFT JOIN public.properties op_puller_color ON op_puller_color.uuid = od.puller_color
+                        LEFT JOIN public.properties op_coloring ON op_coloring.uuid = od.coloring_type
+                        LEFT JOIN public.properties op_slider ON op_slider.uuid = od.slider
+                        LEFT JOIN public.properties op_top_stopper ON op_top_stopper.uuid = od.top_stopper
+                        LEFT JOIN public.properties op_bottom_stopper ON op_bottom_stopper.uuid = od.bottom_stopper
+                        LEFT JOIN public.properties op_logo ON op_logo.uuid = od.logo_type
+                        LEFT JOIN public.properties op_slider_body_shape ON op_slider_body_shape.uuid = od.slider_body_shape
+                        LEFT JOIN public.properties op_slider_link ON op_slider_link.uuid = od.slider_link
+                        LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
+                        LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
+                        WHERE
+                            oi.is_sample = ${is_sample} AND oe.created_at::date = ${date} AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
+                        GROUP BY
+                            order_number,
+                            oi.uuid,
+                            pm.name,
+                            pp.name,
+                            op_item.name,
+                            oe.created_at,
+                            item_description,
+                            od.uuid,
+                            od.is_inch,
+                            od.is_meter,
+                            od.is_cm,
+                            oe.remarks,
+                            od.order_type,
+                            item_details,
+                            slider_details,
+                            other_details
+
+                        ORDER BY
+                            order_number ASC, item_description ASC;`;
+
+		const resultPromise = db.execute(query);
+
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Sample report by date',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

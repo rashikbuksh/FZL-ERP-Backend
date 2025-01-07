@@ -180,7 +180,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-		SELECT
+		SELECT DISTINCT
 			sfg.uuid as sfg_uuid,
 			sfg.recipe_uuid as recipe_uuid,
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
