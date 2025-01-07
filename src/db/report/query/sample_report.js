@@ -245,18 +245,18 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                            pm.name AS marketing_name,
                            pp.name AS party_name,
                            op_item.name AS item_name,
-                           oe.created_at::date AS issue_date,
+                           od_given.created_at AS issue_date,
                            CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
                            od.uuid as order_description_uuid,
                            od.is_inch,
                            od.is_meter,
                            od.is_cm,
-                           oe.remarks,
+                           od_given.remarks,
                            od.order_type,
-                           ARRAY_AGG(DISTINCT oe.size) as size,
-                           ARRAY_AGG(DISTINCT oe.style) as style,
-                           ARRAY_AGG(DISTINCT oe.color) as color,
-                           SUM(oe.quantity) as total_quantity,
+                           od_given.style,
+                           od_given.color,
+                           od_given.size,
+                           od_given.total_quantity,
                            CONCAT(
                                 CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
                                 CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN ', ' ELSE '' END,
@@ -300,7 +300,21 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         FROM
                             zipper.order_info oi
                         LEFT JOIN zipper.order_description od ON od.order_info_uuid = oi.uuid
-                        LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid 
+                        LEFT JOIN
+                                (SELECT
+                                    od.uuid,
+                                    SUM(oe.quantity) as total_quantity,
+                                    array_agg(oe.style) as style,
+                                    array_agg(oe.color) as color,
+                                    array_agg(oe.size) as size,
+                                    array_agg(oe.created_at::date) as created_at,
+                                    array_agg(oe.remarks) as remarks
+                                FROM
+                                    zipper.order_description od
+                                LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid
+                                GROUP BY
+                                    od.uuid
+                                ) od_given ON od_given.uuid = od.uuid 
                         LEFT JOIN public.marketing pm ON pm.uuid = oi.marketing_uuid
                         LEFT JOIN public.party pp ON pp.uuid = oi.party_uuid
                         LEFT JOIN public.properties op_item ON op_item.uuid = od.item
@@ -324,23 +338,6 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
                         WHERE
                             oi.is_sample = ${is_sample} AND oe.created_at::date = ${date} AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
-                        GROUP BY
-                            order_number,
-                            oi.uuid,
-                            pm.name,
-                            pp.name,
-                            op_item.name,
-                            oe.created_at,
-                            item_description,
-                            od.uuid,
-                            od.is_inch,
-                            od.is_meter,
-                            od.is_cm,
-                            oe.remarks,
-                            od.order_type,
-                            item_details,
-                            slider_details,
-                            other_details
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
