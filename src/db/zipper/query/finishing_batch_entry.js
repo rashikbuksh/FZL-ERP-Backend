@@ -469,7 +469,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 
 	const query = sql`
 		SELECT
-			zfbe.uuid as finishing_batch_entry_uuid,
+			DISTINCT zfbe.uuid as finishing_batch_entry_uuid,
 			zfb.uuid as finishing_batch_uuid,
 			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			sfg.uuid as sfg_uuid,
