@@ -265,6 +265,7 @@ export const pathDeliveryPackingList = {
 					'sample_zipper',
 					'sample_thread',
 				]),
+				SE.parameter_query('party_name', 'party_name', [true, false]),
 			],
 			responses: {
 				200: {

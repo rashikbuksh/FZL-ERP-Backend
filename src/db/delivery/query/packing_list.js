@@ -334,6 +334,12 @@ export async function selectAllOrderForPackingList(req, res, next) {
 
 	const { item_for } = req.query;
 
+	let { party_name } = req.query;
+
+	if (typeof party_name === 'undefined') {
+		party_name = false;
+	}
+
 	let query;
 
 	if (
@@ -345,7 +351,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		query = sql`
 		SELECT DISTINCT
 			vodf.order_info_uuid as order_info_uuid,
-			vodf.order_number,
+			CASE WHEN ${party_name} = 'true' THEN CONCAT(vodf.order_number, ' - ', vodf.party_name) ELSE vodf.order_number END as order_number,
 			vodf.item_description,
 			vodf.order_description_uuid,
 			oe.style,
@@ -409,7 +415,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		query = sql`
 		SELECT DISTINCT
 			toi.uuid as order_info_uuid,
-			CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+			CASE WHEN ${party_name} = 'true' THEN CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0'), ' - ', tp.party_name) ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
 			CONCAT(cl.count) as item_description,
 			cl.length as size,
 			toe.style,
@@ -436,6 +442,8 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
 		LEFT JOIN 
 			thread.count_length cl ON toe.count_length_uuid = cl.uuid
+		LEFT JOIN 
+			public.party tp ON toi.party_uuid = tp.uuid
 		WHERE
 			(toe.quantity - toe.warehouse - toe.delivered) > 0 AND toe.production_quantity > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} 
 		ORDER BY
