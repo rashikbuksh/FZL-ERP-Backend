@@ -337,7 +337,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
                         WHERE
-                            oi.is_sample = ${is_sample} AND  = ${date} = ANY (SELECT CAST(unnest(od_given.created_at) AS DATE)) AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
+                            oi.is_sample = ${is_sample} AND ${date} = ANY (SELECT CAST(unnest(od_given.created_at) AS DATE)) AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
