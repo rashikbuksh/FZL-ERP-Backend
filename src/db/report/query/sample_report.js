@@ -253,9 +253,9 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                            od.is_cm,
                            oe.remarks,
                            od.order_type,
-                           ARRAY_AGG(oe.size) as size,
-                           ARRAY_AGG(oe.style) as style,
-                           ARRAY_AGG(oe.color) as color,
+                           ARRAY_AGG(DISTINCT oe.size) as size,
+                           ARRAY_AGG(DISTINCT oe.style) as style,
+                           ARRAY_AGG(DISTINCT oe.color) as color,
                            SUM(oe.quantity) as total_quantity,
                            CONCAT(
                                 CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
