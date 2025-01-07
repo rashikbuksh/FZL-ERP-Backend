@@ -245,7 +245,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                            pm.name AS marketing_name,
                            pp.name AS party_name,
                            op_item.name AS item_name,
-                           od_given.created_at, AS issue_date,
+                           od_given.created_at AS issue_date,
                            CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
                            od.uuid as order_description_uuid,
                            od.is_inch,
