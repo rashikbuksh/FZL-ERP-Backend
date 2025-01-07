@@ -245,7 +245,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                            pm.name AS marketing_name,
                            pp.name AS party_name,
                            op_item.name AS item_name,
-                           od_given.created_at AS issue_date,
+                           od_given.created_at, AS issue_date,
                            CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
                            od.uuid as order_description_uuid,
                            od.is_inch,
@@ -307,7 +307,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                                     array_agg(oe.style) as style,
                                     array_agg(oe.color) as color,
                                     array_agg(oe.size) as size,
-                                    array_agg(oe.created_at::date) as created_at,
+                                    array_agg(DISTINCT TO_CHAR(oe.created_at, 'YYYY-MM-DD')) as created_at,
                                     array_agg(oe.remarks) as remarks
                                 FROM
                                     zipper.order_description od
@@ -337,7 +337,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
                         WHERE
-                            oi.is_sample = ${is_sample} AND oe.created_at::date = ${date} AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
+                            oi.is_sample = ${is_sample} AND  = ${date} = ANY (SELECT CAST(unnest(od_given.created_at) AS DATE)) AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
