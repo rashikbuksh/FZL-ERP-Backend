@@ -120,7 +120,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { is_cash, own_uuid } = req?.query;
+	const { is_cash, own_uuid, type } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -275,6 +275,13 @@ export async function selectAll(req, res, next) {
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+			${
+				type === 'pending'
+					? sql`AND pi_cash.lc_uuid IS NULL`
+					: type === 'completed'
+						? sql`AND pi_cash.lc_uuid IS NOT NULL`
+						: sql`AND TRUE`
+			}
 		GROUP BY
 			pi_cash.uuid, 
 			lc.lc_number, 
