@@ -469,7 +469,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 
 	const query = sql`
 		SELECT
-			zfbe.uuid as finishing_batch_entry_uuid,
+			DISTINCT zfbe.uuid as finishing_batch_entry_uuid,
 			zfb.uuid as finishing_batch_uuid,
 			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			sfg.uuid as sfg_uuid,
@@ -576,7 +576,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			od.order_type,
 			vod.party_name,
 			vod.buyer_name,
-			vod.factory_name
+			vod.factory_name,
+			zfbe.created_at
 		FROM
 			zipper.finishing_batch_entry zfbe
 			LEFT JOIN zipper.sfg sfg ON zfbe.sfg_uuid = sfg.uuid
@@ -587,11 +588,11 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
 			LEFT JOIN public.properties op_item ON od.item = op_item.uuid
 			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
-			WHERE
-				od.tape_coil_uuid IS NOT NULL
-				${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
-				${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vod.nylon_stopper_name) = 'plastic'` : sql`AND lower(vod.nylon_stopper_name) != 'plastic'`) : sql``}
-			ORDER BY zfbe.created_at DESC
+		WHERE
+			od.tape_coil_uuid IS NOT NULL
+			${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
+			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vod.nylon_stopper_name) = 'plastic'` : sql`AND lower(vod.nylon_stopper_name) != 'plastic'`) : sql``}
+		ORDER BY zfbe.created_at DESC
 		`;
 
 	const sfgPromise = db.execute(query);
