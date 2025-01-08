@@ -332,7 +332,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 
 export async function getBatchEntryByBatchUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
+	const { type } = req.query;
+	console.log('type', type);
 	const query = sql`
 						SELECT 
 							be.uuid as batch_entry_uuid,
@@ -404,7 +405,17 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 								batch_entry.order_entry_uuid
 						) as be_given ON be_given.order_entry_uuid = oe.uuid
 						WHERE
-							be.batch_uuid = ${req.params.batch_uuid}`;
+							be.batch_uuid = ${req.params.batch_uuid}
+							${
+								type === 'sample'
+									? sql` AND order_info.is_sample = 1`
+									: type === 'bulk'
+										? sql` AND order_info.is_sample = 0`
+										: type === 'all'
+											? sql``
+											: sql``
+							}
+							`;
 
 	const resultPromise = db.execute(query);
 	try {

@@ -380,10 +380,10 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 
 		const { batch_uuid } = req.params;
 
-		const { is_update } = req.query;
+		const { is_update, type } = req.query;
 
 		const fetchData = async (endpoint) =>
-			await api.get(`/thread/${endpoint}/${batch_uuid}`);
+			await api.get(`/thread/${endpoint}/${batch_uuid}?type=${type}`);
 
 		const [batch, batch_entry] = await Promise.all([
 			fetchData('batch'),
@@ -397,8 +397,8 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 		if (is_update === 'true') {
 			const order_entry = await api.get(
 				batch_type == 'extra'
-					? `/thread/order-batch?batch_type=${batch_type}&order_info_uuid=${order_info_uuid}`
-					: `/thread/order-batch`
+					? `/thread/order-batch?batch_type=${batch_type}&order_info_uuid=${order_info_uuid}&type=${type}`
+					: `/thread/order-batch?type=${type}`
 			);
 
 			new_batch_entry = order_entry?.data?.data?.batch_entry || [];

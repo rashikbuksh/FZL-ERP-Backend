@@ -308,11 +308,11 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 	try {
 		const api = await createApi(req);
 		const { dyeing_batch_uuid } = req.params;
-		const { is_update } = req.query;
+		const { is_update, type } = req.query;
 
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/${dyeing_batch_uuid}`)
+				.get(`${endpoint}/${dyeing_batch_uuid}?type=${type}`)
 				.then((response) => response);
 
 		const [dyeing_batch, dyeing_batch_entry] = await Promise.all([
@@ -327,8 +327,8 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 		if (is_update === 'true') {
 			const dyeing_order_batch = await api.get(
 				batch_type == 'extra'
-					? `/zipper/dyeing-order-batch?batch_type=${batch_type}&order_info_uuid=${order_info_uuid}`
-					: `/zipper/dyeing-order-batch`
+					? `/zipper/dyeing-order-batch?batch_type=${batch_type}&order_info_uuid=${order_info_uuid}&type=${type}`
+					: `/zipper/dyeing-order-batch?type=${type}`
 			);
 
 			const sfg_uuid = dyeing_batch_entry?.data?.data?.map(

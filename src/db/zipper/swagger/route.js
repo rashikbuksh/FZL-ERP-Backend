@@ -1838,6 +1838,7 @@ export const pathZipperDyeingBatch = {
 			parameters: [
 				SE.parameter_params('batch to get', 'dyeing_batch_uuid'),
 				SE.parameter_query('is_update', 'is_update', ['true', 'false']),
+				SE.parameter_query('type', 'type', ['sample', 'bulk', 'all']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -1962,6 +1963,7 @@ export const pathZipperDyeingBatchEntry = {
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params('batch entry to get', 'dyeing_batch_uuid'),
+				SE.parameter_query('type', 'type', ['sample', 'bulk', 'all']),
 			],
 			responses: {
 				200: SE.response_schema(200, {

@@ -156,6 +156,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { dyeing_batch_uuid } = req.params;
+	const { type } = req.query;
 
 	const query = sql`
 		SELECT
@@ -245,7 +246,17 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			AND (
 				 	lower(op_item.name) != 'nylon' 
 					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-				)`;
+				)
+					${
+						type === 'sample'
+							? sql` AND vodf.is_sample = 1`
+							: type === 'bulk'
+								? sql` AND vodf.is_sample = 0`
+								: type === 'all'
+									? sql``
+									: sql``
+					}
+					`;
 
 	const batchEntryPromise = db.execute(query);
 

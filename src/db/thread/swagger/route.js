@@ -594,6 +594,7 @@ export const pathThreadBatch = {
 			parameters: [
 				SE.parameter_params('batch_uuid', 'batch_uuid'),
 				SE.parameter_query('is_update', 'is_update', ['true', 'false']),
+				SE.parameter_query('type', 'type', ['sample', 'bulk', 'all']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
