@@ -383,7 +383,7 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 		const { is_update, type } = req.query;
 
 		const fetchData = async (endpoint) =>
-			await api.get(`/thread/${endpoint}/${batch_uuid}?type=${type}`);
+			await api.get(`/thread/${endpoint}/${batch_uuid}`);
 
 		const [batch, batch_entry] = await Promise.all([
 			fetchData('batch'),

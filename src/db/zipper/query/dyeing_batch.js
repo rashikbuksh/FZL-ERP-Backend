@@ -312,7 +312,7 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 
 		const fetchData = async (endpoint) =>
 			await api
-				.get(`${endpoint}/${dyeing_batch_uuid}?type=${type}`)
+				.get(`${endpoint}/${dyeing_batch_uuid}`)
 				.then((response) => response);
 
 		const [dyeing_batch, dyeing_batch_entry] = await Promise.all([
