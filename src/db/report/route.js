@@ -2,20 +2,22 @@ import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
 import { selectCashInvoice } from './query/cash_invoice.js';
+import { deliveryStatementReport } from './query/delivery_statement.js';
 import { selectLabDip } from './query/lab_dip.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
-import {
-	threadProductionReportByDate,
-	threadProductionReportPartyWiseByDate,
-} from './query/thread_production_report_by_date.js';
 import * as reportOperations from './query/query.js';
 import {
 	selectSampleReport,
 	selectSampleReportByDate,
 	selectSampleReportByDateCombined,
 } from './query/sample_report.js';
+import {
+	threadProductionReportByDate,
+	threadProductionReportPartyWiseByDate,
+} from './query/thread_production_report_by_date.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
+
 const reportRouter = Router();
 
 // * Zipper Production Status Report
@@ -90,10 +92,7 @@ reportRouter.get(
 );
 
 //* Delivery Statement Report
-reportRouter.get(
-	'/delivery-statement-report',
-	reportOperations.deliveryStatementReport
-);
+reportRouter.get('/delivery-statement-report', deliveryStatementReport);
 
 //* Party Wise Production Report Thread
 reportRouter.get(
