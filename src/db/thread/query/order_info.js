@@ -85,7 +85,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { own_uuid } = req.query;
+	const { own_uuid, type } = req.query;
 
 	let marketing_uuid = null;
 
@@ -185,7 +185,14 @@ export async function selectAll(req, res, next) {
 			GROUP BY toi.uuid
 		) pi_cash_grouped ON order_info.uuid = pi_cash_grouped.order_info_uuid
 		 WHERE 
-        ${own_uuid ? sql`order_info.marketing_uuid = ${marketing_uuid}` : sql`1 = 1`}
+        	${own_uuid ? sql`order_info.marketing_uuid = ${marketing_uuid}` : sql`1 = 1`}
+			${
+				type === 'bulk'
+					? sql`AND order_info.is_sample = 0`
+					: type === 'sample'
+						? sql`AND order_info.is_sample = 1`
+						: sql`AND 1=1`
+			}
 		ORDER BY 
 			order_info.created_at DESC;
 	`;

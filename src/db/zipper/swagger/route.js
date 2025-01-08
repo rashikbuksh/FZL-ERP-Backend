@@ -150,6 +150,7 @@ export const pathZipperOrderInfo = {
 			parameters: [
 				SE.parameter_query('all Order', 'all', [true, false]),
 				SE.parameter_query('approved', 'approved', [true, false]),
+				SE.parameter_query('type', 'type', ['bulk', 'sample', 'all']),
 			],
 			responses: {
 				200: SE.response_schema(200, {

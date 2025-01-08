@@ -306,7 +306,7 @@ export async function select(req, res, next) {
 }
 
 export async function getOrderDetails(req, res, next) {
-	const { all, approved } = req.query;
+	const { all, approved, type } = req.query;
 
 	// console.log(all, '- all', approved, '- approved');
 
@@ -355,12 +355,21 @@ export async function getOrderDetails(req, res, next) {
 						GROUP BY oe.order_description_uuid
 					) order_entry_counts ON vod.order_description_uuid = order_entry_counts.order_description_uuid
 					WHERE vod.order_description_uuid IS NOT NULL 
-						AND ${
-							all === 'true'
-								? sql`1=1`
-								: sql`
-                    ${approved === 'true' ? sql`swatch_approval_counts.swatch_approval_count > 0` : sql`1=1`}`
-						}
+							AND ${
+								all === 'true'
+									? sql`1=1`
+									: approved === 'true'
+										? sql`swatch_approval_counts.swatch_approval_count > 0`
+										: sql`1=1`
+							}
+							${
+								type === 'bulk'
+									? sql`AND vod.is_sample = 0`
+									: type === 'sample'
+										? sql`AND vod.is_sample = 1`
+										: sql`AND 1=1`
+							}
+
 					ORDER BY vod.order_description_created_at DESC, order_number_wise_rank ASC;`;
 
 	const orderInfoPromise = db.execute(query);
