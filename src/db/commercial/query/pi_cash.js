@@ -288,6 +288,7 @@ export async function selectAll(req, res, next) {
 			bank.address, 
 			bank.policy, 
 			bank.routing_no, 
+			bank.account_no,
 			public.factory.address, 
 			hr.users.name,
 			pi_cash.validity,
