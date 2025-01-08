@@ -382,6 +382,7 @@ export const pathThreadBatchEntry = {
 					'uuid',
 					'6fm2IOdfSc5p3nJ'
 				),
+				SE.parameter_query('type', 'type', ['sample ', 'bulk', 'all']),
 			],
 			responses: {
 				200: SE.response_schema(200, {

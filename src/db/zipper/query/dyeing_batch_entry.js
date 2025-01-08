@@ -266,7 +266,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 export async function getOrderDetailsForBatchEntry(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { batch_type, order_info_uuid } = req.query;
+	const { batch_type, order_info_uuid, type } = req.query;
 
 	const query = sql`
 		SELECT
@@ -374,6 +374,15 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 				) 
 				${order_info_uuid ? sql`AND vodf.order_info_uuid = ${order_info_uuid}` : sql``}
+				 ${
+						type === 'sample'
+							? sql` AND vodf.is_sample = 1`
+							: type === 'bulk'
+								? sql` AND vodf.is_sample = 0`
+								: type === 'all'
+									? sql``
+									: sql``
+					}
 		`;
 
 	// NOTE: vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END

@@ -240,7 +240,7 @@ export async function select(req, res, next) {
 export async function getOrderDetailsForBatchEntry(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { batch_type, order_info_uuid } = req.query;
+	const { batch_type, order_info_uuid, type } = req.query;
 
 	const query = sql`
 	SELECT 
@@ -296,9 +296,19 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	 LEFT JOIN 
 	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
 	WHERE
-		oe.recipe_uuid IS NOT NULL 
-		${batch_type == 'extra' ? sql`` : sql` AND (oe.quantity - coalesce(be_given.total_quantity,0)) > 0`}
-		${order_info_uuid ? sql` AND order_info.uuid = ${order_info_uuid}` : sql``}
+    oe.recipe_uuid IS NOT NULL 
+    ${batch_type === 'extra' ? sql`` : sql` AND (oe.quantity - COALESCE(be_given.total_quantity, 0)) > 0`}
+    ${order_info_uuid ? sql` AND order_info.uuid = ${order_info_uuid}` : sql``}
+    ${
+		type === 'sample'
+			? sql` AND order_info.is_sample = 1`
+			: type === 'bulk'
+				? sql` AND order_info.is_sample = 0`
+				: type === 'all'
+					? sql``
+					: sql``
+	}
+		
 	ORDER BY
 		oe.created_at DESC
 	`;

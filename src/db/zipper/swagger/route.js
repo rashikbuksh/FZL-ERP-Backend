@@ -2005,6 +2005,7 @@ export const pathZipperDyeingBatchEntry = {
 					'order_info_uuid',
 					'uuid'
 				),
+				SE.parameter_query('type', 'type', ['sample', 'bulk', 'all']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
