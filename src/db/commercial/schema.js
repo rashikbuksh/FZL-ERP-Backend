@@ -25,6 +25,7 @@ export const bank = commercial.table('bank', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	routing_no: text('routing_no').default(null),
 	remarks: text('remarks').default(null),
+	account_no: text('account_no').default(null),
 });
 
 export const lc_sequence = commercial.sequence('lc_sequence', {

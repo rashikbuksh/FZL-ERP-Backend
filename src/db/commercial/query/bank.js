@@ -1,8 +1,5 @@
 import { asc, desc, eq } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { bank } from '../schema.js';
@@ -86,6 +83,7 @@ export async function selectAll(req, res, next) {
 			created_by: bank.created_by,
 			created_by_name: hrSchema.users.name,
 			remarks: bank.remarks,
+			account_no: bank.account_no,
 		})
 		.from(bank)
 		.leftJoin(hrSchema.users, eq(bank.created_by, hrSchema.users.uuid))
@@ -121,6 +119,7 @@ export async function select(req, res, next) {
 			created_by: bank.created_by,
 			created_by_name: hrSchema.users.name,
 			remarks: bank.remarks,
+			account_no: bank.account_no,
 		})
 		.from(bank)
 		.leftJoin(hrSchema.users, eq(bank.created_by, hrSchema.users.uuid))
