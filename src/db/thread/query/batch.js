@@ -161,7 +161,8 @@ export async function selectAll(req, res, next) {
 						ARRAY_AGG(DISTINCT recipe.name) as recipe_name,
 						batch.batch_type,
 						batch.order_info_uuid,
-						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number
+						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number,
+						oi_v2.is_sample
 					FROM
 						thread.batch
 						LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid
@@ -296,7 +297,8 @@ export async function select(req, res, next) {
 						batch.production_date::date as production_date,
 						batch.batch_type,
 						batch.order_info_uuid,
-						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number
+						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number,
+						oi_v2.is_sample
 					FROM
 						thread.batch
 					LEFT JOIN hr.users as labCreated ON batch.lab_created_by = labCreated.uuid

@@ -273,7 +273,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		0 as quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as max_quantity,
-		${batch_type == 'extra' ? sql`'extra'` : sql`'normal'`} as batch_type
+		${batch_type == 'extra' ? sql`'extra'` : sql`'normal'`} as batch_type,
+		order_info.is_sample
 	FROM
 		thread.order_entry oe
 	LEFT JOIN
@@ -364,7 +365,8 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 							order_info.delivery_date,
 							order_info.created_at as order_created_at,
 							batch.batch_type,
-							order_info.uuid as order_info_uuid
+							order_info.uuid as order_info_uuid,
+							order_info.is_sample
 						FROM
 							thread.batch_entry be
 						LEFT JOIN 
