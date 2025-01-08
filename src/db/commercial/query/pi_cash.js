@@ -282,6 +282,27 @@ export async function selectAll(req, res, next) {
 						? sql`AND pi_cash.lc_uuid IS NOT NULL`
 						: sql`AND TRUE`
 			}
+			${
+				type === 'pending' && is_cash === 'true'
+					? sql`
+						AND CASE 
+						WHEN pi_cash.is_pi = 1 THEN 
+							ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) 
+						ELSE 
+							ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
+						END > pi_cash.receive_amount
+					`
+					: type === 'completed' && is_cash === 'true'
+						? sql`
+						AND CASE 
+						WHEN pi_cash.is_pi = 1 THEN 
+							ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) 
+						ELSE 
+							ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
+						END <= pi_cash.receive_amount
+					`
+						: sql`AND TRUE`
+			}
 		GROUP BY
 			pi_cash.uuid, 
 			lc.lc_number, 
