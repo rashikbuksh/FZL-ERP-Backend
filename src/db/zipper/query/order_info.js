@@ -381,6 +381,7 @@ export async function getOrderDetails(req, res, next) {
 }
 
 export async function getTapeAssigned(req, res, next) {
+	const { type } = req.query;
 	const query = sql`
 					SELECT 
 						vodf.order_number,
@@ -422,7 +423,24 @@ export async function getTapeAssigned(req, res, next) {
 						FROM zipper.order_entry oe
 						GROUP BY oe.order_description_uuid
 					) order_entry_counts ON vodf.order_description_uuid = order_entry_counts.order_description_uuid
-					WHERE vodf.order_description_uuid IS NOT NULL AND vodf.is_multi_color = 0 AND vodf.order_type != 'slider'
+					WHERE vodf.order_description_uuid IS NOT NULL 
+							AND vodf.is_multi_color = 0 
+							AND vodf.order_type != 'slider' 
+							${
+								type === 'bulk_pending'
+									? sql`AND vodf.tape_coil_uuid IS NULL AND vodf.is_sample = 0`
+									: type === 'bulk_completed'
+										? sql`AND vodf.tape_coil_uuid IS NOT NULL AND vodf.is_sample = 0`
+										: type === 'sample_pending'
+											? sql`AND vodf.tape_coil_uuid IS NULL AND vodf.is_sample = 1`
+											: type === 'sample_completed'
+												? sql`AND vodf.tape_coil_uuid IS NOT NULL AND vodf.is_sample = 1`
+												: type === 'bulk_all'
+													? sql`AND vodf.is_sample = 0`
+													: type === 'sample_all'
+														? sql`AND vodf.is_sample = 1`
+														: sql`AND 1=1`
+							}
 					ORDER BY 
 						vodf.tape_coil_uuid ASC NULLS FIRST,
 						vodf.order_number DESC,

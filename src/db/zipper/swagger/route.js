@@ -187,7 +187,16 @@ export const pathZipperOrderInfo = {
 		get: {
 			tags: ['zipper.order_info'],
 			summary: 'Get Tape Assigned',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'bulk_pending',
+					'bulk_completed',
+					'sample_pending',
+					'sample_completed',
+					'bulk_all',
+					'sample_all',
+				]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					order_number: SE.string('Z24-0010'),
