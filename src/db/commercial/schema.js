@@ -178,9 +178,7 @@ export const pi_cash = commercial.table('pi_cash', {
 	factory_uuid: defaultUUID('factory_uuid').references(
 		() => publicSchema.factory.uuid
 	),
-	bank_uuid: defaultUUID('bank_uuid')
-		.references(() => bank.uuid)
-		.notNull(),
+	bank_uuid: defaultUUID('bank_uuid').references(() => bank.uuid),
 	validity: integer('validity').default(0),
 	payment: integer('payment').default(0),
 	is_pi: integer('is_pi').default(0),
