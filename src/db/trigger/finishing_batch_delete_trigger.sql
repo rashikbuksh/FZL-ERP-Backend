@@ -20,6 +20,9 @@ BEGIN
     DELETE FROM zipper.finishing_batch_entry
     WHERE finishing_batch_uuid = OLD.uuid;
 
+    DELETE FROM slider.stock
+    WHERE finishing_batch_uuid = OLD.uuid;
+
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
