@@ -148,6 +148,7 @@ export const pathZipperOrderInfo = {
 			summary: 'Get Order Details',
 			parameters: [
 				SE.parameter_query('all Order', 'all', [true, false]),
+				SE.parameter_query('own_uuid', 'own_uuid', [SE.uuid()]),
 				SE.parameter_query('approved', 'approved', [true, false]),
 				SE.parameter_query('type', 'type', ['bulk', 'sample', 'all']),
 			],
