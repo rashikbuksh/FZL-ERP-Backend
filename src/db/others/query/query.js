@@ -817,6 +817,7 @@ export async function selectOrderDescription(req, res, next) {
 				SELECT
 					DISTINCT vodf.order_description_uuid AS value,
 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, 
+						${page == 'dyed_store' ? sql`' ', vodf.teeth_color_name,` : ''}
 						CASE 
 							WHEN vodf.order_type = 'slider' 
 							THEN ' - Slider' 
@@ -1049,13 +1050,15 @@ export async function selectOrderDescription(req, res, next) {
 
 	if (is_slider_needed == 'false') {
 		query.append(sql` AND vodf.order_type != 'slider'`);
-		page ? page_query.append(sql` AND vodf.order_type != 'slider'`) : '';
+		page == 'finishing_batch'
+			? page_query.append(sql` AND vodf.order_type != 'slider'`)
+			: '';
 	}
 
 	if (dyed_tape_required == 'false') {
 	} else if (dyed_tape_required == 'true') {
 		query.append(sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`);
-		page
+		page == 'finishing_batch'
 			? page_query.append(
 					sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`
 				)
@@ -1069,7 +1072,7 @@ export async function selectOrderDescription(req, res, next) {
 			WHEN vodf.is_multi_color = 1 THEN 1=1
 			ELSE swatch_approval_counts.swatch_approval_count > 0 END`
 		);
-		page
+		page == 'finishing_batch'
 			? page_query.append(
 					sql` AND CASE 
 						WHEN order_type = 'slider' THEN 1=1
@@ -1081,12 +1084,12 @@ export async function selectOrderDescription(req, res, next) {
 	}
 	if (item == 'nylon') {
 		query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`);
-		page
+		page == 'finishing_batch'
 			? page_query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`)
 			: '';
 	} else if (item == 'without-nylon') {
 		query.append(sql` AND LOWER(vodf.item_name) != 'nylon'`);
-		page
+		page == 'finishing_batch'
 			? page_query.append(sql` AND LOWER(vodf.item_name) != 'nylon'`)
 			: '';
 	}
@@ -1095,7 +1098,7 @@ export async function selectOrderDescription(req, res, next) {
 		query.append(
 			sql` AND CASE WHEN is_multi_color = 1 THEN 1=1 ELSE tape_received > 0 END`
 		);
-		page
+		page == 'finishing_batch'
 			? page_query.append(
 					sql` AND CASE WHEN is_multi_color = 1 THEN 1=1 ELSE tape_received > 0 END`
 				)
@@ -1114,7 +1117,7 @@ export async function selectOrderDescription(req, res, next) {
 				- coalesce(fbe_given.given_quantity,0)
 				) > 0
 			`);
-		page
+		page == 'finishing_batch'
 			? page_query.append(sql` AND (
 				CASE 
 					WHEN vodf.order_type = 'tape' 
@@ -1126,7 +1129,7 @@ export async function selectOrderDescription(req, res, next) {
 			`)
 			: '';
 	} else if (is_balance == 'true' && is_update == 'true') {
-		page
+		page == 'finishing_batch'
 			? page_query.append(sql` AND (
 				CASE 
 					WHEN vodf.order_type = 'tape' 
@@ -1140,12 +1143,14 @@ export async function selectOrderDescription(req, res, next) {
 	}
 
 	query.append(sql` ORDER BY vodf.order_number`);
-	page ? page_query.append(sql` ORDER BY vodf.order_number`) : '';
+	page == 'finishing_batch'
+		? page_query.append(sql` ORDER BY vodf.order_number`)
+		: '';
 
 	const orderEntryPromise = db.execute(query);
 
 	let pagePromise = '';
-	if (page) {
+	if (page == 'finishing_batch') {
 		pagePromise = db.execute(page_query);
 	}
 
