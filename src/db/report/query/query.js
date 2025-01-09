@@ -1465,7 +1465,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 count_length.count,
                 CONCAT(count_length.count, ' - ', count_length.length) as count_length_name,
                 coalesce(prod_quantity.total_quantity,0) as total_quantity,
-                coalesce(prod_quantity.total_coning_carton_quantity,0) as total_coning_carton_quantity
+                coalesce(prod_quantity.total_coning_carton_quantity,0) as total_coning_carton_quantity,
+                order_info.uuid as order_info_uuid
             FROM
                 thread.order_info
             LEFT JOIN
