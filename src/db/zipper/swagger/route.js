@@ -3655,6 +3655,14 @@ export const pathZipperFinishingBatch = {
 		get: {
 			tags: ['zipper.finishing_batch'],
 			summary: 'Get all Finishing Batch',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+			],
+
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),

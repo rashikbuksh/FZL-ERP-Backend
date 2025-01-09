@@ -84,6 +84,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { type } = req.query;
 	const resultPromise = db
 		.select({
 			uuid: sql`DISTINCT finishing_batch.uuid`,
@@ -148,6 +149,13 @@ export async function selectAll(req, res, next) {
 					finishing_batch_entry.finishing_batch_uuid
 			) as finishing_batch_entry_total`,
 			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid`
+		)
+		.where(
+			type === 'pending'
+				? sql`finishing_batch_entry_total.total_batch_quantity - finishing_batch_entry_total.total_batch_production_quantity > 0`
+				: type === 'completed'
+					? sql`finishing_batch_entry_total.total_batch_quantity - finishing_batch_entry_total.total_batch_production_quantity = 0`
+					: sql`1=1`
 		)
 		.orderBy(desc(finishing_batch.created_at));
 
