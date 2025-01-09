@@ -252,9 +252,9 @@ export async function selectAll(req, res, next) {
 					type === 'pending'
 						? sql`AND challan.gate_pass = 0`
 						: type === 'gate_pass'
-							? sql`AND challan.gate_pass = 1`
+							? sql`AND challan.gate_pass = 1 AND challan.is_delivered = 0`
 							: type === 'delivered'
-								? sql`AND challan.is_delivered = 1`
+								? sql`AND challan.is_delivered = 1 AND challan.receive_status = 0`
 								: type === 'received'
 									? sql`AND challan.receive_status = 1`
 									: sql``

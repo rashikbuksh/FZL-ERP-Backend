@@ -113,7 +113,7 @@ export async function selectAll(req, res, next) {
     ${challan_uuid ? sql`AND dvl.challan_uuid = ${challan_uuid}` : sql``}
     ${
 		type === 'pending'
-			? sql`AND dvl.is_warehouse_received = 'false' AND dvl.challan_uuid IS NULL`
+			? sql`AND dvl.challan_uuid IS NULL`
 			: type === 'challan'
 				? sql`AND dvl.challan_uuid IS NOT NULL`
 				: type === 'gate_pass'
