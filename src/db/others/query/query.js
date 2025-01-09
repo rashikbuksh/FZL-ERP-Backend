@@ -817,7 +817,7 @@ export async function selectOrderDescription(req, res, next) {
 				SELECT
 					DISTINCT vodf.order_description_uuid AS value,
 					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, 
-						${page == 'dyed_store' ? sql`' ', vodf.teeth_color_name,` : sql`' ',`}
+						${page == 'dyed_store' ? sql`' - ', vodf.teeth_color_name,` : sql`' ',`}
 						CASE 
 							WHEN vodf.order_type = 'slider' 
 							THEN ' - Slider' 
