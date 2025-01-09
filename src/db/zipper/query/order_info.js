@@ -382,6 +382,7 @@ export async function getOrderDetails(req, res, next) {
 										? sql`AND vod.is_sample = 1`
 										: sql`AND 1=1`
 							}
+							${own_uuid ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
 
 					ORDER BY vod.order_description_created_at DESC, order_number_wise_rank ASC;`;
 
