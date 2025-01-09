@@ -130,7 +130,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { delivery_date, vehicle } = req.query;
+	const { delivery_date, vehicle, type } = req.query;
 	const query = sql`
 	SELECT
 		main_query.*,
@@ -248,6 +248,18 @@ export async function selectAll(req, res, next) {
 							: sql`challan.vehicle_uuid = ${vehicle}`
 						: sql``
 				}
+				${
+					type === 'pending'
+						? sql`AND challan.gate_pass = 0`
+						: type === 'gate_pass'
+							? sql`AND challan.gate_pass = 1`
+							: type === 'delivered'
+								? sql`AND challan.is_delivered = 1`
+								: type === 'received'
+									? sql`AND challan.receive_status = 1`
+									: sql``
+				}
+
 		) AS main_query
 	LEFT JOIN (
 		SELECT

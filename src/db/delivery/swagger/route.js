@@ -653,6 +653,13 @@ export const pathDeliveryChallan = {
 			parameters: [
 				SE.parameter_query('delivery_date', 'delivery_date'),
 				SE.parameter_query('vehicle', 'vehicle'),
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'gate_pass',
+					'delivered',
+					'received',
+					'all',
+				]),
 			],
 			responses: {
 				200: {
