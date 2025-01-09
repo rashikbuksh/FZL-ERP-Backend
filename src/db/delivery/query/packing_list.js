@@ -103,24 +103,24 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { challan_uuid, can_show, type } = req.query;
 
-	const query = sql`
-		SELECT dvl.*,
-			SUM(ple.quantity)::float8 as total_quantity,
-			SUM(ple.poli_quantity)::float8 as total_poly_quantity
-		FROM delivery.v_packing_list dvl
-		LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
-		WHERE 1=1
-			${challan_uuid ? sql`AND dvl.challan_uuid = ${challan_uuid}` : sql``}
-			${
-				type === 'pending'
-					? sql`AND dvl.is_warehouse_received = 'false' AND dvl.challan_uuid IS NULL`
-					: type === 'challan'
-						? sql`AND dvl.challan_uuid IS NOT NULL`
-						: type === 'gate_pass'
-							? sql`AND dvl.gate_pass = 1`
-							: sql``
-			}
-	`;
+	let query = sql`
+    SELECT dvl.*,
+        SUM(ple.quantity)::float8 as total_quantity,
+        SUM(ple.poli_quantity)::float8 as total_poly_quantity
+    FROM delivery.v_packing_list dvl
+    LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
+    WHERE 1=1
+    ${challan_uuid ? sql`AND dvl.challan_uuid = ${challan_uuid}` : sql``}
+    ${
+		type === 'pending'
+			? sql`AND dvl.is_warehouse_received = 'false' AND dvl.challan_uuid IS NULL`
+			: type === 'challan'
+				? sql`AND dvl.challan_uuid IS NOT NULL`
+				: type === 'gate_pass'
+					? sql`AND dvl.gate_pass = 1`
+					: sql``
+	}
+`;
 
 	// can_show contains comma separated values like zipper,thread or zipper,sample_zipper but if it is thread then show both thread and sample_thread
 	if (can_show && can_show != 'all') {
@@ -135,45 +135,46 @@ export async function selectAll(req, res, next) {
 		}
 
 		can_show_array.forEach((item, index) => {
-			if (index == 0 && !challan_uuid) {
-				query.append(sql`WHERE dvl.item_for = ${item}`);
+			if (index == 0) {
+				query.append(sql`AND (dvl.item_for = ${item}`);
 			} else {
 				query.append(sql` OR dvl.item_for = ${item}`);
 			}
 		});
+		query.append(sql`)`);
 	}
 
 	query.append(
 		sql`
-		GROUP BY 
-			dvl.uuid,
-			dvl.order_info_uuid,
-			dvl.packing_list_wise_rank,
-			dvl.packing_list_wise_count,
-			dvl.packing_number,
-			dvl.order_number,
-			dvl.item_for,
-			dvl.challan_uuid,
-			dvl.challan_number,
-			dvl.carton_size,
-			dvl.carton_weight,
-			dvl.carton_uuid,
-			dvl.carton_name,
-			dvl.is_warehouse_received,
-			dvl.factory_uuid,
-			dvl.factory_name,
-			dvl.buyer_uuid,
-			dvl.buyer_name,
-			dvl.party_uuid,
-			dvl.party_name,
-			dvl.created_by,
-			dvl.created_by_name,
-			dvl.created_at,
-			dvl.updated_at,
-			dvl.remarks,
-			dvl.gate_pass
-		ORDER BY 
-			dvl.created_at DESC`
+    GROUP BY 
+        dvl.uuid,
+        dvl.order_info_uuid,
+        dvl.packing_list_wise_rank,
+        dvl.packing_list_wise_count,
+        dvl.packing_number,
+        dvl.order_number,
+        dvl.item_for,
+        dvl.challan_uuid,
+        dvl.challan_number,
+        dvl.carton_size,
+        dvl.carton_weight,
+        dvl.carton_uuid,
+        dvl.carton_name,
+        dvl.is_warehouse_received,
+        dvl.factory_uuid,
+        dvl.factory_name,
+        dvl.buyer_uuid,
+        dvl.buyer_name,
+        dvl.party_uuid,
+        dvl.party_name,
+        dvl.created_by,
+        dvl.created_by_name,
+        dvl.created_at,
+        dvl.updated_at,
+        dvl.remarks,
+        dvl.gate_pass
+    ORDER BY 
+        dvl.created_at DESC`
 	);
 
 	const resultPromise = db.execute(query);
