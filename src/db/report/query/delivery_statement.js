@@ -23,7 +23,7 @@ export async function deliveryStatementReport(req, res, next) {
 		const query = sql`
            WITH opening_all_sum AS (
                 SELECT 
-                    oe.uuid as order_entry_uuid, 
+                    vpl.packing_list_entry_uuid,
                     coalesce(
                         SUM(
                             CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
@@ -58,12 +58,15 @@ export async function deliveryStatementReport(req, res, next) {
                 WHERE 
                     vpl.is_warehouse_received = true 
                     AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
+                    AND vpl.item_for NOT IN ('thread', 'sample_thread')
                 GROUP BY 
-                    oe.uuid, vodf.order_type
+                    vpl.packing_list_entry_uuid,
+                    vodf.order_type,
+                    oe.company_price
                 ), 
-                running_all_sum AS (
+            running_all_sum AS (
                 SELECT 
-                    oe.uuid as order_entry_uuid, 
+                    vpl.packing_list_entry_uuid, 
                     coalesce(
                         SUM(
                             CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
@@ -98,23 +101,25 @@ export async function deliveryStatementReport(req, res, next) {
                 WHERE 
                     vpl.is_warehouse_received = true 
                     AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
-
+                    AND vpl.item_for NOT IN ('thread', 'sample_thread')
                 GROUP BY 
-                    oe.uuid, vodf.order_type
+                    vpl.packing_list_entry_uuid,
+                    vodf.order_type,
+                    oe.company_price
                 ),
                 opening_all_sum_thread AS (
                     SELECT 
-                        toe.uuid as order_entry_uuid,
+                        vpl.packing_list_entry_uuid,
                         coalesce(
                             SUM(
-                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                                vpl.quantity ::float8
                             ), 
                             0
                         )::float8 AS total_close_end_quantity,
                         0 as total_open_end_quantity,
                         coalesce(
                             SUM(
-                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                                vpl.quantity ::float8
                             ) * toe.company_price, 
                             0
                         )::float8 as total_close_end_value,
@@ -129,22 +134,23 @@ export async function deliveryStatementReport(req, res, next) {
                     WHERE
                         vpl.is_warehouse_received = true
                         AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
+                        AND vpl.item_for IN ('thread', 'sample_thread')
                     GROUP BY
-                        toe.uuid, toe.company_price
+                        vpl.packing_list_entry_uuid, toe.company_price
                 ),
                 running_all_sum_thread AS (
                     SELECT 
-                        toe.uuid as order_entry_uuid,
+                        vpl.packing_list_entry_uuid,
                         coalesce(
                             SUM(
-                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                                vpl.quantity ::float8
                             ),
                             0
                         )::float8 AS total_close_end_quantity,
                         0 as total_open_end_quantity,
                         coalesce(
                             SUM(
-                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                                vpl.quantity ::float8
                             ) * toe.company_price,
                             0
                         )::float8 as total_close_end_value,
@@ -159,27 +165,28 @@ export async function deliveryStatementReport(req, res, next) {
                     WHERE
                         vpl.is_warehouse_received = true
                         AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
-
+                        AND vpl.item_for IN ('thread', 'sample_thread')
                     GROUP BY
-                        toe.uuid, toe.company_price
+                        vpl.packing_list_entry_uuid, toe.company_price
 				)
                 SELECT 
                     vodf.marketing_uuid,
-					vodf.marketing_name,
-					vodf.order_info_uuid,
-					vodf.order_number,
-					vodf.item_name,
-					CASE WHEN vodf.order_type = 'slider' THEN 'Slider' ELSE vodf.item_name END as type,
-					vodf.party_uuid,
-					vodf.party_name,
+                    vodf.marketing_name,
+                    vodf.order_info_uuid,
+                    vodf.order_number,
+                    vodf.item_name,
+                    CASE WHEN vodf.order_type = 'slider' THEN 'Slider' ELSE vodf.item_name END as type,
+                    vodf.party_uuid,
+                    vodf.party_name,
                     order_info_total_quantity.total_quantity,
-					vodf.order_description_uuid,
-					vodf.item_description,
-					vodf.end_type,
-					vodf.end_type_name,
-					vodf.order_type,
-					vodf.is_inch,
-                    description_wise_price_size.size,
+                    vodf.order_description_uuid,
+                    vodf.item_description,
+                    vodf.end_type,
+                    vodf.end_type_name,
+                    vodf.order_type,
+                    vodf.is_inch,
+                    concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
+                    oe.size,
                     CASE 
                         WHEN vodf.order_type = 'tape' THEN 'Meter'
                         WHEN vodf.is_inch = 1 THEN 'Inch'
@@ -189,40 +196,46 @@ export async function deliveryStatementReport(req, res, next) {
                         vodf.order_type = 'tape' THEN 'Mtr'
                         ELSE 'Dzn'
                     END as price_unit,
-                    ROUND(description_wise_price_size.company_price::numeric, 3) as company_price_dzn, 
-                    ROUND(description_wise_price_size.company_price / 12::numeric, 3) as company_price_pcs, 
+                    ROUND(oe.company_price::numeric, 3) as company_price_dzn, 
+                    ROUND(oe.company_price / 12::numeric, 3) as company_price_pcs, 
+                    ple.uuid as packing_list_entry_uuid,
                     'opening' as opening, 
-                    SUM(COALESCE(opening_all_sum.total_close_end_quantity, 0)::float8) as opening_total_close_end_quantity, 
-                    SUM(COALESCE(opening_all_sum.total_open_end_quantity, 0)::float8) as opening_total_open_end_quantity, 
-                    SUM(COALESCE(opening_all_sum.total_prod_quantity, 0)::float8) as opening_total_quantity, 
-                    SUM(COALESCE(opening_all_sum.total_prod_quantity, 0)::float8 / 12) as opening_total_quantity_dzn, 
-                    SUM(COALESCE(opening_all_sum.total_close_end_value, 0)::float8) as opening_total_close_end_value, 
-                    SUM(COALESCE(opening_all_sum.total_open_end_value, 0)::float8) as opening_total_open_end_value, 
-                    SUM(COALESCE(opening_all_sum.total_prod_value, 0)::float8) as opening_total_value, 
+                    COALESCE(opening_all_sum.total_close_end_quantity, 0)::float8 as opening_total_close_end_quantity, 
+                    COALESCE(opening_all_sum.total_open_end_quantity, 0)::float8 as opening_total_open_end_quantity, 
+                    COALESCE(opening_all_sum.total_prod_quantity, 0)::float8 as opening_total_quantity, 
+                    COALESCE(opening_all_sum.total_prod_quantity, 0)::float8 / 12 as opening_total_quantity_dzn, 
+                    COALESCE(opening_all_sum.total_close_end_value, 0)::float8 as opening_total_close_end_value, 
+                    COALESCE(opening_all_sum.total_open_end_value, 0)::float8 as opening_total_open_end_value, 
+                    COALESCE(opening_all_sum.total_prod_value, 0)::float8 as opening_total_value, 
                     'running' as running, 
-                    SUM(COALESCE(running_all_sum.total_close_end_quantity, 0)::float8) as running_total_close_end_quantity, 
-                    SUM(COALESCE(running_all_sum.total_open_end_quantity, 0)::float8) as running_total_open_end_quantity, 
-                    SUM(COALESCE(running_all_sum.total_prod_quantity, 0)::float8) as running_total_quantity, 
-                    SUM(COALESCE(running_all_sum.total_prod_quantity, 0)::float8 / 12) as running_total_quantity_dzn, 
-                    SUM(COALESCE(running_all_sum.total_close_end_value, 0)::float8) as running_total_close_end_value, 
-                    SUM(COALESCE(running_all_sum.total_open_end_value, 0)::float8) as running_total_open_end_value, 
-                    SUM(COALESCE(running_all_sum.total_prod_value, 0)::float8) as running_total_value, 
+                    COALESCE(running_all_sum.total_close_end_quantity, 0)::float8 as running_total_close_end_quantity, 
+                    COALESCE(running_all_sum.total_open_end_quantity, 0)::float8 as running_total_open_end_quantity, 
+                    COALESCE(running_all_sum.total_prod_quantity, 0)::float8 as running_total_quantity, 
+                    COALESCE(running_all_sum.total_prod_quantity, 0)::float8 / 12 as running_total_quantity_dzn, 
+                    COALESCE(running_all_sum.total_close_end_value, 0)::float8 as running_total_close_end_value, 
+                    COALESCE(running_all_sum.total_open_end_value, 0)::float8 as running_total_open_end_value, 
+                    COALESCE(running_all_sum.total_prod_value, 0)::float8 as running_total_value, 
                     'closing' as closing, 
-                    SUM(COALESCE(running_all_sum.total_close_end_quantity, 0)::float8 + COALESCE(opening_all_sum.total_close_end_quantity, 0)::float8) as closing_total_close_end_quantity, 
-                    SUM(COALESCE(running_all_sum.total_open_end_quantity, 0)::float8 + COALESCE(opening_all_sum.total_open_end_quantity, 0)::float8) as closing_total_open_end_quantity, 
-                    SUM(COALESCE(running_all_sum.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum.total_prod_quantity, 0)::float8) as closing_total_quantity, 
-                    SUM((COALESCE(running_all_sum.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum.total_prod_quantity, 0)::float8) / 12) as closing_total_quantity_dzn, 
-                    SUM(COALESCE(running_all_sum.total_close_end_value, 0)::float8 + COALESCE(opening_all_sum.total_close_end_value, 0)::float8) as closing_total_close_end_value, 
-                    SUM(COALESCE(running_all_sum.total_open_end_value, 0)::float8 + COALESCE(opening_all_sum.total_open_end_value, 0)::float8) as closing_total_open_end_value, 
-                    SUM(COALESCE(running_all_sum.total_prod_value, 0)::float8 + COALESCE(opening_all_sum.total_prod_value, 0)::float8) as closing_total_value
+                    COALESCE(running_all_sum.total_close_end_quantity, 0)::float8 + COALESCE(opening_all_sum.total_close_end_quantity, 0)::float8 as closing_total_close_end_quantity, 
+                    COALESCE(running_all_sum.total_open_end_quantity, 0)::float8 + COALESCE(opening_all_sum.total_open_end_quantity, 0)::float8 as closing_total_open_end_quantity, 
+                    COALESCE(running_all_sum.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum.total_prod_quantity, 0)::float8 as closing_total_quantity, 
+                    (COALESCE(running_all_sum.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum.total_prod_quantity, 0)::float8) / 12 as closing_total_quantity_dzn, 
+                    COALESCE(running_all_sum.total_close_end_value, 0)::float8 + COALESCE(opening_all_sum.total_close_end_value, 0)::float8 as closing_total_close_end_value, 
+                    COALESCE(running_all_sum.total_open_end_value, 0)::float8 + COALESCE(opening_all_sum.total_open_end_value, 0)::float8 as closing_total_open_end_value, 
+                    COALESCE(running_all_sum.total_prod_value, 0)::float8 + COALESCE(opening_all_sum.total_prod_value, 0)::float8 as closing_total_value
                 FROM 
-                    zipper.v_order_details_full vodf 
+                    delivery.packing_list_entry ple
+                LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
                 LEFT JOIN 
-                    zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid 
+                    zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
                 LEFT JOIN 
-                    opening_all_sum ON oe.uuid = opening_all_sum.order_entry_uuid 
+                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                 LEFT JOIN 
-                    running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
+                    zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                LEFT JOIN 
+                    opening_all_sum ON ple.uuid = opening_all_sum.packing_list_entry_uuid 
+                LEFT JOIN 
+                    running_all_sum ON ple.uuid = running_all_sum.packing_list_entry_uuid 
                 LEFT JOIN (
                     SELECT
                         vodf.order_info_uuid,
@@ -234,67 +247,25 @@ export async function deliveryStatementReport(req, res, next) {
                     GROUP BY
                         vodf.order_info_uuid
                 ) order_info_total_quantity ON vodf.order_info_uuid = order_info_total_quantity.order_info_uuid
-                LEFT JOIN (
-					SELECT 
-						oe.order_description_uuid, 
-						oe.company_price,
-						CASE 
-							WHEN MAX(oe.size::float8) = MIN(oe.size::float8) 
-							THEN MAX(oe.size::float8)::text 
-							ELSE CONCAT(MAX(oe.size::float8)::text, ' - ', MIN(oe.size::float8)::text) 
-						END as size
-					FROM
-						zipper.order_entry oe
-					GROUP BY
-						oe.order_description_uuid, oe.company_price
-				) description_wise_price_size ON vodf.order_description_uuid = description_wise_price_size.order_description_uuid
                 WHERE 
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---' 
-                    AND coalesce(
-                            coalesce(
-                            running_all_sum.total_close_end_quantity, 
-                            0
-                            )::float8 + coalesce(
-                            running_all_sum.total_open_end_quantity, 
-                            0
-                            )::float8 + coalesce(
-                            opening_all_sum.total_close_end_quantity, 
-                            0
-                            )::float8 + coalesce(
-                            opening_all_sum.total_open_end_quantity, 
-                            0
-                            )::float8, 
+                    AND COALESCE(
+                            COALESCE(running_all_sum.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum.total_prod_quantity, 0)::float8, 
                             0
                         )::float8 > 0
-                GROUP BY 
-                    description_wise_price_size.company_price,
-					description_wise_price_size.size,
-                    vodf.marketing_uuid,
-					vodf.marketing_name,
-					vodf.order_info_uuid,
-					vodf.order_number,
-					vodf.item_name,
-					vodf.party_uuid,
-					vodf.party_name,
-                    order_info_total_quantity.total_quantity,
-					vodf.order_description_uuid,
-					vodf.item_description,
-					vodf.end_type,
-					vodf.end_type_name,
-					vodf.order_type,
-					vodf.is_inch
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
                     marketing.name as marketing_name,
                     toi.uuid as order_info_uuid,
-                    CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+                    CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
                     'Sewing Thread' as item_name,
                     'Thread' as type,
                     toi.party_uuid,
                     party.name as party_name,
                     order_info_total_quantity.total_quantity,
                     count_length.uuid as order_description_uuid,
+                    concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
                     CONCAT(count_length.count, ' - ', count_length.length) as item_description,
                     null as end_type,
                     null as end_type_name,
@@ -305,38 +276,41 @@ export async function deliveryStatementReport(req, res, next) {
                     'Mtr' as price_unit,
                     ROUND(toe.company_price::numeric, 3) as company_price_dzn,
                     ROUND(toe.company_price, 3) as company_price_pcs,
+                    ple.uuid as packing_list_entry_uuid,
                     'opening' as opening,
-                    SUM(COALESCE(opening_all_sum_thread.total_close_end_quantity, 0)::float8) as opening_total_close_end_quantity,
+                    COALESCE(opening_all_sum_thread.total_close_end_quantity, 0)::float8 as opening_total_close_end_quantity,
                     0 as opening_total_open_end_quantity,
-                    SUM(COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8) as opening_total_quantity,
-                    SUM(COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8 / 12) as opening_total_quantity_dzn,
-                    SUM(COALESCE(opening_all_sum_thread.total_close_end_value, 0)::float8) as opening_total_close_end_value,
+                    COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8 as opening_total_quantity,
+                    COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8 / 12 as opening_total_quantity_dzn,
+                    COALESCE(opening_all_sum_thread.total_close_end_value, 0)::float8 as opening_total_close_end_value,
                     0 as opening_total_open_end_value,
-                    SUM(COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8) as opening_total_value,
+                    COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as opening_total_value,
                     'running' as running,
-                    SUM(COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8) as running_total_close_end_quantity,
+                    COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8 as running_total_close_end_quantity,
                     0 as running_total_open_end_quantity,
-                    SUM(COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8) as running_total_quantity,
-                    SUM(COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 / 12) as running_total_quantity_dzn,
-                    SUM(COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8) as running_total_close_end_value,
+                    COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 as running_total_quantity,
+                    COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 / 12 as running_total_quantity_dzn,
+                    COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 as running_total_close_end_value,
                     0 as running_total_open_end_value,
-                    SUM(COALESCE(running_all_sum_thread.total_prod_value, 0)::float8) as running_total_value,
+                    COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 as running_total_value,
                     'closing' as closing,
-                    SUM(COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_quantity, 0)::float8) as closing_total_close_end_quantity,
+                    COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_quantity, 0)::float8 as closing_total_close_end_quantity,
                     0 as closing_total_open_end_quantity,
-                    SUM(COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8) as closing_total_quantity,
-                    SUM((COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8) / 12) as closing_total_quantity_dzn,
-                    SUM(COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_value, 0)::float8) as closing_total_close_end_value,
+                    COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8 as closing_total_quantity,
+                    (COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8) / 12 as closing_total_quantity_dzn,
+                    COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_value, 0)::float8 as closing_total_close_end_value,
                     0 as closing_total_open_end_value,
-                    SUM(COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8) as closing_total_value
+                    COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as closing_total_value
                 FROM
-                    thread.order_info toi
-                    LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+                    delivery.packing_list_entry ple 
+                    LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+                    LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+                    LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
                     LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
                     LEFT JOIN public.party party ON toi.party_uuid = party.uuid
                     LEFT JOIN public.marketing marketing ON toi.marketing_uuid = marketing.uuid
-                    LEFT JOIN opening_all_sum_thread ON toe.uuid = opening_all_sum_thread.order_entry_uuid
-                    LEFT JOIN running_all_sum_thread ON toe.uuid = running_all_sum_thread.order_entry_uuid
+                    LEFT JOIN opening_all_sum_thread ON ple.uuid = opening_all_sum_thread.packing_list_entry_uuid
+                    LEFT JOIN running_all_sum_thread ON ple.uuid = running_all_sum_thread.packing_list_entry_uuid
                     LEFT JOIN (
                         SELECT 
                             toi.uuid as order_info_uuid,
@@ -349,35 +323,12 @@ export async function deliveryStatementReport(req, res, next) {
                     ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
                 WHERE
                     toi.is_bill = 1
-                    AND coalesce(
-                            coalesce(
-                            running_all_sum_thread.total_close_end_quantity, 
-                            0
-                            )::float8 + coalesce(
-                            running_all_sum_thread.total_open_end_quantity, 
-                            0
-                            )::float8 + coalesce(
-                            opening_all_sum_thread.total_close_end_quantity, 
-                            0
-                            )::float8 + coalesce(
-                            opening_all_sum_thread.total_open_end_quantity, 
-                            0
-                            )::float8, 
+                    AND COALESCE(
+                            COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8, 
                             0
                         )::float8 > 0 
-                GROUP BY
-                    toe.company_price,
-                    toi.marketing_uuid,
-                    marketing.name,
-                    order_info_total_quantity.total_quantity,
-                    toi.uuid,
-                    toi.party_uuid,
-                    count_length.uuid,
-                    party.name,
-                    count_length.count,
-                    count_length.length
                 ORDER BY
-                    party_name, marketing_name, item_name DESC;
+                    party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
 		const resultPromise = db.execute(query);
 
@@ -391,6 +342,7 @@ export async function deliveryStatementReport(req, res, next) {
 				total_quantity,
 				marketing_name,
 				order_number,
+				packing_number,
 				item_description,
 				order_description_uuid,
 				is_inch,
@@ -399,6 +351,7 @@ export async function deliveryStatementReport(req, res, next) {
 				price_unit,
 				company_price_dzn,
 				company_price_pcs,
+				packing_list_entry_uuid,
 				opening_total_close_end_quantity,
 				opening_total_open_end_quantity,
 				opening_total_quantity,
@@ -437,15 +390,6 @@ export async function deliveryStatementReport(req, res, next) {
 				return array[index];
 			};
 
-			const findOrCreate = (array, key, value, createFn) => {
-				let index = array.findIndex((item) => item[key] === value);
-				if (index === -1) {
-					array.push(createFn());
-					index = array.length - 1;
-				}
-				return array[index];
-			};
-
 			const typeEntry = findOrCreateArray(
 				acc,
 				['type', 'party_name', 'marketing_name'],
@@ -469,17 +413,20 @@ export async function deliveryStatementReport(req, res, next) {
 				})
 			);
 
-			const item = findOrCreate(
+			const item = findOrCreateArray(
 				order.items,
-				'order_description_uuid',
-				order_description_uuid,
+				['order_description_uuid', 'packing_number'],
+				[order_description_uuid, packing_number],
 				() => ({
+					order_description_uuid,
 					item_description,
+					packing_number,
 					other: [],
 				})
 			);
 
 			item.other.push({
+				packing_list_entry_uuid,
 				is_inch,
 				size,
 				unit,
