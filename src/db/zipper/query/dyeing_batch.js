@@ -79,6 +79,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { type } = req.query;
 	const query = sql`
 		SELECT 
 			dyeing_batch.uuid,
@@ -155,6 +156,14 @@ export async function selectAll(req, res, next) {
 
 			GROUP BY be.dyeing_batch_uuid
 		) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
+
+		 WHERE ${
+				type === 'pending'
+					? sql`dyeing_batch.received = 0`
+					: type === 'completed'
+						? sql`dyeing_batch.received = 1`
+						: sql`1 = 1`
+			}	
 		GROUP BY dyeing_batch.uuid, public.machine.name, public.machine.min_capacity, public.machine.max_capacity, users.name, expected.total_quantity, expected.expected_kg, expected.order_numbers, expected.total_actual_production_quantity, expected.party_name, oe_colors.colors
 		ORDER BY expected.order_numbers DESC, dyeing_batch.id DESC
 	`;

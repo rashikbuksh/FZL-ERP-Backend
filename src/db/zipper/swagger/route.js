@@ -1,4 +1,3 @@
-import { param } from 'express-validator';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Zipper Order Info * //
@@ -1751,6 +1750,13 @@ export const pathZipperDyeingBatch = {
 		get: {
 			tags: ['zipper.dyeing_batch'],
 			summary: 'Get all Dyeing Batch',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),

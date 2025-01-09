@@ -94,6 +94,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { type } = req.query;
 	const query = sql`
 					SELECT
 						batch.uuid,
@@ -182,6 +183,15 @@ export async function selectAll(req, res, next) {
 						LEFT JOIN thread.order_info order_info ON oe.order_info_uuid = order_info.uuid
 						LEFT JOIN public.party party ON order_info.party_uuid = party.uuid
 						LEFT JOIN thread.order_info oi_v2 ON batch.order_info_uuid = oi_v2.uuid
+					WHERE
+						${
+							type === 'pending'
+								? sql`batch.is_drying_complete = 'false' OR batch.is_drying_complete IS NULL`
+								: type === 'completed'
+									? sql`batch.is_drying_complete = 'true'`
+									: sql`1 = 1`
+						}
+						
 					GROUP BY
 						batch.uuid,
 						batch.id,

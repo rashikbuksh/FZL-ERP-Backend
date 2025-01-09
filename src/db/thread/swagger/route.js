@@ -508,6 +508,13 @@ export const pathThreadBatch = {
 			tags: ['thread.batch'],
 			summary: 'Get all Thread Batch',
 			description: 'Get all Thread Batch',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
