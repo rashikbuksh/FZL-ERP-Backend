@@ -306,11 +306,24 @@ export async function select(req, res, next) {
 }
 
 export async function getOrderDetails(req, res, next) {
-	const { all, approved, type } = req.query;
+	const { all, approved, type, own_uuid } = req.query;
 
 	// console.log(all, '- all', approved, '- approved');
 
-	const query = sql`
+	let marketingUuid = null;
+
+	// get marketing_uuid from own_uuid
+
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		const marketingUuidData = await db.execute(marketingUuidQuery);
+		marketingUuid = marketingUuidData?.rows[0]?.uuid;
+
+		const query = sql`
 					SELECT 
 						vod.*, 
 						ROW_NUMBER() OVER (
@@ -372,9 +385,8 @@ export async function getOrderDetails(req, res, next) {
 
 					ORDER BY vod.order_description_created_at DESC, order_number_wise_rank ASC;`;
 
-	const orderInfoPromise = db.execute(query);
+		const orderInfoPromise = db.execute(query);
 
-	try {
 		const data = await orderInfoPromise;
 
 		const toast = {
