@@ -391,7 +391,8 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			COALESCE(sfg.finishing_prod::float8, 0) as finishing_prod,
 			oe.uuid as order_entry_uuid,
 			oe.created_at,
-			vodf.order_type
+			vodf.order_type,
+			'zipper' as item_for
 		FROM
 			zipper.v_order_details_full vodf
 		LEFT JOIN
@@ -440,7 +441,8 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			0 as reject_quantity,
 			COALESCE(toe.production_quantity::float8,0) as finishing_prod,
 			toe.uuid as order_entry_uuid,
-			toe.created_at
+			toe.created_at,
+			'thread' as item_for
 		FROM
 			thread.order_info toi
 		LEFT JOIN
@@ -451,6 +453,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			(toe.quantity - toe.warehouse - toe.delivered) > 0 AND toe.production_quantity > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} 
 		ORDER BY
 			toe.created_at, toe.uuid DESC
+
 		`;
 
 		// AND
