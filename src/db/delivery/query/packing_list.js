@@ -136,7 +136,7 @@ export async function selectAll(req, res, next) {
 
 		can_show_array.forEach((item, index) => {
 			if (index == 0 && !challan_uuid) {
-				query.append(sql`WHERE dvl.item_for = ${item}`);
+				query.append(sql`AND dvl.item_for = ${item}`);
 			} else {
 				query.append(sql` OR dvl.item_for = ${item}`);
 			}
