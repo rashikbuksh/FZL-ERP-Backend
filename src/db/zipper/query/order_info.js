@@ -317,7 +317,7 @@ export async function getOrderDetails(req, res, next) {
 	const marketingUuidQuery = sql`
 		SELECT uuid
 		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
+		WHERE user_uuid = ${own_uuid}`;
 
 	try {
 		const marketingUuidData = await db.execute(marketingUuidQuery);
@@ -383,8 +383,7 @@ export async function getOrderDetails(req, res, next) {
 										: sql`AND 1=1`
 							}
 							${own_uuid ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
-
-					ORDER BY vod.order_description_created_at DESC, order_number_wise_rank ASC;`;
+					ORDER BY vod.order_description_created_at DESC, order_number_wise_rank ASC`;
 
 		const orderInfoPromise = db.execute(query);
 
