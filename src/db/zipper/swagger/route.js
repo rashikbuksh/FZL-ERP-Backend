@@ -1027,6 +1027,13 @@ export const pathZipperSfg = {
 		get: {
 			tags: ['zipper.sfg'],
 			summary: 'Get all SFG Swatch Info',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),

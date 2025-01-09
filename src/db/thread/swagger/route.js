@@ -188,6 +188,14 @@ export const pathThreadOrderInfo = {
 			tags: ['thread.order_info'],
 			summary: 'Get Thread Order Swatch',
 			description: 'Get Thread Order Swatch',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+			],
+
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),

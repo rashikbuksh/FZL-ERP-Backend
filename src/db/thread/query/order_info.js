@@ -332,6 +332,7 @@ export async function selectOrderDetailsByOrderInfoUuid(req, res, next) {
 }
 
 export async function selectThreadSwatch(req, res, next) {
+	const { type } = req.query;
 	const resultPromise = db
 		.select({
 			uuid: order_info.uuid,
@@ -363,6 +364,13 @@ export async function selectThreadSwatch(req, res, next) {
 		.leftJoin(
 			labDipSchema.recipe,
 			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
+		)
+		.where(
+			type === 'pending'
+				? sql`order_entry.recipe_uuid IS NULL`
+				: type === 'completed'
+					? sql`order_entry.recipe_uuid IS NOT NULL`
+					: sql`1 = 1`
 		)
 		.orderBy(
 			desc(order_entry.created_at, order_info.created_at),
