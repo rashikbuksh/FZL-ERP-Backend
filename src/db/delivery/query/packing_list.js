@@ -101,7 +101,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { challan_uuid, can_show } = req.query;
+	const { challan_uuid, can_show, type } = req.query;
 
 	const query = sql`
 		SELECT dvl.*,
@@ -109,7 +109,17 @@ export async function selectAll(req, res, next) {
 			SUM(ple.poli_quantity)::float8 as total_poly_quantity
 		FROM delivery.v_packing_list dvl
 		LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
-		${challan_uuid ? sql`WHERE dvl.challan_uuid = ${challan_uuid}` : sql``}
+		WHERE 1=1
+			${challan_uuid ? sql`AND dvl.challan_uuid = ${challan_uuid}` : sql``}
+			${
+				type === 'pending'
+					? sql`AND dvl.is_warehouse_received = 'false' AND dvl.challan_uuid IS NULL`
+					: type === 'challan'
+						? sql`AND dvl.challan_uuid IS NOT NULL`
+						: type === 'gate_pass'
+							? sql`AND dvl.gate_pass = 1`
+							: sql``
+			}
 	`;
 
 	// can_show contains comma separated values like zipper,thread or zipper,sample_zipper but if it is thread then show both thread and sample_thread

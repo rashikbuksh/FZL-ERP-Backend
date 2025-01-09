@@ -12,6 +12,12 @@ export const pathDeliveryPackingList = {
 			parameters: [
 				SE.parameter_query('challan_uuid', 'challan_uuid'),
 				SE.parameter_query('can_show', 'can_show'),
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'challan',
+					'gate_pass',
+					'all',
+				]),
 			],
 			responses: {
 				200: {
