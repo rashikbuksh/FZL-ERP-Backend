@@ -474,7 +474,7 @@ export async function getTapeAssigned(req, res, next) {
 
 export async function getOrderDetailsByOwnUuid(req, res, next) {
 	const { own_uuid } = req.params;
-	const { approved } = req.query;
+	const { approved, type } = req.query;
 
 	let marketingUuid = null;
 
@@ -523,6 +523,13 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 							approved === 'true'
 								? sql`swatch_approval_counts.swatch_approval_count > 0`
 								: sql`1=1`
+						}
+						${
+							type === 'bulk'
+								? sql`AND vod.is_sample = 0`
+								: type === 'sample'
+									? sql`AND vod.is_sample = 1`
+									: sql`AND 1=1`
 						}
 					ORDER BY vod.created_at DESC;`;
 

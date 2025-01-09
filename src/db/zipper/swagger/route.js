@@ -223,6 +223,7 @@ export const pathZipperOrderInfo = {
 			summary: 'Get Order Details by Ownn UUID',
 			parameters: [
 				SE.parameter_params('own_uuid', 'own_uuid'),
+				SE.parameter_query('type', 'type', ['bulk', 'sample', 'all']),
 				SE.parameter_query('approved', 'approved', [true, false]),
 			],
 			responses: {
