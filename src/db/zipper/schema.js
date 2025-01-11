@@ -729,6 +729,7 @@ export const finishing_batch_entry = zipper.table('finishing_batch_entry', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	processed: boolean('processed').default(false),
 });
 
 export default zipper;

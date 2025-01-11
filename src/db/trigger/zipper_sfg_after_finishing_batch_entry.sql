@@ -7,28 +7,40 @@ DECLARE
     finishing_stock_val numeric;
     finishing_prod_val numeric;
 BEGIN
-        SELECT finishing_batch_entry.sfg_uuid, SUM(finishing_batch_entry.dyed_tape_used_in_kg), SUM(finishing_batch_entry.teeth_molding_prod), SUM(finishing_batch_entry.teeth_coloring_stock), SUM(finishing_batch_entry.finishing_stock), SUM(finishing_batch_entry.finishing_prod)
-        INTO sfg_uuid_val, dyed_tape_used_in_kg_val, teeth_molding_prod_val, teeth_coloring_stock_val, finishing_stock_val, finishing_prod_val
-        FROM zipper.finishing_batch_entry
-        WHERE finishing_batch_entry.uuid = NEW.uuid
-        GROUP BY finishing_batch_entry.sfg_uuid;
+    -- Aggregate only the new or updated entries
+    SELECT finishing_batch_entry.sfg_uuid, 
+           SUM(finishing_batch_entry.dyed_tape_used_in_kg), 
+           SUM(finishing_batch_entry.teeth_molding_prod), 
+           SUM(finishing_batch_entry.teeth_coloring_stock), 
+           SUM(finishing_batch_entry.finishing_stock), 
+           SUM(finishing_batch_entry.finishing_prod)
+    INTO sfg_uuid_val, dyed_tape_used_in_kg_val, teeth_molding_prod_val, teeth_coloring_stock_val, finishing_stock_val, finishing_prod_val
+    FROM zipper.finishing_batch_entry
+    WHERE finishing_batch_entry.sfg_uuid = NEW.sfg_uuid
+      AND finishing_batch_entry.processed = FALSE
+    GROUP BY finishing_batch_entry.sfg_uuid;
+
+    -- Update the sfg table
     UPDATE zipper.sfg
     SET
-        dyed_tape_used_in_kg = dyed_tape_used_in_kg_val,
-        teeth_molding_prod = teeth_molding_prod_val,
-        teeth_coloring_stock = teeth_coloring_stock_val,
-        finishing_stock = finishing_stock_val,
-        finishing_prod = finishing_prod_val
-    FROM zipper.finishing_batch_entry fbe
-    WHERE fbe.uuid = NEW.uuid AND fbe.sfg_uuid = zipper.sfg.uuid;
+        dyed_tape_used_in_kg = COALESCE(dyed_tape_used_in_kg, 0) + dyed_tape_used_in_kg_val,
+        teeth_molding_prod = COALESCE(teeth_molding_prod, 0) + teeth_molding_prod_val,
+        teeth_coloring_stock = COALESCE(teeth_coloring_stock, 0) + teeth_coloring_stock_val,
+        finishing_stock = COALESCE(finishing_stock, 0) + finishing_stock_val,
+        finishing_prod = COALESCE(finishing_prod, 0) + finishing_prod_val
+    WHERE zipper.sfg.uuid = sfg_uuid_val;
+
+    -- Mark the entries as processed
+    UPDATE zipper.finishing_batch_entry
+    SET processed = TRUE
+    WHERE sfg_uuid = NEW.sfg_uuid
+      AND processed = FALSE;
 
     RETURN NEW;
 END;
-
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER zipper_sfg_after_finishing_batch_entry_update
-AFTER UPDATE ON zipper.finishing_batch_entry
+AFTER INSERT OR UPDATE ON zipper.finishing_batch_entry
 FOR EACH ROW
 EXECUTE FUNCTION zipper.zipper_sfg_after_finishing_batch_entry_update();
-
