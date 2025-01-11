@@ -245,7 +245,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                            pm.name AS marketing_name,
                            pp.name AS party_name,
                            op_item.name AS item_name,
-                           od_given.created_at AS issue_date,
+                           od.created_at AS issue_date,
                            CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
                            od.uuid as order_description_uuid,
                            od.is_inch,
@@ -337,7 +337,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
                         WHERE
-                            oi.is_sample = ${is_sample} AND ${date} = ANY (SELECT CAST(unnest(od_given.created_at) AS DATE)) AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
+                            oi.is_sample = ${is_sample} AND ${date} = ANY (SELECT CAST(unnest(od_given.created_at) AS DATE)) AND ${own_uuid ? sql`oi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
                         UNION
                         SELECT 
                             CONCAT('ST', 
@@ -348,7 +348,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                             pmt.name AS marketing_name,
                             ppt.name AS party_name,
                             'Sewing Thread' AS item_name,
-                            toe_given.created_at AS issue_date,
+                            toi.created_at AS issue_date,
                             toe_given.count_length_names as item_description,
                             null as order_description_uuid,
                             0 as is_inch,
@@ -386,7 +386,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                                 toe.order_info_uuid
                         ) toe_given ON toe_given.order_info_uuid = toi.uuid
                         WHERE
-                            toi.is_sample = ${is_sample} AND ${date} = ANY (SELECT CAST(unnest(toe_given.created_at) AS DATE)) AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
+                            toi.is_sample = ${is_sample} AND ${date} = ANY (SELECT CAST(unnest(toe_given.created_at) AS DATE)) AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
                         ORDER BY
                             order_number ASC, item_description ASC;
                     `;

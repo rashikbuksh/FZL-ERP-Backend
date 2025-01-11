@@ -327,7 +327,7 @@ export async function deliveryStatementReport(req, res, next) {
                 WHERE
                     toi.is_bill = 1
                     AND COALESCE(
-                            COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8, 
+                            COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8, 
                             0
                         )::float8 > 0 
                     AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}
