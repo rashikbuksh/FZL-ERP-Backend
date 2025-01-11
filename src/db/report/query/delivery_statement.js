@@ -4,9 +4,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function deliveryStatementReport(req, res, next) {
-	const { from_date, to_date } = req.query;
-
-	const { own_uuid } = req?.query;
+	const { from_date, to_date, own_uuid, marketing, party, type } = req.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -186,7 +184,7 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.order_type,
                     vodf.is_inch,
                     concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
-                    pl.created_at as packing_list_created_at,
+                    DATE(pl.created_at) as packing_list_created_at,
                     oe.size,
                     CASE 
                         WHEN vodf.order_type = 'tape' THEN 'Meter'
@@ -254,6 +252,9 @@ export async function deliveryStatementReport(req, res, next) {
                             COALESCE(running_all_sum.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum.total_prod_quantity, 0)::float8, 
                             0
                         )::float8 > 0
+                    AND ${marketing ? sql`vodf.marketing_uuid = ${marketing}` : sql`1=1`}
+                    AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
+                    AND ${type == 'thread' ? sql`type = 'thread'` : type == 'zipper' ? sql`type != 'thread'` : sql`1=1`}
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
@@ -266,13 +267,13 @@ export async function deliveryStatementReport(req, res, next) {
                     party.name as party_name,
                     order_info_total_quantity.total_quantity,
                     count_length.uuid as order_description_uuid,
-                    concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
-                    pl.created_at as packing_list_created_at,
                     CONCAT(count_length.count, ' - ', count_length.length) as item_description,
                     null as end_type,
                     null as end_type_name,
                     null as order_type,
                     null as is_inch,
+                    concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
+                    DATE(pl.created_at) as packing_list_created_at,
                     count_length.length::text as size,
                     'Mtr' as unit,
                     'Mtr' as price_unit,
@@ -329,6 +330,9 @@ export async function deliveryStatementReport(req, res, next) {
                             COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8, 
                             0
                         )::float8 > 0 
+                    AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}
+                    AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
+                    AND ${type == 'thread' ? sql`type = 'thread'` : type == 'zipper' ? sql`type != 'thread'` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
@@ -340,11 +344,14 @@ export async function deliveryStatementReport(req, res, next) {
 		const groupedData = data?.rows.reduce((acc, row) => {
 			const {
 				type,
+				party_uuid,
 				party_name,
 				total_quantity,
+				marketing_uuid,
 				marketing_name,
 				order_number,
 				packing_number,
+				packing_list_created_at,
 				item_description,
 				order_description_uuid,
 				is_inch,
@@ -398,7 +405,9 @@ export async function deliveryStatementReport(req, res, next) {
 				[type, party_name, marketing_name],
 				() => ({
 					type,
+					party_uuid,
 					party_name,
+					marketing_uuid,
 					marketing_name,
 					orders: [],
 				})
@@ -423,6 +432,7 @@ export async function deliveryStatementReport(req, res, next) {
 					order_description_uuid,
 					item_description,
 					packing_number,
+					packing_list_created_at,
 					other: [],
 				})
 			);

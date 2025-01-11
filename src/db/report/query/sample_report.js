@@ -236,7 +236,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
 		}
 
 		const query = sql`
-                     SELECT 
+                        SELECT 
                            CONCAT('Z', 
                                     CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
                                     to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')
@@ -304,11 +304,11 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                                 (SELECT
                                     od.uuid,
                                     SUM(oe.quantity) as total_quantity,
-                                    array_agg(oe.style) as style,
-                                    array_agg(oe.color) as color,
-                                    array_agg(oe.size) as size,
+                                    array_agg(DISTINCT oe.style) as style,
+                                    array_agg(DISTINCT oe.color) as color,
+                                    array_agg(DISTINCT oe.size) as size,
                                     array_agg(DISTINCT TO_CHAR(oe.created_at, 'YYYY-MM-DD')) as created_at,
-                                    array_agg(oe.remarks) as remarks
+                                    array_agg(DISTINCT oe.remarks) as remarks
                                 FROM
                                     zipper.order_description od
                                 LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid
@@ -338,8 +338,58 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
                         WHERE
                             oi.is_sample = ${is_sample} AND ${date} = ANY (SELECT CAST(unnest(od_given.created_at) AS DATE)) AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
+                        UNION
+                        SELECT 
+                            CONCAT('ST', 
+                                    CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END,
+                                    to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')
+                                ) AS order_number,
+                            toi.uuid as order_info_uuid,
+                            pmt.name AS marketing_name,
+                            ppt.name AS party_name,
+                            'Sewing Thread' AS item_name,
+                            toe_given.created_at AS issue_date,
+                            toe_given.count_length_names as item_description,
+                            null as order_description_uuid,
+                            0 as is_inch,
+                            0 as is_meter,
+                            0 as is_cm,
+                            toe_given.remarks,
+                            null as order_type,
+                            toe_given.style,
+                            toe_given.color,
+                            toe_given.size,
+                            toe_given.total_quantity,
+                            toe_given.count_length_names AS item_details,
+                            null as slider_details,
+                            null as other_details
+                        FROM 
+                            thread.order_info toi
+                        LEFT JOIN public.marketing pmt ON pmt.uuid = toi.marketing_uuid
+                        LEFT JOIN public.party ppt ON ppt.uuid = toi.party_uuid
+                        LEFT JOIN (
+                            SELECT 
+                                toe.order_info_uuid,
+                                string_agg(DISTINCT cl.count, ', ') as name,
+                                array_agg(DISTINCT TO_CHAR(toe.created_at, 'YYYY-MM-DD')) as created_at,
+                                array_agg(DISTINCT toe.style) as style,
+                                array_agg(DISTINCT toe.color) as color,
+                                array_agg(DISTINCT cl.length::text) as size,
+                                array_agg(DISTINCT toe.remarks) as remarks,
+                                SUM(toe.quantity) as total_quantity,
+                                string_agg(DISTINCT CONCAT(cl.count, ' - ', cl.length), ', ') as count_length_names
+                            FROM
+                                thread.order_entry toe
+                            LEFT JOIN 
+                                thread.count_length cl ON cl.uuid = toe.count_length_uuid
+                            GROUP BY
+                                toe.order_info_uuid
+                        ) toe_given ON toe_given.order_info_uuid = toi.uuid
+                        WHERE
+                            toi.is_sample = ${is_sample} AND ${date} = ANY (SELECT CAST(unnest(toe_given.created_at) AS DATE)) AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
                         ORDER BY
-                            order_number ASC, item_description ASC;`;
+                            order_number ASC, item_description ASC;
+                    `;
 
 		const resultPromise = db.execute(query);
 

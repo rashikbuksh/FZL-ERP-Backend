@@ -442,6 +442,11 @@ export const pathReport = {
 			parameters: [
 				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
 				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+				// marketing, party, type, own_uuid
+				SE.parameter_query('marketing', 'marketing', SE.uuid()),
+				SE.parameter_query('party', 'party', SE.uuid()),
+				SE.parameter_query('type', 'type', ['zipper', 'thread']),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
 			],
 			responses: {
 				200: SE.response_schema(200, {
