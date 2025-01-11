@@ -178,7 +178,7 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.party_name,
                     order_info_total_quantity.total_quantity,
                     vodf.order_description_uuid,
-                    vodf.item_description,
+                    CONCAT(vodf.item_description) as item_description,
                     vodf.end_type,
                     vodf.end_type_name,
                     vodf.order_type,

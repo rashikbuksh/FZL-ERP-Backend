@@ -1585,6 +1585,8 @@ export async function dailyProductionReport(req, res, next) {
 		FROM public.marketing
 		WHERE user_uuid = ${own_uuid};`;
 
+	const sort_of_type = ['Thread', 'Nylon', 'Metal', 'Vislon'];
+
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
