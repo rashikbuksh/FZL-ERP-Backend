@@ -17,7 +17,6 @@ BEGIN
     INTO sfg_uuid_val, dyed_tape_used_in_kg_val, teeth_molding_prod_val, teeth_coloring_stock_val, finishing_stock_val, finishing_prod_val
     FROM zipper.finishing_batch_entry
     WHERE finishing_batch_entry.sfg_uuid = NEW.sfg_uuid
-      AND finishing_batch_entry.processed = FALSE
     GROUP BY finishing_batch_entry.sfg_uuid;
 
     -- Update the sfg table
@@ -29,12 +28,6 @@ BEGIN
         finishing_stock = COALESCE(finishing_stock, 0) + finishing_stock_val,
         finishing_prod = COALESCE(finishing_prod, 0) + finishing_prod_val
     WHERE zipper.sfg.uuid = sfg_uuid_val;
-
-    -- Mark the entries as processed
-    UPDATE zipper.finishing_batch_entry
-    SET processed = TRUE
-    WHERE sfg_uuid = NEW.sfg_uuid
-      AND processed = FALSE;
 
     RETURN NEW;
 END;
