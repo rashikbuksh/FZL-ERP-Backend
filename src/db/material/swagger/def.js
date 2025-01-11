@@ -11,6 +11,7 @@ export const defMaterialSection = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		index: SE.number(0),
 	},
 	xml: 'Material/Section',
 });

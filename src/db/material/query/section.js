@@ -1,8 +1,5 @@
 import { asc, desc, eq } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -86,6 +83,7 @@ export async function selectAll(req, res, next) {
 			updated_at: section.updated_at,
 			created_by: section.created_by,
 			created_by_name: hrSchema.users.name,
+			index: section.index,
 		})
 		.from(section)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))
@@ -117,6 +115,7 @@ export async function select(req, res, next) {
 			updated_at: section.updated_at,
 			created_by: section.created_by,
 			created_by_name: hrSchema.users.name,
+			index: section.index,
 		})
 		.from(section)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))

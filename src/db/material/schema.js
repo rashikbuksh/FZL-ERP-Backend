@@ -27,6 +27,7 @@ export const section = material.table('section', {
 	updated_at: DateTime('updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
+	index: integer('index').default(0),
 });
 
 export const type = material.table('type', {
