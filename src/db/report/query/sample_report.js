@@ -349,7 +349,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                             ppt.name AS party_name,
                             'Sewing Thread' AS item_name,
                             toi.created_at AS issue_date,
-                            toe_given.count_length_names as item_description,
+                            null as item_description,
                             null as order_description_uuid,
                             0 as is_inch,
                             0 as is_meter,
