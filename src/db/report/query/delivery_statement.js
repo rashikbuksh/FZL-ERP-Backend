@@ -186,6 +186,7 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.order_type,
                     vodf.is_inch,
                     concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
+                    pl.created_at as packing_list_created_at,
                     oe.size,
                     CASE 
                         WHEN vodf.order_type = 'tape' THEN 'Meter'
@@ -266,6 +267,7 @@ export async function deliveryStatementReport(req, res, next) {
                     order_info_total_quantity.total_quantity,
                     count_length.uuid as order_description_uuid,
                     concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
+                    pl.created_at as packing_list_created_at,
                     CONCAT(count_length.count, ' - ', count_length.length) as item_description,
                     null as end_type,
                     null as end_type_name,
