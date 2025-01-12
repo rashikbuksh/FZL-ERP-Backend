@@ -842,7 +842,9 @@ export async function selectOrderDescription(req, res, next) {
 					vodf.is_multi_color,
 					CASE WHEN vodf.is_multi_color = 1 THEN vodf.multi_color_tape_received ELSE coalesce(batch_stock.stock,0)::float8 END as stock,
 					styles_colors.style_color_object,
-					vodf.slider_provided
+					vodf.slider_provided,
+					vodf.end_type as end_type_uuid,
+					vodf.end_type_name
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -969,7 +971,9 @@ export async function selectOrderDescription(req, res, next) {
 					oe.size,
 					oe.quantity::float8 as order_quantity,
 					fbe_given.balance_quantity,
-					vodf.slider_provided
+					vodf.slider_provided,
+					vodf.end_type as end_type_uuid,
+					vodf.end_type_name
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
