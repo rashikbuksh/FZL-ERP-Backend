@@ -301,7 +301,6 @@ export async function deliveryStatementReport(req, res, next) {
                         )::float8 > 0
                     AND ${marketing ? sql`vodf.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
-                    AND ${type == 'thread' ? sql`type = 'thread'` : type == 'zipper' ? sql`type != 'thread'` : sql`1=1`}
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
@@ -393,13 +392,26 @@ export async function deliveryStatementReport(req, res, next) {
                         )::float8 > 0 
                     AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
-                    AND ${type == 'thread' ? sql`type = 'thread'` : type == 'zipper' ? sql`type != 'thread'` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
+
+		// filter by type
+		if (type === 'thread') {
+			data.rows = data.rows.filter((row) => row.type === 'Thread');
+		} else if (type === 'zipper') {
+			data.rows = data.rows.filter((row) => row.type !== 'Thread');
+		} else if (type === 'nylon') {
+			data.rows = data.rows.filter((row) => row.type === 'Nylon');
+		} else if (type === 'metal') {
+			data.rows = data.rows.filter((row) => row.type === 'Metal');
+		} else if (type === 'vislon') {
+			data.rows = data.rows.filter((row) => row.type === 'Vislon');
+		} else {
+		}
 
 		// first group by type, then party_name, then order_number, then item_description, then size
 		const groupedData = data?.rows.reduce((acc, row) => {
