@@ -358,7 +358,7 @@ export async function deliveryStatementReport(req, res, next) {
                     0 as closing_total_open_end_value,
                     COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as closing_total_value,
                     pi_cash.is_pi,
-                    pi_cash.conversion_rate as conversion_rate
+                    COALESCE(pi_cash.conversion_rate, 0) as conversion_rate
                 FROM
                     delivery.packing_list_entry ple 
                     LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
