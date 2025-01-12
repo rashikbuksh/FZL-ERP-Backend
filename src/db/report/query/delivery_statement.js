@@ -221,7 +221,12 @@ export async function deliveryStatementReport(req, res, next) {
                     (COALESCE(running_all_sum.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum.total_prod_quantity, 0)::float8) / 12 as closing_total_quantity_dzn, 
                     COALESCE(running_all_sum.total_close_end_value, 0)::float8 + COALESCE(opening_all_sum.total_close_end_value, 0)::float8 as closing_total_close_end_value, 
                     COALESCE(running_all_sum.total_open_end_value, 0)::float8 + COALESCE(opening_all_sum.total_open_end_value, 0)::float8 as closing_total_open_end_value, 
-                    COALESCE(running_all_sum.total_prod_value, 0)::float8 + COALESCE(opening_all_sum.total_prod_value, 0)::float8 as closing_total_value
+                    COALESCE(running_all_sum.total_prod_value, 0)::float8 + COALESCE(opening_all_sum.total_prod_value, 0)::float8 as closing_total_value,
+                    pi_cash.is_pi,
+                    CASE 
+                        WHEN pi_cash.is_pi = 1 THEN 80 
+                        ELSE pi_cash.conversion_rate 
+                    END as conversion_rate
                 FROM 
                     delivery.packing_list_entry ple
                 LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -234,7 +239,15 @@ export async function deliveryStatementReport(req, res, next) {
                 LEFT JOIN 
                     opening_all_sum ON ple.uuid = opening_all_sum.packing_list_entry_uuid 
                 LEFT JOIN 
-                    running_all_sum ON ple.uuid = running_all_sum.packing_list_entry_uuid 
+                    running_all_sum ON ple.uuid = running_all_sum.packing_list_entry_uuid
+                LEFT JOIN (
+                            SELECT 
+                                jsonb_array_elements_text(order_info_uuids::jsonb) AS order_info_uuid,
+                                is_pi,
+                                conversion_rate
+                            FROM 
+                                commercial.pi_cash
+                        ) pi_cash ON vodf.order_info_uuid::text = pi_cash.order_info_uuid
                 LEFT JOIN (
                     SELECT
                         vodf.order_info_uuid,
@@ -303,7 +316,12 @@ export async function deliveryStatementReport(req, res, next) {
                     (COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8) / 12 as closing_total_quantity_dzn,
                     COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_value, 0)::float8 as closing_total_close_end_value,
                     0 as closing_total_open_end_value,
-                    COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as closing_total_value
+                    COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as closing_total_value,
+                    pi_cash.is_pi,
+                    CASE 
+                        WHEN pi_cash.is_pi = 1 THEN 80 
+                        ELSE pi_cash.conversion_rate 
+                    END as conversion_rate
                 FROM
                     delivery.packing_list_entry ple 
                     LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -314,6 +332,14 @@ export async function deliveryStatementReport(req, res, next) {
                     LEFT JOIN public.marketing marketing ON toi.marketing_uuid = marketing.uuid
                     LEFT JOIN opening_all_sum_thread ON ple.uuid = opening_all_sum_thread.packing_list_entry_uuid
                     LEFT JOIN running_all_sum_thread ON ple.uuid = running_all_sum_thread.packing_list_entry_uuid
+                    LEFT JOIN (
+                            SELECT 
+                                jsonb_array_elements_text(thread_order_info_uuids::jsonb) AS order_info_uuid,
+                                is_pi,
+                                conversion_rate
+                            FROM 
+                                commercial.pi_cash
+                        ) pi_cash ON toi.uuid::text = pi_cash.order_info_uuid
                     LEFT JOIN (
                         SELECT 
                             toi.uuid as order_info_uuid,
@@ -382,6 +408,8 @@ export async function deliveryStatementReport(req, res, next) {
 				closing_total_close_end_value,
 				closing_total_open_end_value,
 				closing_total_value,
+				is_pi,
+				conversion_rate,
 			} = row;
 
 			// group using (type, party and marketing) together then order_number, item_description, size
@@ -466,6 +494,8 @@ export async function deliveryStatementReport(req, res, next) {
 				closing_total_close_end_value,
 				closing_total_open_end_value,
 				closing_total_value,
+				is_pi,
+				conversion_rate,
 			});
 
 			return acc;
