@@ -1700,9 +1700,10 @@ export async function dailyProductionReport(req, res, next) {
                     SUM(COALESCE(running_all_sum.total_open_end_value, 0)::float8) as running_total_open_end_value, 
                     SUM(COALESCE(running_all_sum.total_prod_value, 0)::float8) as running_total_value,
                     pi_cash.is_pi,
-                    CASE 
+                    CASE WHEN pi_cash.conversion_rate IS NULL THEN 0 ELSE CASE 
                         WHEN pi_cash.is_pi = 1 THEN 80 
                         ELSE pi_cash.conversion_rate 
+                        END
                     END as conversion_rate
                 FROM 
                     zipper.v_order_details_full vodf 
@@ -1783,9 +1784,11 @@ export async function dailyProductionReport(req, res, next) {
                     0 as running_total_open_end_value,
                     SUM(COALESCE(running_all_sum_thread.total_prod_value, 0)::float8) as running_total_value,
                     pi_cash.is_pi,
-                    CASE 
-                        WHEN pi_cash.is_pi = 1 THEN 80 
-                        ELSE pi_cash.conversion_rate 
+                   CASE WHEN pi_cash.conversion_rate IS NULL THEN 0 ELSE
+                        CASE 
+                            WHEN pi_cash.is_pi = 1 THEN 80 
+                            ELSE pi_cash.conversion_rate 
+                        END
                     END as conversion_rate
 
                 FROM

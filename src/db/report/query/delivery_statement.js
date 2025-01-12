@@ -223,9 +223,10 @@ export async function deliveryStatementReport(req, res, next) {
                     COALESCE(running_all_sum.total_open_end_value, 0)::float8 + COALESCE(opening_all_sum.total_open_end_value, 0)::float8 as closing_total_open_end_value, 
                     COALESCE(running_all_sum.total_prod_value, 0)::float8 + COALESCE(opening_all_sum.total_prod_value, 0)::float8 as closing_total_value,
                     pi_cash.is_pi,
-                    CASE 
+                    CASE WHEN pi_cash.conversion_rate IS NULL THEN 0 ELSE CASE 
                         WHEN pi_cash.is_pi = 1 THEN 80 
                         ELSE pi_cash.conversion_rate 
+                        END
                     END as conversion_rate
                 FROM 
                     delivery.packing_list_entry ple
@@ -318,9 +319,10 @@ export async function deliveryStatementReport(req, res, next) {
                     0 as closing_total_open_end_value,
                     COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as closing_total_value,
                     pi_cash.is_pi,
-                    CASE 
+                    CASE WHEN pi_cash.conversion_rate IS NULL THEN 0 ELSE CASE 
                         WHEN pi_cash.is_pi = 1 THEN 80 
                         ELSE pi_cash.conversion_rate 
+                        END
                     END as conversion_rate
                 FROM
                     delivery.packing_list_entry ple 
