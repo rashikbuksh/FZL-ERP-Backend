@@ -1698,13 +1698,26 @@ export async function dailyProductionReport(req, res, next) {
                     SUM(COALESCE(running_all_sum.total_prod_quantity, 0)::float8 / 12) as running_total_quantity_dzn, 
                     SUM(COALESCE(running_all_sum.total_close_end_value, 0)::float8) as running_total_close_end_value, 
                     SUM(COALESCE(running_all_sum.total_open_end_value, 0)::float8) as running_total_open_end_value, 
-                    SUM(COALESCE(running_all_sum.total_prod_value, 0)::float8) as running_total_value
+                    SUM(COALESCE(running_all_sum.total_prod_value, 0)::float8) as running_total_value,
+                    pi_cash.is_pi,
+                    CASE 
+                        WHEN pi_cash.is_pi = 1 THEN 80 
+                        ELSE pi_cash.conversion_rate 
+                    END as conversion_rate
                 FROM 
                     zipper.v_order_details_full vodf 
                 LEFT JOIN 
                     zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid 
                 LEFT JOIN 
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
+                LEFT JOIN (
+                            SELECT 
+                                jsonb_array_elements_text(order_info_uuids::jsonb) AS order_info_uuid,
+                                is_pi,
+                                conversion_rate
+                            FROM 
+                                commercial.pi_cash
+                        ) pi_cash ON vodf.order_info_uuid::text = pi_cash.order_info_uuid
                 LEFT JOIN (
                         SELECT
                             vodf.order_info_uuid,
@@ -1735,7 +1748,10 @@ export async function dailyProductionReport(req, res, next) {
 					vodf.end_type,
 					vodf.end_type_name,
 					vodf.order_type,
-					vodf.is_inch
+					vodf.is_inch,
+                    pi_cash.is_pi,
+                    pi_cash.conversion_rate
+                
             UNION
                 SELECT 
                     toi.marketing_uuid,
@@ -1765,7 +1781,13 @@ export async function dailyProductionReport(req, res, next) {
                     SUM(COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 / 12) as running_total_quantity_dzn,
                     SUM(COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8) as running_total_close_end_value,
                     0 as running_total_open_end_value,
-                    SUM(COALESCE(running_all_sum_thread.total_prod_value, 0)::float8) as running_total_value
+                    SUM(COALESCE(running_all_sum_thread.total_prod_value, 0)::float8) as running_total_value,
+                    pi_cash.is_pi,
+                    CASE 
+                        WHEN pi_cash.is_pi = 1 THEN 80 
+                        ELSE pi_cash.conversion_rate 
+                    END as conversion_rate
+
                 FROM
                     thread.order_info toi
                     LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
@@ -1773,6 +1795,14 @@ export async function dailyProductionReport(req, res, next) {
                     LEFT JOIN public.party party ON toi.party_uuid = party.uuid
                     LEFT JOIN public.marketing marketing ON toi.marketing_uuid = marketing.uuid
                     LEFT JOIN running_all_sum_thread ON toe.uuid = running_all_sum_thread.order_entry_uuid
+                    LEFT JOIN (
+                        SELECT 
+                            jsonb_array_elements_text(order_info_uuids::jsonb) AS order_info_uuid,
+                            is_pi,
+                            conversion_rate
+                        FROM 
+                            commercial.pi_cash
+                    ) pi_cash ON toi.uuid::text = pi_cash.order_info_uuid
                     LEFT JOIN (
                         SELECT 
                             toi.uuid as order_info_uuid,
@@ -1797,7 +1827,9 @@ export async function dailyProductionReport(req, res, next) {
                     count_length.uuid,
                     party.name,
                     count_length.count,
-                    count_length.length
+                    count_length.length,
+                    pi_cash.is_pi,
+                    pi_cash.conversion_rate
                 ORDER BY
                     type DESC
     `;
@@ -1827,6 +1859,8 @@ export async function dailyProductionReport(req, res, next) {
 				running_total_close_end_value,
 				running_total_open_end_value,
 				running_total_value,
+				is_pi,
+				conversion_rate,
 			} = row;
 
 			const findOrCreateArray = (array, key, value, createFn) => {
@@ -1901,6 +1935,8 @@ export async function dailyProductionReport(req, res, next) {
 				running_total_close_end_value,
 				running_total_open_end_value,
 				running_total_value,
+				is_pi,
+				conversion_rate,
 			});
 
 			return acc;
