@@ -1945,6 +1945,11 @@ export async function dailyProductionReport(req, res, next) {
 			return acc;
 		}, []);
 
+		groupedData.sort(
+			(a, b) =>
+				sort_of_type.indexOf(a.type) - sort_of_type.indexOf(b.type)
+		);
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
