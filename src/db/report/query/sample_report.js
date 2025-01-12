@@ -386,7 +386,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                                 toe.order_info_uuid
                         ) toe_given ON toe_given.order_info_uuid = toi.uuid
                         WHERE
-                            toi.is_sample = ${is_sample} AND ${date} = ANY (SELECT CAST(unnest(toe_given.created_at) AS DATE)) AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                            toi.is_sample = ${is_sample} AND ${date} = toi.created_at::date AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
                         ORDER BY
                             order_number ASC, item_description ASC;
                     `;
