@@ -466,6 +466,7 @@ export async function getTapeAssigned(req, res, next) {
 														: sql`AND 1=1`
 							}
 					ORDER BY 
+						vodf.order_number_wise_rank asc,
 						vodf.tape_coil_uuid ASC NULLS FIRST,
 						vodf.order_number DESC,
 						vodf.item_description ASC;`;
