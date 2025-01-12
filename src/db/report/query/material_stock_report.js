@@ -86,7 +86,7 @@ export async function MaterialStockReport(req, res, next) {
                     GROUP BY 
                         mi.uuid
                     ) opening_consumption ON m.uuid = opening_consumption.material_uuid
-                ORDER BY ms.name, m.name;
+                ORDER BY ms.index, m.name;
     `;
 
 		const resultPromise = db.execute(query);
