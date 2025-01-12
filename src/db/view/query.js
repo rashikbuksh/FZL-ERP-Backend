@@ -8,7 +8,20 @@ export const OrderDetailsView = `
             to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
         ) AS order_number,
         order_info.id as id,
-        concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
+        ROW_NUMBER() OVER (
+                PARTITION BY concat('Z', 
+                CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
+                to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+            )
+                ORDER BY order_description.created_at
+            ) AS order_number_wise_rank,
+        concat('#',ROW_NUMBER() OVER (
+                PARTITION BY concat('Z', 
+                CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
+                to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+            )
+                ORDER BY order_description.created_at
+            ),'-',op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
         op_item.name AS item_name,
         op_nylon_stopper.name AS nylon_stopper_name,
         op_zipper.name AS zipper_number_name,
@@ -73,6 +86,13 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
                 to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
             ) AS order_number,
         order_info.id as id,
+        ROW_NUMBER() OVER (
+                PARTITION BY concat('Z', 
+                CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
+                to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+            )
+                ORDER BY order_description.created_at
+            ) AS order_number_wise_rank,
         order_description.uuid AS order_description_uuid,
         order_description.tape_received::float8,
         order_description.multi_color_tape_received::float8,
@@ -98,7 +118,13 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_info.created_at,
         order_info.updated_at,
         order_info.print_in,
-        concat(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
+        concat('#',ROW_NUMBER() OVER (
+                PARTITION BY concat('Z', 
+                CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
+                to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+            )
+                ORDER BY order_description.created_at
+            ),'-',op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
         order_description.item,
         op_item.name AS item_name,
         op_item.short_name AS item_short_name,
@@ -207,7 +233,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = order_description.end_user
         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
         LEFT JOIN zipper.tape_coil tc ON tc.uuid = order_description.tape_coil_uuid
-        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type;
+        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type
+;
 	`; // required order_description changes
 
 export const PackingListDetailsView = `
