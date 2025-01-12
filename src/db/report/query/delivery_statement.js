@@ -3,6 +3,19 @@ import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
+const findOrCreateArray = (array, key, value, createFn) => {
+	let index = array.findIndex((item) =>
+		key
+			.map((indKey, index) => item[indKey] === value[index])
+			.every((item) => item)
+	);
+	if (index === -1) {
+		array.push(createFn());
+		index = array.length - 1;
+	}
+	return array[index];
+};
+
 export async function deliveryStatementReport(req, res, next) {
 	const { from_date, to_date, own_uuid, marketing, party, type } = req.query;
 
@@ -436,19 +449,6 @@ export async function deliveryStatementReport(req, res, next) {
 
 			// group using (type, party and marketing) together then order_number, item_description, size
 
-			const findOrCreateArray = (array, key, value, createFn) => {
-				let index = array.findIndex((item) =>
-					key
-						.map((indKey, index) => item[indKey] === value[index])
-						.every((item) => item)
-				);
-				if (index === -1) {
-					array.push(createFn());
-					index = array.length - 1;
-				}
-				return array[index];
-			};
-
 			const typeEntry = findOrCreateArray(
 				acc,
 				['type', 'party_name', 'marketing_name'],
@@ -488,6 +488,7 @@ export async function deliveryStatementReport(req, res, next) {
 			const packing_lists = findOrCreateArray(
 				item.packing_lists,
 				['packing_number'],
+				[packing_number],
 				() => ({
 					packing_number,
 					packing_list_created_at,
