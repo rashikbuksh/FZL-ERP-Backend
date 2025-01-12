@@ -193,28 +193,38 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.order_description_uuid,
                     CONCAT(
                         vodf.item_description, 
-                        ' - ', 
+                        CASE WHEN (vodf.lock_type_name IS NOT NULL OR vodf.lock_type_name != '---') THEN ' - ' ELSE '' END,
                         vodf.lock_type_name, 
-                        ' - teeth: ', 
+                        CASE WHEN (vodf.teeth_color_name IS NOT NULL OR vodf.teeth_color_name != '---') THEN ' - teeth: ' ELSE '' END,
                         vodf.teeth_color_name, 
-                        ' - puller: ', 
+                        CASE WHEN (vodf.puller_color_name IS NOT NULL OR vodf.puller_color_name != '---') THEN ' - puller: ' ELSE '' END,
                         vodf.puller_color_name, 
-                        ' - ', 
+                        CASE WHEN (vodf.hand_name IS NOT NULL OR vodf.hand_name != '---') THEN ' - ' ELSE '' END,
                         vodf.hand_name, 
-                        ' - ', 
+                        CASE WHEN (vodf.coloring_type_name IS NOT NULL OR vodf.coloring_type_name != '---') THEN ' - ' ELSE '' END, 
                         vodf.coloring_type_name, 
-                        ' - ',
-                        vodf.slider_short_name, 
-                        ' - ', 
-                        top_stopper_name, 
-                        ' - ', 
+                        CASE WHEN (vodf.slider_name IS NOT NULL OR vodf.slider_name != '---') THEN ' - ' ELSE '' END,
+                        vodf.slider_name, 
+                        CASE WHEN (vodf.top_stopper_name IS NOT NULL OR vodf.top_stopper_name != '---') THEN ' - ' ELSE '' END,
+                        vodf.top_stopper_name, 
+                        CASE WHEN (vodf.bottom_stopper_name IS NOT NULL OR vodf.bottom_stopper_name != '---') THEN ' - ' ELSE '' END,
                         vodf.bottom_stopper_name, 
-                        ' - ', 
+                        CASE WHEN (vodf.logo_type_name IS NOT NULL OR vodf.logo_type_name != '---') THEN ' - ' ELSE '' END,
                         vodf.logo_type_name, 
-                        ' (', CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE null END, CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE null END, ') ') as item_description,
+                        CASE WHEN (vodf.logo_type_name IS NOT NULL AND vodf.logo_type_name != '---') THEN 
+                            CONCAT(
+                                ' (', 
+                                CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE '' END, 
+                                CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE '' END, 
+                                ')'
+                            ) 
+                        ELSE '' 
+                        END
+                    ) as item_description,
                     vodf.end_type,
                     vodf.end_type_name,
                     vodf.order_type,
+                    vodf.is_cash,
                     vodf.is_inch,
                     concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
                     DATE(pl.created_at) as packing_list_created_at,
@@ -256,11 +266,7 @@ export async function deliveryStatementReport(req, res, next) {
                     COALESCE(running_all_sum.total_open_end_value, 0)::float8 + COALESCE(opening_all_sum.total_open_end_value, 0)::float8 as closing_total_open_end_value, 
                     COALESCE(running_all_sum.total_prod_value, 0)::float8 + COALESCE(opening_all_sum.total_prod_value, 0)::float8 as closing_total_value,
                     pi_cash.is_pi,
-                    CASE WHEN pi_cash.conversion_rate IS NULL THEN 0 ELSE CASE 
-                        WHEN pi_cash.is_pi = 1 THEN 80 
-                        ELSE pi_cash.conversion_rate 
-                        END
-                    END as conversion_rate
+                    pi_cash.conversion_rate as conversion_rate
                 FROM 
                     delivery.packing_list_entry ple
                 LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -296,7 +302,7 @@ export async function deliveryStatementReport(req, res, next) {
                 WHERE 
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---' 
                     AND COALESCE(
-                            COALESCE(running_all_sum.total_prod_quantity, 0)::float8, 
+                            COALESCE(running_all_sum.total_close_end_quantity, 0)::float8 + COALESCE(opening_all_sum.total_close_end_quantity, 0)::float8,
                             0
                         )::float8 > 0
                     AND ${marketing ? sql`vodf.marketing_uuid = ${marketing}` : sql`1=1`}
@@ -317,6 +323,7 @@ export async function deliveryStatementReport(req, res, next) {
                     null as end_type,
                     null as end_type_name,
                     null as order_type,
+                    toi.is_cash,
                     null as is_inch,
                     concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
                     DATE(pl.created_at) as packing_list_created_at,
@@ -351,11 +358,7 @@ export async function deliveryStatementReport(req, res, next) {
                     0 as closing_total_open_end_value,
                     COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as closing_total_value,
                     pi_cash.is_pi,
-                    CASE WHEN pi_cash.conversion_rate IS NULL THEN 0 ELSE CASE 
-                        WHEN pi_cash.is_pi = 1 THEN 80 
-                        ELSE pi_cash.conversion_rate 
-                        END
-                    END as conversion_rate
+                    pi_cash.conversion_rate as conversion_rate
                 FROM
                     delivery.packing_list_entry ple 
                     LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid

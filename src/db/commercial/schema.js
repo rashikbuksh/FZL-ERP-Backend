@@ -186,7 +186,7 @@ export const pi_cash = commercial.table('pi_cash', {
 	conversion_rate: decimal('conversion_rate', {
 		precision: 20,
 		scale: 4,
-	}).default(0),
+	}).default(80),
 	receive_amount: decimal('receive_amount', {
 		precision: 20,
 		scale: 4,
