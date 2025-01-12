@@ -425,6 +425,7 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.tape_coil_uuid,
 						vodf.order_description_uuid,
 						vodf.is_sample,
+						vodf.order_number_wise_rank,
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
 						order_entry_counts.order_entry_count,
