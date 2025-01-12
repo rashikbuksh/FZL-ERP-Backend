@@ -352,7 +352,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                             null as item_description,
                             null as order_description_uuid,
                             0 as is_inch,
-                            0 as is_meter,
+                            1 as is_meter,
                             0 as is_cm,
                             toe_given.remarks,
                             null as order_type,
