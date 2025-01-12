@@ -178,7 +178,27 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.party_name,
                     order_info_total_quantity.total_quantity,
                     vodf.order_description_uuid,
-                    CONCAT(vodf.item_description) as item_description,
+                    CONCAT(
+                        vodf.item_description, 
+                        ' - ', 
+                        vodf.lock_type_name, 
+                        ' - teeth: ', 
+                        vodf.teeth_color_name, 
+                        ' - puller: ', 
+                        vodf.puller_color_name, 
+                        ' - ', 
+                        vodf.hand_name, 
+                        ' - ', 
+                        vodf.coloring_type_name, 
+                        ' - ',
+                        vodf.slider_short_name, 
+                        ' - ', 
+                        top_stopper_name, 
+                        ' - ', 
+                        vodf.bottom_stopper_name, 
+                        ' - ', 
+                        vodf.logo_type_name, 
+                        ' (', CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE null END, CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE null END, ') ') as item_description,
                     vodf.end_type,
                     vodf.end_type_name,
                     vodf.order_type,
@@ -456,18 +476,26 @@ export async function deliveryStatementReport(req, res, next) {
 
 			const item = findOrCreateArray(
 				order.items,
-				['order_description_uuid', 'packing_number'],
-				[order_description_uuid, packing_number],
+				['item_description'],
+				[item_description],
 				() => ({
 					order_description_uuid,
 					item_description,
+					packing_lists: [],
+				})
+			);
+
+			const packing_lists = findOrCreateArray(
+				item.packing_lists,
+				['packing_number'],
+				() => ({
 					packing_number,
 					packing_list_created_at,
 					other: [],
 				})
 			);
 
-			item.other.push({
+			packing_lists.other.push({
 				packing_list_entry_uuid,
 				is_inch,
 				size,
