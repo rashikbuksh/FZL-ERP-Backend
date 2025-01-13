@@ -130,8 +130,21 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { delivery_date, vehicle, type } = req.query;
-	const query = sql`
+	const { delivery_date, vehicle, type, own_uuid } = req.query;
+
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
 	SELECT
 		main_query.*,
 		sub_query.packing_list_uuids,
@@ -239,13 +252,11 @@ export async function selectAll(req, res, next) {
 			WHERE
 			  ${delivery_date ? sql`DATE(challan.delivery_date) = ${delivery_date}` : sql`TRUE`}
 			  ${
-					vehicle != 'null' &&
-					vehicle != undefined &&
-					vehicle != 'undefined' &&
+					vehicle != 'null' ||
+					vehicle != undefined ||
+					vehicle != 'undefined' ||
 					vehicle != 'all'
-						? delivery_date
-							? sql`AND challan.vehicle_uuid = ${vehicle}`
-							: sql`challan.vehicle_uuid = ${vehicle}`
+						? sql` AND challan.vehicle_uuid = ${vehicle}`
 						: sql``
 				}
 				${
@@ -258,6 +269,13 @@ export async function selectAll(req, res, next) {
 								: type === 'received'
 									? sql`AND challan.receive_status = 1`
 									: sql``
+				}
+				${
+					own_uuid == null ||
+					own_uuid == 'null' ||
+					own_uuid == undefined
+						? sql``
+						: sql` AND (zipper.order_info.marketing_uuid = ${marketingUuid} OR toi.marketing_uuid = ${marketingUuid})`
 				}
 
 		) AS main_query
@@ -291,9 +309,8 @@ export async function selectAll(req, res, next) {
 		main_query.created_at DESC;
 	`;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 		const toast = {
 			status: 200,
