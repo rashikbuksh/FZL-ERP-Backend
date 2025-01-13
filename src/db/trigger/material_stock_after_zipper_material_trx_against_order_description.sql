@@ -24,7 +24,7 @@ BEGIN
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
-    IF (NEW.trx_to = 'tape_making') THEN
+    IF (NEW.trx_to = 'tape_making' OR NEW.trx_to = 'tape_loom') THEN
         UPDATE zipper.tape_coil
         SET
             quantity = quantity + NEW.trx_quantity
@@ -70,7 +70,7 @@ BEGIN
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
-    IF (NEW.trx_to = 'tape_making') THEN
+    IF (NEW.trx_to = 'tape_making' OR NEW.trx_to = 'tape_loom') THEN
         UPDATE zipper.tape_coil
         SET
             quantity = quantity 
@@ -108,7 +108,7 @@ BEGIN
         WHERE material_uuid = OLD.material_uuid;
     END IF;
 
-    IF (OLD.trx_to = 'tape_making') THEN
+    IF (OLD.trx_to = 'tape_making' OR OLD.trx_to = 'tape_loom') THEN
         UPDATE zipper.tape_coil
         SET
             quantity = quantity - OLD.trx_quantity
