@@ -447,6 +447,11 @@ export const pathReport = {
 				SE.parameter_query('party', 'party', SE.uuid()),
 				SE.parameter_query('type', 'type', ['zipper', 'thread']),
 				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query(
+					'order_info_uuid',
+					'order_info_uuid',
+					SE.uuid()
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {
