@@ -275,7 +275,7 @@ export async function selectAll(req, res, next) {
 					own_uuid == 'null' ||
 					own_uuid == undefined
 						? sql``
-						: sql` AND (zipper.order_info.marketing_uuid = ${marketingUuid} OR toi.marketing_uuid = ${marketingUuid})`
+						: sql` AND (order_info.marketing_uuid = ${marketingUuid} OR toi.marketing_uuid = ${marketingUuid})`
 				}
 
 		) AS main_query
