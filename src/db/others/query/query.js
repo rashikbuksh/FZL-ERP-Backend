@@ -593,7 +593,7 @@ export async function selectTapeCoil(req, res, next) {
 export async function selectOrderInfo(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { page, is_sample, item_for } = req.query;
+	const { page, is_sample, item_for, from_date, to_date } = req.query;
 	let { party_name } = req.query;
 
 	if (typeof party_name === 'undefined') {
@@ -658,6 +658,14 @@ export async function selectOrderInfo(req, res, next) {
 			break;
 	}
 
+	if (from_date && to_date) {
+		filterCondition = filterCondition
+			? filterCondition.append(
+					sql` order_info.created_at BETWEEN ${from_date} AND ${to_date}`
+				)
+			: sql` AND order_info.created_at BETWEEN ${from_date} AND ${to_date}`;
+	}
+
 	let orderInfoPromise = db
 		.select({
 			value: zipperSchema.order_info.uuid,
@@ -668,19 +676,6 @@ export async function selectOrderInfo(req, res, next) {
 			publicSchema.party,
 			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
 		);
-
-	// if (is_sample == 'true') {
-	// 	orderInfoPromise = orderInfoPromise.leftJoin(
-	// 		sql`(
-	//             SELECT COUNT(recipe_uuid) as recipe_count, od.order_info_uuid as order_info_uuid
-	//             FROM zipper.sfg
-	//             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-	//             LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
-	//             GROUP BY od.order_info_uuid
-	//         ) as sfg_recipe`,
-	// 		sql`${zipperSchema.order_info.uuid} = sfg_recipe.order_info_uuid`
-	// 	);
-	// }
 
 	orderInfoPromise = orderInfoPromise.where(filterCondition);
 
@@ -700,6 +695,8 @@ export async function selectOrderInfo(req, res, next) {
 export async function selectOrderZipperThread(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
+	const { from_date, to_date } = req.query;
+
 	const query = sql`SELECT
 							oz.uuid AS value,
 							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label
@@ -708,12 +705,15 @@ export async function selectOrderZipperThread(req, res, next) {
 						LEFT JOIN zipper.v_order_details vodf ON oz.uuid = vodf.order_info_uuid
 						WHERE 
 							vodf.item_description != '---' AND vodf.item_description != ''
+							${from_date && to_date ? sql`AND oz.created_at BETWEEN ${from_date} AND ${to_date}` : sql``}
 						UNION 
 						SELECT
 							ot.uuid AS value,
 							CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
 						FROM
-							thread.order_info ot`;
+							thread.order_info ot
+						${from_date && to_date ? sql`WHERE ot.created_at BETWEEN ${from_date} AND ${to_date}` : sql``}
+						;`;
 
 	const orderZipperThreadPromise = db.execute(query);
 

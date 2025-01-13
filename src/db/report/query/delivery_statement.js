@@ -17,7 +17,15 @@ const findOrCreateArray = (array, key, value, createFn) => {
 };
 
 export async function deliveryStatementReport(req, res, next) {
-	const { from_date, to_date, own_uuid, marketing, party, type } = req.query;
+	const {
+		from_date,
+		to_date,
+		own_uuid,
+		marketing,
+		party,
+		type,
+		order_info_uuid,
+	} = req.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -307,6 +315,7 @@ export async function deliveryStatementReport(req, res, next) {
                         )::float8 > 0
                     AND ${marketing ? sql`vodf.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
+                    AND ${order_number ? sql`vodf.order_info_uuid = ${order_number}` : sql`1=1`}
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
@@ -395,6 +404,7 @@ export async function deliveryStatementReport(req, res, next) {
                         )::float8 > 0 
                     AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
+                    AND ${order_number ? sql`toi.uuid = ${order_number}` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
