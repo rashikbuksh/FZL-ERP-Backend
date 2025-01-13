@@ -462,6 +462,7 @@ const pathPublic = {
 			parameters: [
 				SE.parameter_query('from_date', 'from_date', '2021-01-01'),
 				SE.parameter_query('to_date', 'to_date', '2021-01-01'),
+				SE.parameter_query('page', 'page', ['production_statement']),
 			],
 			responses: {
 				200: {
