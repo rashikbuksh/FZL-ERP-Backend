@@ -315,7 +315,6 @@ export async function deliveryStatementReport(req, res, next) {
                         )::float8 > 0
                     AND ${marketing ? sql`vodf.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
-                    AND ${order_info_uuid ? sql`vodf.order_info_uuid = ${order_info_uuid}` : sql`1=1`}
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
@@ -404,7 +403,6 @@ export async function deliveryStatementReport(req, res, next) {
                         )::float8 > 0 
                     AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
-                    AND ${order_info_uuid ? sql`toi.uuid = ${order_info_uuid}` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
@@ -424,6 +422,13 @@ export async function deliveryStatementReport(req, res, next) {
 		} else if (type === 'vislon') {
 			data.rows = data.rows.filter((row) => row.type === 'Vislon');
 		} else {
+		}
+
+		// filter by order_info_uuid
+		if (order_info_uuid) {
+			data.rows = data.rows.filter(
+				(row) => row.order_info_uuid === order_info_uuid
+			);
 		}
 
 		// first group by type, then party_name, then order_number, then item_description, then size
