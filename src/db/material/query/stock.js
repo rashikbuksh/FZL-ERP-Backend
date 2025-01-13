@@ -77,35 +77,62 @@ export async function selectAll(req, res, next) {
 			material_uuid: stock.material_uuid,
 			material_name: info.name,
 			stock: decimalToNumber(stock.stock),
+			booking: decimalToNumber(stock.booking),
 			lab_dip: decimalToNumber(stock.lab_dip),
 			tape_making: decimalToNumber(stock.tape_making),
-			coil_forming: decimalToNumber(stock.coil_forming),
-			dying_and_iron: decimalToNumber(stock.dying_and_iron),
-			m_gapping: decimalToNumber(stock.m_gapping),
-			v_gapping: decimalToNumber(stock.v_gapping),
-			v_teeth_molding: decimalToNumber(stock.v_teeth_molding),
-			m_teeth_molding: decimalToNumber(stock.m_teeth_molding),
-			teeth_assembling_and_polishing: decimalToNumber(
-				stock.teeth_assembling_and_polishing
+			box_pin_metal: decimalToNumber(stock.box_pin_metal),
+			chemicals_dyeing: decimalToNumber(stock.chemicals_dyeing),
+			chemicals_coating: decimalToNumber(stock.chemicals_coating),
+			coating_epoxy_paint_harmes: decimalToNumber(
+				stock.coating_epoxy_paint_harmes
 			),
-			m_teeth_cleaning: decimalToNumber(stock.m_teeth_cleaning),
-			v_teeth_cleaning: decimalToNumber(stock.v_teeth_cleaning),
-			plating_and_iron: decimalToNumber(stock.plating_and_iron),
-			m_sealing: decimalToNumber(stock.m_sealing),
-			v_sealing: decimalToNumber(stock.v_sealing),
-			n_t_cutting: decimalToNumber(stock.n_t_cutting),
-			v_t_cutting: decimalToNumber(stock.v_t_cutting),
-			m_stopper: decimalToNumber(stock.m_stopper),
-			v_stopper: decimalToNumber(stock.v_stopper),
-			n_stopper: decimalToNumber(stock.n_stopper),
-			cutting: decimalToNumber(stock.cutting),
-			m_qc_and_packing: decimalToNumber(stock.m_qc_and_packing),
-			v_qc_and_packing: decimalToNumber(stock.v_qc_and_packing),
-			n_qc_and_packing: decimalToNumber(stock.n_qc_and_packing),
-			s_qc_and_packing: decimalToNumber(stock.s_qc_and_packing),
+			coil_forming_sewing: decimalToNumber(stock.coil_forming_sewing),
+			coil_forming_sewing_forming: decimalToNumber(
+				stock.coil_forming_sewing_forming
+			),
+			dyeing: decimalToNumber(stock.dyeing),
+			elastic: decimalToNumber(stock.elastic),
+			electroplating: decimalToNumber(stock.electroplating),
+			gtz_india_pvt_ltd_electroplating: decimalToNumber(
+				stock.gtz_india_pvt_ltd_electroplating
+			),
+			gtz_india_pvt_ltd_teeth_plating: decimalToNumber(
+				stock.gtz_india_pvt_ltd_teeth_plating
+			),
+			invisible: decimalToNumber(stock.invisible),
+			metal_finishing: decimalToNumber(stock.metal_finishing),
+			metal: decimalToNumber(stock.metal),
+			metal_teeth_electroplating: decimalToNumber(
+				stock.metal_teeth_electroplating
+			),
+			metal_teeth_molding: decimalToNumber(stock.metal_teeth_molding),
+			metal_teeth_plating: decimalToNumber(stock.metal_teeth_plating),
+			nylon: decimalToNumber(stock.nylon),
+			nylon_finishing: decimalToNumber(stock.nylon_finishing),
+			nylon_gapping: decimalToNumber(stock.nylon_gapping),
+			pigment_dye: decimalToNumber(stock.pigment_dye),
+			qlq_enterprise_bangladesh_ltd_chemical: decimalToNumber(
+				stock.qlq_enterprise_bangladesh_ltd_chemical
+			),
 			die_casting: decimalToNumber(stock.die_casting),
 			slider_assembly: decimalToNumber(stock.slider_assembly),
-			coloring: decimalToNumber(stock.coloring),
+			sewing_thread_finishing: decimalToNumber(
+				stock.sewing_thread_finishing
+			),
+			sewing_thread: decimalToNumber(stock.sewing_thread),
+			slider_coating_epoxy_paint: decimalToNumber(
+				stock.slider_coating_epoxy_paint
+			),
+			slider_electroplating: decimalToNumber(stock.slider_electroplating),
+			soft_winding: decimalToNumber(stock.soft_winding),
+			tape_loom: decimalToNumber(stock.tape_loom),
+			thread_dying: decimalToNumber(stock.thread_dying),
+			vislon_finishing: decimalToNumber(stock.vislon_finishing),
+			vislon_gapping: decimalToNumber(stock.vislon_gapping),
+			vislon_injection: decimalToNumber(stock.vislon_injection),
+			vislon_open_injection: decimalToNumber(stock.vislon_open_injection),
+			vislon: decimalToNumber(stock.vislon),
+			zipper_dying: decimalToNumber(stock.zipper_dying),
 			remarks: stock.remarks,
 		})
 		.from(stock)
@@ -134,35 +161,62 @@ export async function select(req, res, next) {
 			material_uuid: stock.material_uuid,
 			material_name: info.name,
 			stock: decimalToNumber(stock.stock),
+			booking: decimalToNumber(stock.booking),
 			lab_dip: decimalToNumber(stock.lab_dip),
 			tape_making: decimalToNumber(stock.tape_making),
-			coil_forming: decimalToNumber(stock.coil_forming),
-			dying_and_iron: decimalToNumber(stock.dying_and_iron),
-			m_gapping: decimalToNumber(stock.m_gapping),
-			v_gapping: decimalToNumber(stock.v_gapping),
-			v_teeth_molding: decimalToNumber(stock.v_teeth_molding),
-			m_teeth_molding: decimalToNumber(stock.m_teeth_molding),
-			teeth_assembling_and_polishing: decimalToNumber(
-				stock.teeth_assembling_and_polishing
+			box_pin_metal: decimalToNumber(stock.box_pin_metal),
+			chemicals_dyeing: decimalToNumber(stock.chemicals_dyeing),
+			chemicals_coating: decimalToNumber(stock.chemicals_coating),
+			coating_epoxy_paint_harmes: decimalToNumber(
+				stock.coating_epoxy_paint_harmes
 			),
-			m_teeth_cleaning: decimalToNumber(stock.m_teeth_cleaning),
-			v_teeth_cleaning: decimalToNumber(stock.v_teeth_cleaning),
-			plating_and_iron: decimalToNumber(stock.plating_and_iron),
-			m_sealing: decimalToNumber(stock.m_sealing),
-			v_sealing: decimalToNumber(stock.v_sealing),
-			n_t_cutting: decimalToNumber(stock.n_t_cutting),
-			v_t_cutting: decimalToNumber(stock.v_t_cutting),
-			m_stopper: decimalToNumber(stock.m_stopper),
-			v_stopper: decimalToNumber(stock.v_stopper),
-			n_stopper: decimalToNumber(stock.n_stopper),
-			cutting: decimalToNumber(stock.cutting),
-			m_qc_and_packing: decimalToNumber(stock.m_qc_and_packing),
-			v_qc_and_packing: decimalToNumber(stock.v_qc_and_packing),
-			n_qc_and_packing: decimalToNumber(stock.n_qc_and_packing),
-			s_qc_and_packing: decimalToNumber(stock.s_qc_and_packing),
+			coil_forming_sewing: decimalToNumber(stock.coil_forming_sewing),
+			coil_forming_sewing_forming: decimalToNumber(
+				stock.coil_forming_sewing_forming
+			),
+			dyeing: decimalToNumber(stock.dyeing),
+			elastic: decimalToNumber(stock.elastic),
+			electroplating: decimalToNumber(stock.electroplating),
+			gtz_india_pvt_ltd_electroplating: decimalToNumber(
+				stock.gtz_india_pvt_ltd_electroplating
+			),
+			gtz_india_pvt_ltd_teeth_plating: decimalToNumber(
+				stock.gtz_india_pvt_ltd_teeth_plating
+			),
+			invisible: decimalToNumber(stock.invisible),
+			metal_finishing: decimalToNumber(stock.metal_finishing),
+			metal: decimalToNumber(stock.metal),
+			metal_teeth_electroplating: decimalToNumber(
+				stock.metal_teeth_electroplating
+			),
+			metal_teeth_molding: decimalToNumber(stock.metal_teeth_molding),
+			metal_teeth_plating: decimalToNumber(stock.metal_teeth_plating),
+			nylon: decimalToNumber(stock.nylon),
+			nylon_finishing: decimalToNumber(stock.nylon_finishing),
+			nylon_gapping: decimalToNumber(stock.nylon_gapping),
+			pigment_dye: decimalToNumber(stock.pigment_dye),
+			qlq_enterprise_bangladesh_ltd_chemical: decimalToNumber(
+				stock.qlq_enterprise_bangladesh_ltd_chemical
+			),
 			die_casting: decimalToNumber(stock.die_casting),
 			slider_assembly: decimalToNumber(stock.slider_assembly),
-			coloring: decimalToNumber(stock.coloring),
+			sewing_thread_finishing: decimalToNumber(
+				stock.sewing_thread_finishing
+			),
+			sewing_thread: decimalToNumber(stock.sewing_thread),
+			slider_coating_epoxy_paint: decimalToNumber(
+				stock.slider_coating_epoxy_paint
+			),
+			slider_electroplating: decimalToNumber(stock.slider_electroplating),
+			soft_winding: decimalToNumber(stock.soft_winding),
+			tape_loom: decimalToNumber(stock.tape_loom),
+			thread_dying: decimalToNumber(stock.thread_dying),
+			vislon_finishing: decimalToNumber(stock.vislon_finishing),
+			vislon_gapping: decimalToNumber(stock.vislon_gapping),
+			vislon_injection: decimalToNumber(stock.vislon_injection),
+			vislon_open_injection: decimalToNumber(stock.vislon_open_injection),
+			vislon: decimalToNumber(stock.vislon),
+			zipper_dying: decimalToNumber(stock.zipper_dying),
 			remarks: stock.remarks,
 		})
 		.from(stock)

@@ -74,166 +74,59 @@ export const stock = material.table('stock', {
 		.notNull()
 		.default(0.0),
 	booking: PG_DECIMAL('booking').default(0.0),
-	lab_dip: decimal('lab_dip', {
-		precision: 20,
-		scale: 4,
-	}).default(0.0),
-	tape_making: decimal('tape_making', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	coil_forming: decimal('coil_forming', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	dying_and_iron: decimal('dying_and_iron', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	m_gapping: decimal('m_gapping', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	v_gapping: decimal('v_gapping', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	v_teeth_molding: decimal('v_teeth_molding', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	m_teeth_molding: decimal('m_teeth_molding', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	teeth_assembling_and_polishing: decimal('teeth_assembling_and_polishing', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	m_teeth_cleaning: decimal('m_teeth_cleaning', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	v_teeth_cleaning: decimal('v_teeth_cleaning', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	plating_and_iron: decimal('plating_and_iron', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	m_sealing: decimal('m_sealing', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	v_sealing: decimal('v_sealing', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	n_t_cutting: decimal('n_t_cutting', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	v_t_cutting: decimal('v_t_cutting', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	m_stopper: decimal('m_stopper', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	v_stopper: decimal('v_stopper', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	n_stopper: decimal('n_stopper', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	cutting: decimal('cutting', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	m_qc_and_packing: decimal('m_qc_and_packing', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	v_qc_and_packing: decimal('v_qc_and_packing', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	n_qc_and_packing: decimal('n_qc_and_packing', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	s_qc_and_packing: decimal('s_qc_and_packing', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	die_casting: decimal('die_casting', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	slider_assembly: decimal('slider_assembly', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
-	coloring: decimal('coloring', {
-		precision: 20,
-		scale: 4,
-	})
-		.notNull()
-		.default(0.0),
+	lab_dip: PG_DECIMAL('lab_dip').default(0.0),
+	tape_making: PG_DECIMAL('tape_making').default(0.0),
+	box_pin_metal: PG_DECIMAL('box_pin_metal').default(0.0),
+	chemicals_dyeing: PG_DECIMAL('chemicals_dyeing').default(0.0),
+	chemicals_coating: PG_DECIMAL('chemicals_coating').default(0.0),
+	coating_epoxy_paint_harmes: PG_DECIMAL(
+		'coating_epoxy_paint_harmes'
+	).default(0.0),
+	coil_forming_sewing: PG_DECIMAL('coil_forming_sewing').default(0.0),
+	coil_forming_sewing_forming: PG_DECIMAL(
+		'coil_forming_sewing_forming'
+	).default(0.0),
+	dyeing: PG_DECIMAL('dyeing').default(0.0),
+	elastic: PG_DECIMAL('elastic').default(0.0),
+	electroplating: PG_DECIMAL('electroplating').default(0.0),
+	gtz_india_pvt_ltd_electroplating: PG_DECIMAL(
+		'gtz_india_pvt_ltd_electroplating'
+	).default(0.0),
+	gtz_india_pvt_ltd_teeth_plating: PG_DECIMAL(
+		'gtz_india_pvt_ltd_teeth_plating'
+	).default(0.0),
+	invisible: PG_DECIMAL('invisible').default(0.0),
+	metal_finishing: PG_DECIMAL('metal_finishing').default(0.0),
+	metal: PG_DECIMAL('metal').default(0.0),
+	metal_teeth_electroplating: PG_DECIMAL(
+		'metal_teeth_electroplating'
+	).default(0.0),
+	metal_teeth_molding: PG_DECIMAL('metal_teeth_molding').default(0.0),
+	metal_teeth_plating: PG_DECIMAL('metal_teeth_plating').default(0.0),
+	nylon: PG_DECIMAL('nylon').default(0.0),
+	nylon_finishing: PG_DECIMAL('nylon_finishing').default(0.0),
+	nylon_gapping: PG_DECIMAL('nylon_gapping').default(0.0),
+	pigment_dye: PG_DECIMAL('pigment_dye').default(0.0),
+	qlq_enterprise_bangladesh_ltd_chemical: PG_DECIMAL(
+		'qlq_enterprise_bangladesh_ltd_chemical'
+	).default(0.0),
+	die_casting: PG_DECIMAL('die_casting').default(0.0),
+	slider_assembly: PG_DECIMAL('slider_assembly').default(0.0),
+	sewing_thread_finishing: PG_DECIMAL('sewing_thread_finishing').default(0.0),
+	sewing_thread: PG_DECIMAL('sewing_thread').default(0.0),
+	slider_coating_epoxy_paint: PG_DECIMAL(
+		'slider_coating_epoxy_paint'
+	).default(0.0),
+	slider_electroplating: PG_DECIMAL('slider_electroplating').default(0.0),
+	soft_winding: PG_DECIMAL('soft_winding').default(0.0),
+	tape_loom: PG_DECIMAL('tape_loom').default(0.0),
+	thread_dying: PG_DECIMAL('thread_dying').default(0.0),
+	vislon_finishing: PG_DECIMAL('vislon_finishing').default(0.0),
+	vislon_gapping: PG_DECIMAL('vislon_gapping').default(0.0),
+	vislon_injection: PG_DECIMAL('vislon_injection').default(0.0),
+	vislon_open_injection: PG_DECIMAL('vislon_open_injection').default(0.0),
+	vislon: PG_DECIMAL('vislon').default(0.0),
+	zipper_dying: PG_DECIMAL('zipper_dying').default(0.0),
 	remarks: text('remarks').default(null),
 });
 
