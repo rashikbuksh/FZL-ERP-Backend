@@ -123,38 +123,60 @@ export async function select(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const marketing_team_member_targetPromise = db
-		.select({
-			uuid: marketing_team_member_target.uuid,
-			marketing_uuid: marketing_team_member_target.marketing_uuid,
-			marketing_name: marketing.name,
-			year: marketing_team_member_target.year,
-			month: marketing_team_member_target.month,
-			amount: sql`(marketing_team_member_target.zipper_amount + marketing_team_member_target.thread_amount)::float8`,
-			zipper_amount: decimalToNumber(
-				marketing_team_member_target.zipper_amount
-			),
-			thread_amount: decimalToNumber(
-				marketing_team_member_target.thread_amount
-			),
-			created_at: marketing_team_member_target.created_at,
-			updated_at: marketing_team_member_target.updated_at,
-			created_by: marketing_team_member_target.created_by,
-			created_by_name: hrSchema.users.name,
-			remarks: marketing_team_member_target.remarks,
-		})
-		.from(marketing_team_member_target)
-		.leftJoin(
-			marketing,
-			eq(marketing.uuid, marketing_team_member_target.marketing_uuid)
-		)
-		.leftJoin(
-			hrSchema.users,
-			eq(marketing_team_member_target.created_by, hrSchema.users.uuid)
-		)
-		.orderBy(desc(marketing_team_member_target.created_at));
+	const { own_uuid } = req.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
 
 	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const marketing_team_member_targetPromise = db
+			.select({
+				uuid: marketing_team_member_target.uuid,
+				marketing_uuid: marketing_team_member_target.marketing_uuid,
+				marketing_name: marketing.name,
+				year: marketing_team_member_target.year,
+				month: marketing_team_member_target.month,
+				amount: sql`(marketing_team_member_target.zipper_amount + marketing_team_member_target.thread_amount)::float8`,
+				zipper_amount: decimalToNumber(
+					marketing_team_member_target.zipper_amount
+				),
+				thread_amount: decimalToNumber(
+					marketing_team_member_target.thread_amount
+				),
+				created_at: marketing_team_member_target.created_at,
+				updated_at: marketing_team_member_target.updated_at,
+				created_by: marketing_team_member_target.created_by,
+				created_by_name: hrSchema.users.name,
+				remarks: marketing_team_member_target.remarks,
+			})
+			.from(marketing_team_member_target)
+			.leftJoin(
+				marketing,
+				eq(marketing.uuid, marketing_team_member_target.marketing_uuid)
+			)
+			.leftJoin(
+				hrSchema.users,
+				eq(marketing_team_member_target.created_by, hrSchema.users.uuid)
+			)
+			.where(
+				marketingUuid
+					? eq(
+							marketing_team_member_target.marketing_uuid,
+							marketingUuid
+						)
+					: sql`1 = 1`
+			)
+			.orderBy(desc(marketing_team_member_target.created_at));
+
 		const data = await marketing_team_member_targetPromise;
 		const toast = {
 			status: 200,

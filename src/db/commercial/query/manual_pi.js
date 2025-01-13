@@ -73,7 +73,21 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const query = sql`
+	const { own_uuid } = req.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
 						SELECT
 							cmp.uuid,
 							cmp.pi_uuids,
@@ -137,6 +151,8 @@ export async function selectAll(req, res, next) {
 							FROM commercial.manual_pi_entry cmpe
 							GROUP BY cmpe.manual_pi_uuid
 						) AS cmpe_total_value ON cmpe_total_value.manual_pi_uuid = cmp.uuid
+						WHERE
+							${marketingUuid ? sql` cmp.marketing_uuid = marketingUuid` : sql` TRUE`}
 						GROUP BY
 							cmp.uuid,
 							cmp.pi_uuids,
@@ -173,9 +189,8 @@ export async function selectAll(req, res, next) {
 						ORDER BY
 							cmp.created_at ASC`;
 
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		const data = await resultPromise;
 		const toast = {
 			status: 200,
