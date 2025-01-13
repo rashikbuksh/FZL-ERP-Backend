@@ -250,15 +250,8 @@ export async function selectAll(req, res, next) {
 					packing_list.challan_uuid
 			) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
 			WHERE
-			  ${delivery_date ? sql`DATE(challan.delivery_date) = ${delivery_date}` : sql`TRUE`}
-			  ${
-					vehicle != 'null' ||
-					vehicle != undefined ||
-					vehicle != 'undefined' ||
-					vehicle != 'all'
-						? sql` AND challan.vehicle_uuid = ${vehicle}`
-						: sql``
-				}
+			  	${delivery_date ? sql`DATE(challan.delivery_date) = ${delivery_date}` : sql`TRUE`}
+				${vehicle && vehicle !== 'null' && vehicle !== 'undefined' && vehicle !== 'all' ? sql`AND challan.vehicle_uuid = ${vehicle}` : sql``}
 				${
 					type === 'pending'
 						? sql`AND challan.gate_pass = 0`
@@ -270,14 +263,7 @@ export async function selectAll(req, res, next) {
 									? sql`AND challan.receive_status = 1`
 									: sql``
 				}
-				${
-					own_uuid == null ||
-					own_uuid == 'null' ||
-					own_uuid == undefined
-						? sql``
-						: sql` AND (order_info.marketing_uuid = ${marketingUuid} OR toi.marketing_uuid = ${marketingUuid})`
-				}
-
+				${own_uuid == null || own_uuid == 'null' || own_uuid == undefined ? sql`` : sql`AND (order_info.marketing_uuid = ${marketingUuid} OR toi.marketing_uuid = ${marketingUuid})`}
 		) AS main_query
 	LEFT JOIN (
 		SELECT
