@@ -196,6 +196,7 @@ export async function selectAll(req, res, next) {
 				challan.remarks AS remarks,
 				challan.delivery_date,
 				packing_list.item_for,
+				packing_list.carton_weight,
 				challan.is_own,
 				challan.delivery_type,
 				challan.is_delivered
@@ -374,6 +375,7 @@ export async function select(req, res, next) {
 									challan.remarks AS remarks,
 									challan.delivery_date,
 									packing_list.item_for,
+									packing_list.carton_weight,
 									challan.is_own,
 									pi_cash.pi_cash_numbers,
 									challan.delivery_type,
