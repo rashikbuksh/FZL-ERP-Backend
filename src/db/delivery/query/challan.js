@@ -267,7 +267,12 @@ export async function selectAll(req, res, next) {
 			ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
 			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
 			jsonb_agg(
-				DISTINCT jsonb_build_object('packing_list_uuid', packing_list.uuid, 'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))), 'carton_weight', packing_list.carton_weight) AS packing_list_numbers,
+				DISTINCT jsonb_build_object(
+					'packing_list_uuid', packing_list.uuid, 
+					'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')),
+					'carton_weight', packing_list.carton_weight
+				)
+			) AS packing_list_numbers,
 			SUM(packing_list_entry.quantity)::float8 AS total_quantity,
 			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
 			CASE
@@ -453,7 +458,12 @@ export async function select(req, res, next) {
 								ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
 								ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
 								jsonb_agg(
-									DISTINCT jsonb_build_object('packing_list_uuid', packing_list.uuid, 'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))), 'carton_weight', packing_list.carton_weight) AS packing_list_numbers,
+									DISTINCT jsonb_build_object(
+										'packing_list_uuid', packing_list.uuid, 
+										'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')),
+										'carton_weight', packing_list.carton_weight
+									)
+								) AS packing_list_numbers,
 								SUM(packing_list_entry.quantity)::float8 AS total_quantity,
 								SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity
 							FROM
