@@ -781,7 +781,6 @@ export async function selectOrderZipperThread(req, res, next) {
 						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum ras ON oz.uuid = ras.order_info_uuid` : sql``}
 						WHERE 
 							vodf.item_description != '---' AND vodf.item_description != ''
-							${from_date && to_date ? sql`AND oz.created_at BETWEEN ${from_date} AND ${to_date}` : sql``}
 						UNION 
 						SELECT
 							ot.uuid AS value,
@@ -789,7 +788,6 @@ export async function selectOrderZipperThread(req, res, next) {
 						FROM
 							thread.order_info ot
 						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum_thread rast ON ot.uuid = rast.order_info_uuid` : sql``}
-						${from_date && to_date ? sql`WHERE ot.created_at BETWEEN ${from_date} AND ${to_date}` : sql``}
 						;`;
 
 	const orderZipperThreadPromise = db.execute(query);
