@@ -421,15 +421,15 @@ export async function deliveryStatementReport(req, res, next) {
 		const data = await resultPromise;
 
 		// filter by type
-		if (type === 'thread') {
+		if (type === 'Thread') {
 			data.rows = data.rows.filter((row) => row.type === 'Thread');
-		} else if (type === 'zipper') {
+		} else if (type === 'Zipper') {
 			data.rows = data.rows.filter((row) => row.type !== 'Thread');
-		} else if (type === 'nylon') {
+		} else if (type === 'Nylon') {
 			data.rows = data.rows.filter((row) => row.type === 'Nylon');
-		} else if (type === 'metal') {
+		} else if (type === 'Metal') {
 			data.rows = data.rows.filter((row) => row.type === 'Metal');
-		} else if (type === 'vislon') {
+		} else if (type === 'Vislon') {
 			data.rows = data.rows.filter((row) => row.type === 'Vislon');
 		} else {
 		}
