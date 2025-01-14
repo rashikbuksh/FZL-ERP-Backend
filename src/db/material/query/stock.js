@@ -276,6 +276,7 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 			unit: info.unit,
 			section: sql`${fieldName}`,
 			[fieldName]: sql`stock.${sql.raw(fieldName)}::float8`,
+			quantity: sql`stock.${sql.raw(fieldName)}::float8`,
 			remarks: stock.remarks,
 		})
 		.from(stock)
