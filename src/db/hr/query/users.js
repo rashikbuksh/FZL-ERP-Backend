@@ -266,8 +266,6 @@ export async function selectAllUserAndAccess(req, res, next) {
 		})
 		.from(users);
 
-	console.log(userPromise.toSQL());
-
 	try {
 		const data = await userPromise;
 		const toast = {
