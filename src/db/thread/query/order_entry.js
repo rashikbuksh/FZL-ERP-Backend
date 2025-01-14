@@ -1,4 +1,4 @@
-import { asc, desc, eq, sql } from 'drizzle-orm';
+import { asc, desc, eq, min, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -240,6 +240,9 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			count: count_length.count,
 			length: count_length.length,
 			count_length_name: sql`concat(count_length.count, ' - ', count_length.length)`,
+			max_weight: count_length.max_weight,
+			min_weight: count_length.min_weight,
+			cone_per_carton: count_length.cone_per_carton,
 			quantity: decimalToNumber(order_entry.quantity),
 			company_price: decimalToNumber(order_entry.company_price),
 			party_price: decimalToNumber(order_entry.party_price),
