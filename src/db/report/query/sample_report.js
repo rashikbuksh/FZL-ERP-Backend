@@ -406,3 +406,89 @@ export async function selectSampleReportByDateCombined(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectThreadSampleReportByDate(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { date, is_sample } = req.query;
+	const { own_uuid } = req?.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
+                     SELECT 
+                            CONCAT('ST', 
+                                    CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END,
+                                    to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')
+                                ) AS order_number,
+                            toi.uuid as order_info_uuid,
+                            pmt.name AS marketing_name,
+                            ppt.name AS party_name,
+                            'Sewing Thread' AS item_name,
+                            toi.created_at AS issue_date,
+                            0 as is_inch,
+                            1 as is_meter,
+                            0 as is_cm,
+                            toe_given.remarks,
+                            null as order_type,
+                            toe_given.style,
+                            toe_given.color,
+                            toe_given.size,
+                            toe_given.total_quantity,
+                            toe_given.count_length_names AS item_details,
+                            null as slider_details,
+                            null as other_details
+                        FROM 
+                            thread.order_info toi
+                        LEFT JOIN public.marketing pmt ON pmt.uuid = toi.marketing_uuid
+                        LEFT JOIN public.party ppt ON ppt.uuid = toi.party_uuid
+                        LEFT JOIN (
+                            SELECT 
+                                toe.order_info_uuid,
+                                string_agg(DISTINCT cl.count, ', ') as name,
+                                array_agg(DISTINCT TO_CHAR(toe.created_at, 'YYYY-MM-DD')) as created_at,
+                                array_agg(DISTINCT toe.style) as style,
+                                array_agg(DISTINCT toe.color) as color,
+                                array_agg(DISTINCT cl.length::text) as size,
+                                array_agg(DISTINCT toe.remarks) as remarks,
+                                SUM(toe.quantity) as total_quantity,
+                                string_agg(DISTINCT CONCAT(cl.count, ' - ', cl.length), ', ') as count_length_names
+                            FROM
+                                thread.order_entry toe
+                            LEFT JOIN 
+                                thread.count_length cl ON cl.uuid = toe.count_length_uuid
+                            GROUP BY
+                                toe.order_info_uuid
+                        ) toe_given ON toe_given.order_info_uuid = toi.uuid
+                        WHERE
+                            toi.is_sample = ${is_sample} AND ${date} = toi.created_at::date AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                        ORDER BY
+                            order_number ASC, item_description ASC;
+                        `;
+
+		const resultPromise = db.execute(query);
+
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Sample report by date',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

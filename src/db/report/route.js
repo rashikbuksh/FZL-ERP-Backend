@@ -11,6 +11,7 @@ import {
 	selectSampleReport,
 	selectSampleReportByDate,
 	selectSampleReportByDateCombined,
+	selectThreadSampleReportByDate,
 } from './query/sample_report.js';
 import {
 	threadProductionReportByDate,
@@ -109,6 +110,10 @@ reportRouter.get('/sample-report-by-date', selectSampleReportByDate);
 reportRouter.get(
 	'/sample-report-by-date-combined',
 	selectSampleReportByDateCombined
+);
+reportRouter.get(
+	'/thread/sample-report-by-date',
+	selectThreadSampleReportByDate
 );
 
 // * Cash Invoice Report
@@ -588,6 +593,33 @@ export const pathReport = {
 			parameters: [
 				SE.parameter_query('date', 'date', '2024-10-01'),
 				SE.parameter_query('is_sample', 'is_sample', [0, 1]),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					sample_order_no: SE.string('Sample Order No'),
+					issue_date: SE.date_time(),
+					status: SE.string('Status'),
+					delivery_last_date: SE.date_time(),
+					delivery_quantity: SE.number(610),
+					order_quantity: SE.number(610),
+					delivery_order_quantity: SE.string(
+						'Delivery Order Quantity'
+					),
+				}),
+			},
+		},
+	},
+	'/report/thread/sample-report-by-date': {
+		get: {
+			summary: 'Thread Sample Report By Date',
+			description: 'Thread Sample Report By Date',
+			tags: ['report'],
+			operationId: 'selectThreadSampleReportByDate',
+			parameters: [
+				SE.parameter_query('date', 'date', '2024-10-01'),
+				SE.parameter_query('is_sample', 'is_sample', [0, 1]),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
 			],
 			responses: {
 				200: SE.response_schema(200, {

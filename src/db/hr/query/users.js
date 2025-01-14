@@ -89,6 +89,7 @@ export async function selectAll(req, res, next) {
 			uuid: users.uuid,
 			name: users.name,
 			email: users.email,
+			can_access: users.can_access,
 			designation_uuid: users.designation_uuid,
 			designation: designation.designation,
 			department_uuid: users.department_uuid,
