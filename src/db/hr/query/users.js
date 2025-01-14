@@ -256,6 +256,8 @@ export async function selectUsersAccessPages(req, res, next) {
 }
 
 export async function selectAllUserAndAccess(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
 	const userPromise = db
 		.select({
 			uuid: users.uuid,
