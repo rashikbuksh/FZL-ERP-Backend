@@ -274,6 +274,7 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 			material_name: info.name,
 			stock: decimalToNumber(stock.stock),
 			unit: info.unit,
+			section: sql`${fieldName}`,
 			[fieldName]: sql`stock.${sql.raw(fieldName)}::float8`,
 			remarks: stock.remarks,
 		})
