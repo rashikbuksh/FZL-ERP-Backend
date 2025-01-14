@@ -12,15 +12,18 @@ const hrRouter = Router();
 hrRouter.post('/user/login', userOperations.loginUser);
 hrRouter.get('/user/can-access/:uuid', userOperations.selectUsersAccessPages);
 hrRouter.get('/user', userOperations.selectAll);
-hrRouter.get('/user/:uuid', validateUuidParam(), userOperations.select);
+hrRouter.get('/user/:uuid', userOperations.select);
 hrRouter.post('/user', userOperations.insert);
 hrRouter.put('/user/:uuid', userOperations.update);
-hrRouter.delete('/user/:uuid', validateUuidParam(), userOperations.remove);
+hrRouter.delete('/user/:uuid', userOperations.remove);
 hrRouter.get('/user-common', userOperations.selectCommonUsers);
 hrRouter.put('/user/can-access/:uuid', userOperations.changeUserAccess);
 hrRouter.put('/user/status/:uuid', userOperations.changeUserStatus);
 hrRouter.put('/user/password/:uuid', userOperations.changeUserPassword);
-hrRouter.get('/user/all-user-can-access', userOperations.selectAllUserAndAccess);
+hrRouter.get(
+	'/user-all-can-access',
+	userOperations.selectAllUserAndAccess
+);
 
 // department routes
 

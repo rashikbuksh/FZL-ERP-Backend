@@ -296,7 +296,7 @@ export const pathHrUser = {
 			},
 		},
 	},
-	'/hr/user/all-user-can-access': {
+	'/hr/user-all-can-access': {
 		get: {
 			tags: ['hr.user'],
 			summary: 'get all users access',
