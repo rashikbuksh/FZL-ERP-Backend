@@ -296,6 +296,21 @@ export const pathHrUser = {
 			},
 		},
 	},
+	'/hr/user/all-user-can-access': {
+		get: {
+			tags: ['hr.user'],
+			summary: 'get all users access',
+			description: 'All users access',
+			operationId: 'getAllUserAccess',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					name: SE.string('John Doe'),
+					can_access: SE.string(''),
+				}),
+			},
+		},
+	},
 };
 
 // * Hr Department * //

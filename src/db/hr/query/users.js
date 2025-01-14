@@ -89,7 +89,6 @@ export async function selectAll(req, res, next) {
 			uuid: users.uuid,
 			name: users.name,
 			email: users.email,
-			can_access: users.can_access,
 			designation_uuid: users.designation_uuid,
 			designation: designation.designation,
 			department_uuid: users.department_uuid,
@@ -251,6 +250,29 @@ export async function selectUsersAccessPages(req, res, next) {
 		};
 
 		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectAllUserAndAccess(req, res, next) {
+	const userPromise = db
+		.select({
+			uuid: users.uuid,
+			name: users.name,
+			can_access: users.can_access,
+		})
+		.from(users);
+
+	try {
+		const data = await userPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'users and access',
+		};
+
+		return res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

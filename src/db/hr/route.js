@@ -20,6 +20,7 @@ hrRouter.get('/user-common', userOperations.selectCommonUsers);
 hrRouter.put('/user/can-access/:uuid', userOperations.changeUserAccess);
 hrRouter.put('/user/status/:uuid', userOperations.changeUserStatus);
 hrRouter.put('/user/password/:uuid', userOperations.changeUserPassword);
+hrRouter.get('/user/all-user-can-access', userOperations.selectAllUserAndAccess);
 
 // department routes
 
