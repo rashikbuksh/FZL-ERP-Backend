@@ -440,7 +440,8 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 						ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
 					END
 				ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
-			END as balance_quantity
+			END as balance_quantity,
+			CASE WHEN sfg.uuid IS NOT NULL THEN zlr.name ELSE tlr.name END as recipe_name
 		FROM 
 			delivery.packing_list_entry ple
 		LEFT JOIN 
@@ -457,6 +458,10 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 			thread.count_length tc ON tc.uuid = toe.count_length_uuid
 		LEFT JOIN
 			delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+		LEFT JOIN
+			lab_dip.recipe zlr ON sfg.recipe_uuid = zlr.uuid
+		LEFT JOIN
+			lab_dip.recipe tlr ON toe.recipe_uuid = tlr.uuid
 		WHERE 
 			pl.challan_uuid = ${req.params.challan_uuid}
 		ORDER BY
