@@ -203,6 +203,7 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.marketing_name,
                     vodf.order_info_uuid,
                     vodf.order_number,
+                    CONCAT(vodf.order_number, ' - ', CASE WHEN vodf.is_cash = 0 THEN '(PI)' ELSE '(CASH)' END) as order_number_with_cash,
                     vodf.item_name,
                     CASE WHEN vodf.order_type = 'slider' THEN 'Slider' ELSE vodf.item_name END as type,
                     vodf.party_uuid,
@@ -285,7 +286,7 @@ export async function deliveryStatementReport(req, res, next) {
                     COALESCE(running_all_sum.total_prod_value, 0)::float8 + COALESCE(opening_all_sum.total_prod_value, 0)::float8 as closing_total_value,
                     pi_cash.is_pi,
                     CASE 
-                        WHEN vodf.is_cash = 0 THEN '80'::float8 
+                        WHEN (vodf.is_cash = 0 AND pi_cash.conversion_rate IS NULL) THEN '80'::float8 
                         ELSE pi_cash.conversion_rate 
                     END as conversion_rate
                 FROM 
@@ -334,6 +335,7 @@ export async function deliveryStatementReport(req, res, next) {
                     marketing.name as marketing_name,
                     toi.uuid as order_info_uuid,
                     CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+                    CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0'), CASE WHEN toi.is_cash = 0 THEN '(PI)' ELSE '(CASH)' END) as order_number_with_cash,
                     'Sewing Thread' as item_name,
                     'Thread' as type,
                     toi.party_uuid,
@@ -457,6 +459,7 @@ export async function deliveryStatementReport(req, res, next) {
 				marketing_uuid,
 				marketing_name,
 				order_number,
+				order_number_with_cash,
 				packing_number,
 				packing_list_created_at,
 				item_description,
@@ -511,10 +514,11 @@ export async function deliveryStatementReport(req, res, next) {
 
 			const order = findOrCreateArray(
 				typeEntry.orders,
-				['order_number'],
-				[order_number],
+				['order_number_with_cash'],
+				[order_number_with_cash],
 				() => ({
 					order_number,
+					order_number_with_cash,
 					total_quantity,
 					items: [],
 				})
