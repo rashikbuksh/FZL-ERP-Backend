@@ -23,26 +23,25 @@ export async function threadProductionStatusOrderWise(req, res, next) {
 
 		const query = sql`
             SELECT
-                order_entry.uuid as order_entry_uuid,
                 order_info.uuid as order_info_uuid,
                 CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+                thread_batch.thread_batch as thread_batch,
                 order_info.created_at as order_created_at,
                 order_info.updated_at as order_updated_at,
                 order_info.party_uuid,
                 party.name as party_name,
                 order_info.marketing_uuid,
                 marketing.name as marketing_name,
-                order_entry.style,
-                order_entry.color,
-                order_entry.swatch_approval_date,
-                order_entry.count_length_uuid,
-                count_length.count,
-                count_length.length,
-                order_entry_batch_entry_quantity_length.total_quantity::float8,
-                order_entry_batch_entry_quantity_length.total_weight::float8,
-                order_entry_batch_entry_quantity_length.yarn_quantity::float8,
-                order_entry_batch_entry_coning.total_coning_production_quantity::float8,
-                order_entry.warehouse::float8,
+                ARRAY_AGG(DISTINCT order_entry.style) as style,
+                ARRAY_AGG(DISTINCT order_entry.color) as color,
+                ARRAY_AGG(DISTINCT order_entry.swatch_approval_date) as swatch_approval_date,
+                ARRAY_AGG(DISTINCT count_length.count) as count,
+                ARRAY_AGG(DISTINCT count_length.length) as length,
+                SUM(coalesce(order_entry.quantity::float8, 0)::float8) as total_quantity,
+                SUM(coalesce(order_entry_batch_entry_quantity_length.total_weight::float8, 0)::float8) as total_weight,
+                SUM(coalesce(order_entry_batch_entry_quantity_length.yarn_quantity::float8, 0)::float8) as yarn_quantity,
+                SUM(coalesce(order_entry_batch_entry_coning.total_coning_production_quantity::float8, 0)::float8) as total_coning_production_quantity,
+                SUM(coalesce(order_entry.warehouse::float8, 0)::float8) as warehouse,
                 coalesce(thread_challan_sum.total_delivery_delivered_quantity,0)::float8 as total_delivery_delivered_quantity,
                 coalesce(thread_challan_sum.total_delivery_balance_quantity,0)::float8 as total_delivery_balance_quantity,
                 coalesce(thread_challan_sum.total_short_quantity,0)::float8 as total_short_quantity,
@@ -59,7 +58,6 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 public.marketing ON order_info.marketing_uuid = marketing.uuid
             LEFT JOIN (
                 SELECT 
-                    SUM(batch_entry.quantity) as total_quantity,
                     SUM(batch_entry.yarn_quantity) as yarn_quantity,
                     SUM(count_length.max_weight * batch_entry.quantity) as total_weight,
                     order_entry.uuid as order_entry_uuid
@@ -73,16 +71,19 @@ export async function threadProductionStatusOrderWise(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     SUM(coning_production_quantity) as total_coning_production_quantity,
-                    order_entry.uuid as order_entry_uuid
+                    order_info.uuid as order_entry_uuid
                 FROM
                     thread.batch_entry
+                LEFT JOIN 
+                    thread.batch ON batch_entry.batch_uuid = batch.uuid
                 LEFT JOIN thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                LEFT JOIN thread.order_info ON order_entry.order_info_uuid = order_info.uuid
                 GROUP BY
-                    order_entry.uuid
+                    order_info.uuid
             ) order_entry_batch_entry_coning ON order_entry.uuid = order_entry_batch_entry_coning.order_entry_uuid
              LEFT JOIN (
                 SELECT 
-                    toe.uuid as order_entry_uuid,
+                    toi.uuid as order_info_uuid,
                     SUM(CASE WHEN (pl.gate_pass = 1 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
                     SUM(CASE WHEN (pl.gate_pass = 0 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_balance_quantity,
                     SUM(ple.short_quantity)AS total_short_quantity,
@@ -95,14 +96,43 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                     delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
                 LEFT JOIN
                     thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+                LEFT JOIN 
+                    thread.order_info toi ON toe.order_info_uuid = toi.uuid
                 WHERE 
-                    toe.uuid IS NOT NULL
+                    toi.uuid IS NOT NULL
                 GROUP BY
-                    toe.uuid
-            ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid
+                    toi.uuid
+            ) thread_challan_sum ON thread_challan_sum.order_info_uuid = order_info.uuid
+            LEFT JOIN (
+                SELECT 
+                    toi.uuid as order_info_uuid,
+                    COALESCE(
+                        jsonb_agg(DISTINCT jsonb_build_object('batch_uuid', batch.uuid, 'batch_number', batch.batch_number, 'batch_date', batch.production_date, 'batch_quantity', batch.total_quantity::float8))
+                        FILTER (WHERE batch.uuid IS NOT NULL), '[]'
+                    ) AS thread_batch
+                FROM
+                    thread.order_info toi
+                LEFT JOIN (
+                    SELECT 
+                        batch.uuid,
+                        CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
+                        batch.production_date,
+                        SUM(batch_entry.quantity) as total_quantity,
+                        order_entry.order_info_uuid
+                    FROM
+                        thread.batch_entry
+                    LEFT JOIN thread.batch ON batch_entry.batch_uuid = batch.uuid
+                    LEFT JOIN thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                    GROUP BY
+                        batch.uuid, order_entry.order_info_uuid
+                ) batch ON toi.uuid = batch.order_info_uuid
+                GROUP BY
+                    toi.uuid
+            ) thread_batch ON thread_batch.order_info_uuid = order_info.uuid
             WHERE
                 ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
-
+            GROUP BY
+                order_info.uuid, party.name, marketing.name, thread_batch.thread_batch, order_info.created_at, order_info.updated_at, order_info.party_uuid, order_info.marketing_uuid, order_info.is_sample, order_info.id, thread_challan_sum.total_delivery_delivered_quantity, thread_challan_sum.total_delivery_balance_quantity, thread_challan_sum.total_short_quantity, thread_challan_sum.total_reject_quantity
             ORDER BY 
                 order_info.created_at DESC
             `;

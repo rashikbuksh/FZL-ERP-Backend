@@ -27,6 +27,8 @@ export async function zipperProductionStatusReport(req, res, next) {
             SELECT 
                 vodf.order_info_uuid,
                 vodf.order_number,
+                finishing_dyeing_batch.finishing_batch,
+                finishing_dyeing_batch.dyeing_batch,
                 vodf.created_at AS order_created_at,
                 vodf.order_description_updated_at as order_description_updated_at,
                 vodf.marketing_uuid,
@@ -132,7 +134,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                     zipper.finishing_batch_production sfg_prod
                 LEFT JOIN
                     zipper.finishing_batch_entry fbe ON sfg_prod.finishing_batch_entry_uuid = fbe.uuid
-               LEFT JOIN
+                LEFT JOIN
                     zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
                 LEFT JOIN 
                     zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
@@ -178,6 +180,55 @@ export async function zipperProductionStatusReport(req, res, next) {
                 GROUP BY
                     od.uuid
             ) delivery_sum ON delivery_sum.order_description_uuid = oe.order_description_uuid
+            LEFT JOIN (
+                SELECT
+                    vod.order_description_uuid,
+                    COALESCE(
+                        jsonb_agg(DISTINCT jsonb_build_object('finishing_batch_uuid', finishing_batch.uuid, 'finishing_batch_number', concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)), 'finishing_batch_date', finishing_batch.created_at, 'finishing_batch_quantity', finishing_batch_total.total_quantity::float8))
+                        FILTER (WHERE finishing_batch.uuid IS NOT NULL), '[]'
+                    ) AS finishing_batch,
+                    COALESCE(
+                        jsonb_agg(DISTINCT jsonb_build_object('dyeing_batch_uuid', dyeing_batch.dyeing_batch_uuid, 'dyeing_batch_number', dyeing_batch.dyeing_batch_number, 'dyeing_batch_date', dyeing_batch.production_date, 'dyeing_batch_quantity', dyeing_batch.total_quantity::float8))
+                        FILTER (WHERE dyeing_batch_uuid IS NOT NULL), '[]'
+                    ) AS dyeing_batch
+                FROM
+                    zipper.v_order_details vod
+                LEFT JOIN
+                    zipper.finishing_batch ON vod.order_description_uuid = finishing_batch.order_description_uuid
+                LEFT JOIN 
+                    (
+						SELECT
+							finishing_batch.uuid as finishing_batch_uuid,
+							SUM(finishing_batch_entry.quantity) as total_quantity
+						FROM
+							zipper.finishing_batch
+						LEFT JOIN
+							zipper.finishing_batch_entry finishing_batch_entry ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
+						GROUP BY
+							finishing_batch.uuid
+					) finishing_batch_total ON finishing_batch_total.finishing_batch_uuid = finishing_batch.uuid
+                LEFT JOIN
+                    (
+						SELECT
+							dyeing_batch.uuid as dyeing_batch_uuid,
+                            CONCAT('B', to_char(dyeing_batch.production_date, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as dyeing_batch_number,
+							dyeing_batch.production_date,
+                            oe.order_description_uuid,
+							SUM(dyeing_batch_entry.quantity) as total_quantity
+						FROM
+							zipper.dyeing_batch
+                        LEFT JOIN
+                            zipper.dyeing_batch_entry dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
+                        LEFT JOIN 
+                            zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
+                        LEFT JOIN
+                            zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                        GROUP BY
+                            dyeing_batch.uuid, oe.order_description_uuid
+					) dyeing_batch ON vod.order_description_uuid = dyeing_batch.order_description_uuid
+                GROUP BY
+                    vod.order_description_uuid
+            ) finishing_dyeing_batch ON finishing_dyeing_batch.order_description_uuid = oe.order_description_uuid
             WHERE vodf.order_description_uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
         `;
 
@@ -185,6 +236,8 @@ export async function zipperProductionStatusReport(req, res, next) {
 			sql` GROUP BY
                 vodf.order_info_uuid,
                 vodf.order_number,
+                finishing_dyeing_batch.finishing_batch,
+                finishing_dyeing_batch.dyeing_batch,
                 vodf.created_at,
                 vodf.order_description_updated_at,
                 vodf.marketing_uuid,
