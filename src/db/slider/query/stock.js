@@ -156,7 +156,9 @@ export async function selectAll(req, res, next) {
 		vodf.order_type,
 		vodf.is_waterproof,
 		finishing_batch.slider_lead_time,
-		finishing_batch.production_date
+		finishing_batch.production_date,
+		oe_style_color.style,
+		oe_style_color.color
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -180,6 +182,14 @@ export async function selectAll(req, res, next) {
         GROUP BY
             stock.uuid
     ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
+	LEFT JOIN (
+		SELECT 
+			ARRAY_AGG(DISTINCT oe.style) as style,
+			ARRAY_AGG(DISTINCT oe.color) as color,
+			oe.order_description_uuid
+		FROM zipper.order_entry oe
+		GROUP BY oe.order_description_uuid
+	) oe_style_color ON oe_style_color.order_description_uuid = finishing_batch.order_description_uuid
 	WHERE 
 		(stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0
 	ORDER BY stock.created_at DESC
@@ -280,7 +290,11 @@ export async function select(req, res, next) {
 		vodf.is_logo_body,
 		vodf.is_logo_puller,
 		vodf.order_type,
-		vodf.is_waterproof
+		vodf.is_waterproof,
+		finishing_batch.slider_lead_time,
+		finishing_batch.production_date,
+		oe_style_color.style,
+		oe_style_color.color
 	FROM
 		slider.stock
 	LEFT JOIN
@@ -291,6 +305,14 @@ export async function select(req, res, next) {
 		zipper.order_info ON order_description.order_info_uuid = order_info.uuid
 	LEFT JOIN 
 		zipper.v_order_details_full vodf ON order_description.uuid = vodf.order_description_uuid
+	LEFT JOIN (
+		SELECT 
+			ARRAY_AGG(DISTINCT oe.style) as style,
+			ARRAY_AGG(DISTINCT oe.color) as color,
+			oe.order_description_uuid
+		FROM zipper.order_entry oe
+		GROUP BY oe.order_description_uuid
+	) oe_style_color ON oe_style_color.order_description_uuid = finishing_batch.order_description_uuid
 	WHERE
 		stock.uuid = ${req.params.uuid};
 	`;
@@ -411,7 +433,11 @@ export async function selectStockByFromSection(req, res, next) {
 			slider_production_given.total_production_weight::float8 as total_production_weight,
 			stock.batch_quantity::float8 - COALESCE(slider_transaction_given.trx_quantity, 0) as balance_quantity,
 			vodf.is_waterproof,
-			styles_colors.style_object
+			styles_colors.style_object,
+			finishing_batch.slider_lead_time,
+			finishing_batch.production_date,
+			oe_style_color.style,
+			oe_style_color.color
 		FROM
 			slider.stock
 		LEFT JOIN
@@ -463,6 +489,14 @@ export async function selectStockByFromSection(req, res, next) {
 			GROUP BY
 				stock.uuid
 		) AS slider_production_given ON stock.uuid = slider_production_given.stock_uuid
+		LEFT JOIN (
+			SELECT 
+				ARRAY_AGG(DISTINCT oe.style) as style,
+				ARRAY_AGG(DISTINCT oe.color) as color,
+				oe.order_description_uuid
+			FROM zipper.order_entry oe
+			GROUP BY oe.order_description_uuid
+		) oe_style_color ON oe_style_color.order_description_uuid = finishing_batch.order_description_uuid
 		WHERE 
 			(stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0
 		ORDER BY 
