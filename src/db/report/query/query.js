@@ -188,7 +188,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                         FILTER (WHERE finishing_batch.uuid IS NOT NULL), '[]'
                     ) AS finishing_batch,
                     COALESCE(
-                        jsonb_agg(DISTINCT jsonb_build_object('dyeing_batch_uuid', dyeing_batch.dyeing_batch_uuid, 'dyeing_batch_number', dyeing_batch.dyeing_batch_number, 'dyeing_batch_date', dyeing_batch.production_date, 'dyeing_batch_quantity', dyeing_batch.total_quantity::float8))
+                        jsonb_agg(DISTINCT jsonb_build_object('dyeing_batch_uuid', dyeing_batch.dyeing_batch_uuid, 'dyeing_batch_number', dyeing_batch.dyeing_batch_number, 'dyeing_batch_date', dyeing_batch.production_date, 'dyeing_batch_quantity', dyeing_batch.total_quantity::float8, 'received', dyeing_batch.received))
                         FILTER (WHERE dyeing_batch_uuid IS NOT NULL), '[]'
                     ) AS dyeing_batch
                 FROM
@@ -215,7 +215,8 @@ export async function zipperProductionStatusReport(req, res, next) {
                             CONCAT('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as dyeing_batch_number,
 							dyeing_batch.production_date::date,
                             oe.order_description_uuid,
-							SUM(dyeing_batch_entry.quantity) as total_quantity
+							SUM(dyeing_batch_entry.quantity) as total_quantity,
+                            CASE WHEN dyeing_batch.received = 1 THEN TRUE ELSE FALSE END as received
 						FROM
 							zipper.dyeing_batch
                         LEFT JOIN
