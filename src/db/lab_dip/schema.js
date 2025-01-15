@@ -53,8 +53,8 @@ export const recipe_entry = lab_dip.table('recipe_entry', {
 	recipe_uuid: defaultUUID('recipe_uuid').references(() => recipe.uuid),
 	color: text('color').notNull(),
 	quantity: decimal('quantity', {
-		precision: 20,
-		scale: 4,
+		precision: 24,
+		scale: 8,
 	}).notNull(),
 	material_uuid: defaultUUID('material_uuid').references(
 		() => materialSchema.info.uuid
