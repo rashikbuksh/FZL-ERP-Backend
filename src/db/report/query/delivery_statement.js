@@ -329,6 +329,7 @@ export async function deliveryStatementReport(req, res, next) {
                         )::float8 > 0
                     AND ${marketing ? sql`vodf.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
+                    AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
@@ -421,6 +422,7 @@ export async function deliveryStatementReport(req, res, next) {
                         )::float8 > 0 
                     AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
+                    AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;

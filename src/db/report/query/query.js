@@ -184,7 +184,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 SELECT
                     vod.order_description_uuid,
                     COALESCE(
-                        jsonb_agg(DISTINCT jsonb_build_object('finishing_batch_uuid', finishing_batch.uuid, 'finishing_batch_number', concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)), 'finishing_batch_date', finishing_batch.created_at, 'finishing_batch_quantity', finishing_batch_total.total_quantity::float8))
+                        jsonb_agg(DISTINCT jsonb_build_object('finishing_batch_uuid', finishing_batch.uuid, 'finishing_batch_number', concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)), 'finishing_batch_date', finishing_batch.created_at::date, 'finishing_batch_quantity', finishing_batch_total.total_quantity::float8, 'balance_quantity', finishing_batch_total.total_quantity::float8 - finishing_batch_total.total_finishing_prod::float8))
                         FILTER (WHERE finishing_batch.uuid IS NOT NULL), '[]'
                     ) AS finishing_batch,
                     COALESCE(
@@ -199,7 +199,8 @@ export async function zipperProductionStatusReport(req, res, next) {
                     (
 						SELECT
 							finishing_batch.uuid as finishing_batch_uuid,
-							SUM(finishing_batch_entry.quantity) as total_quantity
+							SUM(finishing_batch_entry.quantity) as total_quantity,
+                            SUM(finishing_batch_entry.finishing_prod) as total_finishing_prod
 						FROM
 							zipper.finishing_batch
 						LEFT JOIN
@@ -211,8 +212,8 @@ export async function zipperProductionStatusReport(req, res, next) {
                     (
 						SELECT
 							dyeing_batch.uuid as dyeing_batch_uuid,
-                            CONCAT('B', to_char(dyeing_batch.production_date, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as dyeing_batch_number,
-							dyeing_batch.production_date,
+                            CONCAT('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as dyeing_batch_number,
+							dyeing_batch.production_date::date,
                             oe.order_description_uuid,
 							SUM(dyeing_batch_entry.quantity) as total_quantity
 						FROM

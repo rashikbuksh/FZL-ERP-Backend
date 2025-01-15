@@ -107,7 +107,7 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 SELECT 
                     toi.uuid as order_info_uuid,
                     COALESCE(
-                        jsonb_agg(DISTINCT jsonb_build_object('batch_uuid', batch.uuid, 'batch_number', batch.batch_number, 'batch_date', batch.production_date, 'batch_quantity', batch.total_quantity::float8))
+                        jsonb_agg(DISTINCT jsonb_build_object('batch_uuid', batch.uuid, 'batch_number', batch.batch_number, 'batch_date', batch.production_date, 'batch_quantity', batch.total_quantity::float8, 'balance_quantity', batch.total_quantity::float - batch.transfer_quantity::float8))
                         FILTER (WHERE batch.uuid IS NOT NULL), '[]'
                     ) AS thread_batch
                 FROM
@@ -116,8 +116,9 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                     SELECT 
                         batch.uuid,
                         CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
-                        batch.production_date,
+                        batch.production_date::date as production_date,
                         SUM(batch_entry.quantity) as total_quantity,
+                        SUM(batch_entry.transfer_quantity) as transfer_quantity,
                         order_entry.order_info_uuid
                     FROM
                         thread.batch_entry
