@@ -876,6 +876,44 @@ export async function selectOrderEntry(req, res, next) {
 	}
 }
 
+export async function selectOrderDescriptionForStore(req, res, next) {
+	const query = sql`
+				SELECT
+					vodf.order_description_uuid AS value,
+					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, ' - ', vodf.puller_color_name,
+						CASE 
+							WHEN vodf.order_type = 'slider' 
+							THEN ' - Slider' 
+							WHEN vodf.order_type = 'tape'
+							THEN ' - Tape'
+							WHEN vodf.is_multi_color = 1
+							THEN ' - Multi Color'
+							ELSE ''
+							END
+						) AS label
+				FROM
+					zipper.v_order_details_full vodf
+				WHERE order_description_uuid IS NOT NULL
+				ORDER BY vodf.order_description_created_at DESC;
+				`;
+
+	const orderDescriptionPromise = db.execute(query);
+
+	try {
+		const data = await orderDescriptionPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Description list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function selectOrderDescription(req, res, next) {
 	const {
 		item,

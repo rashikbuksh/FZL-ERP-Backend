@@ -46,6 +46,10 @@ otherRouter.get(
 	otherOperations.selectOrderNumberForPi
 );
 otherRouter.get(
+	'/order/order-description-store/value/label',
+	otherOperations.selectOrderDescriptionForStore
+);
+otherRouter.get(
 	'/order/description/value/label',
 	otherOperations.selectOrderDescription
 );
@@ -916,6 +920,31 @@ const pathZipper = {
 				},
 			},
 		},
+	'/other/order/order-description-store/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all order descriptions for store',
+			description: 'All order descriptions for store',
+			operationId: 'getAllOrderDescriptionsForStore',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'Returns a all order descriptions.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.string('2ggcphnwHGzEUGy'),
+									label: SE.string('Z24-0001'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 	'/other/order/description/value/label': {
 		get: {
 			tags: ['others'],
