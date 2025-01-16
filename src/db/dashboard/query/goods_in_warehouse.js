@@ -10,11 +10,11 @@ export async function selectGoodsInWarehouse(req, res, next) {
             SELECT
                 sum(sfg.warehouse)::float8 as amount,
                 pl_count.count as number_of_carton,
-                CASE 
-                    WHEN vodf.nylon_stopper_name != 'plastic' THEN vodf.item_name || CONCAT(' ', vodf.nylon_stopper_name)
+                TRIM(BOTH ' ' FROM LOWER(CASE 
+                    WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
                     WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
                     ELSE vodf.item_name
-                END as item_name
+                END)) as item_name
             FROM
                 delivery.packing_list pl
                 LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
@@ -29,20 +29,33 @@ export async function selectGoodsInWarehouse(req, res, next) {
                 ) AS pl_count ON pl.order_info_uuid = pl_count.order_info_uuid
             WHERE pl.challan_uuid IS NULL
             GROUP BY
-                item_name, vodf.nylon_stopper_name, vodf.item_name, pl_count.count
+                TRIM(BOTH ' ' FROM LOWER(CASE 
+                    WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
+                    WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                    ELSE vodf.item_name
+                END)),
+                item_name,
+                pl_count.count
             UNION
             SELECT
                 sum(toe.warehouse)::float8  as amount,
-                sum(toe.carton_quantity)::float8 as number_of_carton,
+                CEIL(sum(toe.warehouse) / cl.max_weight)::float8 as number_of_carton,
                 'Sewing Thread' as item_name
             FROM
                 thread.order_entry toe
-                LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+            LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
+            GROUP BY
+                item_name, cl.max_weight
         )
     SELECT
-        *,
-        (SELECT SUM(number_of_carton) FROM challan_data)::float8 as total_number
-    FROM challan_data;
+            SUM(amount) as amount,
+            SUM(number_of_carton) as number_of_carton,
+            item_name,
+            (SELECT SUM(number_of_carton) FROM challan_data) as total_number
+        FROM challan_data
+        WHERE item_name IS NOT NULL
+        GROUP BY
+                item_name;
 	`;
 	const resultPromise = db.execute(query);
 
