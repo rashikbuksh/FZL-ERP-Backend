@@ -85,6 +85,7 @@ export const order_info = zipper.table('order_info', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 	print_in: print_in_enum('print_in').default('portrait'),
+	is_cancelled: boolean('is_cancelled').default(false),
 });
 
 export const slider_provided_enum = zipper.enum('slider_provided_enum', [

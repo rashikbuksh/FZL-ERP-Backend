@@ -49,6 +49,8 @@ export const OrderDetailsView = `
         order_info.created_at AS created_at,
         order_info.updated_at AS updated_at,
         order_info.remarks,
+        order_info.print_in,
+        order_info.is_cancelled,
         order_description.is_inch,
         order_description.is_meter,
         order_description.is_cm,
@@ -118,6 +120,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_info.created_at,
         order_info.updated_at,
         order_info.print_in,
+        order_info.is_cancelled,
         concat('#',ROW_NUMBER() OVER (
                 PARTITION BY concat('Z', 
                 CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,

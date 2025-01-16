@@ -29,6 +29,7 @@ export async function insert(req, res, next) {
 		created_at,
 		remarks,
 		print_in,
+		is_cancelled,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -52,6 +53,7 @@ export async function insert(req, res, next) {
 			created_at,
 			remarks,
 			print_in,
+			is_cancelled,
 		})
 		.returning({
 			insertedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
@@ -93,6 +95,7 @@ export async function update(req, res, next) {
 		updated_at,
 		remarks,
 		print_in,
+		is_cancelled,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -116,6 +119,7 @@ export async function update(req, res, next) {
 			updated_at,
 			remarks,
 			print_in,
+			is_cancelled,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -190,6 +194,7 @@ export async function selectAll(req, res, next) {
 			updated_at: order_info.updated_at,
 			remarks: order_info.remarks,
 			print_in: order_info.print_in,
+			is_cancelled: order_info.is_cancelled,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -263,6 +268,7 @@ export async function select(req, res, next) {
 			updated_at: order_info.updated_at,
 			remarks: order_info.remarks,
 			print_in: order_info.print_in,
+			is_cancelled: order_info.is_cancelled,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -426,6 +432,7 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.order_description_uuid,
 						vodf.is_sample,
 						vodf.order_number_wise_rank,
+						vodf.is_cancelled,
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
 						order_entry_counts.order_entry_count,
@@ -466,6 +473,7 @@ export async function getTapeAssigned(req, res, next) {
 														? sql`AND vodf.is_sample = 1`
 														: sql`AND 1=1`
 							}
+							AND vodf.is_cancelled = false
 					ORDER BY 
 						vodf.order_number_wise_rank asc,
 						vodf.tape_coil_uuid ASC NULLS FIRST,
