@@ -67,7 +67,7 @@ export async function MaterialStockReport(req, res, next) {
                     LEFT JOIN 
                         material.trx mtrx ON (mi.uuid = mtrx.material_uuid AND mtrx.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
                     LEFT JOIN 
-                        material.stock_to_sfg s2s ON (mi.uuid = s2s.material_uuid AND s2s.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
+                        zipper.material_trx_against_order_description s2s ON (mi.uuid = s2s.material_uuid AND s2s.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
                     GROUP BY 
                         mi.uuid
                 ) consumption ON m.uuid = consumption.material_uuid
@@ -82,7 +82,7 @@ export async function MaterialStockReport(req, res, next) {
                     LEFT JOIN 
                         material.trx mtrx ON mi.uuid = mtrx.material_uuid AND mtrx.created_at <= ${from_date}::TIMESTAMP
                     LEFT JOIN 
-                        material.stock_to_sfg s2s ON mi.uuid = s2s.material_uuid AND s2s.created_at <= ${from_date}::TIMESTAMP
+                        zipper.material_trx_against_order_description s2s ON mi.uuid = s2s.material_uuid AND s2s.created_at <= ${from_date}::TIMESTAMP
                     GROUP BY 
                         mi.uuid
                     ) opening_consumption ON m.uuid = opening_consumption.material_uuid

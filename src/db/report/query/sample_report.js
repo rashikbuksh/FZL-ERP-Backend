@@ -230,7 +230,7 @@ export async function selectSampleReportByDate(req, res, next) {
 export async function selectSampleReportByDateCombined(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { date, is_sample } = req.query;
+	const { date, to_date, is_sample } = req.query;
 	const { own_uuid } = req?.query;
 
 	// get marketing_uuid from own_uuid
@@ -239,6 +239,11 @@ export async function selectSampleReportByDateCombined(req, res, next) {
 		SELECT uuid
 		FROM public.marketing
 		WHERE user_uuid = ${own_uuid};`;
+
+	if (to_date) {
+	} else {
+		to_date = date;
+	}
 
 	try {
 		if (own_uuid) {
@@ -348,7 +353,9 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
                         WHERE
-                            oi.is_sample = ${is_sample} AND ${date} = ANY (SELECT CAST(unnest(od_given.created_at) AS DATE)) AND ${own_uuid ? sql`oi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                            oi.is_sample = ${is_sample} 
+                            AND od.created_at BETWEEN ${date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+                            AND ${own_uuid ? sql`oi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
                         UNION
                         SELECT 
                             CONCAT('ST', 
@@ -397,7 +404,9 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                                 toe.order_info_uuid
                         ) toe_given ON toe_given.order_info_uuid = toi.uuid
                         WHERE
-                            toi.is_sample = ${is_sample} AND ${date} = toi.created_at::date AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                            toi.is_sample = ${is_sample} 
+                            AND toi.created_at BETWEEN ${date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+                            AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
                         ORDER BY
                             order_number ASC, item_description ASC;
                     `;

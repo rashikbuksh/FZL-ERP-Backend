@@ -924,8 +924,7 @@ export async function LCReport(req, res, next) {
 // shows multiple rows for order_entry.count_length_uuid, count_length.count,count_length.length,order_entry.uuid as order_entry_uuid,order_info.uuid as order_info_uuid columns
 
 export async function threadProductionStatusBatchWise(req, res, next) {
-	const { status } = req.query;
-	const { own_uuid } = req?.query;
+	const { status, own_uuid, from_date, to_date } = req.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -944,6 +943,8 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 batch.uuid,
                 CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) AS batch_number,
                 batch.created_at AS batch_created_at,
+                batch.machine_uuid,
+                machine.name as machine_name,
                 order_entry.uuid as order_entry_uuid,
                 order_info.uuid as order_info_uuid,
                 CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
@@ -989,6 +990,8 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 public.party ON order_info.party_uuid = party.uuid
             LEFT JOIN
                 public.marketing ON order_info.marketing_uuid = marketing.uuid
+            LEFT JOIN 
+                public.machine ON batch.machine_uuid = machine.uuid
             LEFT JOIN (
                 SELECT 
                     SUM(batch_entry.quantity) as total_quantity,
