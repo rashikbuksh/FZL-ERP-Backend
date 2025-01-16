@@ -24,10 +24,11 @@ export async function MaterialStockReport(req, res, next) {
                 ms.name as material_section_name,
                 m.name as material_name,
                 m.unit as material_unit,
-                coalesce(opening_purchase.total_purchase_quantity, 0) - COALESCE(opening_consumption.total_issue_quantity,0) as opening_quantity,
+                coalesce(opening_purchase.total_purchase_quantity, 0) - COALESCE(opening_material_consumption.total_issue_quantity,0) - COALESCE(opening_s2s_consumption.total_s2s_issue_quantity, 0) as opening_quantity,
                 coalesce(purchase.total_purchase_quantity, 0) as purchase_quantity,
-                coalesce(consumption.total_issue_quantity, 0) as consumption_quantity,
-                (coalesce(opening_purchase.total_purchase_quantity, 0) - COALESCE(opening_consumption.total_issue_quantity,0) + coalesce(purchase.total_purchase_quantity, 0) - coalesce(consumption.total_issue_quantity, 0)) as closing_quantity
+                coalesce(material_consumption.total_issue_quantity, 0) + COALESCE(s2s_consumption.total_s2s_issue_quantity, 0) as consumption_quantity,
+                (coalesce(opening_purchase.total_purchase_quantity, 0) - COALESCE(opening_material_consumption.total_issue_quantity,0) - COALESCE(opening_s2s_consumption.total_s2s_issue_quantity, 0) 
+                + coalesce(purchase.total_purchase_quantity, 0) - coalesce(material_consumption.total_issue_quantity, 0) - COALESCE(s2s_consumption.total_s2s_issue_quantity, 0)) as closing_quantity
             FROM 
                 material.info m 
             LEFT JOIN
@@ -60,32 +61,50 @@ export async function MaterialStockReport(req, res, next) {
                 (
                     SELECT 
                         mi.uuid as material_uuid,
-                        SUM(COALESCE(mtrx.trx_quantity, 0))::float8 as total_issue_quantity,
-                        SUM(COALESCE(s2s.trx_quantity, 0))::float8 as total_s2s_issue_quantity
+                        SUM(COALESCE(mtrx.trx_quantity, 0))::float8 as total_issue_quantity
                     FROM 
                         material.info mi
                     LEFT JOIN 
                         material.trx mtrx ON (mi.uuid = mtrx.material_uuid AND mtrx.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
-                    LEFT JOIN 
-                        zipper.material_trx_against_order_description s2s ON (mi.uuid = s2s.material_uuid AND s2s.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
                     GROUP BY 
                         mi.uuid
-                ) consumption ON m.uuid = consumption.material_uuid
-                LEFT JOIN 
-                    (
-                        SELECT 
+                ) material_consumption ON m.uuid = material_consumption.material_uuid
+            LEFT JOIN 
+                (
+                    SELECT 
                         mi.uuid as material_uuid,
-                        SUM(COALESCE(mtrx.trx_quantity, 0))::float8 as total_issue_quantity,
                         SUM(COALESCE(s2s.trx_quantity, 0))::float8 as total_s2s_issue_quantity
                     FROM 
                         material.info mi
                     LEFT JOIN 
+                        zipper.material_trx_against_order_description s2s ON (mi.uuid = s2s.material_uuid AND s2s.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
+                    GROUP BY 
+                        mi.uuid
+                ) s2s_consumption ON m.uuid = s2s_consumption.material_uuid
+            LEFT JOIN 
+                (
+                    SELECT 
+                        mi.uuid as material_uuid,
+                        SUM(COALESCE(mtrx.trx_quantity, 0))::float8 as total_issue_quantity
+                    FROM 
+                        material.info mi
+                    LEFT JOIN 
                         material.trx mtrx ON mi.uuid = mtrx.material_uuid AND mtrx.created_at <= ${from_date}::TIMESTAMP
+                    GROUP BY 
+                        mi.uuid
+                ) opening_material_consumption ON m.uuid = opening_material_consumption.material_uuid
+            LEFT JOIN 
+                (
+                    SELECT 
+                        mi.uuid as material_uuid,
+                        SUM(COALESCE(s2s.trx_quantity, 0))::float8 as total_s2s_issue_quantity
+                    FROM 
+                        material.info mi
                     LEFT JOIN 
                         zipper.material_trx_against_order_description s2s ON mi.uuid = s2s.material_uuid AND s2s.created_at <= ${from_date}::TIMESTAMP
                     GROUP BY 
                         mi.uuid
-                    ) opening_consumption ON m.uuid = opening_consumption.material_uuid
+                ) opening_s2s_consumption ON m.uuid = opening_s2s_consumption.material_uuid
                 ORDER BY ms.index, m.name;
     `;
 

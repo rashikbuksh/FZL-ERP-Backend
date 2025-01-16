@@ -1044,6 +1044,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                     toe.uuid
             ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid
             WHERE batch.uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
+            AND batch.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP +  + interval '23 hours 59 minutes 59 seconds'
             `;
 
 		if (status === 'completed') {
