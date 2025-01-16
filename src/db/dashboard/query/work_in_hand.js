@@ -35,8 +35,13 @@ export async function selectWorkInHand(req, res, next) {
                         LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                         LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                     GROUP BY 
-                        vodf.item_name,
-                        vodf.nylon_stopper_name
+                        CASE 
+                            WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+                            THEN vodf.item_name || ' ' || 'Plastic'
+                            WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+                            THEN vodf.item_name
+                            ELSE vodf.item_name 
+                        END
 
                     UNION
                     SELECT 
@@ -71,27 +76,13 @@ export async function selectWorkInHand(req, res, next) {
 			throw new TypeError('Expected data to be an array');
 		}
 
-		const groupedData = data.rows.reduce((acc, item) => {
-			if (!acc[item.item_name]) {
-				acc[item.item_name] = {
-					not_approved: 0,
-					approved: 0,
-				};
-			}
-
-			acc[item.item_name].not_approved += parseFloat(item.not_approved);
-			acc[item.item_name].approved += parseFloat(item.approved);
-
-			return acc;
-		}, {});
-
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'Work in Hand',
 		};
 
-		return res.status(200).json({ toast, data: groupedData });
+		return res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		handleError({ error, res });
 	}
