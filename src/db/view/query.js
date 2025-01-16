@@ -345,7 +345,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         END as order_info_uuid,
         ROW_NUMBER() OVER (
                         PARTITION BY CASE 
-                            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+                            WHEN (packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape')
                             THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid 
                         END
                         ORDER BY packing_list.created_at
