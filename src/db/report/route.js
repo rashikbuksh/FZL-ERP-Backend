@@ -567,7 +567,9 @@ export const pathReport = {
 			operationId: 'selectSampleReportByDate',
 			parameters: [
 				SE.parameter_query('date', 'date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
 				SE.parameter_query('is_sample', 'is_sample', [0, 1]),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
 			],
 			responses: {
 				200: SE.response_schema(200, {

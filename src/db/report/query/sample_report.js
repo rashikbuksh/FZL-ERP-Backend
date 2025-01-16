@@ -92,7 +92,7 @@ export async function selectSampleReport(req, res, next) {
 export async function selectSampleReportByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { date, is_sample } = req.query;
+	const { date, to_date, is_sample } = req.query;
 	const { own_uuid } = req?.query;
 
 	// get marketing_uuid from own_uuid
@@ -101,6 +101,11 @@ export async function selectSampleReportByDate(req, res, next) {
 		SELECT uuid
 		FROM public.marketing
 		WHERE user_uuid = ${own_uuid};`;
+
+	if (to_date) {
+	} else {
+		to_date = date;
+	}
 
 	try {
 		if (own_uuid) {
@@ -130,6 +135,9 @@ export async function selectSampleReportByDate(req, res, next) {
                            od.order_type,
                            oe.style,
                            oe.color,
+                           oe.party_price,
+                           sfg.pi,
+                           sfg.delivered,
                            CONCAT(
                                 CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
                                 CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN ', ' ELSE '' END,
@@ -174,6 +182,7 @@ export async function selectSampleReportByDate(req, res, next) {
                             zipper.order_info oi
                         LEFT JOIN zipper.order_description od ON od.order_info_uuid = oi.uuid
                         LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid 
+                        LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
                         LEFT JOIN public.marketing pm ON pm.uuid = oi.marketing_uuid
                         LEFT JOIN public.party pp ON pp.uuid = oi.party_uuid
                         LEFT JOIN public.properties op_item ON op_item.uuid = od.item
@@ -196,7 +205,9 @@ export async function selectSampleReportByDate(req, res, next) {
                         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
                         WHERE
-                            oi.is_sample = ${is_sample} AND oe.created_at::date = ${date} AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
+                            oi.is_sample = ${is_sample}
+                            AND od.created_at BETWEEN ${date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+                            AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
