@@ -4,7 +4,7 @@ import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { info_entry, info, recipe } from '../schema.js';
+import { info, info_entry, recipe } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -95,7 +95,10 @@ export async function select(req, res, next) {
 			remarks: info_entry.remarks,
 		})
 		.from(info_entry)
-		.leftJoin(hr.users, eq(info_entry.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(info_entry.created_by, hrSchema.users.uuid)
+		)
 		.leftJoin(recipe, eq(info_entry.recipe_uuid, recipe.uuid))
 		.leftJoin(info, eq(info_entry.lab_dip_info_uuid, info.uuid))
 		.where(eq(info_entry.uuid, req.params.uuid));
@@ -135,7 +138,10 @@ export async function selectAll(req, res, next) {
 			remarks: info_entry.remarks,
 		})
 		.from(info_entry)
-		.leftJoin(hr.users, eq(info_entry.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(info_entry.created_by, hrSchema.users.uuid)
+		)
 		.leftJoin(recipe, eq(info_entry.recipe_uuid, recipe.uuid))
 		.leftJoin(info, eq(info_entry.lab_dip_info_uuid, info.uuid))
 		.orderBy(desc(info_entry.created_at));
