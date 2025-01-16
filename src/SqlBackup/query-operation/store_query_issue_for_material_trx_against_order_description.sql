@@ -39,3 +39,5 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+UPDATE zipper.material_trx_against_order_description SET trx_quantity = trx_quantity WHERE created_at < '2025-01-13 23:59:59';
