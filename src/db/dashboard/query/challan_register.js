@@ -12,7 +12,7 @@ export async function selectChallanRegister(req, res, next) {
                 sum(ple.quantity)::float8 as amount,
                 pl_count.count as number_of_challan,
                 TRIM(BOTH ' ' FROM LOWER(CASE 
-                    WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name || CONCAT(' ', vodf.nylon_stopper_name)
+                    WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
                     WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
                     ELSE vodf.item_name
                 END)) as item_name
@@ -32,7 +32,7 @@ export async function selectChallanRegister(req, res, next) {
                 ${start_date ? sql`pl.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} AND pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL
             GROUP BY
                 TRIM(BOTH ' ' FROM LOWER(CASE 
-                    WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name || CONCAT(' ', vodf.nylon_stopper_name)
+                    WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
                     WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
                     ELSE vodf.item_name
                 END)),
