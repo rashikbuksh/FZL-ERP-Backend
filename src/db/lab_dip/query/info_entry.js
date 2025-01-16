@@ -5,6 +5,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { info_entry, info, recipe } from '../schema.js';
+import { marketing } from '@/db/public/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -86,6 +87,8 @@ export async function select(req, res, next) {
 			recipe_name: recipe.name,
 			approved: info_entry.approved,
 			approved_date: info_entry.approved_date,
+			marketing_approved: info_entry.marketing_approved,
+			marketing_approved_date: info_entry.marketing_approved_date,
 			created_by: info_entry.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: info_entry.created_at,
@@ -124,6 +127,8 @@ export async function selectAll(req, res, next) {
 			recipe_name: recipe.name,
 			approved: info_entry.approved,
 			approved_date: info_entry.approved_date,
+			marketing_approved: info_entry.marketing_approved,
+			marketing_approved_date: info_entry.marketing_approved_date,
 			created_by: info_entry.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: info_entry.created_at,

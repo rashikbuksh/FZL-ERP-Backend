@@ -1,5 +1,12 @@
 import { sql } from 'drizzle-orm';
-import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
+import {
+	boolean,
+	decimal,
+	integer,
+	pgSchema,
+	serial,
+	text,
+} from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as materialSchema from '../material/schema.js';
 import * as threadSchema from '../thread/schema.js';
@@ -10,6 +17,7 @@ import {
 	uuid_primary,
 } from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
+import { marketing } from '../public/schema.js';
 
 const lab_dip = pgSchema('lab_dip');
 
@@ -109,6 +117,8 @@ export const info_entry = lab_dip.table('info_entry', {
 	recipe_uuid: defaultUUID('recipe_uuid').references(() => recipe.uuid),
 	approved: integer('approved').default(0),
 	approved_date: DateTime('approved_date').default(null),
+	marketing_approved: integer('marketing_approved').default(0),
+	marketing_approved_date: DateTime('marketing_approved_date').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
