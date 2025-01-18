@@ -1566,7 +1566,7 @@ export async function selectMaterial(req, res, next) {
 	const infoPromise = db
 		.select({
 			value: materialSchema.info.uuid,
-			label: materialSchema.info.name,
+			label: sql`CONCAT(material.info.name, ' - S:', material.stock.stock::float8)`,
 			unit: materialSchema.info.unit,
 			stock: decimalToNumber(materialSchema.stock.stock),
 		})

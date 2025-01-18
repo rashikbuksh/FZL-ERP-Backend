@@ -11,6 +11,7 @@ export async function selectStockStatus(req, res, next) {
                     mi.threshold::float8,
                     ms.stock::float8,
                     mi.unit,
+                    mi.is_priority_material,
                      ( SELECT pd.created_at FROM purchase.description as pd
                         LEFT JOIN purchase.entry as pe ON pd.uuid = pe.purchase_description_uuid
                         WHERE pe.material_uuid = mi.uuid
@@ -20,7 +21,7 @@ export async function selectStockStatus(req, res, next) {
                     material.info mi
                 LEFT JOIN
                     material.stock ms ON mi.uuid = ms.material_uuid
-                ORDER BY mi.created_at DESC LIMIT 10
+                ORDER BY mi.is_priority_material DESC, stock < threshold DESC LIMIT 10
                         `;
 	const resultPromise = db.execute(query);
 
