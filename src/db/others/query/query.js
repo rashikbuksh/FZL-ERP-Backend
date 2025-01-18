@@ -1859,7 +1859,10 @@ export async function selectLabDipRecipe(req, res, next) {
 	conditions.push(
 		approved === 'true'
 			? and(
-					eq(labDipSchema.info_entry.approved, 1),
+					or(
+						eq(labDipSchema.info_entry.approved, 1),
+						eq(labDipSchema.info_entry.marketing_approved, 1)
+					),
 					bleaching
 						? eq(labDipSchema.recipe.bleaching, bleaching)
 						: sql`1=1`
@@ -1938,8 +1941,8 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	LEFT JOIN
 		lab_dip.info ON info_entry.lab_dip_info_uuid = lab_dip.info.uuid
 	WHERE 
-		lab_dip.info_entry.approved = 1 AND
-		${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND lab_dip.info_entry.approved = 1 ` : sql`1=1`}
+		(lab_dip.info_entry.approved = 1 OR lab_dip.info_entry.marketing_approved = 1) AND
+		${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND (lab_dip.info_entry.approved = 1 OR lab_dip.info_entry.marketing_approved = 1) ` : sql`1=1`}
 		AND
 		${bleaching ? sql` recipe.bleaching = ${bleaching}` : sql`1=1`}
 	`;
