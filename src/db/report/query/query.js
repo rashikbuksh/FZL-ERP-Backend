@@ -924,7 +924,7 @@ export async function LCReport(req, res, next) {
 // shows multiple rows for order_entry.count_length_uuid, count_length.count,count_length.length,order_entry.uuid as order_entry_uuid,order_info.uuid as order_info_uuid columns
 
 export async function threadProductionStatusBatchWise(req, res, next) {
-	const { status, own_uuid, from_date, to_date } = req.query;
+	const { status, own_uuid, from, to } = req.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -1044,7 +1044,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                     toe.uuid
             ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid
             WHERE batch.uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
-            AND batch.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP +  + interval '23 hours 59 minutes 59 seconds'
+            AND batch.created_at between ${from}::TIMESTAMP and ${to}::TIMESTAMP +  + interval '23 hours 59 minutes 59 seconds'
             `;
 
 		if (status === 'completed') {
