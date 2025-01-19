@@ -1,9 +1,6 @@
-import { asc, desc, eq } from 'drizzle-orm';
+import { asc, desc, eq, lt } from 'drizzle-orm';
 import { description } from '../../../db/purchase/schema.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -87,6 +84,7 @@ export async function selectAll(req, res, next) {
 			short_name: info.short_name,
 			stock: decimalToNumber(stock.stock),
 			booking_quantity: decimalToNumber(booking.quantity),
+			is_below_threshold: lt(stock.stock, info.threshold),
 			unit: info.unit,
 			threshold: decimalToNumber(info.threshold),
 			is_priority_material: info.is_priority_material,
@@ -133,6 +131,7 @@ export async function select(req, res, next) {
 			short_name: info.short_name,
 			stock: decimalToNumber(stock.stock),
 			booking_quantity: decimalToNumber(booking.quantity),
+			is_below_threshold: lt(stock.stock, info.threshold),
 			unit: info.unit,
 			threshold: decimalToNumber(info.threshold),
 			is_priority_material: info.is_priority_material,
