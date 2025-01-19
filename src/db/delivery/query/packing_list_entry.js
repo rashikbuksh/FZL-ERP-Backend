@@ -407,6 +407,38 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_info_uuid ELSE toi.uuid END as order_info_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_number ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END as order_number,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END as item_description,
+			CASE WHEN ple.sfg_uuid IS NOT NULL 
+				THEN CONCAT(
+					CASE WHEN (vodf.lock_type_name IS NOT NULL OR vodf.lock_type_name != '---') THEN ' - ' ELSE '' END,
+                    vodf.lock_type_name, 
+                    CASE WHEN (vodf.teeth_color_name IS NOT NULL OR vodf.teeth_color_name != '---') THEN ' - teeth: ' ELSE '' END,
+                    vodf.teeth_color_name, 
+                    CASE WHEN (vodf.puller_color_name IS NOT NULL OR vodf.puller_color_name != '---') THEN ' - puller: ' ELSE '' END,
+                    vodf.puller_color_name, 
+                    CASE WHEN (vodf.hand_name IS NOT NULL OR vodf.hand_name != '---') THEN ' - ' ELSE '' END,
+                    vodf.hand_name, 
+                    CASE WHEN (vodf.coloring_type_name IS NOT NULL OR vodf.coloring_type_name != '---') THEN ' - ' ELSE '' END, 
+                    vodf.coloring_type_name, 
+                    CASE WHEN (vodf.slider_name IS NOT NULL OR vodf.slider_name != '---') THEN ' - ' ELSE '' END,
+                    vodf.slider_name, 
+                    CASE WHEN (vodf.top_stopper_name IS NOT NULL OR vodf.top_stopper_name != '---') THEN ' - ' ELSE '' END,
+                    vodf.top_stopper_name, 
+                    CASE WHEN (vodf.bottom_stopper_name IS NOT NULL OR vodf.bottom_stopper_name != '---') THEN ' - ' ELSE '' END,
+                    vodf.bottom_stopper_name, 
+                    CASE WHEN (vodf.logo_type_name IS NOT NULL OR vodf.logo_type_name != '---') THEN ' - ' ELSE '' END,
+                    vodf.logo_type_name, 
+                    CASE WHEN (vodf.logo_type_name IS NOT NULL AND vodf.logo_type_name != '---') THEN 
+                        CONCAT(
+                            ' (', 
+                            CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE '' END, 
+                            CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE '' END, 
+                            ')'
+                        ) 
+                    ELSE '' 
+                    END
+				) 
+				ELSE null
+			END as specification,
 			vodf.order_description_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,

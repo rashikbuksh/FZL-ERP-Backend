@@ -156,7 +156,7 @@ export async function selectAll(req, res, next) {
 	FROM
 		(
 			SELECT
-					DISTINCT challan.uuid AS uuid,
+				DISTINCT challan.uuid AS uuid,
 				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
 					CONCAT('ZC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE
 					CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) END AS challan_number,
