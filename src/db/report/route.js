@@ -672,6 +672,10 @@ export const pathReport = {
 				SE.parameter_query('from', 'from', '2024-10-01'),
 				SE.parameter_query('to', 'to', '2024-10-31'),
 				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query('status', 'status', [
+					'completed',
+					'pending',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {
