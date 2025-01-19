@@ -409,7 +409,6 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END as item_description,
 			CASE WHEN ple.sfg_uuid IS NOT NULL 
 				THEN CONCAT(
-					CASE WHEN (vodf.lock_type_name IS NOT NULL OR vodf.lock_type_name != '---') THEN ' - ' ELSE '' END,
                     vodf.lock_type_name, 
                     CASE WHEN (vodf.teeth_color_name IS NOT NULL OR vodf.teeth_color_name != '---') THEN ' - teeth: ' ELSE '' END,
                     vodf.teeth_color_name, 
