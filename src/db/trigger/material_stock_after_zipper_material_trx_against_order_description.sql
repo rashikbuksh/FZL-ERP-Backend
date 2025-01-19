@@ -16,7 +16,8 @@ BEGIN
     END IF;
 
     -- update slider.slider_assembly if material is present in die casting
-    IF (NEW.trx_to = 'slider_assembly') THEN
+
+    IF (NEW.trx_to = 'slider_assembly' AND NEW.purpose = 'slider') THEN
         UPDATE slider.assembly_stock
         SET
             quantity = quantity + NEW.trx_quantity,
@@ -24,7 +25,7 @@ BEGIN
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
-    IF (NEW.trx_to = 'tape_making' OR NEW.trx_to = 'tape_loom') THEN
+    IF ((NEW.trx_to = 'tape_making' OR NEW.trx_to = 'tape_loom') AND NEW.purpose = 'tape') THEN
         UPDATE zipper.tape_coil
         SET
             quantity = quantity + NEW.trx_quantity
@@ -58,7 +59,7 @@ BEGIN
     END IF;
 
     -- update slider.slider_assembly if material is present in die casting
-    IF (NEW.trx_to = 'slider_assembly') THEN
+    IF (NEW.trx_to = 'slider_assembly' AND NEW.purpose = 'slider') THEN
         UPDATE slider.assembly_stock
         SET
             quantity = quantity 
@@ -70,7 +71,7 @@ BEGIN
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
-    IF (NEW.trx_to = 'tape_making' OR NEW.trx_to = 'tape_loom') THEN
+    IF ((NEW.trx_to = 'tape_making' OR NEW.trx_to = 'tape_loom') AND NEW.purpose = 'tape') THEN
         UPDATE zipper.tape_coil
         SET
             quantity = quantity 
@@ -100,7 +101,7 @@ BEGIN
     END IF;
 
     -- update slider.slider_assembly if material is present in die casting
-    IF (OLD.trx_to = 'slider_assembly') THEN
+    IF (OLD.trx_to = 'slider_assembly' AND OLD.purpose = 'slider') THEN
         UPDATE slider.assembly_stock
         SET
             quantity = quantity - OLD.trx_quantity,
@@ -108,7 +109,7 @@ BEGIN
         WHERE material_uuid = OLD.material_uuid;
     END IF;
 
-    IF (OLD.trx_to = 'tape_making' OR OLD.trx_to = 'tape_loom') THEN
+    IF ((OLD.trx_to = 'tape_making' OR OLD.trx_to = 'tape_loom') AND OLD.purpose = 'tape') THEN
         UPDATE zipper.tape_coil
         SET
             quantity = quantity - OLD.trx_quantity

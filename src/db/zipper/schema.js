@@ -583,6 +583,13 @@ export const planning_entry = zipper.table('planning_entry', {
 	factory_remarks: text('factory_remarks').default(null),
 });
 
+export const purposeEnum = zipper.enum('purpose_enum', [
+	'general',
+	'tape',
+	'slider',
+	'finishing_floor',
+]);
+
 export const material_trx_against_order_description = zipper.table(
 	'material_trx_against_order_description',
 	{
@@ -608,6 +615,7 @@ export const material_trx_against_order_description = zipper.table(
 		booking_uuid: defaultUUID('booking_uuid')
 			.references(() => materialSchema.booking.uuid)
 			.default(null),
+		purpose: purposeEnum('purpose').default('general'),
 	}
 );
 
