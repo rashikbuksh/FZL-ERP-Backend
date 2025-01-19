@@ -140,7 +140,7 @@ export async function selectSampleReportByDate(req, res, next) {
                            oe.company_price::float8,
                            oe.party_price::float8,
                            sfg.pi::float8,
-                           sf.warehouse::float8,
+                           sfg.warehouse::float8,
                            sfg.delivered::float8,
                            CONCAT(
                                 CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
