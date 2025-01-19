@@ -1,12 +1,11 @@
-import { and, eq, min, sql, sum } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function ProductionReportThreadPartyWise(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { own_uuid } = req?.query;
+	const { own_uuid, from, to } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -51,6 +50,7 @@ export async function ProductionReportThreadPartyWise(req, res, next) {
             ) prod_quantity ON order_info.uuid = prod_quantity.order_info_uuid AND order_entry.count_length_uuid = prod_quantity.count_length_uuid
 			WHERE
 				${own_uuid == null ? sql`TRUE` : sql`marketing.uuid = ${marketingUuid}`}
+				${from && to ? sql` AND order_info.created_at::date BETWEEN ${from} AND ${to}` : sql``}
             GROUP BY 
                 party.uuid, party.name, count_length.count, count_length.length, prod_quantity.total_quantity
             ORDER BY party.name DESC, count_length.count ASC, count_length.length ASC
