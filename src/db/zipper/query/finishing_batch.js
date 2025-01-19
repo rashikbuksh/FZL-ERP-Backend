@@ -623,7 +623,7 @@ export async function getDailyProductionPlan(req, res, next) {
 												: sql`lower(vodf.item_name) = ${item}`
 								})
 							ORDER BY
-								zfb.production_date	
+								vodf.order_number ASC, batch_number ASC, vodf.item_description, zoe.style ASC, zoe.color ASC, zoe.size ASC	
 							`;
 
 	const resultPromise = db.execute(query);
