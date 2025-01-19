@@ -17,7 +17,7 @@ BEGIN
 
     -- update slider.slider_assembly if material is present in die casting
 
-    IF (NEW.trx_to = 'slider_assembly' AND NEW.purpose = 'slider') THEN
+    IF (NEW.purpose = 'slider') THEN
         UPDATE slider.assembly_stock
         SET
             quantity = quantity + NEW.trx_quantity,
@@ -25,11 +25,20 @@ BEGIN
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
-    IF ((NEW.trx_to = 'tape_making' OR NEW.trx_to = 'tape_loom') AND NEW.purpose = 'tape') THEN
+    IF (NEW.purpose = 'tape') THEN
         UPDATE zipper.tape_coil
         SET
             quantity = quantity + NEW.trx_quantity
         WHERE material_uuid = NEW.material_uuid;
+    END IF;
+
+    -- Transfer to finishing floor
+
+    IF(NEW.purpose = 'finishing_floor') THEN
+        UPDATE zipper.order_description
+        SET
+            tape_transferred = tape_transferred + NEW.trx_quantity
+        WHERE uuid = NEW.order_description_uuid;
     END IF;
 
     RETURN NEW;
@@ -59,7 +68,7 @@ BEGIN
     END IF;
 
     -- update slider.slider_assembly if material is present in die casting
-    IF (NEW.trx_to = 'slider_assembly' AND NEW.purpose = 'slider') THEN
+    IF (NEW.purpose = 'slider') THEN
         UPDATE slider.assembly_stock
         SET
             quantity = quantity 
@@ -71,13 +80,20 @@ BEGIN
         WHERE material_uuid = NEW.material_uuid;
     END IF;
 
-    IF ((NEW.trx_to = 'tape_making' OR NEW.trx_to = 'tape_loom') AND NEW.purpose = 'tape') THEN
+    IF (NEW.purpose = 'tape') THEN
         UPDATE zipper.tape_coil
         SET
             quantity = quantity 
                 + NEW.trx_quantity
                 - OLD.trx_quantity
         WHERE material_uuid = NEW.material_uuid;
+    END IF;
+
+    IF(NEW.purpose = 'finishing_floor') THEN
+        UPDATE zipper.order_description
+        SET
+            tape_transferred = tape_transferred + NEW.trx_quantity - OLD.trx_quantity
+        WHERE uuid = NEW.order_description_uuid;
     END IF;
 
     RETURN NEW;
@@ -101,7 +117,7 @@ BEGIN
     END IF;
 
     -- update slider.slider_assembly if material is present in die casting
-    IF (OLD.trx_to = 'slider_assembly' AND OLD.purpose = 'slider') THEN
+    IF (OLD.purpose = 'slider') THEN
         UPDATE slider.assembly_stock
         SET
             quantity = quantity - OLD.trx_quantity,
@@ -109,11 +125,18 @@ BEGIN
         WHERE material_uuid = OLD.material_uuid;
     END IF;
 
-    IF ((OLD.trx_to = 'tape_making' OR OLD.trx_to = 'tape_loom') AND OLD.purpose = 'tape') THEN
+    IF (OLD.purpose = 'tape') THEN
         UPDATE zipper.tape_coil
         SET
             quantity = quantity - OLD.trx_quantity
         WHERE material_uuid = OLD.material_uuid;
+    END IF;
+
+    IF(OLD.purpose = 'finishing_floor') THEN
+        UPDATE zipper.order_description
+        SET
+            tape_transferred = tape_transferred + OLD.trx_quantity
+        WHERE uuid = OLD.order_description_uuid;
     END IF;
 
     RETURN OLD;
