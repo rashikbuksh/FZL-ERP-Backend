@@ -134,10 +134,6 @@ export async function threadProductionStatusOrderWise(req, res, next) {
             WHERE
                 ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
                 AND ${from && to ? sql` order_info.created_at::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
-            GROUP BY
-                order_info.uuid, party.name, marketing.name, thread_batch.thread_batch, order_info.created_at, order_info.updated_at, order_info.party_uuid, order_info.marketing_uuid, order_info.is_sample, order_info.id, thread_challan_sum.total_delivery_delivered_quantity, thread_challan_sum.total_delivery_balance_quantity, thread_challan_sum.total_short_quantity, thread_challan_sum.total_reject_quantity
-            ORDER BY 
-                order_info.created_at DESC
             `;
 
 		if (status === 'completed') {
@@ -165,6 +161,13 @@ export async function threadProductionStatusOrderWise(req, res, next) {
 				sql` AND total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 			);
 		}
+
+		query.append(
+			sql`GROUP BY
+                order_info.uuid, party.name, marketing.name, thread_batch.thread_batch, order_info.created_at, order_info.updated_at, order_info.party_uuid, order_info.marketing_uuid, order_info.is_sample, order_info.id, thread_challan_sum.total_delivery_delivered_quantity, thread_challan_sum.total_delivery_balance_quantity, thread_challan_sum.total_short_quantity, thread_challan_sum.total_reject_quantity
+            ORDER BY 
+                order_info.created_at DESC;`
+		);
 
 		const resultPromise = db.execute(query);
 
