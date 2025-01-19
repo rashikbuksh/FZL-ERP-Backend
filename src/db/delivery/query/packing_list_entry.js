@@ -416,7 +416,7 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
                     vodf.puller_color_name, 
                     CASE WHEN (vodf.hand_name IS NOT NULL OR vodf.hand_name != '---') THEN ', ' ELSE '' END,
                     vodf.hand_name, 
-                    CASE WHEN (vodf.coloring_type_name IS NOT NULL OR vodf.coloring_type_name != '---') THEN ', ' ELSE '' END, 
+                    CASE WHEN (vodf.coloring_type_name IS NOT NULL OR vodf.coloring_type_name != '---') THEN ', type: ' ELSE '' END, 
                     vodf.coloring_type_name, 
                     CASE WHEN (vodf.slider_name IS NOT NULL OR vodf.slider_name != '---') THEN ', ' ELSE '' END,
                     vodf.slider_name, 
