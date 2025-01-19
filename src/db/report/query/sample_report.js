@@ -126,7 +126,7 @@ export async function selectSampleReportByDate(req, res, next) {
                            pp.name AS party_name,
                            op_item.name AS item_name,
                            oe.created_at::date AS issue_date,
-                           CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
+                           vodf.item_description,
                            od.uuid as order_description_uuid,
                            oe.size,
                            od.is_inch,
@@ -183,6 +183,7 @@ export async function selectSampleReportByDate(req, res, next) {
                         FROM
                             zipper.order_info oi
                         LEFT JOIN zipper.order_description od ON od.order_info_uuid = oi.uuid
+                        LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = od.uuid
                         LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid 
                         LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
                         LEFT JOIN public.marketing pm ON pm.uuid = oi.marketing_uuid

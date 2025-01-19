@@ -6,7 +6,7 @@ import db from '../../index.js';
 export async function threadProductionStatusOrderWise(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { own_uuid, from, to } = req?.query;
+	const { own_uuid, status, from, to } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -139,6 +139,32 @@ export async function threadProductionStatusOrderWise(req, res, next) {
             ORDER BY 
                 order_info.created_at DESC
             `;
+
+		if (status === 'completed') {
+			query.append(
+				sql` AND total_quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+			);
+		} else if (status === 'pending') {
+			query.append(
+				sql` AND total_quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+			);
+		} else if (status === 'over_delivered') {
+			query.append(
+				sql` AND total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+			);
+		} else if (status === 'sample_completed') {
+			query.append(
+				sql` AND total_quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+			);
+		} else if (status === 'sample_pending') {
+			query.append(
+				sql` AND total_quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+			);
+		} else if (status === 'sample_over_delivered') {
+			query.append(
+				sql` AND total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+			);
+		}
 
 		const resultPromise = db.execute(query);
 
