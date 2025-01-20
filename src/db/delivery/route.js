@@ -95,6 +95,10 @@ deliveryRouter.put(
 	'/challan/update-delivered/:uuid',
 	challanOperations.updateDelivered
 );
+deliveryRouter.delete(
+	'/challan/delete-challan-packing-list-ref/:uuid',
+	challanOperations.removeChallanAndPLRef
+);
 
 // * vehicle routes
 

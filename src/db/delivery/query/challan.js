@@ -3,7 +3,7 @@ import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
-import { challan } from '../schema.js';
+import { challan, packing_list } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -117,6 +117,39 @@ export async function remove(req, res, next) {
 		});
 
 	try {
+		const data = await challanPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedId} deleted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function removeChallanAndPLRef(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const packingListPromise = db
+		.update(packing_list)
+		.set({ challan_uuid: null })
+		.where(eq(packing_list.challan_uuid, req.params.uuid))
+		.returning({
+			updatedId: packing_list.item_for,
+		});
+
+	try {
+		const packingListData = await packingListPromise;
+
+		const challanPromise = db
+			.delete(challan)
+			.where(eq(challan.uuid, req.params.uuid))
+			.returning({
+				deletedId: sql`concat('${packingListData[0].updatedId !== 'thread' || packingListData[0].updatedId !== 'sample_thread' ? 'ZC' : 'TC'}', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			});
+
 		const data = await challanPromise;
 		const toast = {
 			status: 201,
