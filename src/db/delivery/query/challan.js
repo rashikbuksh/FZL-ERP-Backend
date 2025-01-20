@@ -147,7 +147,7 @@ export async function removeChallanAndPLRef(req, res, next) {
 			.delete(challan)
 			.where(eq(challan.uuid, req.params.uuid))
 			.returning({
-				deletedId: sql`concat('${packingListData[0].updatedId !== 'thread' || packingListData[0].updatedId !== 'sample_thread' ? 'ZC' : 'TC'}', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+				deletedId: sql`concat(${packingListData[0].updatedId !== 'thread' && packingListData[0].updatedId !== 'sample_thread' ? "'ZC'" : "'TC'"}, to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			});
 
 		const data = await challanPromise;
