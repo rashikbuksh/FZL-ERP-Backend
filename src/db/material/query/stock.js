@@ -76,6 +76,7 @@ export async function selectAll(req, res, next) {
 			uuid: stock.uuid,
 			material_uuid: stock.material_uuid,
 			material_name: info.name,
+			index: stock.index,
 			stock: decimalToNumber(stock.stock),
 			booking: decimalToNumber(stock.booking),
 			lab_dip: decimalToNumber(stock.lab_dip),
@@ -160,6 +161,7 @@ export async function select(req, res, next) {
 			uuid: stock.uuid,
 			material_uuid: stock.material_uuid,
 			material_name: info.name,
+			index: stock.index,
 			stock: decimalToNumber(stock.stock),
 			booking: decimalToNumber(stock.booking),
 			lab_dip: decimalToNumber(stock.lab_dip),
@@ -244,6 +246,7 @@ export async function selectMaterialBelowThreshold(req, res, next) {
 			stock: decimalToNumber(stock.stock),
 			threshold: decimalToNumber(info.threshold),
 			unit: info.unit,
+			index: stock.index,
 		})
 		.from(stock)
 		.innerJoin(info, eq(stock.material_uuid, info.uuid))
@@ -278,6 +281,7 @@ export async function selectMaterialStockForAFieldName(req, res, next) {
 			[fieldName]: sql`stock.${sql.raw(fieldName)}::float8`,
 			quantity: sql`stock.${sql.raw(fieldName)}::float8`,
 			remarks: stock.remarks,
+			index: stock.index,
 		})
 		.from(stock)
 		.leftJoin(info, eq(stock.material_uuid, info.uuid))

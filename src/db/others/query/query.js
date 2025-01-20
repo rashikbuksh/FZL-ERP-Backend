@@ -593,7 +593,8 @@ export async function selectTapeCoil(req, res, next) {
 export async function selectOrderInfo(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { page, is_sample, item_for, from_date, to_date } = req.query;
+	const { page, is_sample, item_for, from_date, to_date, challan_uuid } =
+		req.query;
 	let { party_name } = req.query;
 
 	if (typeof party_name === 'undefined') {
@@ -608,7 +609,7 @@ export async function selectOrderInfo(req, res, next) {
 				AND order_info.uuid IN (
 					SELECT pl.order_info_uuid
 					FROM delivery.packing_list pl
-					WHERE pl.challan_uuid IS NULL 
+					WHERE ${challan_uuid ? sql`pl.challan_uuid IS NULL OR pl.challan_uuid = ${challan_uuid}` : sql`pl.challan_uuid IS NULL`}
 					  AND pl.is_warehouse_received = true
 					  ${item_for != undefined ? sql`AND pl.item_for = ${item_for}` : sql`AND 1=1`}
 				)
@@ -2126,7 +2127,7 @@ export async function selectDieCastingUsingType(req, res, next) {
 export async function selectThreadOrder(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { page, is_sample, recipe_required } = req.query;
+	const { page, is_sample, recipe_required, challan_uuid } = req.query;
 
 	let { party_name } = req.query;
 
@@ -2176,7 +2177,7 @@ export async function selectThreadOrder(req, res, next) {
 			FROM
 				delivery.packing_list pl
 			WHERE
-				pl.challan_uuid IS NULL 
+				${challan_uuid ? sql`pl.challan_uuid IS NULL OR pl.challan_uuid = ${challan_uuid}` : sql`pl.challan_uuid IS NULL`}
 				AND pl.is_warehouse_received = true
 		)
 	`;
