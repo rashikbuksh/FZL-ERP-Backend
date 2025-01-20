@@ -330,6 +330,7 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${marketing ? sql`vodf.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
@@ -391,6 +392,7 @@ export async function deliveryStatementReport(req, res, next) {
                 FROM
                     delivery.packing_list_entry ple 
                     LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+                    LEFT JOIN delivery.challan ch ON pl.challan_uuid = ch.uuid
                     LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
                     LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
                     LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
@@ -425,6 +427,7 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
