@@ -485,14 +485,10 @@ export async function select(req, res, next) {
 	try {
 		const data = await challanPromise;
 
-		// sort packing list numbers on packing_number
-		if (data.rows[0]?.packing_list_numbers) {
-			data.rows[0].packing_list_numbers.sort(async (a, b) => {
-				const aNumber = a.packing_number.split('-')[1];
-				const bNumber = b.packing_number.split('-')[1];
-				return aNumber - bNumber;
-			});
-		}
+		// sort packing list numbers on packing_number ascending order
+		data.rows[0].packing_list_numbers.sort((a, b) =>
+			a.packing_number.localeCompare(b.packing_number)
+		);
 
 		const toast = {
 			status: 200,
