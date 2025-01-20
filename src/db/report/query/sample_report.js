@@ -95,7 +95,7 @@ export async function selectSampleReportByDate(req, res, next) {
 	const { date, to_date, is_sample } = req.query;
 	const { own_uuid } = req?.query;
 
-	let toDate = to_date;
+	let toDate = to_date === null || to_date === undefined ? null : to_date;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -107,6 +107,10 @@ export async function selectSampleReportByDate(req, res, next) {
 	if (toDate) {
 	} else {
 		toDate = date;
+	}
+
+	if (!date || !toDate) {
+		throw new Error('Both date and toDate must be provided');
 	}
 
 	try {

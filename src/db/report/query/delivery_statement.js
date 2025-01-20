@@ -25,17 +25,8 @@ export async function deliveryStatementReport(req, res, next) {
 		party,
 		type,
 		order_info_uuid,
+		report_for,
 	} = req.query;
-
-	console.log(
-		from_date,
-		to_date,
-		own_uuid,
-		marketing,
-		party,
-		type,
-		order_info_uuid
-	);
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -88,6 +79,7 @@ export async function deliveryStatementReport(req, res, next) {
                     vpl.is_warehouse_received = true 
                     AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
+                    AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
@@ -131,6 +123,7 @@ export async function deliveryStatementReport(req, res, next) {
                     vpl.is_warehouse_received = true 
                     AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
+                    AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
@@ -164,6 +157,7 @@ export async function deliveryStatementReport(req, res, next) {
                         vpl.is_warehouse_received = true
                         AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                         AND vpl.item_for IN ('thread', 'sample_thread')
+                        AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
                         vpl.packing_list_entry_uuid, toe.company_price
                 ),
@@ -195,6 +189,7 @@ export async function deliveryStatementReport(req, res, next) {
                         vpl.is_warehouse_received = true
                         AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                         AND vpl.item_for IN ('thread', 'sample_thread')
+                        AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
                         vpl.packing_list_entry_uuid, toe.company_price
 				)
@@ -247,6 +242,8 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.is_inch,
                     concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
                     DATE(pl.created_at) as packing_list_created_at,
+                    CONCAT('ZC', TO_CHAR(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) AS challan_number,
+                    DATE(ch.created_at) as challan_created_at,
                     oe.size,
                     CASE 
                         WHEN vodf.order_type = 'tape' THEN 'Meter'
@@ -291,7 +288,10 @@ export async function deliveryStatementReport(req, res, next) {
                     END as conversion_rate
                 FROM 
                     delivery.packing_list_entry ple
-                LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+                LEFT JOIN 
+                    delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+                LEFT JOIN 
+                    delivery.challan ch ON pl.challan_uuid = ch.uuid
                 LEFT JOIN 
                     zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
                 LEFT JOIN 
@@ -351,6 +351,8 @@ export async function deliveryStatementReport(req, res, next) {
                     null as is_inch,
                     concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
                     DATE(pl.created_at) as packing_list_created_at,
+                    CONCAT('TC', TO_CHAR(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) AS challan_number,
+                    DATE(ch.created_at) as challan_created_at,
                     count_length.length::text as size,
                     'Mtr' as unit,
                     'Mtr' as price_unit,
