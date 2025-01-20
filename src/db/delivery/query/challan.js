@@ -132,10 +132,12 @@ export async function remove(req, res, next) {
 export async function removeChallanAndPLRef(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { uuid } = req.params;
+
 	const packingListPromise = db
 		.update(packing_list)
 		.set({ challan_uuid: null })
-		.where(eq(packing_list.challan_uuid, req.params.uuid))
+		.where(eq(packing_list.challan_uuid, uuid))
 		.returning({
 			updatedId: packing_list.item_for,
 		});
@@ -143,11 +145,17 @@ export async function removeChallanAndPLRef(req, res, next) {
 	try {
 		const packingListData = await packingListPromise;
 
+		const challanPrefix =
+			packingListData[0].updatedId !== 'thread' &&
+			packingListData[0].updatedId !== 'sample_thread'
+				? 'ZC'
+				: 'TC';
+
 		const challanPromise = db
 			.delete(challan)
-			.where(eq(challan.uuid, req.params.uuid))
+			.where(eq(challan.uuid, uuid))
 			.returning({
-				deletedId: sql`concat(${packingListData[0].updatedId !== 'thread' && packingListData[0].updatedId !== 'sample_thread' ? "'ZC'" : "'TC'"}, to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+				deletedId: sql`concat(${challanPrefix}, to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			});
 
 		const data = await challanPromise;
