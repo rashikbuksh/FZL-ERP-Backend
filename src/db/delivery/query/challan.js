@@ -134,8 +134,6 @@ export async function removeChallanAndPLRef(req, res, next) {
 
 	const { uuid } = req.params;
 
-	console.log('uuid: ', uuid);
-
 	const packingListPromise = db
 		.update(packing_list)
 		.set({ challan_uuid: null })
