@@ -65,6 +65,7 @@ export const defMaterialStock = SED({
 	properties: {
 		uuid: SE.uuid(),
 		material_uuid: SE.uuid(),
+		index: SE.number(0),
 		stock: SE.number(1000.0),
 		lab_dip: SE.number(1000.0),
 		tape_making: SE.number(1000.0),
