@@ -134,6 +134,8 @@ export async function removeChallanAndPLRef(req, res, next) {
 
 	const { uuid } = req.params;
 
+	console.log('uuid: ', uuid);
+
 	const packingListPromise = db
 		.update(packing_list)
 		.set({ challan_uuid: null })
@@ -145,20 +147,27 @@ export async function removeChallanAndPLRef(req, res, next) {
 	try {
 		const packingListData = await packingListPromise;
 
-		const challanPrefix =
-			packingListData[0].updatedId !== 'thread' &&
-			packingListData[0].updatedId !== 'sample_thread'
-				? 'ZC'
-				: 'TC';
+		// // packinglistData has two item_for values, so we need to check which any of one is not thread or sample_thread then we will use ZC as challan prefix otherwise TC
+		// let challanPrefix = 'ZC'; // Default prefix
+
+		// if (packingListData && packingListData.length > 0) {
+		// 	// Check if any of the item_for values is 'thread' or 'sample_thread'
+		// 	challanPrefix = packingListData.some((data) =>
+		// 		['thread', 'sample_thread'].includes(data.updatedId)
+		// 	)
+		// 		? 'TC'
+		// 		: 'ZC';
+		// }
 
 		const challanPromise = db
 			.delete(challan)
 			.where(eq(challan.uuid, uuid))
 			.returning({
-				deletedId: sql`concat(${challanPrefix}, to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+				deletedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			});
 
 		const data = await challanPromise;
+
 		const toast = {
 			status: 201,
 			type: 'delete',
