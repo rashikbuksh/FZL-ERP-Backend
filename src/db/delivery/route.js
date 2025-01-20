@@ -96,7 +96,7 @@ deliveryRouter.put(
 	challanOperations.updateDelivered
 );
 deliveryRouter.delete(
-	'/challan/delete-challan-packing-list-ref/:uuid',
+	'/challan/delete-challan-packing-list-ref/:challan_number/:uuid',
 	challanOperations.removeChallanAndPLRef
 );
 

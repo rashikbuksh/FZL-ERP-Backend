@@ -132,7 +132,7 @@ export async function remove(req, res, next) {
 export async function removeChallanAndPLRef(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { uuid } = req.params;
+	const { challan_number, uuid } = req.params;
 
 	const packingListPromise = db
 		.update(packing_list)
@@ -161,7 +161,7 @@ export async function removeChallanAndPLRef(req, res, next) {
 			.delete(challan)
 			.where(eq(challan.uuid, uuid))
 			.returning({
-				deletedId: sql`concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+				deletedId: sql`${challan_number}`,
 			});
 
 		const data = await challanPromise;

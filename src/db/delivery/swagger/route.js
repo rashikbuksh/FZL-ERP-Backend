@@ -934,24 +934,28 @@ export const pathDeliveryChallan = {
 			},
 		},
 	},
-	'/delivery/challan/delete-challan-packing-list-ref/{uuid}': {
-		delete: {
-			tags: ['delivery.challan'],
-			summary: 'Delete challan packing list ref by uuid',
-			description: 'Delete challan packing list ref by uuid',
-			// operationId: "deleteChallanPackingListRefByUuid",
-			produces: ['application/json'],
-			parameters: [SE.parameter_params('uuid', 'uuid')],
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Challan packing list ref not found',
+	'/delivery/challan/delete-challan-packing-list-ref/{challan_number}/{uuid}':
+		{
+			delete: {
+				tags: ['delivery.challan'],
+				summary: 'Delete challan packing list ref by uuid',
+				description: 'Delete challan packing list ref by uuid',
+				// operationId: "deleteChallanPackingListRefByUuid",
+				produces: ['application/json'],
+				parameters: [
+					SE.parameter_params('challan_number', 'challan_number'),
+					SE.parameter_params('uuid', 'uuid'),
+				],
+				responses: {
+					400: {
+						description: 'Invalid UUID supplied',
+					},
+					404: {
+						description: 'Challan packing list ref not found',
+					},
 				},
 			},
 		},
-	},
 };
 
 export const pathDeliveryVehicle = {
