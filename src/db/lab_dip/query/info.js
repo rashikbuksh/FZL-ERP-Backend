@@ -216,7 +216,7 @@ export async function selectAll(req, res, next) {
 			updated_at: info.updated_at,
 			remarks: info.remarks,
 			recipe_array: sql`(
-						SELECT ARRAY_AGG(json_build_object('recipe_name', recipe.name, 'marketing_approved', info_entry.marketing_approved, 'approved', info_entry.approved))
+						SELECT ARRAY_AGG(json_build_object('recipe_uuid', recipe.uuid, 'recipe_name', recipe.name, 'marketing_approved', info_entry.marketing_approved, 'approved', info_entry.approved))
 						FROM lab_dip.info_entry
 						LEFT JOIN lab_dip.recipe ON info_entry.recipe_uuid = recipe.uuid
 						WHERE info_entry.lab_dip_info_uuid = info.uuid

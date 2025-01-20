@@ -193,13 +193,18 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
 			vodf.order_type,
 			b.batch_type as batch_type,
-			vodf.is_sample
+			vodf.is_sample,
+			recipe.uuid as recipe_uuid,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+			recipe.name as recipe_name
 		FROM
 			zipper.dyeing_batch_entry be
 		LEFT JOIN
 			zipper.dyeing_batch b ON be.dyeing_batch_uuid = b.uuid
 		LEFT JOIN 
 			zipper.sfg sfg ON be.sfg_uuid = sfg.uuid
+		LEFT JOIN
+			lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
 		LEFT JOIN
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
         LEFT JOIN
