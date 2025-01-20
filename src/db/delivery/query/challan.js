@@ -487,9 +487,9 @@ export async function select(req, res, next) {
 
 		// sort packing list numbers on packing_number
 		if (data.rows[0]?.packing_list_numbers) {
-			data.rows[0].packing_list_numbers.sort((a, b) => {
-				const aNumber = parseInt(a.packing_number.slice(2));
-				const bNumber = parseInt(b.packing_number.slice(2));
+			data.rows[0].packing_list_numbers.sort(async (a, b) => {
+				const aNumber = a.packing_number.split('-')[1];
+				const bNumber = b.packing_number.split('-')[1];
 				return aNumber - bNumber;
 			});
 		}
