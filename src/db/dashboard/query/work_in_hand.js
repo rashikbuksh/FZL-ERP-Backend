@@ -24,9 +24,9 @@ export async function selectWorkInHand(req, res, next) {
                         sum(
                             CASE 
                                 WHEN vodf.order_type = 'slider' 
-                                THEN oe.quantity::float8  
+                                THEN oe.quantity::float8  - sfg.warehouse::float8
                                 WHEN sfg.recipe_uuid IS NOT NULL 
-                                THEN oe.quantity::float8  
+                                THEN oe.quantity::float8  - sfg.warehouse::float8
                                 ELSE 0 
                             END
                         ) as approved
@@ -56,7 +56,7 @@ export async function selectWorkInHand(req, res, next) {
                         sum(
                             CASE 
                                 WHEN toe.recipe_uuid IS NOT NULL 
-                                THEN toe.quantity::float8  
+                                THEN toe.quantity::float8  - toe.warehouse::float8
                                 ELSE 0 
                             END
                         ) as approved
