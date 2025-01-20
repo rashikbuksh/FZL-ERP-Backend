@@ -298,6 +298,11 @@ export async function selectAll(req, res, next) {
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
+
+		data.rows.packing_list_numbers.sort((a, b) =>
+			a.packing_number.localeCompare(b.packing_number)
+		);
+
 		const toast = {
 			status: 200,
 			type: 'select',
