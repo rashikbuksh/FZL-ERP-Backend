@@ -7,7 +7,7 @@ import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as threadSchema from '../../thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
-import { info } from '../schema.js';
+import { info, info_entry, recipe } from '../schema.js';
 
 const thread = alias(threadSchema.order_info, 'thread');
 const zipper = alias(zipperSchema.order_info, 'zipper');
@@ -215,6 +215,13 @@ export async function selectAll(req, res, next) {
 			created_at: info.created_at,
 			updated_at: info.updated_at,
 			remarks: info.remarks,
+			recipe_array: sql`(
+						SELECT ARRAY_AGG(json_build_object('recipe_name', recipe.name, 'marketing_approved', info_entry.marketing_approved, 'approved', info_entry.approved))
+						FROM lab_dip.info_entry
+						LEFT JOIN lab_dip.recipe ON info_entry.recipe_uuid = recipe.uuid
+						WHERE info_entry.lab_dip_info_uuid = info.uuid
+						GROUP BY info_entry.lab_dip_info_uuid
+						)`,
 		})
 		.from(info)
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
@@ -242,6 +249,7 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(zipperFactory, eq(zipper.factory_uuid, zipperFactory.uuid))
 		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
+
 		.orderBy(desc(info.created_at));
 
 	try {
