@@ -629,7 +629,7 @@ export async function PiRegister(req, res, next) {
 					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 				GROUP BY pi_cash_uuid, vodf.order_type
 			) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
-            WHERE  pi_cash_entry_order_numbers.order_numbers IS NOT NULL OR pi_cash_entry_order_numbers.thread_order_numbers IS NOT NULL 
+            WHERE (pi_cash_entry_order_numbers.order_numbers IS NOT NULL OR pi_cash_entry_order_numbers.thread_order_numbers IS NOT NULL)
             AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`1=1`}
         `;
 
