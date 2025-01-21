@@ -173,6 +173,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size,
+			vodf.party_name,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 
 				WHEN vodf.order_type = 'slider' THEN 'Pcs'
@@ -196,7 +197,8 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			vodf.is_sample,
 			recipe.uuid as recipe_uuid,
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
-			recipe.name as recipe_name
+			recipe.name as recipe_name,
+			recipe.sub_streat
 		FROM
 			zipper.dyeing_batch_entry be
 		LEFT JOIN
