@@ -292,6 +292,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			oe.style,
 			oe.color,
 			vodf.order_type,
+			vodf.item,
+			vodf.item_name,
 			oe.size,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 
