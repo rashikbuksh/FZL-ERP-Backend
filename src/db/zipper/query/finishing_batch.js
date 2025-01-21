@@ -407,6 +407,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 						FROM
 							zipper.finishing_batch_production fbp
 						LEFT JOIN zipper.finishing_batch_entry ON finishing_batch_entry.uuid = fbp.finishing_batch_entry_uuid
+						WHERE fbp.section = 'finishing'
 						GROUP BY
 							finishing_batch_entry.finishing_batch_uuid
 					) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
