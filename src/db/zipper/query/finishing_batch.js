@@ -378,7 +378,16 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					vodf.end_type_name,
 					finishing_batch.production_date::date as production_date,
 					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
-					 jsonb_agg(DISTINCT jsonb_build_object('value', finishing_batch.uuid, 'label', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')))) AS batch_numbers,
+					jsonb_agg(DISTINCT 
+						jsonb_build_object(
+							'batch_uuid', finishing_batch.uuid, 
+							'batch_number', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')), 
+							'order_description_uuid', vodf.order_description_uuid, 
+							'order_number', vodf.order_number,
+							'batch_quantity', SUM(finishing_batch_entry.quantity)::float8,
+							'production_quantity', SUM(fbp.production_quantity)::float8
+						)
+					) AS batch_numbers,
 					 jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_description_uuid, 'label', vodf.order_number)) AS order_numbers
 				FROM
 					zipper.finishing_batch
@@ -388,6 +397,8 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					public.production_capacity pc ON pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
 				LEFT JOIN
 					zipper.finishing_batch_entry ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
+				LEFT JOIN 
+					zipper.finishing_batch_production fbp ON (finishing_batch_entry.uuid = fbp.finishing_batch_entry_uuid AND fbp.section)
 				WHERE
 					DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 				GROUP BY

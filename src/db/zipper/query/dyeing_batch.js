@@ -165,7 +165,7 @@ export async function selectAll(req, res, next) {
 						? sql`dyeing_batch.received = 1`
 						: sql`1 = 1`
 			}	
-		GROUP BY dyeing_batch.uuid, public.machine.name, public.machine.min_capacity, public.machine.max_capacity, users.name, expected.total_quantity, expected.expected_kg, expected.order_numbers, expected.total_actual_production_quantity, expected.party_name, oe_colors.colors
+		GROUP BY dyeing_batch.uuid, public.machine.name, public.machine.min_capacity, public.machine.max_capacity, users.name, expected.total_quantity, expected.expected_kg, expected.order_numbers, expected.total_actual_production_quantity, expected.party_name, oe_colors.colors, machine.water_capacity
 		ORDER BY expected.order_numbers DESC, dyeing_batch.id DESC
 	`;
 	const resultPromise = db.execute(query);
