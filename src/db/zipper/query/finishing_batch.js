@@ -385,8 +385,8 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 							'order_description_uuid', vodf.order_description_uuid, 
 							'order_number', vodf.order_number,
 							'batch_quantity', fb_sum.batch_quantity::float8,
-							'production_quantity', fbp.production_quantity::float8,
-							'balance_quantity', fb_sum.batch_quantity::float8 - fbp.production_quantity::float8
+							'production_quantity', coalesce(fbp.production_quantity, 0)::float8,
+							'balance_quantity', fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8
 						)
 					) AS batch_numbers,
 					jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_description_uuid, 'label', vodf.order_number)) AS order_numbers
