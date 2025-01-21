@@ -103,7 +103,8 @@ export async function selectAll(req, res, next) {
 			expected.party_name,
 			oe_colors.colors as color,
 			dyeing_batch.batch_type as batch_type,
-			dyeing_batch.order_info_uuid
+			dyeing_batch.order_info_uuid,
+			machine.water_capacity::float8 as water_capacity
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
 		LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
@@ -204,6 +205,9 @@ export async function select(req, res, next) {
 			batch_type: dyeing_batch.batch_type,
 			order_info_uuid: dyeing_batch.order_info_uuid,
 			order_number: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			water_capacity: decimalToNumber(
+				publicSchema.machine.water_capacity
+			),
 		})
 		.from(dyeing_batch)
 		.leftJoin(
