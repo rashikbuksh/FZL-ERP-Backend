@@ -384,9 +384,9 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 							'batch_number', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')), 
 							'order_description_uuid', vodf.order_description_uuid, 
 							'order_number', vodf.order_number,
-							'batch_quantity', fbp.batch_quantity::float8,
+							'batch_quantity', fb_sum.batch_quantity::float8,
 							'production_quantity', fbp.production_quantity::float8,
-							'balance_quantity', fbp.batch_quantity::float8 - fbp.production_quantity::float8
+							'balance_quantity', fb_sum.batch_quantity::float8 - fbp.production_quantity::float8
 						)
 					) AS batch_numbers,
 					jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_description_uuid, 'label', vodf.order_number)) AS order_numbers
@@ -402,7 +402,16 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					(
 						SELECT
 							finishing_batch_entry.finishing_batch_uuid,
-							SUM(finishing_batch_entry.quantity) as batch_quantity,
+							SUM(finishing_batch_entry.quantity) as batch_quantity
+						FROM
+							zipper.finishing_batch_entry
+						GROUP BY
+							finishing_batch_entry.finishing_batch_uuid
+					) fb_sum ON fb_sum.finishing_batch_uuid = finishing_batch.uuid
+				LEFT JOIN 
+					(
+						SELECT
+							finishing_batch_entry.finishing_batch_uuid,
 							SUM(fbp.production_quantity) as production_quantity
 						FROM
 							zipper.finishing_batch_production fbp
