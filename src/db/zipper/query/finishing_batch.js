@@ -340,7 +340,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 			end_type_properties.name AS end_type_name,
 			production_capacity.quantity::float8 AS production_capacity_quantity,
 			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name) AS item_description,
-			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name,'(', production_capacity.quantity::float8, ')') AS item_description_quantity
+			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name,' (', production_capacity.quantity::float8, ')') AS item_description_quantity
 
 		FROM
 			public.production_capacity
@@ -351,7 +351,9 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 		LEFT JOIN
 			public.properties zipper_number_properties ON production_capacity.zipper_number = zipper_number_properties.uuid
 		LEFT JOIN
-			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid	
+			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid
+		ORDER BY
+			item_description ASC
 	`;
 
 	const resultPromise = sql`
