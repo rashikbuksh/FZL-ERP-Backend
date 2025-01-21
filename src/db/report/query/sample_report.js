@@ -144,6 +144,8 @@ export async function selectSampleReportByDate(req, res, next) {
                            oe.company_price::float8,
                            oe.party_price::float8,
                            sfg.pi::float8,
+                           sfg.finishing_prod::float8,
+                           (oe.quantity::float8 - sfg.finishing_prod - sfg.warehouse::float8 - sfg.delivered::float8) as balance,
                            sfg.warehouse::float8,
                            sfg.delivered::float8,
                            CONCAT(
