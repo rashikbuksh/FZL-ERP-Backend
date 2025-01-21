@@ -28,6 +28,7 @@ export const defThreadCountLength = {
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		is_cancelled: SE.boolean(),
 	},
 	xml: {
 		name: 'Thread/CountLength',

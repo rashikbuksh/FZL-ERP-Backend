@@ -698,80 +698,80 @@ export async function selectOrderZipperThread(req, res, next) {
 	const { from_date, to_date, page } = req.query;
 
 	const query = sql`
-					WITH running_all_sum AS (
-					SELECT 
-						vodf.order_info_uuid, 
-						coalesce(
-							SUM(
-								CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-							), 
-							0
-						)::float8 AS total_close_end_quantity, 
-						coalesce(
-							SUM(
-								CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-							), 
-							0
-						)::float8 AS total_open_end_quantity, 
-						coalesce(
-							SUM(
-								CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-							) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
-							0
-						)::float8 as total_close_end_value, 
-						coalesce(
-							SUM(
-								CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-							) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
-							0
-						)::float8 as total_open_end_value,
-						coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-						coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value
-					FROM 
-						delivery.v_packing_list_details vpl 
-						LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
-						LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
-						AND oe.order_description_uuid = vodf.order_description_uuid 
-					WHERE 
-						vpl.is_warehouse_received = true 
-						AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
-						AND vpl.item_for NOT IN ('thread', 'sample_thread')
-					GROUP BY 
-						vodf.order_info_uuid,
-						vodf.order_type,
-						oe.company_price
-					),
-					running_all_sum_thread AS (
-                    SELECT 
-                        toi.uuid as order_info_uuid,
-                        coalesce(
-                            SUM(
-                                vpl.quantity ::float8
-                            ),
-                            0
-                        )::float8 AS total_close_end_quantity,
-                        0 as total_open_end_quantity,
-                        coalesce(
-                            SUM(
-                                vpl.quantity ::float8
-                            ) * toe.company_price,
-                            0
-                        )::float8 as total_close_end_value,
-                        0 as total_open_end_value,
-                        coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                        coalesce(SUM(vpl.quantity) * toe.company_price, 0)::float8 as total_prod_value
-                    FROM
-                        delivery.v_packing_list_details vpl
-                        LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
-                        LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
-                        AND toi.uuid = toe.order_info_uuid
-                    WHERE
-                        vpl.is_warehouse_received = true
-                        AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
-                        AND vpl.item_for IN ('thread', 'sample_thread')
-                    GROUP BY
-                        toi.uuid, toe.company_price
-				)
+						WITH running_all_sum AS (
+						SELECT 
+							vodf.order_info_uuid, 
+							coalesce(
+								SUM(
+									CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+								), 
+								0
+							)::float8 AS total_close_end_quantity, 
+							coalesce(
+								SUM(
+									CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+								), 
+								0
+							)::float8 AS total_open_end_quantity, 
+							coalesce(
+								SUM(
+									CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+								) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+								0
+							)::float8 as total_close_end_value, 
+							coalesce(
+								SUM(
+									CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+								) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+								0
+							)::float8 as total_open_end_value,
+							coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
+							coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value
+						FROM 
+							delivery.v_packing_list_details vpl 
+							LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
+							LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
+							AND oe.order_description_uuid = vodf.order_description_uuid 
+						WHERE 
+							vpl.is_warehouse_received = true 
+							AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+							AND vpl.item_for NOT IN ('thread', 'sample_thread')
+						GROUP BY 
+							vodf.order_info_uuid,
+							vodf.order_type,
+							oe.company_price
+						),
+						running_all_sum_thread AS (
+						SELECT 
+							toi.uuid as order_info_uuid,
+							coalesce(
+								SUM(
+									vpl.quantity ::float8
+								),
+								0
+							)::float8 AS total_close_end_quantity,
+							0 as total_open_end_quantity,
+							coalesce(
+								SUM(
+									vpl.quantity ::float8
+								) * toe.company_price,
+								0
+							)::float8 as total_close_end_value,
+							0 as total_open_end_value,
+							coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
+							coalesce(SUM(vpl.quantity) * toe.company_price, 0)::float8 as total_prod_value
+						FROM
+							delivery.v_packing_list_details vpl
+							LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
+							LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
+							AND toi.uuid = toe.order_info_uuid
+						WHERE
+							vpl.is_warehouse_received = true
+							AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+							AND vpl.item_for IN ('thread', 'sample_thread')
+						GROUP BY
+							toi.uuid, toe.company_price
+						)
 						SELECT
 							oz.uuid AS value,
 							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label
@@ -780,7 +780,7 @@ export async function selectOrderZipperThread(req, res, next) {
 						LEFT JOIN zipper.v_order_details vodf ON oz.uuid = vodf.order_info_uuid
 						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum ras ON oz.uuid = ras.order_info_uuid` : sql``}
 						WHERE 
-							vodf.item_description != '---' AND vodf.item_description != ''
+							vodf.item_description != '---' AND vodf.item_description != '' AND vodf.is_cancelled = false
 						UNION 
 						SELECT
 							ot.uuid AS value,
@@ -788,6 +788,8 @@ export async function selectOrderZipperThread(req, res, next) {
 						FROM
 							thread.order_info ot
 						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum_thread rast ON ot.uuid = rast.order_info_uuid` : sql``}
+						WHERE 
+							ot.is_cancelled = false
 						;`;
 
 	const orderZipperThreadPromise = db.execute(query);

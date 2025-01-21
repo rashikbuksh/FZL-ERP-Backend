@@ -88,6 +88,7 @@ export const order_info = thread.table('order_info', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 	revision_no: integer('revision_no').default(0),
+	is_cancelled: boolean('is_cancelled').default(false),
 });
 
 export const order_entry = thread.table('order_entry', {
