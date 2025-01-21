@@ -152,7 +152,7 @@ export async function selectAll(req, res, next) {
 							GROUP BY cmpe.manual_pi_uuid
 						) AS cmpe_total_value ON cmpe_total_value.manual_pi_uuid = cmp.uuid
 						WHERE
-							${marketingUuid ? sql` cmp.marketing_uuid = marketingUuid` : sql` TRUE`}
+							${own_uuid ? sql`cmp.marketing_uuid = ${marketingUuid}` : sql`1=1`}
 						GROUP BY
 							cmp.uuid,
 							cmp.pi_uuids,
