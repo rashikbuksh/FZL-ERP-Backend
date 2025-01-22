@@ -190,12 +190,12 @@ export async function selectByDate(req, res, next) {
 					SUM((
 						CASE 
 							WHEN vodf.order_type = 'tape' 
-								THEN ((tcr.top + tcr.bottom + be.quantity) * 1) / 100 / tc.dyed_per_kg_meter::float8
+								THEN ((tcr.top + tcr.bottom + be.quantity) * 1) / 100 / tcr.dyed_mtr_per_kg::float8
 									ELSE ((tcr.top + tcr.bottom + CASE 
 										WHEN vodf.is_inch = 1 
 											THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC) 
 											ELSE CAST(oe.size AS NUMERIC)
-										END) * be.quantity::float8) / 100 / tc.dyed_per_kg_meter::float8
+										END) * be.quantity::float8) / 100 / tcr.dyed_mtr_per_kg::float8
 								END
 					)::numeric), 3) as expected_kg, 
 				be.dyeing_batch_uuid, 

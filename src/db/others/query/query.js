@@ -953,7 +953,7 @@ export async function selectOrderDescription(req, res, next) {
 					totals_of_oe.total_quantity::float8,
 					tcr.top::float8,
 					tcr.bottom::float8,
-					tape_coil.dyed_per_kg_meter::float8,
+					tcr.dyed_mtr_per_kg::float8,
 					vodf.is_multi_color,
 					CASE WHEN vodf.is_multi_color = 1 THEN vodf.multi_color_tape_received ELSE coalesce(batch_stock.stock,0)::float8 END as stock,
 					styles_colors.style_color_object,
@@ -1072,7 +1072,7 @@ export async function selectOrderDescription(req, res, next) {
 					totals_of_oe.total_quantity::float8,
 					tcr.top::float8,
 					tcr.bottom::float8,
-					tape_coil.dyed_per_kg_meter::float8,
+					tcr.dyed_mtr_per_kg::float8,
 					CASE 
 						WHEN vodf.is_multi_color = 1 
 						THEN vodf.multi_color_tape_received 
