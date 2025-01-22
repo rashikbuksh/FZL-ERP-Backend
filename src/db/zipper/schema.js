@@ -543,6 +543,8 @@ export const tape_coil_required = zipper.table('tape_coil_required', {
 	),
 	top: PG_DECIMAL('top').notNull(),
 	bottom: PG_DECIMAL('bottom').notNull(),
+	raw_mtr_per_kg: PG_DECIMAL('raw_mtr_per_kg').default(0),
+	dyed_mtr_per_kg: PG_DECIMAL('dyed_mtr_per_kg').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

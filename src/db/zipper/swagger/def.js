@@ -503,6 +503,8 @@ export const def_zipper_tape_coil_required = SED({
 		zipper_number_uuid: SE.uuid(),
 		top: SE.number('100.0'),
 		bottom: SE.number('100.0'),
+		raw_mtr_per_kg: SE.number('100.0'),
+		dyed_mtr_per_kg: SE.number('100.0'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),

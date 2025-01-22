@@ -94,6 +94,10 @@ export async function selectAll(req, res, next) {
 			zipper_number_name: zipperNumberProperties.name,
 			top: decimalToNumber(tape_coil_required.top),
 			bottom: decimalToNumber(tape_coil_required.bottom),
+			raw_mtr_per_kg: decimalToNumber(tape_coil_required.raw_mtr_per_kg),
+			dyed_mtr_per_kg: decimalToNumber(
+				tape_coil_required.dyed_mtr_per_kg
+			),
 			created_by: tape_coil_required.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_coil_required.created_at,
@@ -157,6 +161,10 @@ export async function select(req, res, next) {
 			zipper_number_name: zipperNumberProperties.name,
 			top: decimalToNumber(tape_coil_required.top),
 			bottom: decimalToNumber(tape_coil_required.bottom),
+			raw_mtr_per_kg: decimalToNumber(tape_coil_required.raw_mtr_per_kg),
+			dyed_mtr_per_kg: decimalToNumber(
+				tape_coil_required.dyed_mtr_per_kg
+			),
 			created_by: tape_coil_required.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: tape_coil_required.created_at,
