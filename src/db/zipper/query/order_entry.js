@@ -12,6 +12,19 @@ import {
 	sfg,
 } from '../schema.js';
 
+const findOrCreateArray = (array, key, value, createFn) => {
+	let index = array.findIndex((item) =>
+		key
+			.map((indKey, index) => item[indKey] === value[index])
+			.every((item) => item)
+	);
+	if (index === -1) {
+		array.push(createFn());
+		index = array.length - 1;
+	}
+	return array[index];
+};
+
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -304,6 +317,197 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 		};
 
 		res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { order_info_uuid } = req.params;
+
+	const query = sql`
+		SELECT 
+			vodf.order_description_uuid,
+			vodf.order_info_uuid,
+			vodf.item_description,
+			CONCAT(
+                    CASE WHEN (vodf.zipper_number_name IS NOT NULL OR vodf.zipper_number_name != '---') THEN '#' ELSE '' END,
+                    vodf.zipper_number_name, 
+                    CASE WHEN (vodf.item_name IS NOT NULL OR vodf.item_name != '---') THEN ' - ' ELSE '' END,
+                    vodf.item_name, 
+                    CASE WHEN (vodf.nylon_stopper_name IS NOT NULL OR vodf.nylon_stopper_name != '---') THEN ' - ' ELSE '' END,
+                    vodf.nylon_stopper_name, 
+                    CASE WHEN is_multi_color = 1 THEN ' (Multi Color) ' ELSE '' END,
+					CASE WHEN order_type = 'tape' THEN ' Long Chain ' ELSE '' END, 
+					CASE WHEN (vodf.end_type_name IS NOT NULL OR vodf.end_type_name != '---') THEN ' - ' ELSE '' END,
+					vodf.end_type_name,
+					CASE WHEN (vodf.hand_name IS NOT NULL OR vodf.hand_name != '---') THEN ' - ' ELSE '' END,
+					vodf.hand_name,
+					CASE WHEN (vodf.teeth_type_name IS NOT NULL OR vodf.teeth_type_name != '---') THEN ' - ' ELSE '' END,
+					vodf.teeth_type_name,
+					CASE WHEN (vodf.teeth_color_name IS NOT NULL OR vodf.teeth_color_name != '---') THEN ' - ' ELSE '' END,
+					vodf.teeth_color_name,
+					CASE WHEN vodf.is_waterproof = true THEN ' (Waterproof) ' ELSE '' END
+				) as tape,
+			CONCAT(
+                vodf.puller_type_name, 
+                CASE WHEN (vodf.puller_type_name IS NOT NULL OR vodf.puller_type_name != '---') THEN ' Puller' ELSE '' END,
+                CASE WHEN (vodf.lock_type_name IS NOT NULL OR vodf.lock_type_name != '---') THEN ' - ' ELSE '' END,
+                vodf.lock_type_name, 
+                CASE WHEN (vodf.coloring_type_name IS NOT NULL OR vodf.coloring_type_name != '---') THEN ' - ' ELSE '' END,
+                vodf.coloring_type_name, 
+                CASE WHEN (vodf.puller_color_name IS NOT NULL OR vodf.puller_color_name != '---') THEN ' - Slider: ' ELSE '' END,
+                vodf.puller_color_name,
+                CASE WHEN (vodf.slider_name IS NOT NULL OR vodf.slider_name != '---') THEN ' - ' ELSE '' END,
+                vodf.slider_name,
+                CASE WHEN (vodf.slider_body_shape_name IS NOT NULL OR vodf.slider_body_shape_name != '---') THEN ' - ' ELSE '' END,
+                vodf.slider_body_shape_name,
+                CASE WHEN (vodf.slider_link_name IS NOT NULL OR vodf.slider_link_name != '---') THEN ' - ' ELSE '' END,
+                vodf.slider_link_name,
+                CASE WHEN (vodf.logo_type_name IS NOT NULL OR vodf.logo_type_name != '---') THEN ' - ' ELSE '' END,
+                vodf.logo_type_name,
+                CASE WHEN (vodf.logo_type_name IS NOT NULL OR vodf.logo_type_name != '---') THEN 
+                    CONCAT(
+                        ' (', 
+                        CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE '' END, 
+                        CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE '' END, 
+                        ')'
+                    ) 
+                ELSE '' END,
+                CASE WHEN (vodf.top_stopper_name IS NOT NULL OR vodf.top_stopper_name != '---') THEN ' - ' ELSE '' END,
+                vodf.top_stopper_name,
+                CASE WHEN (vodf.bottom_stopper_name IS NOT NULL OR vodf.bottom_stopper_name != '---') THEN ' - ' ELSE '' END,
+                vodf.bottom_stopper_name,
+                ' - ',
+                REPLACE(vodf.slider_provided::text, '_', ' ')
+            ) as slider,
+            vodf.special_requirement,
+            vodf.order_type,
+            vodf.is_multi_color,
+            vodf.is_waterproof,
+            vodf.description,
+            vodf.light_preference_name,
+            vodf.garments_wash,
+            vodf.revision_no,
+			oe.uuid as order_entry_uuid,
+			oe.style,
+			oe.color,
+			oe.size,
+			oe.is_inch,
+			oe.quantity::float8,
+			oe.company_price::float8,
+			oe.party_price::float8,
+			oe.status as order_entry_status,
+			oe.swatch_status_enum as swatch_status,
+			oe.swatch_approval_date,
+			oe.bleaching,
+			oe.created_at,
+			oe.updated_at,
+			oe.index
+		FROM 
+			zipper.v_order_details_full vodf
+		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+		WHERE
+			vodf.order_info_uuid = ${order_info_uuid}
+	`;
+
+	const orderEntryPromise = db.query(query);
+
+	try {
+		const data = await orderEntryPromise;
+
+		const groupedData = data?.rows.reduce((acc, row) => {
+			const {
+				style,
+				tape,
+				slider,
+				item_description,
+				special_requirement,
+				order_type,
+				is_multi_color,
+				is_waterproof,
+				description,
+				light_preference_name,
+				garments_wash,
+				revision_no,
+				order_entry_uuid,
+				color,
+				size,
+				is_inch,
+				quantity,
+				company_price,
+				party_price,
+				order_entry_status,
+				swatch_status,
+				swatch_approval_date,
+				bleaching,
+				created_at,
+				updated_at,
+				index,
+			} = row;
+
+			// group using style then tape,slider and other vodf fields, then order_entry fields
+
+			const styleEntry = findOrCreateArray(
+				acc,
+				['style'],
+				[style],
+				() => ({
+					style,
+					item_description: [],
+				})
+			);
+
+			const itemDescription = findOrCreateArray(
+				styleEntry.orders,
+				['tape', 'slider'],
+				[tape, slider],
+				() => ({
+					tape,
+					slider,
+					special_requirement,
+					order_type,
+					is_multi_color,
+					is_waterproof,
+					description,
+					light_preference_name,
+					garments_wash,
+					revision_no,
+					details: [],
+				})
+			);
+
+			itemDescription.details.push({
+				order_entry_uuid,
+				color,
+				size,
+				is_inch,
+				quantity,
+				company_price,
+				party_price,
+				order_entry_status,
+				swatch_status,
+				swatch_approval_date,
+				bleaching,
+				created_at,
+				updated_at,
+				index,
+			});
+
+			return acc;
+		}, []);
+
+		console.log(groupedData);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Entry Full',
+		};
+
+		res.status(200).json({ toast, data: groupedData });
 	} catch (error) {
 		await handleError({ error, res });
 	}

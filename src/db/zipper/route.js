@@ -85,6 +85,10 @@ zipperRouter.get(
 	'/order/entry/full/uuid/by/:order_description_uuid',
 	orderEntryOperations.selectOrderEntryFullByOrderDescriptionUuid
 );
+zipperRouter.get(
+	'/order-all-info/by/:order_info_uuid',
+	orderEntryOperations.selectOrderAllInfoByOrderInfoUuid
+);
 
 // --------------------- SFG ROUTES ---------------------
 
