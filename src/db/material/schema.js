@@ -42,6 +42,7 @@ export const type = material.table('type', {
 
 export const info = material.table('info', {
 	uuid: uuid_primary,
+	index: integer('index').default(0),
 	section_uuid: defaultUUID('section_uuid').references(() => section.uuid),
 	type_uuid: defaultUUID('type_uuid').references(() => type.uuid),
 	name: text('name').notNull().unique(),
@@ -67,7 +68,6 @@ export const stock = material.table('stock', {
 	material_uuid: defaultUUID('material_uuid').references(() => info.uuid, {
 		onDelete: 'CASCADE',
 	}),
-	index: integer('index').default(0),
 	stock: decimal('stock', {
 		precision: 20,
 		scale: 4,
