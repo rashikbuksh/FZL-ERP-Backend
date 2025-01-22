@@ -140,7 +140,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN 
 			zipper.order_description od ON od.uuid = dcp.order_description_uuid
 		LEFT JOIN
-			zipper.v_order_details_full vodf ON vodf.order_description_uuid = od.order_description_uuid
+			zipper.v_order_details_full vodf ON vodf.order_description_uuid = od.uuid
 		ORDER BY
 			dcp.created_at DESC`;
 
