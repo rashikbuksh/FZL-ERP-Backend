@@ -76,8 +76,7 @@ export async function selectAll(req, res, next) {
 			dcp.uuid,
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
-			fb.order_description_uuid,
-			fb.uuid as finishing_batch_uuid,
+			od.uuid as order_description_uuid,
 			concat('FB', to_char(fb.created_at, 'YY'::text), '-', lpad((fb.id)::text, 4, '0'::text)) as batch_number,
 			vodf.order_number,
 			vodf.item_description,
@@ -139,9 +138,9 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN
 			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN 
-			zipper.finishing_batch fb ON fb.uuid = dcp.finishing_batch_uuid
+			zipper.order_description od ON od.uuid = dcp.order_description_uuid
 		LEFT JOIN
-			zipper.v_order_details_full vodf ON vodf.order_description_uuid = fb.order_description_uuid
+			zipper.v_order_details_full vodf ON vodf.order_description_uuid = od.order_description_uuid
 		ORDER BY
 			dcp.created_at DESC`;
 
@@ -169,8 +168,7 @@ export async function select(req, res, next) {
 			dcp.uuid,
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
-			fb.order_description_uuid,
-			fb.uuid as finishing_batch_uuid,
+			od.uuid as order_description_uuid,
 			concat('FB', to_char(fb.created_at, 'YY'::text), '-', lpad((fb.id)::text, 4, '0'::text)) as batch_number,
 			vodf.order_number,
 			vodf.item_description,
@@ -229,7 +227,7 @@ export async function select(req, res, next) {
 		LEFT JOIN
 			hr.users ON users.uuid = dcp.created_by
 		LEFT JOIN 
-			zipper.finishing_batch fb ON fb.uuid = dcp.finishing_batch_uuid
+			zipper.order_description od ON od.uuid = dcp.order_description_uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON vodf.order_description_uuid = fb.order_description_uuid
 		WHERE dcp.uuid = ${req.params.uuid}
