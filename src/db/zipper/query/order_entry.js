@@ -13,6 +13,9 @@ import {
 } from '../schema.js';
 
 const findOrCreateArray = (array, key, value, createFn) => {
+	if (!array) {
+		array = [];
+	}
 	let index = array.findIndex((item) =>
 		key
 			.map((indKey, index) => item[indKey] === value[index])
@@ -461,7 +464,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			);
 
 			const itemDescription = findOrCreateArray(
-				styleEntry.orders,
+				styleEntry.item_description,
 				['tape', 'slider'],
 				[tape, slider],
 				() => ({
