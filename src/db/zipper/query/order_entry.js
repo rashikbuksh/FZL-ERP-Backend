@@ -408,7 +408,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			oe.bleaching,
 			oe.created_at,
 			oe.updated_at,
-			oe.index
+			oe.index,
+			CASE WHEN vodf.is_inch = 1 THEN 'Inch' ELSE CASE WHEN vodf.is_meter = 1 THEN 'Meter' ELSE 'CM' END END as unit
 		FROM 
 			zipper.v_order_details_full vodf
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -439,6 +440,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				color,
 				size,
 				is_inch,
+				unit,
 				quantity,
 				company_price,
 				party_price,
@@ -487,6 +489,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				color,
 				size,
 				is_inch,
+				unit,
 				quantity,
 				company_price,
 				party_price,
