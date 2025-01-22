@@ -217,8 +217,8 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			,0) as max_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
-			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
-			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
+			tcr.raw_per_kg_meter::float8 as raw_mtr_per_kg,
+			tcr.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
 			vodf.order_type,
 			vodf.slider_provided
 		FROM

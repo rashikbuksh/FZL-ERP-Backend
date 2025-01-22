@@ -190,8 +190,8 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			COALESCE(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 * 100 ELSE oe.quantity::float8 END - be_total.total_quantity, 0) + be.quantity::float8 as max_quantity,
 			tcr.top::float8,
 			tcr.bottom::float8,
-			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
-			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
+			tcr.raw_per_kg_meter::float8 as raw_mtr_per_kg,
+			tcr.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
 			vodf.order_type,
 			b.batch_type as batch_type,
 			vodf.is_sample,
@@ -329,8 +329,8 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			tcr.top::float8,
 			tcr.bottom::float8,
 			0 as quantity,
-			tc.raw_per_kg_meter::float8 as raw_mtr_per_kg,
-			tc.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
+			tcr.raw_per_kg_meter::float8 as raw_mtr_per_kg,
+			tcr.dyed_per_kg_meter::float8 as dyed_mtr_per_kg,
 			${batch_type == 'extra' ? sql`'extra'` : sql`'normal'`} as batch_type,
 			vodf.is_sample
 		FROM

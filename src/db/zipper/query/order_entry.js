@@ -325,7 +325,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_info_uuid } = req.params;
+	const { order_number } = req.params;
 
 	const query = sql`
 		SELECT 
@@ -410,7 +410,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			zipper.v_order_details_full vodf
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 		WHERE
-			vodf.order_info_uuid = ${order_info_uuid}
+			vodf.order_number = ${order_number}
 	`;
 
 	const orderEntryPromise = db.query(query);

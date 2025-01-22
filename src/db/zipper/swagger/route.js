@@ -900,7 +900,7 @@ export const pathZipperOrderEntry = {
 			},
 		},
 	},
-	'/zipper/order-all-info/by/{order_info_uuid}': {
+	'/zipper/order-all-info/by/{order_number}': {
 		get: {
 			tags: ['zipper.order_entry'],
 			summary: 'Gets a Order Entry Full By Order Info UUID',
@@ -908,7 +908,7 @@ export const pathZipperOrderEntry = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('orderInfo to get', 'order_info_uuid'),
+				SE.parameter_params('orderInfo to get', 'order_number'),
 			],
 			responses: {
 				200: SE.response_schema(200, {

@@ -86,7 +86,7 @@ zipperRouter.get(
 	orderEntryOperations.selectOrderEntryFullByOrderDescriptionUuid
 );
 zipperRouter.get(
-	'/order-all-info/by/:order_info_uuid',
+	'/order-all-info/by/:order_number',
 	orderEntryOperations.selectOrderAllInfoByOrderInfoUuid
 );
 
