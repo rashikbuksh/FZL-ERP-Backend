@@ -413,7 +413,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			vodf.order_number = ${order_number}
 	`;
 
-	const orderEntryPromise = db.query(query);
+	const orderEntryPromise = db.execute(query);
 
 	try {
 		const data = await orderEntryPromise;

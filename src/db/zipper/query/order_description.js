@@ -741,8 +741,8 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 			v_order_details_full.*, 
 			tape_coil_required.top::float8, 
 			tape_coil_required.bottom::float8,
-			tape_coil_required.raw_mtr_per_kg::float8,
-			tape_coil_required.dyed_mtr_per_kg::float8,
+			tape_coil_required.raw_mtr_per_kg::float8 as raw_per_kg_meter,
+			tape_coil_required.dyed_mtr_per_kg::float8 as dyed_per_kg_meter,
 			pi_cash_grouped.pi_numbers
 		FROM 
 			zipper.v_order_details_full 
