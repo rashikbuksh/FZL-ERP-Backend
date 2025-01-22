@@ -77,7 +77,6 @@ export async function selectAll(req, res, next) {
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
 			od.uuid as order_description_uuid,
-			concat('FB', to_char(fb.created_at, 'YY'::text), '-', lpad((fb.id)::text, 4, '0'::text)) as batch_number,
 			vodf.order_number,
 			vodf.item_description,
 			vodf.item,
@@ -169,7 +168,6 @@ export async function select(req, res, next) {
 			dcp.die_casting_uuid,
 			die_casting.name AS die_casting_name,
 			od.uuid as order_description_uuid,
-			concat('FB', to_char(fb.created_at, 'YY'::text), '-', lpad((fb.id)::text, 4, '0'::text)) as batch_number,
 			vodf.order_number,
 			vodf.item_description,
 			vodf.item,
@@ -229,7 +227,7 @@ export async function select(req, res, next) {
 		LEFT JOIN 
 			zipper.order_description od ON od.uuid = dcp.order_description_uuid
 		LEFT JOIN
-			zipper.v_order_details_full vodf ON vodf.order_description_uuid = fb.order_description_uuid
+			zipper.v_order_details_full vodf ON vodf.order_description_uuid = od.uuid
 		WHERE dcp.uuid = ${req.params.uuid}
 		`;
 
