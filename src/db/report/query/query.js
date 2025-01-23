@@ -1792,7 +1792,7 @@ export async function dailyProductionReport(req, res, next) {
                     ) order_info_total_quantity ON vodf.order_info_uuid = order_info_total_quantity.order_info_uuid
                 WHERE 
                     vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---'
-                    AND coalesce(running_all_sum.total_close_end_quantity, 0)::float8 + coalesce(running_all_sum.total_open_end_quantity, 0)::float8 > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                    AND (coalesce(running_all_sum.total_close_end_quantity, 0)::float8 + coalesce(running_all_sum.total_open_end_quantity, 0)::float8) > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
                 GROUP BY 
                     oe.company_price,
                     oe.size,

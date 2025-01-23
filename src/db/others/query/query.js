@@ -818,7 +818,7 @@ export async function selectOrderInfoToGetOrderDescription(req, res, next) {
 
 	const query = sql`
 		SELECT * 
-		FROM zipper.v_order_details 
+		FROM zipper.v_order_details_full 
 		WHERE 
 			v_order_details.order_number = ${order_number} 
 			${marketing_uuid ? sql`AND v_order_details.marketing_uuid = ${marketing_uuid}` : sql``}
