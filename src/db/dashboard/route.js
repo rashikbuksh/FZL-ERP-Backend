@@ -64,7 +64,10 @@ dashBoardRouter.get('/lc-feed', lcFeedOperations.selectLcFeed);
 
 dashBoardRouter.get('/stock-status', stockStatusOperations.selectStockStatus);
 
-dashBoardRouter.get('/order-entry', orderEntryOperations.selectOrderEntry);
+dashBoardRouter.get(
+	'/order-entry',
+	orderEntryOperations.selectOrderEntryTotalOrdersAndItemWiseQuantity
+);
 
 dashBoardRouter.get(
 	'/amount-and-doc',

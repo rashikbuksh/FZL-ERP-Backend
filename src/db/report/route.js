@@ -3,6 +3,7 @@ import { Router } from 'express';
 import SE, { SED } from '../../util/swagger_example.js';
 import { selectCashInvoice } from './query/cash_invoice.js';
 import { deliveryStatementReport } from './query/delivery_statement.js';
+import { selectItemZipperEndApprovedQuantity } from './query/item_zipper_number_end_wise_approved.js';
 import { selectLabDip } from './query/lab_dip.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
@@ -127,6 +128,12 @@ reportRouter.get(
 
 // * lab dip data
 reportRouter.get('/lab-dip', selectLabDip);
+
+// * Item Zipper Number End Wise Approved
+reportRouter.get(
+	'/item-zipper-number-end-wise-approved',
+	selectItemZipperEndApprovedQuantity
+);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -770,6 +777,24 @@ export const pathReport = {
 					total_weight: SE.number(610),
 					yarn_quantity: SE.number(610),
 					total_coning_production_quantity: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/item-zipper-number-end-wise-approved': {
+		get: {
+			summary: 'Item Zipper Number End Wise Approved',
+			description: 'Item Zipper Number End Wise Approved',
+			tags: ['report'],
+			operationId: 'selectItemZipperEndApprovedQuantity',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					item_name: SE.string('Item Name'),
+					zipper_number_name: SE.string('Zipper Number Name'),
+					end_type_name: SE.string('End Type Name'),
+					not_approved: SE.number(610),
+					approved: SE.number(610),
 				}),
 			},
 		},

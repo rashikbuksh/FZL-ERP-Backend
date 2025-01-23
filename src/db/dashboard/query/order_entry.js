@@ -2,20 +2,30 @@ import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
-export async function selectOrderEntry(req, res, next) {
+export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
               	SELECT 
                     COALESCE(z.date, t.date) as date,
                     COALESCE(z.total_quantity, 0)::float8 as zipper,
-                    COALESCE(t.total_quantity, 0)::float8 as thread
+                    COALESCE(t.total_quantity, 0)::float8 as thread,
+                    COALESCE(z.nylon_plastic_quantity, 0)::float8 as nylon_plastic,
+                    COALESCE(z.nylon_quantity, 0)::float8 as nylon,
+                    COALESCE(z.metal_quantity, 0)::float8 as metal,
+                    COALESCE(z.vislon_quantity, 0)::float8 as vislon
                 FROM 
                     (
-						SELECT DATE(zod.created_at) as date, SUM(zoe.quantity) as total_quantity
+						SELECT 
+							DATE(vodf.order_description_created_at) as date, 
+							SUM(zoe.quantity) as total_quantity,
+							SUM(CASE WHEN (lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) = 'plastic') THEN zoe.quantity ELSE 0 END)::float8 as nylon_plastic_quantity,
+							SUM(CASE WHEN (lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic') THEN zoe.quantity ELSE 0 END)::float8 as nylon_quantity,
+							SUM(CASE WHEN (lower(vodf.item_name) = 'metal') THEN zoe.quantity ELSE 0 END)::float8 as metal_quantity,
+							SUM(CASE WHEN (lower(vodf.item_name) = 'vislon') THEN zoe.quantity ELSE 0 END)::float8 as vislon_quantity
 						FROM zipper.order_entry zoe
-						LEFT JOIN zipper.order_description zod ON zoe.order_description_uuid = zod.uuid
-						GROUP BY DATE(zod.created_at)
+						LEFT JOIN zipper.v_order_details_full vodf ON zoe.order_description_uuid = vodf.order_description_uuid
+						GROUP BY DATE(vodf.order_description_created_at)
 					) z
                 FULL OUTER JOIN 
                     (
