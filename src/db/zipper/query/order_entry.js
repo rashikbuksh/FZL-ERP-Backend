@@ -391,6 +391,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
             vodf.is_multi_color,
             vodf.is_waterproof,
             vodf.description,
+			vodf.remarks,
             vodf.light_preference_name,
             vodf.garments_wash,
 			vodf.garments_remarks,
@@ -418,7 +419,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 						ELSE 'CM'
 					END 
 			END as unit,
-			oe.remarks
+			oe.order_entry_remarks
 		FROM 
 			zipper.v_order_details_full vodf
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -442,6 +443,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				is_multi_color,
 				is_waterproof,
 				description,
+				remarks,
 				light_preference_name,
 				garments_wash,
 				garments_remarks,
@@ -461,7 +463,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				created_at,
 				updated_at,
 				index,
-				remarks,
+				order_entry_remarks,
 			} = row;
 
 			// group using style then tape,slider and other vodf fields, then order_entry fields
@@ -492,6 +494,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 					garments_wash,
 					revision_no,
 					garments_remarks,
+					remarks,
 					details: [],
 				})
 			);
@@ -512,7 +515,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				created_at,
 				updated_at,
 				index,
-				remarks,
+				order_entry_remarks,
 			});
 
 			return acc;
