@@ -410,15 +410,15 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			oe.created_at,
 			oe.updated_at,
 			oe.index,
-			oe.remarks,
-			CASE WHEN vodf.is_inch = 1 
-				THEN 'Inch' 
+			CASE 
+				WHEN vodf.is_inch = 1 THEN 'Inch' 
 				ELSE 
-					CASE WHEN vodf.order_type = 'tape
-						THEN 'Meter' 
-						ELSE 'CM' 
+					CASE 
+						WHEN vodf.order_type = 'tape' THEN 'Meter'
+						ELSE 'CM'
 					END 
-			END as unit
+			END as unit,
+			oe.remarks
 		FROM 
 			zipper.v_order_details_full vodf
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
