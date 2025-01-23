@@ -419,7 +419,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 						ELSE 'CM'
 					END 
 			END as unit,
-			oe.order_entry_remarks
+			oe.remarks as order_entry_remarks
 		FROM 
 			zipper.v_order_details_full vodf
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
