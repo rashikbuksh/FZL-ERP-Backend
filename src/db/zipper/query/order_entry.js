@@ -391,8 +391,10 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
             vodf.is_multi_color,
             vodf.is_waterproof,
             vodf.description,
+			vodf.remarks,
             vodf.light_preference_name,
             vodf.garments_wash,
+			vodf.garments_remarks,
             vodf.revision_no,
 			oe.uuid as order_entry_uuid,
 			oe.style,
@@ -408,7 +410,16 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			oe.bleaching,
 			oe.created_at,
 			oe.updated_at,
-			oe.index
+			oe.index,
+			CASE 
+				WHEN vodf.is_inch = 1 THEN 'Inch' 
+				ELSE 
+					CASE 
+						WHEN vodf.order_type = 'tape' THEN 'Meter'
+						ELSE 'CM'
+					END 
+			END as unit,
+			oe.remarks as order_entry_remarks
 		FROM 
 			zipper.v_order_details_full vodf
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -432,13 +443,16 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				is_multi_color,
 				is_waterproof,
 				description,
+				remarks,
 				light_preference_name,
 				garments_wash,
+				garments_remarks,
 				revision_no,
 				order_entry_uuid,
 				color,
 				size,
 				is_inch,
+				unit,
 				quantity,
 				company_price,
 				party_price,
@@ -449,6 +463,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				created_at,
 				updated_at,
 				index,
+				order_entry_remarks,
 			} = row;
 
 			// group using style then tape,slider and other vodf fields, then order_entry fields
@@ -478,6 +493,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 					light_preference_name,
 					garments_wash,
 					revision_no,
+					garments_remarks,
+					remarks,
 					details: [],
 				})
 			);
@@ -487,6 +504,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				color,
 				size,
 				is_inch,
+				unit,
 				quantity,
 				company_price,
 				party_price,
@@ -497,6 +515,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				created_at,
 				updated_at,
 				index,
+				order_entry_remarks,
 			});
 
 			return acc;

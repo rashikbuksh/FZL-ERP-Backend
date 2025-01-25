@@ -108,6 +108,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { purpose, trx_to } = req.query;
+
 	const query = sql`
     SELECT
         mtaod.uuid,
@@ -141,8 +143,11 @@ export async function selectAll(req, res, next) {
 		material.stock stock ON mtaod.material_uuid = stock.material_uuid
 	LEFT JOIN
 		material.booking booking ON mtaod.booking_uuid = booking.uuid
+	WHERE
+		${purpose ? sql`mtaod.purpose = ${purpose}` : sql`TRUE`}
+		${trx_to ? sql`OR mtaod.trx_to = ${trx_to}` : sql``}
 	ORDER BY mtaod.created_at DESC
-    `;
+	`;
 
 	const materialTrxAgainstOrderPromise = db.execute(query);
 

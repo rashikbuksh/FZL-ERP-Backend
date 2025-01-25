@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
-export async function selectWorkInHand(req, res, next) {
+export async function selectItemZipperEndApprovedQuantity(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
@@ -14,9 +14,11 @@ export async function selectWorkInHand(req, res, next) {
                             THEN vodf.item_name
                             ELSE vodf.item_name 
                         END as item_name,
+                        vodf.zipper_number_name,
+                        vodf.end_type_name,
                         sum(
                             CASE 
-                                WHEN vodf.order_type != 'slider' AND sfg.recipe_uuid IS NULL 
+                                WHEN sfg.recipe_uuid IS NULL 
                                 THEN oe.quantity::float8  
                                 ELSE 0 
                             END
@@ -34,6 +36,8 @@ export async function selectWorkInHand(req, res, next) {
                         zipper.sfg sfg 
                         LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                         LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    WHERE 
+                        vodf.order_type != 'slider'
                     GROUP BY 
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
@@ -41,31 +45,11 @@ export async function selectWorkInHand(req, res, next) {
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
                             THEN vodf.item_name
                             ELSE vodf.item_name 
-                        END
-
-                    UNION
-                    SELECT 
-                        'Sewing Thread' as item_name,
-                        sum(
-                            CASE 
-                                WHEN toe.recipe_uuid IS NULL 
-                                THEN toe.quantity::float8  
-                                ELSE 0 
-                            END
-                        ) as not_approved,
-                        sum(
-                            CASE 
-                                WHEN toe.recipe_uuid IS NOT NULL 
-                                THEN toe.quantity::float8  - toe.warehouse::float8 - toe.delivered::float8
-                                ELSE 0 
-                            END
-                        ) as approved
-                    FROM
-                        thread.order_entry toe
-                    GROUP BY
-                        item_name
+                        END,
+                        vodf.zipper_number_name,
+                        vodf.end_type_name
                     ORDER BY 
-                        item_name
+                        item_name, zipper_number_name, end_type_name;
 
     `;
 	const resultPromise = db.execute(query);
@@ -81,7 +65,7 @@ export async function selectWorkInHand(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'Work in Hand',
+			message: 'Item zipper number end wise approved quantity',
 		};
 
 		return res.status(200).json({ toast, data: data.rows });

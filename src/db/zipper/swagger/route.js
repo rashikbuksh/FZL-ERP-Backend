@@ -3039,7 +3039,11 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 	'/zipper/material-trx-against-order': {
 		get: {
 			tags: ['zipper.material_trx_against_order_description'],
-			summary: 'Get all Material Trx',
+			summary: 'Get all Material Trx Against Order Description',
+			parameters: [
+				SE.parameter_query('trx_to', 'trx_to', 'string'),
+				SE.parameter_query('purpose', 'purpose'),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -3058,6 +3062,7 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 					updated_at: SE.date_time(),
 					booking_uuid: SE.uuid(),
 					booking_number: SE.string('MB24-0001'),
+					purpose: SE.string('Purpose'),
 				}),
 			},
 		},
@@ -3107,6 +3112,7 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 					updated_at: SE.date_time(),
 					booking_uuid: SE.uuid(),
 					booking_number: SE.string('MB24-0001'),
+					purpose: SE.string('Purpose'),
 				}),
 				400: SE.response(400),
 				404: SE.response(404),
