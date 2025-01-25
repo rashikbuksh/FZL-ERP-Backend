@@ -695,7 +695,8 @@ export async function PiToBeRegister(req, res, next) {
                 vodf_grouped.total_quantity_value::float8,
                 vodf_grouped.total_delivered_value::float8,
                 vodf_grouped.total_pi_value::float8,
-                vodf_grouped.total_non_pi_value::float8
+                vodf_grouped.total_non_pi_value::float8,
+                true as is_zipper
             FROM
                 public.party party
             LEFT JOIN (
@@ -733,6 +734,54 @@ export async function PiToBeRegister(req, res, next) {
                 vodf_grouped.total_delivered > 0 OR 
                 vodf_grouped.total_pi > 0 OR
                 vodf_grouped.total_non_pi > 0) AND ${own_uuid == null ? sql`TRUE` : sql`vodf_grouped.marketing_uuid = ${marketingUuid}`}
+            UNION 
+            SELECT 
+                party.uuid,
+                party.name,
+                toi_grouped.order_object,
+                toi_grouped.total_quantity::float8,
+                toi_grouped.total_delivered::float8,
+                toi_grouped.total_pi::float8,
+                toi_grouped.total_non_pi::float8,
+                toi_grouped.total_quantity_value::float8,
+                toi_grouped.total_delivered_value::float8,
+                toi_grouped.total_pi_value::float8,
+                toi_grouped.total_non_pi_value::float8,
+                false as is_zipper
+            FROM
+                public.party party
+            LEFT JOIN (
+                SELECT 
+                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')))) as order_object,
+                    SUM(toe.quantity) AS total_quantity,
+                    SUM(toe.delivered) AS total_delivered,
+                    SUM(toe.pi) AS total_pi,
+                    SUM(toe.quantity - toe.pi) AS total_non_pi,
+                    SUM(toe.quantity * toe.party_price) AS total_quantity_value,
+                    SUM(toe.delivered * toe.party_price) AS total_delivered_value,
+                    SUM(toe.pi * toe.party_price) AS total_pi_value,
+                    SUM((toe.quantity - toe.pi) * toe.party_price) AS total_non_pi_value,
+                    toi.party_uuid,
+                    toi.marketing_uuid
+                FROM
+                    thread.order_entry toe
+                LEFT JOIN 
+                    thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                LEFT JOIN (
+                    SELECT DISTINCT toi.uuid
+                    FROM commercial.pi_cash_entry
+                    LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+                    LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                ) order_exists_in_pi ON toi.uuid = order_exists_in_pi.uuid
+                WHERE order_exists_in_pi.uuid IS NULL
+                GROUP BY
+                    toi.party_uuid, toi.marketing_uuid
+            ) toi_grouped ON party.uuid = toi_grouped.party_uuid
+            WHERE 
+                (toi_grouped.total_quantity > 0 OR 
+                toi_grouped.total_delivered > 0 OR 
+                toi_grouped.total_pi > 0 OR 
+                toi_grouped.total_non_pi > 0) AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
         `;
 
 		const resultPromise = db.execute(query);
