@@ -265,10 +265,10 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		CASE WHEN be_given.total_quantity IS NULL THEN 0 ELSE
 			be_given.total_quantity::float8
 		END as total_trx_quantity,
-		CASE WHEN be.transfer_quantity IS NULL THEN 0 ELSE be.transfer_quantity::float8 END as transfer_quantity,
-		CASE WHEN be.transfer_carton_quantity IS NULL THEN 0 ELSE be.transfer_carton_quantity::float8 END as transfer_carton_quantity,
-		CASE WHEN be.yarn_quantity IS NULL THEN 0 ELSE
-			be.yarn_quantity::float8
+		CASE WHEN be_given.transfer_quantity IS NULL THEN 0 ELSE be_given.transfer_quantity::float8 END as transfer_quantity,
+		CASE WHEN be_given.transfer_carton_quantity IS NULL THEN 0 ELSE be_given.transfer_carton_quantity::float8 END as transfer_carton_quantity,
+		CASE WHEN be_given.yarn_quantity IS NULL THEN 0 ELSE
+			be_given.yarn_quantity::float8
 		END as yarn_quantity,
 		0 as quantity,
 		(oe.quantity - coalesce(be_given.total_quantity,0))::float8 as balance_quantity,
@@ -287,14 +287,15 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	(
 		SELECT 
 			batch_entry.order_entry_uuid,
-			SUM(batch_entry.quantity) as total_quantity
+			SUM(batch_entry.quantity) as total_quantity,
+			SUM(batch_entry.yarn_quantity) as yarn_quantity,
+			SUM(batch_entry.transfer_quantity) as transfer_quantity,
+			SUM(batch_entry.transfer_carton_quantity) as transfer_carton_quantity
 		FROM 
 			thread.batch_entry
 		GROUP BY 
 			batch_entry.order_entry_uuid
 	) as be_given ON be_given.order_entry_uuid = oe.uuid
-	 LEFT JOIN 
-	 	thread.batch_entry be ON be.order_entry_uuid = oe.uuid
 	WHERE
     oe.recipe_uuid IS NOT NULL 
     ${batch_type === 'extra' ? sql`` : sql` AND (oe.quantity - COALESCE(be_given.total_quantity, 0)) > 0`}
