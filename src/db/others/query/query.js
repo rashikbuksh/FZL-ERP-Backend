@@ -792,6 +792,7 @@ export async function selectOrderZipperThread(req, res, next) {
 							ARRAY_AGG(DISTINCT toe.color) as colors
 						FROM
 							thread.order_info ot
+						LEFT JOIN thread.order_entry toe ON ot.uuid = toe.order_info_uuid
 						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum_thread rast ON ot.uuid = rast.order_info_uuid` : sql``}
 						WHERE 
 							ot.is_cancelled = false
