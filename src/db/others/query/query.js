@@ -783,6 +783,7 @@ export async function selectOrderZipperThread(req, res, next) {
 						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum ras ON oz.uuid = ras.order_info_uuid` : sql``}
 						WHERE 
 							vodf.item_description != '---' AND vodf.item_description != '' AND vodf.is_cancelled = false
+							${page == 'production_statement' ? sql`AND ras.total_close_end_value + ras.total_open_end_value > 0` : sql``}
 						GROUP BY
 							oz.uuid, oz.is_sample, oz.created_at, oz.id
 						UNION 
@@ -796,6 +797,7 @@ export async function selectOrderZipperThread(req, res, next) {
 						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum_thread rast ON ot.uuid = rast.order_info_uuid` : sql``}
 						WHERE 
 							ot.is_cancelled = false
+							${page == 'production_statement' ? sql`AND rast.total_close_end_value > 0` : sql``}
 						GROUP BY
 							ot.uuid, ot.is_sample, ot.created_at, ot.id
 						;`;
