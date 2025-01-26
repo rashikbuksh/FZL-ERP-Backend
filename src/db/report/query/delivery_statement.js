@@ -28,6 +28,8 @@ export async function deliveryStatementReport(req, res, next) {
 		report_for,
 	} = req.query;
 
+	console.log('order_info_uuid', order_info_uuid);
+
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
 	const marketingUuidQuery = sql`
@@ -449,15 +451,19 @@ export async function deliveryStatementReport(req, res, next) {
 		} else {
 		}
 
+		let filterData = [];
+
 		// filter by order_info_uuid
 		if (order_info_uuid) {
-			data.rows = data.rows.filter(
+			filterData = data?.rows?.filter(
 				(row) => row.order_info_uuid === order_info_uuid
 			);
+		} else {
+			filterData = data.rows;
 		}
 
 		// first group by type, then party_name, then order_number, then item_description, then size
-		const groupedData = data?.rows.reduce((acc, row) => {
+		const groupedData = filterData.reduce((acc, row) => {
 			const {
 				type,
 				party_uuid,
