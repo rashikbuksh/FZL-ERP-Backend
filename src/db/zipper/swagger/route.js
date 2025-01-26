@@ -909,6 +909,11 @@ export const pathZipperOrderEntry = {
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params('orderInfo to get', 'order_number'),
+				SE.parameter_query(
+					'order_description_uuid',
+					'order_description_uuid',
+					[SE.uuid()]
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {
