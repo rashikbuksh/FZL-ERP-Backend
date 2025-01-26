@@ -774,22 +774,29 @@ export async function selectOrderZipperThread(req, res, next) {
 						)
 						SELECT
 							oz.uuid AS value,
-							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label
+							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label,
+							ARRAY_AGG(DISTINCT oe.color) as colors,
 						FROM
 							zipper.order_info oz
 						LEFT JOIN zipper.v_order_details vodf ON oz.uuid = vodf.order_info_uuid
+						LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum ras ON oz.uuid = ras.order_info_uuid` : sql``}
 						WHERE 
 							vodf.item_description != '---' AND vodf.item_description != '' AND vodf.is_cancelled = false
+						GROUP BY
+							oz.uuid, oz.is_sample, oz.created_at, oz.id
 						UNION 
 						SELECT
 							ot.uuid AS value,
-							CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label
+							CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label,
+							ARRAY_AGG(DISTINCT toe.color) as colors
 						FROM
 							thread.order_info ot
 						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum_thread rast ON ot.uuid = rast.order_info_uuid` : sql``}
 						WHERE 
 							ot.is_cancelled = false
+						GROUP BY
+							ot.uuid, ot.is_sample, ot.created_at, ot.id
 						;`;
 
 	const orderZipperThreadPromise = db.execute(query);

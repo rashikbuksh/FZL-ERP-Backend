@@ -432,6 +432,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 	try {
 		const data = await orderEntryPromise;
 
+		let arrayData;
+
 		const groupedData = data?.rows.reduce((acc, row) => {
 			const {
 				style,
@@ -521,7 +523,105 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			return acc;
 		}, []);
 
-		console.log(groupedData);
+		// arrayData will be same as groupedData but it will have extra group of color
+
+		arrayData = data?.rows.reduce(
+			(acc, row) => {
+				const {
+					style,
+					tape,
+					slider,
+					item_description,
+					special_requirement,
+					order_type,
+					is_multi_color,
+					is_waterproof,
+					description,
+					remarks,
+					light_preference_name,
+					garments_wash,
+					garments_remarks,
+					revision_no,
+					order_entry_uuid,
+					color,
+					size,
+					is_inch,
+					unit,
+					quantity,
+					company_price,
+					party_price,
+					order_entry_status,
+					swatch_status,
+					swatch_approval_date,
+					bleaching,
+					created_at,
+					updated_at,
+					index,
+					order_entry_remarks,
+				} = row;
+
+				// group using style then tape,slider and other vodf fields, then order_entry fields
+
+				const itemDescription = findOrCreateArray(
+					acc,
+					['tape', 'slider'],
+					[tape, slider],
+					() => ({
+						tape,
+						slider,
+						special_requirement,
+						order_type,
+						is_multi_color,
+						is_waterproof,
+						description,
+						light_preference_name,
+						garments_wash,
+						revision_no,
+						garments_remarks,
+						remarks,
+						details: [],
+					})
+				);
+
+				const colorEntry = findOrCreateArray(
+					itemDescription.details,
+					['color'],
+					[color],
+					() => ({
+						color,
+						sizes: [],
+					})
+				);
+
+				colorEntry.sizes.push({
+					order_entry_uuid,
+					style,
+					size,
+					is_inch,
+					unit,
+					quantity,
+					company_price,
+					party_price,
+					order_entry_status,
+					swatch_status,
+					swatch_approval_date,
+					bleaching,
+					created_at,
+					updated_at,
+					index,
+					order_entry_remarks,
+				});
+
+				return acc;
+			},
+
+			[]
+		);
+
+		const response = {
+			data: groupedData,
+			pageData: arrayData,
+		};
 
 		const toast = {
 			status: 200,
@@ -529,7 +629,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			message: 'Order Entry Full',
 		};
 
-		res.status(200).json({ toast, data: groupedData });
+		res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}
