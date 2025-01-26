@@ -10,6 +10,8 @@ export async function selectItemZipperEndApprovedQuantity(req, res, next) {
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
                             THEN vodf.item_name || ' ' || 'Plastic'
+                            WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Invisible')
+                            THEN vodf.item_name || ' ' || 'Invisible'
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
                             THEN vodf.item_name
                             ELSE vodf.item_name 
@@ -42,6 +44,8 @@ export async function selectItemZipperEndApprovedQuantity(req, res, next) {
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
                             THEN vodf.item_name || ' ' || 'Plastic'
+                            WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Invisible')
+                            THEN vodf.item_name || ' ' || 'Invisible'
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
                             THEN vodf.item_name
                             ELSE vodf.item_name 
