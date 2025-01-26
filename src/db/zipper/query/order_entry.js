@@ -562,8 +562,18 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 
 				// group using style then tape,slider and other vodf fields, then order_entry fields
 
-				const itemDescription = findOrCreateArray(
+				const styleEntry = findOrCreateArray(
 					acc,
+					['style'],
+					[style],
+					() => ({
+						style,
+						item_description: [],
+					})
+				);
+
+				const itemDescription = findOrCreateArray(
+					styleEntry.item_description,
 					['tape', 'slider'],
 					[tape, slider],
 					() => ({
