@@ -469,6 +469,7 @@ export const pathReport = {
 					'order_info_uuid',
 					SE.uuid()
 				),
+				SE.parameter_query('report_for', 'report_for', ['accounts']),
 			],
 			responses: {
 				200: SE.response_schema(200, {

@@ -28,8 +28,6 @@ export async function deliveryStatementReport(req, res, next) {
 		report_for,
 	} = req.query;
 
-	console.log('order_info_uuid', order_info_uuid);
-
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
 	const marketingUuidQuery = sql`
