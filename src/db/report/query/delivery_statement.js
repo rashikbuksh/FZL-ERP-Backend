@@ -200,7 +200,7 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.marketing_name,
                     vodf.order_info_uuid,
                     vodf.order_number,
-                    CONCAT(vodf.order_number, ' - ', CASE WHEN vodf.is_cash = 0 THEN '(PI)' ELSE '(CASH)' END) as order_number_with_cash,
+                    CONCAT(vodf.order_number, ' - ', CASE WHEN vodf.is_cash = 0 THEN ' (PI)' ELSE ' (CASH)' END) as order_number_with_cash,
                     vodf.item_name,
                     CASE WHEN vodf.order_type = 'slider' THEN 'Slider' ELSE vodf.item_name END as type,
                     vodf.party_uuid,

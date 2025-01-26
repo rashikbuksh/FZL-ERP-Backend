@@ -780,10 +780,25 @@ export async function selectOrderZipperThread(req, res, next) {
 							zipper.order_info oz
 						LEFT JOIN zipper.v_order_details vodf ON oz.uuid = vodf.order_info_uuid
 						LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum ras ON oz.uuid = ras.order_info_uuid` : sql``}
+						${
+							page == 'production_statement'
+								? sql`
+								LEFT JOIN running_all_sum ras ON oz.uuid = ras.order_info_uuid
+								LEFT JOIN delivery.v_packing_list_details vpl ON vpl.order_description_uuid = vodf.order_description_uuid
+								`
+								: sql``
+						}
 						WHERE 
 							vodf.item_description != '---' AND vodf.item_description != '' AND vodf.is_cancelled = false
-							${page == 'production_statement' ? sql`AND ras.total_close_end_value + ras.total_open_end_value > 0` : sql``}
+							${
+								page == 'production_statement'
+									? sql` 
+								AND ras.total_close_end_value + ras.total_open_end_value > 0
+								AND vpl.is_warehouse_received = true
+								AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+								`
+									: sql``
+							}
 						GROUP BY
 							oz.uuid, oz.is_sample, oz.created_at, oz.id
 						UNION 
@@ -794,10 +809,25 @@ export async function selectOrderZipperThread(req, res, next) {
 						FROM
 							thread.order_info ot
 						LEFT JOIN thread.order_entry toe ON ot.uuid = toe.order_info_uuid
-						${page == 'production_statement' ? sql`LEFT JOIN running_all_sum_thread rast ON ot.uuid = rast.order_info_uuid` : sql``}
+						${
+							page == 'production_statement'
+								? sql`
+							LEFT JOIN running_all_sum_thread rast ON ot.uuid = rast.order_info_uuid
+							LEFT JOIN delivery.v_packing_list_details vpl ON vpl.order_info_uuid = ot.uuid
+							`
+								: sql``
+						}
 						WHERE 
 							ot.is_cancelled = false
-							${page == 'production_statement' ? sql`AND rast.total_close_end_value > 0` : sql``}
+							${
+								page == 'production_statement'
+									? sql` 
+								AND rast.total_close_end_value > 0
+								AND vpl.is_warehouse_received = true
+								AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+								`
+									: sql``
+							}
 						GROUP BY
 							ot.uuid, ot.is_sample, ot.created_at, ot.id
 						;`;

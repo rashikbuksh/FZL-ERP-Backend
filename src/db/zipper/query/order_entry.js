@@ -426,6 +426,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 		WHERE
 			vodf.order_number = ${order_number} AND ${order_description_uuid ? sql`vodf.order_description_uuid = ${order_description_uuid}` : sql`true`}
+		ORDER BY
+			oe.size
 	`;
 
 	const orderEntryPromise = db.execute(query);
