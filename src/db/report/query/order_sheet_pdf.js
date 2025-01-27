@@ -151,7 +151,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                             null as slider_details,
                             null as other_details,
                             false as is_zipper,
-                            toi.remarks,
+                            toi.remarks
                         FROM 
                             thread.order_info toi
                         LEFT JOIN public.marketing pmt ON pmt.uuid = toi.marketing_uuid
