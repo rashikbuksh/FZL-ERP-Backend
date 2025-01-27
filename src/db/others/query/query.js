@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, min, ne, or, sql, sum } from 'drizzle-orm';
+import { and, asc, desc, eq, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
@@ -11,7 +11,6 @@ import * as labDipSchema from '../../lab_dip/schema.js';
 import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as purchaseSchema from '../../purchase/schema.js';
-import * as sliderSchema from '../../slider/schema.js';
 import * as threadSchema from '../../thread/schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 
@@ -1917,7 +1916,7 @@ export async function selectLabDipRecipe(req, res, next) {
 			? and(
 					or(
 						eq(labDipSchema.info_entry.approved, 1),
-						eq(labDipSchema.info_entry.marketing_approved, 1)
+						eq(labDipSchema.info_entry.is_pps_req, 1)
 					),
 					bleaching
 						? eq(labDipSchema.recipe.bleaching, bleaching)
@@ -1997,8 +1996,8 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	LEFT JOIN
 		lab_dip.info ON info_entry.lab_dip_info_uuid = lab_dip.info.uuid
 	WHERE 
-		(lab_dip.info_entry.approved = 1 OR lab_dip.info_entry.marketing_approved = 1) AND
-		${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND (lab_dip.info_entry.approved = 1 OR lab_dip.info_entry.marketing_approved = 1) ` : sql`1=1`}
+		(lab_dip.info_entry.approved = 1 OR lab_dip.info_entry.is_pps_req = 1) AND
+		${thread_order_info_uuid ? sql`lab_dip.info.thread_order_info_uuid = ${thread_order_info_uuid} AND (lab_dip.info_entry.approved = 1 OR lab_dip.info_entry.is_pps_req = 1) ` : sql`1=1`}
 		AND
 		${bleaching ? sql` recipe.bleaching = ${bleaching}` : sql`1=1`}
 	`;

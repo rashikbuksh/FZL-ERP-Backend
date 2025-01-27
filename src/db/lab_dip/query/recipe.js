@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gt, lte, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, lte, or, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -8,9 +8,7 @@ import * as threadSchema from '../../thread/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import { info, info_entry, recipe } from '../schema.js';
-
 import { dyes_category, programs } from '../../thread/schema.js';
-
 import { alias } from 'drizzle-orm/pg-core';
 
 const thread = alias(threadSchema.order_info, 'thread');
@@ -307,8 +305,8 @@ export async function selectRecipeByLabDipInfoUuid(req, res, next) {
 			recipe_created_at: recipe.created_at,
 			recipe_updated_at: recipe.updated_at,
 			approved_date: info_entry.approved_date,
-			marketing_approved: info_entry.marketing_approved,
-			marketing_approved_date: info_entry.marketing_approved_date,
+			is_pps_req: info_entry.is_pps_req,
+			is_pps_req_date: info_entry.is_pps_req_date,
 			info_entry_uuid: info_entry.uuid,
 			lad_dip_info_uuid: info_entry.lab_dip_info_uuid,
 			info_entry_created_at: info_entry.created_at,

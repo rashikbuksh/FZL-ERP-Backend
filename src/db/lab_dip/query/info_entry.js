@@ -1,6 +1,4 @@
 import { desc, eq, sql } from 'drizzle-orm';
-import { alias, uuid } from 'drizzle-orm/pg-core';
-import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
@@ -86,8 +84,8 @@ export async function select(req, res, next) {
 			recipe_name: recipe.name,
 			approved: info_entry.approved,
 			approved_date: info_entry.approved_date,
-			marketing_approved: info_entry.marketing_approved,
-			marketing_approved_date: info_entry.marketing_approved_date,
+			is_pps_req: info_entry.is_pps_req,
+			is_pps_req_date: info_entry.is_pps_req_date,
 			created_by: info_entry.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: info_entry.created_at,
@@ -129,8 +127,8 @@ export async function selectAll(req, res, next) {
 			recipe_name: recipe.name,
 			approved: info_entry.approved,
 			approved_date: info_entry.approved_date,
-			marketing_approved: info_entry.marketing_approved,
-			marketing_approved_date: info_entry.marketing_approved_date,
+			is_pps_req: info_entry.is_pps_req,
+			is_pps_req_date: info_entry.is_pps_req_date,
 			created_by: info_entry.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: info_entry.created_at,
