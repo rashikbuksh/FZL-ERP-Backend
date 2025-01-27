@@ -53,12 +53,17 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const batchEntryPromise = db
-		.delete(dyeing_batch_entry)
-		.where(eq(dyeing_batch_entry.uuid, req.params.uuid))
-		.returning({ deletedUuid: dyeing_batch_entry.uuid });
-
+	const query = sql`
+		DELETE FROM zipper.dyeing_batch_production
+		WHERE dyeing_batch_entry_uuid = ${req.params.uuid}
+	`;
 	try {
+		await db.execute(query);
+		const batchEntryPromise = db
+			.delete(dyeing_batch_entry)
+			.where(eq(dyeing_batch_entry.uuid, req.params.uuid))
+			.returning({ deletedUuid: dyeing_batch_entry.uuid });
+
 		const data = await batchEntryPromise;
 		const toast = {
 			status: 201,
