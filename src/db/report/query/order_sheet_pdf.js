@@ -9,7 +9,7 @@ export async function selectOrderSheetPdf(req, res, next) {
 	const { date } = req.query;
 
 	try {
-		const query = sql`
+		const zipper_query = sql`
                         SELECT 
                             CONCAT('Z', 
                                         CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
@@ -115,8 +115,10 @@ export async function selectOrderSheetPdf(req, res, next) {
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
                         WHERE
                             DATE(od.created_at) = ${date}
-                        UNION
-                        SELECT 
+                        ORDER BY
+                            order_number ASC, item_description ASC;`;
+
+		const thread_query = sql`SELECT 
                             CONCAT('ST', 
                                     CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END,
                                     to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')
@@ -171,9 +173,11 @@ export async function selectOrderSheetPdf(req, res, next) {
                             order_number ASC, item_description ASC;
                     `;
 
-		const resultPromise = db.execute(query);
+		const zipperResultPromise = db.execute(zipper_query);
+		const threadResultPromise = db.execute(thread_query);
 
-		const data = await resultPromise;
+		const zipper_data = await zipperResultPromise;
+		const thread_data = await threadResultPromise;
 
 		const toast = {
 			status: 200,
@@ -181,7 +185,13 @@ export async function selectOrderSheetPdf(req, res, next) {
 			message: 'Sample report by date',
 		};
 
-		return res.status(200).json({ toast, data: data?.rows });
+		return res.status(200).json({
+			toast,
+			data: {
+				zipper: zipper_data?.rows,
+				thread: thread_data?.rows,
+			},
+		});
 	} catch (error) {
 		await handleError({ error, res });
 	}
