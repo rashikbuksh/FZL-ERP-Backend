@@ -11,83 +11,44 @@ export async function selectOrderSheetPdf(req, res, next) {
 	try {
 		const zipper_query = sql`
                         SELECT 
-                            CONCAT('Z', 
-                                        CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
-                                        to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')
-                                    ) AS order_number,
-                                oi.uuid as order_info_uuid,
-                            pm.name AS marketing_name,
-                            pp.name AS party_name,
-                            op_item.name AS item_name,
-                            od.created_at AS issue_date,
-                            CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
-                            od.uuid as order_description_uuid,
-                            od.is_inch,
-                            od.is_meter,
-                            od.is_cm,
-                            od.order_type,
-                            od_given.order_entry,
-                            CONCAT(
-                                CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
-                                CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN op_zipper.name ELSE '' END,
-                                CASE WHEN op_end.name IS NOT NULL AND op_end.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_end.name IS NOT NULL AND op_end.name != '---' THEN op_end.name ELSE '' END,
-                                CASE WHEN op_hand.name IS NOT NULL AND op_hand.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_hand.name IS NOT NULL AND op_hand.name != '---' THEN op_hand.name ELSE '' END,
-                                CASE WHEN op_teeth_type.name IS NOT NULL AND op_teeth_type.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_teeth_type.name IS NOT NULL AND op_teeth_type.name != '---' THEN op_teeth_type.name ELSE '' END,
-                                CASE WHEN op_teeth_color.name IS NOT NULL AND op_teeth_color.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_teeth_color.name IS NOT NULL AND op_teeth_color.name != '---' THEN op_teeth_color.name ELSE '' END,
-                                CASE WHEN op_nylon_stopper.name IS NOT NULL AND op_nylon_stopper.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_nylon_stopper.name IS NOT NULL AND op_nylon_stopper.name != '---' THEN op_nylon_stopper.name ELSE '' END
-                                ) AS item_details,
-                            CONCAT(
-                                    COALESCE(op_puller.name, ''),
-                                    CASE WHEN op_puller_color.name IS NOT NULL THEN ', ' ELSE '' END,
-                                    COALESCE(op_puller_color.name, ''),
-                                    CASE WHEN op_coloring.name IS NOT NULL THEN ', ' ELSE '' END,
-                                    COALESCE(op_coloring.name, ''),
-                                    CASE WHEN op_slider.name IS NOT NULL THEN ', ' ELSE '' END,
-                                    COALESCE(op_slider.name, ''),
-                                    CASE WHEN op_top_stopper.name IS NOT NULL THEN ', ' ELSE '' END,
-                                    COALESCE(op_top_stopper.name, ''),
-                                    CASE WHEN op_bottom_stopper.name IS NOT NULL THEN ', ' ELSE '' END,
-                                    COALESCE(op_bottom_stopper.name, ''),
-                                    CASE WHEN op_logo.name IS NOT NULL THEN ', ' ELSE '' END,
-                                    COALESCE(op_logo.name, ''),
-                                    CASE WHEN op_slider_body_shape.name IS NOT NULL THEN ', ' ELSE '' END,
-                                    COALESCE(op_slider_body_shape.name, ''),
-                                    CASE WHEN op_slider_link.name IS NOT NULL THEN ', ' ELSE '' END,
-                                    COALESCE(op_slider_link.name, '')
-                                ) AS slider_details,
-                            CONCAT(
-                                    od.garment,
-                                    COALESCE(op_end_user.name, ''),
-                                    CASE WHEN op_light_preference.name IS NOT NULL THEN ' ,' ELSE '' END,
-                                    COALESCE(op_light_preference.name, '')
-                                ) AS other_details,
-                            vodf.remarks,
-                            vodf.special_requirement,
-                            vodf.order_type,
-                            vodf.is_multi_color,
-                            vodf.is_waterproof,
-                            vodf.description,
-                            vodf.remarks,
-                            vodf.light_preference_name,
-                            vodf.garments_wash,
-                            vodf.garments_remarks,
-                            vodf.revision_no,
-                            true as is_zipper
-                        FROM
-                            zipper.order_info oi
-                        LEFT JOIN zipper.order_description od ON od.order_info_uuid = oi.uuid
+                            v_order_details_full.*, 
+                            tape_coil_required.top::float8, 
+                            tape_coil_required.bottom::float8,
+                            tape_coil_required.raw_mtr_per_kg::float8 as raw_per_kg_meter,
+                            tape_coil_required.dyed_mtr_per_kg::float8 as dyed_per_kg_meter,
+                            pi_cash_grouped.pi_numbers,
+                            od_given.order_entry
+                        FROM 
+                            zipper.v_order_details_full 
+                        LEFT JOIN 
+                            zipper.tape_coil_required 
+                        ON 
+                            v_order_details_full.item = tape_coil_required.item_uuid  
+                            AND v_order_details_full.zipper_number = tape_coil_required.zipper_number_uuid 
+                            AND v_order_details_full.end_type = tape_coil_required.end_type_uuid 
+                            AND (
+                                lower(v_order_details_full.item_name) != 'nylon' 
+                                OR v_order_details_full.nylon_stopper = tape_coil_required.nylon_stopper_uuid
+                            )
                         LEFT JOIN
-                                (
+                            zipper.tape_coil ON v_order_details_full.tape_coil_uuid = tape_coil.uuid
+                        LEFT JOIN (
+                            SELECT vodf.order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers
+                            FROM
+                                zipper.v_order_details_full vodf
+                                LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+                                LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+                                LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
+                                LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+                            WHERE pi_cash.id IS NOT NULL
+                            GROUP BY vodf.order_info_uuid
+                        ) pi_cash_grouped ON v_order_details_full.order_info_uuid = pi_cash_grouped.order_info_uuid
+                        LEFT JOIN (
                                 SELECT
                                     od.uuid,
                                     jsonb_agg(json_build_object(
-                                        'order_entry_uuid', oe.uuid, 
+                                        'uuid', oe.uuid, 
+                                        'order_description_uuid', oe.order_description_uuid,
                                         'style', oe.style,
                                         'color', oe.color,
                                         'size', oe.size,
@@ -103,60 +64,78 @@ export async function selectOrderSheetPdf(req, res, next) {
                                 LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid
                                 GROUP BY
                                     od.uuid
-                                ) od_given ON od_given.uuid = od.uuid 
-                        LEFT JOIN zipper.v_order_details_full vodf ON od.uuid = vodf.order_description_uuid
-                        LEFT JOIN public.marketing pm ON pm.uuid = oi.marketing_uuid
-                        LEFT JOIN public.party pp ON pp.uuid = oi.party_uuid
-                        LEFT JOIN public.properties op_item ON op_item.uuid = od.item
-                        LEFT JOIN public.properties op_zipper ON op_zipper.uuid = od.zipper_number
-                        LEFT JOIN public.properties op_end ON op_end.uuid = od.end_type
-                        LEFT JOIN public.properties op_hand ON op_hand.uuid = od.hand
-                        LEFT JOIN public.properties op_lock ON op_lock.uuid = od.lock_type
-                        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = od.teeth_type
-                        LEFT JOIN public.properties op_teeth_color ON op_teeth_color.uuid = od.teeth_color
-                        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = od.nylon_stopper
-                        LEFT JOIN public.properties op_puller ON op_puller.uuid = od.puller_type
-                        LEFT JOIN public.properties op_puller_color ON op_puller_color.uuid = od.puller_color
-                        LEFT JOIN public.properties op_coloring ON op_coloring.uuid = od.coloring_type
-                        LEFT JOIN public.properties op_slider ON op_slider.uuid = od.slider
-                        LEFT JOIN public.properties op_top_stopper ON op_top_stopper.uuid = od.top_stopper
-                        LEFT JOIN public.properties op_bottom_stopper ON op_bottom_stopper.uuid = od.bottom_stopper
-                        LEFT JOIN public.properties op_logo ON op_logo.uuid = od.logo_type
-                        LEFT JOIN public.properties op_slider_body_shape ON op_slider_body_shape.uuid = od.slider_body_shape
-                        LEFT JOIN public.properties op_slider_link ON op_slider_link.uuid = od.slider_link
-                        LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
-                        LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
+                        ) od_given ON od_given.uuid = v_order_details_full.order_description_uuid 
                         WHERE
-                            DATE(od.created_at) = ${date}
+                            DATE(v_order_details_full.order_description_created_at) = ${date}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
-		const thread_query = sql`SELECT 
-                            CONCAT('ST', 
-                                    CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END,
-                                    to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')
-                                ) AS order_number,
-                            toi.uuid as order_info_uuid,
-                            pmt.name AS marketing_name,
-                            ppt.name AS party_name,
-                            'Sewing Thread' AS item_name,
-                            toi.created_at AS issue_date,
-                            null as item_description,
-                            null as order_description_uuid,
-                            0 as is_inch,
-                            1 as is_meter,
-                            0 as is_cm,
-                            null as order_type,
-                            toe_given.order_entry,
-                            array_to_string(toe_given.item_details, ', ') as item_details,
-                            null as slider_details,
-                            null as other_details,
-                            false as is_zipper,
-                            toi.remarks
+		const thread_query = sql`
+                        SELECT 
+                            order_info.uuid,
+                            order_info.id,
+                            CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+                            pi_cash_grouped.pi_numbers,
+                            order_info.party_uuid,
+                            party.name AS party_name,
+                            order_info.marketing_uuid,
+                            marketing.name AS marketing_name,
+                            order_info.factory_uuid,
+                            factory.name AS factory_name,
+                            factory.address AS factory_address,
+                            order_info.merchandiser_uuid,
+                            merchandiser.name AS merchandiser_name,
+                            order_info.buyer_uuid,
+                            buyer.name AS buyer_name,
+                            order_info.is_sample,
+                            order_info.is_bill,
+                            order_info.is_cash,
+                            order_info.delivery_date,
+                            order_info.created_by,
+                            hr.users.name AS created_by_name,
+                            order_info.created_at,
+                            order_info.updated_at,
+                            order_info.remarks,
+                            swatch_approval_counts.swatch_approval_count,
+                            order_entry_counts.order_entry_count,
+                            CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
+                            order_info.revision_no,
+                            order_info.is_cancelled,
+                            toe_given.order_entry
                         FROM 
-                            thread.order_info toi
-                        LEFT JOIN public.marketing pmt ON pmt.uuid = toi.marketing_uuid
-                        LEFT JOIN public.party ppt ON ppt.uuid = toi.party_uuid
+                            thread.order_info
+                        LEFT JOIN 
+                            hr.users ON order_info.created_by = hr.users.uuid
+                        LEFT JOIN 
+                            public.party ON order_info.party_uuid = public.party.uuid
+                        LEFT JOIN 
+                            public.marketing ON order_info.marketing_uuid = public.marketing.uuid
+                        LEFT JOIN 
+                            public.factory ON order_info.factory_uuid = public.factory.uuid
+                        LEFT JOIN 
+                            public.merchandiser ON order_info.merchandiser_uuid = public.merchandiser.uuid
+                        LEFT JOIN 
+                            public.buyer ON order_info.buyer_uuid = public.buyer.uuid
+                        LEFT JOIN (
+                                    SELECT COUNT(toe.swatch_approval_date) AS swatch_approval_count, toe.order_info_uuid as order_info_uuid
+                                    FROM thread.order_entry toe
+                                    GROUP BY toe.order_info_uuid
+                        ) swatch_approval_counts ON order_info.uuid = swatch_approval_counts.order_info_uuid
+                        LEFT JOIN (
+                                    SELECT COUNT(*) AS order_entry_count, toe.order_info_uuid as order_info_uuid
+                                    FROM thread.order_entry toe
+                                    GROUP BY toe.order_info_uuid
+                        ) order_entry_counts ON order_info.uuid = order_entry_counts.order_info_uuid
+                        LEFT JOIN (
+                            SELECT toi.uuid as order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers
+                            FROM
+                                thread.order_info toi
+                                LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+                                LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
+                                LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+                            WHERE pi_cash.id IS NOT NULL
+                            GROUP BY toi.uuid
+                        ) pi_cash_grouped ON order_info.uuid = pi_cash_grouped.order_info_uuid
                         LEFT JOIN (
                             SELECT 
                                 toe.order_info_uuid,
@@ -181,11 +160,11 @@ export async function selectOrderSheetPdf(req, res, next) {
                                 thread.count_length cl ON cl.uuid = toe.count_length_uuid
                             GROUP BY
                                 toe.order_info_uuid
-                        ) toe_given ON toe_given.order_info_uuid = toi.uuid
+                        ) toe_given ON toe_given.order_info_uuid = order_info.uuid
                         WHERE
-                            DATE(toi.created_at) = ${date}
+                            DATE(order_info.created_at) = ${date}
                         ORDER BY
-                            order_number ASC, item_description ASC;
+                            order_number ASC;
                     `;
 
 		const zipperResultPromise = db.execute(zipper_query);
