@@ -103,6 +103,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                                 GROUP BY
                                     od.uuid
                                 ) od_given ON od_given.uuid = od.uuid 
+                        LEFT JOIN zipper.v_order_details_full vodf ON od.uuid = vodf.order_description_uuid
                         LEFT JOIN public.marketing pm ON pm.uuid = oi.marketing_uuid
                         LEFT JOIN public.party pp ON pp.uuid = oi.party_uuid
                         LEFT JOIN public.properties op_item ON op_item.uuid = od.item
