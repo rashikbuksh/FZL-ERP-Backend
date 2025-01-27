@@ -19,6 +19,7 @@ import {
 	threadProductionReportPartyWiseByDate,
 } from './query/thread_production_report_by_date.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
+import { selectOrderSheetPdf } from './query/order_sheet_pdf.js';
 
 const reportRouter = Router();
 
@@ -134,6 +135,9 @@ reportRouter.get(
 	'/item-zipper-number-end-wise-approved',
 	selectItemZipperEndApprovedQuantity
 );
+
+// * Order Sheet Pdf Report
+reportRouter.get('/order-sheet-pdf-report', selectOrderSheetPdf);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -796,6 +800,41 @@ export const pathReport = {
 					end_type_name: SE.string('End Type Name'),
 					not_approved: SE.number(610),
 					approved: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/order-sheet-pdf-report': {
+		get: {
+			summary: 'Order Sheet Pdf Report',
+			description: 'Order Sheet Pdf Report',
+			tags: ['report'],
+			operationId: 'selectOrderSheetPdf',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					order_entry: SE.sub_response_schema({
+						order_entry_uuid: SE.uuid(),
+						style: SE.string('Item Name'),
+						color: SE.string('End Type Name'),
+						size: SE.string('Size'),
+						quantity: SE.number(610),
+						created_at: SE.date_time(),
+						updated_at: SE.date_time(),
+						index: SE.number(610),
+						remarks: SE.string('Remarks'),
+					}),
 				}),
 			},
 		},
