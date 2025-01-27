@@ -92,6 +92,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                                         'color', oe.color,
                                         'size', oe.size,
                                         'quantity', oe.quantity,
+                                        'bleaching', oe.bleaching,
                                         'created_at', oe.created_at,
                                         'updated_at', oe.updated_at,
                                         'index', oe.index,
@@ -169,6 +170,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                                         'quantity', toe.quantity,
                                         'created_at', toe.created_at,
                                         'updated_at', toe.updated_at,
+                                        'bleaching', toe.bleaching,
                                         'index', toe.index,
                                         'remarks', toe.remarks
                                     )) as order_entry,
