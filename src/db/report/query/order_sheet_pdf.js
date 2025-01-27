@@ -67,7 +67,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                                     CASE WHEN op_light_preference.name IS NOT NULL THEN ' ,' ELSE '' END,
                                     COALESCE(op_light_preference.name, '')
                                 ) AS other_details,
-                            vodf.order_description_remarks as remarks,
+                            vodf.remarks,
                             vodf.special_requirement,
                             vodf.order_type,
                             vodf.is_multi_color,
