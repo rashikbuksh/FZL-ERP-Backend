@@ -67,6 +67,17 @@ export async function selectOrderSheetPdf(req, res, next) {
                                     CASE WHEN op_light_preference.name IS NOT NULL THEN ' ,' ELSE '' END,
                                     COALESCE(op_light_preference.name, '')
                                 ) AS other_details,
+                            vodf.order_description_remarks as remarks,
+                            vodf.special_requirement,
+                            vodf.order_type,
+                            vodf.is_multi_color,
+                            vodf.is_waterproof,
+                            vodf.description,
+                            vodf.remarks,
+                            vodf.light_preference_name,
+                            vodf.garments_wash,
+                            vodf.garments_remarks,
+                            vodf.revision_no,
                             true as is_zipper
                         FROM
                             zipper.order_info oi
@@ -138,7 +149,8 @@ export async function selectOrderSheetPdf(req, res, next) {
                             array_to_string(toe_given.item_details, ', ') as item_details,
                             null as slider_details,
                             null as other_details,
-                            false as is_zipper
+                            false as is_zipper,
+                            toi.remarks,
                         FROM 
                             thread.order_info toi
                         LEFT JOIN public.marketing pmt ON pmt.uuid = toi.marketing_uuid
