@@ -101,7 +101,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                             CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
                             order_info.revision_no,
                             order_info.is_cancelled,
-                            toe_given.order_entry
+                            toe_given.order_entry as order_info_entry
                         FROM 
                             thread.order_info
                         LEFT JOIN 
@@ -140,7 +140,8 @@ export async function selectOrderSheetPdf(req, res, next) {
                             SELECT 
                                 toe.order_info_uuid,
                                 jsonb_agg(json_build_object(
-                                        'order_entry_uuid', toe.uuid, 
+                                        'uuid', toe.uuid, 
+                                        'order_info_uuid', toe.order_info_uuid,
                                         'style', toe.style,
                                         'color', toe.color,
                                         'count', cl.count,
@@ -150,12 +151,34 @@ export async function selectOrderSheetPdf(req, res, next) {
                                         'created_at', toe.created_at,
                                         'updated_at', toe.updated_at,
                                         'bleaching', toe.bleaching,
+                                        'remarks', toe.remarks,
+                                        'max_weight', cl.max_weight,
+                                        'min_weight', cl.min_weight,
+                                        'cone_per_carton', cl.cone_per_carton,
+                                        'company_price', toe.company_price,
+                                        'party_price', toe.party_price,
+                                        'swatch_approval_date', toe.swatch_approval_date,
+                                        'bleaching', toe.bleaching,
+                                        'transfer_quantity', toe.transfer_quantity,
+                                        'carton_quantity', toe.carton_quantity,
+                                        'created_by', toe.created_by,
+                                        'pi', toe.pi,
+                                        'delivered', toe.delivered,
+                                        'warehouse', toe.warehouse,
+                                        'short_quantity', toe.short_quantity,
+                                        'reject_quantity', toe.reject_quantity,
+                                        'production_quantity_in_kg', toe.production_quantity_in_kg,
                                         'index', toe.index,
-                                        'remarks', toe.remarks
+                                        'lab_reference', toe.lab_reference,
+                                        'recipe_uuid', toe.recipe_uuid,
+                                        'recipe_name', recipe.name,
+                                        'po', toe.po
                                     )) as order_entry,
                                 ARRAY_AGG(CONCAT(cl.count, ' - ', cl.length)) as item_details
                             FROM
                                 thread.order_entry toe
+                            LEFT JOIN 
+                                lab_dip.recipe ON toe.recipe_uuid = lab_dip.recipe.uuid
                             LEFT JOIN 
                                 thread.count_length cl ON cl.uuid = toe.count_length_uuid
                             GROUP BY

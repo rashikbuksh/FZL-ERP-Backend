@@ -186,40 +186,34 @@ BEGIN
         UPDATE 
             thread.order_entry
         SET 
-            production_quantity = production_quantity - ple.quantity
-        FROM delivery.packing_list_entry ple
+            production_quantity = production_quantity - NEW.quantity
         WHERE 
-            order_entry.uuid = NEW.thread_order_entry_uuid AND ple.uuid = NEW.uuid;
+            order_entry.uuid = NEW.thread_order_entry_uuid;
 
         IF is_warehouse_received_gp = TRUE THEN
             UPDATE 
                 thread.order_entry
             SET 
-                warehouse = warehouse + ple.quantity
-            FROM delivery.packing_list_entry ple
+                warehouse = warehouse + NEW.quantity
             WHERE 
-                order_entry.uuid = NEW.thread_order_entry_uuid AND ple.uuid = NEW.uuid;
+                order_entry.uuid = NEW.thread_order_entry_uuid;
         END IF;
     ELSE
 
         UPDATE 
             zipper.sfg
         SET 
-            finishing_prod = finishing_prod - ple.quantity
-        FROM 
-            delivery.packing_list_entry ple
+            finishing_prod = finishing_prod - NEW.quantity
         WHERE 
-            sfg.uuid = NEW.sfg_uuid AND ple.uuid = NEW.uuid;
+            sfg.uuid = NEW.sfg_uuid;
 
         IF is_warehouse_received_gp = TRUE THEN
             UPDATE 
                 zipper.sfg
             SET 
-                warehouse = warehouse + ple.quantity
-            FROM 
-                delivery.packing_list_entry ple
+                warehouse = warehouse + NEW.quantity
             WHERE 
-                sfg.uuid = NEW.sfg_uuid AND ple.uuid = NEW.uuid;
+                sfg.uuid = NEW.sfg_uuid;
         END IF;
     END IF;
 
