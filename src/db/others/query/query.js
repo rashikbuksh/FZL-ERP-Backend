@@ -1831,6 +1831,7 @@ export async function selectHrUser(req, res, next) {
 			label: hrSchema.users.name,
 			designation: hrSchema.designation.designation,
 			department: hrSchema.department.department,
+			can_access: hrSchema.users.can_access,
 		})
 		.from(hrSchema.users)
 		.leftJoin(
