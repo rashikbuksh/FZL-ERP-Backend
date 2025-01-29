@@ -214,6 +214,8 @@ export async function selectOrderSheetPdf(req, res, next) {
 				return row.item_name === 'Vislon';
 			} else if (type === 'metal') {
 				return row.item_name === 'Metal';
+			} else {
+				return true;
 			}
 		});
 		if (type === 'thread') {
