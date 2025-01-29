@@ -810,7 +810,10 @@ export const pathReport = {
 			description: 'Order Sheet Pdf Report',
 			tags: ['report'],
 			operationId: 'selectOrderSheetPdf',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					order_info_uuid: SE.uuid(),
