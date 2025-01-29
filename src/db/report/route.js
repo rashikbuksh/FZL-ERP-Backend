@@ -306,6 +306,8 @@ export const pathReport = {
 				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
 				SE.parameter_query('from', 'from', '2024-10-01'),
 				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('time_from', 'time_from', '00:00:00'),
+				SE.parameter_query('time_to', 'time_to', '23:59:59'),
 			],
 			responses: {
 				200: SE.response_schema(200, {

@@ -6,7 +6,7 @@ import db from '../../index.js';
 export async function selectOrderSheetPdf(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { from_date, to_date } = req.query;
+	const { from_date, to_date, type, marketing, party } = req.query;
 
 	try {
 		const zipper_query = sql`
@@ -67,6 +67,8 @@ export async function selectOrderSheetPdf(req, res, next) {
                         ) od_given ON od_given.uuid = v_order_details_full.order_description_uuid 
                         WHERE
                             DATE(v_order_details_full.order_description_created_at) BETWEEN ${from_date} AND ${to_date}
+                            AND ${marketing ? sql`v_order_details_full.marketing_uuid = ${marketing}` : sql`TRUE`}
+                            AND ${party ? sql`v_order_details_full.party_uuid = ${party}` : sql`TRUE`}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
@@ -186,6 +188,8 @@ export async function selectOrderSheetPdf(req, res, next) {
                         ) toe_given ON toe_given.order_info_uuid = order_info.uuid
                         WHERE
                             DATE(order_info.created_at) BETWEEN ${from_date} AND ${to_date}
+                            AND ${marketing ? sql`order_info.marketing_uuid = ${marketing}` : sql`TRUE`}
+                            AND ${party ? sql`order_info.party_uuid = ${party}` : sql`TRUE`}
                         ORDER BY
                             order_number ASC;
                     `;
@@ -196,6 +200,53 @@ export async function selectOrderSheetPdf(req, res, next) {
 		const zipper_data = await zipperResultPromise;
 		const thread_data = await threadResultPromise;
 
+		// filter type -> zipper, nylon, vislon, metal, thread
+		zipper_data.rows = zipper_data.rows.filter((row) => {
+			if (type === 'zipper') {
+				return (
+					row.item_name === 'Nylon' ||
+					row.item_name === 'Vislon' ||
+					row.item_name === 'Metal'
+				);
+			} else if (type === 'nylon') {
+				return row.item_name === 'Nylon';
+			} else if (type === 'vislon') {
+				return row.item_name === 'Vislon';
+			} else if (type === 'metal') {
+				return row.item_name === 'Metal';
+			}
+		});
+		if (type === 'thread') {
+			return res.status(200).json({
+				toast: {
+					status: 200,
+					type: 'select',
+					message: 'Sample report by date',
+				},
+				data: {
+					zipper: [],
+					thread: thread_data?.rows,
+				},
+			});
+		} else if (
+			type === 'zipper' ||
+			type === 'nylon' ||
+			type === 'vislon' ||
+			type === 'metal'
+		) {
+			return res.status(200).json({
+				toast: {
+					status: 200,
+					type: 'select',
+					message: 'Sample report by date',
+				},
+				data: {
+					zipper: zipper_data?.rows,
+					thread: [],
+				},
+			});
+		}
+
 		const toast = {
 			status: 200,
 			type: 'select',
@@ -205,8 +256,8 @@ export async function selectOrderSheetPdf(req, res, next) {
 		return res.status(200).json({
 			toast,
 			data: {
-				zipper: zipper_data?.rows,
-				thread: thread_data?.rows,
+				zipper: zipper_data?.rows || [],
+				thread: thread_data?.rows || [],
 			},
 		});
 	} catch (error) {
