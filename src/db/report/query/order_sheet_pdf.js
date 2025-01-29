@@ -6,7 +6,7 @@ import db from '../../index.js';
 export async function selectOrderSheetPdf(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { date } = req.query;
+	const { from_date, to_date } = req.query;
 
 	try {
 		const zipper_query = sql`
@@ -66,7 +66,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                                     od.uuid
                         ) od_given ON od_given.uuid = v_order_details_full.order_description_uuid 
                         WHERE
-                            DATE(v_order_details_full.order_description_created_at) = ${date}
+                            DATE(v_order_details_full.order_description_created_at) BETWEEN ${from_date} AND ${to_date}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
@@ -185,7 +185,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                                 toe.order_info_uuid
                         ) toe_given ON toe_given.order_info_uuid = order_info.uuid
                         WHERE
-                            DATE(order_info.created_at) = ${date}
+                            DATE(order_info.created_at) BETWEEN ${from_date} AND ${to_date}
                         ORDER BY
                             order_number ASC;
                     `;
