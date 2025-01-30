@@ -302,7 +302,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 				THEN
 					CASE
 						WHEN order_type = 'tape'
-						THEN (CAST(oe.size AS NUMERIC) * 100 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+						THEN (CAST(oe.size AS NUMERIC) - sfg.warehouse::float8 - sfg.delivered::float8)::float8
 						ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
 					END
 				ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
