@@ -95,6 +95,8 @@ export async function selectAll(req, res, next) {
 			item_description: viewSchema.v_order_details_full.item_description,
 			order_type: viewSchema.v_order_details_full.order_type,
 			slider_provided: viewSchema.v_order_details_full.slider_provided,
+			party_uuid: viewSchema.v_order_details_full.party_uuid,
+			party_name: viewSchema.v_order_details_full.party_name,
 			order_description_uuid: finishing_batch.order_description_uuid,
 			slider_lead_time: finishing_batch.slider_lead_time,
 			dyeing_lead_time: finishing_batch.dyeing_lead_time,
