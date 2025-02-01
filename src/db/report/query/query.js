@@ -86,14 +86,14 @@ export async function zipperProductionStatusReport(req, res, next) {
 			) order_entry_counts ON vodf.order_description_uuid = order_entry_counts.order_description_uuid
             LEFT JOIN (
                 SELECT 
-                    oe.order_description_uuid,
+                    od.uuid as order_description_uuid,
                     SUM(CASE WHEN section = 'sa_prod' THEN production_quantity ELSE 0 END) AS assembly_production_quantity,
                     SUM(CASE WHEN section = 'coloring' THEN production_quantity ELSE 0 END) AS coloring_production_quantity
                 FROM slider.production
                 LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
                 LEFT JOIN zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
-                LEFT JOIN zipper.order_entry oe ON finishing_batch.order_description_uuid = oe.order_description_uuid
-                GROUP BY oe.order_description_uuid
+                LEFT JOIN zipper.order_description od ON finishing_batch.order_description_uuid = od.uuid
+                GROUP BY od.uuid
             ) production_sum ON production_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
                 SELECT 
