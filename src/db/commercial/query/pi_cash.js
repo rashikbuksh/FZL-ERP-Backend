@@ -136,24 +136,108 @@ export async function selectAll(req, res, next) {
 		}
 
 		const query = sql`
+		WITH zipper_order_numbers AS (
+			SELECT
+				DISTINCT oi.uuid::text AS order_info_uuid,
+				vodf.order_number
+			FROM
+				zipper.order_info oi
+			LEFT JOIN
+				zipper.v_order_details_full vodf ON oi.uuid = vodf.order_info_uuid::text
+		),
+		thread_order_numbers AS (
+			SELECT
+				DISTINCT toi.uuid::text AS order_info_uuid,
+				CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS thread_order_number
+			FROM
+				thread.order_info toi
+		),
+		order_numbers_agg AS (
+			SELECT
+				pi_cash.uuid AS pi_cash_uuid,
+				COALESCE(
+					jsonb_agg(DISTINCT jsonb_build_object('order_info_uuid', zipper_order_numbers.order_info_uuid, 'order_number', zipper_order_numbers.order_number))
+					FILTER (WHERE zipper_order_numbers.order_number IS NOT NULL), '[]'
+				) AS order_numbers
+			FROM
+				commercial.pi_cash
+			LEFT JOIN
+				zipper_order_numbers ON zipper_order_numbers.order_info_uuid = ANY(
+					SELECT DISTINCT elem
+					FROM jsonb_array_elements_text(pi_cash.order_info_uuids::jsonb) AS elem
+					WHERE elem IS NOT NULL AND elem != 'null'
+				)
+			GROUP BY
+				pi_cash.uuid
+		),
+		thread_order_numbers_agg AS (
+			SELECT
+				pi_cash.uuid AS pi_cash_uuid,
+				COALESCE(
+					jsonb_agg(DISTINCT jsonb_build_object('thread_order_info_uuid', thread_order_numbers.order_info_uuid, 'thread_order_number', thread_order_numbers.thread_order_number))
+					FILTER (WHERE thread_order_numbers.thread_order_number IS NOT NULL), '[]'
+				) AS thread_order_numbers
+			FROM
+				commercial.pi_cash
+			LEFT JOIN
+				thread_order_numbers ON thread_order_numbers.order_info_uuid = ANY(
+					SELECT DISTINCT elem
+					FROM jsonb_array_elements_text(pi_cash.thread_order_info_uuids::jsonb) AS elem
+					WHERE elem IS NOT NULL AND elem != 'null'
+				)
+			GROUP BY
+				pi_cash.uuid
+		),
+		total_pi_amount AS (
+			SELECT 
+				pi_cash.uuid AS pi_cash_uuid,
+				SUM(
+					CASE 
+						WHEN od.order_type = 'tape' 
+						THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
+						ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price / 12, 0)
+					END
+				)::float8 AS total_amount
+			FROM 
+				commercial.pi_cash
+			LEFT JOIN 
+				commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+			LEFT JOIN 
+				zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+			LEFT JOIN 
+				zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+			LEFT JOIN 
+				zipper.order_description od ON order_entry.order_description_uuid = od.uuid
+			GROUP BY 
+				pi_cash.uuid
+		),
+		total_pi_amount_thread AS (
+			SELECT 
+				pi_cash.uuid AS pi_cash_uuid,
+				SUM(
+					COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price, 0)
+				)::float8 AS total_amount
+			FROM 
+				commercial.pi_cash
+			LEFT JOIN 
+				commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+			LEFT JOIN 
+				thread.order_entry ON pi_cash_entry.thread_order_entry_uuid = order_entry.uuid
+			GROUP BY 
+				pi_cash.uuid
+		)
 		SELECT 
 			pi_cash.uuid,
 			CASE 
-				WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-				ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+				WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+				ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
 			END AS id,
 			pi_cash.lc_uuid,
 			lc.lc_number,
 			COALESCE(pi_cash.order_info_uuids, '[]') AS order_info_uuids,
-			COALESCE(
-				jsonb_agg(DISTINCT jsonb_build_object('order_info_uuid', zipper_order_numbers.order_info_uuid, 'order_number', zipper_order_numbers.order_number))
-				FILTER (WHERE zipper_order_numbers.order_number IS NOT NULL), '[]'
-			) AS order_numbers,
+			order_numbers_agg.order_numbers,
 			COALESCE(pi_cash.thread_order_info_uuids, '[]') AS thread_order_info_uuids,
-			COALESCE(
-				jsonb_agg(DISTINCT jsonb_build_object('thread_order_info_uuid', thread_order_numbers.order_info_uuid, 'thread_order_number', thread_order_numbers.thread_order_number))
-				FILTER (WHERE thread_order_numbers.thread_order_number IS NOT NULL), '[]'
-    		) AS thread_order_numbers,
+			thread_order_numbers_agg.thread_order_numbers,
 			pi_cash.marketing_uuid,
 			public.marketing.name AS marketing_name,
 			pi_cash.party_uuid,
@@ -168,8 +252,8 @@ export async function selectAll(req, res, next) {
 			bank.swift_code AS bank_swift_code,
 			bank.address AS bank_address,
 			bank.policy AS bank_policy,
-			bank.routing_no AS routing_no,
-			bank.account_no AS account_no,
+			bank.routing_no AS bank_routing_no,
+			bank.account_no AS bank_account_no,
 			public.factory.address AS factory_address,
 			pi_cash.validity::float8,
 			pi_cash.payment::float8,
@@ -186,7 +270,8 @@ export async function selectAll(req, res, next) {
 			CASE 
 				WHEN pi_cash.is_pi = 1 
 				THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) 
-				ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 END AS total_amount,
+				ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
+			END AS total_amount,
 			jsonb_agg(DISTINCT od.order_type) AS order_type
 		FROM 
 			commercial.pi_cash
@@ -204,74 +289,22 @@ export async function selectAll(req, res, next) {
 			commercial.bank ON pi_cash.bank_uuid = bank.uuid
 		LEFT JOIN 
 			commercial.lc ON pi_cash.lc_uuid = lc.uuid
-		LEFT JOIN
+		LEFT JOIN 
 			commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
 		LEFT JOIN 
 			zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-		LEFT JOIN
+		LEFT JOIN 
 			zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-		LEFT JOIN
+		LEFT JOIN 
 			zipper.order_description od ON order_entry.order_description_uuid = od.uuid
-		LEFT JOIN
-				(
-					SELECT
-						DISTINCT oi.uuid::text AS order_info_uuid,
-						vodf.order_number
-					FROM
-						zipper.order_info oi
-					LEFT JOIN
-						zipper.v_order_details_full vodf ON oi.uuid = vodf.order_info_uuid::text
-				) AS zipper_order_numbers 
-				ON zipper_order_numbers.order_info_uuid = ANY(
-					SELECT DISTINCT elem
-					FROM jsonb_array_elements_text(pi_cash.order_info_uuids::jsonb) AS elem
-					WHERE elem IS NOT NULL AND elem != 'null'
-				)
-		LEFT JOIN
-				(
-					SELECT
-						DISTINCT toi.uuid::text AS order_info_uuid,
-						CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS thread_order_number
-					FROM
-						thread.order_info toi
-				) AS thread_order_numbers 
-				ON thread_order_numbers.order_info_uuid = ANY(
-					SELECT DISTINCT elem
-					FROM jsonb_array_elements_text(pi_cash.thread_order_info_uuids::jsonb) AS elem
-					WHERE elem IS NOT NULL AND elem != 'null'
-				)
 		LEFT JOIN 
-			(
-				SELECT 
-					SUM(
-						CASE 
-							WHEN od.order_type = 'tape' 
-							THEN order_entry.size::float8 * coalesce(order_entry.party_price,0)
-							ELSE coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(order_entry.party_price/12,0)
-						END)::float8 
-					as total_amount, 
-					pi_cash.uuid as pi_cash_uuid
-				FROM commercial.pi_cash 
-					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
-					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
-					LEFT JOIN zipper.order_description od ON order_entry.order_description_uuid = od.uuid
-				GROUP BY pi_cash.uuid
-		) total_pi_amount ON total_pi_amount.pi_cash_uuid = pi_cash.uuid
+			order_numbers_agg ON order_numbers_agg.pi_cash_uuid = pi_cash.uuid
 		LEFT JOIN 
-			(
-				SELECT 
-					(
-						SUM(
-							coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)
-						)
-					)::float8 as total_amount, 
-					pi_cash.uuid as pi_cash_uuid
-				FROM commercial.pi_cash 
-					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
-					LEFT JOIN thread.order_entry ON pi_cash_entry.thread_order_entry_uuid = order_entry.uuid 
-				GROUP BY pi_cash.uuid
-		) total_pi_amount_thread ON total_pi_amount_thread.pi_cash_uuid = pi_cash.uuid
+			thread_order_numbers_agg ON thread_order_numbers_agg.pi_cash_uuid = pi_cash.uuid
+		LEFT JOIN 
+			total_pi_amount ON total_pi_amount.pi_cash_uuid = pi_cash.uuid
+		LEFT JOIN 
+			total_pi_amount_thread ON total_pi_amount_thread.pi_cash_uuid = pi_cash.uuid
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
@@ -340,9 +373,12 @@ export async function selectAll(req, res, next) {
 			pi_cash.created_by,
 			pi_cash.id,
 			total_pi_amount.total_amount,
-			total_pi_amount_thread.total_amount
+			total_pi_amount_thread.total_amount,
+			order_numbers_agg.order_numbers,
+			thread_order_numbers_agg.thread_order_numbers
 		ORDER BY 
-			pi_cash.created_at DESC;`;
+			pi_cash.created_at DESC;
+		`;
 
 		const resultPromise = db.execute(query);
 
