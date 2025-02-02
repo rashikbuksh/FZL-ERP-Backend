@@ -174,10 +174,10 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN (
 					SELECT 
 						COUNT(*) AS order_entry_count, 
-						jsonb_agg(DISTINCT toe.bleaching) as bleaching,
+						toe.bleaching as bleaching,
 						toe.order_info_uuid as order_info_uuid
 					FROM thread.order_entry toe
-					GROUP BY toe.order_info_uuid
+					GROUP BY toe.order_info_uuid, toe.bleaching
 		) order_entry_counts ON order_info.uuid = order_entry_counts.order_info_uuid
 		LEFT JOIN (
 			SELECT toi.uuid as order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers
