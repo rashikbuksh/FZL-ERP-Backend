@@ -983,8 +983,6 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 		FROM public.marketing
 		WHERE user_uuid = ${own_uuid};`;
 
-	console.log(time_from, time_to);
-
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
