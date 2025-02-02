@@ -141,7 +141,7 @@ export async function selectAll(req, res, next) {
 			order_info.remarks,
 			swatch_approval_counts.swatch_approval_count,
 			order_entry_counts.order_entry_count,
-			order_entry_counts.bleaching,
+			CASE WHEN order_entry_counts.bleaching = 'bleach' THEN true ELSE false END AS is_bleached,
 			CASE WHEN price_approval_counts.price_approval_count IS NULL THEN 0 ELSE price_approval_counts.price_approval_count END AS price_approval_count,
 			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
 			order_info.revision_no,
