@@ -983,6 +983,8 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 		FROM public.marketing
 		WHERE user_uuid = ${own_uuid};`;
 
+	console.log(time_from, time_to);
+
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
@@ -1094,7 +1096,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                     toe.uuid
             ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid
             WHERE batch.uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
-            AND ${from && to ? sql`batch.created_at between ${from}::TIMESTAMP and ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
+            AND ${time_from && time_to ? sql`batch.created_at::TIMESTAMP >= ${time_from}::TIMESTAMP AND batch.created_at::TIMESTAMP <= ${time_to}::TIMESTAMP` : sql`TRUE`}
             `;
 
 		if (status === 'completed') {
@@ -1122,6 +1124,8 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 				sql` AND batch_entry_quantity_length.total_quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 			);
 		}
+
+		query.append(sql`ORDER BY batch.created_at DESC`);
 
 		const resultPromise = db.execute(query);
 
