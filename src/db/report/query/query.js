@@ -1443,7 +1443,15 @@ export async function ProductionReportSnm(req, res, next) {
                 coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity,
                 sfg.delivered::float8,
                 sfg.warehouse::float8,
-                (oe.quantity::float8 - sfg.delivered::float8) as balance_quantity
+                (oe.quantity::float8 - sfg.delivered::float8) as balance_quantity,
+                vodf.order_type,
+                vodf.is_inch,
+                CASE 
+                    WHEN vodf.order_type = 'tape' THEN 'Meter' 
+                    WHEN vodf.order_type = 'slider' THEN 'Pcs'
+                    WHEN vodf.is_inch = 1 THEN 'Inch'
+				    ELSE 'Cm'
+			    END as unit
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN 
