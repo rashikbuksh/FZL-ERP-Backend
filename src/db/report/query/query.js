@@ -1644,8 +1644,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
             ) prod_quantity ON order_entry.uuid = prod_quantity.order_entry_uuid
             WHERE 
                 order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
-                ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
-            AND ${from && to ? sql`order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
+                AND ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
+                AND ${from && to ? sql`order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
             ORDER BY party.name DESC
     `;
 
