@@ -1587,7 +1587,10 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 recipe.name as recipe_name,
                 coalesce(prod_quantity.total_quantity,0)::float8 as total_quantity,
                 coalesce(prod_quantity.total_coning_carton_quantity,0)::float8 as total_coning_carton_quantity,
-                order_info.uuid as order_info_uuid
+                order_info.uuid as order_info_uuid,
+                order_entry.delivered::float8,
+                order_entry.warehouse::float8,
+                (order_entry.quantity::float8 - order_entry.delivered::float8) as balance_quantity
             FROM
                 thread.order_info
             LEFT JOIN
