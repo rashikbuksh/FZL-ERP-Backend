@@ -1578,14 +1578,14 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 order_entry.style,
                 order_entry.color,
                 order_entry.recipe_uuid,
-                CASE WHEN order_entry.recipe_uuid IS NULL THEN order_entry.quantity ELSE 0 END as not_approved_quantity,
-                CASE WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity ELSE 0 END as approved_quantity,
+                CASE WHEN order_entry.recipe_uuid IS NULL THEN order_entry.quantity::float8 ELSE 0 END as not_approved_quantity,
+                CASE WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8 ELSE 0 END as approved_quantity,
                 count_length.count,
                 count_length.length,
                 CONCAT(count_length.count, ' - ', count_length.length) as count_length_name,
                 recipe.name as recipe_name,
-                coalesce(prod_quantity.total_quantity,0) as total_quantity,
-                coalesce(prod_quantity.total_coning_carton_quantity,0) as total_coning_carton_quantity,
+                coalesce(prod_quantity.total_quantity,0)::float8 as total_quantity,
+                coalesce(prod_quantity.total_coning_carton_quantity,0)::float8 as total_coning_carton_quantity,
                 order_info.uuid as order_info_uuid
             FROM
                 thread.order_info
