@@ -1573,6 +1573,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 'Sewing Thread' as item_name,
                 order_info.party_uuid,
                 party.name as party_name,
+                order_info.marketing_uuid,
+                marketing.name as marketing_name,
                 CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
                 order_entry.uuid as order_entry_uuid,
                 order_entry.style,
