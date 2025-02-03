@@ -1419,19 +1419,31 @@ export async function ProductionReportSnm(req, res, next) {
             SELECT 
                 vodf.order_info_uuid,
                 vodf.item,
+                vodf.created_at,
+                vodf.updated_at,
                 vodf.item_name,
                 vodf.order_number,
                 vodf.party_uuid,
                 vodf.party_name,
+                vodf.marketing_uuid,
+                vodf.marketing_name,
                 vodf.order_description_uuid,
                 vodf.item_description,
                 vodf.end_type,
                 vodf.end_type_name,
                 oe,uuid as order_entry_uuid,
-                oe.size,
+                oe.style,
+                oe.color,
+                oe.size::float8,
+                oe.quantity::float8,
+                CASE WHEN oe.recipe_uuid IS NULL THEN oe.quantity::float8 ELSE 0 END as not_approved_quantity,
+                CASE WHEN oe.recipe_uuid IS NOT NULL THEN oe.quantity::float8 ELSE 0 END as approved_quantity,
                 coalesce(close_end_sum.total_close_end_quantity,0) as total_close_end_quantity,
                 coalesce(open_end_sum.total_open_end_quantity,0) as total_open_end_quantity,
-                coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity
+                coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity,
+                oe.delivered::float8,
+                oe.warehouse::float8,
+                (oe.quantity::float8 - oe.delivered::float8) as balance_quantity
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN 
