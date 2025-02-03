@@ -1401,7 +1401,7 @@ export async function ProductionReportThreadDirector(req, res, next) {
 }
 
 export async function ProductionReportSnm(req, res, next) {
-	const { own_uuid } = req?.query;
+	const { own_uuid, from, to } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -1474,7 +1474,9 @@ export async function ProductionReportSnm(req, res, next) {
                 GROUP BY
                     oe.uuid
             ) open_end_sum ON oe.uuid = open_end_sum.order_entry_uuid
-            WHERE vodf.order_description_uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+            WHERE vodf.order_description_uuid IS NOT NULL 
+            AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+            AND ${from && to ? sql`vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
             ORDER BY vodf.item_name DESC
     `;
 
@@ -1631,7 +1633,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
             ) prod_quantity ON order_entry.uuid = prod_quantity.order_entry_uuid
             WHERE 
                 ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
-            AND ${from && to ? sql`order_info.created_at BETWEEN ${from} AND ${to}` : sql`TRUE`}
+            AND ${from && to ? sql`order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
             ORDER BY party.name DESC
     `;
 
