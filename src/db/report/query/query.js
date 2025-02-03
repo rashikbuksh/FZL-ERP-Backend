@@ -1431,23 +1431,25 @@ export async function ProductionReportSnm(req, res, next) {
                 vodf.item_description,
                 vodf.end_type,
                 vodf.end_type_name,
-                oe,uuid as order_entry_uuid,
+                oe.uuid as order_entry_uuid,
                 oe.style,
                 oe.color,
                 oe.size::float8,
                 oe.quantity::float8,
-                CASE WHEN oe.recipe_uuid IS NULL THEN oe.quantity::float8 ELSE 0 END as not_approved_quantity,
-                CASE WHEN oe.recipe_uuid IS NOT NULL THEN oe.quantity::float8 ELSE 0 END as approved_quantity,
+                CASE WHEN sfg.recipe_uuid IS NULL THEN oe.quantity::float8 ELSE 0 END as not_approved_quantity,
+                CASE WHEN sfg.recipe_uuid IS NOT NULL THEN oe.quantity::float8 ELSE 0 END as approved_quantity,
                 coalesce(close_end_sum.total_close_end_quantity,0) as total_close_end_quantity,
                 coalesce(open_end_sum.total_open_end_quantity,0) as total_open_end_quantity,
                 coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity,
-                oe.delivered::float8,
-                oe.warehouse::float8,
-                (oe.quantity::float8 - oe.delivered::float8) as balance_quantity
+                sfg.delivered::float8,
+                sfg.warehouse::float8,
+                (oe.quantity::float8 - sfg.delivered::float8) as balance_quantity
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN 
                 zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+            LEFT JOIN 
+                zipper.sfg ON oe.uuid = sfg.order_entry_uuid
             LEFT JOIN (
                 SELECT 
                     coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
