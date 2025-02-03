@@ -1578,7 +1578,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 order_entry.style,
                 order_entry.color,
                 order_entry.recipe_uuid,
-                oe.quantity,
+                order_entry.quantity,
                 CASE WHEN order_entry.recipe_uuid IS NULL THEN order_entry.quantity::float8 ELSE 0 END as not_approved_quantity,
                 CASE WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8 ELSE 0 END as approved_quantity,
                 count_length.count,
