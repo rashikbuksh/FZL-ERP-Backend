@@ -1551,7 +1551,7 @@ export async function ProductionReportSnm(req, res, next) {
 }
 
 export async function ProductionReportThreadSnm(req, res, next) {
-	const { own_uuid } = req?.query;
+	const { own_uuid, from, to } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -1568,13 +1568,22 @@ export async function ProductionReportThreadSnm(req, res, next) {
 		const query = sql`
             SELECT 
                 order_info.uuid,
+                order_info.created_at,
+                order_info.updated_at,
                 'Sewing Thread' as item_name,
                 order_info.party_uuid,
                 party.name as party_name,
                 CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
                 order_entry.uuid as order_entry_uuid,
+                order_entry.style,
+                order_entry.color,
+                order_entry.recipe_uuid,
+                CASE WHEN order_entry.recipe_uuid IS NULL THEN order_entry.quantity ELSE 0 END as not_approved_quantity,
+                CASE WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity ELSE 0 END as approved_quantity,
                 count_length.count,
+                count_length.length,
                 CONCAT(count_length.count, ' - ', count_length.length) as count_length_name,
+                recipe.name as recipe_name,
                 coalesce(prod_quantity.total_quantity,0) as total_quantity,
                 coalesce(prod_quantity.total_coning_carton_quantity,0) as total_coning_carton_quantity,
                 order_info.uuid as order_info_uuid
@@ -1584,6 +1593,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 thread.order_entry ON order_entry.order_info_uuid = order_info.uuid
             LEFT JOIN
                 thread.count_length ON order_entry.count_length_uuid = count_length.uuid
+            LEFT JOIN 
+                lab_dip.recipe ON order_entry.recipe_uuid = recipe.uuid
             LEFT JOIN
                 public.party ON order_info.party_uuid = party.uuid
             LEFT JOIN
@@ -1600,7 +1611,9 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 GROUP BY
                     order_entry.uuid
             ) prod_quantity ON order_entry.uuid = prod_quantity.order_entry_uuid
-            WHERE ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
+            WHERE 
+                ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
+            AND ${from && to ? sql`order_info.created_at BETWEEN ${from} AND ${to}` : sql`TRUE`}
             ORDER BY party.name DESC
     `;
 
