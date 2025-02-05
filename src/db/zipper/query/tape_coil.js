@@ -197,7 +197,7 @@ export async function selectAll(req, res, next) {
 			type: 'select',
 			message: 'tape_coil',
 		};
-		return await res.status(200).json({ toast, data });
+		return await res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -264,7 +264,7 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: 'tape_coil',
 		};
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data: data.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -333,7 +333,7 @@ export async function selectByNylon(req, res, next) {
 			type: 'select',
 			message: 'tape_coil by nylon',
 		};
-		return await res.status(200).json({ toast, data });
+		return await res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
