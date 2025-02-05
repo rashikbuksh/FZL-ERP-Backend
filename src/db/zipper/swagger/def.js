@@ -395,6 +395,7 @@ export const def_zipper_tape_coil = SED({
 		uuid: SE.uuid(),
 		item_uuid: SE.uuid(),
 		zipper_number_uuid: SE.uuid(),
+		nylon_stopper_uuid: SE.uuid(),
 		name: SE.string('Name'),
 		is_import: SE.boolean(),
 		is_reverse: SE.boolean(),

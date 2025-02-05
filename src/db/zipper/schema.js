@@ -450,6 +450,9 @@ export const tape_coil = zipper.table('tape_coil', {
 	zipper_number_uuid: defaultUUID('zipper_number_uuid').references(
 		() => publicSchema.properties.uuid
 	),
+	nylon_stopper_uuid: defaultUUID('nylon_stopper_uuid')
+		.references(() => publicSchema.properties.uuid)
+		.default(null),
 	name: text('name').notNull(),
 	is_import: text('is_import').default(null),
 	is_reverse: text('is_reverse').default(null),

@@ -7,12 +7,21 @@ import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { tape_coil } from '../schema.js';
+import { tape_coil, tape_coil_required } from '../schema.js';
 
 const item_properties = alias(publicSchema.properties, 'item_properties');
 const zipper_number_properties = alias(
 	publicSchema.properties,
 	'zipper_number_properties'
+);
+const nylon_stopper_properties = alias(
+	publicSchema.properties,
+	'nylon_stopper_properties'
+);
+
+const tape_coil_required_custom = alias(
+	tape_coil_required,
+	'tape_coil_required_custom'
 );
 
 export async function insert(req, res, next) {
@@ -136,7 +145,9 @@ export async function selectAll(req, res, next) {
 			is_nylon: eq(sql`lower(item_properties.name)`, 'nylon'),
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
 			zipper_number_name: zipper_number_properties.name,
-			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
+			nylon_stopper_uuid: tape_coil.nylon_stopper_uuid,
+			nylon_stopper_name: nylon_stopper_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name, ' - ', nylon_stopper_properties.name)`,
 			name: tape_coil.name,
 			is_import: tape_coil.is_import,
 			is_reverse: tape_coil.is_reverse,
@@ -168,6 +179,10 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
+		)
+		.leftJoin(
+			nylon_stopper_properties,
+			eq(tape_coil.nylon_stopper_uuid, nylon_stopper_properties.uuid)
 		)
 		.leftJoin(
 			materialSchema.info,
@@ -202,12 +217,18 @@ export async function select(req, res, next) {
 			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
 			zipper_number_name: zipper_number_properties.name,
-			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
+			nylon_stopper_uuid: tape_coil.nylon_stopper_uuid,
+			nylon_stopper_name: nylon_stopper_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name, ' - ', nylon_stopper_properties.name)`,
 			name: tape_coil.name,
 			is_import: tape_coil.is_import,
 			is_reverse: tape_coil.is_reverse,
-			raw_per_kg_meter: decimalToNumber(tape_coil.raw_per_kg_meter),
-			dyed_per_kg_meter: decimalToNumber(tape_coil.dyed_per_kg_meter),
+			raw_per_kg_meter: decimalToNumber(
+				tape_coil_required.raw_per_kg_meter
+			),
+			dyed_per_kg_meter: decimalToNumber(
+				tape_coil_required.dyed_per_kg_meter
+			),
 			quantity: decimalToNumber(tape_coil.quantity),
 			trx_quantity_in_dying: decimalToNumber(
 				tape_coil.trx_quantity_in_dying
@@ -236,10 +257,27 @@ export async function select(req, res, next) {
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.leftJoin(
+			nylon_stopper_properties,
+			eq(tape_coil.nylon_stopper_uuid, nylon_stopper_properties.uuid)
+		)
+		.leftJoin(
 			materialSchema.info,
 			eq(tape_coil.material_uuid, materialSchema.info.uuid)
 		)
+		.leftJoin(
+			sql`
+			SELECT tape_coil.*
+            FROM tape_coil
+            WHERE 
+                tape_coil.item_uuid = tape_coil_required.item_uuid
+                AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
+                AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+            LIMIT 1
+			`
+		)
 		.where(eq(tape_coil.uuid, req.params.uuid));
+
+	console.log(tapeCoilPromise.toSQL());
 
 	try {
 		const data = await tapeCoilPromise;
@@ -264,7 +302,9 @@ export async function selectByNylon(req, res, next) {
 			item_name: item_properties.name,
 			zipper_number_uuid: tape_coil.zipper_number_uuid,
 			zipper_number_name: zipper_number_properties.name,
-			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name)`,
+			nylon_stopper_uuid: tape_coil.nylon_stopper_uuid,
+			nylon_stopper_name: nylon_stopper_properties.name,
+			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name, ' - ', nylon_stopper_properties.name)`,
 			name: tape_coil.name,
 			is_import: tape_coil.is_import,
 			is_reverse: tape_coil.is_reverse,
@@ -296,6 +336,10 @@ export async function selectByNylon(req, res, next) {
 		.leftJoin(
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
+		)
+		.leftJoin(
+			nylon_stopper_properties,
+			eq(tape_coil.nylon_stopper_uuid, nylon_stopper_properties.uuid)
 		)
 		.leftJoin(
 			materialSchema.info,
