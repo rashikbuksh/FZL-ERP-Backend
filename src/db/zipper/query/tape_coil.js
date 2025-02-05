@@ -171,18 +171,15 @@ export async function selectAll(req, res, next) {
 	LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 	LEFT JOIN public.properties nylon_stopper_properties ON tape_coil.nylon_stopper_uuid = nylon_stopper_properties.uuid
 	LEFT JOIN material.info ON tape_coil.material_uuid = material.info.uuid
-	LEFT JOIN LATERAL (
-		SELECT *
+	LEFT JOIN (
+		SELECT tape_coil_required.*, tape_coil.uuid as tape_coil_uuid
         FROM zipper.tape_coil_required
-        WHERE 
-            tape_coil.item_uuid = tape_coil_required.item_uuid
+		LEFT JOIN zipper.tape_coil 
+			ON (tape_coil.item_uuid = tape_coil_required.item_uuid
             AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
-            AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+            AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid)
         LIMIT 1
-	) tape_coil_required ON
-		tape_coil.item_uuid = tape_coil_required.item_uuid
-		AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
-		AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+	) tape_coil_required ON tape_coil.uuid = tape_coil_required.tape_coil_uuid
 	ORDER BY
 		lower(item_properties.name) = 'nylon' DESC,
 		item_properties.name ASC,
@@ -240,18 +237,15 @@ export async function select(req, res, next) {
 	LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 	LEFT JOIN public.properties nylon_stopper_properties ON tape_coil.nylon_stopper_uuid = nylon_stopper_properties.uuid
 	LEFT JOIN material.info ON tape_coil.material_uuid = material.info.uuid
-	LEFT JOIN LATERAL (
-		SELECT *
+	LEFT JOIN (
+		SELECT tape_coil_required.*, tape_coil.uuid as tape_coil_uuid
         FROM zipper.tape_coil_required
-        WHERE 
-            tape_coil.item_uuid = tape_coil_required.item_uuid
+		LEFT JOIN zipper.tape_coil 
+			ON (tape_coil.item_uuid = tape_coil_required.item_uuid
             AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
-            AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+            AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid)
         LIMIT 1
-	) tape_coil_required ON
-		tape_coil.item_uuid = tape_coil_required.item_uuid
-		AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
-		AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+	) tape_coil_required ON tape_coil.uuid = tape_coil_required.tape_coil_uuid
 	WHERE
 		tape_coil.uuid = ${req.params.uuid};`;
 
@@ -307,18 +301,15 @@ export async function selectByNylon(req, res, next) {
 	LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 	LEFT JOIN public.properties nylon_stopper_properties ON tape_coil.nylon_stopper_uuid = nylon_stopper_properties.uuid
 	LEFT JOIN material.info ON tape_coil.material_uuid = material.info.uuid
-	LEFT JOIN LATERAL (
-		SELECT *
+	LEFT JOIN (
+		SELECT tape_coil_required.*, tape_coil.uuid as tape_coil_uuid
         FROM zipper.tape_coil_required
-        WHERE 
-            tape_coil.item_uuid = tape_coil_required.item_uuid
+		LEFT JOIN zipper.tape_coil 
+			ON (tape_coil.item_uuid = tape_coil_required.item_uuid
             AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
-            AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+            AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid)
         LIMIT 1
-	) tape_coil_required ON
-		tape_coil.item_uuid = tape_coil_required.item_uuid
-		AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
-		AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+	) tape_coil_required ON tape_coil.uuid = tape_coil_required.tape_coil_uuid
 	WHERE
 		lower(item_properties.name) = 'nylon'
 	ORDER BY
