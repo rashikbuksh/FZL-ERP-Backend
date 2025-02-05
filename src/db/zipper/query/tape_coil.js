@@ -137,62 +137,58 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const resultPromise = db
-		.select({
-			uuid: tape_coil.uuid,
-			item_uuid: tape_coil.item_uuid,
-			item_name: item_properties.name,
-			is_nylon: eq(sql`lower(item_properties.name)`, 'nylon'),
-			zipper_number_uuid: tape_coil.zipper_number_uuid,
-			zipper_number_name: zipper_number_properties.name,
-			nylon_stopper_uuid: tape_coil.nylon_stopper_uuid,
-			nylon_stopper_name: nylon_stopper_properties.name,
-			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name, ' - ', nylon_stopper_properties.name)`,
-			name: tape_coil.name,
-			is_import: tape_coil.is_import,
-			is_reverse: tape_coil.is_reverse,
-			raw_per_kg_meter: decimalToNumber(tape_coil.raw_per_kg_meter),
-			dyed_per_kg_meter: decimalToNumber(tape_coil.dyed_per_kg_meter),
-			quantity: decimalToNumber(tape_coil.quantity),
-			trx_quantity_in_dying: decimalToNumber(
-				tape_coil.trx_quantity_in_dying
-			),
-			stock_quantity: decimalToNumber(tape_coil.stock_quantity),
-			trx_quantity_in_coil: decimalToNumber(
-				tape_coil.trx_quantity_in_coil
-			),
-			quantity_in_coil: decimalToNumber(tape_coil.quantity_in_coil),
-			created_by: tape_coil.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: tape_coil.created_at,
-			updated_at: tape_coil.updated_at,
-			remarks: tape_coil.remarks,
-			material_uuid: tape_coil.material_uuid,
-			material_name: materialSchema.info.name,
-		})
-		.from(tape_coil)
-		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			item_properties,
-			eq(tape_coil.item_uuid, item_properties.uuid)
-		)
-		.leftJoin(
-			zipper_number_properties,
-			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
-		)
-		.leftJoin(
-			nylon_stopper_properties,
-			eq(tape_coil.nylon_stopper_uuid, nylon_stopper_properties.uuid)
-		)
-		.leftJoin(
-			materialSchema.info,
-			eq(tape_coil.material_uuid, materialSchema.info.uuid)
-		)
-		.orderBy(
-			asc(sql`lower(item_properties.name) = 'nylon'`),
-			asc(item_properties.name),
-			asc(zipper_number_properties.name)
-		);
+	const query = sql`
+	SELECT
+		tape_coil.uuid,
+		tape_coil.item_uuid,
+		item_properties.name AS item_name,
+		tape_coil.zipper_number_uuid,
+		zipper_number_properties.name AS zipper_number_name,
+		tape_coil.nylon_stopper_uuid,
+		nylon_stopper_properties.name AS nylon_stopper_name,
+		CONCAT(item_properties.name, ' - ', zipper_number_properties.name, ' - ', nylon_stopper_properties.name) AS type_of_zipper,
+		tape_coil.name,
+		tape_coil.is_import,
+		tape_coil.is_reverse,
+		CAST(tape_coil_required.raw_mtr_per_kg AS DECIMAL) AS raw_per_kg_meter,
+		CAST(tape_coil_required.dyed_mtr_per_kg AS DECIMAL) AS dyed_per_kg_meter,
+		CAST(tape_coil.quantity AS DECIMAL) AS quantity,
+		CAST(tape_coil.trx_quantity_in_dying AS DECIMAL) AS trx_quantity_in_dying,
+		CAST(tape_coil.stock_quantity AS DECIMAL) AS stock_quantity,
+		CAST(tape_coil.trx_quantity_in_coil AS DECIMAL) AS trx_quantity_in_coil,
+		CAST(tape_coil.quantity_in_coil AS DECIMAL) AS quantity_in_coil,
+		tape_coil.created_by,
+		hr.users.name AS created_by_name,
+		tape_coil.created_at,
+		tape_coil.updated_at,
+		tape_coil.remarks,
+		tape_coil.material_uuid,
+		material.info.name AS material_name
+	FROM
+		zipper.tape_coil
+	LEFT JOIN hr.users ON tape_coil.created_by = hr.users.uuid
+	LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
+	LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
+	LEFT JOIN public.properties nylon_stopper_properties ON tape_coil.nylon_stopper_uuid = nylon_stopper_properties.uuid
+	LEFT JOIN material.info ON tape_coil.material_uuid = material.info.uuid
+	LEFT JOIN LATERAL (
+		SELECT *
+        FROM zipper.tape_coil_required
+        WHERE 
+            tape_coil.item_uuid = tape_coil_required.item_uuid
+            AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
+            AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+        LIMIT 1
+	) tape_coil_required ON
+		tape_coil.item_uuid = tape_coil_required.item_uuid
+		AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
+		AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+	ORDER BY
+		lower(item_properties.name) = 'nylon' DESC,
+		item_properties.name ASC,
+		zipper_number_properties.name ASC;`;
+
+	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
@@ -210,74 +206,56 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const tapeCoilPromise = db
-		.select({
-			uuid: tape_coil.uuid,
-			item_uuid: tape_coil.item_uuid,
-			item_name: item_properties.name,
-			zipper_number_uuid: tape_coil.zipper_number_uuid,
-			zipper_number_name: zipper_number_properties.name,
-			nylon_stopper_uuid: tape_coil.nylon_stopper_uuid,
-			nylon_stopper_name: nylon_stopper_properties.name,
-			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name, ' - ', nylon_stopper_properties.name)`,
-			name: tape_coil.name,
-			is_import: tape_coil.is_import,
-			is_reverse: tape_coil.is_reverse,
-			raw_per_kg_meter: decimalToNumber(
-				tape_coil_required.raw_per_kg_meter
-			),
-			dyed_per_kg_meter: decimalToNumber(
-				tape_coil_required.dyed_per_kg_meter
-			),
-			quantity: decimalToNumber(tape_coil.quantity),
-			trx_quantity_in_dying: decimalToNumber(
-				tape_coil.trx_quantity_in_dying
-			),
-			stock_quantity: decimalToNumber(tape_coil.stock_quantity),
-			trx_quantity_in_coil: decimalToNumber(
-				tape_coil.trx_quantity_in_coil
-			),
-			quantity_in_coil: decimalToNumber(tape_coil.quantity_in_coil),
-			created_by: tape_coil.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: tape_coil.created_at,
-			updated_at: tape_coil.updated_at,
-			remarks: tape_coil.remarks,
-			material_uuid: tape_coil.material_uuid,
-			material_name: materialSchema.info.name,
-		})
-		.from(tape_coil)
-		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			item_properties,
-			eq(tape_coil.item_uuid, item_properties.uuid)
-		)
-		.leftJoin(
-			zipper_number_properties,
-			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
-		)
-		.leftJoin(
-			nylon_stopper_properties,
-			eq(tape_coil.nylon_stopper_uuid, nylon_stopper_properties.uuid)
-		)
-		.leftJoin(
-			materialSchema.info,
-			eq(tape_coil.material_uuid, materialSchema.info.uuid)
-		)
-		.leftJoin(
-			sql`
-			SELECT tape_coil.*
-            FROM tape_coil
-            WHERE 
-                tape_coil.item_uuid = tape_coil_required.item_uuid
-                AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
-                AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
-            LIMIT 1
-			`
-		)
-		.where(eq(tape_coil.uuid, req.params.uuid));
+	const query = sql`
+	SELECT
+		tape_coil.uuid,
+		tape_coil.item_uuid,
+		item_properties.name AS item_name,
+		tape_coil.zipper_number_uuid,
+		zipper_number_properties.name AS zipper_number_name,
+		tape_coil.nylon_stopper_uuid,
+		nylon_stopper_properties.name AS nylon_stopper_name,
+		CONCAT(item_properties.name, ' - ', zipper_number_properties.name, ' - ', nylon_stopper_properties.name) AS type_of_zipper,
+		tape_coil.name,
+		tape_coil.is_import,
+		tape_coil.is_reverse,
+		CAST(tape_coil_required.raw_mtr_per_kg AS DECIMAL) AS raw_per_kg_meter,
+		CAST(tape_coil_required.dyed_mtr_per_kg AS DECIMAL) AS dyed_per_kg_meter,
+		CAST(tape_coil.quantity AS DECIMAL) AS quantity,
+		CAST(tape_coil.trx_quantity_in_dying AS DECIMAL) AS trx_quantity_in_dying,
+		CAST(tape_coil.stock_quantity AS DECIMAL) AS stock_quantity,
+		CAST(tape_coil.trx_quantity_in_coil AS DECIMAL) AS trx_quantity_in_coil,
+		CAST(tape_coil.quantity_in_coil AS DECIMAL) AS quantity_in_coil,
+		tape_coil.created_by,
+		hr.users.name AS created_by_name,
+		tape_coil.created_at,
+		tape_coil.updated_at,
+		tape_coil.remarks,
+		tape_coil.material_uuid,
+		material.info.name AS material_name
+	FROM
+		zipper.tape_coil
+	LEFT JOIN hr.users ON tape_coil.created_by = hr.users.uuid
+	LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
+	LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
+	LEFT JOIN public.properties nylon_stopper_properties ON tape_coil.nylon_stopper_uuid = nylon_stopper_properties.uuid
+	LEFT JOIN material.info ON tape_coil.material_uuid = material.info.uuid
+	LEFT JOIN LATERAL (
+		SELECT *
+        FROM zipper.tape_coil_required
+        WHERE 
+            tape_coil.item_uuid = tape_coil_required.item_uuid
+            AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
+            AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+        LIMIT 1
+	) tape_coil_required ON
+		tape_coil.item_uuid = tape_coil_required.item_uuid
+		AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
+		AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+	WHERE
+		tape_coil.uuid = ${req.params.uuid};`;
 
-	console.log(tapeCoilPromise.toSQL());
+	const tapeCoilPromise = db.execute(query);
 
 	try {
 		const data = await tapeCoilPromise;
@@ -295,58 +273,58 @@ export async function select(req, res, next) {
 export async function selectByNylon(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const tapeCoilPromise = db
-		.select({
-			uuid: tape_coil.uuid,
-			item_uuid: tape_coil.item_uuid,
-			item_name: item_properties.name,
-			zipper_number_uuid: tape_coil.zipper_number_uuid,
-			zipper_number_name: zipper_number_properties.name,
-			nylon_stopper_uuid: tape_coil.nylon_stopper_uuid,
-			nylon_stopper_name: nylon_stopper_properties.name,
-			type_of_zipper: sql`concat(item_properties.name, ' - ', zipper_number_properties.name, ' - ', nylon_stopper_properties.name)`,
-			name: tape_coil.name,
-			is_import: tape_coil.is_import,
-			is_reverse: tape_coil.is_reverse,
-			raw_per_kg_meter: decimalToNumber(tape_coil.raw_per_kg_meter),
-			dyed_per_kg_meter: decimalToNumber(tape_coil.dyed_per_kg_meter),
-			quantity: decimalToNumber(tape_coil.quantity),
-			trx_quantity_in_dying: decimalToNumber(
-				tape_coil.trx_quantity_in_dying
-			),
-			stock_quantity: decimalToNumber(tape_coil.stock_quantity),
-			trx_quantity_in_coil: decimalToNumber(
-				tape_coil.trx_quantity_in_coil
-			),
-			quantity_in_coil: decimalToNumber(tape_coil.quantity_in_coil),
-			created_by: tape_coil.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: tape_coil.created_at,
-			updated_at: tape_coil.updated_at,
-			remarks: tape_coil.remarks,
-			material_uuid: tape_coil.material_uuid,
-			material_name: materialSchema.info.name,
-		})
-		.from(tape_coil)
-		.leftJoin(hrSchema.users, eq(tape_coil.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			item_properties,
-			eq(tape_coil.item_uuid, item_properties.uuid)
-		)
-		.leftJoin(
-			zipper_number_properties,
-			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
-		)
-		.leftJoin(
-			nylon_stopper_properties,
-			eq(tape_coil.nylon_stopper_uuid, nylon_stopper_properties.uuid)
-		)
-		.leftJoin(
-			materialSchema.info,
-			eq(tape_coil.material_uuid, materialSchema.info.uuid)
-		)
-		.where(eq(sql`lower(item_properties.name)`, 'nylon'))
-		.orderBy(desc(tape_coil.created_at));
+	const query = sql`
+	SELECT
+		tape_coil.uuid,
+		tape_coil.item_uuid,
+		item_properties.name AS item_name,
+		tape_coil.zipper_number_uuid,
+		zipper_number_properties.name AS zipper_number_name,
+		tape_coil.nylon_stopper_uuid,
+		nylon_stopper_properties.name AS nylon_stopper_name,
+		CONCAT(item_properties.name, ' - ', zipper_number_properties.name, ' - ', nylon_stopper_properties.name) AS type_of_zipper,
+		tape_coil.name,
+		tape_coil.is_import,
+		tape_coil.is_reverse,
+		CAST(tape_coil_required.raw_mtr_per_kg AS DECIMAL) AS raw_per_kg_meter,
+		CAST(tape_coil_required.dyed_mtr_per_kg AS DECIMAL) AS dyed_per_kg_meter,
+		CAST(tape_coil.quantity AS DECIMAL) AS quantity,
+		CAST(tape_coil.trx_quantity_in_dying AS DECIMAL) AS trx_quantity_in_dying,
+		CAST(tape_coil.stock_quantity AS DECIMAL) AS stock_quantity,
+		CAST(tape_coil.trx_quantity_in_coil AS DECIMAL) AS trx_quantity_in_coil,
+		CAST(tape_coil.quantity_in_coil AS DECIMAL) AS quantity_in_coil,
+		tape_coil.created_by,
+		hr.users.name AS created_by_name,
+		tape_coil.created_at,
+		tape_coil.updated_at,
+		tape_coil.remarks,
+		tape_coil.material_uuid,
+		material.info.name AS material_name
+	FROM
+		zipper.tape_coil
+	LEFT JOIN hr.users ON tape_coil.created_by = hr.users.uuid
+	LEFT JOIN public.properties item_properties ON tape_coil.item_uuid = item_properties.uuid
+	LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
+	LEFT JOIN public.properties nylon_stopper_properties ON tape_coil.nylon_stopper_uuid = nylon_stopper_properties.uuid
+	LEFT JOIN material.info ON tape_coil.material_uuid = material.info.uuid
+	LEFT JOIN LATERAL (
+		SELECT *
+        FROM zipper.tape_coil_required
+        WHERE 
+            tape_coil.item_uuid = tape_coil_required.item_uuid
+            AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
+            AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+        LIMIT 1
+	) tape_coil_required ON
+		tape_coil.item_uuid = tape_coil_required.item_uuid
+		AND tape_coil.zipper_number_uuid = tape_coil_required.zipper_number_uuid
+		AND tape_coil.nylon_stopper_uuid = tape_coil_required.nylon_stopper_uuid
+	WHERE
+		lower(item_properties.name) = 'nylon'
+	ORDER BY
+		tape_coil.created_at DESC;`;
+
+	const tapeCoilPromise = db.execute(query);
 
 	try {
 		const data = await tapeCoilPromise;
