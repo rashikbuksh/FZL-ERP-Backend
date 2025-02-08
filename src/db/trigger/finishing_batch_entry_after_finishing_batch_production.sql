@@ -81,14 +81,14 @@ BEGIN
 
         UPDATE zipper.order_description od
         SET 
-            slider_finishing_stock = slider_finishing_stock -
+            slider_finishing_stock = od.slider_finishing_stock -
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
                     ELSE 0
                 END
         FROM zipper.finishing_batch_entry fbe
         LEFT JOIN zipper.finishing_batch fb ON fbe.finishing_batch_uuid = fb.uuid
-        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid and od.uuid = fb.order_description_uuid;
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid and od.uuid = fb.order_description_uuid;
     END IF;
 
     -- Update sfg based on sfg_uuid_val
@@ -236,14 +236,14 @@ BEGIN
 
         UPDATE zipper.order_description od
         SET 
-            slider_finishing_stock = slider_finishing_stock -
+            slider_finishing_stock = od.slider_finishing_stock -
                 CASE 
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity - OLD.production_quantity
                     ELSE 0
                 END
         FROM zipper.finishing_batch_entry fbe
         LEFT JOIN zipper.finishing_batch fb ON fbe.finishing_batch_uuid = fb.uuid
-        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = NEW.finishing_batch_entry_uuid and od.uuid = fb.order_description_uuid;
+        WHERE fbe.uuid = NEW.finishing_batch_entry_uuid and od.uuid = fb.order_description_uuid;
     END IF;
 
     -- Update sfg based on sfg_uuid_val
@@ -389,14 +389,14 @@ BEGIN
 
         UPDATE zipper.order_description od
         SET 
-            slider_finishing_stock = slider_finishing_stock + 
+            slider_finishing_stock = od.slider_finishing_stock + 
                 CASE 
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END
         FROM zipper.finishing_batch_entry fbe
         LEFT JOIN zipper.finishing_batch fb ON fbe.finishing_batch_uuid = fb.uuid
-        WHERE fbe.finishing_batch_uuid = fb.uuid AND fbe.uuid = OLD.finishing_batch_entry_uuid and od.uuid = fb.order_description_uuid;
+        WHERE fbe.uuid = OLD.finishing_batch_entry_uuid and od.uuid = fb.order_description_uuid;
     END IF;
 
     -- Update sfg based on sfg_uuid_val
