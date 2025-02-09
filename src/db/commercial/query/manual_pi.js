@@ -224,7 +224,7 @@ export async function select(req, res, next) {
 			factory_name: publicSchema.factory.name,
 			bank_uuid: manual_pi.bank_uuid,
 			bank_name: bank.name,
-			bank_address: bank.name,
+			bank_address: bank.address,
 			bank_swift_code: bank.swift_code,
 			bank_policy: bank.policy,
 			routing_no: bank.routing_no,
