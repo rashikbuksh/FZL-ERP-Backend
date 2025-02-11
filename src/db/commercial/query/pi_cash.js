@@ -138,16 +138,14 @@ export async function selectAll(req, res, next) {
 		const query = sql`
 		WITH zipper_order_numbers AS (
 			SELECT
-				DISTINCT oi.uuid::text AS order_info_uuid,
-				vodf.order_number
+				oi.uuid::text AS order_info_uuid,
+				concat('Z', to_char(oi.created_at, 'YY'::text), '-', lpad((oi.id)::text, 4, '0'::text)) AS order_number
 			FROM
 				zipper.order_info oi
-			LEFT JOIN
-				zipper.v_order_details_full vodf ON oi.uuid = vodf.order_info_uuid::text
 		),
 		thread_order_numbers AS (
 			SELECT
-				DISTINCT toi.uuid::text AS order_info_uuid,
+				toi.uuid::text AS order_info_uuid,
 				CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS thread_order_number
 			FROM
 				thread.order_info toi
@@ -156,14 +154,14 @@ export async function selectAll(req, res, next) {
 			SELECT
 				pi_cash.uuid AS pi_cash_uuid,
 				COALESCE(
-					jsonb_agg(DISTINCT jsonb_build_object('order_info_uuid', zipper_order_numbers.order_info_uuid, 'order_number', zipper_order_numbers.order_number))
+					jsonb_agg(jsonb_build_object('order_info_uuid', zipper_order_numbers.order_info_uuid, 'order_number', zipper_order_numbers.order_number))
 					FILTER (WHERE zipper_order_numbers.order_number IS NOT NULL), '[]'
 				) AS order_numbers
 			FROM
 				commercial.pi_cash
 			LEFT JOIN
 				zipper_order_numbers ON zipper_order_numbers.order_info_uuid = ANY(
-					SELECT DISTINCT elem
+					SELECT elem
 					FROM jsonb_array_elements_text(pi_cash.order_info_uuids::jsonb) AS elem
 					WHERE elem IS NOT NULL AND elem != 'null'
 				)
@@ -174,14 +172,14 @@ export async function selectAll(req, res, next) {
 			SELECT
 				pi_cash.uuid AS pi_cash_uuid,
 				COALESCE(
-					jsonb_agg(DISTINCT jsonb_build_object('thread_order_info_uuid', thread_order_numbers.order_info_uuid, 'thread_order_number', thread_order_numbers.thread_order_number))
+					jsonb_agg(jsonb_build_object('thread_order_info_uuid', thread_order_numbers.order_info_uuid, 'thread_order_number', thread_order_numbers.thread_order_number))
 					FILTER (WHERE thread_order_numbers.thread_order_number IS NOT NULL), '[]'
 				) AS thread_order_numbers
 			FROM
 				commercial.pi_cash
 			LEFT JOIN
 				thread_order_numbers ON thread_order_numbers.order_info_uuid = ANY(
-					SELECT DISTINCT elem
+					SELECT elem
 					FROM jsonb_array_elements_text(pi_cash.thread_order_info_uuids::jsonb) AS elem
 					WHERE elem IS NOT NULL AND elem != 'null'
 				)
