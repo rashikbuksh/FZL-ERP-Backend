@@ -793,13 +793,13 @@ export async function selectOrderZipperThread(req, res, next) {
 							${
 								page == 'production_statement'
 									? sql` 
-									AND ras.total_close_end_value + ras.total_open_end_value > 0
+									AND ras.total_prod_quantity > 0
 									AND vpl.is_warehouse_received = true
 									AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 									`
 									: page == 'production_statement_accounts'
 										? sql`
-										AND ras.total_close_end_value + ras.total_open_end_value > 0
+										AND ras.total_prod_quantity > 0
 										AND vpl.is_warehouse_received = true AND vpl.challan_uuid IS NOT NULL
 										AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 										`
@@ -829,13 +829,13 @@ export async function selectOrderZipperThread(req, res, next) {
 							${
 								page == 'production_statement'
 									? sql` 
-									AND rast.total_close_end_value > 0
+									AND rast.total_prod_quantity > 0
 									AND vpl.is_warehouse_received = true
 									AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 									`
 									: page == 'production_statement_accounts'
 										? sql`
-										AND rast.total_close_end_value > 0
+										AND rast.total_prod_quantity > 0
 										AND vpl.is_warehouse_received = true AND vpl.challan_uuid IS NOT NULL
 										AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 										`
