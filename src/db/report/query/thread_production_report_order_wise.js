@@ -99,7 +99,7 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 LEFT JOIN 
                     thread.order_info toi ON toe.order_info_uuid = toi.uuid
                 WHERE 
-                    toi.uuid IS NOT NULL
+                    ple.thread_order_entry_uuid IS NOT NULL
                 GROUP BY
                     toi.uuid
             ) thread_challan_sum ON thread_challan_sum.order_info_uuid = order_info.uuid
@@ -137,7 +137,7 @@ export async function threadProductionStatusOrderWise(req, res, next) {
 
 		query.append(
 			sql`GROUP BY
-                order_info.uuid, party.name, marketing.name, thread_batch.thread_batch, order_info.created_at, order_info.updated_at, order_info.party_uuid, order_info.marketing_uuid, order_info.is_sample, order_info.id, thread_challan_sum.total_delivery_delivered_quantity, thread_challan_sum.total_delivery_balance_quantity, thread_challan_sum.total_short_quantity, thread_challan_sum.total_reject_quantity
+                order_info.uuid, party.name, marketing.name, thread_batch.thread_batch, order_info.created_at, order_info.updated_at, order_info.party_uuid, order_info.marketing_uuid, order_info.is_sample, order_info.id,  thread_challan_sum.packing_list_quantity, thread_challan_sum.total_delivery_delivered_quantity, thread_challan_sum.total_delivery_balance_quantity, thread_challan_sum.total_short_quantity, thread_challan_sum.total_reject_quantity
             `
 		);
 
