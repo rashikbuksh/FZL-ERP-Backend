@@ -1301,8 +1301,8 @@ export async function ProductionReportThreadDirector(req, res, next) {
                 party.name as party_name,
                 CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
                 CONCAT(count_length.count, ' - ', count_length.length) as count_length_name,
-                coalesce(prod_quantity.total_quantity,0) as total_quantity,
-                coalesce(prod_quantity.total_coning_carton_quantity,0) as total_coning_carton_quantity
+                coalesce(prod_quantity.total_quantity,0)::float8 as total_quantity,
+                coalesce(prod_quantity.total_coning_carton_quantity,0)::float8 as total_coning_carton_quantity
             FROM
                 thread.order_info
             LEFT JOIN
@@ -1439,9 +1439,9 @@ export async function ProductionReportSnm(req, res, next) {
                 oe.quantity::float8,
                 CASE WHEN sfg.recipe_uuid IS NULL THEN oe.quantity::float8 ELSE 0 END as not_approved_quantity,
                 CASE WHEN sfg.recipe_uuid IS NOT NULL THEN oe.quantity::float8 ELSE 0 END as approved_quantity,
-                coalesce(close_end_sum.total_close_end_quantity,0) as total_close_end_quantity,
-                coalesce(open_end_sum.total_open_end_quantity,0) as total_open_end_quantity,
-                coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0) as total_quantity,
+                coalesce(close_end_sum.total_close_end_quantity,0)::float8 as total_close_end_quantity,
+                coalesce(open_end_sum.total_open_end_quantity,0)::float8 as total_open_end_quantity,
+                coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0)::float8 as total_quantity,
                 sfg.delivered::float8,
                 sfg.warehouse::float8,
                 (oe.quantity::float8 - sfg.delivered::float8) as balance_quantity,
@@ -1606,7 +1606,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 order_entry.style,
                 order_entry.color,
                 order_entry.recipe_uuid,
-                order_entry.quantity,
+                order_entry.quantity::float8,
                 CASE WHEN order_entry.recipe_uuid IS NULL THEN order_entry.quantity::float8 ELSE 0 END as not_approved_quantity,
                 CASE WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8 ELSE 0 END as approved_quantity,
                 count_length.count,

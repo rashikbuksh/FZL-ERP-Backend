@@ -24,11 +24,11 @@ export async function MaterialStockReport(req, res, next) {
                 ms.name as material_section_name,
                 m.name as material_name,
                 m.unit as material_unit,
-                coalesce(opening_purchase.total_purchase_quantity, 0) - COALESCE(opening_material_consumption.total_issue_quantity,0) - COALESCE(opening_s2s_consumption.total_s2s_issue_quantity, 0) as opening_quantity,
-                coalesce(purchase.total_purchase_quantity, 0) as purchase_quantity,
-                coalesce(material_consumption.total_issue_quantity, 0) + COALESCE(s2s_consumption.total_s2s_issue_quantity, 0) as consumption_quantity,
+                coalesce(opening_purchase.total_purchase_quantity, 0) - COALESCE(opening_material_consumption.total_issue_quantity,0) - COALESCE(opening_s2s_consumption.total_s2s_issue_quantity, 0)::float8 as opening_quantity,
+                coalesce(purchase.total_purchase_quantity, 0)::float8 as purchase_quantity,
+                coalesce(material_consumption.total_issue_quantity, 0) + COALESCE(s2s_consumption.total_s2s_issue_quantity, 0)::float8 as consumption_quantity,
                 (coalesce(opening_purchase.total_purchase_quantity, 0) - COALESCE(opening_material_consumption.total_issue_quantity,0) - COALESCE(opening_s2s_consumption.total_s2s_issue_quantity, 0) 
-                + coalesce(purchase.total_purchase_quantity, 0) - coalesce(material_consumption.total_issue_quantity, 0) - COALESCE(s2s_consumption.total_s2s_issue_quantity, 0)) as closing_quantity
+                + coalesce(purchase.total_purchase_quantity, 0) - coalesce(material_consumption.total_issue_quantity, 0) - COALESCE(s2s_consumption.total_s2s_issue_quantity, 0))::float8 as closing_quantity
             FROM 
                 material.info m 
             LEFT JOIN

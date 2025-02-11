@@ -136,7 +136,7 @@ export async function selectSampleReportByDate(req, res, next) {
                            od.is_inch,
                            od.is_meter,
                            od.is_cm,
-                           oe.quantity,
+                           oe.quantity::float8,
                            oe.remarks,
                            od.order_type,
                            oe.style,
@@ -285,7 +285,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                            od_given.style,
                            od_given.color,
                            od_given.size,
-                           od_given.total_quantity,
+                           od_given.total_quantity::float8,
                            CONCAT(
                                 CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
                                 CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN ', ' ELSE '' END,
@@ -390,7 +390,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                             toe_given.style,
                             toe_given.color,
                             toe_given.size,
-                            toe_given.total_quantity,
+                            toe_given.total_quantity::float8,
                             toe_given.count_length_names AS item_details,
                             null as slider_details,
                             null as other_details
