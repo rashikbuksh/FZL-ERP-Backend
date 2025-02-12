@@ -427,7 +427,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         WHERE
                             toi.is_sample = ${is_sample} 
                             AND toi.created_at BETWEEN ${date}::TIMESTAMP and ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
-                            AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                            AND ${own_uuid ? sql`toi.marketing_uuid = ${marketing_uuid}` : sql`TRUE`}
                         ORDER BY
                             order_number ASC, item_description ASC;
                     `;
