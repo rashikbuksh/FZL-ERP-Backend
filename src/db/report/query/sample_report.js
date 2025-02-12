@@ -247,7 +247,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
 	let toDate = to_date;
 
 	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
+	let marketing_uuid = null;
 	const marketingUuidQuery = sql`
 		SELECT uuid
 		FROM public.marketing
@@ -261,7 +261,15 @@ export async function selectSampleReportByDateCombined(req, res, next) {
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+			if (
+				marketingUuidData &&
+				marketingUuidData.rows &&
+				marketingUuidData.rows.length > 0
+			) {
+				marketing_uuid = marketingUuidData.rows[0].uuid;
+			} else {
+				marketing_uuid = null;
+			}
 		}
 
 		const query = sql`
@@ -368,7 +376,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         WHERE
                             oi.is_sample = ${is_sample} 
                             AND od.created_at BETWEEN ${date}::TIMESTAMP and ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
-                            AND ${own_uuid ? sql`oi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                            AND ${own_uuid ? sql`oi.marketing_uuid = ${marketing_uuid}` : sql`TRUE`}
                         UNION
                         SELECT 
                             CONCAT('ST', 
