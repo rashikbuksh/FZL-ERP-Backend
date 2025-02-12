@@ -139,11 +139,10 @@ export async function selectAll(req, res, next) {
 			order_info.created_at,
 			order_info.updated_at,
 			order_info.remarks,
-			swatch_approval_counts.swatch_approval_count,
+			order_entry_counts.swatch_approval_count,
 			order_entry_counts.order_entry_count,
-			CASE WHEN order_entry_counts.bleaching = 'bleach' THEN true ELSE false END AS is_bleached,
 			CASE WHEN price_approval_counts.price_approval_count IS NULL THEN 0 ELSE price_approval_counts.price_approval_count END AS price_approval_count,
-			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
+			CASE WHEN order_entry_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
 			order_info.revision_no,
 			order_info.is_cancelled
 		FROM 
@@ -160,11 +159,6 @@ export async function selectAll(req, res, next) {
 			public.merchandiser ON order_info.merchandiser_uuid = public.merchandiser.uuid
 		LEFT JOIN 
 			public.buyer ON order_info.buyer_uuid = public.buyer.uuid
-		LEFT JOIN (
-					SELECT COUNT(toe.swatch_approval_date) AS swatch_approval_count, toe.order_info_uuid as order_info_uuid
-					FROM thread.order_entry toe
-					GROUP BY toe.order_info_uuid
-		) swatch_approval_counts ON order_info.uuid = swatch_approval_counts.order_info_uuid
 		 LEFT JOIN (
 					SELECT COUNT(*) AS price_approval_count, toe.order_info_uuid as order_info_uuid
 					FROM thread.order_entry toe
@@ -173,11 +167,11 @@ export async function selectAll(req, res, next) {
 		) price_approval_counts ON order_info.uuid = price_approval_counts.order_info_uuid
 		LEFT JOIN (
 					SELECT 
-						COUNT(*) AS order_entry_count, 
-						toe.bleaching as bleaching,
+						COUNT(*) AS order_entry_count,
+						COUNT(toe.swatch_approval_date) AS swatch_approval_count,
 						toe.order_info_uuid as order_info_uuid
 					FROM thread.order_entry toe
-					GROUP BY toe.order_info_uuid, toe.bleaching
+					GROUP BY toe.order_info_uuid
 		) order_entry_counts ON order_info.uuid = order_entry_counts.order_info_uuid
 		LEFT JOIN (
 			SELECT toi.uuid as order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers
@@ -245,9 +239,10 @@ export async function select(req, res, next) {
 			order_info.created_at,
 			order_info.updated_at,
 			order_info.remarks,
-			swatch_approval_counts.swatch_approval_count,
+			order_entry_counts.swatch_approval_count,
 			order_entry_counts.order_entry_count,
-			CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
+			CASE WHEN price_approval_counts.price_approval_count IS NULL THEN 0 ELSE price_approval_counts.price_approval_count END AS price_approval_count,
+			CASE WHEN order_entry_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
 			order_info.revision_no,
 			order_info.is_cancelled
 		FROM 
@@ -264,13 +259,17 @@ export async function select(req, res, next) {
 			public.merchandiser ON order_info.merchandiser_uuid = public.merchandiser.uuid
 		LEFT JOIN 
 			public.buyer ON order_info.buyer_uuid = public.buyer.uuid
-		LEFT JOIN (
-					SELECT COUNT(toe.swatch_approval_date) AS swatch_approval_count, toe.order_info_uuid as order_info_uuid
+		 LEFT JOIN (
+					SELECT COUNT(*) AS price_approval_count, toe.order_info_uuid as order_info_uuid
 					FROM thread.order_entry toe
+					WHERE toe.party_price > 0 AND toe.company_price > 0
 					GROUP BY toe.order_info_uuid
-		) swatch_approval_counts ON order_info.uuid = swatch_approval_counts.order_info_uuid
+		) price_approval_counts ON order_info.uuid = price_approval_counts.order_info_uuid
 		LEFT JOIN (
-					SELECT COUNT(*) AS order_entry_count, toe.order_info_uuid as order_info_uuid
+					SELECT 
+						COUNT(*) AS order_entry_count,
+						COUNT(toe.swatch_approval_date) AS swatch_approval_count,
+						toe.order_info_uuid as order_info_uuid
 					FROM thread.order_entry toe
 					GROUP BY toe.order_info_uuid
 		) order_entry_counts ON order_info.uuid = order_entry_counts.order_info_uuid
