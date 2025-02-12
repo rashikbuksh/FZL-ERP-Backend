@@ -1486,7 +1486,6 @@ export async function ProductionReportSnm(req, res, next) {
                     oe.uuid
             ) open_end_sum ON oe.uuid = open_end_sum.order_entry_uuid
             WHERE vodf.order_description_uuid IS NOT NULL 
-            AND oe.quantity > 0 AND oe.quantity IS NOT NULL
             AND (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) > 0
             AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
             AND ${from && to ? sql`vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
