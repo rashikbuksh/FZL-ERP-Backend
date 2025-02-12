@@ -98,7 +98,7 @@ export async function selectSampleReportByDate(req, res, next) {
 	let toDate = to_date === null || to_date === undefined ? null : to_date;
 
 	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
+	let marketing_uuid = null;
 	const marketingUuidQuery = sql`
 		SELECT uuid
 		FROM public.marketing
@@ -116,7 +116,15 @@ export async function selectSampleReportByDate(req, res, next) {
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+			if (
+				marketingUuidData &&
+				marketingUuidData.rows &&
+				marketingUuidData.rows.length > 0
+			) {
+				marketing_uuid = marketingUuidData.rows[0].uuid;
+			} else {
+				marketing_uuid = null;
+			}
 		}
 
 		const query = sql`
@@ -218,7 +226,7 @@ export async function selectSampleReportByDate(req, res, next) {
                         WHERE
                             oi.is_sample = ${is_sample}
                             AND od.created_at BETWEEN ${date}::TIMESTAMP and ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
-                            AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketingUuid}`}
+                            AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketing_uuid}`}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
