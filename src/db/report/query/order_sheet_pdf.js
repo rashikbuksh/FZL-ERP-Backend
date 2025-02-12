@@ -80,7 +80,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                             DATE(v_order_details_full.order_description_created_at) BETWEEN ${from_date} AND ${to_date}
                             AND ${marketing ? sql`v_order_details_full.marketing_uuid = ${marketing}` : sql`TRUE`}
                             AND ${party ? sql`v_order_details_full.party_uuid = ${party}` : sql`TRUE`}
-                            AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                            AND ${own_uuid ? sql`v_order_details_full.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
@@ -202,7 +202,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                             DATE(order_info.created_at) BETWEEN ${from_date} AND ${to_date}
                             AND ${marketing ? sql`order_info.marketing_uuid = ${marketing}` : sql`TRUE`}
                             AND ${party ? sql`order_info.party_uuid = ${party}` : sql`TRUE`}
-                            AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                            AND ${own_uuid ? sql`order_info.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
                         ORDER BY
                             order_number ASC;
                     `;
