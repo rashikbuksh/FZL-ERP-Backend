@@ -1619,7 +1619,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 order_info.uuid as order_info_uuid,
                 order_entry.delivered::float8,
                 order_entry.warehouse::float8,
-                (order_entry.quantity::float8 - order_entry.delivered::float8) as balance_quantity
+                (order_entry.quantity::float8 - order_entry.warehouse::float8 - order_entry.delivered::float8) as balance_quantity
             FROM
                 thread.order_info
             LEFT JOIN
@@ -1646,6 +1646,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
             ) prod_quantity ON order_entry.uuid = prod_quantity.order_entry_uuid
             WHERE 
                 order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
+                AND (order_entry.quantity::float8 - order_entry.warehouse::float8 - order_entry.delivered::float8) > 0
                 AND ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
                 AND ${from && to ? sql`order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
             ORDER BY party.name DESC
