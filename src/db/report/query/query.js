@@ -1444,7 +1444,7 @@ export async function ProductionReportSnm(req, res, next) {
                 coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0)::float8 as total_quantity,
                 sfg.delivered::float8,
                 sfg.warehouse::float8,
-                (oe.quantity::float8 - sfg.delivered::float8) as balance_quantity,
+                (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) as balance_quantity,
                 vodf.order_type,
                 vodf.is_inch,
                 CASE 
@@ -1487,6 +1487,7 @@ export async function ProductionReportSnm(req, res, next) {
             ) open_end_sum ON oe.uuid = open_end_sum.order_entry_uuid
             WHERE vodf.order_description_uuid IS NOT NULL 
             AND oe.quantity > 0 AND oe.quantity IS NOT NULL
+            AND (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) > 0
             AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
             AND ${from && to ? sql`vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
             ORDER BY vodf.item_name DESC
