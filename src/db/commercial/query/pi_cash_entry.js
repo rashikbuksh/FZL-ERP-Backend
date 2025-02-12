@@ -182,6 +182,27 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 						ELSE 'CM'
 					END as size_unit,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.quantity::float8 ELSE toe.quantity::float8 END as max_quantity,
+					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.company_price::float8 ELSE toe.company_price::float8 END as company_price,
+					CASE 
+						WHEN pe.thread_order_entry_uuid IS NULL 
+						THEN 
+							CASE 
+								WHEN vodf.order_type = 'tape' 
+								THEN oe.company_price::float8 
+								ELSE ROUND(oe.company_price/12,2)::float8 
+							END
+						ELSE toe.company_price::float8 
+					END as company_price_pcs,
+					CASE 
+						WHEN pe.thread_order_entry_uuid IS NULL 
+						THEN 
+							CASE 
+								WHEN vodf.order_type = 'tape' 
+								THEN oe.size::float8 * (oe.company_price::float8)::float8 
+								ELSE ROUND(pe.pi_cash_quantity * oe.company_price/12, 2)::float8 
+							END
+						ELSE ROUND(pe.pi_cash_quantity * toe.company_price, 2)::float8 
+					END as company_value,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as unit_price,
 					CASE 
 						WHEN pe.thread_order_entry_uuid IS NULL 
