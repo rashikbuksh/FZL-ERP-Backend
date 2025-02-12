@@ -826,6 +826,7 @@ export const pathReport = {
 				SE.parameter_query('type', 'type', ['zipper', 'thread']),
 				SE.parameter_query('marketing', 'marketing', SE.uuid()),
 				SE.parameter_query('party', 'party', SE.uuid()),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
 			],
 			responses: {
 				200: SE.response_schema(200, {
