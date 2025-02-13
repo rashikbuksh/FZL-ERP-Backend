@@ -148,7 +148,7 @@ export async function selectAll(req, res, next) {
 			is_logo_puller: die_casting.is_logo_puller,
 			quantity: decimalToNumber(die_casting.quantity),
 			weight: decimalToNumber(die_casting.weight),
-			pcs_per_kg: sql`coalesce(NULLIF(die_casting.weight,0) / die_casting.quantity,0)::float8`,
+			pcs_per_kg: sql`coalesce(CASE WHEN die_casting.quantity = 0 THEN 0 ELSE die_casting.weight / die_casting.quantity END, 0)::float8`,
 			created_by: die_casting.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: die_casting.created_at,
@@ -156,7 +156,7 @@ export async function selectAll(req, res, next) {
 			remarks: die_casting.remarks,
 			type: die_casting.type,
 			quantity_in_sa: decimalToNumber(die_casting.quantity_in_sa),
-			quantity_in_sa_weight: sql`((coalesce(NULLIF(die_casting.weight,0) / die_casting.quantity,0)::float8) * die_casting.quantity_in_sa)::float8`,
+			quantity_in_sa_weight: sql`((coalesce(CASE WHEN die_casting.quantity = 0 THEN 0 ELSE die_casting.weight / die_casting.quantity END, 0)::float8) * die_casting.quantity_in_sa)::float8`,
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))
