@@ -1,4 +1,4 @@
-import { asc, desc, eq, sql } from 'drizzle-orm';
+import { asc, desc, eq, sql, sum } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as deliverySchema from '../../delivery/schema.js';
@@ -241,12 +241,8 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			size: order_entry.size,
 			is_inch: order_entry.is_inch,
 			quantity: decimalToNumber(order_entry.quantity),
-			total_planning_quantity: sql`
-				SUM(finishing_batch_entry.batch_quantity)::float8
-			`,
-			total_dyeing_quantity: sql`
-				SUM(dyeing_batch_entry.quantity)::float8
-			`,
+			total_planning_quantity: sum(finishing_batch_entry.quantity),
+			total_dyeing_quantity: sum(dyeing_batch_entry.quantity),
 			company_price: decimalToNumber(order_entry.company_price),
 			party_price: decimalToNumber(order_entry.party_price),
 			order_entry_status: order_entry.status,
