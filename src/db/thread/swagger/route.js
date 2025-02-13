@@ -903,6 +903,10 @@ export const pathThreadBatchEntryProduction = {
 			tags: ['thread.batch_entry_production'],
 			summary: 'Get Batch Entry Production Details',
 			description: 'Get Batch Entry Production Details',
+			parameters: [
+				SE.parameter_query('from', 'from'),
+				SE.parameter_query('to', 'to'),
+			],
 			produces: ['application/json'],
 			responses: {
 				200: SE.response_schema(200, {

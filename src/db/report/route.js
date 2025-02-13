@@ -3,7 +3,10 @@ import { Router } from 'express';
 import SE, { SED } from '../../util/swagger_example.js';
 import { selectCashInvoice } from './query/cash_invoice.js';
 import { deliveryStatementReport } from './query/delivery_statement.js';
-import { selectItemZipperEndApprovedQuantity } from './query/item_zipper_number_end_wise_approved.js';
+import {
+	selectItemZipperEndApprovedQuantity,
+	selectPartyWiseApprovedQuantity,
+} from './query/item_zipper_number_end_wise_approved.js';
 import { selectLabDip } from './query/lab_dip.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
@@ -134,6 +137,12 @@ reportRouter.get('/lab-dip', selectLabDip);
 reportRouter.get(
 	'/item-zipper-number-end-wise-approved',
 	selectItemZipperEndApprovedQuantity
+);
+
+// * party wise approved quantity
+reportRouter.get(
+	'/party-wise-approved-quantity',
+	selectPartyWiseApprovedQuantity
 );
 
 // * Order Sheet Pdf Report
@@ -852,6 +861,22 @@ export const pathReport = {
 						index: SE.number(610),
 						remarks: SE.string('Remarks'),
 					}),
+				}),
+			},
+		},
+	},
+	'/report/party-wise-approved-quantity': {
+		get: {
+			summary: 'Party Wise Approved Quantity',
+			description: 'Party Wise Approved Quantity',
+			tags: ['report'],
+			operationId: 'selectPartyWiseApprovedQuantity',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					party_name: SE.string('Party Name'),
+					not_approved: SE.number(610),
+					approved: SE.number(610),
 				}),
 			},
 		},

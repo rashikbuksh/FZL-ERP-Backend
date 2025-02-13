@@ -84,13 +84,21 @@ const SE = {
 	parameter_query: (
 		description = 'GET DATA',
 		name = 'uuid',
-		enumVal = ['']
+		enumVal = [''],
+		schemaNeeded = false
 	) => ({
 		name: name,
 		in: 'query',
 		description: description,
 		required: false,
 		type: 'array',
+		schema: schemaNeeded
+			? {
+					type: 'string',
+					enum: enumVal,
+					default: enumVal[0],
+				}
+			: '',
 		items: {
 			type: 'string',
 			enum: enumVal,

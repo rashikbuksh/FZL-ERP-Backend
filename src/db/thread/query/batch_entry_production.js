@@ -150,8 +150,11 @@ export async function select(req, res, next) {
 }
 
 export async function getBatchEntryProductionDetails(req, res, next) {
+	const { from, to } = req.query;
+
 	const query = sql`
-	WITH calculated_balance AS (SELECT 
+	WITH calculated_balance AS (
+	SELECT 
 		bep.uuid,
 		bep.batch_entry_uuid,
 		bep.production_quantity::float8,
@@ -197,6 +200,8 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		public.party ON order_info.party_uuid = party.uuid
 	LEFT JOIN
 		thread.batch ON be.batch_uuid = batch.uuid
+	WHERE
+		${from && to ? sql`bep.created_at BETWEEN ${from} AND ${to}` : sql`TRUE`}
 	)
 	SELECT * FROM calculated_balance
 	WHERE balance_quantity >= 0
