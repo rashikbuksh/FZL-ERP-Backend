@@ -243,7 +243,7 @@ export async function select(req, res, next) {
 			remarks: die_casting.remarks,
 			type: die_casting.type,
 			quantity_in_sa: decimalToNumber(die_casting.quantity_in_sa),
-			quantity_in_sa_weight: sql`((coalesce(NULLIF(die_casting.weight, 0) / NULLIF(die_casting.quantity, 0), 0)::float8) * die_casting.quantity_in_sa)::float8`,
+			quantity_in_sa_weight: sql`((coalesce(CASE WHEN die_casting.quantity = 0 THEN 0 ELSE die_casting.weight / die_casting.quantity END, 0)::float8) * die_casting.quantity_in_sa)::float8`,
 		})
 		.from(die_casting)
 		.leftJoin(itemProperties, eq(die_casting.item, itemProperties.uuid))
