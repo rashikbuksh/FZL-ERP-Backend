@@ -23,6 +23,7 @@ import {
 } from './query/thread_production_report_by_date.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
 import { selectOrderSheetPdf } from './query/order_sheet_pdf.js';
+import { selectChallanPdf } from './query/challan_pdf.js';
 
 const reportRouter = Router();
 
@@ -147,6 +148,10 @@ reportRouter.get(
 
 // * Order Sheet Pdf Report
 reportRouter.get('/order-sheet-pdf-report', selectOrderSheetPdf);
+
+// * Challan Pdf Report
+
+reportRouter.get('/challan-pdf-report', selectChallanPdf);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -877,6 +882,42 @@ export const pathReport = {
 					party_name: SE.string('Party Name'),
 					not_approved: SE.number(610),
 					approved: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/challan-pdf-report': {
+		get: {
+			summary: 'Challan Pdf Report',
+			description: 'Challan Pdf Report',
+			tags: ['report'],
+			operationId: 'selectChallanPdf',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					challan_number: SE.string('ZC25-0001'),
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Z25-0001'),
+					total_carton_quantity: SE.number(610),
+					buyer_uuid: SE.uuid(),
+					buyer_name: SE.string('Buyer Name'),
+					party_uuid: SE.uuid(),
+					party_name: SE.string('Party Name'),
+					merchandiser_uuid: SE.uuid(),
+					merchandiser_name: SE.string('Merchandiser Name'),
+					factory_uuid: SE.uuid(),
+					factory_name: SE.string('Factory Name'),
+					factory_address: SE.string('Factory Address'),
+					vehicle_uuid: SE.uuid(),
+					vehicle_name: SE.string('Vehicle Name'),
+					vehicle_driver_name: SE.string('Driver Name'),
+					carton_quantity: SE.number(610),
+					receive_status: SE.string('Receive Status'),
 				}),
 			},
 		},

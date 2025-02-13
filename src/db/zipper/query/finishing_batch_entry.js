@@ -256,7 +256,13 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
                 THEN 1=1 
                 WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1)
                 THEN 1=1
-                ELSE sfg.recipe_uuid IS NOT NULL 
+                ELSE (
+						sfg.recipe_uuid IS NOT NULL AND
+						(
+							lower(vodf.item_name) != 'nylon'
+							OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+						)
+					)
             END
 		AND (
 			CASE 
@@ -267,11 +273,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			- coalesce(fbe_given.given_quantity,0)
 			) > 0
 		AND vodf.order_description_uuid = ${req.params.order_description_uuid}
-		AND
-	 	(
-	 		lower(vodf.item_name) != 'nylon'
-	 		OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-	 	)`;
+		`;
 
 	// AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0
 	// AND
