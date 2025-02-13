@@ -392,7 +392,7 @@ export async function selectTransactionsFromDieCasting(req, res, next) {
 				die_casting.is_logo_puller,
 				die_casting.quantity::float8,
 				die_casting.weight::float8,
-				CASE WHEN die_casting.weight != 0 THEN (die_casting.quantity::float8 / die_casting.weight::float8)::float8 ELSE 0 END AS pcs_per_kg,
+				CASE WHEN die_casting.quantity != 0 THEN (die_casting.weight::float8 / die_casting.quantity::float8)::float8 ELSE 0 END AS pcs_per_kg,
 				die_casting.created_at,
 				die_casting.updated_at,
 				die_casting.remarks,
