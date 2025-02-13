@@ -886,7 +886,7 @@ export const pathReport = {
 			},
 		},
 	},
-	'/report/challan-pdf-report': {
+	'/report/challan-pdf-report/{order_info_uuid}': {
 		get: {
 			summary: 'Challan Pdf Report',
 			description: 'Challan Pdf Report',
