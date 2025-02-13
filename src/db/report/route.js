@@ -151,7 +151,7 @@ reportRouter.get('/order-sheet-pdf-report', selectOrderSheetPdf);
 
 // * Challan Pdf Report
 
-reportRouter.get('/challan-pdf-report', selectChallanPdf);
+reportRouter.get('/challan-pdf-report/:order_info_uuid', selectChallanPdf);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -893,6 +893,11 @@ export const pathReport = {
 			tags: ['report'],
 			operationId: 'selectChallanPdf',
 			parameters: [
+				SE.parameter_params(
+					'order_info_uuid',
+					'order_info_uuid',
+					SE.uuid()
+				),
 				SE.parameter_query('from', 'from', '2024-10-01'),
 				SE.parameter_query('to', 'to', '2024-10-31'),
 				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
