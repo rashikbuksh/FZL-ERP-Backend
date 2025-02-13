@@ -4,6 +4,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectChallanPdf(req, res, next) {
+	const { order_info_uuid } = req.query;
 	const { from, to, own_uuid } = req.query;
 
 	let marketingUuid = null;
@@ -21,11 +22,7 @@ export async function selectChallanPdf(req, res, next) {
 		const query = sql`
 	SELECT
 		main_query.*,
-		sub_query.packing_list_uuids,
-		sub_query.packing_numbers,
 		sub_query.packing_list_numbers,
-		sub_query.total_quantity,
-		sub_query.total_poly_quantity,
 		sub_query.gate_pass
 	FROM
 		(
@@ -126,6 +123,7 @@ export async function selectChallanPdf(req, res, next) {
 			WHERE
 			  	${from && to ? sql`challan.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
 				${own_uuid == null || own_uuid == 'null' || own_uuid == undefined ? sql`` : sql`AND (order_info.marketing_uuid = ${marketingUuid} OR toi.marketing_uuid = ${marketingUuid})`}
+                ${order_info_uuid ? sql`AND (challan.order_info_uuid = ${order_info_uuid} OR challan.thread_order_info_uuid = ${order_info_uuid})` : sql``}
 		) AS main_query
 	LEFT JOIN (
 		SELECT
@@ -135,7 +133,7 @@ export async function selectChallanPdf(req, res, next) {
 					'packing_list_entry_uuid', ple.uuid,
                     'style', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.style ELSE toe.style END,
                     'color', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.color ELSE toe.color END,
-                    'item_description', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END,
+                    'item_description', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE cl.count::text END,
                     'specification', 
                     CASE WHEN ple.sfg_uuid IS NOT NULL 
                         THEN CONCAT(
@@ -166,8 +164,8 @@ export async function selectChallanPdf(req, res, next) {
                             ELSE '' 
                             END
                         ) 
-                        ELSE null,
-                    'size', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.size ELSE cl.length END,
+                        ELSE null END,
+                    'size', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.size::float8 ELSE cl.length::float8 END,
                     'count', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN null ELSE cl.count END,
                     'length', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN null ELSE cl.length END,
                     'sfg_uuid', ple.sfg_uuid,
@@ -175,7 +173,7 @@ export async function selectChallanPdf(req, res, next) {
                     'poli_quantity', ple.poli_quantity,
                     'short_quantity', ple.short_quantity,
                     'reject_quantity', ple.reject_quantity,
-                    'thread_order_entry_uuid', ple.thread_order_entry_uuid,
+                    'thread_order_entry_uuid', ple.thread_order_entry_uuid
 				)
 			) AS packing_list_numbers,
 			CASE
@@ -186,7 +184,7 @@ export async function selectChallanPdf(req, res, next) {
 		FROM
 			delivery.packing_list
 		LEFT JOIN
-			delivery.packing_list_entry ple ON packing_list.uuid = packing_list_entry.packing_list_uuid
+			delivery.packing_list_entry ple ON packing_list.uuid = ple.packing_list_uuid
         LEFT JOIN
             thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
         LEFT JOIN 
