@@ -254,7 +254,13 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			CASE 
                 WHEN vodf.order_type = 'slider' 
                 THEN 1=1 
-                WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1)
+                WHEN 
+					(
+						vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1 AND (
+							lower(vodf.item_name) != 'nylon'
+							OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+						)
+					)
                 THEN 1=1
                 ELSE (
 						sfg.recipe_uuid IS NOT NULL AND

@@ -130,17 +130,54 @@ export async function selectChallanPdf(req, res, next) {
 	LEFT JOIN (
 		SELECT
 			packing_list.challan_uuid,
-			ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
-			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
 			jsonb_agg(
 				DISTINCT jsonb_build_object(
-					'packing_list_uuid', packing_list.uuid, 
-					'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')),
-					'carton_weight', packing_list.carton_weight
+					'packing_list_entry_uuid', ple.uuid,
+                    'style', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.style ELSE toe.style END,
+                    'color', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.color ELSE toe.color END,
+                    'item_description', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END,
+                    'specification', 
+                    CASE WHEN ple.sfg_uuid IS NOT NULL 
+                        THEN CONCAT(
+                            vodf.lock_type_name, 
+                            CASE WHEN (vodf.teeth_color_name IS NOT NULL OR vodf.teeth_color_name != '---') THEN ', teeth: ' ELSE '' END,
+                            vodf.teeth_color_name, 
+                            CASE WHEN (vodf.puller_color_name IS NOT NULL OR vodf.puller_color_name != '---') THEN ', puller: ' ELSE '' END,
+                            vodf.puller_color_name, 
+                            CASE WHEN (vodf.hand_name IS NOT NULL OR vodf.hand_name != '---') THEN ', ' ELSE '' END,
+                            vodf.hand_name, 
+                            CASE WHEN (vodf.coloring_type_name IS NOT NULL OR vodf.coloring_type_name != '---') THEN ', type: ' ELSE '' END, 
+                            vodf.coloring_type_name, 
+                            CASE WHEN (vodf.slider_name IS NOT NULL OR vodf.slider_name != '---') THEN ', ' ELSE '' END,
+                            vodf.slider_name, 
+                            CASE WHEN (vodf.top_stopper_name IS NOT NULL OR vodf.top_stopper_name != '---') THEN ', ' ELSE '' END,
+                            vodf.top_stopper_name, 
+                            CASE WHEN (vodf.bottom_stopper_name IS NOT NULL OR vodf.bottom_stopper_name != '---') THEN ', ' ELSE '' END,
+                            vodf.bottom_stopper_name, 
+                            CASE WHEN (vodf.logo_type_name IS NOT NULL OR vodf.logo_type_name != '---') THEN ', ' ELSE '' END,
+                            vodf.logo_type_name, 
+                            CASE WHEN (vodf.logo_type_name IS NOT NULL AND vodf.logo_type_name != '---') THEN 
+                                CONCAT(
+                                    ' (', 
+                                    CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE '' END, 
+                                    CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE '' END, 
+                                    ')'
+                                ) 
+                            ELSE '' 
+                            END
+                        ) 
+                        ELSE null,
+                    'size', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.size ELSE cl.length END,
+                    'count', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN null ELSE cl.count END,
+                    'length', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN null ELSE cl.length END,
+                    'sfg_uuid', ple.sfg_uuid,
+                    'quantity', ple.quantity,
+                    'poli_quantity', ple.poli_quantity,
+                    'short_quantity', ple.short_quantity,
+                    'reject_quantity', ple.reject_quantity,
+                    'thread_order_entry_uuid', ple.thread_order_entry_uuid,
 				)
 			) AS packing_list_numbers,
-			SUM(packing_list_entry.quantity)::float8 AS total_quantity,
-			SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
 			CASE
 				WHEN COUNT(packing_list.uuid) = SUM(CASE WHEN packing_list.gate_pass = 1 THEN 1 ELSE 0 END) 
 				THEN 1
@@ -149,7 +186,17 @@ export async function selectChallanPdf(req, res, next) {
 		FROM
 			delivery.packing_list
 		LEFT JOIN
-			delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+			delivery.packing_list_entry ple ON packing_list.uuid = packing_list_entry.packing_list_uuid
+        LEFT JOIN
+            thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+        LEFT JOIN 
+            thread.count_length cl ON toe.count_length_uuid = cl.uuid
+        LEFT JOIN
+            zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+        LEFT JOIN
+            zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+        LEFT JOIN
+            zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		GROUP BY
 			packing_list.challan_uuid
 	) AS sub_query ON main_query.uuid = sub_query.challan_uuid
