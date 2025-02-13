@@ -5,6 +5,7 @@ import * as deliverySchema from '../../delivery/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import {
+	dyeing_batch_entry,
 	finishing_batch_entry,
 	finishing_batch_production,
 	order_description,
@@ -240,6 +241,12 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			size: order_entry.size,
 			is_inch: order_entry.is_inch,
 			quantity: decimalToNumber(order_entry.quantity),
+			total_planning_quantity: sql`
+				SUM(finishing_batch_entry.batch_quantity)::float8
+			`,
+			total_dyeing_quantity: sql`
+				SUM(dyeing_batch_entry.quantity)::float8
+			`,
 			company_price: decimalToNumber(order_entry.company_price),
 			party_price: decimalToNumber(order_entry.party_price),
 			order_entry_status: order_entry.status,
@@ -251,19 +258,25 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			teeth_molding_stock: decimalToNumber(sfg.teeth_molding_stock),
 			teeth_molding_prod: decimalToNumber(sfg.teeth_molding_prod),
 			dying_and_iron_prod: decimalToNumber(sfg.dying_and_iron_prod),
-			total_teeth_molding: sql`SUM(
-				CASE WHEN finishing_batch_production.section = 'teeth_molding' THEN finishing_batch_production.production_quantity ELSE 0 END
-				)::float8`,
+			total_teeth_molding: sql`
+				SUM(
+					CASE WHEN finishing_batch_production.section = 'teeth_molding' THEN finishing_batch_production.production_quantity ELSE 0 END
+				)::float8
+			`,
 			teeth_coloring_stock: decimalToNumber(sfg.teeth_coloring_stock),
 			teeth_coloring_prod: decimalToNumber(sfg.teeth_coloring_prod),
-			total_teeth_coloring: sql`SUM(
-				CASE WHEN finishing_batch_production.section = 'teeth_coloring' THEN finishing_batch_production.production_quantity ELSE 0 END
-				)::float8`,
+			total_teeth_coloring: sql`
+				SUM(
+					CASE WHEN finishing_batch_production.section = 'teeth_coloring' THEN finishing_batch_production.production_quantity ELSE 0 END
+				)::float8
+			`,
 			finishing_stock: decimalToNumber(sfg.finishing_stock),
 			finishing_prod: decimalToNumber(sfg.finishing_prod),
-			total_finishing: sql`SUM(
-				CASE WHEN finishing_batch_production.section = 'finishing' THEN finishing_batch_production.production_quantity ELSE 0 END
-				)::float8`,
+			total_finishing: sql`
+				SUM(
+					CASE WHEN finishing_batch_production.section = 'finishing' THEN finishing_batch_production.production_quantity ELSE 0 END
+				)::float8
+			`,
 			coloring_prod: decimalToNumber(sfg.coloring_prod),
 			total_pi_quantity: decimalToNumber(sfg.pi),
 			total_warehouse_quantity: decimalToNumber(sfg.warehouse),
@@ -289,6 +302,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 				finishing_batch_production.finishing_batch_entry_uuid
 			)
 		)
+		.leftJoin(dyeing_batch_entry, eq(sfg.uuid, dyeing_batch_entry.sfg_uuid))
 		.leftJoin(
 			deliverySchema.packing_list_entry,
 			eq(deliverySchema.packing_list_entry.sfg_uuid, sfg.uuid)
