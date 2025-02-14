@@ -438,7 +438,8 @@ export async function getBatchEntryDetails(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-	WITH calculated_balance AS (SELECT 
+	WITH calculated_balance AS (
+	SELECT 
 		be.uuid as batch_entry_uuid,
 		be.batch_uuid,
 		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
@@ -482,9 +483,9 @@ export async function getBatchEntryDetails(req, res, next) {
 		thread.batch ON be.batch_uuid = batch.uuid
 	LEFT JOIN
 	    lab_dip.recipe re ON oe.recipe_uuid = re.uuid
-)
+	)
 	SELECT * FROM calculated_balance
-	WHERE transfer_quantity != batch_quantity AND is_drying_complete = 'true' AND balance_quantity > 0
+	WHERE is_drying_complete = 'true' AND balance_quantity > 0
 	ORDER BY created_at DESC, batch_entry_uuid ASC
 ;
 	`;
