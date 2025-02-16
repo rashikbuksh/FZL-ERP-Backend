@@ -23,7 +23,8 @@ export async function selectChallanPdf(req, res, next) {
 	SELECT
 		main_query.*,
 		sub_query.challan_entry,
-		sub_query.gate_pass
+		sub_query.gate_pass,
+		sub_query.packing_list_numbers
 	FROM
 		(
 			SELECT
@@ -177,7 +178,17 @@ export async function selectChallanPdf(req, res, next) {
 				WHEN COUNT(packing_list.uuid) = SUM(CASE WHEN packing_list.gate_pass = 1 THEN 1 ELSE 0 END) 
 				THEN 1
 				ELSE 0
-			END AS gate_pass
+			END AS gate_pass,
+			ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
+			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
+			jsonb_agg(
+					DISTINCT jsonb_build_object(
+					'packing_list_uuid', packing_list.uuid, 
+					'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')),
+					'carton_weight', packing_list.carton_weight)
+					) AS packing_list_numbers,
+			SUM(ple.quantity)::float8 AS total_quantity,
+			SUM(ple.poli_quantity)::float8 AS total_poly_quantity
 		FROM
 			delivery.packing_list
 		LEFT JOIN
@@ -199,7 +210,6 @@ export async function selectChallanPdf(req, res, next) {
 	ORDER BY
 		main_query.created_at DESC;
 	`;
-
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
