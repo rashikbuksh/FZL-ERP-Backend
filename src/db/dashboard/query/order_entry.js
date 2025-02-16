@@ -83,8 +83,6 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
 			return acc;
 		}, []);
 
-		console.log('response:', response);
-
 		const toast = {
 			status: 200,
 			type: 'select',
