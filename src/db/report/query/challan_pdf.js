@@ -142,6 +142,7 @@ export async function selectChallanPdf(req, res, next) {
 			pl.challan_uuid,
 			jsonb_agg(
 				jsonb_build_object(
+					'uuid', ple.uuid,
 					'packing_list_entry_uuid', ple.uuid,
 					'packing_number', CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')),
 					'packing_list_uuid', ple.packing_list_uuid,
@@ -199,6 +200,7 @@ export async function selectChallanPdf(req, res, next) {
 					'delivered', CASE WHEN sfg.uuid IS NOT NULL THEN sfg.delivered::float8 ELSE toe.delivered::float8 END,
 					'cone_per_carton', tc.cone_per_carton,
 					'order_type', vodf.order_type,
+					'is_inch', vodf.is_inch,
 					'is_meter', vodf.is_meter,
 					'balance_quantity', CASE
 						WHEN sfg.uuid IS NOT NULL

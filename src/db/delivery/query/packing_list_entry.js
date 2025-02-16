@@ -457,7 +457,7 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END as order_quantity,
 			sfg.uuid as sfg_uuid,
 			CASE WHEN sfg.uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END as warehouse,
-			CASE WHEN sfg.uuid IS NOT NULL THEN  sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
+			CASE WHEN sfg.uuid IS NOT NULL THEN sfg.delivered::float8 ELSE toe.delivered::float8 END as delivered,
 			tc.cone_per_carton,
 			vodf.order_type,
 			vodf.is_inch,
