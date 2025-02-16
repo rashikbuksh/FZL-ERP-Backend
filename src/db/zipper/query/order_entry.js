@@ -359,7 +359,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 					CASE WHEN (vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---') THEN vodf.end_type_name ELSE '' END,
 					CASE WHEN (vodf.hand_name IS NOT NULL AND vodf.hand_name != '---' AND (lower(vodf.end_type_name) != 'close end' AND lower(vodf.end_type_name) != '2 way - close end')) THEN ' - ' ELSE '' END,
 					CASE WHEN (lower(vodf.end_type_name) != 'close end' AND lower(vodf.end_type_name) != '2 way - close end') THEN vodf.hand_name ELSE '' END,
-					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN ' - ' ELSE '' END,
+					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN ' - Teeth: ' ELSE '' END,
 					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN vodf.teeth_type_name ELSE '' END,
 					CASE WHEN (vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---') THEN ' - ' ELSE '' END,
 					CASE WHEN (vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---') THEN vodf.teeth_color_name ELSE '' END,
@@ -412,7 +412,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			oe.color,
 			oe.size,
 			oe.is_inch,
-			oe.quantity::float8,
+			SUM(oe.quantity)::float8,
 			oe.company_price::float8,
 			oe.party_price::float8,
 			oe.status as order_entry_status,
@@ -436,6 +436,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 		WHERE
 			vodf.order_number = ${order_number} AND ${order_description_uuid ? sql`vodf.order_description_uuid = ${order_description_uuid}` : sql`true`}
+		GROUP BY 
+			oe.size	
 		ORDER BY
 			oe.size
 	`;
