@@ -120,7 +120,7 @@ export async function selectChallanPdf(req, res, next) {
 				GROUP BY
 					packing_list.challan_uuid
 			) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
-            ${order_info_uuid ? sql` WHERE (challan.order_info_uuid = ${order_info_uuid} OR challan.thread_order_info_uuid = ${order_info_uuid})` : sql``}
+            WHERE (challan.order_info_uuid = ${order_info_uuid} OR challan.thread_order_info_uuid = ${order_info_uuid})
 		) AS main_query
 	LEFT JOIN (
 		SELECT
@@ -192,7 +192,7 @@ export async function selectChallanPdf(req, res, next) {
             zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
         LEFT JOIN
             zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-		${order_info_uuid ? sql` WHERE (vodf.order_info_uuid = ${order_info_uuid} OR toe.order_info_uuid = ${order_info_uuid})` : sql``}
+		WHERE (vodf.order_info_uuid = ${order_info_uuid} OR toe.order_info_uuid = ${order_info_uuid})
 		GROUP BY
 			packing_list.challan_uuid
 	) AS sub_query ON main_query.uuid = sub_query.challan_uuid
