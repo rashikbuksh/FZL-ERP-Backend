@@ -359,9 +359,9 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 					CASE WHEN (vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---') THEN vodf.end_type_name ELSE '' END,
 					CASE WHEN (vodf.hand_name IS NOT NULL AND vodf.hand_name != '---' AND (lower(vodf.end_type_name) != 'close end' AND lower(vodf.end_type_name) != '2 way - close end')) THEN ' / ' ELSE '' END,
 					CASE WHEN (lower(vodf.end_type_name) != 'close end' AND lower(vodf.end_type_name) != '2 way - close end') THEN vodf.hand_name ELSE '' END,
-					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN ' / Teeth: ' ELSE ' / Teeth:' END,
+					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN ' / Teeth: ' ELSE '' END,
 					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN vodf.teeth_type_name ELSE '' END,
-					CASE WHEN (vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---') THEN '' ELSE '' END,
+					CASE WHEN (vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---') THEN ' / Teeth: ' ELSE '' END,
 					CASE WHEN (vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---') THEN vodf.teeth_color_name ELSE '' END,
 					CASE WHEN vodf.is_waterproof = true THEN ' (Waterproof) ' ELSE '' END
 				) as tape,
