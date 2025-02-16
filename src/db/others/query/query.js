@@ -694,9 +694,22 @@ export async function selectOrderInfo(req, res, next) {
 export async function selectOrderZipperThread(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { from_date, to_date, page } = req.query;
+	const { from_date, to_date, page, own_uuid } = req.query;
 
-	const query = sql`
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
 						WITH running_all_sum AS (
 						SELECT 
 							vodf.order_info_uuid, 
@@ -788,6 +801,11 @@ export async function selectOrderZipperThread(req, res, next) {
 								`
 								: sql``
 						}
+						${
+							page == 'challan_pdf'
+								? sql`LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid`
+								: sql``
+						}
 						WHERE 
 							vodf.item_description != '---' AND vodf.item_description != '' AND vodf.is_cancelled = false
 							${
@@ -805,6 +823,8 @@ export async function selectOrderZipperThread(req, res, next) {
 										`
 										: sql``
 							}
+							${page == 'challan_pdf' ? sql`AND sfg.delivered > 0` : sql``}
+							${own_uuid ? sql`AND oz.marketing_uuid = ${marketingUuid}` : sql``}
 						GROUP BY
 							oz.uuid, oz.is_sample, oz.created_at, oz.id
 						UNION 
@@ -841,13 +861,16 @@ export async function selectOrderZipperThread(req, res, next) {
 										`
 										: sql``
 							}
+							${page == 'challan_pdf' ? sql`AND toe.delivered > 0` : sql``}
+							${own_uuid ? sql`AND ot.marketing_uuid = ${marketingUuid}` : sql``}
 						GROUP BY
 							ot.uuid, ot.is_sample, ot.created_at, ot.id
+						ORDER BY
+							label DESC;
 						;`;
 
-	const orderZipperThreadPromise = db.execute(query);
+		const orderZipperThreadPromise = db.execute(query);
 
-	try {
 		const data = await orderZipperThreadPromise;
 
 		const toast = {
