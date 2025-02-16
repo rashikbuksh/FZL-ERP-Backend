@@ -172,7 +172,7 @@ export async function selectChallanPdf(req, res, next) {
                     'reject_quantity', ple.reject_quantity,
                     'thread_order_entry_uuid', ple.thread_order_entry_uuid
 				)
-			) AS packing_list_numbers,
+			) AS challan_entry,
 			CASE
 				WHEN COUNT(packing_list.uuid) = SUM(CASE WHEN packing_list.gate_pass = 1 THEN 1 ELSE 0 END) 
 				THEN 1
