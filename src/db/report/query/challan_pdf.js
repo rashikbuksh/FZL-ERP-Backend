@@ -4,7 +4,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectChallanPdf(req, res, next) {
-	const { order_info_uuid } = req.query;
+	const { order_info_uuid } = req.params;
 	const { from, to, own_uuid } = req.query;
 
 	let marketingUuid = null;
