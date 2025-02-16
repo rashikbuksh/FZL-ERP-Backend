@@ -2,14 +2,18 @@ import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
-export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(req, res, next) {
+export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
+	req,
+	res,
+	next
+) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
               	SELECT 
-                    COALESCE(z.date, t.date) as date,
+                    COALESCE(z.date) as date,
                     COALESCE(z.total_quantity, 0)::float8 as zipper,
-                    COALESCE(t.total_quantity, 0)::float8 as thread,
+                    0 as thread,
                     COALESCE(z.nylon_plastic_quantity, 0)::float8 as nylon_plastic,
                     COALESCE(z.nylon_quantity, 0)::float8 as nylon,
                     COALESCE(z.metal_quantity, 0)::float8 as metal,
@@ -27,16 +31,23 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(req, res, n
 						LEFT JOIN zipper.v_order_details_full vodf ON zoe.order_description_uuid = vodf.order_description_uuid
 						GROUP BY DATE(vodf.order_description_created_at)
 					) z
-                FULL OUTER JOIN 
+				UNION 
+				SELECT
+					COALESCE(t.date) as date,
+					0 as zipper,
+					COALESCE(t.total_quantity, 0)::float8 as thread,
+					0 as nylon_plastic,
+					0 as nylon,
+					0 as metal,
+					0 as vislon
+                FROM 
                     (
 						SELECT DATE(toi.created_at) as date, SUM(toe.quantity) as total_quantity
 						FROM thread.order_entry toe 
 						LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 						GROUP BY DATE(toi.created_at)
 					) t
-                ON z.date = t.date
-				ORDER BY date DESC LIMIT 30;
-
+				ORDER BY date DESC;
                     `;
 	const resultPromise = db.execute(query);
 
@@ -46,6 +57,10 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(req, res, n
 			date: row.date,
 			zipper: row.zipper,
 			thread: row.thread,
+			nylon_plastic: row.nylon_plastic,
+			nylon: row.nylon,
+			metal: row.metal,
+			vislon: row.vislon,
 		}));
 
 		const toast = {
