@@ -22,7 +22,7 @@ export async function selectChallanPdf(req, res, next) {
 		const query = sql`
 	SELECT
 		main_query.*,
-		sub_query.packing_list_numbers,
+		sub_query.challan_entry,
 		sub_query.gate_pass
 	FROM
 		(
