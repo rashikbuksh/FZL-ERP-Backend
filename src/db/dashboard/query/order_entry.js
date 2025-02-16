@@ -53,15 +53,37 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
 
 	try {
 		const data = await resultPromise;
-		const response = data.rows.map((row) => ({
-			date: row.date,
-			zipper: row.zipper,
-			thread: row.thread,
-			nylon_plastic: row.nylon_plastic,
-			nylon: row.nylon,
-			metal: row.metal,
-			vislon: row.vislon,
-		}));
+
+		// same date showing twice, so need to merge them
+
+		const response = data.rows?.reduce((acc, curr) => {
+			const date = curr.date;
+
+			const existing = acc.find((item) => item.date === date);
+
+			if (existing) {
+				existing.zipper += curr.zipper;
+				existing.thread += curr.thread;
+				existing.nylon_plastic += curr.nylon_plastic;
+				existing.nylon += curr.nylon;
+				existing.metal += curr.metal;
+				existing.vislon += curr.vislon;
+			} else {
+				acc.push({
+					date,
+					zipper: curr.zipper,
+					thread: curr.thread,
+					nylon_plastic: curr.nylon_plastic,
+					nylon: curr.nylon,
+					metal: curr.metal,
+					vislon: curr.vislon,
+				});
+			}
+
+			return acc;
+		}, []);
+
+		console.log('response:', response);
 
 		const toast = {
 			status: 200,
