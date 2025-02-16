@@ -407,7 +407,6 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
             vodf.garments_wash,
 			vodf.garments_remarks,
             vodf.revision_no,
-			oe.uuid as order_entry_uuid,
 			oe.style,
 			oe.color,
 			oe.size,
@@ -419,9 +418,6 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			oe.swatch_status_enum as swatch_status,
 			oe.swatch_approval_date,
 			oe.bleaching,
-			oe.created_at,
-			oe.updated_at,
-			oe.index,
 			CASE 
 				WHEN vodf.is_inch = 1 THEN 'Inch' 
 				ELSE 
@@ -437,7 +433,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 		WHERE
 			vodf.order_number = ${order_number} AND ${order_description_uuid ? sql`vodf.order_description_uuid = ${order_description_uuid}` : sql`true`}
 		GROUP BY 
-			oe.size	
+			oe.size,vodf.order_description_uuid, vodf.order_info_uuid, vodf.item_description, vodf.zipper_number_name, vodf.item_name, vodf.nylon_stopper_name, vodf.is_multi_color, vodf.end_type_name, vodf.hand_name, vodf.teeth_type_name, vodf.teeth_color_name, vodf.is_waterproof, vodf.puller_type_name, vodf.lock_type_name, vodf.coloring_type_name, vodf.puller_color_name, vodf.slider_name, vodf.slider_body_shape_name, vodf.slider_link_name, vodf.logo_type_name, vodf.is_logo_body, vodf.is_logo_puller, vodf.top_stopper_name, vodf.bottom_stopper_name, vodf.slider_provided, vodf.special_requirement, vodf.order_type, vodf.description, vodf.remarks, vodf.light_preference_name, vodf.garments_wash, vodf.garments_remarks, vodf.revision_no, oe.style, oe.color, oe.size, oe.is_inch, oe.company_price, oe.party_price, oe.status, oe.swatch_status_enum, oe.swatch_approval_date, oe.bleaching, vodf.is_inch, oe.remarks
 		ORDER BY
 			oe.size
 	`;
