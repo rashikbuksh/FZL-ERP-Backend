@@ -22,13 +22,13 @@ export async function selectChallanPdf(req, res, next) {
 		const query = sql`
 	SELECT
 		main_query.*,
-		sub_query.challan_entry,
 		sub_query.gate_pass,
 		sub_query.packing_list_uuids,
 		sub_query.packing_numbers,
 		sub_query.packing_list_numbers,
 		sub_query.total_quantity,
-		sub_query.total_poly_quantity
+		sub_query.total_poly_quantity,
+		sub_query.challan_entry
 	FROM
 		(
 			SELECT
@@ -139,87 +139,118 @@ export async function selectChallanPdf(req, res, next) {
 		) AS main_query
 	LEFT JOIN (
 		SELECT
-			packing_list.challan_uuid,
+			pl.challan_uuid,
 			jsonb_agg(
-				DISTINCT jsonb_build_object(
+				jsonb_build_object(
 					'packing_list_entry_uuid', ple.uuid,
-                    'style', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.style ELSE toe.style END,
-                    'color', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.color ELSE toe.color END,
-                    'item_description', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE cl.count::text END,
-                    'specification', 
-                    CASE WHEN ple.sfg_uuid IS NOT NULL 
-                        THEN CONCAT(
-                            vodf.lock_type_name, 
-                            CASE WHEN (vodf.teeth_color_name IS NOT NULL OR vodf.teeth_color_name != '---') THEN ', teeth: ' ELSE '' END,
-                            vodf.teeth_color_name, 
-                            CASE WHEN (vodf.puller_color_name IS NOT NULL OR vodf.puller_color_name != '---') THEN ', puller: ' ELSE '' END,
-                            vodf.puller_color_name, 
-                            CASE WHEN (vodf.hand_name IS NOT NULL OR vodf.hand_name != '---') THEN ', ' ELSE '' END,
-                            vodf.hand_name, 
-                            CASE WHEN (vodf.coloring_type_name IS NOT NULL OR vodf.coloring_type_name != '---') THEN ', type: ' ELSE '' END, 
-                            vodf.coloring_type_name, 
-                            CASE WHEN (vodf.slider_name IS NOT NULL OR vodf.slider_name != '---') THEN ', ' ELSE '' END,
-                            vodf.slider_name, 
-                            CASE WHEN (vodf.top_stopper_name IS NOT NULL OR vodf.top_stopper_name != '---') THEN ', ' ELSE '' END,
-                            vodf.top_stopper_name, 
-                            CASE WHEN (vodf.bottom_stopper_name IS NOT NULL OR vodf.bottom_stopper_name != '---') THEN ', ' ELSE '' END,
-                            vodf.bottom_stopper_name, 
-                            CASE WHEN (vodf.logo_type_name IS NOT NULL OR vodf.logo_type_name != '---') THEN ', ' ELSE '' END,
-                            vodf.logo_type_name, 
-                            CASE WHEN (vodf.logo_type_name IS NOT NULL AND vodf.logo_type_name != '---') THEN 
-                                CONCAT(
-                                    ' (', 
-                                    CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE '' END, 
-                                    CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE '' END, 
-                                    ')'
-                                ) 
-                            ELSE '' 
-                            END
-                        ) 
-                        ELSE null END,
-                    'size', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN oe.size::float8 ELSE cl.length::float8 END,
-                    'count', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN null ELSE cl.count END,
-                    'length', CASE WHEN packing_list.item_for NOT IN ('thread', 'sample_thread') THEN null ELSE cl.length END,
-                    'sfg_uuid', ple.sfg_uuid,
-                    'quantity', ple.quantity,
-                    'poli_quantity', ple.poli_quantity,
-                    'short_quantity', ple.short_quantity,
-                    'reject_quantity', ple.reject_quantity,
-                    'thread_order_entry_uuid', ple.thread_order_entry_uuid
+					'packing_number', CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')),
+					'packing_list_uuid', ple.packing_list_uuid,
+					'sfg_uuid', ple.sfg_uuid,
+					'quantity', coalesce(ple.quantity, 0)::float8,
+					'poli_quantity', coalesce(ple.poli_quantity, 0)::float8,
+					'short_quantity', coalesce(ple.short_quantity, 0)::float8,
+					'reject_quantity', coalesce(ple.reject_quantity, 0)::float8,
+					'created_at', ple.created_at,
+					'updated_at', ple.updated_at,
+					'remarks', ple.remarks,
+					'order_info_uuid', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_info_uuid ELSE toi.uuid END,
+					'order_number', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_number ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END,
+					'item_description', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END,
+					'specification', CASE WHEN ple.sfg_uuid IS NOT NULL 
+						THEN CONCAT(
+							vodf.lock_type_name, 
+							CASE WHEN (vodf.teeth_color_name IS NOT NULL OR vodf.teeth_color_name != '---') THEN ', teeth: ' ELSE '' END,
+							vodf.teeth_color_name, 
+							CASE WHEN (vodf.puller_color_name IS NOT NULL OR vodf.puller_color_name != '---') THEN ', puller: ' ELSE '' END,
+							vodf.puller_color_name, 
+							CASE WHEN (vodf.hand_name IS NOT NULL OR vodf.hand_name != '---') THEN ', ' ELSE '' END,
+							vodf.hand_name, 
+							CASE WHEN (vodf.coloring_type_name IS NOT NULL OR vodf.coloring_type_name != '---') THEN ', type: ' ELSE '' END, 
+							vodf.coloring_type_name, 
+							CASE WHEN (vodf.slider_name IS NOT NULL OR vodf.slider_name != '---') THEN ', ' ELSE '' END,
+							vodf.slider_name, 
+							CASE WHEN (vodf.top_stopper_name IS NOT NULL OR vodf.top_stopper_name != '---') THEN ', ' ELSE '' END,
+							vodf.top_stopper_name, 
+							CASE WHEN (vodf.bottom_stopper_name IS NOT NULL OR vodf.bottom_stopper_name != '---') THEN ', ' ELSE '' END,
+							vodf.bottom_stopper_name, 
+							CASE WHEN (vodf.logo_type_name IS NOT NULL OR vodf.logo_type_name != '---') THEN ', ' ELSE '' END,
+							vodf.logo_type_name, 
+							CASE WHEN (vodf.logo_type_name IS NOT NULL AND vodf.logo_type_name != '---') THEN 
+								CONCAT(
+									' (', 
+									CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE '' END, 
+									CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE '' END, 
+									')'
+								) 
+							ELSE '' 
+							END
+						) 
+						ELSE null
+					END,
+					'order_description_uuid', vodf.order_description_uuid,
+					'style', CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END,
+					'color', CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END,
+					'size_cm', CASE WHEN ple.sfg_uuid IS NOT NULL THEN CAST(oe.size AS NUMERIC) ELSE tc.length END,
+					'size', CASE WHEN ple.sfg_uuid IS NOT NULL THEN CAST(oe.size AS NUMERIC) ELSE tc.length END,
+					'is_inch', vodf.is_inch,
+					'style_color_size', concat(oe.style, ' / ', oe.color, ' / ', CAST(oe.size AS NUMERIC)),
+					'order_quantity', CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.quantity::float8 ELSE toe.quantity END,
+					'warehouse', CASE WHEN sfg.uuid IS NOT NULL THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 END,
+					'delivered', CASE WHEN sfg.uuid IS NOT NULL THEN sfg.delivered::float8 ELSE toe.delivered::float8 END,
+					'cone_per_carton', tc.cone_per_carton,
+					'order_type', vodf.order_type,
+					'is_meter', vodf.is_meter,
+					'balance_quantity', CASE
+						WHEN sfg.uuid IS NOT NULL
+						THEN
+							CASE
+								WHEN vodf.order_type = 'tape'
+								THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+								ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+							END
+						ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
+					END,
+					'recipe_name', CASE WHEN sfg.uuid IS NOT NULL THEN zlr.name ELSE tlr.name END
 				)
 			) AS challan_entry,
 			CASE
-				WHEN COUNT(packing_list.uuid) = SUM(CASE WHEN packing_list.gate_pass = 1 THEN 1 ELSE 0 END) 
+				WHEN COUNT(pl.uuid) = SUM(CASE WHEN pl.gate_pass = 1 THEN 1 ELSE 0 END) 
 				THEN 1
 				ELSE 0
 			END AS gate_pass,
-			ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
-			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))) AS packing_numbers,
+			ARRAY_AGG(DISTINCT pl.uuid) AS packing_list_uuids,
+			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0'))) AS packing_numbers,
 			jsonb_agg(
 					DISTINCT jsonb_build_object(
-					'packing_list_uuid', packing_list.uuid, 
-					'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')),
-					'carton_weight', packing_list.carton_weight)
+					'packing_list_uuid', pl.uuid, 
+					'packing_number', CONCAT('PL', TO_CHAR(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')),
+					'carton_weight', pl.carton_weight)
 					) AS packing_list_numbers,
 			SUM(ple.quantity)::float8 AS total_quantity,
 			SUM(ple.poli_quantity)::float8 AS total_poly_quantity
 		FROM
-			delivery.packing_list
+			delivery.packing_list pl
 		LEFT JOIN
-			delivery.packing_list_entry ple ON packing_list.uuid = ple.packing_list_uuid
+			delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
         LEFT JOIN
             thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+		LEFT JOIN
+			thread.order_info toi ON toe.order_info_uuid = toi.uuid
+		LEFT JOIN 
+			lab_dip.recipe tlr ON toe.recipe_uuid = tlr.uuid
         LEFT JOIN 
-            thread.count_length cl ON toe.count_length_uuid = cl.uuid
+            thread.count_length tc ON toe.count_length_uuid = tc.uuid
         LEFT JOIN
             zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+		LEFT JOIN 
+			lab_dip.recipe zlr ON sfg.recipe_uuid = zlr.uuid
         LEFT JOIN
             zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
         LEFT JOIN
             zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 		WHERE (vodf.order_info_uuid = ${order_info_uuid} OR toe.order_info_uuid = ${order_info_uuid})
 		GROUP BY
-			packing_list.challan_uuid
+			pl.challan_uuid
 	) AS sub_query ON main_query.uuid = sub_query.challan_uuid
 	ORDER BY
 		main_query.created_at DESC;
