@@ -803,7 +803,7 @@ export async function selectOrderZipperThread(req, res, next) {
 						}
 						${
 							page == 'challan_pdf'
-								? sql`LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid`
+								? sql`LEFT JOIN delivery.challan ON challan.order_info_uuid = oz.uuid`
 								: sql``
 						}
 						WHERE 
@@ -823,7 +823,7 @@ export async function selectOrderZipperThread(req, res, next) {
 										`
 										: sql``
 							}
-							${page == 'challan_pdf' ? sql`AND sfg.delivered > 0` : sql``}
+							${page == 'challan_pdf' ? sql`AND challan.uuid IS NOT NULL` : sql``}
 							${own_uuid ? sql`AND oz.marketing_uuid = ${marketingUuid}` : sql``}
 						GROUP BY
 							oz.uuid, oz.is_sample, oz.created_at, oz.id
@@ -844,6 +844,11 @@ export async function selectOrderZipperThread(req, res, next) {
 								`
 								: sql``
 						}
+						${
+							page == 'challan_pdf'
+								? sql`LEFT JOIN delivery.challan ON challan.thread_order_info_uuid = ot.uuid`
+								: sql``
+						}
 						WHERE 
 							ot.is_cancelled = false
 							${
@@ -861,7 +866,7 @@ export async function selectOrderZipperThread(req, res, next) {
 										`
 										: sql``
 							}
-							${page == 'challan_pdf' ? sql`AND toe.delivered > 0` : sql``}
+							${page == 'challan_pdf' ? sql`AND challan.uuid IS NOT NULL` : sql``}
 							${own_uuid ? sql`AND ot.marketing_uuid = ${marketingUuid}` : sql``}
 						GROUP BY
 							ot.uuid, ot.is_sample, ot.created_at, ot.id
