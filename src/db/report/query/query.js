@@ -1733,7 +1733,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
 }
 
 export async function dailyProductionReport(req, res, next) {
-	const { from_date, to_date } = req.query;
+	const { from_date, to_date, type } = req.query;
 	const { own_uuid } = req?.query;
 
 	// get marketing_uuid from own_uuid
@@ -1788,6 +1788,7 @@ export async function dailyProductionReport(req, res, next) {
                 WHERE 
                     vpl.is_warehouse_received = true 
                     AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} 
+                    AND ${type == 'bulk' ? sql`vodf.is_sample = 0` : type == 'bulk' ? sql`vodf.is_sample = 1` : sql`1=1`}
                 GROUP BY 
                     oe.uuid, vodf.order_type
                 ),
@@ -1818,6 +1819,7 @@ export async function dailyProductionReport(req, res, next) {
                     WHERE
                         vpl.is_warehouse_received = true
                         AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                        AND ${type == 'bulk' ? sql`toi.is_sample = 0` : type == 'bulk' ? sql`toi.is_sample = 1` : sql`1=1`}
                     GROUP BY
                         toe.uuid, toe.company_price
                 )
@@ -1837,6 +1839,7 @@ export async function dailyProductionReport(req, res, next) {
 					vodf.end_type_name,
 					vodf.order_type,
 					vodf.is_inch,
+                    oe.color,
                     oe.size::float8,
                     CASE 
                         WHEN vodf.is_inch = 1 THEN 'Inch'
@@ -1891,6 +1894,7 @@ export async function dailyProductionReport(req, res, next) {
                 WHERE 
                     vodf.item_description IS NOT NULL AND vodf.item_description != '---'
                     AND (coalesce(running_all_sum.total_close_end_quantity, 0)::float8 + coalesce(running_all_sum.total_open_end_quantity, 0)::float8) > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                    AND ${type == 'bulk' ? sql`vodf.is_sample = 0` : type == 'sample' ? sql`vodf.is_sample = 1` : sql`TRUE`}
                 GROUP BY 
                     oe.company_price,
                     oe.size,
@@ -1928,6 +1932,7 @@ export async function dailyProductionReport(req, res, next) {
                     null as end_type_name,
                     null as order_type,
                     null as is_inch,
+                    toe.color,
                     count_length.length::float8 as size,
                     'Mtr' as unit,
                     'Cone' as price_unit,
@@ -1976,6 +1981,7 @@ export async function dailyProductionReport(req, res, next) {
                     ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
                 WHERE
                     coalesce(running_all_sum_thread.total_close_end_quantity, 0)::float8  > 0 AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
+                    AND ${type == 'bulk' ? sql`toi.is_sample = 0` : type == 'sample' ? sql`toi.is_sample = 1` : sql`TRUE`}
                 GROUP BY
                     toe.company_price,
                     count_length.length,
