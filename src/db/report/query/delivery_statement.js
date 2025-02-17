@@ -84,7 +84,8 @@ export async function deliveryStatementReport(req, res, next) {
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
-                    ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'}
+                    oe.party_price,
+                    oe.company_price
                 ), 
             running_all_sum AS (
                 SELECT 
@@ -128,7 +129,8 @@ export async function deliveryStatementReport(req, res, next) {
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
-                    ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'}
+                    oe.party_price,
+                    oe.company_price
                 ),
                 opening_all_sum_thread AS (
                     SELECT 
@@ -160,7 +162,7 @@ export async function deliveryStatementReport(req, res, next) {
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
-                        vpl.packing_list_entry_uuid, ${price_for === 'party' ? 'toe.party_price' : 'toe.company_price'}
+                        vpl.packing_list_entry_uuid, toe.party_price, toe.company_price
                 ),
                 running_all_sum_thread AS (
                     SELECT 
@@ -192,7 +194,7 @@ export async function deliveryStatementReport(req, res, next) {
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
-                        vpl.packing_list_entry_uuid, ${price_for === 'party' ? 'toe.party_price' : 'toe.company_price'}
+                        vpl.packing_list_entry_uuid, toe.party_price, toe.company_price
                 )
                 SELECT 
                     vodf.marketing_uuid,
