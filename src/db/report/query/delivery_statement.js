@@ -322,7 +322,7 @@ export async function deliveryStatementReport(req, res, next) {
                         vodf.order_info_uuid
                 ) order_info_total_quantity ON vodf.order_info_uuid = order_info_total_quantity.order_info_uuid
                 WHERE 
-                    vodf.is_bill = 1 AND vodf.item_description IS NOT NULL AND vodf.item_description != '---' 
+                    vodf.item_description IS NOT NULL AND vodf.item_description != '---' 
                     AND COALESCE(
                             COALESCE(running_all_sum.total_close_end_quantity, 0)::float8 + COALESCE(running_all_sum.total_open_end_quantity, 0)::float8,
                             0
@@ -419,8 +419,7 @@ export async function deliveryStatementReport(req, res, next) {
                             toi.uuid
                     ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
                 WHERE
-                    toi.is_bill = 1
-                    AND COALESCE(
+                    COALESCE(
                             COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8, 
                             0
                         )::float8 > 0 
@@ -431,6 +430,7 @@ export async function deliveryStatementReport(req, res, next) {
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
+    // ! is_bill removed
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
