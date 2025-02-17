@@ -26,6 +26,7 @@ export async function deliveryStatementReport(req, res, next) {
 		type,
 		order_info_uuid,
 		report_for,
+		price_for,
 	} = req.query;
 
 	// get marketing_uuid from own_uuid
@@ -41,7 +42,7 @@ export async function deliveryStatementReport(req, res, next) {
 			marketingUuid = marketingUuidData?.rows[0]?.uuid;
 		}
 		const query = sql`
-           WITH opening_all_sum AS (
+            WITH opening_all_sum AS (
                 SELECT 
                     vpl.packing_list_entry_uuid,
                     coalesce(
@@ -59,17 +60,17 @@ export async function deliveryStatementReport(req, res, next) {
                     coalesce(
                         SUM(
                             CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} ELSE (${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} / 12) END, 
                         0
                     )::float8 as total_close_end_value, 
                     coalesce(
                         SUM(
                             CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} ELSE (${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} / 12) END, 
                         0
                     )::float8 as total_open_end_value,
                     coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value
+                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} ELSE (${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} / 12) END, 0)::float8 as total_prod_value
                 FROM 
                     delivery.v_packing_list_details vpl 
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
@@ -83,7 +84,7 @@ export async function deliveryStatementReport(req, res, next) {
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
-                    oe.company_price
+                    ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'}
                 ), 
             running_all_sum AS (
                 SELECT 
@@ -103,17 +104,17 @@ export async function deliveryStatementReport(req, res, next) {
                     coalesce(
                         SUM(
                             CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} ELSE (${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} / 12) END, 
                         0
                     )::float8 as total_close_end_value, 
                     coalesce(
                         SUM(
                             CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} ELSE (${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} / 12) END, 
                         0
                     )::float8 as total_open_end_value,
                     coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value
+                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} ELSE (${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'} / 12) END, 0)::float8 as total_prod_value
                 FROM 
                     delivery.v_packing_list_details vpl 
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
@@ -127,7 +128,7 @@ export async function deliveryStatementReport(req, res, next) {
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
-                    oe.company_price
+                    ${price_for === 'party' ? 'oe.party_price' : 'oe.company_price'}
                 ),
                 opening_all_sum_thread AS (
                     SELECT 
@@ -142,12 +143,12 @@ export async function deliveryStatementReport(req, res, next) {
                         coalesce(
                             SUM(
                                 vpl.quantity ::float8
-                            ) * toe.company_price, 
+                            ) * ${price_for === 'party' ? 'toe.party_price' : 'toe.company_price'}, 
                             0
                         )::float8 as total_close_end_value,
                         0 as total_open_end_value,
                         coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                        coalesce(SUM(vpl.quantity) * toe.company_price, 0)::float8 as total_prod_value
+                        coalesce(SUM(vpl.quantity) * ${price_for === 'party' ? 'toe.party_price' : 'toe.company_price'}, 0)::float8 as total_prod_value
                     FROM
                         delivery.v_packing_list_details vpl
                         LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
@@ -159,7 +160,7 @@ export async function deliveryStatementReport(req, res, next) {
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
-                        vpl.packing_list_entry_uuid, toe.company_price
+                        vpl.packing_list_entry_uuid, ${price_for === 'party' ? 'toe.party_price' : 'toe.company_price'}
                 ),
                 running_all_sum_thread AS (
                     SELECT 
@@ -174,12 +175,12 @@ export async function deliveryStatementReport(req, res, next) {
                         coalesce(
                             SUM(
                                 vpl.quantity ::float8
-                            ) * toe.company_price,
+                            ) * ${price_for === 'party' ? 'toe.party_price' : 'toe.company_price'},
                             0
                         )::float8 as total_close_end_value,
                         0 as total_open_end_value,
                         coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                        coalesce(SUM(vpl.quantity) * toe.company_price, 0)::float8 as total_prod_value
+                        coalesce(SUM(vpl.quantity) * ${price_for === 'party' ? 'toe.party_price' : 'toe.company_price'}, 0)::float8 as total_prod_value
                     FROM
                         delivery.v_packing_list_details vpl
                         LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
@@ -191,8 +192,8 @@ export async function deliveryStatementReport(req, res, next) {
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
-                        vpl.packing_list_entry_uuid, toe.company_price
-				)
+                        vpl.packing_list_entry_uuid, ${price_for === 'party' ? 'toe.party_price' : 'toe.company_price'}
+                )
                 SELECT 
                     vodf.marketing_uuid,
                     vodf.marketing_name,
@@ -430,7 +431,7 @@ export async function deliveryStatementReport(req, res, next) {
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
-    // ! is_bill removed
+		// ! is_bill removed
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
