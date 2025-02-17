@@ -504,6 +504,12 @@ export const pathReport = {
 					SE.uuid()
 				),
 				SE.parameter_query('report_for', 'report_for', ['accounts']),
+				SE.parameter_query(
+					'price_for',
+					'price_for',
+					['company', 'party'],
+					true
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {
