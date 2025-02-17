@@ -213,7 +213,41 @@ export async function selectChallanPdf(req, res, next) {
 						ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
 					END,
 					'recipe_name', CASE WHEN sfg.uuid IS NOT NULL THEN zlr.name ELSE tlr.name END
-				) ORDER BY pl.id ASC, vodf.item_description ASC, vodf.lock_type_name ASC, oe.style ASC, oe.color ASC, oe.size::float8 ASC
+				) 
+					ORDER BY 
+						pl.id ASC, 
+						vodf.item_description ASC, 
+						CONCAT(
+							vodf.lock_type_name, 
+							CASE WHEN (vodf.teeth_color_name IS NOT NULL OR vodf.teeth_color_name != '---') THEN ', teeth: ' ELSE '' END,
+							vodf.teeth_color_name, 
+							CASE WHEN (vodf.puller_color_name IS NOT NULL OR vodf.puller_color_name != '---') THEN ', puller: ' ELSE '' END,
+							vodf.puller_color_name, 
+							CASE WHEN (vodf.hand_name IS NOT NULL OR vodf.hand_name != '---') THEN ', ' ELSE '' END,
+							vodf.hand_name, 
+							CASE WHEN (vodf.coloring_type_name IS NOT NULL OR vodf.coloring_type_name != '---') THEN ', type: ' ELSE '' END, 
+							vodf.coloring_type_name, 
+							CASE WHEN (vodf.slider_name IS NOT NULL OR vodf.slider_name != '---') THEN ', ' ELSE '' END,
+							vodf.slider_name, 
+							CASE WHEN (vodf.top_stopper_name IS NOT NULL OR vodf.top_stopper_name != '---') THEN ', ' ELSE '' END,
+							vodf.top_stopper_name, 
+							CASE WHEN (vodf.bottom_stopper_name IS NOT NULL OR vodf.bottom_stopper_name != '---') THEN ', ' ELSE '' END,
+							vodf.bottom_stopper_name, 
+							CASE WHEN (vodf.logo_type_name IS NOT NULL OR vodf.logo_type_name != '---') THEN ', ' ELSE '' END,
+							vodf.logo_type_name, 
+							CASE WHEN (vodf.logo_type_name IS NOT NULL AND vodf.logo_type_name != '---') THEN 
+								CONCAT(
+									' (', 
+									CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE '' END, 
+									CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE '' END, 
+									')'
+								) 
+							ELSE '' 
+							END
+						) ASC, 
+						oe.style ASC, 
+						oe.color ASC, 
+						oe.size::float8 ASC
 			) AS challan_entry,
 			CASE
 				WHEN COUNT(pl.uuid) = SUM(CASE WHEN pl.gate_pass = 1 THEN 1 ELSE 0 END) 
