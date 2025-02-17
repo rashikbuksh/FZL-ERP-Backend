@@ -37,6 +37,7 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 ARRAY_AGG(DISTINCT order_entry.swatch_approval_date) as swatch_approval_date,
                 ARRAY_AGG(DISTINCT CONCAT(count_length.count, ' - ', count_length.length)) as count_length_name,
                 ROUND(SUM(coalesce(order_entry.quantity::float8, 0))::numeric,3)::float8 as total_quantity,
+                ROUND(SUM(coalesce(CASE WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8 ELSE 0 END, 0))::numeric,3)::float8 as total_approved_quantity,
                 ROUND(SUM(coalesce(order_entry_batch_entry_quantity_length.total_weight::float8, 0))::numeric,3)::float8 as total_weight,
                 ROUND(SUM(coalesce(order_entry_batch_entry_quantity_length.yarn_quantity::float8, 0))::numeric,3)::float8 as yarn_quantity,
                 ROUND(SUM(coalesce(order_entry_batch_entry_coning.total_coning_production_quantity::float8, 0))::numeric,3)::float8 as total_coning_production_quantity,

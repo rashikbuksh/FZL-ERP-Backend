@@ -136,7 +136,7 @@ export async function removeChallanAndPLRef(req, res, next) {
 
 	const packingListPromise = db
 		.update(packing_list)
-		.set({ challan_uuid: null })
+		.set({ challan_uuid: null, gate_pass: 0 })
 		.where(eq(packing_list.challan_uuid, uuid))
 		.returning({
 			updatedId: packing_list.item_for,

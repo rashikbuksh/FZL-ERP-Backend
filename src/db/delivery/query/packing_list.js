@@ -488,11 +488,17 @@ export async function selectAllOrderForPackingList(req, res, next) {
 export async function setChallanUuidOfPackingList(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { challan_uuid } = req.body;
+	const { challan_uuid, item_for } = req.body;
+
+	let gate_pass = 0;
+
+	if (item_for == 'sample_zipper' || item_for == 'sample_thread') {
+		gate_pass = 1;
+	}
 
 	const packingListPromise = db
 		.update(packing_list)
-		.set({ challan_uuid })
+		.set({ challan_uuid, gate_pass })
 		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
 		.returning({
 			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
