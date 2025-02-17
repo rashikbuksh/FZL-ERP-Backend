@@ -498,7 +498,15 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 
 	const packingListPromise = db
 		.update(packing_list)
-		.set({ challan_uuid, gate_pass })
+		.set({ challan_uuid })
+		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
+		.returning({
+			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
+		});
+
+	const packingListGatePassPromise = db
+		.update(packing_list)
+		.set({ gate_pass })
 		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
 		.returning({
 			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0'))`,
@@ -506,6 +514,7 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 
 	try {
 		const data = await packingListPromise;
+		const dataGatePass = await packingListGatePassPromise;
 		const toast = {
 			status: 201,
 			type: challan_uuid != null ? 'insert' : 'delete',
