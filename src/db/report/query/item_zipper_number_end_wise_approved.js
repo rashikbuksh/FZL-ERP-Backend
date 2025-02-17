@@ -5,7 +5,22 @@ import db from '../../index.js';
 export async function selectItemZipperEndApprovedQuantity(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`
+	const { own_uuid } = req.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
                     SELECT 
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
@@ -40,6 +55,7 @@ export async function selectItemZipperEndApprovedQuantity(req, res, next) {
                         LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                     WHERE 
                         vodf.order_type != 'slider'
+                        AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
                     GROUP BY 
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
@@ -56,9 +72,8 @@ export async function selectItemZipperEndApprovedQuantity(req, res, next) {
                         item_name, zipper_number_name, end_type_name;
 
     `;
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		// group data using item_name
 		const data = await resultPromise;
 
@@ -81,7 +96,21 @@ export async function selectItemZipperEndApprovedQuantity(req, res, next) {
 export async function selectPartyWiseApprovedQuantity(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`
+	const { own_uuid } = req.query;
+
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+		const query = sql`
                     SELECT 
                         vodf.party_name,
                         sum(
@@ -106,14 +135,14 @@ export async function selectPartyWiseApprovedQuantity(req, res, next) {
                         LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                     WHERE 
                         vodf.order_type != 'slider'
+                        AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
                     GROUP BY 
                         vodf.party_name
                     ORDER BY 
                         vodf.party_name;
     `;
-	const resultPromise = db.execute(query);
+		const resultPromise = db.execute(query);
 
-	try {
 		// group data using item_name
 		const data = await resultPromise;
 
