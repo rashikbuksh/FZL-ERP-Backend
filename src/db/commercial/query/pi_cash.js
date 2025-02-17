@@ -307,9 +307,9 @@ export async function selectAll(req, res, next) {
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
 			${
-				type === 'pending'
+				type === 'pending' && is_cash === 'false'
 					? sql`AND pi_cash.lc_uuid IS NULL`
-					: type === 'completed'
+					: type === 'completed' && is_cash === 'false'
 						? sql`AND pi_cash.lc_uuid IS NOT NULL`
 						: sql`AND TRUE`
 			}
@@ -332,7 +332,7 @@ export async function selectAll(req, res, next) {
 							ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
 						END <= pi_cash.receive_amount
 					`
-						: sql`AND TRUE`
+						: sql``
 			}
 		GROUP BY
 			pi_cash.uuid, 
