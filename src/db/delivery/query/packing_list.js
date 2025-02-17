@@ -520,7 +520,7 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 			type: challan_uuid != null ? 'insert' : 'delete',
 			message: `${data[0].updatedId} updated`,
 		};
-		return await res.status(201).json({ toast, data });
+		return await res.status(201).json({ toast, data, extra: dataGatePass });
 	} catch (error) {
 		console.error(error);
 		handleError({ error, res });
