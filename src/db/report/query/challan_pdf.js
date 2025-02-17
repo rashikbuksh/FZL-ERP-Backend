@@ -213,7 +213,7 @@ export async function selectChallanPdf(req, res, next) {
 						ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8
 					END,
 					'recipe_name', CASE WHEN sfg.uuid IS NOT NULL THEN zlr.name ELSE tlr.name END
-				)
+				) ORDER BY pl.id ASC, vodf.item_description ASC, vodf.lock_type_name ASC, oe.style ASC, oe.color ASC, oe.size::float8 ASC
 			) AS challan_entry,
 			CASE
 				WHEN COUNT(pl.uuid) = SUM(CASE WHEN pl.gate_pass = 1 THEN 1 ELSE 0 END) 
@@ -255,7 +255,7 @@ export async function selectChallanPdf(req, res, next) {
 			pl.challan_uuid
 	) AS sub_query ON main_query.uuid = sub_query.challan_uuid
 	ORDER BY
-		pl.id ASC, vodf.item_description ASC, specification ASC, oe.style ASC, oe.color ASC, oe.size::float8 ASC;
+		main_query.created_at DESC;
 	`;
 		const resultPromise = db.execute(query);
 
