@@ -255,7 +255,7 @@ export async function selectChallanPdf(req, res, next) {
 			pl.challan_uuid
 	) AS sub_query ON main_query.uuid = sub_query.challan_uuid
 	ORDER BY
-		main_query.created_at DESC;
+		pl.id ASC, vodf.item_description ASC, specification ASC, oe.style ASC, oe.color ASC, oe.size::float8 ASC;
 	`;
 		const resultPromise = db.execute(query);
 
