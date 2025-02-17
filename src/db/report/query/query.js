@@ -1897,6 +1897,7 @@ export async function dailyProductionReport(req, res, next) {
                     AND ${type == 'bulk' ? sql`vodf.is_sample = 0` : type == 'sample' ? sql`vodf.is_sample = 1` : sql`TRUE`}
                 GROUP BY 
                     oe.company_price,
+                    oe.color,
                     oe.size,
                     vodf.marketing_uuid,
 					vodf.marketing_name,
@@ -1984,6 +1985,7 @@ export async function dailyProductionReport(req, res, next) {
                     AND ${type == 'bulk' ? sql`toi.is_sample = 0` : type == 'sample' ? sql`toi.is_sample = 1` : sql`TRUE`}
                 GROUP BY
                     toe.company_price,
+                    toe.color,
                     count_length.length,
                     toi.marketing_uuid,
                     marketing.name,
@@ -2013,6 +2015,7 @@ export async function dailyProductionReport(req, res, next) {
 				total_quantity,
 				order_description_uuid,
 				is_inch,
+				color,
 				size,
 				unit,
 				price_unit,
@@ -2089,6 +2092,7 @@ export async function dailyProductionReport(req, res, next) {
 
 			item.other.push({
 				is_inch,
+				color,
 				size,
 				unit,
 				price_unit,
