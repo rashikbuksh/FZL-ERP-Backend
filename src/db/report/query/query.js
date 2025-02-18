@@ -710,8 +710,7 @@ export async function PiToBeRegister(req, res, next) {
                     SUM(sfg.delivered * order_entry.party_price) AS total_delivered_value,
                     SUM(sfg.pi * order_entry.party_price) AS total_pi_value,
                     SUM((order_entry.quantity - sfg.pi) * order_entry.party_price) AS total_non_pi_value,
-                    vodf.party_uuid,
-                    vodf.marketing_uuid
+                    vodf.party_uuid
                 FROM
                     zipper.sfg
                 LEFT JOIN
@@ -725,16 +724,18 @@ export async function PiToBeRegister(req, res, next) {
                     LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
                 ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
-                WHERE order_exists_in_pi.order_info_uuid IS NULL AND vodf.is_sample = 0
+                WHERE 
+                    order_exists_in_pi.order_info_uuid IS NULL 
+                    AND vodf.is_sample = 0
+                    AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
                 GROUP BY
-                    vodf.party_uuid, vodf.marketing_uuid
+                    vodf.party_uuid
             ) vodf_grouped ON party.uuid = vodf_grouped.party_uuid
             WHERE 
                 (vodf_grouped.total_quantity > 0 OR 
                 vodf_grouped.total_delivered > 0 OR 
                 vodf_grouped.total_pi > 0 OR
                 vodf_grouped.total_non_pi > 0) 
-                AND ${own_uuid == null ? sql`TRUE` : sql`vodf_grouped.marketing_uuid = ${marketingUuid}`}
             UNION 
             SELECT 
                 party.uuid,
@@ -762,8 +763,7 @@ export async function PiToBeRegister(req, res, next) {
                     SUM(toe.delivered * toe.party_price) AS total_delivered_value,
                     SUM(toe.pi * toe.party_price) AS total_pi_value,
                     SUM((toe.quantity - toe.pi) * toe.party_price) AS total_non_pi_value,
-                    toi.party_uuid,
-                    toi.marketing_uuid
+                    toi.party_uuid
                 FROM
                     thread.order_entry toe
                 LEFT JOIN 
@@ -774,16 +774,19 @@ export async function PiToBeRegister(req, res, next) {
                     LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
                     LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
                 ) order_exists_in_pi ON toi.uuid = order_exists_in_pi.uuid
-                WHERE order_exists_in_pi.uuid IS NULL AND toi.is_sample = 0
+                WHERE 
+                    order_exists_in_pi.uuid IS NULL 
+                    AND toi.is_sample = 0
+                    AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
                 GROUP BY
-                    toi.party_uuid, toi.marketing_uuid
+                    toi.party_uuid
             ) toi_grouped ON party.uuid = toi_grouped.party_uuid
             WHERE 
                 (toi_grouped.total_quantity > 0 OR 
                 toi_grouped.total_delivered > 0 OR 
                 toi_grouped.total_pi > 0 OR 
                 toi_grouped.total_non_pi > 0) 
-                AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
+                
         `;
 
 		const resultPromise = db.execute(query);
@@ -867,7 +870,10 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                     LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
                 ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
-                WHERE order_exists_in_pi.order_info_uuid IS NULL AND vodf.is_sample = 0
+                WHERE 
+                    order_exists_in_pi.order_info_uuid IS NULL 
+                    AND vodf.is_sample = 0
+                    AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
                 GROUP BY
                     vodf.marketing_uuid
             ) vodf_grouped ON marketing.uuid = vodf_grouped.marketing_uuid
@@ -875,8 +881,7 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                 (vodf_grouped.total_quantity > 0 OR 
                 vodf_grouped.total_delivered > 0 OR 
                 vodf_grouped.total_pi > 0 OR
-                vodf_grouped.total_non_pi > 0) 
-                AND ${own_uuid == null ? sql`TRUE` : sql`vodf_grouped.marketing_uuid = ${marketingUuid}`}
+                vodf_grouped.total_non_pi > 0)
             UNION 
             SELECT 
                 marketing.uuid,
@@ -915,7 +920,10 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                     LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
                     LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
                 ) order_exists_in_pi ON toi.uuid = order_exists_in_pi.uuid
-                WHERE order_exists_in_pi.uuid IS NULL AND toi.is_sample = 0
+                WHERE 
+                    order_exists_in_pi.uuid IS NULL 
+                    AND toi.is_sample = 0
+                    AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
                 GROUP BY
                     toi.marketing_uuid
             ) toi_grouped ON marketing.uuid = toi_grouped.marketing_uuid
@@ -923,8 +931,7 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                 (toi_grouped.total_quantity > 0 OR 
                 toi_grouped.total_delivered > 0 OR 
                 toi_grouped.total_pi > 0 OR 
-                toi_grouped.total_non_pi > 0) 
-                AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
+                toi_grouped.total_non_pi > 0)
         `;
 
 		const resultPromise = db.execute(query);
