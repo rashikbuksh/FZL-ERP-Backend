@@ -164,7 +164,7 @@ export const pi_cash = commercial.table('pi_cash', {
 	lc_uuid: defaultUUID('lc_uuid')
 		.default(null)
 		.references(() => lc.uuid),
-	order_info_uuids: text('order_info_uuids').notNull(),
+	order_info_uuids: text('order_info_uuids').default(null),
 	thread_order_info_uuids: text('thread_order_info_uuids').default(null),
 	marketing_uuid: defaultUUID('marketing_uuid').references(
 		() => publicSchema.marketing.uuid

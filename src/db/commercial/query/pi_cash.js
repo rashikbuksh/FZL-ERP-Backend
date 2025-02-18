@@ -371,7 +371,7 @@ export async function selectAll(req, res, next) {
 			pi_cash.is_rtgs,
 			pi_cash.conversion_rate,
 			pi_cash.weight,
-			pi_cash.cross_weight,
+			pi_cash.cross_weight::float8,
 			pi_cash.receive_amount,
 			pi_cash.order_info_uuids,
 			pi_cash.thread_order_info_uuids,

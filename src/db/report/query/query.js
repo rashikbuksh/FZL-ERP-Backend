@@ -1,6 +1,5 @@
-import { and, eq, min, sql, sum } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
-import { handleError, validateRequest } from '../../../util/index.js';
+import { sql } from 'drizzle-orm';
+import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 
 // * Zipper Production Status Report

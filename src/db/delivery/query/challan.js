@@ -39,7 +39,11 @@ export async function insert(req, res, next) {
 		.insert(challan)
 		.values(req.body)
 		.returning({
-			insertedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			insertedId:
+				req.body.item_for !== 'sample_thread' ||
+				req.body.item_for !== 'thread'
+					? sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`
+					: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
 			updatedUuid: challan.uuid,
 		});
 	try {
