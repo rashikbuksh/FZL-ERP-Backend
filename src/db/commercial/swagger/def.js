@@ -215,6 +215,7 @@ export const defCommercialPiCash = SED({
 		is_rtgs: SE.boolean(false),
 		conversion_rate: SE.number(1000.0),
 		weight: SE.number(1000.0),
+		cross_weight: SE.number(1000.0),
 		receive_amount: SE.number(1000.0),
 		thread_order_info_uuids: SE.array([SE.uuid()]),
 	},

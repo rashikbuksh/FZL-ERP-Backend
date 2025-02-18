@@ -5,7 +5,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { bank, lc, pi_cash } from '../schema.js';
+import { bank, lc, pi_cash, pi_cash_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -28,6 +28,7 @@ export async function insert(req, res, next) {
 		is_rtgs,
 		conversion_rate,
 		weight,
+		cross_weight,
 		receive_amount,
 	} = req.body;
 
@@ -51,6 +52,7 @@ export async function insert(req, res, next) {
 			is_rtgs,
 			conversion_rate,
 			weight,
+			cross_weight,
 			receive_amount,
 		})
 		.returning({
@@ -98,14 +100,23 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const piPromise = db
-		.delete(pi_cash)
-		.where(eq(pi_cash.uuid, req.params.uuid))
+	const piEntryPromise = db
+		.delete(pi_cash_entry)
+		.where(eq(pi_cash_entry.pi_cash_uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
+			deletedId: sql`pi_cash_entry.uuid`,
 		});
 
 	try {
+		const piEntryData = await piEntryPromise;
+
+		const piPromise = db
+			.delete(pi_cash)
+			.where(eq(pi_cash.uuid, req.params.uuid))
+			.returning({
+				deletedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
+			});
+
 		const data = await piPromise;
 		const toast = {
 			status: 201,
@@ -264,6 +275,7 @@ export async function selectAll(req, res, next) {
 			pi_cash.is_rtgs,
 			pi_cash.conversion_rate::float8,
 			pi_cash.weight::float8,
+			pi_cash.cross_weight::float8,
 			pi_cash.receive_amount::float8,
 			CASE 
 				WHEN pi_cash.is_pi = 1 
@@ -359,6 +371,7 @@ export async function selectAll(req, res, next) {
 			pi_cash.is_rtgs,
 			pi_cash.conversion_rate,
 			pi_cash.weight,
+			pi_cash.cross_weight,
 			pi_cash.receive_amount,
 			pi_cash.order_info_uuids,
 			pi_cash.thread_order_info_uuids,
@@ -462,6 +475,7 @@ export async function select(req, res, next) {
 				pi_cash.is_rtgs,
 				pi_cash.conversion_rate::float8,
 				pi_cash.weight::float8,
+				pi_cash.cross_weight::float8,
 				pi_cash.receive_amount::float8
 			FROM 
 				commercial.pi_cash
@@ -757,6 +771,7 @@ export async function selectPiByLcUuid(req, res, next) {
 			is_rtgs: pi_cash.is_rtgs,
 			conversion_rate: decimalToNumber(pi_cash.conversion_rate),
 			weight: decimalToNumber(pi_cash.weight),
+			cross_weight: decimalToNumber(pi_cash.cross_weight),
 			receive_amount: decimalToNumber(pi_cash.receive_amount),
 		})
 		.from(pi_cash)
