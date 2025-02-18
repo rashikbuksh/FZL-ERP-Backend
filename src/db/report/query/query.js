@@ -725,7 +725,7 @@ export async function PiToBeRegister(req, res, next) {
                     LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
                 ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
-                WHERE order_exists_in_pi.order_info_uuid IS NULL
+                WHERE order_exists_in_pi.order_info_uuid IS NULL AND vodf.is_sample = 0
                 GROUP BY
                     vodf.party_uuid, vodf.marketing_uuid
             ) vodf_grouped ON party.uuid = vodf_grouped.party_uuid
@@ -733,7 +733,8 @@ export async function PiToBeRegister(req, res, next) {
                 (vodf_grouped.total_quantity > 0 OR 
                 vodf_grouped.total_delivered > 0 OR 
                 vodf_grouped.total_pi > 0 OR
-                vodf_grouped.total_non_pi > 0) AND ${own_uuid == null ? sql`TRUE` : sql`vodf_grouped.marketing_uuid = ${marketingUuid}`}
+                vodf_grouped.total_non_pi > 0) 
+                AND ${own_uuid == null ? sql`TRUE` : sql`vodf_grouped.marketing_uuid = ${marketingUuid}`}
             UNION 
             SELECT 
                 party.uuid,
@@ -773,7 +774,7 @@ export async function PiToBeRegister(req, res, next) {
                     LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
                     LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
                 ) order_exists_in_pi ON toi.uuid = order_exists_in_pi.uuid
-                WHERE order_exists_in_pi.uuid IS NULL
+                WHERE order_exists_in_pi.uuid IS NULL AND toi.is_sample = 0
                 GROUP BY
                     toi.party_uuid, toi.marketing_uuid
             ) toi_grouped ON party.uuid = toi_grouped.party_uuid
@@ -781,7 +782,8 @@ export async function PiToBeRegister(req, res, next) {
                 (toi_grouped.total_quantity > 0 OR 
                 toi_grouped.total_delivered > 0 OR 
                 toi_grouped.total_pi > 0 OR 
-                toi_grouped.total_non_pi > 0) AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
+                toi_grouped.total_non_pi > 0) 
+                AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
         `;
 
 		const resultPromise = db.execute(query);
@@ -800,8 +802,9 @@ export async function PiToBeRegister(req, res, next) {
 	}
 }
 
-export async function PiToBeRegisterThread(req, res, next) {
+export async function PiToBeRegisterMarketingWise(req, res, next) {
 	const { own_uuid } = req?.query;
+	//console.log(own_uuid);
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -813,38 +816,115 @@ export async function PiToBeRegisterThread(req, res, next) {
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+			if (
+				marketingUuidData &&
+				marketingUuidData.rows &&
+				marketingUuidData.rows.length > 0
+			) {
+				marketingUuid = marketingUuidData.rows[0].uuid;
+			} else {
+				marketingUuid = null;
+			}
 		}
 		const query = sql`
             SELECT 
-                party.uuid,
-                party.name,
-                toi_grouped.total_quantity::float8,
-                toi_grouped.total_pi::float8,
-                toi_grouped.total_balance_pi_quantity::float8,
-                toi_grouped.total_balance_pi_value::float8,
-                toi_grouped.total_delivered::float8,
-                toi_grouped.total_undelivered_balance_quantity::float8
+                marketing.uuid,
+                marketing.name,
+                vodf_grouped.order_object,
+                vodf_grouped.total_quantity::float8,
+                vodf_grouped.total_delivered::float8,
+                vodf_grouped.total_pi::float8,
+                vodf_grouped.total_non_pi::float8,
+                vodf_grouped.total_quantity_value::float8,
+                vodf_grouped.total_delivered_value::float8,
+                vodf_grouped.total_pi_value::float8,
+                vodf_grouped.total_non_pi_value::float8,
+                true as is_zipper
             FROM
-                public.party party
+                public.marketing marketing
             LEFT JOIN (
                 SELECT 
+                    jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', vodf.order_number)) as order_object,
                     SUM(order_entry.quantity) AS total_quantity,
-                    SUM(order_entry.quantity - order_entry.pi) AS total_balance_pi_quantity,
-                    SUM((order_entry.quantity - order_entry.pi) * order_entry.party_price) AS total_balance_pi_value,
-                    SUM(order_entry.pi) AS total_pi,
-                    SUM(order_entry.delivered) AS total_delivered,
-                    SUM(order_entry.pi - order_entry.delivered) AS total_undelivered_balance_quantity,
-                    toi.party_uuid
+                    SUM(sfg.delivered) AS total_delivered,
+                    SUM(sfg.pi) AS total_pi,
+                    SUM(order_entry.quantity - sfg.pi) AS total_non_pi,
+                    SUM(order_entry.quantity * order_entry.party_price) AS total_quantity_value,
+                    SUM(sfg.delivered * order_entry.party_price) AS total_delivered_value,
+                    SUM(sfg.pi * order_entry.party_price) AS total_pi_value,
+                    SUM((order_entry.quantity - sfg.pi) * order_entry.party_price) AS total_non_pi_value,
+                    vodf.marketing_uuid
                 FROM
-                    thread.order_entry
+                    zipper.sfg
+                LEFT JOIN
+                    zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
                 LEFT JOIN 
-                    thread.order_info toi ON order_entry.order_info_uuid = toi.uuid
+                    zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                LEFT JOIN (
+                    SELECT DISTINCT vodf.order_info_uuid
+                    FROM commercial.pi_cash_entry
+                    LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
+                WHERE order_exists_in_pi.order_info_uuid IS NULL AND vodf.is_sample = 0
                 GROUP BY
-                    toi.party_uuid
-            ) toi_grouped ON party.uuid = toi_grouped.party_uuid
+                    vodf.marketing_uuid
+            ) vodf_grouped ON marketing.uuid = vodf_grouped.marketing_uuid
             WHERE 
-                toi_grouped.total_quantity > 0 OR toi_grouped.total_delivered > 0 OR toi_grouped.total_balance_pi_quantity > 0 OR toi_grouped.total_undelivered_balance_quantity > 0 AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
+                (vodf_grouped.total_quantity > 0 OR 
+                vodf_grouped.total_delivered > 0 OR 
+                vodf_grouped.total_pi > 0 OR
+                vodf_grouped.total_non_pi > 0) 
+                AND ${own_uuid == null ? sql`TRUE` : sql`vodf_grouped.marketing_uuid = ${marketingUuid}`}
+            UNION 
+            SELECT 
+                marketing.uuid,
+                marketing.name,
+                toi_grouped.order_object,
+                toi_grouped.total_quantity::float8,
+                toi_grouped.total_delivered::float8,
+                toi_grouped.total_pi::float8,
+                toi_grouped.total_non_pi::float8,
+                toi_grouped.total_quantity_value::float8,
+                toi_grouped.total_delivered_value::float8,
+                toi_grouped.total_pi_value::float8,
+                toi_grouped.total_non_pi_value::float8,
+                false as is_zipper
+            FROM
+                public.marketing marketing
+            LEFT JOIN (
+                SELECT 
+                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')))) as order_object,
+                    SUM(toe.quantity) AS total_quantity,
+                    SUM(toe.delivered) AS total_delivered,
+                    SUM(toe.pi) AS total_pi,
+                    SUM(toe.quantity - toe.pi) AS total_non_pi,
+                    SUM(toe.quantity * toe.party_price) AS total_quantity_value,
+                    SUM(toe.delivered * toe.party_price) AS total_delivered_value,
+                    SUM(toe.pi * toe.party_price) AS total_pi_value,
+                    SUM((toe.quantity - toe.pi) * toe.party_price) AS total_non_pi_value,
+                    toi.marketing_uuid
+                FROM
+                    thread.order_entry toe
+                LEFT JOIN 
+                    thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                LEFT JOIN (
+                    SELECT DISTINCT toi.uuid
+                    FROM commercial.pi_cash_entry
+                    LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+                    LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                ) order_exists_in_pi ON toi.uuid = order_exists_in_pi.uuid
+                WHERE order_exists_in_pi.uuid IS NULL AND toi.is_sample = 0
+                GROUP BY
+                    toi.marketing_uuid
+            ) toi_grouped ON marketing.uuid = toi_grouped.marketing_uuid
+            WHERE 
+                (toi_grouped.total_quantity > 0 OR 
+                toi_grouped.total_delivered > 0 OR 
+                toi_grouped.total_pi > 0 OR 
+                toi_grouped.total_non_pi > 0) 
+                AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
         `;
 
 		const resultPromise = db.execute(query);

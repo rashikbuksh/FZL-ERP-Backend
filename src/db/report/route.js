@@ -42,10 +42,10 @@ reportRouter.get('/pi-register-report', reportOperations.PiRegister);
 // * Pi To Be Register Report
 reportRouter.get('/pi-to-be-register-report', reportOperations.PiToBeRegister);
 
-// * Pi To Be Register Report Thread
+// * Pi To Be Register Report Marketing Wise
 reportRouter.get(
-	'/pi-to-be-register-report-thread',
-	reportOperations.PiToBeRegisterThread
+	'/pi-to-be-register-report-marketing-wise',
+	reportOperations.PiToBeRegisterMarketingWise
 );
 
 // * LCReport
@@ -241,17 +241,17 @@ export const pathReport = {
 			},
 		},
 	},
-	'/report/pi-to-be-register-report-thread': {
+	'/report/pi-to-be-register-report-marketing-wise': {
 		get: {
-			summary: 'Pi To Be Register Report Thread',
-			description: 'Pi To Be Register Report Thread',
+			summary: 'Pi To Be Register Report Marketing Wise',
+			description: 'Pi To Be Register Report Marketing Wise',
 			tags: ['report'],
-			operationId: 'PiToBeRegisterThread',
-			parameters: [],
+			operationId: 'PiToBeRegisterMarketingWise',
+			parameters: [SE.parameter_query('own_uuid', 'own_uuid', SE.uuid())],
 			responses: {
 				200: SE.response_schema(200, {
-					party_uuid: SE.uuid(),
-					party_name: SE.string(),
+					marketing_uuid: SE.uuid(),
+					marketing_name: SE.string(),
 					total_quantity: SE.number(3950),
 					total_pi: SE.number(610),
 					total_balance_pi_quantity: SE.number(3340),
