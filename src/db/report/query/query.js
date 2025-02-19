@@ -1872,8 +1872,7 @@ export async function dailyProductionReport(req, res, next) {
                     LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
                     AND oe.order_description_uuid = vodf.order_description_uuid 
                 WHERE 
-                    vpl.is_warehouse_received = true 
-                    AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} 
+                    ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} 
                     AND ${type == 'bulk' ? sql`vodf.is_sample = 0` : type == 'bulk' ? sql`vodf.is_sample = 1` : sql`1=1`}
                 GROUP BY 
                     oe.uuid, vodf.order_type
@@ -1903,8 +1902,7 @@ export async function dailyProductionReport(req, res, next) {
                         LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
                         AND toi.uuid = toe.order_info_uuid
                     WHERE
-                        vpl.is_warehouse_received = true
-                        AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                        ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                         AND ${type == 'bulk' ? sql`toi.is_sample = 0` : type == 'bulk' ? sql`toi.is_sample = 1` : sql`1=1`}
                     GROUP BY
                         toe.uuid, toe.company_price
