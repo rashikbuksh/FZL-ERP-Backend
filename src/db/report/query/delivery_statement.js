@@ -429,7 +429,8 @@ export async function deliveryStatementReport(req, res, next) {
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
-		// ! is_bill removed
+		// ! is_bill removed from where clause in main query of zipper and thread
+		// ! warehouse_received removed from where clause in opening_all_sum, running_all_sum, opening_all_sum_thread, running_all_sum_thread
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
