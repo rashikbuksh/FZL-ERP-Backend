@@ -320,7 +320,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
                     ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 
                 END
             ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 
-        END as balance_quantity
+        END as balance_quantity,
+        ple.thread_order_entry_uuid
     FROM 
         delivery.packing_list_entry ple
         LEFT JOIN delivery.packing_list pl ON pl.uuid = ple.packing_list_uuid
@@ -392,7 +393,17 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         packing_list.updated_at,
         packing_list.remarks,
         packing_list.gate_pass AS gate_pass,
-        packing_list.item_for
+        packing_list.item_for,
+        CASE WHEN 
+            packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+            THEN zipper.order_info.marketing_uuid 
+            ELSE toi.marketing_uuid 
+        END AS marketing_uuid,
+        CASE WHEN 
+            packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+            THEN marketing.name 
+            ELSE toi_marketing.name 
+        END AS marketing_name
     FROM
         delivery.packing_list
     LEFT JOIN
@@ -411,12 +422,16 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         public.party ON zipper.order_info.party_uuid = public.party.uuid
     LEFT JOIN
         public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
+    LEFT JOIN 
+        public.marketing ON zipper.order_info.marketing_uuid = public.marketing.uuid
     LEFT JOIN
         public.factory toi_fac ON toi.factory_uuid = toi_fac.uuid
     LEFT JOIN
         public.buyer toi_buyer ON toi.buyer_uuid = toi_buyer.uuid
     LEFT JOIN 
         public.party toi_party ON toi.party_uuid = toi_party.uuid
+    LEFT JOIN
+        public.marketing toi_marketing ON toi.marketing_uuid = toi_marketing.uuid
     LEFT JOIN (
                     SELECT
                         packing_list.order_info_uuid AS order_info_uuid,
