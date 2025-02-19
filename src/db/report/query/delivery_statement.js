@@ -77,8 +77,7 @@ export async function deliveryStatementReport(req, res, next) {
                     LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
                     AND oe.order_description_uuid = vodf.order_description_uuid 
                 WHERE 
-                    vpl.is_warehouse_received = true 
-                    AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
+                    ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
                     AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                 GROUP BY 
@@ -122,8 +121,7 @@ export async function deliveryStatementReport(req, res, next) {
                     LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
                     AND oe.order_description_uuid = vodf.order_description_uuid 
                 WHERE 
-                    vpl.is_warehouse_received = true 
-                    AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
                     AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                 GROUP BY 
@@ -157,8 +155,7 @@ export async function deliveryStatementReport(req, res, next) {
                         LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
                         AND toi.uuid = toe.order_info_uuid
                     WHERE
-                        vpl.is_warehouse_received = true
-                        AND ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
+                        ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
@@ -189,8 +186,7 @@ export async function deliveryStatementReport(req, res, next) {
                         LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
                         AND toi.uuid = toe.order_info_uuid
                     WHERE
-                        vpl.is_warehouse_received = true
-                        AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                        ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
@@ -306,13 +302,13 @@ export async function deliveryStatementReport(req, res, next) {
                 LEFT JOIN 
                     running_all_sum ON ple.uuid = running_all_sum.packing_list_entry_uuid
                 LEFT JOIN (
-                            SELECT 
-                                jsonb_array_elements_text(order_info_uuids::jsonb) AS order_info_uuid,
-                                is_pi,
-                                conversion_rate
-                            FROM 
-                                commercial.pi_cash
-                        ) pi_cash ON vodf.order_info_uuid::text = pi_cash.order_info_uuid
+                    SELECT 
+                        jsonb_array_elements_text(order_info_uuids::jsonb) AS order_info_uuid,
+                        is_pi,
+                        conversion_rate
+                    FROM 
+                        commercial.pi_cash
+                ) pi_cash ON vodf.order_info_uuid::text = pi_cash.order_info_uuid
                 LEFT JOIN (
                     SELECT
                         vodf.order_info_uuid,
