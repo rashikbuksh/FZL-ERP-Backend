@@ -12,6 +12,7 @@ export async function selectEDReport(req, res, next) {
             SELECT 
                 vplf.packing_list_entry_uuid,
                 vplf.packing_list_uuid,
+                challan.uuid as challan_uuid,
                 vplf.challan_number,
                 challan.created_at as challan_date,
                 vplf.quantity,
@@ -88,7 +89,7 @@ export async function selectEDReport(req, res, next) {
             LEFT JOIN
                 delivery.v_packing_list vpl ON vplf.packing_list_uuid = vpl.uuid
             LEFT JOIN
-                delivery.challan  ON vplf.challan_uuid = challan.uuid
+                delivery.challan ON vplf.challan_uuid = challan.uuid
             LEFT JOIN 
                 delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
             LEFT JOIN 
