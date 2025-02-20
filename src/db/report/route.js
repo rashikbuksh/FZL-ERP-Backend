@@ -24,6 +24,7 @@ import {
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
 import { selectOrderSheetPdf } from './query/order_sheet_pdf.js';
 import { selectChallanPdf } from './query/challan_pdf.js';
+import { selectEDReport } from './query/report_for_ed.js';
 
 const reportRouter = Router();
 
@@ -152,6 +153,8 @@ reportRouter.get('/order-sheet-pdf-report', selectOrderSheetPdf);
 // * Challan Pdf Report
 
 reportRouter.get('/challan-pdf-report/:order_info_uuid', selectChallanPdf);
+
+reportRouter.get('/report-for-ed', selectEDReport);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -935,6 +938,33 @@ export const pathReport = {
 					vehicle_driver_name: SE.string('Driver Name'),
 					carton_quantity: SE.number(610),
 					receive_status: SE.string('Receive Status'),
+				}),
+			},
+		},
+	},
+	'/report/report-for-ed': {
+		get: {
+			summary: 'Report For ED',
+			description: 'Report For ED',
+			tags: ['report'],
+			operationId: 'selectEDReport',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
 				}),
 			},
 		},
