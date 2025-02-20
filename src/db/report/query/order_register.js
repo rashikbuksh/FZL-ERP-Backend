@@ -11,10 +11,15 @@ export async function selectOrderRegisterReport(req, res, next) {
 		const query = sql`
             SELECT
                 vpld.order_info_uuid,
-                vpld.created_at,
-                vpld.updated_at,
                 vpld.order_number,
-                
+                vpld.packing_list_uuid,
+                vpld.packing_list_number,
+            FROM 
+                delivery.v_packing_list_details vpld
+            LEFT JOIN 
+                delivery.v_packing_lists vpl ON vpld.packing_list_uuid = vpl.uuid
+            WHERE 
+                vpld.order_info_uuid = ${order_info_uuid}
         `;
 
 		const resultPromise = db.execute(query);
