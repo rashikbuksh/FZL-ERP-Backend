@@ -483,7 +483,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			sfg.order_entry_uuid as order_entry_uuid,
 			vodf.order_number as order_number,
-			CONCAT(vodf.item_description, ' - teeth:', vodf.teeth_color_name) as item_description,
+			CONCAT(vodf.item_description, ' - teeth: ', vodf.teeth_color_name) as item_description,
 			vodf.order_info_uuid,
 			oe.order_description_uuid as order_description_uuid,
 			oe.style as style,
