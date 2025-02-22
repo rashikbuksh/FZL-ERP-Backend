@@ -406,7 +406,8 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					(
 						SELECT
 							finishing_batch_entry.finishing_batch_uuid,
-							SUM(finishing_batch_entry.quantity) as batch_quantity
+							SUM(finishing_batch_entry.quantity) as batch_quantity,
+							SUM(finishing_batch_entry.finishing_prod) as total_finishing_production_quantity
 						FROM
 							zipper.finishing_batch_entry
 						GROUP BY
@@ -426,6 +427,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
 				WHERE
 					DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+					AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
 				GROUP BY
 					vodf.item,
 					vodf.item_name,
