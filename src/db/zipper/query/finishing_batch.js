@@ -650,8 +650,9 @@ export async function getDailyProductionPlan(req, res, next) {
 							LEFT JOIN
 								zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
 							WHERE
-								DATE(zfb.production_date) = ${date} AND 
-								(${
+								DATE(zfb.production_date) = ${date} 
+								AND zfbe.quantity - zfbe.finishing_prod > 0
+								AND (${
 									item == 'all' || item == ''
 										? sql`1=1`
 										: item == 'nylon_plastic'
