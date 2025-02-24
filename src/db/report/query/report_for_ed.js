@@ -31,6 +31,7 @@ export async function selectEDReport(req, res, next) {
                 vplf.color,
                 vplf.size,
                 vplf.style_color_size,
+                CASE WHEN sfg.uuid IS NOT NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as party_price,
                 CASE WHEN vodf.is_inch = 1 THEN 'Inch' ELSE CASE WHEN vodf.is_cm = 1 THEN 'CM' ELSE 'Meter' END END AS unit,
                 vplf.order_quantity as order_quantity,
                 CASE WHEN (sfg.recipe_uuid IS NOT NULL OR toe.recipe_uuid IS NOT NULL) 
@@ -60,8 +61,8 @@ export async function selectEDReport(req, res, next) {
                             SUM(
                                 CASE 
                                     WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
-                                    THEN coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(order_entry.party_price,0)/12 
-                                    ELSE coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(toe.party_price,0) 
+                                    THEN (coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(order_entry.party_price,0)/12)::float8 
+                                    ELSE (coalesce(pi_cash_entry.pi_cash_quantity,0) * coalesce(toe.party_price,0))::float8 
                                 END
                             )
                         FROM commercial.pi_cash 
@@ -78,10 +79,10 @@ export async function selectEDReport(req, res, next) {
                 vplf.balance_quantity,
                 COALESCE(dyeing_finishing_batch_total.finishing_batch, '[]'::jsonb) as finishing_batch,
                 CASE WHEN sfg.uuid IS NOT NULL THEN COALESCE(dyeing_finishing_batch_total.dyeing_batch, '[]'::jsonb) ELSE thread_batch.thread_batch END as dyeing_batch,
-                COALESCE(dyeing_finishing_batch_total.total_quantity, 0) as total_batch_quantity,
-                COALESCE(dyeing_finishing_batch_total.teeth_molding_prod, 0) as teeth_molding_prod,
-                COALESCE(dyeing_finishing_batch_total.total_finished_quantity, 0) as total_finished_quantity,
-                COALESCE(dyeing_finishing_batch_total.slider_finishing_stock, 0) as slider_finishing_stock,
+                COALESCE(dyeing_finishing_batch_total.total_quantity, 0)::float8 as total_batch_quantity,
+                COALESCE(dyeing_finishing_batch_total.teeth_molding_prod, 0)::float8 as teeth_molding_prod,
+                COALESCE(dyeing_finishing_batch_total.total_finished_quantity, 0)::float8 as total_finished_quantity,
+                COALESCE(dyeing_finishing_batch_total.slider_finishing_stock, 0)::float8 as slider_finishing_stock,
                 CASE WHEN sfg.uuid IS NOT NULL THEN vodf.created_at ELSE toi.created_at END as order_created_at,
                 CASE WHEN sfg.uuid IS NOT NULL THEN vodf.updated_at ELSE toi.updated_at END as order_updated_at
             FROM 
