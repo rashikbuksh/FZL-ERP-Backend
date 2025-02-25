@@ -34,13 +34,13 @@ export async function selectEDReport(req, res, next) {
                 CASE WHEN sfg.uuid IS NOT NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as party_price,
                 CASE WHEN vodf.is_inch = 1 THEN 'Inch' ELSE CASE WHEN vodf.is_cm = 1 THEN 'CM' ELSE 'Meter' END END AS unit,
                 vplf.order_quantity as order_quantity,
-                CASE WHEN (sfg.recipe_uuid IS NOT NULL OR toe.recipe_uuid IS NOT NULL) 
-                    THEN vplf.order_quantity::float8
-                    ELSE 0 
+                CASE WHEN vplf.item_for IN ('thread', 'sample_thread') THEN 
+                    CASE WHEN toe.recipe_uuid IS NOT NULL THEN vplf.order_quantity ELSE 0 END
+                    ELSE CASE WHEN sfg.recipe_uuid IS NOT NULL THEN vplf.order_quantity ELSE 0 END
                 END as approved_quantity,
-                CASE WHEN (sfg.recipe_uuid IS NULL OR toe.recipe_uuid IS NULL) 
-                    THEN vplf.order_quantity::float8
-                    ELSE 0 
+                CASE WHEN vplf.item_for IN ('thread', 'sample_thread') THEN 
+                    CASE WHEN toe.recipe_uuid IS NULL THEN vplf.order_quantity ELSE 0 END
+                    ELSE CASE WHEN sfg.recipe_uuid IS NULL THEN vplf.order_quantity ELSE 0 END
                 END as not_approved_quantity,
                 CASE WHEN sfg.uuid IS NOT NULL 
                     THEN oe.swatch_approval_date 
