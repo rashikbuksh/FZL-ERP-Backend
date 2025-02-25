@@ -479,7 +479,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 
 	const query = sql`
 		SELECT
-			DISTINCT zfbe.uuid as finishing_batch_entry_uuid,
+			zfbe.uuid as finishing_batch_entry_uuid,
 			zfb.uuid as finishing_batch_uuid,
 			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			sfg.uuid as sfg_uuid,
@@ -499,19 +499,19 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			END as unit,
 			concat(oe.style, '/', oe.color, '/', oe.size) as style_color_size,
 			CASE 
-				WHEN od.order_type = 'tape' 
+				WHEN vodf.order_type = 'tape' 
 				THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
 				ELSE oe.quantity::float8 
 			END as order_quantity,
 			zfbe.quantity::float8 as batch_quantity,
 			sfg.recipe_uuid as recipe_uuid,
 			recipe.name as recipe_name,
-			od.item,
-			op_item.name as item_name,
-			op_item.short_name as item_short_name,
-			od.coloring_type,
-			op_coloring_type.name as coloring_type_name,
-			op_coloring_type.short_name as coloring_type_short_name,
+			vodf.item,
+			vodf.item_name as item_name,
+			vodf.item_short_name as item_short_name,
+			vodf.coloring_type,
+			vodf.coloring_type_name as coloring_type_name,
+			vodf.coloring_type_short_name as coloring_type_short_name,
 			vodf.nylon_stopper_name,
 			zfb.slider_finishing_stock::float8 as slider_finishing_stock,
 			sfg.dying_and_iron_prod::float8 as dying_and_iron_prod,
@@ -578,12 +578,12 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 							THEN zfbp.section = 'teeth_molding'
 						ELSE zfbp.section = ${section} END
 			), 0)::float8 as total_production_quantity,
-			od.tape_transferred::float8,
+			vodf.tape_transferred::float8,
 			sfg.dyed_tape_used_in_kg::float8,
-			COALESCE(od.tape_received,0)::float8 as tape_received,
-			(COALESCE(od.tape_transferred,0) - COALESCE(sfg.dyed_tape_used_in_kg,0))::float8 as tape_stock,
-			od.is_multi_color,
-			od.order_type,
+			COALESCE(vodf.tape_received,0)::float8 as tape_received,
+			(COALESCE(vodf.tape_transferred,0) - COALESCE(sfg.dyed_tape_used_in_kg,0))::float8 as tape_stock,
+			vodf.is_multi_color,
+			vodf.order_type,
 			vodf.party_name,
 			vodf.buyer_name,
 			vodf.factory_name,
@@ -595,12 +595,9 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 			LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
 			LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid AND zfb.order_description_uuid = vodf.order_description_uuid
-			LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
-			LEFT JOIN public.properties op_item ON od.item = op_item.uuid
-			LEFT JOIN public.properties op_coloring_type ON od.coloring_type = op_coloring_type.uuid
 		WHERE
-			od.tape_coil_uuid IS NOT NULL
-			${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
+			vodf.tape_coil_uuid IS NOT NULL
+			${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vodf.nylon_stopper_name) = 'plastic'` : sql`AND lower(vodf.nylon_stopper_name) != 'plastic'`) : sql``}
 		ORDER BY zfbe.created_at DESC
 		`;
