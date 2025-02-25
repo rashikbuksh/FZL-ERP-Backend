@@ -337,6 +337,7 @@ export const def_zipper_dyeing_batch = SED({
 		machine_uuid: SE.uuid(),
 		slot: SE.number(),
 		received: SE.number(),
+		received_date: SE.date_time(),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),

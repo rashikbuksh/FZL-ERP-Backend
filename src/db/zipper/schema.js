@@ -402,6 +402,7 @@ export const dyeing_batch = zipper.table('dyeing_batch', {
 	),
 	slot: integer('slot').default(0),
 	received: integer('received').default(0),
+	received_date: DateTime('received_date').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
