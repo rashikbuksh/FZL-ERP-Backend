@@ -369,7 +369,7 @@ export async function selectTapeCoilDashboard(req, res, next) {
 			vodf.tape_received::float8,
 			vodf.tape_transferred::float8,
             vodf.tape_coil_uuid,
-            tape_coil.name
+            tape_coil.name as tape_coil_name
         FROM zipper.v_order_details_full vodf
         LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
         LEFT JOIN (
