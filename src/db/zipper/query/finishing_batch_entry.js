@@ -475,6 +475,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 
 	const { item_name, nylon_stopper } = req.query;
 
+	// item_description -> CONCAT(vodf.item_description, ' - teeth: ', vodf.teeth_color_name)
+
 	const query = sql`
 		SELECT
 			DISTINCT zfbe.uuid as finishing_batch_entry_uuid,
@@ -483,7 +485,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			sfg.order_entry_uuid as order_entry_uuid,
 			vodf.order_number as order_number,
-			CONCAT(vodf.item_description, ' - teeth: ', vodf.teeth_color_name) as item_description,
+			vodf.item_description as item_description,
 			vodf.order_info_uuid,
 			oe.order_description_uuid as order_description_uuid,
 			oe.style as style,
