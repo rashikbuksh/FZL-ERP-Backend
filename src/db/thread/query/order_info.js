@@ -1,4 +1,4 @@
-import { asc, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, ne, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -371,11 +371,14 @@ export async function selectThreadSwatch(req, res, next) {
 			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		)
 		.where(
-			type === 'pending'
-				? sql`order_entry.recipe_uuid IS NULL`
-				: type === 'completed'
-					? sql`order_entry.recipe_uuid IS NOT NULL`
-					: sql`1 = 1`
+			and(
+				type === 'pending'
+					? sql`order_entry.recipe_uuid IS NULL`
+					: type === 'completed'
+						? sql`order_entry.recipe_uuid IS NOT NULL`
+						: sql`1 = 1`,
+				ne(order_entry.uuid, null)
+			)
 		)
 		.orderBy(
 			desc(order_entry.created_at, order_info.created_at),
