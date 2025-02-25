@@ -369,7 +369,7 @@ export async function selectTapeCoilDashboard(req, res, next) {
 			vodf.tape_received::float8,
 			vodf.tape_transferred::float8,
             vodf.tape_coil_uuid,
-            tape_coil.name as tape_coil_name
+            tape_coil.name
         FROM zipper.v_order_details_full vodf
         LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
         LEFT JOIN (
@@ -380,7 +380,8 @@ export async function selectTapeCoilDashboard(req, res, next) {
             GROUP BY tape_coil_to_dyeing.order_description_uuid
         ) tctd ON vodf.order_description_uuid = tctd.order_description_uuid
 		WHERE vodf.item_description IS NOT NULL AND vodf.tape_coil_uuid is NOT NULL
-        ORDER BY vodf.order_number ASC;
+        AND (tctd.total_trx_quantity != 0 OR vodf.tape_received != 0 OR vodf.tape_transferred != 0)
+        ORDER BY vodf.order_number DESC;
 		`;
 
 	const resultPromise = db.execute(query);
