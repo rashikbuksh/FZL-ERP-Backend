@@ -270,6 +270,10 @@ zipperRouter.post('/tape-coil', tapeCoilOperations.insert);
 zipperRouter.put('/tape-coil/:uuid', tapeCoilOperations.update);
 zipperRouter.delete('/tape-coil/:uuid', tapeCoilOperations.remove);
 zipperRouter.get('/tape-coil/by/nylon', tapeCoilOperations.selectByNylon);
+zipperRouter.get(
+	'/tape-coil-dashboard',
+	tapeCoilOperations.selectTapeCoilDashboard
+);
 
 // --------------------- TAPE COIL PRODUCTION ROUTES ---------------------
 

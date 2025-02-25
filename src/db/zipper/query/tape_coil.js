@@ -353,3 +353,47 @@ export async function selectByNylon(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectTapeCoilDashboard(req, res, next) {
+	const query = sql`
+		SELECT 
+			vodf.item,
+			vodf.item_name,
+			vodf.zipper_number,
+			vodf.zipper_number_name,
+            vodf.order_info_uuid,
+			vodf.order_number,
+            vodf.order_description_uuid,
+			vodf.item_description,
+            COALESCE(tctd.total_trx_quantity, 0)::float8 as total_trx_to_dyeing_quantity,
+			vodf.tape_received::float8,
+			vodf.tape_transferred::float8,
+            vodf.tape_coil_uuid,
+            tape_coil.name as tape_coil_name
+        FROM zipper.v_order_details_full vodf
+        LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
+        LEFT JOIN (
+            SELECT 
+                tape_coil_to_dyeing.order_description_uuid,
+                SUM(tape_coil_to_dyeing.trx_quantity) as total_trx_quantity
+            FROM zipper.tape_coil_to_dyeing
+            GROUP BY tape_coil_to_dyeing.order_description_uuid
+        ) tctd ON vodf.order_description_uuid = tctd.order_description_uuid
+		WHERE vodf.item_description IS NOT NULL AND vodf.tape_coil_uuid is NOT NULL
+        ORDER BY vodf.order_number ASC;
+		`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'tape_coil_dashboard',
+		};
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

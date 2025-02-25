@@ -2266,6 +2266,29 @@ export const pathZipperTapeCoil = {
 			},
 		},
 	},
+	'/zipper/tape-coil-dashboard': {
+		get: {
+			tags: ['zipper.tape_coil'],
+			summary: 'Get Tape Coil Dashboard',
+			responses: {
+				200: SE.response_schema(200, {
+					item: SE.uuid(),
+					item_name: SE.string('nylon'),
+					zipper_number: SE.uuid(),
+					zipper_number_name: SE.string('3'),
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0010'),
+					order_description_uuid: SE.uuid(),
+					item_description: SE.string('#1-N-5-OE-RP'),
+					total_trx_to_dyeing_quantity: SE.number(10),
+					tape_received: SE.number(10),
+					tape_transferred: SE.number(10),
+					tape_coil_uuid: SE.uuid(),
+					tape_coil_name: SE.string('#3 Metal Zipper Tape'),
+				}),
+			},
+		},
+	},
 };
 
 // * Zipper Tape Coil Production * //
