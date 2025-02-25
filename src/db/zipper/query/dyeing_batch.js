@@ -223,88 +223,6 @@ export async function select(req, res, next) {
 		.leftJoin(order_info, eq(dyeing_batch.order_info_uuid, order_info.uuid))
 		.where(eq(dyeing_batch.uuid, req.params.uuid));
 
-	const query2 = sql`
-		            SELECT 
-							dyeing_batch.uuid,
-							dyeing_batch.id,
-							concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as batch_id,
-							dyeing_batch.batch_status,
-							dyeing_batch.machine_uuid,
-							concat(public.machine.name, ' (', public.machine.min_capacity::float8, '-', public.machine.max_capacity::float8, ')') as machine_name,
-							dyeing_batch.slot,
-							dyeing_batch.received,
-							dyeing_batch.received_date,
-							dyeing_batch.created_by,
-							users.name as created_by_name,
-							dyeing_batch.created_at,
-							dyeing_batch.updated_at,
-							dyeing_batch.remarks,
-							expected.total_quantity::float8,
-							expected.expected_kg::float8,
-							expected.order_numbers,
-							ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
-							dyeing_batch.production_date::date as production_date,
-							expected.party_name,
-							oe_colors.colors as color,
-							dyeing_batch.batch_type as batch_type,
-							dyeing_batch.order_info_uuid,
-							vodf.order_number
-						FROM zipper.dyeing_batch
-						LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
-						LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
-						LEFT JOIN zipper.v_order_details_full vodf ON dyeing_batch.order_info_uuid = vodf.order_info_uuid
-						LEFT JOIN zipper.dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
-						LEFT JOIN zipper.sfg ON dyeing_batch_entry.sfg_uuid = zipper.sfg.uuid
-						LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-						LEFT JOIN (
-							SELECT 
-								ARRAY_AGG(DISTINCT order_entry.color) as colors,
-								dyeing_batch.uuid
-							FROM zipper.order_entry
-							LEFT JOIN zipper.sfg ON order_entry.uuid = sfg.order_entry_uuid
-							LEFT JOIN zipper.dyeing_batch_entry on dyeing_batch_entry.sfg_uuid = sfg.uuid
-							LEFT JOIN zipper.dyeing_batch on dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
-							GROUP BY dyeing_batch.uuid
-						) AS oe_colors ON dyeing_batch.uuid = oe_colors.uuid
-						LEFT JOIN (
-							SELECT 
-								ROUND(
-									SUM((
-										CASE 
-											WHEN vodf.order_type = 'tape' 
-												THEN ((tcr.top + tcr.bottom + be.quantity) * 1) / 100 / tcr.dyed_mtr_per_kg::float8
-											ELSE ((tcr.top + tcr.bottom + CASE 
-													WHEN vodf.is_inch = 1 
-														THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC) 
-													ELSE CAST(oe.size AS NUMERIC)
-													END) * be.quantity::float8) / 100 / tcr.dyed_mtr_per_kg::float8
-										END
-								)::numeric), 3) as expected_kg, 
-								be.dyeing_batch_uuid, 
-								jsonb_agg(DISTINCT vodf.order_number) as order_numbers, 
-								jsonb_agg(DISTINCT vodf.party_name) as party_name,
-								SUM(be.quantity::float8) as total_quantity, 
-								SUM(be.production_quantity_in_kg::float8) as total_actual_production_quantity
-							FROM zipper.dyeing_batch_entry be
-								LEFT JOIN zipper.sfg ON be.sfg_uuid = zipper.sfg.uuid
-								LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-								LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-								LEFT JOIN 
-									zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid AND vodf.item = tcr.item_uuid 
-									AND vodf.zipper_number = tcr.zipper_number_uuid 
-									AND (CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END)
-								LEFT JOIN
-									zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid AND vodf.zipper_number = tc.zipper_number_uuid 
-							WHERE 
-										lower(vodf.item_name) != 'nylon' 
-										OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-
-							GROUP BY be.dyeing_batch_uuid
-						) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
-						WHERE dyeing_batch.uuid = ${req.params.uuid}
-						GROUP BY dyeing_batch.uuid, public.machine.name, public.machine.min_capacity, public.machine.max_capacity, users.name, expected.total_quantity, expected.expected_kg, expected.order_numbers, expected.total_actual_production_quantity, expected.party_name, oe_colors.colors, vodf.order_number
-						ORDER BY dyeing_batch.created_at DESC`;
-
 	try {
 		const data = await batchPromise;
 		const toast = {
@@ -362,12 +280,6 @@ export async function selectBatchDetailsByBatchUuid(req, res, next) {
 					(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
 				);
 			}
-
-			// if (sfg_uuid) {
-			// 	new_dyeing_batch_entry = new_dyeing_batch_entry.filter(
-			// 		(uuid) => !sfg_uuid.includes(uuid.sfg_uuid)
-			// 	);
-			// }
 		}
 
 		const response = {

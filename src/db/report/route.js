@@ -25,6 +25,7 @@ import { threadProductionStatusOrderWise } from './query/thread_production_repor
 import { selectOrderSheetPdf } from './query/order_sheet_pdf.js';
 import { selectChallanPdf } from './query/challan_pdf.js';
 import { selectEDReport } from './query/report_for_ed.js';
+import { selectOrderRegisterReport } from './query/order_register.js';
 
 const reportRouter = Router();
 
@@ -154,7 +155,14 @@ reportRouter.get('/order-sheet-pdf-report', selectOrderSheetPdf);
 
 reportRouter.get('/challan-pdf-report/:order_info_uuid', selectChallanPdf);
 
+// * Report for ED
 reportRouter.get('/report-for-ed', selectEDReport);
+
+// * Order Register Report
+reportRouter.get(
+	'/order-register-report/:order_info_uuid',
+	selectOrderRegisterReport
+);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -951,6 +959,36 @@ export const pathReport = {
 			parameters: [
 				SE.parameter_query('from', 'from', '2024-10-01'),
 				SE.parameter_query('to', 'to', '2024-10-31'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/order-register-report/{order_info_uuid}': {
+		get: {
+			summary: 'Order Register Report',
+			description: 'Order Register Report',
+			tags: ['report'],
+			operationId: 'selectOrderRegisterReport',
+			parameters: [
+				SE.parameter_params(
+					'order_info_uuid',
+					'order_info_uuid',
+					SE.uuid()
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {
