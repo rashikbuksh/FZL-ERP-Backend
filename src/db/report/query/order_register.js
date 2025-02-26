@@ -14,6 +14,12 @@ export async function selectOrderRegisterReport(req, res, next) {
 					vodf.order_info_uuid,
 					vodf.order_description_uuid,
 					vodf.item_description,
+					CASE 
+						WHEN vodf.order_type = 'tape' THEN 'Meter' 
+						WHEN vodf.order_type = 'slider' THEN 'Pcs'
+						WHEN vodf.is_inch = 1 THEN 'Inch'
+						ELSE 'Cm'
+					END as unit,
 					sfg.order_entry_uuid,
 					sfg.uuid AS sfg_uuid,
 					oe.order_description_uuid,
@@ -42,7 +48,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 				LEFT JOIN delivery.packing_list_entry ple ON sfg.uuid = ple.sfg_uuid
 				LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
 				LEFT JOIN delivery.challan ON pl.challan_uuid = challan.uuid
-				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description
+				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description, vodf.order_type, vodf.is_inch
 			),
 			pi_cash_grouped AS (
 				SELECT 
@@ -62,6 +68,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 			challan_agg_thread AS (
 				SELECT 
 					toe.order_info_uuid,
+					'Cone' as unit,
 					toe.uuid as order_entry_uuid,
 					CONCAT(cl.count, ' - ', cl.length) as count_length_name,
 					toe.style,
@@ -119,6 +126,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						'item_description', vodf.item_description,
 						'order_entry_uuid', challan_agg.order_entry_uuid,
 						'sfg_uuid', challan_agg.sfg_uuid,
+						'unit', challan_agg.unit,
 						'style', challan_agg.style,
 						'color', challan_agg.color,
 						'size', challan_agg.size,
@@ -149,6 +157,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 				jsonb_agg(
 					jsonb_build_object(
 						'order_entry_uuid', challan_agg_thread.order_entry_uuid,
+						'unit', challan_agg_thread.unit,
 						'count_length_name', challan_agg_thread.count_length_name,
 						'style', challan_agg_thread.style,
 						'color', challan_agg_thread.color,
