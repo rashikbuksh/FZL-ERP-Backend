@@ -56,17 +56,18 @@ export async function selectOrderRegisterReport(req, res, next) {
 							jsonb_build_object(
 								'challan_number', 
 								CASE WHEN pl.item_for IN ('thread', 'sample_thread') 
-									THEN concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
-									ELSE concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
+									THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
+									ELSE concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
 								END,
 								'challan_date', challan.created_at,
 								'quantity', ple.quantity,
-								'sfg_uuid', ple.sfg_uuid
+								'order_entry_uuid', oe.order_entry_uuid
 							)
 						) AS challan_array
 					FROM
 						delivery.packing_list_entry ple
 					LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+					LEFT JOIN zipper.sfg ON ple.sfg_uuid = sfg.uuid
 					LEFT JOIN delivery.challan ON pl.challan_uuid = challan.uuid
 					WHERE challan.uuid IS NOT NULL
 					GROUP BY ple.sfg_uuid
@@ -124,8 +125,8 @@ export async function selectOrderRegisterReport(req, res, next) {
 							jsonb_build_object(
 								'challan_number', 
 								CASE WHEN pl.item_for IN ('thread', 'sample_thread') 
-									THEN concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
-									ELSE concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
+									THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
+									ELSE concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
 								END,
 								'challan_date', challan.created_at,
 								'quantity', ple.quantity,
