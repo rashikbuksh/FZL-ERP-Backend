@@ -179,7 +179,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 			message: 'Order register report',
 		};
 
-		res.status(200).json({ toast, data: data.rows });
+		res.status(200).json({ toast, data: data.rows[0] });
 	} catch (error) {
 		handleError(error, res);
 	}
