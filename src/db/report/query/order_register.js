@@ -11,6 +11,9 @@ export async function selectOrderRegisterReport(req, res, next) {
 		const query = sql`
             WITH challan_agg AS (
 				SELECT 
+					vodf.order_info_uuid,
+					vodf.order_description_uuid,
+					vodf.item_description,
 					sfg.order_entry_uuid,
 					sfg.uuid AS sfg_uuid,
 					oe.order_description_uuid,
@@ -34,11 +37,12 @@ export async function selectOrderRegisterReport(req, res, next) {
 					) AS challan_array
 				FROM
 					zipper.order_entry oe
+				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
 				LEFT JOIN delivery.packing_list_entry ple ON sfg.uuid = ple.sfg_uuid
 				LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
 				LEFT JOIN delivery.challan ON pl.challan_uuid = challan.uuid
-				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.size, oe.quantity
+				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description
 			),
 			pi_cash_grouped AS (
 				SELECT 
@@ -109,10 +113,10 @@ export async function selectOrderRegisterReport(req, res, next) {
 				vodf.marketing_name,
 				pi_cash_grouped.pi_numbers,
 				pi_cash_grouped.lc_numbers,
-				vodf.order_description_uuid,
-				vodf.item_description,
 				jsonb_agg(
 					jsonb_build_object(
+						'order_description_uuid', vodf.order_description_uuid,
+						'item_description', vodf.item_description,
 						'order_entry_uuid', challan_agg.order_entry_uuid,
 						'sfg_uuid', challan_agg.sfg_uuid,
 						'style', challan_agg.style,
@@ -125,10 +129,10 @@ export async function selectOrderRegisterReport(req, res, next) {
 			FROM
 				zipper.v_order_details_full vodf
 			LEFT JOIN pi_cash_grouped ON vodf.order_info_uuid = pi_cash_grouped.order_info_uuid
-			LEFT JOIN challan_agg ON vodf.order_description_uuid = challan_agg.order_description_uuid
+			LEFT JOIN challan_agg ON vodf.order_info_uuid = challan_agg.order_info_uuid
 			WHERE
 				vodf.order_info_uuid = ${order_info_uuid}
-			GROUP BY vodf.order_info_uuid, vodf.order_number, vodf.created_at, vodf.party_name, vodf.buyer_name, vodf.merchandiser_name, vodf.marketing_name, pi_cash_grouped.pi_numbers, pi_cash_grouped.lc_numbers, vodf.order_description_uuid, vodf.item_description
+			GROUP BY vodf.order_info_uuid, vodf.order_number, vodf.created_at, vodf.party_name, vodf.buyer_name, vodf.merchandiser_name, vodf.marketing_name, pi_cash_grouped.pi_numbers, pi_cash_grouped.lc_numbers
 
 			UNION ALL
 

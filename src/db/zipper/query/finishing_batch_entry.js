@@ -548,8 +548,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 					))::float8
 				ELSE (
 					zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8
-				)::float8 END 
-			as balance_quantity,
+				)::float8 
+			END as balance_quantity,
 			COALESCE((
 				SELECT 
 					CASE 
@@ -599,6 +599,31 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			vodf.tape_coil_uuid IS NOT NULL
 			${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vodf.nylon_stopper_name) = 'plastic'` : sql`AND lower(vodf.nylon_stopper_name) != 'plastic'`) : sql``}
+			AND CASE 
+					WHEN lower(${item_name}) = 'vislon'
+						THEN (zfbe.quantity - (
+							COALESCE(zfbe.finishing_prod, 0)
+						))::float8 
+					WHEN ${section} = 'finishing_prod'
+						THEN (zfbe.quantity - (
+							COALESCE(zfbe.finishing_prod, 0)
+						))::float8 
+					WHEN ${section} = 'teeth_coloring_prod'
+						THEN (zfbe.quantity - (
+							COALESCE(zfbe.finishing_stock, 0) + 
+							COALESCE(zfbe.finishing_prod, 0)
+						))::float8
+					WHEN ${section} = 'teeth_molding_prod'
+						THEN (zfbe.quantity - (
+							COALESCE(zfbe.teeth_molding_prod, 0) + 
+							COALESCE(zfbe.teeth_coloring_stock, 0) + 
+							COALESCE(zfbe.finishing_stock, 0) + 
+							COALESCE(zfbe.finishing_prod, 0)
+						))::float8
+					ELSE (
+						zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8
+					)::float8 
+				END > 0
 		ORDER BY zfbe.created_at DESC
 		`;
 
