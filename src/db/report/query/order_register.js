@@ -146,8 +146,6 @@ export async function selectOrderRegisterReport(req, res, next) {
 				mk.name as marketing_name,
 				pi_cash_grouped_thread.pi_numbers,
 				pi_cash_grouped_thread.lc_numbers,
-				null as order_description_uuid,
-				null as item_description,
 				jsonb_agg(
 					jsonb_build_object(
 						'order_entry_uuid', challan_agg_thread.order_entry_uuid,

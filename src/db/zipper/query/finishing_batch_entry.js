@@ -478,110 +478,89 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 	// item_description -> CONCAT(vodf.item_description, ' - teeth: ', vodf.teeth_color_name)
 
 	const query = sql`
+		WITH finishing_batch_transactions AS (
+			SELECT 
+				zfbt.finishing_batch_entry_uuid,
+				SUM(CASE WHEN zfbt.trx_quantity > 0 THEN zfbt.trx_quantity ELSE zfbt.trx_quantity_in_kg END)::float8 AS total_trx_quantity
+			FROM zipper.finishing_batch_transaction zfbt
+			WHERE zfbt.trx_from = ${section}
+			GROUP BY zfbt.finishing_batch_entry_uuid
+		),
+		finishing_batch_productions AS (
+			SELECT 
+				zfbp.finishing_batch_entry_uuid,
+				SUM(CASE 
+					WHEN zfbp.production_quantity > 0 THEN zfbp.production_quantity 
+					ELSE zfbp.production_quantity_in_kg 
+				END)::float8 AS total_production_quantity
+			FROM zipper.finishing_batch_production zfbp
+			WHERE 
+				CASE 
+					WHEN ${section} = 'finishing_prod' THEN zfbp.section = 'finishing' 
+					WHEN ${section} = 'teeth_coloring_prod' THEN zfbp.section = 'teeth_coloring'
+					WHEN ${section} = 'teeth_molding_prod' THEN zfbp.section = 'teeth_molding'
+					ELSE zfbp.section = ${section}
+				END
+			GROUP BY zfbp.finishing_batch_entry_uuid
+		)
 		SELECT
-			zfbe.uuid as finishing_batch_entry_uuid,
-			zfb.uuid as finishing_batch_uuid,
-			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
-			sfg.uuid as sfg_uuid,
-			sfg.order_entry_uuid as order_entry_uuid,
-			vodf.order_number as order_number,
-			vodf.item_description as item_description,
+			zfbe.uuid AS finishing_batch_entry_uuid,
+			zfb.uuid AS finishing_batch_uuid,
+			CONCAT('FB', TO_CHAR(zfb.created_at, 'YY'), '-', LPAD((zfb.id)::text, 4, '0')) AS batch_number,
+			sfg.uuid AS sfg_uuid,
+			sfg.order_entry_uuid AS order_entry_uuid,
+			vodf.order_number AS order_number,
+			vodf.item_description AS item_description,
 			vodf.order_info_uuid,
-			oe.order_description_uuid as order_description_uuid,
-			oe.style as style,
-			oe.color as color,
+			oe.order_description_uuid AS order_description_uuid,
+			oe.style AS style,
+			oe.color AS color,
 			oe.size,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 
 				WHEN vodf.order_type = 'slider' THEN 'Pcs'
 				WHEN vodf.is_inch = 1 THEN 'Inch'
 				ELSE 'CM' 
-			END as unit,
-			concat(oe.style, '/', oe.color, '/', oe.size) as style_color_size,
+			END AS unit,
+			CONCAT(oe.style, '/', oe.color, '/', oe.size) AS style_color_size,
 			CASE 
-				WHEN vodf.order_type = 'tape' 
-				THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
+				WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
 				ELSE oe.quantity::float8 
-			END as order_quantity,
-			zfbe.quantity::float8 as batch_quantity,
-			sfg.recipe_uuid as recipe_uuid,
-			recipe.name as recipe_name,
+			END AS order_quantity,
+			zfbe.quantity::float8 AS batch_quantity,
+			sfg.recipe_uuid AS recipe_uuid,
+			recipe.name AS recipe_name,
 			vodf.item,
-			vodf.item_name as item_name,
-			vodf.item_short_name as item_short_name,
+			vodf.item_name AS item_name,
+			vodf.item_short_name AS item_short_name,
 			vodf.coloring_type,
-			vodf.coloring_type_name as coloring_type_name,
-			vodf.coloring_type_short_name as coloring_type_short_name,
+			vodf.coloring_type_name AS coloring_type_name,
+			vodf.coloring_type_short_name AS coloring_type_short_name,
 			vodf.nylon_stopper_name,
-			zfb.slider_finishing_stock::float8 as slider_finishing_stock,
-			sfg.dying_and_iron_prod::float8 as dying_and_iron_prod,
-			zfbe.teeth_molding_prod::float8 as teeth_molding_prod,
-			zfbe.teeth_coloring_stock::float8 as teeth_coloring_stock,
-			zfbe.finishing_stock::float8 as finishing_stock,
-			zfbe.finishing_prod::float8 as finishing_prod,
-			sfg.warehouse::float8 as warehouse,
-			sfg.delivered::float8 as delivered,
-			sfg.pi::float8 as pi,
-			sfg.short_quantity::float8 as short_quantity,
-			sfg.reject_quantity::float8 as reject_quantity,
-			sfg.remarks as remarks,
+			zfb.slider_finishing_stock::float8 AS slider_finishing_stock,
+			sfg.dying_and_iron_prod::float8 AS dying_and_iron_prod,
+			zfbe.teeth_molding_prod::float8 AS teeth_molding_prod,
+			zfbe.teeth_coloring_stock::float8 AS teeth_coloring_stock,
+			zfbe.finishing_stock::float8 AS finishing_stock,
+			zfbe.finishing_prod::float8 AS finishing_prod,
+			sfg.warehouse::float8 AS warehouse,
+			sfg.delivered::float8 AS delivered,
+			sfg.short_quantity::float8 AS short_quantity,
+			sfg.reject_quantity::float8 AS reject_quantity,
+			sfg.remarks AS remarks,
 			CASE 
-				WHEN lower(${item_name}) = 'vislon'
-					THEN (zfbe.quantity - (
-						COALESCE(zfbe.finishing_prod, 0)
-					))::float8 
-				WHEN ${section} = 'finishing_prod'
-					THEN (zfbe.quantity - (
-						COALESCE(zfbe.finishing_prod, 0)
-					))::float8 
-				WHEN ${section} = 'teeth_coloring_prod'
-					THEN (zfbe.quantity - (
-						COALESCE(zfbe.finishing_stock, 0) + 
-						COALESCE(zfbe.finishing_prod, 0)
-					))::float8
-				WHEN ${section} = 'teeth_molding_prod'
-					THEN (zfbe.quantity - (
-						COALESCE(zfbe.teeth_molding_prod, 0) + 
-						COALESCE(zfbe.teeth_coloring_stock, 0) + 
-						COALESCE(zfbe.finishing_stock, 0) + 
-						COALESCE(zfbe.finishing_prod, 0)
-					))::float8
-				ELSE (
-					zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8
-				)::float8 
-			END as balance_quantity,
-			COALESCE((
-				SELECT 
-					CASE 
-						WHEN SUM(trx_quantity)::float8 > 0 
-							THEN SUM(trx_quantity)::float8
-						ELSE SUM(trx_quantity_in_kg)::float8
-					END
-				FROM zipper.finishing_batch_transaction zfbt
-				WHERE zfbt.finishing_batch_entry_uuid = zfbe.uuid AND zfbt.trx_from = ${section}
-			), 0)::float8 as total_trx_quantity,
-			COALESCE((
-				SELECT 
-					CASE 
-						WHEN SUM(production_quantity)::float8 > 0 
-							THEN SUM(production_quantity)::float8
-						ELSE SUM(production_quantity_in_kg)::float8
-					END
-				FROM zipper.finishing_batch_production zfbp
-				WHERE zfbp.finishing_batch_entry_uuid = zfbe.uuid AND 
-					CASE 
-						WHEN ${section} = 'finishing_prod' 
-							THEN zfbp.section = 'finishing' 
-						WHEN ${section} = 'teeth_coloring_prod'
-							THEN zfbp.section = 'teeth_coloring'
-						WHEN ${section} = 'teeth_molding_prod'
-							THEN zfbp.section = 'teeth_molding'
-						ELSE zfbp.section = ${section} END
-			), 0)::float8 as total_production_quantity,
+				WHEN lower(${item_name}) = 'vislon' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 
+				WHEN ${section} = 'finishing_prod' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 
+				WHEN ${section} = 'teeth_coloring_prod' THEN (zfbe.quantity - (COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8
+				WHEN ${section} = 'teeth_molding_prod' THEN (zfbe.quantity - (COALESCE(zfbe.teeth_molding_prod, 0) + COALESCE(zfbe.teeth_coloring_stock, 0) + COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8
+				ELSE (zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8)::float8 
+			END AS balance_quantity,
+			COALESCE(fbt.total_trx_quantity, 0)::float8 AS total_trx_quantity,
+			COALESCE(fbp.total_production_quantity, 0)::float8 AS total_production_quantity,
 			vodf.tape_transferred::float8,
 			sfg.dyed_tape_used_in_kg::float8,
-			COALESCE(vodf.tape_received,0)::float8 as tape_received,
-			(COALESCE(vodf.tape_transferred,0) - COALESCE(sfg.dyed_tape_used_in_kg,0))::float8 as tape_stock,
+			COALESCE(vodf.tape_received, 0)::float8 AS tape_received,
+			(COALESCE(vodf.tape_transferred, 0) - COALESCE(sfg.dyed_tape_used_in_kg, 0))::float8 AS tape_stock,
 			vodf.is_multi_color,
 			vodf.order_type,
 			vodf.party_name,
@@ -590,41 +569,18 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			zfbe.created_at
 		FROM
 			zipper.finishing_batch_entry zfbe
-			LEFT JOIN zipper.sfg sfg ON zfbe.sfg_uuid = sfg.uuid
-			LEFT JOIN zipper.finishing_batch zfb ON zfbe.finishing_batch_uuid = zfb.uuid
-			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-			LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
-			LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid AND zfb.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN zipper.sfg sfg ON zfbe.sfg_uuid = sfg.uuid
+		LEFT JOIN zipper.finishing_batch zfb ON zfbe.finishing_batch_uuid = zfb.uuid
+		LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
+		LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid AND zfb.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN finishing_batch_transactions fbt ON zfbe.uuid = fbt.finishing_batch_entry_uuid
+		LEFT JOIN finishing_batch_productions fbp ON zfbe.uuid = fbp.finishing_batch_entry_uuid
 		WHERE
 			vodf.tape_coil_uuid IS NOT NULL
 			${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vodf.nylon_stopper_name) = 'plastic'` : sql`AND lower(vodf.nylon_stopper_name) != 'plastic'`) : sql``}
-			AND CASE 
-					WHEN lower(${item_name}) = 'vislon'
-						THEN (zfbe.quantity - (
-							COALESCE(zfbe.finishing_prod, 0)
-						))::float8 
-					WHEN ${section} = 'finishing_prod'
-						THEN (zfbe.quantity - (
-							COALESCE(zfbe.finishing_prod, 0)
-						))::float8 
-					WHEN ${section} = 'teeth_coloring_prod'
-						THEN (zfbe.quantity - (
-							COALESCE(zfbe.finishing_stock, 0) + 
-							COALESCE(zfbe.finishing_prod, 0)
-						))::float8
-					WHEN ${section} = 'teeth_molding_prod'
-						THEN (zfbe.quantity - (
-							COALESCE(zfbe.teeth_molding_prod, 0) + 
-							COALESCE(zfbe.teeth_coloring_stock, 0) + 
-							COALESCE(zfbe.finishing_stock, 0) + 
-							COALESCE(zfbe.finishing_prod, 0)
-						))::float8
-					ELSE (
-						zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8
-					)::float8 
-				END > 0
-		ORDER BY zfbe.created_at DESC
+		ORDER BY zfbe.created_at DESC;
 		`;
 
 	const sfgPromise = db.execute(query);
