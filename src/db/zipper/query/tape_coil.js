@@ -365,22 +365,30 @@ export async function selectTapeCoilDashboard(req, res, next) {
 			vodf.order_number,
             vodf.order_description_uuid,
 			vodf.item_description,
-            COALESCE(tctd.total_trx_quantity, 0)::float8 as total_trx_to_dyeing_quantity,
-			vodf.tape_received::float8,
-			vodf.tape_transferred::float8,
+			vodf.tape_received as tape_received,
+            COALESCE(total_tape_production.total_prod_quantity, 0)::float8 as total_tape_production,
+			COALESCE(dtt.total_tape_transferred, 0)::float8 as tape_transferred,
             vodf.tape_coil_uuid,
             tape_coil.name as tape_coil_name
         FROM zipper.v_order_details_full vodf
         LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
         LEFT JOIN (
             SELECT 
-                tape_coil_to_dyeing.order_description_uuid,
-                SUM(tape_coil_to_dyeing.trx_quantity) as total_trx_quantity
-            FROM zipper.tape_coil_to_dyeing
-            GROUP BY tape_coil_to_dyeing.order_description_uuid
-        ) tctd ON vodf.order_description_uuid = tctd.order_description_uuid
+                oe.order_description_uuid,
+                SUM(sfg.dying_and_iron_prod) as total_prod_quantity
+            FROM zipper.sfg
+            LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+            GROUP BY oe.order_description_uuid
+        ) total_tape_production ON vodf.order_description_uuid = total_tape_production.order_description_uuid
+        LEFT JOIN (
+            SELECT 
+                dtt.order_description_uuid,
+                SUM(dtt.trx_quantity) as total_tape_transferred
+            FROM zipper.dyed_tape_transaction dtt
+            GROUP BY dtt.order_description_uuid
+        ) dtt ON vodf.order_description_uuid = dtt.order_description_uuid
 		WHERE vodf.item_description IS NOT NULL AND vodf.tape_coil_uuid is NOT NULL
-        AND (tctd.total_trx_quantity != 0 OR vodf.tape_received != 0 OR vodf.tape_transferred != 0)
+        AND (total_tape_production.total_prod_quantity != 0 OR vodf.tape_received != 0 OR vodf.tape_transferred != 0)
         ORDER BY vodf.order_number DESC;
 		`;
 
