@@ -390,9 +390,9 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
                         ')'
                     ) 
                 ELSE '' END,
-                CASE WHEN (vodf.top_stopper_name IS NOT NULL AND vodf.top_stopper_name != '---') THEN ' / ' ELSE '' END,
+                CASE WHEN (vodf.top_stopper_name IS NOT NULL AND vodf.top_stopper_name != '---') THEN ' / Top Stopper: ' ELSE '' END,
                 CASE WHEN (vodf.top_stopper_name IS NOT NULL AND vodf.top_stopper_name != '---') THEN vodf.top_stopper_name ELSE '' END,
-                CASE WHEN (vodf.bottom_stopper_name IS NOT NULL AND vodf.bottom_stopper_name != '---') THEN ' / ' ELSE '' END,
+                CASE WHEN (vodf.bottom_stopper_name IS NOT NULL AND vodf.bottom_stopper_name != '---') THEN ' / Bottom Stopper: ' ELSE '' END,
                 CASE WHEN (vodf.bottom_stopper_name IS NOT NULL AND vodf.bottom_stopper_name != '---') THEN vodf.bottom_stopper_name ELSE '' END,
                 ' / ',
                 REPLACE(vodf.slider_provided::text, '_', ' ')
