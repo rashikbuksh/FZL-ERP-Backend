@@ -61,7 +61,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 								END,
 								'challan_date', challan.created_at,
 								'quantity', ple.quantity,
-								'order_entry_uuid', oe.order_entry_uuid
+								'order_entry_uuid', sfg.order_entry_uuid
 							)
 						) AS challan_array
 					FROM
