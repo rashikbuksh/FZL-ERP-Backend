@@ -60,7 +60,8 @@ export async function selectOrderRegisterReport(req, res, next) {
 									ELSE concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
 								END,
 								'challan_date', challan.created_at,
-								'quantity', ple.quantity
+								'quantity', ple.quantity,
+								'sfg_uuid', ple.sfg_uuid
 							)
 						) AS challan_array
 					FROM
@@ -127,7 +128,8 @@ export async function selectOrderRegisterReport(req, res, next) {
 									ELSE concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
 								END,
 								'challan_date', challan.created_at,
-								'quantity', ple.quantity
+								'quantity', ple.quantity,
+								'order_entry_uuid', ple.thread_order_entry_uuid
 							)
 						) AS challan_array
 					FROM
