@@ -592,14 +592,27 @@ export async function selectTapeCoil(req, res, next) {
 export async function selectOrderInfo(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { page, is_sample, item_for, from_date, to_date, challan_uuid } =
-		req.query;
+	const {
+		page,
+		is_sample,
+		item_for,
+		from_date,
+		to_date,
+		challan_uuid,
+		own_uuid,
+	} = req.query;
 	let { party_name } = req.query;
 
 	if (typeof party_name === 'undefined') {
 		party_name = false;
 	}
 	let filterCondition;
+
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
 
 	switch (page) {
 		case 'challan':
@@ -665,20 +678,31 @@ export async function selectOrderInfo(req, res, next) {
 			: sql` AND order_info.created_at BETWEEN ${from_date} AND ${to_date}`;
 	}
 
-	let orderInfoPromise = db
-		.select({
-			value: zipperSchema.order_info.uuid,
-			label: sql`CASE WHEN ${party_name} = 'true' THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name) ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) END`,
-		})
-		.from(zipperSchema.order_info)
-		.leftJoin(
-			publicSchema.party,
-			eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
-		);
-
-	orderInfoPromise = orderInfoPromise.where(filterCondition);
-
 	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		let orderInfoPromise = db
+			.select({
+				value: zipperSchema.order_info.uuid,
+				label: sql`CASE WHEN ${party_name} = 'true' THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name) ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) END`,
+			})
+			.from(zipperSchema.order_info)
+			.leftJoin(
+				publicSchema.party,
+				eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
+			);
+
+		orderInfoPromise = orderInfoPromise.where(filterCondition);
+
+		if (own_uuid) {
+			orderInfoPromise = orderInfoPromise.where(
+				sql`order_info.marketing_uuid = ${marketingUuid}`
+			);
+		}
+
 		const data = await orderInfoPromise;
 		const toast = {
 			status: 200,
