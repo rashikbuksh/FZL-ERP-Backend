@@ -1,6 +1,5 @@
-import { and, eq, min, sql, sum } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
-import { handleError, validateRequest } from '../../../util/index.js';
+import { sql } from 'drizzle-orm';
+import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 
 const findOrCreateArray = (array, key, value, createFn) => {
@@ -419,7 +418,7 @@ export async function deliveryStatementReport(req, res, next) {
                     ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
                 WHERE
                     COALESCE(
-                            COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8, 
+                            COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8, 
                             0
                         )::float8 > 0 
                     AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}

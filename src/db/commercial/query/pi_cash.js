@@ -199,41 +199,28 @@ export async function selectAll(req, res, next) {
 		),
 		total_pi_amount AS (
 			SELECT 
-				pi_cash.uuid AS pi_cash_uuid,
+				pi_cash_entry.pi_cash_uuid AS pi_cash_uuid,
 				SUM(
 					CASE 
-						WHEN od.order_type = 'tape' 
+						WHEN pi_cash_entry.sfg_uuid IS NULL 
+						THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
+						WHEN (od.order_type = 'tape' AND pi_cash_entry.sfg_uuid IS NOT NULL)
 						THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
 						ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price / 12, 0)
 					END
 				)::float8 AS total_amount
 			FROM 
-				commercial.pi_cash
-			LEFT JOIN 
-				commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+				commercial.pi_cash_entry
 			LEFT JOIN 
 				zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
 			LEFT JOIN 
 				zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
 			LEFT JOIN 
 				zipper.order_description od ON order_entry.order_description_uuid = od.uuid
+            LEFT JOIN 
+				thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
 			GROUP BY 
-				pi_cash.uuid
-		),
-		total_pi_amount_thread AS (
-			SELECT 
-				pi_cash.uuid AS pi_cash_uuid,
-				SUM(
-					COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price, 0)
-				)::float8 AS total_amount
-			FROM 
-				commercial.pi_cash
-			LEFT JOIN 
-				commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
-			LEFT JOIN 
-				thread.order_entry ON pi_cash_entry.thread_order_entry_uuid = order_entry.uuid
-			GROUP BY 
-				pi_cash.uuid
+				pi_cash_entry.pi_cash_uuid
 		)
 		SELECT 
 			pi_cash.uuid,
@@ -279,8 +266,8 @@ export async function selectAll(req, res, next) {
 			pi_cash.receive_amount::float8,
 			CASE 
 				WHEN pi_cash.is_pi = 1 
-				THEN ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) 
-				ELSE ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
+				THEN ROUND((total_pi_amount.total_amount::numeric), 2)
+				ELSE ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
 			END AS total_amount,
 			jsonb_agg(DISTINCT od.order_type) AS order_type
 		FROM 
@@ -313,8 +300,6 @@ export async function selectAll(req, res, next) {
 			thread_order_numbers_agg ON thread_order_numbers_agg.pi_cash_uuid = pi_cash.uuid
 		LEFT JOIN 
 			total_pi_amount ON total_pi_amount.pi_cash_uuid = pi_cash.uuid
-		LEFT JOIN 
-			total_pi_amount_thread ON total_pi_amount_thread.pi_cash_uuid = pi_cash.uuid
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
@@ -330,18 +315,18 @@ export async function selectAll(req, res, next) {
 					? sql`
 						AND CASE 
 						WHEN pi_cash.is_pi = 1 THEN 
-							ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) 
+							ROUND((total_pi_amount.total_amount::numeric), 2) 
 						ELSE 
-							ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
+							ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
 						END > pi_cash.receive_amount
 					`
 					: type === 'completed' && is_cash === 'true'
 						? sql`
 						AND CASE 
 						WHEN pi_cash.is_pi = 1 THEN 
-							ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) 
+							ROUND((total_pi_amount.total_amount::numeric), 2) 
 						ELSE 
-							ROUND((total_pi_amount.total_amount::numeric + total_pi_amount_thread.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
+							ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
 						END <= pi_cash.receive_amount
 					`
 						: sql``
