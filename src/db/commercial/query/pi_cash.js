@@ -369,7 +369,6 @@ export async function selectAll(req, res, next) {
 			pi_cash.created_by,
 			pi_cash.id,
 			total_pi_amount.total_amount,
-			total_pi_amount_thread.total_amount,
 			order_numbers_agg.order_numbers,
 			thread_order_numbers_agg.thread_order_numbers
 		ORDER BY 
