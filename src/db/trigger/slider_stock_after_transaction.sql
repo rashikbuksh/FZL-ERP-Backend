@@ -35,10 +35,10 @@ BEGIN
                 finishing_prod = finishing_prod + NEW.trx_quantity
             WHERE uuid = NEW.finishing_batch_entry_uuid;
 
-            UPDATE zipper.order_description
+            UPDATE zipper.sfg
             SET
                 finishing_prod = finishing_prod + NEW.trx_quantity
-            WHERE uuid = (SELECT order_description_uuid FROM zipper.finishing_batch WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid));
+            WHERE uuid = (SELECT sfg_uuid FROM zipper.finishing_batch_entry WHERE uuid = NEW.finishing_batch_entry_uuid);
         ELSE
             UPDATE zipper.finishing_batch
             SET
@@ -114,10 +114,10 @@ BEGIN
                 finishing_prod = finishing_prod - OLD.trx_quantity
             WHERE uuid = OLD.finishing_batch_entry_uuid;
 
-            UPDATE zipper.order_description
+            UPDATE zipper.sfg
             SET
                 finishing_prod = finishing_prod - OLD.trx_quantity
-            WHERE uuid = (SELECT order_description_uuid FROM zipper.finishing_batch WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = OLD.stock_uuid));
+            WHERE uuid = (SELECT sfg_uuid FROM zipper.finishing_batch_entry WHERE uuid = OLD.finishing_batch_entry_uuid);
         ELSE
             UPDATE zipper.finishing_batch
             SET
@@ -201,10 +201,10 @@ BEGIN
                 finishing_prod = finishing_prod + NEW.trx_quantity - OLD.trx_quantity
             WHERE uuid = NEW.finishing_batch_entry_uuid;
 
-            UPDATE zipper.order_description
+            UPDATE zipper.sfg
             SET
                 finishing_prod = finishing_prod + NEW.trx_quantity - OLD.trx_quantity
-            WHERE uuid = (SELECT order_description_uuid FROM zipper.finishing_batch WHERE uuid = (SELECT finishing_batch_uuid FROM slider.stock WHERE uuid = NEW.stock_uuid));
+            WHERE uuid = (SELECT sfg_uuid FROM zipper.finishing_batch_entry WHERE uuid = NEW.finishing_batch_entry_uuid);
         ELSE
             UPDATE zipper.finishing_batch
             SET
