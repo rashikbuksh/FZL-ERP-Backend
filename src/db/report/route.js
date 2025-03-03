@@ -215,7 +215,11 @@ export const pathReport = {
 			description: 'Pi Register Report',
 			tags: ['report'],
 			operationId: 'PiRegister',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
 			responses: {
 				200: {
 					description: 'Pi Register Report',

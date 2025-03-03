@@ -555,7 +555,7 @@ export async function dailyChallanReport(req, res, next) {
 }
 
 export async function PiRegister(req, res, next) {
-	const { own_uuid } = req?.query;
+	const { own_uuid, from, to } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -630,6 +630,7 @@ export async function PiRegister(req, res, next) {
 			) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
             WHERE (pi_cash_entry_order_numbers.order_numbers IS NOT NULL OR pi_cash_entry_order_numbers.thread_order_numbers IS NOT NULL)
             AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`1=1`}
+            AND ${from && to ? sql`pi_cash.created_at::date BETWEEN ${from} AND ${to}` : sql`1=1`}
         `;
 
 		const resultPromise = db.execute(query);
