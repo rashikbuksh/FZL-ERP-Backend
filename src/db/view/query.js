@@ -352,7 +352,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                         ORDER BY packing_list.created_at
                     ) AS packing_list_wise_rank, 
         packing_list_wise_counts.packing_list_wise_count,
-        CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 4, '0')) AS packing_number,
+        CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0')) AS packing_number,
         CASE 
             WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
                 THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
