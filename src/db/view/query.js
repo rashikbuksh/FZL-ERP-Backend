@@ -245,7 +245,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
     SELECT 
         pl.id as packing_list_id,
         pl.uuid as packing_list_uuid,
-        CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
+        CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) as packing_number,
         carton.name as carton_name,
         carton.size as carton_size,
         pl.carton_weight,

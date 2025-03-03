@@ -249,7 +249,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 
 	const query = sql`
 		SELECT DISTINCT
-			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number, 
+			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) as packing_number, 
 			ple.uuid,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
@@ -395,7 +395,7 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 	const query = sql`
 		SELECT 
 			ple.uuid,
-			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 4, '0')) as packing_number,
+			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) as packing_number,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
 			coalesce(ple.quantity,0)::float8 as quantity,
