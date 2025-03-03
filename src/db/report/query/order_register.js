@@ -35,6 +35,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 								THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
 								ELSE concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
 							END,
+							'challan_uuid', challan.uuid,
 							'challan_date', challan.created_at,
 							'quantity', ple.quantity,
 							'order_entry_uuid', sfg.order_entry_uuid
@@ -53,7 +54,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 			pi_cash_grouped AS (
 				SELECT 
 					vodf.order_info_uuid, 
-					array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers,
+					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
 					array_agg(DISTINCT lc.lc_number) as lc_numbers
 				FROM
 					zipper.v_order_details_full vodf
@@ -82,6 +83,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 									THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
 									ELSE concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
 								END,
+								'challan_uuid', challan.uuid,
 								'challan_date', challan.created_at,
 								'quantity', ple.quantity,
 								'order_entry_uuid', ple.thread_order_entry_uuid
@@ -99,7 +101,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 			pi_cash_grouped_thread AS (
 				SELECT 
 					toi.uuid as order_info_uuid,
-					array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers,
+					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
 					array_agg(DISTINCT lc.lc_number) as lc_numbers
 				FROM
 					thread.order_info toi

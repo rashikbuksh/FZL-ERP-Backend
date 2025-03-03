@@ -1504,6 +1504,21 @@ export async function ProductionReportSnm(req, res, next) {
 			marketingUuid = marketingUuidData?.rows[0]?.uuid;
 		}
 		const query = sql`
+            WITH pi_cash_grouped AS (
+				SELECT 
+					vodf.order_info_uuid, 
+					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
+					array_agg(DISTINCT lc.lc_number) as lc_numbers
+				FROM
+					zipper.v_order_details_full vodf
+				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+				LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
+				LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+				LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
+				WHERE pi_cash.id IS NOT NULL
+				GROUP BY vodf.order_info_uuid
+			)
             SELECT 
                 vodf.order_info_uuid,
                 vodf.item,
@@ -1539,7 +1554,12 @@ export async function ProductionReportSnm(req, res, next) {
                     WHEN vodf.order_type = 'slider' THEN 'Pcs'
                     WHEN vodf.is_inch = 1 THEN 'Inch'
 				    ELSE 'Cm'
-			    END as unit
+			    END as unit,
+                coalesce(sfg_production_sum.finishing_quantity,0)::float8 as total_finishing_quantity,
+                (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0))::float8 AS total_dyeing_quantity,
+                coalesce(slider_production_sum.coloring_production_quantity,0)::float8 as total_coloring_quantity,
+                coalesce(pi_cash_grouped.pi_numbers, '{}') as pi_numbers,
+                coalesce(pi_cash_grouped.lc_numbers, '{}') as lc_numbers
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN 
@@ -1572,6 +1592,47 @@ export async function ProductionReportSnm(req, res, next) {
                 GROUP BY
                     oe.uuid
             ) open_end_sum ON oe.uuid = open_end_sum.order_entry_uuid
+            LEFT JOIN (
+                SELECT 
+                    oe.uuid as order_entry_uuid,
+                    SUM(sfg_prod.production_quantity) AS finishing_quantity
+                FROM 
+                    zipper.finishing_batch_production sfg_prod
+                LEFT JOIN
+                    zipper.finishing_batch_entry fbe ON sfg_prod.finishing_batch_entry_uuid = fbe.uuid
+                LEFT JOIN
+                    zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+                LEFT JOIN 
+                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                WHERE
+                    sfg_prod.section = 'finishing'
+                GROUP BY 
+                   oe.uuid
+            ) sfg_production_sum ON sfg_production_sum.order_entry_uuid = oe.uuid
+            LEFT JOIN (
+                SELECT 
+                    SUM(dtt.trx_quantity) AS total_trx_quantity, dtt.order_description_uuid
+                FROM zipper.dyed_tape_transaction dtt
+                GROUP BY dtt.order_description_uuid
+            ) dyed_tape_transaction_sum ON dyed_tape_transaction_sum.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN (
+                SELECT SUM(dttfs.trx_quantity) AS total_trx_quantity, dttfs.order_description_uuid
+                FROM zipper.dyed_tape_transaction_from_stock dttfs
+                GROUP BY dttfs.order_description_uuid
+            ) dyed_tape_transaction_from_stock_sum ON dyed_tape_transaction_from_stock_sum.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN (
+                SELECT 
+                    od.uuid as order_description_uuid,
+                    SUM(production_quantity) AS coloring_production_quantity
+                FROM slider.production
+                LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
+                LEFT JOIN zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
+                LEFT JOIN zipper.order_description od ON finishing_batch.order_description_uuid = od.uuid
+                WHERE 
+                    production.section = 'coloring'
+                GROUP BY od.uuid
+            ) slider_production_sum ON slider_production_sum.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN pi_cash_grouped ON vodf.order_info_uuid = pi_cash_grouped.order_info_uuid
             WHERE vodf.order_description_uuid IS NOT NULL 
             AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
             AND ${from && to ? sql`vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
@@ -1680,6 +1741,20 @@ export async function ProductionReportThreadSnm(req, res, next) {
 			marketingUuid = marketingUuidData?.rows[0]?.uuid;
 		}
 		const query = sql`
+            WITH pi_cash_grouped_thread AS (
+				SELECT 
+					toi.uuid as order_info_uuid,
+					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
+					array_agg(DISTINCT lc.lc_number) as lc_numbers
+				FROM
+					thread.order_info toi
+				LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+				LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
+				LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+				LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
+				WHERE pi_cash.id IS NOT NULL
+				GROUP BY toi.uuid
+			)
             SELECT 
                 order_info.uuid,
                 order_info.created_at,
@@ -1706,7 +1781,11 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 order_info.uuid as order_info_uuid,
                 order_entry.delivered::float8,
                 order_entry.warehouse::float8,
-                (order_entry.quantity::float8 - order_entry.warehouse::float8 - order_entry.delivered::float8) as balance_quantity
+                (order_entry.quantity::float8 - order_entry.warehouse::float8 - order_entry.delivered::float8) as balance_quantity,
+                coalesce(pi_cash_grouped_thread.pi_numbers, '{}') as pi_numbers,
+                coalesce(pi_cash_grouped_thread.lc_numbers, '{}') as lc_numbers,
+                coalesce(batch_production_sum.coning_production_quantity,0)::float8 as total_coning_production_quantity,
+                coalesce(batch_production_sum.yarn_quantity,0)::float8 as total_yarn_quantity
             FROM
                 thread.order_info
             LEFT JOIN
@@ -1731,6 +1810,21 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 GROUP BY
                     order_entry.uuid
             ) prod_quantity ON order_entry.uuid = prod_quantity.order_entry_uuid
+            LEFT JOIN pi_cash_grouped_thread ON order_info.uuid = pi_cash_grouped_thread.order_info_uuid
+            LEFT JOIN (
+                SELECT 
+                    order_entry.uuid as order_entry_uuid,
+                    SUM(batch_entry.coning_production_quantity) AS coning_production_quantity,
+                    SUM(batch.yarn_quantity) AS yarn_quantity
+                FROM 
+                    thread.batch_entry
+                LEFT JOIN 
+                    thread.batch ON batch_entry.batch_uuid = batch.uuid
+                LEFT JOIN 
+                    thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                GROUP BY 
+                    order_entry.uuid
+            ) batch_production_sum ON batch_production_sum.order_entry_uuid = order_entry.uuid
             WHERE 
                 order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
                 AND ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}

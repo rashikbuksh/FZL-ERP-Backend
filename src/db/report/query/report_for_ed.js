@@ -10,15 +10,14 @@ export async function selectEDReport(req, res, next) {
 	try {
 		const query = sql`
             SELECT 
-                vplf.packing_list_entry_uuid,
-                vplf.packing_list_uuid,
                 challan.uuid as challan_uuid,
                 vplf.challan_number,
                 challan.created_at as challan_date,
-                vplf.quantity,
+                vplf.quantity as challan_quantity,
                 challan.created_by,
                 challan_created_by.name as challan_created_by_name,
                 challan.vehicle_uuid,
+                challan.delivery_date,
                 vehicle.name as vehicle_name,
                 vehicle.number as vehicle_number,
                 vehicle.driver_name,
@@ -27,6 +26,7 @@ export async function selectEDReport(req, res, next) {
                 vplf.item_description,
                 vpl.marketing_name,
                 vpl.party_name,
+                CASE WHEN oe.uuid IS NOT NULL THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
                 vplf.style,
                 vplf.color,
                 vplf.size,
