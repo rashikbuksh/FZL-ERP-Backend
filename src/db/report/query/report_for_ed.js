@@ -17,7 +17,7 @@ export async function selectEDReport(req, res, next) {
                 challan.created_by,
                 challan_created_by.name as challan_created_by_name,
                 challan.vehicle_uuid,
-                challan.delivery_date,
+                challan.delivery_date as challan_delivered_date,
                 vehicle.name as vehicle_name,
                 vehicle.number as vehicle_number,
                 vehicle.driver_name,
