@@ -1815,7 +1815,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 SELECT 
                     order_entry.uuid as order_entry_uuid,
                     SUM(batch_entry.coning_production_quantity) AS coning_production_quantity,
-                    SUM(batch.yarn_quantity) AS yarn_quantity
+                    SUM(batch_entry.yarn_quantity) AS yarn_quantity
                 FROM 
                     thread.batch_entry
                 LEFT JOIN 
