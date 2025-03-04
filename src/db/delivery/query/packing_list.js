@@ -456,11 +456,14 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN 
 			thread.count_length cl ON toe.count_length_uuid = cl.uuid
 		WHERE
-			(toe.quantity - toe.warehouse - toe.delivered) > 0 AND toe.production_quantity > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} 
+			toe.production_quantity > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} 
 		ORDER BY
 			toe.created_at, toe.uuid DESC
 
 		`;
+
+		// FOR extra production quantity, cannot deliver more than order quantity
+		// (toe.quantity - toe.warehouse - toe.delivered) > 0  (REMOVED)
 
 		// AND
 		// CASE
