@@ -439,7 +439,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			toe.warehouse::float8 as warehouse,
 			toe.delivered::float8 as delivered,
 			(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8)::float8 as balance_quantity,
-			LEAST(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8, toe.production_quantity::float8) as max_quantity,
+			LEAST(toe.quantity::float8 - toe.warehouse::float8 - toe.delivered::float8 + toe.production_quantity::float8, toe.production_quantity::float8) as max_quantity,
 			cl.cone_per_carton,
 			0 as quantity,
 			0 as poli_quantity,
@@ -456,11 +456,14 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN 
 			thread.count_length cl ON toe.count_length_uuid = cl.uuid
 		WHERE
-			(toe.quantity - toe.warehouse - toe.delivered) > 0 AND toe.production_quantity > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} 
+			toe.production_quantity > 0 AND toe.order_info_uuid = ${req.params.order_info_uuid} 
 		ORDER BY
 			toe.created_at, toe.uuid DESC
 
 		`;
+
+		// FOR extra production quantity, cannot deliver more than order quantity
+		// (toe.quantity - toe.warehouse - toe.delivered) > 0  (REMOVED)
 
 		// AND
 		// CASE

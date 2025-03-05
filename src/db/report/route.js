@@ -26,6 +26,10 @@ import { selectOrderSheetPdf } from './query/order_sheet_pdf.js';
 import { selectChallanPdf } from './query/challan_pdf.js';
 import { selectEDReport } from './query/report_for_ed.js';
 import { selectOrderRegisterReport } from './query/order_register.js';
+import {
+	selectDeliveryReportThread,
+	selectDeliveryReportZipper,
+} from './query/delivery_report.js';
 
 const reportRouter = Router();
 
@@ -163,6 +167,11 @@ reportRouter.get(
 	'/order-register-report/:order_info_uuid',
 	selectOrderRegisterReport
 );
+
+// * Delivery Report
+reportRouter.get('/delivery-report', selectDeliveryReportZipper);
+
+reportRouter.get('/delivery-report-thread', selectDeliveryReportThread);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -993,6 +1002,62 @@ export const pathReport = {
 					'order_info_uuid',
 					SE.uuid()
 				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/delivery-report': {
+		get: {
+			summary: 'Delivery Report',
+			description: 'Delivery Report',
+			tags: ['report'],
+			operationId: 'selectDeliveryReportZipper',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/delivery-report-thread': {
+		get: {
+			summary: 'Delivery Report Thread',
+			description: 'Delivery Report Thread',
+			tags: ['report'],
+			operationId: 'selectDeliveryReportThread',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
 			],
 			responses: {
 				200: SE.response_schema(200, {

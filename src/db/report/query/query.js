@@ -1546,7 +1546,7 @@ export async function ProductionReportSnm(req, res, next) {
                 coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0)::float8 as total_quantity,
                 sfg.delivered::float8,
                 sfg.warehouse::float8,
-                (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) as balance_quantity,
+                (oe.quantity::float8 - sfg.delivered::float8) as balance_quantity,
                 vodf.order_type,
                 vodf.is_inch,
                 CASE 
@@ -1781,7 +1781,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 order_info.uuid as order_info_uuid,
                 order_entry.delivered::float8,
                 order_entry.warehouse::float8,
-                (order_entry.quantity::float8 - order_entry.warehouse::float8 - order_entry.delivered::float8) as balance_quantity,
+                (order_entry.quantity::float8 - order_entry.delivered::float8) as balance_quantity,
                 coalesce(pi_cash_grouped_thread.pi_numbers, '{}') as pi_numbers,
                 coalesce(pi_cash_grouped_thread.lc_numbers, '{}') as lc_numbers,
                 coalesce(batch_production_sum.coning_production_quantity,0)::float8 as total_coning_production_quantity,
@@ -1815,7 +1815,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 SELECT 
                     order_entry.uuid as order_entry_uuid,
                     SUM(batch_entry.coning_production_quantity) AS coning_production_quantity,
-                    SUM(batch.yarn_quantity) AS yarn_quantity
+                    SUM(batch_entry.yarn_quantity) AS yarn_quantity
                 FROM 
                     thread.batch_entry
                 LEFT JOIN 
