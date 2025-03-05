@@ -52,27 +52,33 @@ export async function selectDeliveryReportZipper(req, res, next) {
                 vpld.short_quantity,
                 vpld.reject_quantity,
                 vpld.order_type,
-                coalesce(oe.party_price,0) as rate_per_dzn,
+                coalesce(oe.party_price,0)::float8 as rate_per_dzn,
                 CASE 
 					WHEN vpld.order_type = 'tape' 
-					THEN coalesce(oe.party_price,0)
-					ELSE coalesce(oe.party_price/12,0)
+					THEN coalesce(oe.party_price,0)::float8
+					ELSE coalesce(oe.party_price/12,0)::float8
 				END as rate_per_piece,
-                oe.party_price - oe.company_price as commission,
+                CASE 
+                    WHEN oe.party_price = 0
+                    THEN 0::float8
+                    ELSE coalesce(oe.party_price - oe.company_price, 0)::float8
+                END as commission,
                 CASE 
                     WHEN vpld.order_type = 'tape'
-                    THEN vpld.quantity * oe.party_price
-                    ELSE vpld.quantity * oe.party_price/12
+                    THEN (vpld.quantity * oe.party_price)::float8
+                    ELSE (vpld.quantity * oe.party_price/12)::float8
                 END as total_value,
                 CASE 
                     WHEN vpld.order_type = 'tape'
-                    THEN vpld.quantity * oe.company_price
-                    ELSE vpld.quantity * oe.company_price/12
+                    THEN (vpld.quantity * oe.company_price)::float8
+                    ELSE (vpld.quantity * oe.company_price/12)::float8
                 END as total_value_company,
                 CASE 
+                    WHEN oe.party_price = 0
+                    THEN 0
                     WHEN vpld.order_type = 'tape'
-                    THEN vpld.quantity * oe.party_price - vpld.quantity * oe.company_price
-                    ELSE vpld.quantity * oe.party_price/12 - vpld.quantity * oe.company_price/12
+                    THEN (vpld.quantity * oe.party_price - vpld.quantity * oe.company_price)::float8
+                    ELSE (vpld.quantity * oe.party_price/12 - vpld.quantity * oe.company_price/12)::float8
                 END as total_commission,
                 pcg.pi_numbers,
                 pcg.lc_numbers
@@ -84,7 +90,7 @@ export async function selectDeliveryReportZipper(req, res, next) {
             LEFT JOIN pi_cash_grouped pcg ON vpld.order_info_uuid = pcg.order_info_uuid
             WHERE 
                 vpld.item_for IN ('zipper', 'slider', 'tape', 'sample_zipper')
-                AND challan.delivery_date::date BETWEEN ${from} AND ${to}  
+                AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
         `;
 		const resultPromise = db.execute(query);
@@ -150,10 +156,19 @@ export async function selectDeliveryReportThread(req, res, next) {
                 vpld.poli_quantity,
                 vpld.short_quantity,
                 vpld.reject_quantity,
-			    coalesce(oe.party_price,0) as rate_per_piece,
-                coalesce(oe.party_price - oe.company_price, 0) as commission,
-                coalesce(vpld.quantity * oe.company_price, 0) as total_value_company,
-                coalesce(vpld.quantity * oe.party_price - vpld.quantity * oe.company_price, 0) as total_commission,
+			    coalesce(oe.party_price,0)::float8 as rate_per_piece,
+                CASE 
+                    WHEN oe.party_price = 0
+                    THEN 0::float8
+                    ELSE coalesce(oe.party_price - oe.company_price, 0)::float8
+                END as commission,
+                coalesce(vpld.quantity * oe.party_price, 0)::float8 as total_value,
+                coalesce(vpld.quantity * oe.company_price, 0)::float8 as total_value_company,
+                CASE 
+                    WHEN oe.party_price = 0
+                    THEN 0::float8
+                    ELSE coalesce(vpld.quantity * oe.party_price - vpld.quantity * oe.company_price, 0)::float8
+                END as total_commission,
                 pcg.pi_numbers,
                 pcg.lc_numbers
             FROM delivery.v_packing_list_details vpld 
@@ -163,7 +178,7 @@ export async function selectDeliveryReportThread(req, res, next) {
             LEFT JOIN pi_cash_grouped_thread pcg ON vpld.order_info_uuid = pcg.order_info_uuid
             WHERE 
                 vpld.item_for IN ('thread', 'sample_thread')
-                AND challan.delivery_date::date BETWEEN ${from} AND ${to}  
+                AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
         `;
 		const resultPromise = db.execute(query);
