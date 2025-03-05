@@ -56,29 +56,29 @@ export async function selectDeliveryReportZipper(req, res, next) {
                 CASE 
 					WHEN vpld.order_type = 'tape' 
 					THEN coalesce(oe.party_price,0)::float8
-					ELSE coalesce(oe.party_price/12,0)::float8
+					ELSE ROUND(coalesce(oe.party_price/12,0)::NUMERIC, 2)
 				END as rate_per_piece,
                 CASE 
                     WHEN oe.party_price = 0
                     THEN 0::float8
-                    ELSE coalesce(oe.party_price - oe.company_price, 0)::float8
+                    ELSE ROUND(coalesce(oe.party_price - oe.company_price, 0)::NUMERIC, 2)
                 END as commission,
                 CASE 
                     WHEN vpld.order_type = 'tape'
                     THEN (vpld.quantity * oe.party_price)::float8
-                    ELSE (vpld.quantity * oe.party_price/12)::float8
+                    ELSE ROUND((vpld.quantity * oe.party_price/12)::NUMERIC, 2)
                 END as total_value,
                 CASE 
                     WHEN vpld.order_type = 'tape'
-                    THEN (vpld.quantity * oe.company_price)::float8
-                    ELSE (vpld.quantity * oe.company_price/12)::float8
+                    THEN ROUND((vpld.quantity * oe.company_price)::NUMERIC, 2)
+                    ELSE ROUND((vpld.quantity * oe.company_price/12)::NUMERIC, 2)
                 END as total_value_company,
                 CASE 
                     WHEN oe.party_price = 0
                     THEN 0
                     WHEN vpld.order_type = 'tape'
-                    THEN (vpld.quantity * oe.party_price - vpld.quantity * oe.company_price)::float8
-                    ELSE (vpld.quantity * oe.party_price/12 - vpld.quantity * oe.company_price/12)::float8
+                    THEN ROUND((vpld.quantity * oe.party_price - vpld.quantity * oe.company_price)::NUMERIC, 2)
+                    ELSE ROUND((vpld.quantity * oe.party_price/12 - vpld.quantity * oe.company_price/12)::NUMERIC, 2)
                 END as total_commission,
                 pcg.pi_numbers,
                 pcg.lc_numbers
@@ -162,12 +162,12 @@ export async function selectDeliveryReportThread(req, res, next) {
                     THEN 0::float8
                     ELSE coalesce(oe.party_price - oe.company_price, 0)::float8
                 END as commission,
-                coalesce(vpld.quantity * oe.party_price, 0)::float8 as total_value,
-                coalesce(vpld.quantity * oe.company_price, 0)::float8 as total_value_company,
+                ROUND(coalesce(vpld.quantity * oe.party_price, 0)::NUMERIC, 2) as total_value,
+                ROUND(coalesce(vpld.quantity * oe.company_price, 0)::NUMERIC, 2) as total_value_company,
                 CASE 
                     WHEN oe.party_price = 0
                     THEN 0::float8
-                    ELSE coalesce(vpld.quantity * oe.party_price - vpld.quantity * oe.company_price, 0)::float8
+                    ELSE ROUND(coalesce(vpld.quantity * oe.party_price - vpld.quantity * oe.company_price, 0)::NUMERIC, 2)
                 END as total_commission,
                 pcg.pi_numbers,
                 pcg.lc_numbers
