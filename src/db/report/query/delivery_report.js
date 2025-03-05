@@ -40,7 +40,9 @@ export async function selectDeliveryReportZipper(req, res, next) {
                 vpld.item_for,
                 vpl.marketing_name,
                 vpl.party_name,
+                vpld.order_info_uuid,
                 vpld.order_number,
+                vpld.order_description_uuid,
                 vpld.item_description,
                 vpld.style,
                 vpld.color,
@@ -81,7 +83,13 @@ export async function selectDeliveryReportZipper(req, res, next) {
                     ELSE ROUND((vpld.quantity * oe.party_price/12 - vpld.quantity * oe.company_price/12)::NUMERIC, 2)
                 END as total_commission,
                 pcg.pi_numbers,
-                pcg.lc_numbers
+                pcg.lc_numbers,
+                CASE 
+					WHEN vpld.order_type = 'tape' THEN 'Meter' 
+					WHEN vpld.order_type = 'slider' THEN 'Pcs'
+					WHEN vpld.is_inch = 1 THEN 'Inch'
+					ELSE 'CM' 
+				END as unit
             FROM delivery.v_packing_list_details vpld 
             LEFT JOIN delivery.challan challan ON vpld.challan_uuid = challan.uuid
             LEFT JOIN delivery.v_packing_list vpl ON vpld.packing_list_uuid = vpl.uuid
@@ -146,6 +154,7 @@ export async function selectDeliveryReportThread(req, res, next) {
                 vpld.item_for,
                 vpl.marketing_name,
                 vpl.party_name,
+                vpld.order_info_uuid,
                 vpld.order_number,
                 vpld.item_description,
                 vpld.style,
@@ -170,7 +179,8 @@ export async function selectDeliveryReportThread(req, res, next) {
                     ELSE ROUND(coalesce(vpld.quantity * oe.party_price - vpld.quantity * oe.company_price, 0)::NUMERIC, 2)
                 END as total_commission,
                 pcg.pi_numbers,
-                pcg.lc_numbers
+                pcg.lc_numbers,
+                'Cone' as unit
             FROM delivery.v_packing_list_details vpld 
             LEFT JOIN delivery.challan challan ON vpld.challan_uuid = challan.uuid
             LEFT JOIN delivery.v_packing_list vpl ON vpld.packing_list_uuid = vpl.uuid
