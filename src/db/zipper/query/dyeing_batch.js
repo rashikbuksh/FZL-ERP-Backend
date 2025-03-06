@@ -103,6 +103,7 @@ export async function selectAll(req, res, next) {
 			dyeing_batch.production_date::date as production_date,
 			expected.party_name,
 			oe_colors.colors as color,
+			oe_colors.styles as style,
 			dyeing_batch.batch_type as batch_type,
 			dyeing_batch.order_info_uuid,
 			machine.water_capacity::float8 as water_capacity
@@ -115,6 +116,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
 		LEFT JOIN (
 			SELECT 
+				ARRAY_AGG(DISTINCT order_entry.style) as styles,
 				ARRAY_AGG(DISTINCT order_entry.color) as colors,
 				dyeing_batch.uuid
 			FROM zipper.order_entry
