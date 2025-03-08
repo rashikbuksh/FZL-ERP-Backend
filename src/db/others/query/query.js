@@ -2148,18 +2148,39 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
 	const { section } = req.query;
 
 	const query = sql`
+	WITH special_requirements AS (
+		SELECT 
+            order_description_uuid,
+            jsonb_array_elements_text((jsonb_extract_path_text(special_requirement::jsonb, 'values')::jsonb -> 'values')) AS value_uuid
+        FROM 
+            zipper.v_order_details_full
+        WHERE
+            jsonb_typeof(jsonb_extract_path_text(special_requirement::jsonb, 'values')::jsonb -> 'values') = 'array'
+	),
+	requirements_with_names AS (
+		SELECT 
+			sr.order_description_uuid,
+			sr.value_uuid,
+			p.short_name
+		FROM 
+			special_requirements sr
+		JOIN 
+			public.properties p ON sr.value_uuid = p.uuid
+	)
 	SELECT
 		stock.uuid AS value,
 		concat(
 			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) , ' ⇾ ',
 			vodf.order_number, ' ⇾ ',
 			vodf.item_description, ' ⇾ ',
+			STRING_AGG(DISTINCT rwn.short_name, ', ') , CASE WHEN rwn.short_name IS NOT NULL THEN ' ⇾ ' ELSE '' END,
 			'Balance: ', (stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0))::float8
 		) AS label
 	FROM
 		slider.stock
 	LEFT JOIN
 		zipper.finishing_batch zfb ON stock.finishing_batch_uuid = zfb.uuid
+	LEFT JOIN requirements_with_names rwn ON zfb.order_description_uuid = rwn.order_description_uuid
 	LEFT JOIN
 		zipper.v_order_details_full vodf ON zfb.order_description_uuid = vodf.order_description_uuid
 	LEFT JOIN
@@ -2178,7 +2199,10 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
             stock.uuid
     ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
 	WHERE 
-		(stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0;`;
+		(stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0
+	GROUP BY
+		stock.uuid, zfb.created_at, zfb.id, vodf.order_number, vodf.item_description, rwn.short_name, stock.batch_quantity, slider_transaction_given.trx_quantity	
+	;`;
 
 	const stockPromise = db.execute(query);
 

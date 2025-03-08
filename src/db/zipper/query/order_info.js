@@ -344,10 +344,10 @@ export async function getOrderDetails(req, res, next) {
         SELECT 
             vod.*, 
             order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
-            swatch_approval_counts.swatch_approval_count,
-            order_entry_counts.order_entry_count,
-            CASE WHEN price_approval_counts.price_approval_count IS NULL THEN 0 ELSE price_approval_counts.price_approval_count END AS price_approval_count,
-            CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
+            all_approval_counts.swatch_approval_count,
+            all_approval_counts.order_entry_count,
+            CASE WHEN all_approval_counts.price_approval_count IS NULL THEN 0 ELSE all_approval_counts.price_approval_count END AS price_approval_count,
+            CASE WHEN all_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
         FROM zipper.v_order_details vod
         LEFT JOIN (
             SELECT 
@@ -360,26 +360,13 @@ export async function getOrderDetails(req, res, next) {
         LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
         LEFT JOIN (
             SELECT 
-                COUNT(oe.swatch_approval_date) AS swatch_approval_count, 
-                oe.order_description_uuid
-            FROM zipper.order_entry oe
-            GROUP BY oe.order_description_uuid
-        ) swatch_approval_counts ON vod.order_description_uuid = swatch_approval_counts.order_description_uuid
-        LEFT JOIN (
-            SELECT 
-                COUNT(*) AS price_approval_count, 
-                oe.order_description_uuid
-            FROM zipper.order_entry oe
-            WHERE oe.party_price > 0 AND oe.company_price > 0
-            GROUP BY oe.order_description_uuid
-        ) price_approval_counts ON vod.order_description_uuid = price_approval_counts.order_description_uuid
-        LEFT JOIN (
-            SELECT 
-                COUNT(*) AS order_entry_count, 
-                oe.order_description_uuid
-            FROM zipper.order_entry oe
-            GROUP BY oe.order_description_uuid
-        ) order_entry_counts ON vod.order_description_uuid = order_entry_counts.order_description_uuid
+				COUNT(oe.swatch_approval_date) AS swatch_approval_count, 
+				COUNT(*) AS order_entry_count, 
+				COUNT(CASE WHEN oe.party_price > 0 AND oe.company_price > 0 THEN 1 END) AS price_approval_count,
+				oe.order_description_uuid
+			FROM zipper.order_entry oe
+			GROUP BY oe.order_description_uuid
+        ) all_approval_counts ON vod.order_description_uuid = all_approval_counts.order_description_uuid
         WHERE vod.order_description_uuid IS NOT NULL 
             AND ${
 				all === 'true'

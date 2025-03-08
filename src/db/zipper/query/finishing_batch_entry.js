@@ -473,7 +473,7 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 export async function selectFinishingBatchEntryBySection(req, res, next) {
 	const { section } = req.params;
 
-	const { item_name, nylon_stopper } = req.query;
+	const { item_name, nylon_stopper, status } = req.query;
 
 	// item_description -> CONCAT(vodf.item_description, ' - teeth: ', vodf.teeth_color_name)
 
@@ -578,10 +578,41 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 		LEFT JOIN finishing_batch_productions fbp ON zfbe.uuid = fbp.finishing_batch_entry_uuid
 		WHERE
 			vodf.tape_coil_uuid IS NOT NULL
+			AND vodf.is_sample = 0
 			${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vodf.nylon_stopper_name) = 'plastic'` : sql`AND lower(vodf.nylon_stopper_name) != 'plastic'`) : sql``}
-		ORDER BY zfbe.created_at DESC;
 		`;
+
+	if (status == 'pending') {
+		query.append(sql`AND CASE 
+								WHEN lower(${item_name}) = 'vislon' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 
+								WHEN ${section} = 'finishing_prod' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 
+								WHEN ${section} = 'teeth_coloring_prod' THEN (zfbe.quantity - (COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8
+								WHEN ${section} = 'teeth_molding_prod' THEN (zfbe.quantity - (COALESCE(zfbe.teeth_molding_prod, 0) + COALESCE(zfbe.teeth_coloring_stock, 0) + COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8
+								ELSE (zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8)::float8 
+							END > 0
+					`);
+	} else if (status == 'completed') {
+		query.append(sql`AND CASE 
+								WHEN lower(${item_name}) = 'vislon' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 
+								WHEN ${section} = 'finishing_prod' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 
+								WHEN ${section} = 'teeth_coloring_prod' THEN (zfbe.quantity - (COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8
+								WHEN ${section} = 'teeth_molding_prod' THEN (zfbe.quantity - (COALESCE(zfbe.teeth_molding_prod, 0) + COALESCE(zfbe.teeth_coloring_stock, 0) + COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8
+								ELSE (zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8)::float8 
+							END = 0
+					`);
+	} else if (status == 'over_delivered') {
+		query.append(sql`AND CASE 
+								WHEN lower(${item_name}) = 'vislon' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 
+								WHEN ${section} = 'finishing_prod' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 
+								WHEN ${section} = 'teeth_coloring_prod' THEN (zfbe.quantity - (COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8
+								WHEN ${section} = 'teeth_molding_prod' THEN (zfbe.quantity - (COALESCE(zfbe.teeth_molding_prod, 0) + COALESCE(zfbe.teeth_coloring_stock, 0) + COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8
+								ELSE (zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8)::float8 
+							END < 0
+					`);
+	}
+
+	query.append(sql`ORDER BY zfbe.created_at DESC`);
 
 	const sfgPromise = db.execute(query);
 
