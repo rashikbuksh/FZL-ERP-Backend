@@ -1097,7 +1097,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 recipe.name as recipe_name,
                 order_entry.swatch_approval_date,
                 order_entry.count_length_uuid,
-                count_length.count,
+                CONCAT('"',count_length.count) AS count,
                 count_length.length,
                 batch_entry_quantity_length.total_quantity::float8,
                 batch_entry_quantity_length.total_weight::float8,
