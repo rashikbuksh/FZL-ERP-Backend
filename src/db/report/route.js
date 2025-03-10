@@ -1082,6 +1082,34 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/count-length-wise-delivery-report': {
+		get: {
+			summary: 'Count Length Wise Delivery Report',
+			description: 'Count Length Wise Delivery Report',
+			tags: ['report'],
+			operationId: 'selectCountLengthWiseDeliveryReport',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
 };
 
 export const tagReport = [
