@@ -581,6 +581,11 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			AND vodf.is_sample = 0
 			${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vodf.nylon_stopper_name) = 'plastic'` : sql`AND lower(vodf.nylon_stopper_name) != 'plastic'`) : sql``}
+			AND CASE WHEN ${section} = 'finishing_prod' 
+				THEN zfbe.finishing_prod IS NOT NULL
+				ELSE 
+					zfbe.quantity - coalesce(fbt.total_trx_quantity, 0) > 0
+				END
 		`;
 
 	if (status == 'pending') {
