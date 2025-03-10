@@ -30,6 +30,7 @@ import {
 	selectDeliveryReportThread,
 	selectDeliveryReportZipper,
 } from './query/delivery_report.js';
+import { selectCountLengthWiseDeliveryReport } from './query/count_length_wise_delivery_report.js';
 
 const reportRouter = Router();
 
@@ -166,6 +167,11 @@ reportRouter.get('/report-for-ed', selectEDReport);
 reportRouter.get(
 	'/order-register-report/:order_info_uuid',
 	selectOrderRegisterReport
+);
+
+reportRouter.get(
+	'/count-length-wise-delivery-report',
+	selectCountLengthWiseDeliveryReport
 );
 
 // * Delivery Report
