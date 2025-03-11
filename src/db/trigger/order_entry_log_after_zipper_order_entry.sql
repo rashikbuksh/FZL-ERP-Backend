@@ -8,7 +8,7 @@ BEGIN
         OLD.company_price IS DISTINCT FROM NEW.company_price OR
         OLD.party_price IS DISTINCT FROM NEW.party_price OR
         OLD.updated_by IS DISTINCT FROM NEW.updated_by OR
-        OLD.created_at IS DISTINCT FROM NEW.created_at) THEN
+        OLD.updated_at IS DISTINCT FROM NEW.updated_at) THEN
 
         INSERT INTO zipper.order_entry_log (
             order_entry_uuid, 
