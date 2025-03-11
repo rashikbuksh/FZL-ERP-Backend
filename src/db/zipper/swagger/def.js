@@ -1,5 +1,4 @@
 import SE, { SED } from '../../../util/swagger_example.js';
-import { finishing_batch_entry } from '../schema.js';
 
 // * Zipper Order Info * //
 export const def_zipper_order_info = SED({
@@ -706,6 +705,24 @@ export const def_finishing_batch_entry = SED({
 	xml: 'Zipper/Finishing-Batch-Entry',
 });
 
+export const def_order_entry_log = SED({
+	required: ['uuid', 'created_by', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		order_entry_uuid: SE.uuid(),
+		thread_order_entry_uuid: SE.uuid(),
+		style: SE.string(),
+		color: SE.string(),
+		size: SE.string(),
+		quantity: SE.number(),
+		company_price: SE.number(),
+		party_price: SE.number(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+	},
+	xml: 'Zipper/Order-Entry-Log',
+});
+
 //....................FOR TESTING.......................
 export const defZipper = {
 	order_info: def_zipper_order_info,
@@ -733,6 +750,7 @@ export const defZipper = {
 	multi_color_tape_receive: def_multi_color_tape_receive,
 	finishing_batch: def_finishing_batch,
 	finishing_batch_entry: def_finishing_batch_entry,
+	order_entry_log: def_order_entry_log,
 };
 
 // * Zipper Tag * //
@@ -828,5 +846,9 @@ export const tagZipper = [
 	{
 		name: 'zipper.finishing_batch_entry',
 		description: 'Zipper Finishing Batch Entry',
+	},
+	{
+		name: 'zipper.order_entry_log',
+		description: 'Zipper Order Entry Log',
 	},
 ];

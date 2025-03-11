@@ -13,6 +13,7 @@ import * as labDipSchema from '../lab_dip/schema.js';
 import * as materialSchema from '../material/schema.js';
 import * as publicSchema from '../public/schema.js';
 import * as sliderSchema from '../slider/schema.js';
+import * as threadSchema from '../thread/schema.js';
 import {
 	DateTime,
 	defaultUUID,
@@ -744,6 +745,24 @@ export const finishing_batch_entry = zipper.table('finishing_batch_entry', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+});
+
+export const order_entry_log = zipper.table('order_entry_log', {
+	uuid: uuid_primary,
+	order_entry_uuid: defaultUUID('order_entry_uuid').references(
+		() => order_entry.uuid
+	),
+	thread_order_entry_uuid: defaultUUID('thread_order_entry_uuid').references(
+		() => threadSchema.order_entry.uuid
+	),
+	style: text('style').notNull(null),
+	color: text('color').default(null),
+	size: text('size').default(null),
+	quantity: PG_DECIMAL('quantity').default(0.0),
+	company_price: PG_DECIMAL('company_price').default(0.0),
+	party_price: PG_DECIMAL('party_price').default(0.0),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
 });
 
 export default zipper;

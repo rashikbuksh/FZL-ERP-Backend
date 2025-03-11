@@ -4240,6 +4240,110 @@ export const pathZipperFinishingBatchEntry = {
 	},
 };
 
+export const pathOrderEntryLog = {
+	'/zipper/order-entry-log': {
+		get: {
+			tags: ['zipper.order_entry_log'],
+			summary: 'Get all Order Entry Log',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					thread_order_entry_uuid: SE.string('Z24-0001'),
+					style: SE.string('Style 1'),
+					color: SE.string('Color 1'),
+					size: SE.number(100),
+					quantity: SE.number(100),
+					company_price: SE.number(100),
+					party_price: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+				}),
+			},
+		},
+
+		post: {
+			tags: ['zipper.order_entry_log'],
+			summary: 'create a order entry log',
+			description: '',
+			// operationId: "add
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref('zipper/order_entry_log'),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/order_entry_log'),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/order-entry-log/{uuid}': {
+		get: {
+			tags: ['zipper.order_entry_log'],
+			summary: 'Gets a order entry log',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('order entry log to get', 'uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					thread_order_entry_uuid: SE.string('Z24-0001'),
+					style: SE.string('Style 1'),
+					color: SE.string('Color 1'),
+					size: SE.number(100),
+					quantity: SE.number(100),
+					company_price: SE.number(100),
+					party_price: SE.number(100),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+
+		put: {
+			tags: ['zipper.order_entry_log'],
+			summary: 'Update an existing order entry log',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_schema_ref('order entry log to update', 'uuid'),
+			],
+			requestBody: SE.requestBody_schema_ref('zipper/order_entry_log'),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/order_entry_log'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+
+		delete: {
+			tags: ['zipper.order_entry_log'],
+			summary: 'Deletes a order entry log',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('order entry log to delete', 'uuid'),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
 // * Zipper Path Zipper * //
 export const pathZipper = {
 	...pathZipperOrderInfo,
@@ -4265,4 +4369,5 @@ export const pathZipper = {
 	...pathZipperMultiColorTapeReceive,
 	...pathZipperFinishingBatch,
 	...pathZipperFinishingBatchEntry,
+	...pathOrderEntryLog,
 };

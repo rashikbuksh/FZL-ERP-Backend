@@ -22,6 +22,7 @@ import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
+import * as orderEntryLogOperations from './query/order_entry_log.js';
 
 const zipperRouter = Router();
 
@@ -542,5 +543,13 @@ zipperRouter.get(
 	'/finishing-batch/by/:section',
 	finishingBatchEntryOperations.selectFinishingBatchEntryBySection
 );
+
+// --------------------- ORDER ENTRY LOG ROUTES ---------------------
+
+zipperRouter.get('/order-entry-log', orderEntryLogOperations.selectAll);
+zipperRouter.get('/order-entry-log/:uuid', orderEntryLogOperations.select);
+zipperRouter.post('/order-entry-log', orderEntryLogOperations.insert);
+zipperRouter.put('/order-entry-log/:uuid', orderEntryLogOperations.update);
+zipperRouter.delete('/order-entry-log/:uuid', orderEntryLogOperations.remove);
 
 export { zipperRouter };
