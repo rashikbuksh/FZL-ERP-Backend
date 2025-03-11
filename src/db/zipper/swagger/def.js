@@ -706,9 +706,9 @@ export const def_finishing_batch_entry = SED({
 });
 
 export const def_order_entry_log = SED({
-	required: ['uuid', 'created_by', 'created_at'],
+	required: ['created_by', 'created_at'],
 	properties: {
-		uuid: SE.uuid(),
+		id: SE.integer(),
 		order_entry_uuid: SE.uuid(),
 		thread_order_entry_uuid: SE.uuid(),
 		style: SE.string(),

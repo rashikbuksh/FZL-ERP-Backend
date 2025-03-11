@@ -4248,7 +4248,7 @@ export const pathOrderEntryLog = {
 			parameters: [],
 			responses: {
 				200: SE.response_schema(200, {
-					uuid: SE.uuid(),
+					id: SE.number(1),
 					order_entry_uuid: SE.uuid(),
 					thread_order_entry_uuid: SE.string('Z24-0001'),
 					style: SE.string('Style 1'),
@@ -4289,7 +4289,7 @@ export const pathOrderEntryLog = {
 			parameters: [SE.parameter_params('order entry log to get', 'uuid')],
 			responses: {
 				200: SE.response_schema(200, {
-					uuid: SE.uuid(),
+					id: SE.number(1),
 					order_entry_uuid: SE.uuid(),
 					thread_order_entry_uuid: SE.string('Z24-0001'),
 					style: SE.string('Style 1'),
