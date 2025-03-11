@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
@@ -97,7 +97,7 @@ export async function selectAll(req, res, next) {
 			materialSchema.info,
 			eq(materialSchema.info.uuid, recipe_entry.material_uuid)
 		)
-		.orderBy(desc(recipe_entry.index));
+		.orderBy(asc(recipe_entry.index));
 
 	try {
 		const data = await resultPromise;
@@ -180,7 +180,7 @@ export async function selectRecipeEntryByRecipeUuid(req, res, next) {
 			eq(materialSchema.info.uuid, recipe_entry.material_uuid)
 		)
 		.where(eq(recipe_entry.recipe_uuid, req.params.recipe_uuid))
-		.orderBy(desc(recipe_entry.index));
+		.orderBy(asc(recipe_entry.index));
 
 	try {
 		const data = await recipe_entryPromise;
