@@ -786,7 +786,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 							finishing_batch_entry.finishing_batch_uuid
 					) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
 				WHERE
-					${date ? sql`DATE(finishing_batch.production_date) BETWEEN ${date}` : sql`1=1`}
+					${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
 					${order_description_uuid ? sql`AND vodf.order_description_uuid = ${order_description_uuid}` : sql`1=1`}
 					AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
 				GROUP BY
