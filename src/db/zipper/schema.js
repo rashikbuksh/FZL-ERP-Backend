@@ -212,6 +212,7 @@ export const order_entry = zipper.table('order_entry', {
 	remarks: text('remarks').default(null),
 	is_inch: integer('is_inch').default(0),
 	index: integer('index').notNull().default(1),
+	updated_by: defaultUUID('updated_by').references(() => hrSchema.users.uuid),
 });
 
 export const sfg = zipper.table('sfg', {
@@ -747,8 +748,18 @@ export const finishing_batch_entry = zipper.table('finishing_batch_entry', {
 	remarks: text('remarks').default(null),
 });
 
+export const order_entry_log_sequence = zipper.sequence(
+	'order_entry_log_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
+
 export const order_entry_log = zipper.table('order_entry_log', {
-	uuid: uuid_primary,
+	id: integer('id')
+		.default(sql`nextval('zipper.order_entry_log_sequence')`)
+		.notNull(),
 	order_entry_uuid: defaultUUID('order_entry_uuid').references(
 		() => order_entry.uuid
 	),
