@@ -900,8 +900,8 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 		);
 
 		const dateRange = [];
-		let currentDate = new Date(from_date);
-		const endDate = new Date(to_date);
+		let currentDate = new Date(date);
+		const endDate = new Date(date);
 
 		while (currentDate <= endDate) {
 			dateRange.push(currentDate.toISOString().split('T')[0]);
