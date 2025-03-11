@@ -707,6 +707,9 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 	`;
 	try {
 		const [orderAllItemResult] = await db.execute(orderAllItemQuery);
+
+		console.log(orderAllItemResult, 'orderAllItemResult');
+
 		const CapacityQuery = sql`
 		SELECT
 			item_properties.uuid AS item,
