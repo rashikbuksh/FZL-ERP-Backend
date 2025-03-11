@@ -263,7 +263,8 @@ export async function selectAll(req, res, next) {
 				packing_list.item_for,
 				challan.is_own,
 				challan.delivery_type,
-				challan.is_delivered
+				challan.is_delivered,
+				colors.color
 			FROM
 				delivery.challan
 			LEFT JOIN
@@ -301,6 +302,20 @@ export async function selectAll(req, res, next) {
 				GROUP BY
 					packing_list.challan_uuid
 			) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
+			LEFT JOIN (
+			         SELECT 
+					 		delivery.challan.uuid,
+							ARRAY_AGG(DISTINCT CASE
+								WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN order_entry.color ELSE toe.color END
+							) AS color
+					FROM delivery.challan
+					LEFT JOIN delivery.packing_list ON challan.uuid = packing_list.challan_uuid
+					LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+					LEFT JOIN zipper.sfg ON packing_list_entry.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+					LEFT JOIN thread.order_entry toe ON packing_list_entry.thread_order_entry_uuid = toe.uuid
+					GROUP BY delivery.challan.uuid
+			) AS colors ON challan.uuid = colors.uuid
 			WHERE
 			  	${delivery_date ? sql`DATE(challan.delivery_date) = ${delivery_date}` : sql`TRUE`}
 				${vehicle && vehicle !== 'null' && vehicle !== 'undefined' && vehicle !== 'all' ? sql`AND challan.vehicle_uuid = ${vehicle}` : sql``}
