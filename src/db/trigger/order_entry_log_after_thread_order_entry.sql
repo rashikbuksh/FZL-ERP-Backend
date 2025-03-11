@@ -3,7 +3,6 @@ RETURNS TRIGGER AS $$
 BEGIN 
     IF (OLD.style IS DISTINCT FROM NEW.style OR
         OLD.color IS DISTINCT FROM NEW.color OR
-        OLD.size IS DISTINCT FROM NEW.size OR
         OLD.quantity IS DISTINCT FROM NEW.quantity OR
         OLD.company_price IS DISTINCT FROM NEW.company_price OR
         OLD.party_price IS DISTINCT FROM NEW.party_price OR
