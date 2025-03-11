@@ -165,7 +165,8 @@ export async function selectByManualPiUuid(req, res, next) {
 			remarks: manual_pi_entry.remarks,
 		})
 		.from(manual_pi_entry)
-		.where(eq(manual_pi_entry.manual_pi_uuid, req.params.manual_pi_uuid));
+		.where(eq(manual_pi_entry.manual_pi_uuid, req.params.manual_pi_uuid))
+		.orderBy(asc(manual_pi_entry.order_number));
 
 	try {
 		const data = await manualPiEntryPromise;
