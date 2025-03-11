@@ -547,9 +547,9 @@ zipperRouter.get(
 // --------------------- ORDER ENTRY LOG ROUTES ---------------------
 
 zipperRouter.get('/order-entry-log', orderEntryLogOperations.selectAll);
-zipperRouter.get('/order-entry-log/:uuid', orderEntryLogOperations.select);
+zipperRouter.get('/order-entry-log/:id', orderEntryLogOperations.select);
 zipperRouter.post('/order-entry-log', orderEntryLogOperations.insert);
-zipperRouter.put('/order-entry-log/:uuid', orderEntryLogOperations.update);
-zipperRouter.delete('/order-entry-log/:uuid', orderEntryLogOperations.remove);
+zipperRouter.put('/order-entry-log/:id', orderEntryLogOperations.update);
+zipperRouter.delete('/order-entry-log/:id', orderEntryLogOperations.remove);
 
 export { zipperRouter };

@@ -4279,14 +4279,14 @@ export const pathOrderEntryLog = {
 			},
 		},
 	},
-	'/zipper/order-entry-log/{uuid}': {
+	'/zipper/order-entry-log/{id}': {
 		get: {
 			tags: ['zipper.order_entry_log'],
 			summary: 'Gets a order entry log',
 			description: '',
 			// operationId: "deletePet",
 			produces: ['application/json'],
-			parameters: [SE.parameter_params('order entry log to get', 'uuid')],
+			parameters: [SE.parameter_params('order entry log to get', 'id')],
 			responses: {
 				200: SE.response_schema(200, {
 					id: SE.number(1),
@@ -4315,7 +4315,7 @@ export const pathOrderEntryLog = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_schema_ref('order entry log to update', 'uuid'),
+				SE.parameter_schema_ref('order entry log to update', 'id'),
 			],
 			requestBody: SE.requestBody_schema_ref('zipper/order_entry_log'),
 			responses: {
@@ -4333,7 +4333,7 @@ export const pathOrderEntryLog = {
 			// operationId: "deletePet",
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_params('order entry log to delete', 'uuid'),
+				SE.parameter_params('order entry log to delete', 'id'),
 			],
 			responses: {
 				200: SE.response(200),

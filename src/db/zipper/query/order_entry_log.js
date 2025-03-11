@@ -83,9 +83,10 @@ export async function remove(req, res, next) {
 }
 
 export async function select(req, res, next) {
+	console.log(req.params.id);
 	const orderEntryLogPromise = db
 		.select({
-			uuid: order_entry_log.uuid,
+			id: order_entry_log.id,
 			order_entry_uuid: order_entry_log.order_entry_uuid,
 			thread_order_entry_uuid: order_entry_log.thread_order_entry_uuid,
 			style: order_entry_log.style,
@@ -103,7 +104,7 @@ export async function select(req, res, next) {
 			hrSchema.users,
 			eq(order_entry_log.created_by, hrSchema.users.uuid)
 		)
-		.where(eq(order_entry_log.uuid, req.params.uuid));
+		.where(eq(order_entry_log.id, req.params.id));
 
 	try {
 		const data = await orderEntryLogPromise;
@@ -122,7 +123,7 @@ export async function select(req, res, next) {
 export async function selectAll(req, res, next) {
 	const orderEntryLogPromise = db
 		.select({
-			uuid: order_entry_log.uuid,
+			id: order_entry_log.id,
 			order_entry_uuid: order_entry_log.order_entry_uuid,
 			thread_order_entry_uuid: order_entry_log.thread_order_entry_uuid,
 			style: order_entry_log.style,
