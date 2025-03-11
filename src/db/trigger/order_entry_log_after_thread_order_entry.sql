@@ -6,7 +6,7 @@ BEGIN
         OLD.quantity IS DISTINCT FROM NEW.quantity OR
         OLD.company_price IS DISTINCT FROM NEW.company_price OR
         OLD.party_price IS DISTINCT FROM NEW.party_price OR
-        OLD.updated_by IS DISTINCT FROM NEW.updated_by OR
+        OLD.created_by IS DISTINCT FROM NEW.created_by OR
         OLD.updated_at IS DISTINCT FROM NEW.updated_at) THEN
 
         INSERT INTO zipper.order_entry_log (
@@ -26,7 +26,7 @@ BEGIN
             NEW.quantity, 
             NEW.company_price, 
             NEW.party_price, 
-            NEW.updated_by, 
+            NEW.created_by, 
             NEW.updated_at
         );
     END IF;
