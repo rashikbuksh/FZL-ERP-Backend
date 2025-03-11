@@ -296,13 +296,13 @@ export async function selectManualPiByManualPiUuid(req, res, next) {
 			fetchData('/commercial/manual-pi-entry/by'),
 		]);
 
-		const manual_zipper_pi_entry = manual_pi_entry?.data?.data.filter(
-			(e) => e.is_zipper === true
-		);
+		const manual_zipper_pi_entry = manual_pi_entry?.data?.data
+			.filter((e) => e.is_zipper === true)
+			.sort((a, b) => a.item - b.item);
 
-		const manual_thread_pi_entry = manual_pi_entry?.data?.data.filter(
-			(e) => e.is_zipper === false
-		);
+		const manual_thread_pi_entry = manual_pi_entry?.data?.data
+			.filter((e) => e.is_zipper === false)
+			.sort((a, b) => a.order_number - b.order_number);
 
 		const response = {
 			...manual_pi?.data?.data,
