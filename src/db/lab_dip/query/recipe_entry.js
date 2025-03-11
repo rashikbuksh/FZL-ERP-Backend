@@ -89,6 +89,7 @@ export async function selectAll(req, res, next) {
 			created_at: recipe_entry.created_at,
 			updated_at: recipe_entry.updated_at,
 			remarks: recipe_entry.remarks,
+			index: recipe_entry.index,
 		})
 		.from(recipe_entry)
 		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid))
@@ -96,7 +97,7 @@ export async function selectAll(req, res, next) {
 			materialSchema.info,
 			eq(materialSchema.info.uuid, recipe_entry.material_uuid)
 		)
-		.orderBy(desc(recipe_entry.created_at));
+		.orderBy(desc(recipe_entry.index));
 
 	try {
 		const data = await resultPromise;
@@ -129,6 +130,7 @@ export async function select(req, res, next) {
 			created_at: recipe_entry.created_at,
 			updated_at: recipe_entry.updated_at,
 			remarks: recipe_entry.remarks,
+			index: recipe_entry.index,
 		})
 		.from(recipe_entry)
 		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid))
@@ -169,6 +171,7 @@ export async function selectRecipeEntryByRecipeUuid(req, res, next) {
 			created_at: recipe_entry.created_at,
 			updated_at: recipe_entry.updated_at,
 			remarks: recipe_entry.remarks,
+			index: recipe_entry.index,
 		})
 		.from(recipe_entry)
 		.leftJoin(recipe, eq(recipe.uuid, recipe_entry.recipe_uuid))
@@ -177,7 +180,7 @@ export async function selectRecipeEntryByRecipeUuid(req, res, next) {
 			eq(materialSchema.info.uuid, recipe_entry.material_uuid)
 		)
 		.where(eq(recipe_entry.recipe_uuid, req.params.recipe_uuid))
-		.orderBy(desc(materialSchema.info.name));
+		.orderBy(desc(recipe_entry.index));
 
 	try {
 		const data = await recipe_entryPromise;
