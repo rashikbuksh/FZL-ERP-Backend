@@ -691,7 +691,23 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 
 	const { date, order_description_uuid } = req.query;
 
-	const CapacityQuery = sql`
+	const orderAllItemQuery = sql`
+		SELECT
+			vodf.item,
+			vodf.item_name,
+			vodf.nylon_stopper,
+			vodf.zipper_number,
+			vodf.zipper_number_name,
+			vodf.end_type,
+			vodf.end_type_name
+		FROM
+			zipper.v_order_details_full vodf
+		WHERE
+			vodf.order_description_uuid = ${order_description_uuid}
+	`;
+	try {
+		const [orderAllItemResult] = await db.execute(orderAllItemQuery);
+		const CapacityQuery = sql`
 		SELECT
 			item_properties.uuid AS item,
 			item_properties.name AS item_name,
@@ -714,105 +730,108 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 			public.properties zipper_number_properties ON production_capacity.zipper_number = zipper_number_properties.uuid
 		LEFT JOIN
 			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid
+		WHERE 
+			${orderAllItemResult.rows.length > 0 ? sql`item_properties.uuid = ${orderAllItemResult.rows.item}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`AND nylon_stopper_properties.uuid = ${orderAllItemResult.rows.nylon_stopper}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`AND zipper_number_properties.uuid = ${orderAllItemResult.rows.zipper_number}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`AND end_type_properties.uuid = ${orderAllItemResult.rows.end_type}` : sql`1=1`}
 		ORDER BY
 			item_description ASC
 	`;
 
-	const orderQuery = sql`
-	SELECT 
-		subquery.item,
-		subquery.item_name,
-        subquery.nylon_stopper,
-        subquery.zipper_number,
-		subquery.zipper_number_name,
-        subquery.end_type,
-		subquery.end_type_name,
-		subquery.production_date,
-		SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum,
-		subquery.order_numbers AS order_numbers,
-		subquery.batch_numbers AS batch_numbers
-			FROM (
-				SELECT 
-					vodf.item,
-					vodf.item_name,
-					vodf.nylon_stopper,
-					vodf.zipper_number,
-					vodf.zipper_number_name,
-					vodf.end_type,
-					vodf.end_type_name,
-					finishing_batch.production_date::date as production_date,
-					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
-					jsonb_agg(DISTINCT 
-						jsonb_build_object(
-							'batch_uuid', finishing_batch.uuid, 
-							'batch_number', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')), 
-							'order_description_uuid', vodf.order_description_uuid, 
-							'order_number', vodf.order_number,
-							'batch_quantity', fb_sum.batch_quantity::float8,
-							'production_quantity', coalesce(fbp.production_quantity, 0)::float8,
-							'balance_quantity', fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8
-						)
-					) AS batch_numbers,
-					jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_description_uuid, 'label', vodf.order_number)) AS order_numbers
-				FROM
-					zipper.finishing_batch
-				LEFT JOIN
-					zipper.v_order_details_full vodf ON vodf.order_description_uuid = finishing_batch.order_description_uuid
-				LEFT JOIN
-					public.production_capacity pc ON pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
-				LEFT JOIN
-					zipper.finishing_batch_entry ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
-				LEFT JOIN 
-					(
-						SELECT
-							finishing_batch_entry.finishing_batch_uuid,
-							SUM(finishing_batch_entry.quantity) as batch_quantity,
-							SUM(finishing_batch_entry.finishing_prod) as total_finishing_production_quantity
-						FROM
-							zipper.finishing_batch_entry
-						GROUP BY
-							finishing_batch_entry.finishing_batch_uuid
-					) fb_sum ON fb_sum.finishing_batch_uuid = finishing_batch.uuid
-				LEFT JOIN 
-					(
-						SELECT
-							finishing_batch_entry.finishing_batch_uuid,
-							SUM(fbp.production_quantity) as production_quantity
-						FROM
-							zipper.finishing_batch_production fbp
-						LEFT JOIN zipper.finishing_batch_entry ON finishing_batch_entry.uuid = fbp.finishing_batch_entry_uuid
-						WHERE fbp.section = 'finishing'
-						GROUP BY
-							finishing_batch_entry.finishing_batch_uuid
-					) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
-				WHERE
-					${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
-					${order_description_uuid ? sql`AND vodf.order_description_uuid = ${order_description_uuid}` : sql`1=1`}
-					AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
-				GROUP BY
-					vodf.item,
-					vodf.item_name,
-					vodf.nylon_stopper,
-					vodf.zipper_number,
-					vodf.zipper_number_name,
-					vodf.end_type,
-					vodf.end_type_name,
-					finishing_batch.production_date
-			) subquery
-            GROUP BY 
-				subquery.item,
-				subquery.item_name,
-				subquery.nylon_stopper,
-				subquery.zipper_number,
-				subquery.zipper_number_name,
-				subquery.end_type,
-				subquery.end_type_name,
-				subquery.production_date,
-				subquery.order_numbers,
-				subquery.batch_numbers
-	`;
+		const orderQuery = sql`
+		SELECT 
+			subquery.item,
+			subquery.item_name,
+			subquery.nylon_stopper,
+			subquery.zipper_number,
+			subquery.zipper_number_name,
+			subquery.end_type,
+			subquery.end_type_name,
+			subquery.production_date,
+			SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum,
+			subquery.order_numbers AS order_numbers,
+			subquery.batch_numbers AS batch_numbers
+				FROM (
+					SELECT 
+						vodf.item,
+						vodf.item_name,
+						vodf.nylon_stopper,
+						vodf.zipper_number,
+						vodf.zipper_number_name,
+						vodf.end_type,
+						vodf.end_type_name,
+						finishing_batch.production_date::date as production_date,
+						SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
+						jsonb_agg(DISTINCT 
+							jsonb_build_object(
+								'batch_uuid', finishing_batch.uuid, 
+								'batch_number', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')), 
+								'order_description_uuid', vodf.order_description_uuid, 
+								'order_number', vodf.order_number,
+								'batch_quantity', fb_sum.batch_quantity::float8,
+								'production_quantity', coalesce(fbp.production_quantity, 0)::float8,
+								'balance_quantity', fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8
+							)
+						) AS batch_numbers,
+						jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_description_uuid, 'label', vodf.order_number)) AS order_numbers
+					FROM
+						zipper.finishing_batch
+					LEFT JOIN
+						zipper.v_order_details_full vodf ON vodf.order_description_uuid = finishing_batch.order_description_uuid
+					LEFT JOIN
+						public.production_capacity pc ON pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
+					LEFT JOIN
+						zipper.finishing_batch_entry ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
+					LEFT JOIN 
+						(
+							SELECT
+								finishing_batch_entry.finishing_batch_uuid,
+								SUM(finishing_batch_entry.quantity) as batch_quantity,
+								SUM(finishing_batch_entry.finishing_prod) as total_finishing_production_quantity
+							FROM
+								zipper.finishing_batch_entry
+							GROUP BY
+								finishing_batch_entry.finishing_batch_uuid
+						) fb_sum ON fb_sum.finishing_batch_uuid = finishing_batch.uuid
+					LEFT JOIN 
+						(
+							SELECT
+								finishing_batch_entry.finishing_batch_uuid,
+								SUM(fbp.production_quantity) as production_quantity
+							FROM
+								zipper.finishing_batch_production fbp
+							LEFT JOIN zipper.finishing_batch_entry ON finishing_batch_entry.uuid = fbp.finishing_batch_entry_uuid
+							WHERE fbp.section = 'finishing'
+							GROUP BY
+								finishing_batch_entry.finishing_batch_uuid
+						) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
+					WHERE
+						${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
+						AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
+					GROUP BY
+						vodf.item,
+						vodf.item_name,
+						vodf.nylon_stopper,
+						vodf.zipper_number,
+						vodf.zipper_number_name,
+						vodf.end_type,
+						vodf.end_type_name,
+						finishing_batch.production_date
+				) subquery
+				GROUP BY 
+					subquery.item,
+					subquery.item_name,
+					subquery.nylon_stopper,
+					subquery.zipper_number,
+					subquery.zipper_number_name,
+					subquery.end_type,
+					subquery.end_type_name,
+					subquery.production_date,
+					subquery.order_numbers,
+					subquery.batch_numbers
+		`;
 
-	try {
 		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
 		const dataResult = await db.execute(orderQuery); // Fetch main query results
 
