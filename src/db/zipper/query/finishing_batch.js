@@ -426,7 +426,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 							finishing_batch_entry.finishing_batch_uuid
 					) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
 				WHERE
-					DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+					${from_date && to_date ? sql`DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 					AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
 				GROUP BY
 					vodf.item,
@@ -691,53 +691,279 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 
 	const { date, order_description_uuid } = req.query;
 
-	const query = sql`
-							SELECT
-								finishing_batch.uuid as batch_uuid, 
-								CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')) as batch_number,
-								finishing_batch.production_date::date as production_date, 
-								vodf.order_description_uuid, 
-								vodf.order_number,
-								fb_sum.batch_quantity::float8 as batch_quantity,
-								coalesce(fbp.production_quantity, 0)::float8 as production_quantity,
-								fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 as balance_quantity
-							FROM
-								zipper.finishing_batch
-							LEFT JOIN
-								zipper.v_order_details_full vodf ON vodf.order_description_uuid = finishing_batch.order_description_uuid
-							LEFT JOIN 
-								(
-									SELECT
-										finishing_batch_entry.finishing_batch_uuid,
-										SUM(finishing_batch_entry.quantity) as batch_quantity,
-										SUM(finishing_batch_entry.finishing_prod) as total_finishing_production_quantity
-									FROM
-										zipper.finishing_batch_entry
-									GROUP BY
-										finishing_batch_entry.finishing_batch_uuid
-								) fb_sum ON fb_sum.finishing_batch_uuid = finishing_batch.uuid
-							LEFT JOIN 
-								(
-									SELECT
-										finishing_batch_entry.finishing_batch_uuid,
-										SUM(fbp.production_quantity) as production_quantity
-									FROM
-										zipper.finishing_batch_production fbp
-									LEFT JOIN zipper.finishing_batch_entry ON finishing_batch_entry.uuid = fbp.finishing_batch_entry_uuid
-									WHERE fbp.section = 'finishing'
-									GROUP BY
-										finishing_batch_entry.finishing_batch_uuid
-								) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
-							WHERE
-								${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
-								${order_description_uuid ? sql`AND finishing_batch.order_description_uuid = ${order_description_uuid}` : sql``}
-								AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
-							`;
+	const CapacityQuery = sql`
+		SELECT
+			item_properties.uuid AS item,
+			item_properties.name AS item_name,
+			nylon_stopper_properties.uuid AS nylon_stopper,
+			nylon_stopper_properties.name AS nylon_stopper_name,
+			zipper_number_properties.uuid AS zipper_number,
+			zipper_number_properties.name AS zipper_number_name,
+			end_type_properties.uuid AS end_type,
+			end_type_properties.name AS end_type_name,
+			production_capacity.quantity::float8 AS production_capacity_quantity,
+			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name) AS item_description,
+			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name,' (', production_capacity.quantity::float8, ')') AS item_description_quantity
+		FROM
+			public.production_capacity
+		LEFT JOIN
+			public.properties item_properties ON production_capacity.item = item_properties.uuid
+		LEFT JOIN
+			public.properties nylon_stopper_properties ON production_capacity.nylon_stopper = nylon_stopper_properties.uuid
+		LEFT JOIN
+			public.properties zipper_number_properties ON production_capacity.zipper_number = zipper_number_properties.uuid
+		LEFT JOIN
+			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid
+		ORDER BY
+			item_description ASC
+	`;
 
-	const resultPromise = db.execute(query);
+	const orderQuery = sql`
+	SELECT 
+		subquery.item,
+		subquery.item_name,
+        subquery.nylon_stopper,
+        subquery.zipper_number,
+		subquery.zipper_number_name,
+        subquery.end_type,
+		subquery.end_type_name,
+		subquery.production_date,
+		SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum,
+		subquery.order_numbers AS order_numbers,
+		subquery.batch_numbers AS batch_numbers
+			FROM (
+				SELECT 
+					vodf.item,
+					vodf.item_name,
+					vodf.nylon_stopper,
+					vodf.zipper_number,
+					vodf.zipper_number_name,
+					vodf.end_type,
+					vodf.end_type_name,
+					finishing_batch.production_date::date as production_date,
+					SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
+					jsonb_agg(DISTINCT 
+						jsonb_build_object(
+							'batch_uuid', finishing_batch.uuid, 
+							'batch_number', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')), 
+							'order_description_uuid', vodf.order_description_uuid, 
+							'order_number', vodf.order_number,
+							'batch_quantity', fb_sum.batch_quantity::float8,
+							'production_quantity', coalesce(fbp.production_quantity, 0)::float8,
+							'balance_quantity', fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8
+						)
+					) AS batch_numbers,
+					jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_description_uuid, 'label', vodf.order_number)) AS order_numbers
+				FROM
+					zipper.finishing_batch
+				LEFT JOIN
+					zipper.v_order_details_full vodf ON vodf.order_description_uuid = finishing_batch.order_description_uuid
+				LEFT JOIN
+					public.production_capacity pc ON pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
+				LEFT JOIN
+					zipper.finishing_batch_entry ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
+				LEFT JOIN 
+					(
+						SELECT
+							finishing_batch_entry.finishing_batch_uuid,
+							SUM(finishing_batch_entry.quantity) as batch_quantity,
+							SUM(finishing_batch_entry.finishing_prod) as total_finishing_production_quantity
+						FROM
+							zipper.finishing_batch_entry
+						GROUP BY
+							finishing_batch_entry.finishing_batch_uuid
+					) fb_sum ON fb_sum.finishing_batch_uuid = finishing_batch.uuid
+				LEFT JOIN 
+					(
+						SELECT
+							finishing_batch_entry.finishing_batch_uuid,
+							SUM(fbp.production_quantity) as production_quantity
+						FROM
+							zipper.finishing_batch_production fbp
+						LEFT JOIN zipper.finishing_batch_entry ON finishing_batch_entry.uuid = fbp.finishing_batch_entry_uuid
+						WHERE fbp.section = 'finishing'
+						GROUP BY
+							finishing_batch_entry.finishing_batch_uuid
+					) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
+				WHERE
+					${date ? sql`DATE(finishing_batch.production_date) BETWEEN ${date}` : sql`1=1`}
+					${order_description_uuid ? sql`AND vodf.order_description_uuid = ${order_description_uuid}` : sql`1=1`}
+					AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
+				GROUP BY
+					vodf.item,
+					vodf.item_name,
+					vodf.nylon_stopper,
+					vodf.zipper_number,
+					vodf.zipper_number_name,
+					vodf.end_type,
+					vodf.end_type_name,
+					finishing_batch.production_date
+			) subquery
+            GROUP BY 
+				subquery.item,
+				subquery.item_name,
+				subquery.nylon_stopper,
+				subquery.zipper_number,
+				subquery.zipper_number_name,
+				subquery.end_type,
+				subquery.end_type_name,
+				subquery.production_date,
+				subquery.order_numbers,
+				subquery.batch_numbers
+	`;
 
 	try {
-		const data = await resultPromise;
+		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
+		const dataResult = await db.execute(orderQuery); // Fetch main query results
+
+		const dateWiseData = {};
+
+		dataResult.rows.forEach((dataRow) => {
+			const productionDate = dataRow.production_date.split(' ')[0];
+			if (!dateWiseData[productionDate]) {
+				dateWiseData[productionDate] = [];
+			}
+			dateWiseData[productionDate].push(dataRow);
+		});
+
+		const zipperNumberUUID = capacityQueryResult.rows.find(
+			(row) => row.zipper_number_name === '3'
+		).zipper_number;
+
+		const formattedData = capacityQueryResult.rows.reduce(
+			(acc, capacityRow) => {
+				const matchingDataRows = Object.keys(dateWiseData).reduce(
+					(innerAcc, date) => {
+						const filteredRows = dateWiseData[date].filter(
+							(dataRow) => {
+								const itemName =
+									dataRow.item_name.toLowerCase();
+								const endTypeName =
+									dataRow.end_type_name.toLowerCase();
+								const zipperNumberName =
+									dataRow.zipper_number_name.toLowerCase();
+
+								if (
+									itemName === 'metal' &&
+									endTypeName === 'close end' &&
+									zipperNumberName === '4.5'
+								) {
+									return (
+										dataRow.item === capacityRow.item &&
+										dataRow.end_type ===
+											capacityRow.end_type &&
+										capacityRow.zipper_number ===
+											zipperNumberUUID
+									);
+								} else {
+									// Default matching criteria
+									return (
+										dataRow.item === capacityRow.item &&
+										dataRow.nylon_stopper ===
+											capacityRow.nylon_stopper &&
+										dataRow.zipper_number ===
+											capacityRow.zipper_number &&
+										dataRow.end_type ===
+											capacityRow.end_type
+									);
+								}
+							}
+						);
+						return innerAcc.concat(filteredRows);
+					},
+					[]
+				);
+
+				const formattedRows = matchingDataRows.map(
+					(matchingDataRow) => ({
+						item_description_quantity:
+							capacityRow.item_description_quantity,
+						item_description: capacityRow.item_description,
+						production_capacity_quantity:
+							capacityRow.production_capacity_quantity,
+						production_date:
+							matchingDataRow.production_date.split(' ')[0],
+						production_quantity:
+							matchingDataRow.total_batch_quantity_sum,
+						order_numbers: matchingDataRow.order_numbers,
+						batch_numbers: matchingDataRow.batch_numbers,
+						order_description_uuid:
+							matchingDataRow.order_description_uuid,
+						finishing_batch_uuid:
+							matchingDataRow.finishing_batch_uuid,
+					})
+				);
+
+				return acc.concat(formattedRows);
+			},
+			[]
+		);
+
+		const dateRange = [];
+		let currentDate = new Date(from_date);
+		const endDate = new Date(to_date);
+
+		while (currentDate <= endDate) {
+			dateRange.push(currentDate.toISOString().split('T')[0]);
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
+
+		const groupedData = dateRange.reduce((acc, date) => {
+			acc[date] = (
+				formattedData.filter((item) => item.production_date === date) ||
+				[]
+			).map((item) => ({
+				...item,
+				production_date: date,
+				production_quantity: item.production_quantity,
+			}));
+
+			// Add items with zero production quantity if they are not present for the current date
+			capacityQueryResult.rows.forEach((capacityRow) => {
+				const itemDescription = capacityRow.item_description;
+				if (
+					!acc[date].some(
+						(d) => d.item_description === itemDescription
+					)
+				) {
+					acc[date].push({
+						production_capacity_quantity:
+							capacityRow.production_capacity_quantity,
+						item_description: itemDescription,
+						item_description_quantity:
+							capacityRow.item_description_quantity,
+						production_date: date,
+						production_quantity: 0,
+						order_numbers: [],
+						batch_numbers: [],
+						order_description_uuid: null,
+						finishing_batch_uuid: null,
+					});
+				}
+			});
+
+			// Sort the data based on the order of capacityQueryResult's item_description_quantity
+			acc[date].sort((a, b) => {
+				const aIndex = capacityQueryResult.rows.findIndex(
+					(row) =>
+						row.item_description_quantity ===
+						a.item_description_quantity
+				);
+				const bIndex = capacityQueryResult.rows.findIndex(
+					(row) =>
+						row.item_description_quantity ===
+						b.item_description_quantity
+				);
+				return aIndex - bIndex;
+			});
+
+			return acc;
+		}, {});
+
+		const response = Object.keys(groupedData).map((date) => ({
+			production_date: date,
+			data: groupedData[date],
+		}));
 
 		const toast = {
 			status: 200,
@@ -745,7 +971,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 			message: 'production_plan',
 		};
 
-		res.status(200).json({ toast, data: data?.rows });
+		res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}
