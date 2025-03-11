@@ -1,4 +1,4 @@
-import { asc, desc, eq, sql, sum } from 'drizzle-orm';
+import { asc, desc, eq, sql, sum, or } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as deliverySchema from '../../delivery/schema.js';
@@ -121,6 +121,7 @@ export async function select(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { order_entry_uuid } = req.query;
 	const orderEntryLogPromise = db
 		.select({
 			id: order_entry_log.id,
@@ -141,6 +142,15 @@ export async function selectAll(req, res, next) {
 			hrSchema.users,
 			eq(order_entry_log.created_by, hrSchema.users.uuid)
 		);
+
+	if (order_entry_uuid) {
+		orderEntryLogPromise.where(
+			or(
+				eq(order_entry_log.order_entry_uuid, order_entry_uuid),
+				eq(order_entry_log.thread_order_entry_uuid, order_entry_uuid)
+			)
+		);
+	}
 
 	try {
 		const data = await orderEntryLogPromise;

@@ -4245,7 +4245,11 @@ export const pathOrderEntryLog = {
 		get: {
 			tags: ['zipper.order_entry_log'],
 			summary: 'Get all Order Entry Log',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('order_entry_uuid', 'order_entry_uuid', [
+					'igD0v9DIJQhJeet',
+				]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					id: SE.number(1),
