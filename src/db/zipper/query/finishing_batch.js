@@ -731,10 +731,10 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 		LEFT JOIN
 			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid
 		WHERE 
-			${orderAllItemResult.rows.length > 0 ? sql`item_properties.uuid = ANY(ARRAY[${orderAllItemResult.rows.map((row) => row.item)}])` : sql`1=1`}
-			${orderAllItemResult.rows.length > 0 ? sql`AND nylon_stopper_properties.uuid = ANY(ARRAY[${orderAllItemResult.rows.map((row) => row.nylon_stopper)}])` : sql`1=1`}
-			${orderAllItemResult.rows.length > 0 ? sql`AND zipper_number_properties.uuid = ANY(ARRAY[${orderAllItemResult.rows.map((row) => row.zipper_number)}])` : sql`1=1`}
-			${orderAllItemResult.rows.length > 0 ? sql`AND end_type_properties.uuid = ANY(ARRAY[${orderAllItemResult.rows.map((row) => row.end_type)}])` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`item_properties.uuid = ${orderAllItemResult.rows.item}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`AND nylon_stopper_properties.uuid = ${orderAllItemResult.rows.nylon_stopper}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`AND zipper_number_properties.uuid = ${orderAllItemResult.rows.zipper_number}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`AND end_type_properties.uuid = ${orderAllItemResult.rows.end_type}` : sql`1=1`}
 		ORDER BY
 			item_description ASC
 	`;
