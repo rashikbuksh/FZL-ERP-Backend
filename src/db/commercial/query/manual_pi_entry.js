@@ -84,7 +84,7 @@ export async function selectAll(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
-			value: sql` coalesce(manual_pi_entry.unit_price,0)::float8 / 12 * coalesce(manual_pi_entry.quantity,0)::float8 `,
+			value: sql` ROUND(coalesce(manual_pi_entry.unit_price,0)::numeric / 12 * coalesce(manual_pi_entry.quantity,0)::numeric, 4) `,
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
@@ -121,7 +121,7 @@ export async function select(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
-			value: sql` coalesce(manual_pi_entry.unit_price,0)::float8 / 12 * coalesce(manual_pi_entry.quantity,0)::float8 `,
+			value: sql` ROUND(coalesce(manual_pi_entry.unit_price,0)::numeric / 12 * coalesce(manual_pi_entry.quantity,0)::numeric, 4) `,
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
@@ -158,14 +158,15 @@ export async function selectByManualPiUuid(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
-			value: sql` coalesce(manual_pi_entry.unit_price,0)::float8 / 12 * coalesce(manual_pi_entry.quantity,0)::float8 `,
+			value: sql` ROUND(coalesce(manual_pi_entry.unit_price,0)::numeric / 12 * coalesce(manual_pi_entry.quantity,0)::numeric, 4) `,
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
 			remarks: manual_pi_entry.remarks,
 		})
 		.from(manual_pi_entry)
-		.where(eq(manual_pi_entry.manual_pi_uuid, req.params.manual_pi_uuid));
+		.where(eq(manual_pi_entry.manual_pi_uuid, req.params.manual_pi_uuid))
+		.orderBy(asc(manual_pi_entry.order_number));
 
 	try {
 		const data = await manualPiEntryPromise;
