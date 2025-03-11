@@ -3964,6 +3964,31 @@ export const pathZipperFinishingBatch = {
 			},
 		},
 	},
+	'/zipper/finishing-batch-planning-info': {
+		get: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'Get all Finishing Batch Planning Info',
+			parameters: [
+				SE.parameter_query('date', 'date', ['2024-01-01']),
+				SE.parameter_query(
+					'order_description_uuid',
+					'order_description_uuid',
+					['igD0v9DIJQhJeet']
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					batch_uuid: SE.uuid(),
+					production_date: SE.date_time(),
+					order_description_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0001'),
+					batch_quantity: SE.number(100),
+					production_quantity: SE.number(100),
+					balance_quantity: SE.number(100),
+				}),
+			},
+		},
+	},
 };
 
 // * Zipper Finishing Batch Entry * //

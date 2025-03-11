@@ -681,3 +681,72 @@ export async function getDailyProductionPlan(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function getPlanningInfoFromDateAndOrderDescription(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { date, order_description_uuid } = req.query;
+
+	const query = sql`
+							SELECT
+								finishing_batch.uuid as batch_uuid, 
+								CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')) as batch_number,
+								finishing_batch.production_date::date as production_date, 
+								vodf.order_description_uuid, 
+								vodf.order_number,
+								fb_sum.batch_quantity::float8 as batch_quantity,
+								coalesce(fbp.production_quantity, 0)::float8 as production_quantity,
+								fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 as balance_quantity
+							FROM
+								zipper.finishing_batch
+							LEFT JOIN
+								zipper.v_order_details_full vodf ON vodf.order_description_uuid = finishing_batch.order_description_uuid
+							LEFT JOIN 
+								(
+									SELECT
+										finishing_batch_entry.finishing_batch_uuid,
+										SUM(finishing_batch_entry.quantity) as batch_quantity,
+										SUM(finishing_batch_entry.finishing_prod) as total_finishing_production_quantity
+									FROM
+										zipper.finishing_batch_entry
+									GROUP BY
+										finishing_batch_entry.finishing_batch_uuid
+								) fb_sum ON fb_sum.finishing_batch_uuid = finishing_batch.uuid
+							LEFT JOIN 
+								(
+									SELECT
+										finishing_batch_entry.finishing_batch_uuid,
+										SUM(fbp.production_quantity) as production_quantity
+									FROM
+										zipper.finishing_batch_production fbp
+									LEFT JOIN zipper.finishing_batch_entry ON finishing_batch_entry.uuid = fbp.finishing_batch_entry_uuid
+									WHERE fbp.section = 'finishing'
+									GROUP BY
+										finishing_batch_entry.finishing_batch_uuid
+								) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
+							WHERE
+								${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
+								${order_description_uuid ? sql`AND finishing_batch.order_description_uuid = ${order_description_uuid}` : sql``}
+								AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
+							`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'production_plan',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

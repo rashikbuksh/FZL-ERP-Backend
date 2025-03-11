@@ -499,6 +499,10 @@ zipperRouter.get(
 	'/daily-production-plan',
 	finishingBatchOperations.getDailyProductionPlan
 );
+zipperRouter.get(
+	'/finishing-batch-planning-info',
+	finishingBatchOperations.getPlanningInfoFromDateAndOrderDescription
+);
 
 // --------------------- FINISHING BATCH ENTRY ROUTES ---------------------
 
