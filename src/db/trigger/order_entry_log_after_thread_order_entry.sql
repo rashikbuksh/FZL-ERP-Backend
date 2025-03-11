@@ -11,7 +11,7 @@ BEGIN
         OLD.created_at IS DISTINCT FROM NEW.created_at) THEN
 
         INSERT INTO zipper.order_entry_log (
-            order_entry_uuid, 
+            thread_order_entry_uuid, 
             style, 
             color,  
             quantity, 
