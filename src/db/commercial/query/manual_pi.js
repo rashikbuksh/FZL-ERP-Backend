@@ -147,7 +147,10 @@ export async function selectAll(req, res, next) {
 										commercial.pi_cash cpc
 								) AS pi_cash_id ON pi_cash_id.uuid = ANY(cmp.pi_uuids)
 						LEFT JOIN (
-							SELECT cmpe.manual_pi_uuid, SUM(CASE WHEN cmpe.is_zipper = true THEN (cmpe.unit_price/12)*cmpe.quantity::float8 ELSE (cmpe.unit_price*cmpe.quantity::float8) END) AS total_value, jsonb_agg(DISTINCT order_number) AS order_number
+							SELECT 
+							 cmpe.manual_pi_uuid,
+							 SUM(CASE WHEN cmpe.is_zipper = true THEN (cmpe.unit_price/12)*cmpe.quantity::float8 ELSE (cmpe.unit_price*cmpe.quantity::float8) END) AS total_value,
+							 jsonb_agg(jsonb_build_object('uuid', cmpe.uuid, 'order_number', cmpe.order_number)) AS order_number
 							FROM commercial.manual_pi_entry cmpe
 							GROUP BY cmpe.manual_pi_uuid
 						) AS cmpe_total_value ON cmpe_total_value.manual_pi_uuid = cmp.uuid
