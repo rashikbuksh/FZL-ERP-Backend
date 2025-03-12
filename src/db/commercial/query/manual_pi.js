@@ -298,11 +298,21 @@ export async function selectManualPiByManualPiUuid(req, res, next) {
 
 		const manual_zipper_pi_entry = manual_pi_entry?.data?.data
 			.filter((e) => e.is_zipper === true)
-			.sort((a, b) => a.item - b.item);
+			.sort((a, b) => {
+				console.log(a, b);
+
+				if (a.item < b.item) return -1;
+				if (a.item > b.item) return 1;
+				return 0;
+			});
 
 		const manual_thread_pi_entry = manual_pi_entry?.data?.data
 			.filter((e) => e.is_zipper === false)
-			.sort((a, b) => a.order_number - b.order_number);
+			.sort((a, b) => {
+				if (a.order_number < b.order_number) return -1;
+				if (a.order_number > b.order_number) return 1;
+				return 0;
+			});
 
 		const response = {
 			...manual_pi?.data?.data,
