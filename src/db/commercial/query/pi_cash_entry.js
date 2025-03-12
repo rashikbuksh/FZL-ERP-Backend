@@ -140,7 +140,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 	                pe.uuid as uuid,
                     pe.pi_cash_uuid as pi_cash_uuid,
 					pe.pi_cash_quantity::float8 as pi_cash_quantity,
-					ROUND(pe.pi_cash_quantity / 12, 2)::float8 as pi_cash_quantity_dzn,
+					(pe.pi_cash_quantity / 12)::float8 as pi_cash_quantity_dzn,
 					pe.created_at as created_at,
 	                pe.updated_at as updated_at,
 					CASE WHEN pe.thread_order_entry_uuid IS NOT NULL THEN true ELSE false END as is_thread_order,
@@ -189,7 +189,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							CASE 
 								WHEN vodf.order_type = 'tape' 
 								THEN oe.company_price::float8 
-								ELSE ROUND(oe.company_price/12,2)::float8 
+								ELSE (oe.company_price/12)::float8 
 							END
 						ELSE toe.company_price::float8 
 					END as company_price_pcs,
@@ -199,9 +199,9 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							CASE 
 								WHEN vodf.order_type = 'tape' 
 								THEN oe.size::float8 * (oe.company_price::float8)::float8 
-								ELSE ROUND(pe.pi_cash_quantity * oe.company_price/12, 2)::float8 
+								ELSE (pe.pi_cash_quantity * oe.company_price/12)::float8 
 							END
-						ELSE ROUND(pe.pi_cash_quantity * toe.company_price, 2)::float8 
+						ELSE (pe.pi_cash_quantity * toe.company_price)::float8 
 					END as company_value,
 					CASE WHEN pe.thread_order_entry_uuid IS NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as unit_price,
 					CASE 
@@ -210,7 +210,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							CASE 
 								WHEN vodf.order_type = 'tape' 
 								THEN oe.party_price::float8 
-								ELSE ROUND(oe.party_price/12,2)::float8 
+								ELSE (oe.party_price/12)::float8 
 							END
 						ELSE toe.party_price::float8 
 					END as unit_price_pcs,
@@ -221,9 +221,9 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							CASE 
 								WHEN vodf.order_type = 'tape' 
 								THEN oe.size::float8 * (oe.party_price::float8)::float8 
-								ELSE ROUND(pe.pi_cash_quantity * oe.party_price/12, 2)::float8 
+								ELSE ROUND(pe.pi_cash_quantity * oe.party_price/12, 4)::float8 
 							END
-						ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 2)::float8 
+						ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 4)::float8 
 					END as value,
 					CASE 
 						WHEN pe.thread_order_entry_uuid IS NULL 
@@ -231,9 +231,9 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 							CASE 
 								WHEN vodf.order_type = 'tape'
 								THEN oe.size::float8 * (oe.party_price::float8)::float8
-								ELSE ROUND(pe.pi_cash_quantity/12 * oe.party_price, 2)::float8
+								ELSE ROUND(pe.pi_cash_quantity/12 * oe.party_price, 4)::float8
 							END
-						ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 2)::float8 
+						ELSE ROUND(pe.pi_cash_quantity * toe.party_price, 4)::float8 
 					END as value_dzn,
 					CASE 
 						WHEN vodf.order_type = 'tape'
