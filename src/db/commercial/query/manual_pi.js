@@ -302,7 +302,8 @@ export async function selectManualPiByManualPiUuid(req, res, next) {
 
 		const manual_thread_pi_entry = manual_pi_entry?.data?.data
 			.filter((e) => e.is_zipper === false)
-			.sort((a, b) => a.order_number.localeCompare(b.order_number));
+			.sort((a, b) => a.order_number.localeCompare(b.order_number))
+			.sort((a, b) => a.size.localeCompare(b.size));
 
 		const response = {
 			...manual_pi?.data?.data,
