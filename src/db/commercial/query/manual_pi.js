@@ -153,20 +153,8 @@ export async function selectAll(req, res, next) {
 											WHEN cmpe.is_zipper = true THEN (cmpe.unit_price / 12) * cmpe.quantity::float8 
 											ELSE (cmpe.unit_price * cmpe.quantity::float8) 
 										END) AS total_value,
-										jsonb_agg(DISTINCT jsonb_build_object('uuid', order_info.order_info_uuid, 'order_number', cmpe.order_number)) AS order_number
+										jsonb_agg(DISTINCT jsonb_build_object('order_number', cmpe.order_number)) AS order_number
 									FROM commercial.manual_pi_entry cmpe
-									LEFT JOIN LATERAL (
-													SELECT
-														oi.uuid AS order_info_uuid
-													FROM (
-														SELECT uuid, created_at, id FROM zipper.order_info WHERE LEFT(cmpe.order_number, 1) = 'Z'
-														UNION ALL
-														SELECT uuid, created_at, id FROM thread.order_info WHERE LEFT(cmpe.order_number, 1) = 'T'
-													) AS oi
-													WHERE
-														to_char(oi.created_at, 'YY') = SUBSTRING(cmpe.order_number, 2, 2)
-														AND LPAD(oi.id::text, 4, '0') = RIGHT(cmpe.order_number, 4)
-												) AS order_info ON true
 									GROUP BY cmpe.manual_pi_uuid
 								) AS cmpe_total_value ON cmpe_total_value.manual_pi_uuid = cmp.uuid
 						WHERE
