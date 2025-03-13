@@ -132,6 +132,7 @@ export const defThreadOrderEntry = {
 		production_quantity_in_kg: SE.number(10),
 		carton_quantity: SE.number(10),
 		index: SE.integer(1),
+		damage_quantity: SE.number(10),
 	},
 	xml: {
 		name: 'Thread/OrderEntry',

@@ -749,9 +749,12 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 						fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0 
 						AND ${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
 						AND vodf.item = ${orderAllItemResult.rows[0].item}
-						AND vodf.nylon_stopper = ${orderAllItemResult.rows[0].nylon_stopper}
 						AND vodf.zipper_number = ${orderAllItemResult.rows[0].zipper_number}
 						AND vodf.end_type = ${orderAllItemResult.rows[0].end_type}
+						AND (
+							lower(vodf.item_name) != 'nylon'
+							OR vodf.nylon_stopper = ${orderAllItemResult.rows[0].nylon_stopper}
+						)
 		`;
 
 		// const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results

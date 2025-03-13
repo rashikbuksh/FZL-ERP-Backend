@@ -124,6 +124,7 @@ export async function selectAll(req, res, next) {
 			),
 			carton_quantity: order_entry.carton_quantity,
 			index: order_entry.index,
+			damage_quantity: decimalToNumber(order_entry.damage_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -194,6 +195,7 @@ export async function select(req, res, next) {
 			),
 			carton_quantity: order_entry.carton_quantity,
 			index: order_entry.index,
+			damage_quantity: decimalToNumber(order_entry.damage_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -268,6 +270,7 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			),
 			carton_quantity: order_entry.carton_quantity,
 			index: order_entry.index,
+			damage_quantity: decimalToNumber(order_entry.damage_quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
