@@ -200,7 +200,7 @@ export async function selectSwatchInfo(req, res, next) {
 					LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
 				WHERE 
 					od.order_type != 'slider' 
-					AND vodf.is_cancelled = FALSE
+					AND vod.is_cancelled = FALSE
 					${
 						type === 'pending'
 							? sql`AND sfg.recipe_uuid IS NULL`
