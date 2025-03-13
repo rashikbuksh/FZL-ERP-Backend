@@ -379,7 +379,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
         WHERE
 			vodf.tape_coil_uuid IS NOT NULL AND 
 				sfg.recipe_uuid IS NOT NULL AND 
-				sfg.is_cancelled = FALSE 
+				vodf.is_cancelled = FALSE 
 				${
 					batch_type == 'extra'
 						? sql``
