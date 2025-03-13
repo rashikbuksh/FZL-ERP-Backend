@@ -706,9 +706,9 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 			vodf.order_description_uuid = ${order_description_uuid}
 	`;
 	try {
-		const [orderAllItemResult] = await db.execute(orderAllItemQuery);
+		const orderAllItemResult = await db.execute(orderAllItemQuery);
 
-		console.log(orderAllItemResult, 'orderAllItemResult');
+		// console.log(orderAllItemResult, 'orderAllItemResult');
 
 		const CapacityQuery = sql`
 		SELECT
@@ -734,10 +734,10 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 		LEFT JOIN
 			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid
 		WHERE 
-			${orderAllItemResult.rows.length > 0 ? sql`item_properties.uuid = ${orderAllItemResult.rows.item}` : sql`1=1`}
-			${orderAllItemResult.rows.length > 0 ? sql`AND nylon_stopper_properties.uuid = ${orderAllItemResult.rows.nylon_stopper}` : sql`1=1`}
-			${orderAllItemResult.rows.length > 0 ? sql`AND zipper_number_properties.uuid = ${orderAllItemResult.rows.zipper_number}` : sql`1=1`}
-			${orderAllItemResult.rows.length > 0 ? sql`AND end_type_properties.uuid = ${orderAllItemResult.rows.end_type}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`item_properties.uuid = ${orderAllItemResult.rows[0].item}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`AND nylon_stopper_properties.uuid = ${orderAllItemResult.rows[0].nylon_stopper}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`AND zipper_number_properties.uuid = ${orderAllItemResult.rows[0].zipper_number}` : sql`1=1`}
+			${orderAllItemResult.rows.length > 0 ? sql`AND end_type_properties.uuid = ${orderAllItemResult.rows[0].end_type}` : sql`1=1`}
 		ORDER BY
 			item_description ASC
 	`;
@@ -810,8 +810,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 								finishing_batch_entry.finishing_batch_uuid
 						) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
 					WHERE
-						${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
-						AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
+						fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0 AND ${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
 					GROUP BY
 						vodf.item,
 						vodf.item_name,
@@ -848,9 +847,13 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 			dateWiseData[productionDate].push(dataRow);
 		});
 
-		const zipperNumberUUID = capacityQueryResult.rows.find(
+		const zipperNumberRow = capacityQueryResult.rows.find(
 			(row) => row.zipper_number_name === '3'
-		).zipper_number;
+		);
+
+		const zipperNumberUUID = zipperNumberRow
+			? zipperNumberRow.zipper_number
+			: null;
 
 		const formattedData = capacityQueryResult.rows.reduce(
 			(acc, capacityRow) => {
