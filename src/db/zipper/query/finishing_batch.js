@@ -747,7 +747,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 						fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0 
 						AND ${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
 						AND ${orderAllItemResult.rows[0].item ? sql`vodf.item = ${orderAllItemResult.rows[0].item}` : sql`1=1`}
-						AND ${orderAllItemResult.rows[0].item.toLowerCase() === 'metal' && (orderAllItemResult.rows[0].zipper_number_name === '3' || orderAllItemResult.rows[0].zipper_number_name === '4.5') ? sql`vodf.zipper_number_name = 3 OR vodf.zipper_number = 4.5` : orderAllItemResult.rows[0].zipper_number_name ? sql`vodf.zipper_number = ${orderAllItemResult.rows[0].zipper_number}` : sql`1=1`}
+						AND ${orderAllItemResult.rows[0].item.toLowerCase() === 'metal' && (orderAllItemResult.rows[0].zipper_number_name === '3' || orderAllItemResult.rows[0].zipper_number_name === '4.5') ? sql`vodf.zipper_number_name = 3 OR vodf.zipper_number_name = 4.5` : orderAllItemResult.rows[0].zipper_number_name ? sql`vodf.zipper_number = ${orderAllItemResult.rows[0].zipper_number}` : sql`1=1`}
 						AND ${orderAllItemResult.rows[0].end_type ? sql`vodf.end_type = ${orderAllItemResult.rows[0].end_type}` : sql`1=1`}
 						AND ${orderAllItemResult.rows[0].nylon_stopper ? sql`vodf.nylon_stopper = ${orderAllItemResult.rows[0].nylon_stopper}` : sql`1=1`}
 		`;
