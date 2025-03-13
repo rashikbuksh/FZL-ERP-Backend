@@ -711,29 +711,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 		// console.log(orderAllItemResult, 'orderAllItemResult');
 
 		const orderQuery = sql`
-		SELECT 
-			subquery.item,
-			subquery.item_name,
-			subquery.nylon_stopper,
-			subquery.zipper_number,
-			subquery.zipper_number_name,
-			subquery.end_type,
-			subquery.end_type_name,
-			subquery.production_date,
-			SUM(subquery.total_batch_quantity)::float8 AS total_batch_quantity_sum,
-			subquery.order_numbers AS order_numbers,
-			subquery.batch_numbers AS batch_numbers
-				FROM (
 					SELECT 
-						vodf.item,
-						vodf.item_name,
-						vodf.nylon_stopper,
-						vodf.zipper_number,
-						vodf.zipper_number_name,
-						vodf.end_type,
-						vodf.end_type_name,
-						finishing_batch.production_date::date as production_date,
-						SUM(finishing_batch_entry.quantity) AS total_batch_quantity,
 						jsonb_agg(DISTINCT 
 							jsonb_build_object(
 								'batch_uuid', finishing_batch.uuid, 
@@ -744,8 +722,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 								'production_quantity', coalesce(fbp.production_quantity, 0)::float8,
 								'balance_quantity', fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8
 							)
-						) AS batch_numbers,
-						jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_description_uuid, 'label', vodf.order_number)) AS order_numbers
+						) AS batch_numbers
 					FROM
 						zipper.finishing_batch
 					LEFT JOIN
@@ -793,18 +770,6 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 						vodf.end_type,
 						vodf.end_type_name,
 						finishing_batch.production_date
-				) subquery
-				GROUP BY 
-					subquery.item,
-					subquery.item_name,
-					subquery.nylon_stopper,
-					subquery.zipper_number,
-					subquery.zipper_number_name,
-					subquery.end_type,
-					subquery.end_type_name,
-					subquery.production_date,
-					subquery.order_numbers,
-					subquery.batch_numbers
 		`;
 
 		// const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
@@ -816,7 +781,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 			message: 'production_plan',
 		};
 
-		res.status(200).json({ toast, data: dataResult });
+		res.status(200).json({ toast, data: dataResult.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
