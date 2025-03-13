@@ -3,11 +3,10 @@ import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import * as viewSchema from '../../view/schema.js';
-import { finishing_batch, order_description } from '../schema.js';
+import { finishing_batch } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -712,17 +711,13 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 
 		const orderQuery = sql`
 					SELECT 
-						jsonb_agg(DISTINCT 
-							jsonb_build_object(
-								'batch_uuid', finishing_batch.uuid, 
-								'batch_number', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')), 
-								'order_description_uuid', vodf.order_description_uuid, 
-								'order_number', vodf.order_number,
-								'batch_quantity', fb_sum.batch_quantity::float8,
-								'production_quantity', coalesce(fbp.production_quantity, 0)::float8,
-								'balance_quantity', fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8
-							)
-						) AS batch_numbers
+						finishing_batch.uuid as batch_uuid, 
+						CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')) as batch_number, 
+						vodf.order_description_uuid as order_description_uuid, 
+						vodf.order_number as order_number,
+						fb_sum.batch_quantity::float8 as batch_quantity,
+						coalesce(fbp.production_quantity, 0)::float8 as production_quantity,
+						fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 as balance_quantity
 					FROM
 						zipper.finishing_batch
 					LEFT JOIN
@@ -775,13 +770,17 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 		// const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
 		const dataResult = await db.execute(orderQuery); // Fetch main query results
 
+		const data = {
+			batch_numbers: dataResult.rows,
+		};
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'production_plan',
 		};
 
-		res.status(200).json({ toast, data: dataResult.rows });
+		res.status(200).json({ toast, data: data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
