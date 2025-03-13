@@ -230,7 +230,9 @@ export async function zipperProductionStatusReport(req, res, next) {
                 GROUP BY
                     vod.order_description_uuid
             ) finishing_dyeing_batch ON finishing_dyeing_batch.order_description_uuid = oe.order_description_uuid
-            WHERE vodf.order_description_uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+            WHERE vodf.order_description_uuid IS NOT NULL 
+                AND vodf.is_cancelled = FALSE
+                AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
         `;
 
 		query.append(
@@ -1292,7 +1294,9 @@ export async function ProductionReportDirector(req, res, next) {
                 GROUP BY
                     oe.order_description_uuid
             ) open_end_sum ON vodf.order_description_uuid = open_end_sum.order_description_uuid
-            WHERE vodf.order_description_uuid IS NOT NULL AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+            WHERE vodf.order_description_uuid IS NOT NULL 
+                AND vodf.is_cancelled = FALSE
+                AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
             ORDER BY vodf.item_name DESC
     `;
 
@@ -1639,8 +1643,9 @@ export async function ProductionReportSnm(req, res, next) {
             ) slider_production_sum ON slider_production_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN pi_cash_grouped ON vodf.order_info_uuid = pi_cash_grouped.order_info_uuid
             WHERE vodf.order_description_uuid IS NOT NULL 
-            AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
-            AND ${from && to ? sql`vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
+                AND vodf.is_cancelled = FALSE
+                AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                AND ${from && to ? sql`vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
             ORDER BY vodf.item_name DESC
     `;
 

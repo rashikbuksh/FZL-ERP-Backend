@@ -710,38 +710,6 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 
 		// console.log(orderAllItemResult, 'orderAllItemResult');
 
-		const CapacityQuery = sql`
-		SELECT
-			item_properties.uuid AS item,
-			item_properties.name AS item_name,
-			nylon_stopper_properties.uuid AS nylon_stopper,
-			nylon_stopper_properties.name AS nylon_stopper_name,
-			zipper_number_properties.uuid AS zipper_number,
-			zipper_number_properties.name AS zipper_number_name,
-			end_type_properties.uuid AS end_type,
-			end_type_properties.name AS end_type_name,
-			production_capacity.quantity::float8 AS production_capacity_quantity,
-			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name) AS item_description,
-			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name,' (', production_capacity.quantity::float8, ')') AS item_description_quantity
-		FROM
-			public.production_capacity
-		LEFT JOIN
-			public.properties item_properties ON production_capacity.item = item_properties.uuid
-		LEFT JOIN
-			public.properties nylon_stopper_properties ON production_capacity.nylon_stopper = nylon_stopper_properties.uuid
-		LEFT JOIN
-			public.properties zipper_number_properties ON production_capacity.zipper_number = zipper_number_properties.uuid
-		LEFT JOIN
-			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid
-		WHERE 
-			${orderAllItemResult.rows.length > 0 ? sql`item_properties.uuid = ${orderAllItemResult.rows[0].item}` : sql`1=1`}
-			${orderAllItemResult.rows.length > 0 ? sql`AND nylon_stopper_properties.uuid = ${orderAllItemResult.rows[0].nylon_stopper}` : sql`1=1`}
-			${orderAllItemResult.rows.length > 0 ? sql`AND zipper_number_properties.uuid = ${orderAllItemResult.rows[0].zipper_number}` : sql`1=1`}
-			${orderAllItemResult.rows.length > 0 ? sql`AND end_type_properties.uuid = ${orderAllItemResult.rows[0].end_type}` : sql`1=1`}
-		ORDER BY
-			item_description ASC
-	`;
-
 		const orderQuery = sql`
 		SELECT 
 			subquery.item,
@@ -810,7 +778,12 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 								finishing_batch_entry.finishing_batch_uuid
 						) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
 					WHERE
-						fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0 AND ${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
+						fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0 
+						AND ${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
+						AND vodf.item = ${orderAllItemResult.rows[0].item}
+						AND vodf.nylon_stopper = ${orderAllItemResult.rows[0].nylon_stopper}
+						AND vodf.zipper_number = ${orderAllItemResult.rows[0].zipper_number}
+						AND vodf.end_type = ${orderAllItemResult.rows[0].end_type}
 					GROUP BY
 						vodf.item,
 						vodf.item_name,
@@ -834,161 +807,8 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 					subquery.batch_numbers
 		`;
 
-		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
+		// const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
 		const dataResult = await db.execute(orderQuery); // Fetch main query results
-
-		const dateWiseData = {};
-
-		dataResult.rows.forEach((dataRow) => {
-			const productionDate = dataRow.production_date.split(' ')[0];
-			if (!dateWiseData[productionDate]) {
-				dateWiseData[productionDate] = [];
-			}
-			dateWiseData[productionDate].push(dataRow);
-		});
-
-		const zipperNumberRow = capacityQueryResult.rows.find(
-			(row) => row.zipper_number_name === '3'
-		);
-
-		const zipperNumberUUID = zipperNumberRow
-			? zipperNumberRow.zipper_number
-			: null;
-
-		const formattedData = capacityQueryResult.rows.reduce(
-			(acc, capacityRow) => {
-				const matchingDataRows = Object.keys(dateWiseData).reduce(
-					(innerAcc, date) => {
-						const filteredRows = dateWiseData[date].filter(
-							(dataRow) => {
-								const itemName =
-									dataRow.item_name.toLowerCase();
-								const endTypeName =
-									dataRow.end_type_name.toLowerCase();
-								const zipperNumberName =
-									dataRow.zipper_number_name.toLowerCase();
-
-								if (
-									itemName === 'metal' &&
-									endTypeName === 'close end' &&
-									zipperNumberName === '4.5'
-								) {
-									return (
-										dataRow.item === capacityRow.item &&
-										dataRow.end_type ===
-											capacityRow.end_type &&
-										capacityRow.zipper_number ===
-											zipperNumberUUID
-									);
-								} else {
-									// Default matching criteria
-									return (
-										dataRow.item === capacityRow.item &&
-										dataRow.nylon_stopper ===
-											capacityRow.nylon_stopper &&
-										dataRow.zipper_number ===
-											capacityRow.zipper_number &&
-										dataRow.end_type ===
-											capacityRow.end_type
-									);
-								}
-							}
-						);
-						return innerAcc.concat(filteredRows);
-					},
-					[]
-				);
-
-				const formattedRows = matchingDataRows.map(
-					(matchingDataRow) => ({
-						item_description_quantity:
-							capacityRow.item_description_quantity,
-						item_description: capacityRow.item_description,
-						production_capacity_quantity:
-							capacityRow.production_capacity_quantity,
-						production_date:
-							matchingDataRow.production_date.split(' ')[0],
-						production_quantity:
-							matchingDataRow.total_batch_quantity_sum,
-						order_numbers: matchingDataRow.order_numbers,
-						batch_numbers: matchingDataRow.batch_numbers,
-						order_description_uuid:
-							matchingDataRow.order_description_uuid,
-						finishing_batch_uuid:
-							matchingDataRow.finishing_batch_uuid,
-					})
-				);
-
-				return acc.concat(formattedRows);
-			},
-			[]
-		);
-
-		const dateRange = [];
-		let currentDate = new Date(date);
-		const endDate = new Date(date);
-
-		while (currentDate <= endDate) {
-			dateRange.push(currentDate.toISOString().split('T')[0]);
-			currentDate.setDate(currentDate.getDate() + 1);
-		}
-
-		const groupedData = dateRange.reduce((acc, date) => {
-			acc[date] = (
-				formattedData.filter((item) => item.production_date === date) ||
-				[]
-			).map((item) => ({
-				...item,
-				production_date: date,
-				production_quantity: item.production_quantity,
-			}));
-
-			// Add items with zero production quantity if they are not present for the current date
-			capacityQueryResult.rows.forEach((capacityRow) => {
-				const itemDescription = capacityRow.item_description;
-				if (
-					!acc[date].some(
-						(d) => d.item_description === itemDescription
-					)
-				) {
-					acc[date].push({
-						production_capacity_quantity:
-							capacityRow.production_capacity_quantity,
-						item_description: itemDescription,
-						item_description_quantity:
-							capacityRow.item_description_quantity,
-						production_date: date,
-						production_quantity: 0,
-						order_numbers: [],
-						batch_numbers: [],
-						order_description_uuid: null,
-						finishing_batch_uuid: null,
-					});
-				}
-			});
-
-			// Sort the data based on the order of capacityQueryResult's item_description_quantity
-			acc[date].sort((a, b) => {
-				const aIndex = capacityQueryResult.rows.findIndex(
-					(row) =>
-						row.item_description_quantity ===
-						a.item_description_quantity
-				);
-				const bIndex = capacityQueryResult.rows.findIndex(
-					(row) =>
-						row.item_description_quantity ===
-						b.item_description_quantity
-				);
-				return aIndex - bIndex;
-			});
-
-			return acc;
-		}, {});
-
-		const response = Object.keys(groupedData).map((date) => ({
-			production_date: date,
-			data: groupedData[date],
-		}));
 
 		const toast = {
 			status: 200,
@@ -996,7 +816,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 			message: 'production_plan',
 		};
 
-		res.status(200).json({ toast, data: response });
+		res.status(200).json({ toast, data: dataResult });
 	} catch (error) {
 		await handleError({ error, res });
 	}

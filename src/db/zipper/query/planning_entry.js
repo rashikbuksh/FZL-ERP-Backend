@@ -370,6 +370,7 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			) as pe_given ON pe_given.sfg_uuid = sfg.uuid
 		WHERE 
 			sfg.recipe_uuid IS NOT NULL
+			AND vodf.is_cancelled = FALSE
 		GROUP BY 
 			sfg.uuid, 
 			oe.style, 

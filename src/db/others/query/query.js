@@ -1138,7 +1138,9 @@ export async function selectOrderDescription(req, res, next) {
 				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
 				LEFT JOIN zipper.multi_color_dashboard mcd ON vodf.order_description_uuid = mcd.order_description_uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND vodf.is_sample = 0 AND 
+					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL 
+					AND vodf.is_cancelled = FALSE
+					AND vodf.is_sample = 0 AND 
 					CASE WHEN order_type = 'slider' THEN 1=1 
 					WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1) THEN 1=1
 					ELSE sfg.recipe_uuid IS NOT NULL END
@@ -1262,8 +1264,10 @@ export async function selectOrderDescription(req, res, next) {
 				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
 				LEFT JOIN zipper.multi_color_dashboard mcd ON vodf.order_description_uuid = mcd.order_description_uuid
 				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL AND vodf.is_sample = 0 AND 
-					CASE 
+					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL 
+					AND vodf.is_cancelled = FALSE
+					AND vodf.is_sample = 0 
+					AND CASE 
 						WHEN order_type = 'slider' THEN 1=1 
 						WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1) THEN 1=1
 						ELSE sfg.recipe_uuid IS NOT NULL 
@@ -1473,7 +1477,9 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 				GROUP BY od.uuid
 			) multi_tape ON vodf.order_description_uuid = multi_tape.order_description_uuid
 			WHERE
-				(vodf.tape_coil_uuid = ${coil_uuid} OR (vodf.item = ${item_uuid} AND vodf.zipper_number = ${zipper_number_uuid} AND vodf.tape_coil_uuid IS NULL)) AND vodf.order_description_uuid IS NOT NULL
+				(vodf.tape_coil_uuid = ${coil_uuid} OR (vodf.item = ${item_uuid} AND vodf.zipper_number = ${zipper_number_uuid} AND vodf.tape_coil_uuid IS NULL)) 
+				AND vodf.order_description_uuid IS NOT NULL
+				AND vodf.is_cancelled = FALSE
 				${is_slider_needed == 'false' ? sql` AND vodf.order_type != 'slider'` : sql``}
 		`;
 

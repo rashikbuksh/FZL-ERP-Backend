@@ -34,6 +34,8 @@ export async function selectWorkInHand(req, res, next) {
                         zipper.sfg sfg 
                         LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                         LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    WHERE 
+                        vodf.is_cancelled = FALSE
                     GROUP BY 
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
@@ -62,6 +64,9 @@ export async function selectWorkInHand(req, res, next) {
                         ) as approved
                     FROM
                         thread.order_entry toe
+                    LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                    WHERE
+                        toi.is_cancelled = FALSE
                     GROUP BY
                         item_name
                     ORDER BY 

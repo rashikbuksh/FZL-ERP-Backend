@@ -57,6 +57,7 @@ export async function selectProductionStatus(req, res, next) {
 						OR vodf.nylon_stopper = sfg_production_sum.nylon_stopper
 					)
                 WHERE vodf.order_description_uuid IS NOT NULL
+                    AND vodf.is_cancelled = FALSE
                 GROUP BY 
                 vodf.item_name, vodf.nylon_stopper_name
 

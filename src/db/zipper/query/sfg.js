@@ -166,7 +166,8 @@ export async function selectSwatchInfo(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { type } = req.query;
 
-	const query = sql`SELECT
+	const query = sql`
+				SELECT
 					sfg.uuid as uuid,
 					sfg.order_entry_uuid as order_entry_uuid,
 					oe.order_description_uuid as order_description_uuid,
@@ -198,7 +199,9 @@ export async function selectSwatchInfo(req, res, next) {
 					LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
 					LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
 				WHERE 
-					od.order_type != 'slider' ${
+					od.order_type != 'slider' 
+					AND vodf.is_cancelled = FALSE
+					${
 						type === 'pending'
 							? sql`AND sfg.recipe_uuid IS NULL`
 							: type === 'completed'

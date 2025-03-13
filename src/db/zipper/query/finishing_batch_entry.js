@@ -251,6 +251,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 					sfg.uuid
 		) AS fbe_given ON sfg.uuid = fbe_given.sfg_uuid
 		WHERE 
+			vodf.is_cancelled = FALSE AND
 			CASE 
                 WHEN vodf.order_type = 'slider' 
                 THEN 1=1 
