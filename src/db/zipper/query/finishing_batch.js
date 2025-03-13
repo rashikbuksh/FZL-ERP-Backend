@@ -722,10 +722,6 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 						zipper.finishing_batch
 					LEFT JOIN
 						zipper.v_order_details_full vodf ON vodf.order_description_uuid = finishing_batch.order_description_uuid
-					LEFT JOIN
-						public.production_capacity pc ON pc.item = vodf.item AND pc.nylon_stopper = vodf.nylon_stopper AND pc.zipper_number = vodf.zipper_number AND pc.end_type = vodf.end_type
-					LEFT JOIN
-						zipper.finishing_batch_entry ON finishing_batch.uuid = finishing_batch_entry.finishing_batch_uuid
 					LEFT JOIN 
 						(
 							SELECT
@@ -756,15 +752,6 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 						AND vodf.nylon_stopper = ${orderAllItemResult.rows[0].nylon_stopper}
 						AND vodf.zipper_number = ${orderAllItemResult.rows[0].zipper_number}
 						AND vodf.end_type = ${orderAllItemResult.rows[0].end_type}
-					GROUP BY
-						vodf.item,
-						vodf.item_name,
-						vodf.nylon_stopper,
-						vodf.zipper_number,
-						vodf.zipper_number_name,
-						vodf.end_type,
-						vodf.end_type_name,
-						finishing_batch.production_date
 		`;
 
 		// const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
