@@ -748,12 +748,12 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 						AND ${date ? sql`DATE(finishing_batch.production_date) = ${date}` : sql`1=1`}
 						AND ${orderAllItemResult.rows[0].item ? sql`vodf.item = ${orderAllItemResult.rows[0].item}` : sql`1=1`}
 						AND ${
-							orderAllItemResult.rows[0].item.toLowerCase() ==
+							orderAllItemResult.rows[0].item_name.toLowerCase() ==
 								'metal' &&
 							(orderAllItemResult.rows[0].zipper_number_name ==
 								'3' ||
-								orderAllItemResult.rows[0]
-									.zipper_number_name == '4.5')
+								orderAllItemResult.rows[0].zipper_number_name ==
+									'4.5')
 								? sql`(vodf.zipper_number_name = '3' OR vodf.zipper_number_name = '4.5')`
 								: orderAllItemResult.rows[0].zipper_number_name
 									? sql`vodf.zipper_number = ${orderAllItemResult.rows[0].zipper_number}`
@@ -762,6 +762,8 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 						AND ${orderAllItemResult.rows[0].end_type ? sql`vodf.end_type = ${orderAllItemResult.rows[0].end_type}` : sql`1=1`}
 						AND ${orderAllItemResult.rows[0].nylon_stopper ? sql`vodf.nylon_stopper = ${orderAllItemResult.rows[0].nylon_stopper}` : sql`1=1`}
 		`;
+
+		console.log('orderQuery', orderQuery.queryChunks);
 
 		const dataResult = await db.execute(orderQuery); // Fetch main query results
 
