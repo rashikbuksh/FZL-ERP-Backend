@@ -28,7 +28,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 					oe.size,
 					oe.quantity AS order_quantity,
 					jsonb_agg(
-						CASE WHEN challan.uuid IS NOT NULL THEN 
+						DISTINCT CASE WHEN challan.uuid IS NOT NULL THEN 
 							jsonb_build_object(
 							'challan_number', 
 							CASE WHEN pl.item_for IN ('thread', 'sample_thread') 
@@ -37,7 +37,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 							END,
 							'challan_uuid', challan.uuid,
 							'challan_date', challan.created_at,
-							'quantity', ple.quantity,
+							'quantity', ple_sum.quantity,
 							'order_entry_uuid', sfg.order_entry_uuid
 							)
 						ELSE 'null' END
@@ -46,9 +46,21 @@ export async function selectOrderRegisterReport(req, res, next) {
 					zipper.order_entry oe
 				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
-				LEFT JOIN delivery.packing_list_entry ple ON sfg.uuid = ple.sfg_uuid
-				LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+				LEFT JOIN delivery.packing_list pl ON vodf.order_info_uuid = pl.order_info_uuid
 				LEFT JOIN delivery.challan ON pl.challan_uuid = challan.uuid
+				INNER JOIN (
+					SELECT 
+						pl.challan_uuid, 
+						ple.sfg_uuid,
+						SUM(ple.quantity) as quantity
+					FROM 
+						delivery.packing_list_entry ple
+					LEFT JOIN 
+						delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+					WHERE 
+						pl.item_for NOT IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
+					GROUP BY pl.challan_uuid, ple.sfg_uuid
+				) ple_sum ON challan.uuid = ple_sum.challan_uuid AND sfg.uuid = ple_sum.sfg_uuid
 				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description, vodf.order_type, vodf.is_inch
 			),
 			pi_cash_grouped AS (
@@ -76,7 +88,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 					toe.color,
 					toe.quantity AS order_quantity,
 					jsonb_agg(
-						CASE WHEN challan.uuid IS NOT NULL THEN 
+						DISTINCT CASE WHEN challan.uuid IS NOT NULL THEN 
 							jsonb_build_object(
 								'challan_number', 
 								CASE WHEN pl.item_for IN ('thread', 'sample_thread') 
@@ -85,17 +97,30 @@ export async function selectOrderRegisterReport(req, res, next) {
 								END,
 								'challan_uuid', challan.uuid,
 								'challan_date', challan.created_at,
-								'quantity', ple.quantity,
-								'order_entry_uuid', ple.thread_order_entry_uuid
+								'quantity', ple_sum.quantity,
+								'order_entry_uuid', toe.uuid
 							)
 						ELSE 'null' END
 					) AS challan_array
 				FROM
 					thread.order_entry toe 
 				LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
-				LEFT JOIN delivery.packing_list_entry ple ON toe.uuid = ple.thread_order_entry_uuid
-				LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+				LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+				LEFT JOIN delivery.packing_list pl ON toi.uuid = pl.order_info_uuid
 				LEFT JOIN delivery.challan ON pl.challan_uuid = challan.uuid
+				INNER JOIN (
+					SELECT 
+						pl.challan_uuid, 
+						ple.thread_order_entry_uuid,
+						SUM(ple.quantity) as quantity
+					FROM 
+						delivery.packing_list_entry ple
+					LEFT JOIN 
+						delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+					WHERE 
+						pl.item_for NOT IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
+					GROUP BY pl.challan_uuid, ple.thread_order_entry_uuid
+				) ple_sum ON challan.uuid = ple_sum.challan_uuid AND toe.uuid = ple_sum.thread_order_entry_uuid
 				GROUP BY toe.order_info_uuid, toe.uuid, cl.count, cl.length, toe.style, toe.color, toe.quantity
 			),
 			pi_cash_grouped_thread AS (
