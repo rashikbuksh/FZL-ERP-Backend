@@ -2332,6 +2332,7 @@ export async function selectThreadOrder(req, res, next) {
 				oe.production_quantity::float8 > 0
 		)
 	`;
+		// ! removed the condition (oe.quantity - oe.warehouse - oe.delivered) > 0 for the packing list
 	} else {
 		condition = sql`1=1`;
 	}
