@@ -234,26 +234,12 @@ export async function selectAll(req, res, next) {
 			order_numbers_agg.order_numbers,
 			COALESCE(pi_cash.thread_order_info_uuids, '[]') AS thread_order_info_uuids,
 			thread_order_numbers_agg.thread_order_numbers,
-			pi_cash.marketing_uuid,
 			public.marketing.name AS marketing_name,
-			pi_cash.party_uuid,
 			public.party.name AS party_name,
 			public.party.address AS party_address,
-			pi_cash.merchandiser_uuid,
 			public.merchandiser.name AS merchandiser_name,
-			pi_cash.factory_uuid,
 			public.factory.name AS factory_name,
-			pi_cash.bank_uuid,
 			bank.name AS bank_name,
-			bank.swift_code AS bank_swift_code,
-			bank.address AS bank_address,
-			bank.policy AS bank_policy,
-			bank.routing_no AS bank_routing_no,
-			bank.account_no AS bank_account_no,
-			public.factory.address AS factory_address,
-			pi_cash.validity::float8,
-			pi_cash.payment::float8,
-			pi_cash.created_by,
 			hr.users.name AS created_by_name,
 			pi_cash.created_at,
 			pi_cash.updated_at,
@@ -261,8 +247,6 @@ export async function selectAll(req, res, next) {
 			pi_cash.is_pi::float8,
 			pi_cash.is_rtgs,
 			pi_cash.conversion_rate::float8,
-			pi_cash.weight::float8,
-			pi_cash.cross_weight::float8,
 			pi_cash.receive_amount::float8,
 			CASE 
 				WHEN pi_cash.is_pi = 1 
@@ -381,28 +365,28 @@ export async function selectAll(req, res, next) {
 
 		// Filter order_numbers and thread_order_numbers to remove null values
 
-		data.rows.forEach((item) => {
-			item.order_numbers = item.order_numbers.filter(
-				(x) => x !== null && x !== 'null'
-			);
-			item.thread_order_numbers = item.thread_order_numbers.filter(
-				(x) => x !== null && x !== 'null'
-			);
-		});
+		// data.rows.forEach((item) => {
+		// 	item.order_numbers = item.order_numbers.filter(
+		// 		(x) => x !== null && x !== 'null'
+		// 	);
+		// 	item.thread_order_numbers = item.thread_order_numbers.filter(
+		// 		(x) => x !== null && x !== 'null'
+		// 	);
+		// });
 
-		data?.rows?.forEach((item) => {
-			item.order_info_uuids = JSON.parse(item.order_info_uuids).filter(
-				(x) => x !== null && x !== 'null'
-			);
-			item.thread_order_info_uuids = JSON.parse(
-				item.thread_order_info_uuids
-			).filter((x) => x !== null && x !== 'null');
+		// data?.rows?.forEach((item) => {
+		// 	item.order_info_uuids = JSON.parse(item.order_info_uuids).filter(
+		// 		(x) => x !== null && x !== 'null'
+		// 	);
+		// 	item.thread_order_info_uuids = JSON.parse(
+		// 		item.thread_order_info_uuids
+		// 	).filter((x) => x !== null && x !== 'null');
 
-			// Convert back to JSON strings if needed
-			item.order_info_uuids = JSON.stringify(item.order_info_uuids) || [];
-			item.thread_order_info_uuids =
-				JSON.stringify(item.thread_order_info_uuids) || [];
-		});
+		// 	// Convert back to JSON strings if needed
+		// 	item.order_info_uuids = JSON.stringify(item.order_info_uuids) || [];
+		// 	item.thread_order_info_uuids =
+		// 		JSON.stringify(item.thread_order_info_uuids) || [];
+		// });
 
 		const toast = {
 			status: 200,
