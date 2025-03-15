@@ -150,9 +150,14 @@ export async function selectAll(req, res, next) {
 		WITH zipper_order_numbers AS (
 			SELECT
 				oi.uuid::text AS order_info_uuid,
-				concat('Z', to_char(oi.created_at, 'YY'::text), '-', lpad((oi.id)::text, 4, '0'::text)) AS order_number
+				concat('Z', to_char(oi.created_at, 'YY'::text), '-', lpad((oi.id)::text, 4, '0'::text)) AS order_number,
+				jsonb_agg(DISTINCT od.order_type) as order_type
 			FROM
 				zipper.order_info oi
+			LEFT JOIN
+				zipper.order_description od ON oi.uuid = od.order_info_uuid
+			GROUP BY
+				oi.uuid
 		),
 		thread_order_numbers AS (
 			SELECT
@@ -167,7 +172,8 @@ export async function selectAll(req, res, next) {
 				COALESCE(
 					jsonb_agg(jsonb_build_object('order_info_uuid', zipper_order_numbers.order_info_uuid, 'order_number', zipper_order_numbers.order_number))
 					FILTER (WHERE zipper_order_numbers.order_number IS NOT NULL), '[]'
-				) AS order_numbers
+				) AS order_numbers,
+				jsonb_agg(zipper_order_numbers.order_type) AS order_type
 			FROM
 				commercial.pi_cash
 			LEFT JOIN
@@ -177,7 +183,7 @@ export async function selectAll(req, res, next) {
 					WHERE elem IS NOT NULL AND elem != 'null'
 				)
 			GROUP BY
-				pi_cash.uuid
+				pi_cash.uuid, zipper_order_numbers.order_type
 		),
 		thread_order_numbers_agg AS (
 			SELECT
@@ -230,30 +236,14 @@ export async function selectAll(req, res, next) {
 			END AS id,
 			pi_cash.lc_uuid,
 			lc.lc_number,
-			COALESCE(pi_cash.order_info_uuids, '[]') AS order_info_uuids,
 			order_numbers_agg.order_numbers,
-			COALESCE(pi_cash.thread_order_info_uuids, '[]') AS thread_order_info_uuids,
 			thread_order_numbers_agg.thread_order_numbers,
-			pi_cash.marketing_uuid,
 			public.marketing.name AS marketing_name,
-			pi_cash.party_uuid,
 			public.party.name AS party_name,
 			public.party.address AS party_address,
-			pi_cash.merchandiser_uuid,
 			public.merchandiser.name AS merchandiser_name,
-			pi_cash.factory_uuid,
 			public.factory.name AS factory_name,
-			pi_cash.bank_uuid,
 			bank.name AS bank_name,
-			bank.swift_code AS bank_swift_code,
-			bank.address AS bank_address,
-			bank.policy AS bank_policy,
-			bank.routing_no AS bank_routing_no,
-			bank.account_no AS bank_account_no,
-			public.factory.address AS factory_address,
-			pi_cash.validity::float8,
-			pi_cash.payment::float8,
-			pi_cash.created_by,
 			hr.users.name AS created_by_name,
 			pi_cash.created_at,
 			pi_cash.updated_at,
@@ -261,15 +251,13 @@ export async function selectAll(req, res, next) {
 			pi_cash.is_pi::float8,
 			pi_cash.is_rtgs,
 			pi_cash.conversion_rate::float8,
-			pi_cash.weight::float8,
-			pi_cash.cross_weight::float8,
 			pi_cash.receive_amount::float8,
 			CASE 
 				WHEN pi_cash.is_pi = 1 
 				THEN ROUND((total_pi_amount.total_amount::numeric), 2)
 				ELSE ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
 			END AS total_amount,
-			jsonb_agg(DISTINCT od.order_type) AS order_type
+			order_numbers_agg.order_type[0] as order_type
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
@@ -331,46 +319,6 @@ export async function selectAll(req, res, next) {
 					`
 						: sql``
 			}
-		GROUP BY
-			pi_cash.uuid, 
-			lc.lc_number, 
-			public.marketing.name, 
-			public.party.name, 
-			public.party.address, 
-			public.merchandiser.name, 
-			public.factory.name, 
-			bank.name, 
-			bank.swift_code, 
-			bank.address, 
-			bank.policy, 
-			bank.routing_no, 
-			bank.account_no,
-			public.factory.address, 
-			hr.users.name,
-			pi_cash.validity,
-			pi_cash.payment,
-			pi_cash.created_at,
-			pi_cash.updated_at,
-			pi_cash.remarks,
-			pi_cash.is_pi,
-			pi_cash.is_rtgs,
-			pi_cash.conversion_rate,
-			pi_cash.weight,
-			pi_cash.cross_weight::float8,
-			pi_cash.receive_amount,
-			pi_cash.order_info_uuids,
-			pi_cash.thread_order_info_uuids,
-			pi_cash.lc_uuid,
-			pi_cash.marketing_uuid,
-			pi_cash.party_uuid,
-			pi_cash.merchandiser_uuid,
-			pi_cash.factory_uuid,
-			pi_cash.bank_uuid,
-			pi_cash.created_by,
-			pi_cash.id,
-			total_pi_amount.total_amount,
-			order_numbers_agg.order_numbers,
-			thread_order_numbers_agg.thread_order_numbers
 		ORDER BY 
 			pi_cash.created_at DESC;
 		`;
