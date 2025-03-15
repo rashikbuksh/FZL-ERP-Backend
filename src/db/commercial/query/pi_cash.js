@@ -259,7 +259,7 @@ export async function selectAll(req, res, next) {
 				THEN ROUND((total_pi_amount.total_amount::numeric), 2)
 				ELSE ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
 			END AS total_amount,
-			order_numbers_agg.order_type[0] as order_type
+			COALESCE(order_numbers_agg.order_type[0], ',') as order_type
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
