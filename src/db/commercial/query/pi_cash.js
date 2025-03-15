@@ -235,6 +235,8 @@ export async function selectAll(req, res, next) {
 				ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
 			END AS id,
 			pi_cash.lc_uuid,
+			pi_cash.thread_order_info_uuids,
+			pi_cash.order_info_uuids,
 			lc.lc_number,
 			order_numbers_agg.order_numbers,
 			thread_order_numbers_agg.thread_order_numbers,
