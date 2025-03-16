@@ -92,7 +92,7 @@ export async function selectSampleReport(req, res, next) {
 export async function selectSampleReportByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { date, to_date, is_sample } = req.query;
+	const { date, to_date, is_sample, show_zero_balance } = req.query;
 	const { own_uuid } = req?.query;
 
 	let toDate = to_date === null || to_date === undefined ? null : to_date;
@@ -156,6 +156,7 @@ export async function selectSampleReportByDate(req, res, next) {
                            (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) as balance,
                            sfg.warehouse::float8,
                            sfg.delivered::float8,
+                           oe.quantity::float8 - sfg.delivered::float8 as delivered_balance,
                            CONCAT(
                                 CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
                                 CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN ', ' ELSE '' END,
@@ -226,7 +227,7 @@ export async function selectSampleReportByDate(req, res, next) {
                         WHERE
                             oi.is_sample = ${is_sample}
                             AND od.created_at BETWEEN ${date}::TIMESTAMP and ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
-                            AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketing_uuid}`}
+                            AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketing_uuid}`} AND ${show_zero_balance === 1 ? sql`TRUE` : sql`oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8 > 0`}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
