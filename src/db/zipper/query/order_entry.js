@@ -268,11 +268,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			`,
 			finishing_stock: decimalToNumber(sfg.finishing_stock),
 			finishing_prod: decimalToNumber(sfg.finishing_prod),
-			finishing_balance:
-				decimalToNumber(order_entry.quantity) -
-				decimalToNumber(sfg.finishing_prod) -
-				decimalToNumber(sfg.warehouse) -
-				decimalToNumber(sfg.delivered),
+			finishing_balance: sql`order_entry.quantity - sfg.finishing_prod - sfg.warehouse - sfg.delivered`,
 			total_finishing: sql`
 				SUM(
 					CASE WHEN finishing_batch_production.section = 'finishing' THEN finishing_batch_production.production_quantity ELSE 0 END
