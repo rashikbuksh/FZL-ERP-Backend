@@ -233,10 +233,10 @@ export async function selectSampleReportByDate(req, res, next) {
 									: sql`TRUE`
 							}
                             AND ${own_uuid ? sql`oi.marketing_uuid = ${marketing_uuid}` : sql`TRUE`}
-                            AND ${
-								show_zero_balance === 1
+                           AND ${
+								show_zero_balance == 1
 									? sql`TRUE`
-									: sql`oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8 > 0`
+									: sql`(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) > 0`
 							}
                         ORDER BY
                             order_number ASC, item_description ASC`;
