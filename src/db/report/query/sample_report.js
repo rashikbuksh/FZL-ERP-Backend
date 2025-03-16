@@ -109,9 +109,9 @@ export async function selectSampleReportByDate(req, res, next) {
 		toDate = date;
 	}
 
-	if (!date || !toDate) {
-		throw new Error('Both date and toDate must be provided');
-	}
+	// if (!date || !toDate) {
+	// 	throw new Error('Both date and toDate must be provided');
+	// }
 
 	try {
 		if (own_uuid) {
@@ -224,12 +224,22 @@ export async function selectSampleReportByDate(req, res, next) {
                         LEFT JOIN public.properties op_slider_link ON op_slider_link.uuid = od.slider_link
                         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
                         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
-                        WHERE
+                       WHERE
                             oi.is_sample = ${is_sample}
-                            AND od.created_at BETWEEN ${date}::TIMESTAMP and ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
-                            AND ${own_uuid == null ? sql`TRUE` : sql`oi.marketing_uuid = ${marketing_uuid}`} AND ${show_zero_balance === 1 ? sql`TRUE` : sql`oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8 > 0`}
+                            AND ${
+								date && toDate
+									? sql`od.created_at BETWEEN ${date}::TIMESTAMP 
+                                        AND ${toDate}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'`
+									: sql`TRUE`
+							}
+                            AND ${own_uuid ? sql`oi.marketing_uuid = ${marketing_uuid}` : sql`TRUE`}
+                            AND ${
+								show_zero_balance === 1
+									? sql`TRUE`
+									: sql`oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8 > 0`
+							}
                         ORDER BY
-                            order_number ASC, item_description ASC;`;
+                            order_number ASC, item_description ASC`;
 
 		const resultPromise = db.execute(query);
 
