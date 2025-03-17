@@ -1175,16 +1175,6 @@ export async function selectOrderDescription(req, res, next) {
 					vodf.item_name,
 					vodf.tape_received::float8,
 					vodf.tape_transferred::float8,
-					totals_of_oe.total_size::float8,
-					totals_of_oe.total_quantity::float8,
-					tcr.top::float8,
-					tcr.bottom::float8,
-					tcr.dyed_mtr_per_kg::float8,
-					CASE 
-						WHEN vodf.is_multi_color = 1 
-						THEN vodf.multi_color_tape_received 
-						ELSE coalesce(batch_stock.stock,0)::float8 
-					END as stock,
 					sfg.uuid as sfg_uuid,
 					sfg.recipe_uuid as recipe_uuid,
 					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
@@ -1229,39 +1219,7 @@ export async function selectOrderDescription(req, res, next) {
 							GROUP BY
 								oe.uuid
 					) AS fbe_given ON oe.uuid = fbe_given.order_entry_uuid
-				LEFT JOIN 
-					(
-						SELECT oe.order_description_uuid, 
-						SUM(
-							CASE 
-								WHEN vodf.is_inch = 1 
-									THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
-								ELSE CAST(oe.size AS NUMERIC)
-							END 
-						* oe.quantity::numeric) as total_size, 
-						SUM(oe.quantity::numeric) as total_quantity
-						FROM zipper.order_entry oe 
-						LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-				        group by oe.order_description_uuid
-					) AS totals_of_oe ON totals_of_oe.order_description_uuid = vodf.order_description_uuid 
-				LEFT JOIN zipper.tape_coil_required tcr ON
-					vodf.item = tcr.item_uuid  
-					AND vodf.zipper_number = tcr.zipper_number_uuid 
-					AND vodf.end_type = tcr.end_type_uuid 
-					AND (
-						lower(vodf.item_name) != 'nylon' 
-						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-					)
 				LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
-				LEFT JOIN (
-					SELECT oe.order_description_uuid, SUM(be.production_quantity_in_kg) as stock
-					FROM zipper.order_entry oe
-						LEFT JOIN zipper.sfg ON oe.uuid = sfg.order_entry_uuid
-						LEFT JOIN zipper.dyeing_batch_entry be ON be.sfg_uuid = sfg.uuid
-						LEFT JOIN zipper.dyeing_batch b ON b.uuid = be.dyeing_batch_uuid
-					WHERE b.received = 1
-					GROUP BY oe.order_description_uuid
-				) batch_stock ON vodf.order_description_uuid = batch_stock.order_description_uuid
 				LEFT JOIN (
 						SELECT COUNT(oe.swatch_approval_date) AS swatch_approval_count, oe.order_description_uuid
 						FROM zipper.order_entry oe
