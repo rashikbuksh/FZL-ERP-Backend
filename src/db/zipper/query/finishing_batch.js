@@ -707,6 +707,47 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 	try {
 		const orderAllItemResult = await db.execute(orderAllItemQuery);
 
+		const CapacityQuery = sql`
+		SELECT
+			item_properties.uuid AS item,
+			item_properties.name AS item_name,
+			nylon_stopper_properties.uuid AS nylon_stopper,
+			nylon_stopper_properties.name AS nylon_stopper_name,
+			zipper_number_properties.uuid AS zipper_number,
+			zipper_number_properties.name AS zipper_number_name,
+			end_type_properties.uuid AS end_type,
+			end_type_properties.name AS end_type_name,
+			production_capacity.quantity::float8 AS production_capacity_quantity,
+			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name) AS item_description,
+			CONCAT(item_properties.short_name, nylon_stopper_properties.short_name, '-', zipper_number_properties.short_name, '-', end_type_properties.short_name,' (', production_capacity.quantity::float8, ')') AS item_description_quantity
+
+		FROM
+			public.production_capacity
+		LEFT JOIN
+			public.properties item_properties ON production_capacity.item = item_properties.uuid
+		LEFT JOIN
+			public.properties nylon_stopper_properties ON production_capacity.nylon_stopper = nylon_stopper_properties.uuid
+		LEFT JOIN
+			public.properties zipper_number_properties ON production_capacity.zipper_number = zipper_number_properties.uuid
+		LEFT JOIN
+			public.properties end_type_properties ON production_capacity.end_type = end_type_properties.uuid
+		WHERE 
+			${orderAllItemResult.rows[0].item ? sql`item_properties.uuid = ${orderAllItemResult.rows[0].item}` : sql`1=1`}
+			AND ${
+				orderAllItemResult.rows[0].item_name.toLowerCase() == 'metal' &&
+				(orderAllItemResult.rows[0].zipper_number_name == '3' ||
+					orderAllItemResult.rows[0].zipper_number_name == '4.5')
+					? sql`(zipper_number_properties.name = '3' OR zipper_number_properties.name = '4.5')`
+					: orderAllItemResult.rows[0].zipper_number_name
+						? sql`zipper_number_properties.uuid = ${orderAllItemResult.rows[0].zipper_number}`
+						: sql`1=1`
+			}
+			AND ${orderAllItemResult.rows[0].end_type ? sql`end_type_properties.uuid = ${orderAllItemResult.rows[0].end_type}` : sql`1=1`}
+			AND ${orderAllItemResult.rows[0].nylon_stopper ? sql`nylon_stopper_properties.uuid = ${orderAllItemResult.rows[0].nylon_stopper}` : sql`1=1`}
+	`;
+
+		const capacityQueryResult = await db.execute(CapacityQuery); // Fetch capacity query results
+
 		const orderQuery = sql`
 					SELECT 
 						finishing_batch.uuid as batch_uuid, 
@@ -763,11 +804,10 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 						AND ${orderAllItemResult.rows[0].nylon_stopper ? sql`vodf.nylon_stopper = ${orderAllItemResult.rows[0].nylon_stopper}` : sql`1=1`}
 		`;
 
-		console.log('orderQuery', orderQuery.queryChunks);
-
 		const dataResult = await db.execute(orderQuery); // Fetch main query results
 
 		const data = {
+			...capacityQueryResult.rows,
 			batch_numbers: dataResult.rows,
 		};
 
