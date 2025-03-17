@@ -450,6 +450,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				style,
 				tape,
 				slider,
+				order_description_uuid,
 				item_description,
 				special_requirement,
 				order_type,
@@ -492,10 +493,11 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			);
 
 			const itemDescription = findOrCreateArray(
-				styleEntry.item_description,
+				styleEntry.order_description_uuid,
 				['tape', 'slider'],
 				[tape, slider],
 				() => ({
+					order_description_uuid,
 					tape,
 					slider,
 					special_requirement,
@@ -542,6 +544,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 					style,
 					tape,
 					slider,
+					order_description_uuid,
 					item_description,
 					special_requirement,
 					order_type,
@@ -584,10 +587,11 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				);
 
 				const itemDescription = findOrCreateArray(
-					styleEntry.item_description,
+					styleEntry.order_description_uuid,
 					['tape', 'slider'],
 					[tape, slider],
 					() => ({
+						order_description_uuid,
 						tape,
 						slider,
 						special_requirement,
