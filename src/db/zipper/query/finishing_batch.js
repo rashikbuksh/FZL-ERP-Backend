@@ -807,7 +807,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 		const dataResult = await db.execute(orderQuery); // Fetch main query results
 
 		const data = {
-			...capacityQueryResult.rows,
+			...capacityQueryResult.rows[0],
 			batch_numbers: dataResult.rows,
 		};
 
