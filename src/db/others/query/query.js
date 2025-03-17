@@ -1188,6 +1188,10 @@ export async function selectOrderDescription(req, res, next) {
 					sfg.uuid as sfg_uuid,
 					sfg.recipe_uuid as recipe_uuid,
 					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+					ie.approved,
+					ie.approved_date,
+					ie.is_pps_req,
+					ie.is_pps_req_date,
 					oe.style,
 					oe.color,
 					oe.size,
@@ -1201,6 +1205,7 @@ export async function selectOrderDescription(req, res, next) {
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
 				LEFT JOIN lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
+				LEFT JOIN lab_dip.info_entry ie ON recipe.uuid = ie.recipe_uuid
 				LEFT JOIN 
 						(
 							SELECT
