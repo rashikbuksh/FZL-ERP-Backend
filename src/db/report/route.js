@@ -31,6 +31,7 @@ import {
 	selectDeliveryReportZipper,
 } from './query/delivery_report.js';
 import { selectCountLengthWiseDeliveryReport } from './query/count_length_wise_delivery_report.js';
+import { selectPackingList } from './query/packing_list_report.js';
 
 const reportRouter = Router();
 
@@ -178,6 +179,9 @@ reportRouter.get(
 reportRouter.get('/delivery-report', selectDeliveryReportZipper);
 
 reportRouter.get('/delivery-report-thread', selectDeliveryReportThread);
+
+// * Packing List Report
+reportRouter.get('/packing-list-report', selectPackingList);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -1092,6 +1096,34 @@ export const pathReport = {
 			description: 'Count Length Wise Delivery Report',
 			tags: ['report'],
 			operationId: 'selectCountLengthWiseDeliveryReport',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/packing-list-report': {
+		get: {
+			summary: 'Packing List Report',
+			description: 'Packing List Report',
+			tags: ['report'],
+			operationId: 'selectPackingListReport',
 			parameters: [
 				SE.parameter_query('from', 'from', '2024-10-01'),
 				SE.parameter_query('to', 'to', '2024-10-31'),
