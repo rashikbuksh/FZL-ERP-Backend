@@ -14,7 +14,7 @@ export const pathHrUser = {
 			requestBody: SE.requestBody(
 				{
 					email: SE.string('admin@fzl.com'),
-					pass: SE.string('1234'),
+					pass: SE.string('fzl@dmin2025'),
 				},
 				['email', 'pass']
 			),

@@ -1,7 +1,8 @@
-import { asc, desc, eq, lt } from 'drizzle-orm';
+import { asc, avg, desc, eq, lt, sql } from 'drizzle-orm';
 import { description } from '../../../db/purchase/schema.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
+import * as purchaseSchema from '../../purchase/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { booking, info, section, stock, type } from '../schema.js';
@@ -73,6 +74,18 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	// const subQuery = db
+	// 	.select({
+	// 		material_uuid: purchaseSchema.entry.material_uuid,
+	// 		total_quantity: sql`SUM(quantity)`,
+	// 		total_price: sql`SUM(price)`,
+	// 	})
+	// 	.from(purchaseSchema.entry)
+	// 	.groupBy(purchaseSchema.entry.material_uuid);
+
+	// const subqueryData = await subQuery;
+	// console.log(subqueryData);
+
 	const resultPromise = db
 		.select({
 			uuid: info.uuid,
@@ -96,6 +109,11 @@ export async function selectAll(req, res, next) {
 			created_by: info.created_by,
 			created_by_name: hrSchema.users.name,
 			remarks: info.remarks,
+			avg_price: decimalToNumber(sql`CASE 
+								WHEN purchase_entry.total_price IS NULL OR purchase_entry.total_price = 0 
+								THEN 0 
+								ELSE purchase_entry.total_price / purchase_entry.total_quantity 
+								END`),
 		})
 		.from(info)
 		.leftJoin(section, eq(info.section_uuid, section.uuid))
@@ -103,6 +121,14 @@ export async function selectAll(req, res, next) {
 		.leftJoin(stock, eq(info.uuid, stock.material_uuid))
 		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
 		.leftJoin(booking, eq(info.uuid, booking.material_uuid))
+		.leftJoin(
+			sql`(
+			SELECT material_uuid, SUM(quantity) as total_quantity, SUM(price) as total_price
+			FROM purchase.entry
+			GROUP BY material_uuid
+		) as purchase_entry`,
+			eq(info.uuid, sql`purchase_entry.material_uuid`)
+		)
 		.orderBy(asc(info.name));
 
 	try {
