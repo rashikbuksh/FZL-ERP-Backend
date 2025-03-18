@@ -3,6 +3,8 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectPackingList(req, res, next) {
+	const { type } = req.query;
+
 	let query = sql`
                     SELECT  dvl.*,
 							SUM(ple.quantity)::float8 as total_quantity,
@@ -32,6 +34,16 @@ export async function selectPackingList(req, res, next) {
 						LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 						LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
 						LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+						 WHERE 1=1
+						 ${
+								type === 'pending'
+									? sql`AND dvl.challan_uuid IS NULL`
+									: type === 'challan'
+										? sql`AND dvl.challan_uuid IS NOT NULL`
+										: type === 'gate_pass'
+											? sql`AND dvl.gate_pass = 1`
+											: sql``
+							}
 						GROUP BY dvl.uuid,
 							dvl.order_info_uuid,
 							dvl.packing_list_wise_rank,
