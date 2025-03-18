@@ -18,12 +18,19 @@ export async function selectPackingList(req, res, next) {
 								WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape'
 								THEN CONCAT(oe.style, ' / ', oe.color, ' / ', oe.size) 
 								ELSE CONCAT (toe.style, ' / ', toe.color) 
-							END) as style_color_size
-
+							END) as style_color_size,
+							CASE 
+                                WHEN vodf.order_type = 'tape' THEN 'Meter' 
+                                WHEN vodf.order_type = 'slider' THEN 'Pcs' 
+                                WHEN vodf.is_inch = 1 THEN 'Inch' 
+                                WHEN dvl.item_for = 'thread' OR dvl.item_for = 'sample_thread' THEN 'Cone' 
+                                ELSE 'Cm' 
+                            END as unit
 						FROM delivery.v_packing_list dvl
 						LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 						LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 						LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+						LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
 						LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
 						GROUP BY dvl.uuid,
 							dvl.order_info_uuid,
@@ -52,7 +59,9 @@ export async function selectPackingList(req, res, next) {
 							dvl.remarks,
 							dvl.gate_pass,
 							dvl.marketing_uuid,
-							dvl.marketing_name
+							dvl.marketing_name,
+							vodf.order_type,
+							vodf.is_inch
 						ORDER BY dvl.created_at DESC;`;
 
 	try {
