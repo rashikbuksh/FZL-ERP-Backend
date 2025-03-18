@@ -1150,18 +1150,7 @@ export async function selectOrderDescription(req, res, next) {
 	if (page == 'finishing_batch') {
 		page_query = sql` 
 				SELECT
-					DISTINCT vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, 
-						CASE 
-							WHEN vodf.order_type = 'slider' 
-							THEN ' - Slider' 
-							WHEN vodf.order_type = 'tape'
-							THEN ' - Tape'
-							WHEN vodf.is_multi_color = 1
-							THEN ' - Multi Color'
-							ELSE ''
-							END
-						) AS label,
+					DISTINCT oe.uuid as order_entry_uuid,
 					CASE 
 						WHEN vodf.order_type = 'tape' THEN 'Meter' 
 						WHEN vodf.order_type = 'slider' THEN 'Pcs'
