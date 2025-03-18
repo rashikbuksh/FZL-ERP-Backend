@@ -158,7 +158,8 @@ export async function selectByManualPiUuid(req, res, next) {
 			size: manual_pi_entry.size,
 			quantity: decimalToNumber(manual_pi_entry.quantity),
 			unit_price: decimalToNumber(manual_pi_entry.unit_price),
-			value: sql` ROUND(coalesce(manual_pi_entry.unit_price,0)::numeric / 12 * coalesce(manual_pi_entry.quantity,0)::numeric, 3) `,
+			value: sql` CASE WHEN manual_pi_entry.is_zipper = 'true' THEN  ROUND(coalesce(manual_pi_entry.unit_price,0)::numeric / 12 * coalesce(manual_pi_entry.quantity,0)::numeric, 3)
+			ELSE ROUND(coalesce(manual_pi_entry.unit_price,0)::numeric * coalesce(manual_pi_entry.quantity,0)::numeric, 3) END `,
 			is_zipper: manual_pi_entry.is_zipper,
 			created_at: manual_pi_entry.created_at,
 			updated_at: manual_pi_entry.updated_at,
