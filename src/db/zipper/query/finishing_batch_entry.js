@@ -603,7 +603,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 								ELSE (zfbe.quantity::float8 - COALESCE(sfg.warehouse, 0)::float8 - COALESCE(sfg.delivered, 0)::float8)::float8 
 							END = 0
 					`);
-	} else if (status == 'over_delivered') {
+	} else if (status == 'over_production') {
 		query.append(sql`AND CASE 
 								WHEN lower(${item_name}) = 'vislon' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 
 								WHEN ${section} = 'finishing_prod' THEN (zfbe.quantity - COALESCE(zfbe.finishing_prod, 0))::float8 

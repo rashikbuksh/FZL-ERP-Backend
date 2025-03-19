@@ -4219,6 +4219,11 @@ export const pathZipperFinishingBatchEntry = {
 					'true',
 					'false',
 				]),
+				SE.parameter_query('status', 'status', [
+					'pending',
+					'completed',
+					'over_production',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {
