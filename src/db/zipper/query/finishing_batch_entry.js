@@ -235,6 +235,9 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid 
         	AND vodf.zipper_number = tcr.zipper_number_uuid 
 			AND CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END 
+			AND (
+					lower(vodf.item_name) != 'nylon' OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+				)
 		LEFT JOIN
 			zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid AND vodf.item = tc.item_uuid 
 		AND vodf.zipper_number = tc.zipper_number_uuid 
@@ -257,18 +260,11 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
                 THEN 1=1 
                 WHEN 
 					(
-						vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1 AND (
-							lower(vodf.item_name) != 'nylon'
-							OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-						)
+						vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1
 					)
                 THEN 1=1
                 ELSE (
-						sfg.recipe_uuid IS NOT NULL AND
-						(
-							lower(vodf.item_name) != 'nylon'
-							OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-						)
+						sfg.recipe_uuid IS NOT NULL
 					)
             END
 		AND (

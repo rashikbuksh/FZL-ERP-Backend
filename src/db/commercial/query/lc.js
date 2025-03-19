@@ -132,7 +132,12 @@ export async function selectAll(req, res, next) {
 			users.name AS created_by_name,
 			lc.created_at,
 			lc.updated_at,
-			lc.remarks
+			lc.remarks,
+			lc.export_lc_number,
+			lc.export_lc_date,
+			lc.export_expire_date,
+			lc.up_date,
+			lc.up_number
 		FROM
 			commercial.lc
 		LEFT JOIN
@@ -212,7 +217,12 @@ export async function select(req, res, next) {
 			users.name AS created_by_name,
 			lc.created_at,
 			lc.updated_at,
-			lc.remarks
+			lc.remarks,
+			lc.export_lc_number,
+			lc.export_lc_date,
+			lc.export_expire_date,
+			lc.up_date,
+			lc.up_number
 		FROM
 			commercial.lc
 		LEFT JOIN
@@ -327,7 +337,12 @@ export async function selectLcByLcNumber(req, res, next) {
 			users.name AS created_by_name,
 			lc.created_at,
 			lc.updated_at,
-			lc.remarks
+			lc.remarks,
+			lc.export_lc_number,
+			lc.export_lc_date,
+			lc.export_expire_date,
+			lc.up_date,
+			lc.up_number
 		FROM
 			commercial.lc
 		LEFT JOIN
