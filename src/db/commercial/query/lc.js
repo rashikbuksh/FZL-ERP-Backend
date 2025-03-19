@@ -135,7 +135,7 @@ export async function selectAll(req, res, next) {
 			lc.remarks,
 			lc.export_lc_number,
 			lc.export_lc_date,
-			lc.export_expire_date,
+			lc.export_lc_expire_date,
 			lc.up_date,
 			lc.up_number
 		FROM
@@ -220,7 +220,7 @@ export async function select(req, res, next) {
 			lc.remarks,
 			lc.export_lc_number,
 			lc.export_lc_date,
-			lc.export_expire_date,
+			lc.export_lc_expire_date,
 			lc.up_date,
 			lc.up_number
 		FROM
@@ -340,7 +340,7 @@ export async function selectLcByLcNumber(req, res, next) {
 			lc.remarks,
 			lc.export_lc_number,
 			lc.export_lc_date,
-			lc.export_expire_date,
+			lc.export_lc_expire_date,
 			lc.up_date,
 			lc.up_number
 		FROM

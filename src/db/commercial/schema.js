@@ -60,7 +60,7 @@ export const lc = commercial.table('lc', {
 	lc_value: PG_DECIMAL('lc_value').default(0),
 	export_lc_number: text('export_lc_number').notNull(),
 	export_lc_date: DateTime('export_lc_date').notNull(),
-	export_expire_date: DateTime('export_expire_date').notNull(),
+	export_lc_expire_date: DateTime('export_lc_expire_date').notNull(),
 	up_date: DateTime('up_date').default(null),
 	up_number: text('up_number').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),

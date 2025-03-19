@@ -38,7 +38,7 @@ export const defCommercialLc = SED({
 		'lc_value',
 		'export_lc_number',
 		'export_lc_date',
-		'export_expire_date',
+		'export_lc_expire_date',
 		'up_date',
 		'up_number',
 		'created_at',
