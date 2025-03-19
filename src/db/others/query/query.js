@@ -1351,7 +1351,7 @@ export async function selectOrderDescription(req, res, next) {
 
 		// data pass as array and pageData pass as object
 		const response = page
-			? { data: dataData?.rows, pageData: pageData }
+			? { data: dataData?.rows, pageData: pageData?.rows }
 			: { data: dataData?.rows };
 
 		const toast = {
