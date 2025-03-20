@@ -13,6 +13,7 @@ import { sliderRouter } from '../db/slider/route.js';
 import { threadRouter } from '../db/thread/route.js';
 import { threadRouterV2 } from '../db/thread/routev2.js';
 import { zipperRouter } from '../db/zipper/route.js';
+import { zipperRouterV2 } from '@/db/zipper/routev2.js';
 
 const route = express.Router();
 
@@ -50,6 +51,9 @@ route.use('/purchase', purchaseRouter);
 
 // zipper routes
 route.use('/zipper', zipperRouter);
+
+// * zipper routes v2
+route.use('/v2/zipper', zipperRouterV2);
 
 // slider routes
 route.use('/slider', sliderRouter);

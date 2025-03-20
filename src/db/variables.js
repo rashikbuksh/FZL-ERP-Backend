@@ -52,6 +52,8 @@ export function constructSelectAllQuery(
 	// Include additional search fields from joined tables
 	const allSearchFields = [...searchFields, ...additionalSearchFields];
 
+	console.log('All search fields:', allSearchFields);
+
 	// Apply search filter
 	if (q) {
 		const searchConditions = allSearchFields.map((field) =>
