@@ -52,6 +52,8 @@ export const packing_list = delivery.table('packing_list', {
 	thread_order_info_uuid: defaultUUID('thread_order_info_uuid')
 		.references(() => threadSchema.order_info.uuid)
 		.default(null),
+	warehouse_received_date: DateTime('warehouse_received_date').default(null),
+	gate_pass_date: DateTime('gate_pass_date').default(null),
 });
 
 export const packing_list_entry = delivery.table('packing_list_entry', {
