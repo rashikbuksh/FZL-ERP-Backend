@@ -403,7 +403,9 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
             packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
             THEN marketing.name 
             ELSE toi_marketing.name 
-        END AS marketing_name
+        END AS marketing_name,
+        packing_list.warehouse_received_date,
+        packing_list.gate_pass_date
     FROM
         delivery.packing_list
     LEFT JOIN

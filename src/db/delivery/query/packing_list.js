@@ -179,7 +179,9 @@ export async function selectAll(req, res, next) {
         dvl.remarks,
         dvl.gate_pass,
 		dvl.marketing_uuid,
-		dvl.marketing_name
+		dvl.marketing_name,
+		dvl.warehouse_received_date,
+		dvl.gate_pass_date
     ORDER BY 
         dvl.created_at DESC`
 	);
@@ -237,7 +239,9 @@ export async function select(req, res, next) {
 			dvl.remarks,
 			dvl.gate_pass,
 			dvl.marketing_uuid,
-			dvl.marketing_name
+			dvl.marketing_name,
+			dvl.warehouse_received_date,
+			dvl.gate_pass_date
 		ORDER BY 
 			dvl.created_at DESC
 		
