@@ -60,7 +60,7 @@ export const lc = commercial.table('lc', {
 	lc_value: PG_DECIMAL('lc_value').default(0),
 	export_lc_number: text('export_lc_number').notNull(),
 	export_lc_date: DateTime('export_lc_date').notNull(),
-	export_lc_expire_date: DateTime('export_lc_expire_date').notNull(),
+	export_lc_expire_date: DateTime('export_lc_expire_date').default(null),
 	up_date: DateTime('up_date').default(null),
 	up_number: text('up_number').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
@@ -75,7 +75,9 @@ export const lc_entry = commercial.table('lc_entry', {
 	ldbc_fdbc: text('ldbc_fdbc').default(null),
 	receive_date: DateTime('receive_date').default(null),
 	handover_date: DateTime('handover_date').default(null),
-	document_submission_date: DateTime('document_submission_date').default(null),
+	document_submission_date: DateTime('document_submission_date').default(
+		null
+	),
 	document_receive_date: DateTime('document_receive_date').default(null),
 	bank_forward_date: DateTime('bank_forward_date').default(null),
 	acceptance_date: DateTime('acceptance_date').default(null),
