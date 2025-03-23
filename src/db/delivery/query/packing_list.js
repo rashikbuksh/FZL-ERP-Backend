@@ -548,6 +548,8 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 export async function selectPackingListReceivedLog(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { from, to } = req.query;
+
 	const query = sql`
 					SELECT dvl.*,
 						SUM(ple.quantity)::float8 as total_quantity,
@@ -559,7 +561,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
-					WHERE dvl.is_warehouse_received = TRUE
+					WHERE dvl.is_warehouse_received = TRUE AND dvl.warehouse_received_date::date BETWEEN ${from} AND ${to}
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
@@ -613,6 +615,8 @@ export async function selectPackingListReceivedLog(req, res, next) {
 export async function selectPackingListWarehouseOutLog(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { from, to } = req.query;
+
 	const query = sql`
 					SELECT dvl.*,
 						SUM(ple.quantity)::float8 as total_quantity,
@@ -624,7 +628,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
-					WHERE dvl.gate_pass = 1
+					WHERE dvl.gate_pass = 1 AND dvl.gate_pass_date::date BETWEEN ${from} AND ${to}
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
