@@ -40,6 +40,11 @@ export const type = material.table('type', {
 	remarks: text('remarks').default(null),
 });
 
+export const store_type_enum = material.enum('store_type_enum', [
+	'rm',
+	'accessories',
+]);
+
 export const info = material.table('info', {
 	uuid: uuid_primary,
 	index: integer('index').default(0),
@@ -61,6 +66,7 @@ export const info = material.table('info', {
 	updated_at: DateTime('updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
+	store_type: store_type_enum('store_type').notNull().default('rm'),
 });
 
 export const stock = material.table('stock', {

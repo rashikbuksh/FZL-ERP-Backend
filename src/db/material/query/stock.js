@@ -135,6 +135,7 @@ export async function selectAll(req, res, next) {
 			vislon: decimalToNumber(stock.vislon),
 			zipper_dying: decimalToNumber(stock.zipper_dying),
 			remarks: stock.remarks,
+			store_type: info.store_type,
 		})
 		.from(stock)
 		.leftJoin(info, eq(stock.material_uuid, info.uuid));

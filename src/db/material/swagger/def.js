@@ -56,6 +56,7 @@ export const defMaterialInfo = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		store_type: SE.string('rm'),
 	},
 	xml: 'Material/Info',
 });
