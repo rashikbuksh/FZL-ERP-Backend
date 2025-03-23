@@ -1,14 +1,15 @@
-import { request } from 'express';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 // * Material Info * //
-
 export const pathMaterialInfo = {
 	'/material/info': {
 		get: {
 			tags: ['material.info'],
 			summary: 'Get all material info',
 			description: 'Get all material info',
+			parameters: [
+				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+			],
 			responses: {
 				200: {
 					description: 'Returns all material info',
