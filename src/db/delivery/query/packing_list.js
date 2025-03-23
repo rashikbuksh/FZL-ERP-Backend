@@ -544,3 +544,132 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 		handleError({ error, res });
 	}
 }
+
+export async function selectPackingListReceivedLog(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+					SELECT dvl.*,
+						SUM(ple.quantity)::float8 as total_quantity,
+						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
+						ARRAY_AGG(DISTINCT CASE 
+							WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END) as color
+					FROM delivery.v_packing_list dvl
+					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
+					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+					WHERE dvl.is_warehouse_received = TRUE
+					GROUP BY
+						dvl.uuid,
+						dvl.order_info_uuid,
+						dvl.packing_list_wise_rank,
+						dvl.packing_list_wise_count,
+						dvl.packing_number,
+						dvl.order_number,
+						dvl.item_for,
+						dvl.challan_uuid,
+						dvl.challan_number,
+						dvl.carton_size,
+						dvl.carton_weight,
+						dvl.carton_uuid,
+						dvl.carton_name,
+						dvl.is_warehouse_received,
+						dvl.factory_uuid,
+						dvl.factory_name,
+						dvl.buyer_uuid,
+						dvl.buyer_name,
+						dvl.party_uuid,
+						dvl.party_name,
+						dvl.created_by,
+						dvl.created_by_name,
+						dvl.created_at,
+						dvl.updated_at,
+						dvl.remarks,
+						dvl.gate_pass,
+						dvl.marketing_uuid,
+						dvl.marketing_name,
+						dvl.warehouse_received_date,
+						dvl.gate_pass_date
+					ORDER BY
+						dvl.created_at DESC
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Packing list received log',
+		};
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectPackingListWarehouseOutLog(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+					SELECT dvl.*,
+						SUM(ple.quantity)::float8 as total_quantity,
+						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
+						ARRAY_AGG(DISTINCT CASE 
+							WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END) as color
+					FROM delivery.v_packing_list dvl
+					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
+					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+					WHERE dvl.gate_pass = 1
+					GROUP BY
+						dvl.uuid,
+						dvl.order_info_uuid,
+						dvl.packing_list_wise_rank,
+						dvl.packing_list_wise_count,
+						dvl.packing_number,
+						dvl.order_number,
+						dvl.item_for,
+						dvl.challan_uuid,
+						dvl.challan_number,
+						dvl.carton_size,
+						dvl.carton_weight,
+						dvl.carton_uuid,
+						dvl.carton_name,
+						dvl.is_warehouse_received,
+						dvl.factory_uuid,
+						dvl.factory_name,
+						dvl.buyer_uuid,
+						dvl.buyer_name,
+						dvl.party_uuid,
+						dvl.party_name,
+						dvl.created_by,
+						dvl.created_by_name,
+						dvl.created_at,
+						dvl.updated_at,
+						dvl.remarks,
+						dvl.gate_pass,
+						dvl.marketing_uuid,
+						dvl.marketing_name,
+						dvl.warehouse_received_date,
+						dvl.gate_pass_date
+					ORDER BY
+						dvl.created_at DESC
+	`;
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Packing list warehouse out log',
+		};
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
