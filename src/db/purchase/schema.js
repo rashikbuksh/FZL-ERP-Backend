@@ -28,6 +28,11 @@ export const purchase_description_sequence = purchase.sequence(
 	}
 );
 
+export const store_type_enum = purchase.enum('store_type_enum', [
+	'rm',
+	'accessories',
+]);
+
 export const description = purchase.table('description', {
 	uuid: uuid_primary,
 	id: integer('id')
@@ -41,6 +46,7 @@ export const description = purchase.table('description', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	store_type: store_type_enum('store_type').notNull().default('rm'),
 });
 
 export const entry = purchase.table('entry', {
