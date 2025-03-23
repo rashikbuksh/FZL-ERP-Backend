@@ -114,6 +114,7 @@ export async function selectAll(req, res, next) {
 								THEN 0 
 								ELSE purchase_entry.total_price / purchase_entry.total_quantity 
 								END`),
+			store_type: info.store_type,
 		})
 		.from(info)
 		.leftJoin(section, eq(info.section_uuid, section.uuid))
@@ -170,6 +171,7 @@ export async function select(req, res, next) {
 			created_by: info.created_by,
 			created_by_name: hrSchema.users.name,
 			remarks: info.remarks,
+			store_type: info.store_type,
 		})
 		.from(info)
 		.leftJoin(section, eq(info.section_uuid, section.uuid))
