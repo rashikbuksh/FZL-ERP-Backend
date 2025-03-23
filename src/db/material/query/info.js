@@ -85,6 +85,7 @@ export async function selectAll(req, res, next) {
 
 	// const subqueryData = await subQuery;
 	// console.log(subqueryData);
+	const { type } = req.query;
 
 	const resultPromise = db
 		.select({
@@ -131,6 +132,10 @@ export async function selectAll(req, res, next) {
 			eq(info.uuid, sql`purchase_entry.material_uuid`)
 		)
 		.orderBy(asc(info.name));
+
+	if (type) {
+		resultPromise.where(eq(info.store_type, type));
+	}
 
 	try {
 		const data = await resultPromise;
