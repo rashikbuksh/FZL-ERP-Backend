@@ -326,6 +326,63 @@ export const pathDeliveryPackingList = {
 			},
 		},
 	},
+	'/delivery/packing-list-received-log': {
+		get: {
+			tags: ['delivery.packing-list'],
+			summary: 'Get all packing list received log',
+			description: 'Get all packing list received log',
+			// operationId: "getPackingListReceivedLog",
+			responses: {
+				200: {
+					description: 'Return list of packing list received log',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: SE.uuid(),
+									packing_list_uuid: SE.uuid(),
+									received_quantity: SE.number(0),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/delivery/packing-list-warehouse-out-log': {
+		get: {
+			tags: ['delivery.packing-list'],
+			summary: 'Get all packing list warehouse out log',
+			description: 'Get all packing list warehouse out log',
+			// operationId: "getPackingListWarehouseOutLog",
+			responses: {
+				200: {
+					description:
+						'Return list of packing list warehouse out log',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: SE.uuid(),
+									packing_list_uuid: SE.uuid(),
+									warehouse_out_quantity: SE.number(0),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 // * Delivery PackingListEntry * //
