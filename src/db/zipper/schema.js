@@ -212,7 +212,7 @@ export const order_entry = zipper.table('order_entry', {
 	remarks: text('remarks').default(null),
 	is_inch: integer('is_inch').default(0),
 	index: integer('index').notNull().default(1),
-	updated_by: defaultUUID('updated_by').references(() => hrSchema.users.uuid),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 });
 
 export const sfg = zipper.table('sfg', {
