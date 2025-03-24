@@ -4,8 +4,7 @@ import db from '../../index.js';
 import { sql } from 'drizzle-orm';
 
 export async function getOrderDetailsPagination(req, res, next) {
-	const { all, approved, type, own_uuid, q, page, limit, sort, orderby } =
-		req.query;
+	const { all, approved, type, own_uuid } = req.query;
 
 	// console.log(all, '- all', approved, '- approved');
 
@@ -71,6 +70,8 @@ export async function getOrderDetailsPagination(req, res, next) {
 			}
             ${marketingUuid != null ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
         `;
+
+		let { limit, page, orderby, sort } = req.query;
 
 		limit = limit || 10;
 		page = page || 1;
