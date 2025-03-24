@@ -147,7 +147,7 @@ export async function getOrderDetailsPagination(req, res, next) {
 
 		// Prepare the response
 		const response = {
-			pagination,
+			pagination: pagination,
 			data: dataResult.rows,
 		};
 
@@ -157,7 +157,7 @@ export async function getOrderDetailsPagination(req, res, next) {
 			message: 'Order Info list',
 		};
 
-		res.status(200).json({ toast, data: response });
+		res.status(200).json({ toast, response });
 	} catch (error) {
 		await handleError({ error, res });
 	}
