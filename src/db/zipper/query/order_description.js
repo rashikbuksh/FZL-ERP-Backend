@@ -854,7 +854,7 @@ export async function selectOrderNumberToGetOrderDescriptionAndOrderEntry(
 
 			const orderEntriesWithHistory = await Promise.all(
 				(order_entry?.data?.data || []).map(async (entry) => {
-					console.log('entry', entry.order_entry_uuid);
+					// console.log('entry', entry.order_entry_uuid);
 					const historyResponse = await api.get(
 						`/zipper/order-entry-log?order_entry_uuid=${entry.order_entry_uuid}`
 					);
