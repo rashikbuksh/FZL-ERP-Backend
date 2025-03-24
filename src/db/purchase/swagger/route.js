@@ -1,3 +1,5 @@
+import SE, { SED } from '../../../util/swagger_example.js';
+
 // * Purchase Vendor * //
 const pathPurchaseVendor = {
 	'/purchase/vendor': {
@@ -125,7 +127,9 @@ const pathPurchaseDescription = {
 			summary: 'Get all descriptions',
 			tags: ['purchase.description'],
 			operationId: 'getDescriptions',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+			],
 			responses: {
 				200: {
 					description: 'OK',

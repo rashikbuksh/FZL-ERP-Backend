@@ -37,6 +37,7 @@ export const defPurchaseDescription = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('This is a description'),
+		store_type: SE.string('rm'),
 	},
 	xml: 'Purchase/Description',
 });

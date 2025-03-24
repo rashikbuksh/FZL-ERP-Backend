@@ -1,9 +1,6 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
@@ -83,6 +80,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { s_type } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: description.uuid,
@@ -97,14 +96,20 @@ export async function selectAll(req, res, next) {
 			created_at: description.created_at,
 			updated_at: description.updated_at,
 			remarks: description.remarks,
+			store_type: description.store_type,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
 		.leftJoin(
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)
-		)
-		.orderBy(desc(description.created_at));
+		);
+
+	if (s_type) {
+		resultPromise.where(eq(description.store_type, s_type));
+	}
+
+	resultPromise.orderBy(desc(description.created_at));
 
 	try {
 		const data = await resultPromise;
@@ -136,6 +141,7 @@ export async function select(req, res, next) {
 			created_at: description.created_at,
 			updated_at: description.updated_at,
 			remarks: description.remarks,
+			store_type: description.store_type,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
@@ -219,6 +225,7 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			updated_at: description.updated_at,
 			remarks: description.remarks,
 			entry_remarks: entry.remarks,
+			store_type: description.store_type,
 		})
 		.from(entry)
 		.leftJoin(
