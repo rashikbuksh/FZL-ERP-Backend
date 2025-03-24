@@ -118,7 +118,8 @@ export async function getOrderDetailsPagination(req, res, next) {
 			}
             ${marketingUuid != null ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
         ${orderby || sort ? sql`ORDER BY ${sql.raw(orderby)} ${sql.raw(sort)}` : sql`ORDER BY order_description_created_at DESC`}
-        LIMIT ${limit} OFFSET ${page * limit - limit}`;
+        ${limit && page ? sql`LIMIT ${sql.raw(limit)} OFFSET ${sql.raw(page) * sql.raw(limit) - sql.raw(limit)}` : sql``}
+		`;
 
 		// Execute the queries
 		const dataPromise = db.execute(sql_query);
