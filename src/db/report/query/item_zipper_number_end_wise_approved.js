@@ -133,7 +133,6 @@ export async function selectPartyWiseApprovedQuantity(req, res, next) {
                         zipper.sfg sfg 
                         LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                         LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                        ) as approved
                     WHERE 
                         vodf.is_cancelled = FALSE
                         AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
