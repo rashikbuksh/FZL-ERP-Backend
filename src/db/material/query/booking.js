@@ -109,7 +109,7 @@ export async function selectAll(req, res, next) {
 
 	if (s_type) bookingPromise.where(eq(info.store_type, s_type));
 
-	resultPromise.orderBy(desc(booking.created_at));
+	bookingPromise.orderBy(desc(booking.created_at));
 
 	try {
 		const data = await bookingPromise;
