@@ -5,7 +5,20 @@ import db from '../../index.js';
 export async function selectItemWiseProduction(req, res, next) {
 	const { own_uuid, from, to } = req?.query;
 
-	const query = sql`
+	// get marketing_uuid from own_uuid
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+        SELECT uuid
+        FROM public.marketing
+        WHERE user_uuid = ${own_uuid};`;
+
+	try {
+		if (own_uuid) {
+			const marketingUuidData = await db.execute(marketingUuidQuery);
+			marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		}
+
+		const query = sql`
         SELECT 
             CASE 
                 WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
@@ -38,6 +51,8 @@ export async function selectItemWiseProduction(req, res, next) {
                 GROUP BY
                     od.uuid
         ) packing_list_sum ON vodf.order_description_uuid = packing_list_sum.order_description_uuid
+        WHERE
+            ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
         GROUP BY 
             CASE 
                 WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
@@ -69,11 +84,11 @@ export async function selectItemWiseProduction(req, res, next) {
                 GROUP BY
                     oe.order_info_uuid
         ) packing_list_sum ON toi.uuid = packing_list_sum.order_info_uuid
+        WHERE
+            ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`1=1`}
         GROUP BY 
             item_name 
         `;
-
-	try {
 		const data = await db.execute(query);
 		return res.status(200).json({ data });
 	} catch (error) {
@@ -132,10 +147,13 @@ export async function selectItemZipperEndWiseProduction(req, res, next) {
                         LEFT JOIN
                             zipper.order_description od ON oe.order_description_uuid = od.uuid
                         WHERE
-                            pl.item_for NOT IN ('thread', 'sample_thread') AND ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                            pl.item_for NOT IN ('thread', 'sample_thread') 
+                            AND ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                         GROUP BY
                             od.uuid
                     ) packing_list_sum ON vodf.order_description_uuid = packing_list_sum.order_description_uuid
+                    WHERE
+                        ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
                     GROUP BY 
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
@@ -149,9 +167,7 @@ export async function selectItemZipperEndWiseProduction(req, res, next) {
                         vodf.zipper_number_name,
                         vodf.end_type_name
                     ORDER BY 
-                        item_name, zipper_number_name, end_type_name;
-
-    `;
+                        item_name, zipper_number_name, end_type_name;`;
 		const resultPromise = db.execute(query);
 
 		// group data using item_name

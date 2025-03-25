@@ -32,6 +32,10 @@ import {
 } from './query/delivery_report.js';
 import { selectCountLengthWiseDeliveryReport } from './query/count_length_wise_delivery_report.js';
 import { selectPackingList } from './query/packing_list_report.js';
+import {
+	selectItemWiseProduction,
+	selectItemZipperEndWiseProduction,
+} from './query/production_query.js';
 
 const reportRouter = Router();
 
@@ -182,6 +186,17 @@ reportRouter.get('/delivery-report-thread', selectDeliveryReportThread);
 
 // * Packing List Report
 reportRouter.get('/packing-list-report', selectPackingList);
+
+// * Production Report
+
+// ? Item Wise Production Report
+reportRouter.get('/item-wise-production-report', selectItemWiseProduction);
+
+// ? Item Zipper End Wise Production Report
+reportRouter.get(
+	'/item-zipper-end-wise-production-report',
+	selectItemZipperEndWiseProduction
+);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -1142,6 +1157,46 @@ export const pathReport = {
 					weight: SE.number(610),
 					created_at: SE.date_time(),
 					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/item-wise-production-report': {
+		get: {
+			summary: 'Item Wise Production Report',
+			description: 'Item Wise Production Report',
+			tags: ['report'],
+			operationId: 'selectItemWiseProductionReport',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					item_name: SE.string('Item Name'),
+					total_production: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/item-zipper-end-wise-production-report': {
+		get: {
+			summary: 'Item Zipper End Wise Production Report',
+			description: 'Item Zipper End Wise Production Report',
+			tags: ['report'],
+			operationId: 'selectItemZipperEndWiseProductionReport',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					item_name: SE.string('Item Name'),
+					zipper_number_name: SE.string('Zipper Number Name'),
+					end_type_name: SE.string('End Type Name'),
+					total_production: SE.number(610),
 				}),
 			},
 		},
