@@ -103,6 +103,9 @@ export async function remove(req, res, next) {
 
 export async function selectAll(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	const { s_type } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: trx.uuid,
@@ -121,6 +124,7 @@ export async function selectAll(req, res, next) {
 			remarks: trx.remarks,
 			booking_uuid: trx.booking_uuid,
 			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text))`,
+			store_type: info.store_type,
 		})
 		.from(trx)
 		.leftJoin(info, eq(trx.material_uuid, info.uuid))
@@ -134,8 +138,11 @@ export async function selectAll(req, res, next) {
 			hrSchema.department,
 			eq(hrSchema.users.department_uuid, hrSchema.department.uuid)
 		)
-		.leftJoin(booking, eq(trx.booking_uuid, booking.uuid))
-		.orderBy(desc(trx.created_at));
+		.leftJoin(booking, eq(trx.booking_uuid, booking.uuid));
+
+	if (s_type) resultPromise.where(eq(info.store_type, s_type));
+
+	resultPromise.orderBy(desc(trx.created_at));
 
 	try {
 		const data = await resultPromise;

@@ -18,22 +18,13 @@ export const pathMaterialInfo = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									section_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									section_uuid: SE.uuid(),
 									section_name: {
 										type: 'string',
 										example: 'section 1',
 									},
-									type_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									type_uuid: SE.uuid(),
 									type_name: {
 										type: 'string',
 										example: 'type 1',
@@ -382,14 +373,8 @@ export const pathMaterialStock = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									material_uuid: SE.uuid(),
 									material_name: {
 										type: 'string',
 										example: 'material 1',
@@ -757,6 +742,9 @@ export const pathMaterialTrx = {
 			tags: ['material.trx'],
 			summary: 'Get all material trx',
 			description: 'Get all material trx',
+			parameters: [
+				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+			],
 			responses: {
 				200: {
 					description: 'Returns all material trx',
@@ -765,14 +753,8 @@ export const pathMaterialTrx = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									material_uuid: SE.uuid(),
 									material_name: {
 										type: 'string',
 										example: 'material 1',
@@ -785,10 +767,7 @@ export const pathMaterialTrx = {
 										type: 'number',
 										example: 10.0,
 									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									created_by: SE.uuid(),
 									created_by_name: {
 										type: 'string',
 										example: 'admin',
@@ -801,16 +780,8 @@ export const pathMaterialTrx = {
 										type: 'string',
 										example: 'Admin',
 									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
 									remarks: {
 										type: 'string',
 										example: 'This is an entry',
@@ -1205,14 +1176,8 @@ export const pathMaterialUsed = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									material_uuid: SE.uuid(),
 									material_name: {
 										type: 'string',
 										example: 'material 1',
@@ -1326,24 +1291,13 @@ export const pathMaterialUsed = {
 										type: 'string',
 										example: 'tape_making',
 									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									created_by: SE.uuid(),
 									created_by_name: {
 										type: 'string',
 										example: 'admin',
 									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
 									remarks: {
 										type: 'string',
 										example: 'This is an entry',
@@ -1834,28 +1788,16 @@ export const pathMaterialStockToSFG = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									material_uuid: SE.uuid(),
 									material_name: {
 										type: 'string',
 										example: 'material 1',
 									},
 									unit: { type: 'string', example: 'kg' },
 									stock: SE.number(10.0),
-									order_entry_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_description_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									order_entry_uuid: SE.uuid(),
+									order_description_uuid: SE.uuid(),
 									trx_to: {
 										type: 'string',
 										example: 'tape_making',
@@ -1864,24 +1806,13 @@ export const pathMaterialStockToSFG = {
 										type: 'number',
 										example: 10.0,
 									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									created_by: SE.uuid(),
 									created_by_name: {
 										type: 'string',
 										example: 'admin',
 									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
 									remarks: {
 										type: 'string',
 										example: 'This is an entry',
@@ -2135,6 +2066,9 @@ export const pathMaterialBooking = {
 			tags: ['material.booking'],
 			summary: 'Get all material booking',
 			description: 'Get all material booking',
+			parameters: [
+				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+			],
 			responses: {
 				200: {
 					description: 'Returns all material booking',
@@ -2143,54 +2077,20 @@ export const pathMaterialBooking = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
 									id: { type: 'number', example: 1 },
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									material_name: {
-										type: 'string',
-										example: 'material 1',
-									},
-									marketing_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									marketing_name: {
-										type: 'string',
-										example: 'marketing 1',
-									},
+									material_uuid: SE.uuid(),
+									material_name: SE.string('material 1'),
+									marketing_uuid: SE.uuid(),
+									marketing_name: SE.string('marketing 1'),
 									quantity: SE.number(10.0),
-									trx_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'admin',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'This is an entry',
-									},
+									trx_quantity: SE.number(10.0),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('admin'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string(),
+									store_type: SE.string('rm'),
 								},
 							},
 						},

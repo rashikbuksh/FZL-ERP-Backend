@@ -108,7 +108,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { purpose, trx_to } = req.query;
+	const { purpose, trx_to, s_type } = req.query;
 
 	const query = sql`
     SELECT
@@ -130,7 +130,8 @@ export async function selectAll(req, res, next) {
 		mtaod.remarks,
 		mtaod.booking_uuid,
 		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number,
-		mtaod.purpose
+		mtaod.purpose,
+		info.store_type
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
@@ -146,6 +147,7 @@ export async function selectAll(req, res, next) {
 	WHERE
 		${purpose ? sql`mtaod.purpose = ${purpose}` : sql`TRUE`}
 		${trx_to ? sql`OR mtaod.trx_to = ${trx_to}` : sql``}
+		${s_type ? sql`AND info.store_type = ${s_type}` : sql``}
 	ORDER BY mtaod.created_at DESC
 	`;
 

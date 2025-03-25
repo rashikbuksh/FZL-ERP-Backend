@@ -204,6 +204,8 @@ export async function selectPurchaseDetailsByPurchaseDescriptionUuid(
 }
 
 export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
+	const { s_type } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: description.uuid,
@@ -241,6 +243,10 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			materialSchema.info,
 			eq(entry.material_uuid, materialSchema.info.uuid)
 		);
+
+	if (s_type) {
+		resultPromise.where(eq(description.store_type, s_type));
+	}
 
 	try {
 		const data = await resultPromise;

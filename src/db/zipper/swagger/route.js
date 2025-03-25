@@ -2761,6 +2761,7 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 			parameters: [
 				SE.parameter_query('trx_to', 'trx_to', 'string'),
 				SE.parameter_query('purpose', 'purpose'),
+				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
 			],
 			responses: {
 				200: SE.response_schema(200, {

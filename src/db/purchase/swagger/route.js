@@ -546,7 +546,9 @@ const pathPurchaseDescription = {
 			summary: 'Get purchase log',
 			tags: ['purchase.description'],
 			operationId: 'getPurchaseLog',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+			],
 			responses: {
 				200: {
 					description: 'OK',
@@ -557,18 +559,12 @@ const pathPurchaseDescription = {
 								items: {
 									type: 'object',
 									properties: {
-										uuid: {
-											type: 'string',
-											example: 'igD0v9DIJQhJeet',
-										},
+										uuid: SE.uuid(),
 										purchase_id: {
 											type: 'string',
 											example: 'SR24-0001',
 										},
-										vendor_uuid: {
-											type: 'string',
-											example: 'igD0v9DIJQhJeet',
-										},
+										vendor_uuid: SE.uuid(),
 										vendor_name: {
 											type: 'string',
 											example: 'John Doe',
@@ -585,44 +581,24 @@ const pathPurchaseDescription = {
 											type: 'string',
 											example: '123456789',
 										},
-										material_uuid: {
-											type: 'string',
-											example: 'igD0v9DIJQhJeet',
-										},
+										material_uuid: SE.uuid(),
 										material_name: {
 											type: 'string',
 											example: 'material 1',
 										},
-										quantity: {
-											type: 'number',
-											example: 1000.0,
-										},
-										price: {
-											type: 'number',
-											example: 1111.0,
-										},
+										quantity: SE.number(10.0),
+										price: SE.number(10.0),
 										unit: {
 											type: 'string',
 											example: 'kg',
 										},
-										created_by: {
-											type: 'string',
-											example: 'igD0v9DIJQhJeet',
-										},
+										created_by: SE.uuid(),
 										created_by_name: {
 											type: 'string',
 											example: 'John Doe',
 										},
-										created_at: {
-											type: 'string',
-											format: 'date-time',
-											example: '2024-01-01 00:00:00',
-										},
-										updated_at: {
-											type: 'string',
-											format: 'date-time',
-											example: '2024-01-01 00:00:00',
-										},
+										created_at: SE.date_time(),
+										updated_at: SE.date_time(),
 										remarks: {
 											type: 'string',
 											example: 'This is a description',

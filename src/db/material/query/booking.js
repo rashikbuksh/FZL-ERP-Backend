@@ -1,8 +1,5 @@
 import { asc, desc, eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
@@ -76,6 +73,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { s_type } = req.query;
+
 	const bookingPromise = db
 		.select({
 			uuid: booking.uuid,
@@ -97,6 +96,7 @@ export async function selectAll(req, res, next) {
 			created_at: booking.created_at,
 			updated_at: booking.updated_at,
 			remarks: booking.remarks,
+			store_type: info.store_type,
 		})
 		.from(booking)
 		.leftJoin(hrSchema.users, eq(booking.created_by, hrSchema.users.uuid))
@@ -105,8 +105,11 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			publicSchema.marketing,
 			eq(booking.marketing_uuid, publicSchema.marketing.uuid)
-		)
-		.orderBy(desc(booking.created_at));
+		);
+
+	if (s_type) bookingPromise.where(eq(info.store_type, s_type));
+
+	resultPromise.orderBy(desc(booking.created_at));
 
 	try {
 		const data = await bookingPromise;
