@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { handleError } from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectItemWiseProduction(req, res, next) {
@@ -90,7 +90,14 @@ export async function selectItemWiseProduction(req, res, next) {
             item_name 
         `;
 		const data = await db.execute(query);
-		return res.status(200).json({ data });
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Item Wise Production',
+		};
+
+		return res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		handleError({ error, res });
 	}
@@ -99,7 +106,7 @@ export async function selectItemWiseProduction(req, res, next) {
 export async function selectItemZipperEndWiseProduction(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { own_uuid } = req.query;
+	const { own_uuid, from, to } = req.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -180,7 +187,7 @@ export async function selectItemZipperEndWiseProduction(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'Item zipper number end wise approved quantity',
+			message: 'Item zipper number end wise Production',
 		};
 
 		return res.status(200).json({ toast, data: data.rows });
