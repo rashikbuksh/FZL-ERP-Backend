@@ -552,6 +552,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 
 	const query = sql`
 					SELECT dvl.*,
+						vodf.item_description,
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
@@ -560,11 +561,13 @@ export async function selectPackingListReceivedLog(req, res, next) {
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
 					WHERE dvl.is_warehouse_received = TRUE AND dvl.warehouse_received_date::date BETWEEN ${from} AND ${to}
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
+						vodf.item_description,
 						dvl.packing_list_wise_rank,
 						dvl.packing_list_wise_count,
 						dvl.packing_number,
@@ -619,6 +622,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 
 	const query = sql`
 					SELECT dvl.*,
+						vodf.item_description,
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
@@ -627,11 +631,13 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
 					WHERE dvl.gate_pass = 1 AND dvl.gate_pass_date::date BETWEEN ${from} AND ${to}
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
+						vodf.item_description,
 						dvl.packing_list_wise_rank,
 						dvl.packing_list_wise_count,
 						dvl.packing_number,
