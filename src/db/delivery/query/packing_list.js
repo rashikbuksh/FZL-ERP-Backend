@@ -553,6 +553,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 	const query = sql`
 					SELECT dvl.*,
 						vodf.item_description,
+						vodf.order_description_uuid,
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
@@ -568,6 +569,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						dvl.uuid,
 						dvl.order_info_uuid,
 						vodf.item_description,
+						vodf.order_description_uuid,
 						dvl.packing_list_wise_rank,
 						dvl.packing_list_wise_count,
 						dvl.packing_number,
@@ -623,6 +625,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 	const query = sql`
 					SELECT dvl.*,
 						vodf.item_description,
+						vodf.order_description_uuid,
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
@@ -638,6 +641,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						dvl.uuid,
 						dvl.order_info_uuid,
 						vodf.item_description,
+						vodf.order_description_uuid,
 						dvl.packing_list_wise_rank,
 						dvl.packing_list_wise_count,
 						dvl.packing_number,
