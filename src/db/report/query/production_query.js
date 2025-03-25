@@ -7,15 +7,21 @@ export async function selectItemWiseProduction(req, res, next) {
 
 	const query = sql`
         SELECT 
-            vodf.item_name,
-            vodf.nylon_stopper_name,
+            CASE 
+                WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+                THEN vodf.item_name || ' ' || 'Plastic'
+                WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Invisible')
+                THEN vodf.item_name || ' ' || 'Invisible'
+                WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+                THEN vodf.item_name
+                ELSE vodf.item_name 
+            END as item_name,
             SUM(packing_list_sum.total_packing_list_quantity) as total_production
         FROM
             zipper.v_order_details_full vodf
         LEFT JOIN (
                 SELECT 
-                    od.item,
-                    od.nylon_stopper,
+                    od.uuid as order_description_uuid,
                     SUM(ple.quantity) as total_packing_list_quantity
                 FROM 
                     delivery.packing_list_entry ple
@@ -28,14 +34,22 @@ export async function selectItemWiseProduction(req, res, next) {
                 LEFT JOIN
                     zipper.order_description od ON oe.order_description_uuid = od.uuid
                 WHERE
-                    ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    pl.item_for NOT IN ('thread', 'sample_thread') AND ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 GROUP BY
-                    od.item,
-                    od.nylon_stopper
-        ) packing_list_sum ON vodf.item = packing_list_sum.item AND vodf.nylon_stopper = packing_list_sum.nylon_stopper
+                    od.uuid
+        ) packing_list_sum ON vodf.order_description_uuid = packing_list_sum.order_description_uuid
         GROUP BY 
-            vodf.item_name,
-            vodf.nylon_stopper_name
+            CASE 
+                WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+                THEN vodf.item_name || ' ' || 'Plastic'
+                WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Invisible')
+                THEN vodf.item_name || ' ' || 'Invisible'
+                WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+                THEN vodf.item_name
+                ELSE vodf.item_name 
+            END as item_name
+        UNION 
+        
         `;
 
 	try {
