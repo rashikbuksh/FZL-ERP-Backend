@@ -52,7 +52,7 @@ export async function selectItemWiseProduction(req, res, next) {
                     od.uuid
         ) packing_list_sum ON vodf.order_description_uuid = packing_list_sum.order_description_uuid
         WHERE
-            ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
+            ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`} AND item_name IS NOT null
         GROUP BY 
             CASE 
                 WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
