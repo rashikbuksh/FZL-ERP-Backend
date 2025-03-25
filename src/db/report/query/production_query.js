@@ -29,7 +29,7 @@ export async function selectItemWiseProduction(req, res, next) {
                 THEN vodf.item_name
                 ELSE vodf.item_name 
             END as item_name,
-            SUM(packing_list_sum.total_packing_list_quantity) as total_production
+            COALESCE(SUM(packing_list_sum.total_packing_list_quantity),0)::float8 as total_production
         FROM
             zipper.v_order_details_full vodf
         LEFT JOIN (
@@ -66,7 +66,7 @@ export async function selectItemWiseProduction(req, res, next) {
         UNION 
         SELECT 
             'Thread' as item_name,
-            SUM(packing_list_sum.total_packing_list_quantity) as total_production
+            COALESCE(SUM(packing_list_sum.total_packing_list_quantity),0)::float8 as total_production
         FROM
             thread.order_info toi
         LEFT JOIN (
@@ -134,9 +134,9 @@ export async function selectItemZipperEndWiseProduction(req, res, next) {
                         END as item_name,
                         vodf.zipper_number_name,
                         vodf.end_type_name,
-                        SUM(
+                        COALESCE(SUM(
                             packing_list_sum.total_packing_list_quantity
-                        )::float8 as total_production
+                        ),0)::float8 as total_production
                     FROM
                         zipper.v_order_details_full vodf
                     LEFT JOIN (
