@@ -415,7 +415,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		LEFT JOIN
 			zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 		WHERE
-			(oe.quantity - sfg.warehouse - sfg.delivered) > 0 AND vodf.order_info_uuid = ${req.params.order_info_uuid} AND 
+			vodf.order_info_uuid = ${req.params.order_info_uuid} AND 
 			CASE 
 				WHEN ${item_for} = 'sample_zipper' AND vodf.order_type = 'tape' 
 				THEN (oe.size::float8 - sfg.warehouse - sfg.delivered) > 0
@@ -433,7 +433,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 				END
 		ORDER BY
 			oe.created_at, oe.uuid DESC
-		`;
+		`; // ! (oe.quantity - sfg.warehouse - sfg.delivered) > 0  Removed from the query for packing list issues
 	} else {
 		query = sql`
 		SELECT DISTINCT
