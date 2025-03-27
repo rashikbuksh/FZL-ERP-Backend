@@ -554,6 +554,18 @@ export async function selectPackingListReceivedLog(req, res, next) {
 					SELECT dvl.*,
 						vodf.item_description,
 						vodf.order_description_uuid,
+						CASE 
+							WHEN item_for IN ('thread', 'sample_thread') 
+							THEN 'Thread' 
+							ELSE 
+								CASE 
+									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+									THEN vodf.item_name || ' ' || 'Plastic'
+									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+									THEN vodf.item_name
+								ELSE vodf.item_name 
+                        	END 
+						END as item_name,
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
@@ -570,6 +582,8 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						dvl.order_info_uuid,
 						vodf.item_description,
 						vodf.order_description_uuid,
+						vodf.item_name,
+						vodf.nylon_stopper_name,
 						dvl.packing_list_wise_rank,
 						dvl.packing_list_wise_count,
 						dvl.packing_number,
@@ -626,6 +640,18 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 					SELECT dvl.*,
 						vodf.item_description,
 						vodf.order_description_uuid,
+						CASE 
+							WHEN item_for IN ('thread', 'sample_thread') 
+							THEN 'Thread' 
+							ELSE 
+								CASE 
+									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+									THEN vodf.item_name || ' ' || 'Plastic'
+									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+									THEN vodf.item_name
+								ELSE vodf.item_name 
+                        	END 
+						END as item_name,
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
@@ -642,6 +668,8 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						dvl.order_info_uuid,
 						vodf.item_description,
 						vodf.order_description_uuid,
+						vodf.item_name,
+						vodf.nylon_stopper_name,
 						dvl.packing_list_wise_rank,
 						dvl.packing_list_wise_count,
 						dvl.packing_number,
