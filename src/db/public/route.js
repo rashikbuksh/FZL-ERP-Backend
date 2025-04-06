@@ -12,16 +12,45 @@ import * as marketingTeamMemberTargetOperations from './query/marketing_team_mem
 import * as marketingTeamEntryOperations from './query/marketing_team_entry.js';
 import * as productionCapacityOperations from './query/production_capacity.js';
 
-import apiCache from '../../middleware/api_cache.js';
+import apicache from 'apicache';
+
+const cache = apicache.middleware;
+
+// Enable debugging for apicache
+apicache.options({
+	debug: true,
+});
 
 const publicRouter = Router();
 
-// buyer routes
-publicRouter.get('/buyer', apiCache('5 minutes'), buyerOperations.selectAll);
+// Route to fetch buyers with caching and a custom cache key
+publicRouter.get('/buyer', cache('2 minutes'), buyerOperations.selectAll);
 publicRouter.get('/buyer/:uuid', buyerOperations.select);
-publicRouter.post('/buyer', buyerOperations.insert);
-publicRouter.put('/buyer/:uuid', buyerOperations.update);
-publicRouter.delete('/buyer/:uuid', buyerOperations.remove);
+
+publicRouter.post('/buyer', async (req, res, next) => {
+	try {
+		await buyerOperations.insert(req, res, next);
+		apicache.clear('/public/buyer'); // Clear the cache for /buyer
+	} catch (error) {
+		next(error);
+	}
+});
+publicRouter.put('/buyer/:uuid', async (req, res, next) => {
+	try {
+		await buyerOperations.update(req, res, next);
+		apicache.clear('/public/buyer'); // Clear the cache for /buyer
+	} catch (error) {
+		next(error);
+	}
+});
+publicRouter.delete('/buyer/:uuid', async (req, res, next) => {
+	try {
+		await buyerOperations.remove(req, res, next);
+		apicache.clear('/public/buyer'); // Clear the cache for /buyer
+	} catch (error) {
+		next(error);
+	}
+});
 
 // factory routes
 publicRouter.get('/factory', factoryOperations.selectAll);

@@ -990,6 +990,7 @@ const pathZipper = {
 					'true',
 					'false',
 				]),
+				SE.parameter_query('type', 'type', ['all']),
 			],
 			responses: {
 				200: {

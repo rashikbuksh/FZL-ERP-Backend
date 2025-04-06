@@ -17,11 +17,6 @@ import * as zipperSchema from '../../zipper/schema.js';
 // * Aliases * //
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
 const zipperProperties = alias(publicSchema.properties, 'zipperProperties');
-const endTypeProperties = alias(publicSchema.properties, 'endTypeProperties');
-const pullerTypeProperties = alias(
-	publicSchema.properties,
-	'pullerTypeProperties'
-);
 
 //* public
 export async function selectMachine(req, res, next) {
@@ -1031,6 +1026,7 @@ export async function selectOrderDescription(req, res, next) {
 		page,
 		is_update,
 		is_slider_needed,
+		type,
 	} = req.query;
 
 	const query = sql`
@@ -1140,10 +1136,10 @@ export async function selectOrderDescription(req, res, next) {
 				WHERE 
 					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL 
 					AND vodf.is_cancelled = FALSE
-					AND vodf.is_sample = 0 AND 
-					CASE WHEN order_type = 'slider' THEN 1=1 
-					WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1) THEN 1=1
-					ELSE sfg.recipe_uuid IS NOT NULL END
+					AND ${type === 'all' ? sql`1=1` : sql` vodf.is_sample = 0 `}
+					AND CASE WHEN order_type = 'slider' THEN 1=1 
+						WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1) THEN 1=1
+						ELSE sfg.recipe_uuid IS NOT NULL END
 				`;
 
 	let page_query = sql``;
