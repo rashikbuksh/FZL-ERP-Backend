@@ -12,18 +12,16 @@ import * as marketingTeamMemberTargetOperations from './query/marketing_team_mem
 import * as marketingTeamEntryOperations from './query/marketing_team_entry.js';
 import * as productionCapacityOperations from './query/production_capacity.js';
 
+import apiCache from '../../middleware/api_cache.js';
+
 const publicRouter = Router();
 
 // buyer routes
-publicRouter.get('/buyer', buyerOperations.selectAll);
+publicRouter.get('/buyer', apiCache, buyerOperations.selectAll);
 publicRouter.get('/buyer/:uuid', buyerOperations.select);
-publicRouter.post('/buyer', buyerOperations.insert);
+publicRouter.post('/buyer', apiCache, buyerOperations.insert);
 publicRouter.put('/buyer/:uuid', buyerOperations.update);
-publicRouter.delete(
-	'/buyer/:uuid',
-	//
-	buyerOperations.remove
-);
+publicRouter.delete('/buyer/:uuid', apiCache, buyerOperations.remove);
 
 // factory routes
 publicRouter.get('/factory', factoryOperations.selectAll);

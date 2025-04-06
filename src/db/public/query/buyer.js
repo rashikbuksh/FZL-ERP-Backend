@@ -62,6 +62,8 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const apiCache = req.apicacheGroup;
+
 	const buyerPromise = db
 		.delete(buyer)
 		.where(eq(buyer.uuid, req.params.uuid))
