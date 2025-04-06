@@ -410,7 +410,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
             vodf.revision_no,
 			oe.style,
 			oe.color,
-			oe.size,
+			oe.size::float8,
 			oe.is_inch,
 			SUM(oe.quantity)::float8 as quantity,
 			oe.company_price::float8,
@@ -435,7 +435,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 		GROUP BY 
 			oe.size,vodf.order_description_uuid, vodf.order_info_uuid, vodf.item_description, vodf.zipper_number_name, vodf.item_name, vodf.nylon_stopper_name, vodf.is_multi_color, vodf.end_type_name, vodf.hand_name, vodf.teeth_type_name, vodf.teeth_color_name, vodf.is_waterproof, vodf.puller_type_name, vodf.lock_type_name, vodf.coloring_type_name, vodf.puller_color_name, vodf.slider_name, vodf.slider_body_shape_name, vodf.slider_link_name, vodf.logo_type_name, vodf.is_logo_body, vodf.is_logo_puller, vodf.top_stopper_name, vodf.bottom_stopper_name, vodf.slider_provided, vodf.special_requirement, vodf.order_type, vodf.description, vodf.remarks, vodf.light_preference_name, vodf.garments_wash, vodf.garments_remarks, vodf.revision_no, oe.style, oe.color, oe.size, oe.is_inch, oe.company_price, oe.party_price, oe.status, oe.swatch_status_enum, oe.swatch_approval_date, oe.bleaching, vodf.is_inch
 		ORDER BY
-			oe.size
+			oe.size::float8 ASC
 	`;
 
 	const orderEntryPromise = db.execute(query);
