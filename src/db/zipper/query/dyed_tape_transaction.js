@@ -74,6 +74,10 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { from_date, to_date } = req.query;
+
 	const query = sql`
 		SELECT
 			dtt.uuid AS uuid,
@@ -98,6 +102,7 @@ export async function selectAll(req, res, next) {
 			LEFT JOIN zipper.v_order_details vod ON dtt.order_description_uuid = vod.order_description_uuid
 			LEFT JOIN zipper.sfg sfg ON dtt.sfg_uuid = sfg.uuid
 			LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+		WHERE DATE(dtt.created_at) BETWEEN ${from_date} AND ${to_date}
 		ORDER BY dtt.created_at DESC
 	`;
 

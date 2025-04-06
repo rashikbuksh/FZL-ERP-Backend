@@ -548,6 +548,8 @@ const pathPurchaseDescription = {
 			operationId: 'getPurchaseLog',
 			parameters: [
 				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('from_date', 'from_date', '2024-01-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-01-01'),
 			],
 			responses: {
 				200: {

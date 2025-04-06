@@ -108,7 +108,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { purpose, trx_to, s_type } = req.query;
+	const { purpose, trx_to, s_type, from_date, to_date } = req.query;
 
 	const query = sql`
     SELECT
@@ -148,6 +148,11 @@ export async function selectAll(req, res, next) {
 		${purpose ? sql`mtaod.purpose = ${purpose}` : sql`TRUE`}
 		${trx_to ? sql`OR mtaod.trx_to = ${trx_to}` : sql``}
 		${s_type ? sql`AND info.store_type = ${s_type}` : sql``}
+		${
+			from_date && to_date
+				? sql`AND DATE(mtaod.created_at) BETWEEN ${from_date} AND ${to_date}`
+				: sql``
+		}
 	ORDER BY mtaod.created_at DESC
 	`;
 

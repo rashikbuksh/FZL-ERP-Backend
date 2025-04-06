@@ -73,7 +73,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { s_type } = req.query;
+	const { s_type, from_date, to_date } = req.query;
 
 	const bookingPromise = db
 		.select({
@@ -108,6 +108,15 @@ export async function selectAll(req, res, next) {
 		);
 
 	if (s_type) bookingPromise.where(eq(info.store_type, s_type));
+
+	if (from_date && to_date) {
+		bookingPromise.where(
+			and(
+				sql`${booking.created_at} >= ${from_date}`,
+				sql`${booking.created_at} <= ${to_date}`
+			)
+		);
+	}
 
 	bookingPromise.orderBy(desc(booking.created_at));
 

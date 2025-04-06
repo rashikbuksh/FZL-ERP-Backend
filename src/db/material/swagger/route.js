@@ -744,6 +744,8 @@ export const pathMaterialTrx = {
 			description: 'Get all material trx',
 			parameters: [
 				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('from_date', 'from_date', 'string'),
+				SE.parameter_query('to_date', 'to_date', 'string'),
 			],
 			responses: {
 				200: {
@@ -2068,6 +2070,8 @@ export const pathMaterialBooking = {
 			description: 'Get all material booking',
 			parameters: [
 				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('from_date', 'from_date', 'date'),
+				SE.parameter_query('to_date', 'to_date', 'date'),
 			],
 			responses: {
 				200: {

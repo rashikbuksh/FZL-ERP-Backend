@@ -204,7 +204,7 @@ export async function selectPurchaseDetailsByPurchaseDescriptionUuid(
 }
 
 export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
-	const { s_type } = req.query;
+	const { s_type, from_date, to_date } = req.query;
 
 	const resultPromise = db
 		.select({
@@ -246,6 +246,15 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 
 	if (s_type) {
 		resultPromise.where(eq(description.store_type, s_type));
+	}
+
+	if (from_date && to_date) {
+		resultPromise.where(
+			and(
+				sql`${description.created_at} >= ${from_date}`,
+				sql`${description.created_at} <= ${to_date}`
+			)
+		);
 	}
 
 	try {

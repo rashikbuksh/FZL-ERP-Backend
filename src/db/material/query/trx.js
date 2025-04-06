@@ -104,7 +104,7 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { s_type } = req.query;
+	const { s_type, from_date, to_date } = req.query;
 
 	const resultPromise = db
 		.select({
@@ -141,6 +141,15 @@ export async function selectAll(req, res, next) {
 		.leftJoin(booking, eq(trx.booking_uuid, booking.uuid));
 
 	if (s_type) resultPromise.where(eq(info.store_type, s_type));
+
+	if (from_date && to_date) {
+		resultPromise.where(
+			and(
+				sql`${trx.created_at} >= ${from_date}`,
+				sql`${trx.created_at} <= ${to_date}`
+			)
+		);
+	}
 
 	resultPromise.orderBy(desc(trx.created_at));
 
