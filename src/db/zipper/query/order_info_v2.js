@@ -68,6 +68,7 @@ export async function getOrderDetailsPagination(req, res, next) {
 						? sql`AND vod.is_sample = 1`
 						: sql`AND 1=1`
 			}
+			${start_date && end_date ? sql`AND vod.order_description_created_at::date BETWEEN ${start_date}::date AND ${end_date}::date` : sql`AND 1=1`}
             ${marketingUuid != null ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
         `;
 
