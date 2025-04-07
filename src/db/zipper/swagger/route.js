@@ -202,8 +202,8 @@ export const pathZipperOrderInfo = {
 				SE.parameter_query('start_date', 'start_date', SE.date_time()),
 				SE.parameter_query('end_date', 'end_date', SE.date_time()),
 				SE.parameter_query(
-					'order_number',
-					'order_number',
+					'order_info_uuid',
+					'order_info_uuid',
 					SE.string('')
 				),
 				SE.parameter_query('buyer_uuid', 'buyer_uuid', SE.uuid()),
