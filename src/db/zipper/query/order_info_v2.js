@@ -52,7 +52,6 @@ export async function getOrderDetailsPagination(req, res, next) {
             GROUP BY order_info_uuid
         ) order_number_wise_counts
         ON vod.order_info_uuid = order_number_wise_counts.order_info_uuid
-        LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
         LEFT JOIN (
             SELECT 
                 COUNT(oe.swatch_approval_date) AS swatch_approval_count, 
@@ -104,7 +103,6 @@ export async function getOrderDetailsPagination(req, res, next) {
             GROUP BY order_info_uuid
         ) order_number_wise_counts
         ON vod.order_info_uuid = order_number_wise_counts.order_info_uuid
-        LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
         LEFT JOIN (
             SELECT 
                 COUNT(oe.swatch_approval_date) AS swatch_approval_count, 
