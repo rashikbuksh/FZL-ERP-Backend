@@ -140,9 +140,17 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(booking, eq(trx.booking_uuid, booking.uuid));
 
-	if (s_type) resultPromise.where(eq(info.store_type, s_type));
-
-	if (from_date && to_date) {
+	if (s_type && from_date && to_date) {
+		resultPromise.where(
+			and(
+				sql`${trx.created_at} >= ${from_date}`,
+				sql`${trx.created_at} <= ${to_date}`,
+				eq(info.store_type, s_type)
+			)
+		);
+	} else if (s_type) {
+		resultPromise.where(eq(info.store_type, s_type));
+	} else if (from_date && to_date) {
 		resultPromise.where(
 			and(
 				sql`${trx.created_at} >= ${from_date}`,
