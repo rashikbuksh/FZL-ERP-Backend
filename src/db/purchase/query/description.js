@@ -244,11 +244,17 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			eq(entry.material_uuid, materialSchema.info.uuid)
 		);
 
-	if (s_type) {
-		resultPromise.where(eq(description.store_type, s_type));
-	}
-
-	if (from_date && to_date) {
+	if (s_type != undefined && from_date != undefined && to_date != undefined) {
+		resultPromise.where(
+			and(
+				sql`${description.created_at} >= ${from_date}`,
+				sql`${description.created_at} <= ${to_date}`,
+				eq(info.store_type, s_type)
+			)
+		);
+	} else if (s_type != undefined) {
+		resultPromise.where(eq(info.store_type, s_type));
+	} else if (from_date != undefined && to_date != undefined) {
 		resultPromise.where(
 			and(
 				sql`${description.created_at} >= ${from_date}`,
