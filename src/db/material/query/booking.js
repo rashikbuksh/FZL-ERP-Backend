@@ -107,13 +107,21 @@ export async function selectAll(req, res, next) {
 			eq(booking.marketing_uuid, publicSchema.marketing.uuid)
 		);
 
-	if (s_type) bookingPromise.where(eq(info.store_type, s_type));
-
-	if (from_date && to_date) {
-		bookingPromise.where(
+	if (s_type != undefined && from_date != undefined && to_date != undefined) {
+		resultPromise.where(
 			and(
-				sql`${booking.created_at} >= ${from_date}`,
-				sql`${booking.created_at} <= ${to_date}`
+				sql`${trx.created_at} >= ${from_date}`,
+				sql`${trx.created_at} <= ${to_date}`,
+				eq(info.store_type, s_type)
+			)
+		);
+	} else if (s_type != undefined) {
+		resultPromise.where(eq(info.store_type, s_type));
+	} else if (from_date != undefined && to_date != undefined) {
+		resultPromise.where(
+			and(
+				sql`${trx.created_at} >= ${from_date}`,
+				sql`${trx.created_at} <= ${to_date}`
 			)
 		);
 	}
