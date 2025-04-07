@@ -4,7 +4,16 @@ import db from '../../index.js';
 import { sql } from 'drizzle-orm';
 
 export async function getOrderDetailsPagination(req, res, next) {
-	const { all, approved, type, own_uuid, start_date, end_date, field_name, field_value } = req.query;
+	const {
+		all,
+		approved,
+		type,
+		own_uuid,
+		start_date,
+		end_date,
+		field_name,
+		field_value,
+	} = req.query;
 
 	// console.log(all, '- all', approved, '- approved');
 
@@ -37,12 +46,12 @@ export async function getOrderDetailsPagination(req, res, next) {
         FROM zipper.v_order_details vod
         LEFT JOIN (
             SELECT 
-                order_number, 
+                order_info_uuid, 
                 COUNT(*) AS order_number_wise_count
             FROM zipper.v_order_details
-            GROUP BY order_number
+            GROUP BY order_info_uuid
         ) order_number_wise_counts
-        ON vod.order_number = order_number_wise_counts.order_number
+        ON vod.order_info_uuid = order_number_wise_counts.order_info_uuid
         LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
         LEFT JOIN (
             SELECT 
@@ -89,12 +98,12 @@ export async function getOrderDetailsPagination(req, res, next) {
         FROM zipper.v_order_details vod
         LEFT JOIN (
             SELECT 
-                order_number, 
+                order_info_uuid, 
                 COUNT(*) AS order_number_wise_count
             FROM zipper.v_order_details
-            GROUP BY order_number
+            GROUP BY order_info_uuid
         ) order_number_wise_counts
-        ON vod.order_number = order_number_wise_counts.order_number
+        ON vod.order_info_uuid = order_number_wise_counts.order_info_uuid
         LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
         LEFT JOIN (
             SELECT 
