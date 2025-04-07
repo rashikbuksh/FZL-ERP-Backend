@@ -140,7 +140,7 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(booking, eq(trx.booking_uuid, booking.uuid));
 
-	if (s_type && from_date && to_date) {
+	if (s_type != undefined && from_date != undefined && to_date != undefined) {
 		resultPromise.where(
 			and(
 				sql`${trx.created_at} >= ${from_date}`,
