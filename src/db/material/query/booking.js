@@ -108,7 +108,7 @@ export async function selectAll(req, res, next) {
 		);
 
 	if (s_type != undefined && from_date != undefined && to_date != undefined) {
-		resultPromise.where(
+		bookingPromise.where(
 			and(
 				sql`${trx.created_at} >= ${from_date}`,
 				sql`${trx.created_at} <= ${to_date}`,
@@ -116,9 +116,9 @@ export async function selectAll(req, res, next) {
 			)
 		);
 	} else if (s_type != undefined) {
-		resultPromise.where(eq(info.store_type, s_type));
+		bookingPromise.where(eq(info.store_type, s_type));
 	} else if (from_date != undefined && to_date != undefined) {
-		resultPromise.where(
+		bookingPromise.where(
 			and(
 				sql`${trx.created_at} >= ${from_date}`,
 				sql`${trx.created_at} <= ${to_date}`
