@@ -7,8 +7,6 @@ import { buyer } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	console.log(req.originalUrl, 'insert originalUrl');
-
 	const buyerPromise = db
 		.insert(buyer)
 		.values(req.body)

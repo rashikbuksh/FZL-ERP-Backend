@@ -201,8 +201,18 @@ export const pathZipperOrderInfo = {
 				SE.parameter_query('orderby', 'orderby', ['asc', 'desc']),
 				SE.parameter_query('start_date', 'start_date', SE.date_time()),
 				SE.parameter_query('end_date', 'end_date', SE.date_time()),
-				SE.parameter_query('field_name', 'field_name', SE.string('')),
-				SE.parameter_query('field_value', 'field_value', SE.string('')),
+				SE.parameter_query(
+					'order_number',
+					'order_number',
+					SE.string('')
+				),
+				SE.parameter_query('buyer_uuid', 'buyer_uuid', SE.uuid()),
+				SE.parameter_query('party_uuid', 'party_uuid', SE.uuid()),
+				SE.parameter_query(
+					'marketing_uuid',
+					'marketing_uuid',
+					SE.uuid()
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {

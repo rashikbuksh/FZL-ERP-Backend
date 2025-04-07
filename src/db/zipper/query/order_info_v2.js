@@ -11,8 +11,10 @@ export async function getOrderDetailsPagination(req, res, next) {
 		own_uuid,
 		start_date,
 		end_date,
-		field_name,
-		field_value,
+		marketing_uuid,
+		buyer_uuid,
+		party_uuid,
+		order_number,
 	} = req.query;
 
 	// console.log(all, '- all', approved, '- approved');
@@ -78,7 +80,10 @@ export async function getOrderDetailsPagination(req, res, next) {
 			}
 			${start_date && end_date ? sql`AND vod.order_description_created_at::date BETWEEN ${start_date}::date AND ${end_date}::date` : sql`AND 1=1`}
             ${marketingUuid != null ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
-			${field_name && field_value ? sql`AND ${sql.raw(field_name)} = ${field_value}` : sql`AND 1=1`}
+			${order_number ? sql`AND vod.order_number = ${order_number}` : sql`AND 1=1`}
+			${buyer_uuid ? sql`AND vod.buyer_uuid = ${buyer_uuid}` : sql`AND 1=1`}
+			${party_uuid ? sql`AND vod.party_uuid = ${party_uuid}` : sql`AND 1=1`}
+			${marketing_uuid ? sql`AND vod.marketing_uuid = ${marketing_uuid}` : sql`AND 1=1`}
         `;
 
 		let { limit, page, orderby, sort } = req.query;
@@ -129,7 +134,10 @@ export async function getOrderDetailsPagination(req, res, next) {
 			}
 			${start_date && end_date ? sql`AND vod.order_description_created_at::date BETWEEN ${start_date}::date AND ${end_date}::date` : sql`AND 1=1`}
             ${marketingUuid != null ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
-			${field_name && field_value ? sql`AND ${sql.raw(field_name)} = ${field_value}` : sql`AND 1=1`}
+			${order_number ? sql`AND vod.order_number = ${order_number}` : sql`AND 1=1`}
+			${buyer_uuid ? sql`AND vod.buyer_uuid = ${buyer_uuid}` : sql`AND 1=1`}
+			${party_uuid ? sql`AND vod.party_uuid = ${party_uuid}` : sql`AND 1=1`}
+			${marketing_uuid ? sql`AND vod.marketing_uuid = ${marketing_uuid}` : sql`AND 1=1`}
         ${orderby || sort ? sql`ORDER BY ${sql.raw(sort)} ${sql.raw(orderby)}` : sql`ORDER BY order_description_created_at DESC`}
         LIMIT ${limit} OFFSET ${page * limit - limit}
 		`;
