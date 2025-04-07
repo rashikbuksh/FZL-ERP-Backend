@@ -148,9 +148,9 @@ export async function selectAll(req, res, next) {
 				eq(info.store_type, s_type)
 			)
 		);
-	} else if (s_type) {
+	} else if (s_type != undefined) {
 		resultPromise.where(eq(info.store_type, s_type));
-	} else if (from_date && to_date) {
+	} else if (from_date != undefined && to_date != undefined) {
 		resultPromise.where(
 			and(
 				sql`${trx.created_at} >= ${from_date}`,
