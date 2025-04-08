@@ -201,7 +201,6 @@ export async function select(req, res, next) {
 			carton_quantity: order_entry.carton_quantity,
 			index: order_entry.index,
 			damage_quantity: decimalToNumber(order_entry.damage_quantity),
-			batch_quantity: decimalToNumber(batch_entry.quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -215,10 +214,6 @@ export async function select(req, res, next) {
 		.leftJoin(
 			count_length,
 			eq(order_entry.count_length_uuid, count_length.uuid)
-		)
-		.leftJoin(
-			batch_entry,
-			eq(order_entry.uuid, batch_entry.order_entry_uuid)
 		)
 		.where(eq(order_entry.uuid, req.params.uuid));
 
@@ -281,6 +276,7 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			carton_quantity: order_entry.carton_quantity,
 			index: order_entry.index,
 			damage_quantity: decimalToNumber(order_entry.damage_quantity),
+			batch_quantity: decimalToNumber(batch_entry.quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -294,6 +290,10 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 		.leftJoin(
 			count_length,
 			eq(order_entry.count_length_uuid, count_length.uuid)
+		)
+		.leftJoin(
+			batch_entry,
+			eq(order_entry.uuid, batch_entry.order_entry_uuid)
 		)
 		.where(eq(order_entry.order_info_uuid, req.params.order_info_uuid))
 		.orderBy(asc(order_entry.index));
