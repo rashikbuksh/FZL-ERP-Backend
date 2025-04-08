@@ -240,6 +240,7 @@ export const defThreadBatchEntry = {
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 		yarn_quantity: SE.number(10),
+		damaged_quantity: SE.number(10),
 	},
 	xml: {
 		name: 'Thread/BatchEntry',
@@ -320,6 +321,7 @@ export const defThreadBatchEntryProduction = {
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		type: SE.string('type'),
 	},
 	xml: {
 		name: 'Thread/BatchEntryProduction',

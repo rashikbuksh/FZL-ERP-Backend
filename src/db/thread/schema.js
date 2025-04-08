@@ -224,6 +224,7 @@ export const batch_entry = thread.table('batch_entry', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 	yarn_quantity: PG_DECIMAL('yarn_quantity').default(0),
+	damaged_quantity: PG_DECIMAL('damaged_quantity').default(0),
 });
 
 export const dyes_category = thread.table('dyes_category', {
@@ -253,6 +254,11 @@ export const programs = thread.table('programs', {
 	remarks: text('remarks').default(null),
 });
 
+export const batch_entry_production_type = thread.enum(
+	'batch_entry_production_type',
+	['normal', 'damage']
+);
+
 export const batch_entry_production = thread.table('batch_entry_production', {
 	uuid: uuid_primary,
 	batch_entry_uuid: defaultUUID('batch_entry_uuid').references(
@@ -264,6 +270,7 @@ export const batch_entry_production = thread.table('batch_entry_production', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	type: batch_entry_production_type('type').default('normal'),
 });
 
 export const batch_entry_trx = thread.table('batch_entry_trx', {
