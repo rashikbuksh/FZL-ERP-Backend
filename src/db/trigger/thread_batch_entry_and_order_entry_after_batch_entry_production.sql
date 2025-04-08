@@ -18,7 +18,7 @@ BEGIN
     ELSIF NEW.type = 'damage' THEN
         UPDATE thread.batch_entry
         SET
-            damage_quantity = damage_quantity + NEW.production_quantity,
+            damaged_quantity = damaged_quantity + NEW.production_quantity,
             coning_carton_quantity = coning_carton_quantity + NEW.coning_carton_quantity
         WHERE uuid = NEW.batch_entry_uuid;
 
@@ -48,7 +48,7 @@ BEGIN
     ELSIF OLD.type = 'damage' THEN
         UPDATE thread.batch_entry
         SET
-            damage_quantity = damage_quantity - OLD.production_quantity,
+            damaged_quantity = damaged_quantity - OLD.production_quantity,
             coning_carton_quantity = coning_carton_quantity - OLD.coning_carton_quantity
         WHERE uuid = OLD.batch_entry_uuid;
     END IF;
@@ -77,7 +77,7 @@ BEGIN
     ELSIF NEW.type = 'damage' THEN
         UPDATE thread.batch_entry
         SET
-            damage_quantity = damage_quantity - OLD.production_quantity + NEW.production_quantity,
+            damaged_quantity = damaged_quantity - OLD.production_quantity + NEW.production_quantity,
             coning_carton_quantity = coning_carton_quantity - OLD.coning_carton_quantity + NEW.coning_carton_quantity
         WHERE uuid = NEW.batch_entry_uuid;
     END IF;
