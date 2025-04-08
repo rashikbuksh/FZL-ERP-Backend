@@ -86,6 +86,7 @@ export async function selectAll(req, res, next) {
 			coning_carton_quantity: decimalToNumber(
 				batch_entry_production.coning_carton_quantity
 			),
+			type: batch_entry_production.type,
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
@@ -123,6 +124,7 @@ export async function select(req, res, next) {
 			coning_carton_quantity: decimalToNumber(
 				batch_entry_production.coning_carton_quantity
 			),
+			type: batch_entry_production.type,
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
@@ -177,8 +179,10 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		be.coning_production_quantity::float8,
 		be.coning_carton_quantity::float8 as be_coning_carton_quantity,
 		be.transfer_quantity::float8 as transfer_quantity,
-		(be.quantity - be.coning_production_quantity)::float8 as coning_balance_quantity,
+		be.damaged_quantity::float8 as damaged_quantity,
+		(be.quantity - be.coning_production_quantity - be.damaged_quantity)::float8 as coning_balance_quantity,
 		(be.quantity - be.transfer_quantity)::float8 as balance_quantity,
+		bep.type,
 		bep.created_by,
 		users.name as created_by_name,
 		bep.created_at,
