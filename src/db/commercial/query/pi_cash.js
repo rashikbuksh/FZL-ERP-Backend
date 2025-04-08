@@ -253,7 +253,8 @@ export async function selectAll(req, res, next) {
 				THEN ROUND((total_pi_amount.total_amount::numeric), 2)
 				ELSE ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
 			END AS total_amount,
-			jsonb_agg(DISTINCT od.order_type) AS order_type
+			jsonb_agg(DISTINCT od.order_type) AS order_type,
+			pi_cash.is_completed
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
@@ -296,23 +297,9 @@ export async function selectAll(req, res, next) {
 			}
 			${
 				type === 'pending' && is_cash === 'true'
-					? sql`
-						AND CASE 
-						WHEN pi_cash.is_pi = 1 THEN 
-							ROUND((total_pi_amount.total_amount::numeric), 2) 
-						ELSE 
-							ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
-						END > pi_cash.receive_amount
-					`
+					? sql` AND pi_cash.is_completed = false`
 					: type === 'completed' && is_cash === 'true'
-						? sql`
-						AND CASE 
-						WHEN pi_cash.is_pi = 1 THEN 
-							ROUND((total_pi_amount.total_amount::numeric), 2) 
-						ELSE 
-							ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
-						END <= pi_cash.receive_amount
-					`
+						? sql` AND pi_cash.is_completed = true`
 						: sql``
 			}
 		GROUP BY
@@ -444,7 +431,8 @@ export async function select(req, res, next) {
 				pi_cash.conversion_rate::float8,
 				pi_cash.weight::float8,
 				pi_cash.cross_weight::float8,
-				pi_cash.receive_amount::float8
+				pi_cash.receive_amount::float8,
+				pi_cash.is_completed
 			FROM 
 				commercial.pi_cash
 			LEFT JOIN 
@@ -777,6 +765,44 @@ export async function selectPiByLcUuid(req, res, next) {
 			message: 'Pi Cash list',
 		};
 		return res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updatePiPutIsCompletedByPiUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { pi_cash_uuid } = req.params;
+
+	const { is_completed } = req.body;
+
+	const piPromise = db
+		.update(pi_cash)
+		.set({ is_completed })
+		.where(eq(pi_cash.uuid, pi_cash_uuid))
+		.returning({
+			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
+		});
+
+	try {
+		const data = await piPromise;
+		if (data.length === 0) {
+			const toast = {
+				status: 404,
+				type: 'update',
+				message: `No record found to update`,
+			};
+			return res.status(404).json({ toast, data });
+		}
+
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return await res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

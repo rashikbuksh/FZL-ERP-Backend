@@ -173,6 +173,7 @@ export async function selectItemZipperEndWiseProduction(req, res, next) {
                         END,
                         vodf.zipper_number_name,
                         vodf.end_type_name
+                    HAVING SUM(packing_list_sum.total_packing_list_quantity) > 0
                     ORDER BY 
                         item_name, zipper_number_name, end_type_name;`;
 		const resultPromise = db.execute(query);
