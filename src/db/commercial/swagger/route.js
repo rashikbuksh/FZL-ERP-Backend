@@ -1198,6 +1198,32 @@ export const pathCommercialPiCash = {
 			},
 		},
 	},
+	'/commercial/pi-cash-update-is-completed/{pi_cash_uuid}': {
+		put: {
+			tags: ['commercial.pi_cash'],
+			summary: 'Update a pi cash to completed',
+			description: 'Update a pi cash to completed by pi_uuid',
+			//operationId: "updatePet",
+			consume: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Update data using uuid',
+					'pi_cash_uuid',
+					'uuid'
+				),
+			],
+			requestBody: SE.requestBody({
+				is_completed: SE.boolean(false),
+			}),
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 // * Commercial Pi_Entry* //

@@ -120,6 +120,10 @@ commercialRouter.get(
 	'/pi-cash/details/by/pi-cash-id/:pi_cash_id',
 	piCashOperations.selectPiDetailsByPiId
 );
+commercialRouter.put(
+	'/pi-cash-update-is-completed/:pi_cash_uuid',
+	piCashOperations.updatePiPutIsCompletedByPiUuid
+);
 
 // pi_cash_entry routes
 commercialRouter.get('/pi-cash-entry', piCashEntryOperations.selectAll);
