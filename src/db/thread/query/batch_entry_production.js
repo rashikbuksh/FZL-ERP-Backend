@@ -86,6 +86,7 @@ export async function selectAll(req, res, next) {
 			coning_carton_quantity: decimalToNumber(
 				batch_entry_production.coning_carton_quantity
 			),
+			type: batch_entry_production.type,
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
@@ -123,6 +124,7 @@ export async function select(req, res, next) {
 			coning_carton_quantity: decimalToNumber(
 				batch_entry_production.coning_carton_quantity
 			),
+			type: batch_entry_production.type,
 			created_by: batch_entry_production.created_by,
 			created_by_name: hrSchema.users.name,
 			created_at: batch_entry_production.created_at,
