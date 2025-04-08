@@ -198,7 +198,7 @@ export async function selectSwatchInfo(req, res, next) {
 							WHERE dyeing_batch_entry.sfg_uuid = sfg.uuid) > 0 
 						THEN TRUE 
 						ELSE FALSE 
-					END as is_dyeing_batch_entry
+					END as is_batch_created
 				FROM
 					zipper.sfg sfg
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
