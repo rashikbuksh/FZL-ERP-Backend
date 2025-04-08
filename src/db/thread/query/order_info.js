@@ -359,7 +359,7 @@ export async function selectThreadSwatch(req, res, next) {
 			updated_at: order_info.updated_at,
 			remarks: order_info.remarks,
 			swatch_approval_date: order_entry.swatch_approval_date,
-			is_batch_created: sql`CASE WHEN SELECT SUM(batch_entry.quantity) FROM thread.batch_entry WHERE batch_entry.order_entry_uuid = order_entry.uuid) > 0 THEN TRUE ELSE FALSE END`,
+			is_batch_created: sql`CASE WHEN (SELECT SUM(batch_entry.quantity) FROM thread.batch_entry WHERE batch_entry.order_entry_uuid = order_entry.uuid) > 0 THEN TRUE ELSE FALSE END`,
 		})
 		.from(order_info)
 		.leftJoin(order_entry, eq(order_info.uuid, order_entry.order_info_uuid))
