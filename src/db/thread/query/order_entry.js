@@ -5,7 +5,12 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { count_length, order_entry, order_info } from '../schema.js';
+import {
+	count_length,
+	order_entry,
+	order_info,
+	batch_entry,
+} from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -196,6 +201,7 @@ export async function select(req, res, next) {
 			carton_quantity: order_entry.carton_quantity,
 			index: order_entry.index,
 			damage_quantity: decimalToNumber(order_entry.damage_quantity),
+			batch_quantity: decimalToNumber(batch_entry.quantity),
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -209,6 +215,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			count_length,
 			eq(order_entry.count_length_uuid, count_length.uuid)
+		)
+		.leftJoin(
+			batch_entry,
+			eq(order_entry.uuid, batch_entry.order_entry_uuid)
 		)
 		.where(eq(order_entry.uuid, req.params.uuid));
 
