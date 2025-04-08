@@ -114,9 +114,11 @@ export async function selectAll(req, res, next) {
             THEN vod.item_name || ' ' || 'Plastic'
             WHEN (vod.item_name = 'Nylon' AND vod.nylon_stopper_name = 'Invisible')
             THEN vod.item_name || ' ' || 'Invisible'
-            WHEN (vod.item_name = 'Nylon' AND vod.nylon_stopper_name != 'Plastic')
-            THEN vod.item_name
-            ELSE vod.item_name 
+            WHEN (vod.item_name = 'Nylon' AND vod.nylon_stopper_name != 'Plastic') 
+			WHEN item_for IN ('thread', 'sample_thread')
+			THEN 'Thread'
+			THEN vod.item_name
+            ELSE vod.item_name
         END as item_name,
 		ARRAY_AGG(DISTINCT CASE 
             WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END) as color
