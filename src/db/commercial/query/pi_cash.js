@@ -775,11 +775,11 @@ export async function updatePiPutIsCompletedByPiUuid(req, res, next) {
 
 	const { pi_cash_uuid } = req.params;
 
-	const { is_completed } = req.body;
+	const { is_completed, updated_at } = req.body;
 
 	const piPromise = db
 		.update(pi_cash)
-		.set({ is_completed })
+		.set({ is_completed, updated_at })
 		.where(eq(pi_cash.uuid, pi_cash_uuid))
 		.returning({
 			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
