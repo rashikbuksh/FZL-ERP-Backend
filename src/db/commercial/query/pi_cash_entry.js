@@ -136,6 +136,25 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 
 	try {
 		const query = sql`
+			WITH special_requirements AS (
+				SELECT 
+					order_description_uuid,
+					jsonb_array_elements_text((jsonb_extract_path_text(special_requirement::jsonb, 'values')::jsonb -> 'values')) AS value_uuid
+				FROM 
+					zipper.v_order_details_full
+				WHERE
+					jsonb_typeof(jsonb_extract_path_text(special_requirement::jsonb, 'values')::jsonb -> 'values') = 'array'
+			),
+			requirements_with_names AS (
+				SELECT 
+					sr.order_description_uuid,
+					sr.value_uuid,
+					p.short_name
+				FROM 
+					special_requirements sr
+				JOIN 
+					public.properties p ON sr.value_uuid = p.uuid
+			)
 				SELECT
 	                pe.uuid as uuid,
                     pe.pi_cash_uuid as pi_cash_uuid,
@@ -251,7 +270,10 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					count_length.count,
 					count_length.length,
 					CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked,
-					vodf.order_type
+					vodf.order_type,
+					ARRAY[
+					rwn.short_name
+					] as sp_short_names
 	            FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
@@ -261,6 +283,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 					LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
                     LEFT JOIN public.buyer thread_buyer ON toi.buyer_uuid = thread_buyer.uuid
+					LEFT JOIN requirements_with_names rwn ON vodf.order_description_uuid = rwn.order_description_uuid
 				WHERE 
 					pe.pi_cash_uuid = ${req.params.pi_cash_uuid}
 				ORDER BY
@@ -268,56 +291,12 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					vodf.item_description ASC,
 					oe.style ASC,
 					oe.color ASC,
-					oe.size ASC `;
+					oe.size ASC 
+			`;
 
 		const pi_entryPromise = db.execute(query);
 
 		const data = await pi_entryPromise;
-
-		const uuids = new Set();
-
-		data?.rows?.forEach((row) => {
-			if (JSON.parse(row?.special_requirement)) {
-				try {
-					const specialRequirement = JSON.parse(
-						row?.special_requirement
-					);
-
-					// specialRequirement.values is still a string, so we need to parse it
-					const nestedValuesObject = JSON.parse(
-						specialRequirement?.values
-					);
-
-					// Extract the UUID from the nested values array
-					const [uuid] = nestedValuesObject?.values;
-
-					if (uuid) {
-						uuids.add(uuid);
-					}
-				} catch (error) {}
-			}
-		});
-
-		let s_short_name = [];
-		const uuidArray = Array.from(uuids);
-
-		const shortNameQuery = sql`
-								SELECT
-									pp.uuid,
-									pp.short_name
-								FROM public.properties as pp
-								WHERE pp.uuid IN (${sql.join(uuidArray, sql`, `)})
-								 `;
-
-		try {
-			const result = await db.execute(shortNameQuery);
-
-			if (result.rows.length > 0) {
-				s_short_name = result.rows.map((row) => row.short_name);
-			} else {
-				s_short_name = [];
-			}
-		} catch (error) {}
 
 		const toast = {
 			status: 200,
@@ -326,7 +305,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 		};
 		data.rows.forEach((row) => {
 			if (Array.isArray(row.short_names)) {
-				row.short_names = [...row.short_names, ...s_short_name];
+				row.short_names = [...row.short_names, ...row.sp_short_names];
 			} else {
 				row.short_names = [...s_short_name];
 			}
