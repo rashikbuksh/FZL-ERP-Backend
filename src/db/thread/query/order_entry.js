@@ -277,7 +277,9 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			carton_quantity: order_entry.carton_quantity,
 			index: order_entry.index,
 			damage_quantity: decimalToNumber(order_entry.damage_quantity),
-			batch_quantity: sql`COALESCE(batch.total_batch_quantity, 0)`,
+			batch_quantity: decimalToNumber(
+				sql`COALESCE(batch.total_batch_quantity, 0)`
+			),
 		})
 		.from(order_entry)
 		.leftJoin(
