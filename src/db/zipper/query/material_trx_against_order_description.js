@@ -150,7 +150,7 @@ export async function selectAll(req, res, next) {
 		${s_type ? sql`AND info.store_type = ${s_type}` : sql``}
 		${
 			from_date && to_date
-				? sql`AND DATE(mtaod.created_at) BETWEEN ${from_date} AND ${to_date}`
+				? sql`AND mtaod.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
 				: sql``
 		}
 	ORDER BY mtaod.created_at DESC
