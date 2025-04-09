@@ -113,7 +113,8 @@ export async function selectOpenSlotMachine(req, res, next) {
 }
 
 export async function selectParty(req, res, next) {
-	const { marketing, item_for, is_cash, page, has_factory } = req.query;
+	const { marketing, item_for, is_cash, page, has_factory, is_pi } =
+		req.query;
 
 	let query = sql`
 		SELECT DISTINCT
