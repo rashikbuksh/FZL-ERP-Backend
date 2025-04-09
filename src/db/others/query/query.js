@@ -261,17 +261,16 @@ export async function selectParty(req, res, next) {
 							? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 							: sql` WHERE vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 					);
-				} else if (
-					!marketing &&
-					is_cash === 'false' &&
-					is_pi === 'true'
-				) {
-					query = query.append(
-						hasWhere
-							? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
-							: sql` WHERE pi_cash.is_pi = 1`
-					);
 				}
+			}
+
+			if (is_pi === 'true') {
+				query = query.append(
+					hasWhere
+						? sql` AND pi_cash.is_pi = 1`
+						: sql` WHERE pi_cash.is_pi = 1`
+				);
+				hasWhere = true;
 			}
 
 			if (has_factory === 'true') {
@@ -303,7 +302,6 @@ export async function selectParty(req, res, next) {
 					LEFT JOIN commercial.pi_cash ON pi_cash.party_uuid = party.uuid
 					`
 				);
-
 				if (marketing) {
 					query = query.append(
 						hasWhere
@@ -340,14 +338,11 @@ export async function selectParty(req, res, next) {
 							? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 							: sql` WHERE oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 					);
-				} else if (
-					!marketing &&
-					is_cash === 'false' &&
-					is_pi === 'true'
-				) {
+				}
+				if (is_pi === 'true') {
 					query = query.append(
 						hasWhere
-							? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
+							? sql` AND pi_cash.is_pi = 1`
 							: sql` WHERE pi_cash.is_pi = 1`
 					);
 				}

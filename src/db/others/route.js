@@ -271,6 +271,7 @@ const pathPublic = {
 					'true',
 					'false',
 				]),
+				SE.parameter_query('is_pi', 'is_pi', ['true', 'false']),
 			],
 			responses: {
 				200: {
