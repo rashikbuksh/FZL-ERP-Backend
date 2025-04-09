@@ -200,7 +200,7 @@ export async function selectAll(req, res, next) {
 		total_pi_amount AS (
 			SELECT 
 				pi_cash_entry.pi_cash_uuid AS pi_cash_uuid,
-				SUM(
+				COALESCE(SUM(
 					CASE 
 						WHEN pi_cash_entry.sfg_uuid IS NULL 
 						THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
@@ -208,7 +208,7 @@ export async function selectAll(req, res, next) {
 						THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
 						ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price / 12, 0)
 					END
-				)::float8 AS total_amount
+				)::float8,0) AS total_amount
 			FROM 
 				commercial.pi_cash_entry
 			LEFT JOIN 
@@ -250,8 +250,8 @@ export async function selectAll(req, res, next) {
 			pi_cash.receive_amount::float8,
 			CASE 
 				WHEN pi_cash.is_pi = 1 
-				THEN ROUND((total_pi_amount.total_amount::numeric), 2)
-				ELSE ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8 
+				THEN COALESCE(ROUND((total_pi_amount.total_amount::numeric), 2),0)
+				ELSE COALESCE(ROUND((total_pi_amount.total_amount::numeric), 2) * pi_cash.conversion_rate::float8,0)
 			END AS total_amount,
 			jsonb_agg(DISTINCT od.order_type) AS order_type,
 			pi_cash.is_completed
