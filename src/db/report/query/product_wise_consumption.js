@@ -52,6 +52,17 @@ export async function selectProductWiseConsumption(req, res, next) {
 						FROM zipper.dyed_tape_transaction_from_stock dttfs
 						GROUP BY dttfs.order_description_uuid
 					) dyed_tape_transaction_from_stock_sum ON dyed_tape_transaction_from_stock_sum.order_description_uuid = vodf.order_description_uuid
+					 LEFT JOIN (
+						SELECT 
+							od.uuid as order_description_uuid,
+							SUM(CASE WHEN section = 'sa_prod' THEN production_quantity ELSE 0 END) AS assembly_production_quantity,
+							SUM(CASE WHEN section = 'coloring' THEN production_quantity ELSE 0 END) AS coloring_production_quantity
+						FROM slider.production
+						LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
+						LEFT JOIN zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
+						LEFT JOIN zipper.order_description od ON finishing_batch.order_description_uuid = od.uuid
+						GROUP BY od.uuid
+					) production_sum ON production_sum.order_description_uuid = vodf.order_description_uuid
                     WHERE 
 						(
 							lower(vodf.item_name) != 'nylon' 

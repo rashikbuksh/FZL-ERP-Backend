@@ -232,6 +232,7 @@ export async function select(req, res, next) {
 
 export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
 	const resultPromise = db
 		.select({
 			uuid: order_entry.uuid,
@@ -276,7 +277,7 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			carton_quantity: order_entry.carton_quantity,
 			index: order_entry.index,
 			damage_quantity: decimalToNumber(order_entry.damage_quantity),
-			batch_quantity: decimalToNumber(batch_entry.quantity),
+			batch_quantity: sql`COALESCE(batch.total_batch_quantity, 0)`,
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -292,8 +293,16 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			eq(order_entry.count_length_uuid, count_length.uuid)
 		)
 		.leftJoin(
-			batch_entry,
-			eq(order_entry.uuid, batch_entry.order_entry_uuid)
+			sql`
+				(
+					SELECT 
+						batch_entry.order_entry_uuid,
+						SUM(batch_entry.quantity) AS total_batch_quantity
+					FROM thread.batch_entry
+					GROUP BY batch_entry.order_entry_uuid
+				) AS batch
+			`,
+			sql`batch.order_entry_uuid = order_entry.uuid`
 		)
 		.where(eq(order_entry.order_info_uuid, req.params.order_info_uuid))
 		.orderBy(asc(order_entry.index));
