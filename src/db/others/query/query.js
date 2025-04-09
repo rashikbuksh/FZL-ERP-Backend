@@ -220,9 +220,10 @@ export async function selectParty(req, res, next) {
 		default:
 			let hasWhere = false;
 
-			if (marketing || is_cash) {
+			if (marketing || is_cash || is_pi) {
 				query = query.append(
-					sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid`
+					sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid
+					LEFT JOIN commercial.pi_cash ON pi_cash.party_uuid = party.uuid`
 				);
 
 				if (marketing) {
@@ -268,7 +269,7 @@ export async function selectParty(req, res, next) {
 					query = query.append(
 						hasWhere
 							? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
-							: sql` WHERE (vod.is_cash = 0 AND vod.is_bill = 1) AND (vod.is_sample = 0 OR vod.is_sample = 1)`
+							: sql` WHERE pi_cash.is_pi = 1`
 					);
 				}
 			}
@@ -285,7 +286,7 @@ export async function selectParty(req, res, next) {
 				);
 			}
 
-			if (marketing || is_cash) {
+			if (marketing || is_cash || is_pi) {
 				query = query.append(sql` UNION `);
 				hasWhere = false;
 				query = query.append(
@@ -299,6 +300,7 @@ export async function selectParty(req, res, next) {
 						GROUP BY party_uuid
 					) pub_fac ON party.uuid = pub_fac.party_uuid
 					LEFT JOIN thread.order_info oi ON party.uuid = oi.party_uuid
+					LEFT JOIN commercial.pi_cash ON pi_cash.party_uuid = party.uuid
 					`
 				);
 
@@ -346,7 +348,7 @@ export async function selectParty(req, res, next) {
 					query = query.append(
 						hasWhere
 							? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
-							: sql` WHERE (oi.is_cash = 0 AND oi.is_bill = 1) AND (oi.is_sample = 0 OR oi.is_sample = 1)`
+							: sql` WHERE pi_cash.is_pi = 1`
 					);
 				}
 
