@@ -24,16 +24,24 @@ export async function selectProductWiseConsumption(req, res, next) {
 		const query = sql`
                     SELECT 
                         CONCAT(
-                            vodf.item_name,
-                            vodf.nylon_stopper_name, ' - ', 
-                            vodf.zipper_number_name, ' - ', 
-                            vodf.end_type_name, ' - ',
+                            vodf.item_name, 
+							CASE WHEN vodf.nylon_stopper_name IS NOT NULL THEN ' ' ELSE '' END,
+                            vodf.nylon_stopper_name, 
+							CASE WHEN vodf.zipper_number_name IS NOT NULL THEN ' - ' ELSE '' END, 
+                            vodf.zipper_number_name, 
+							CASE WHEN vodf.end_type_name IS NOT NULL THEN ' - ' ELSE '' END,
+                            vodf.end_type_name, 
+							CASE WHEN vodf.puller_type_name IS NOT NULL THEN ' - ' ELSE '' END,
 							vodf.puller_type_name
                         ) AS item_description,
                         SUM(oe.quantity) AS total_quantity,
-						SUM(COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0))::float8 AS total_dyeing_transaction_quantity,
+						SUM(
+							COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + 
+							COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)
+						)::float8 AS total_dyeing_transaction_quantity,
 						tcr.raw_mtr_per_kg,
-						tcr.dyed_mtr_per_kg
+						tcr.dyed_mtr_per_kg,
+						SUM(production_sum.coloring_production_quantity) AS total_coloring_production_quantity
 					FROM
 						zipper.v_order_details_full vodf
 					LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
@@ -55,7 +63,6 @@ export async function selectProductWiseConsumption(req, res, next) {
 					 LEFT JOIN (
 						SELECT 
 							od.uuid as order_description_uuid,
-							SUM(CASE WHEN section = 'sa_prod' THEN production_quantity ELSE 0 END) AS assembly_production_quantity,
 							SUM(CASE WHEN section = 'coloring' THEN production_quantity ELSE 0 END) AS coloring_production_quantity
 						FROM slider.production
 						LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
