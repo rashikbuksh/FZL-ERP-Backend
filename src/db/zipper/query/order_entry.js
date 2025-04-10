@@ -282,9 +282,9 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			total_reject_quantity: decimalToNumber(sfg.reject_quantity),
 			total_short_quantity: decimalToNumber(sfg.short_quantity),
 			index: order_entry.index,
-			planning_batch_quantity: decimalToNumber(
-				finishing_batch_entry.quantity
-			),
+			planning_batch_quantity: sql`
+				SUM(finishing_batch_entry.quantity)::float8
+			`,
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -323,7 +323,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			)
 		)
 		.where(eq(order_description.uuid, order_description_uuid))
-		.groupBy(order_entry.uuid, sfg.uuid, finishing_batch_entry.quantity)
+		.groupBy(order_entry.uuid, sfg.uuid)
 		.orderBy(asc(order_entry.index));
 
 	try {
