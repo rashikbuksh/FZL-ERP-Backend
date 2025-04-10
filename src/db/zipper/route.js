@@ -74,6 +74,10 @@ zipperRouter.put(
 	'/order/description/update/by/:tape_coil_uuid',
 	orderDescriptionOperations.updateOrderDescriptionByTapeCoil
 );
+zipperRouter.put(
+	'/order/description/update-is-marketing-checked/by/:uuid',
+	orderDescriptionOperations.updateOrderDescriptionPutIsMarketingCheckedByOrderDescriptionUuid
+);
 
 // --------------------- ORDER ENTRY ROUTES ---------------------
 

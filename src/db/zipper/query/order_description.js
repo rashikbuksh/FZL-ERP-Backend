@@ -992,3 +992,45 @@ export async function updateOrderDescriptionByTapeCoil(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function updateOrderDescriptionPutIsMarketingCheckedByOrderDescriptionUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { uuid } = req.params;
+
+	const { is_marketing_checked, updated_at } = req.body;
+
+	const orderDescriptionPromise = db
+		.update(order_description)
+		.set({ is_marketing_checked, updated_at })
+		.where(eq(order_description.uuid, uuid))
+		.returning({
+			updatedId: sql`order_description.uuid`,
+		});
+
+	try {
+		const data = await orderDescriptionPromise;
+		if (data.length === 0) {
+			const toast = {
+				status: 404,
+				type: 'update',
+				message: `No record found to update`,
+			};
+			return res.status(404).json({ toast, data });
+		}
+
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
