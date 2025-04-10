@@ -504,6 +504,10 @@ zipperRouter.get(
 	'/finishing-batch-planning-info',
 	finishingBatchOperations.getPlanningInfoFromDateAndOrderDescription
 );
+zipperRouter.get(
+	'/finishing-batch/update-is-completed/by/:uuid',
+	finishingBatchOperations.updateFinishingBatchPutIsCompletedByFinishingBatchUuid
+);
 
 // --------------------- FINISHING BATCH ENTRY ROUTES ---------------------
 

@@ -1215,6 +1215,7 @@ export const pathCommercialPiCash = {
 			],
 			requestBody: SE.requestBody({
 				is_completed: SE.boolean(false),
+				updated_at: SE.date_time(),
 			}),
 			responses: {
 				200: SE.response(200),

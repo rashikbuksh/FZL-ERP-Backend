@@ -824,3 +824,45 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 		await handleError({ error, res });
 	}
 }
+
+export async function updateFinishingBatchPutIsCompletedByFinishingBatchUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { uuid } = req.params;
+
+	const { is_completed, updated_at } = req.body;
+
+	const finishingBatchPromise = db
+		.update(finishing_batch)
+		.set({ is_completed, updated_at })
+		.where(eq(finishing_batch.uuid, uuid))
+		.returning({
+			updatedId: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+		});
+
+	try {
+		const data = await finishingBatchPromise;
+		if (data.length === 0) {
+			const toast = {
+				status: 404,
+				type: 'update',
+				message: `No record found to update`,
+			};
+			return res.status(404).json({ toast, data });
+		}
+
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
