@@ -190,10 +190,10 @@ export async function selectEDReport(req, res, next) {
                     toe.uuid as order_entry_uuid,
                     COALESCE(
                         jsonb_agg(DISTINCT jsonb_build_object(
-                            'batch_uuid', batch.uuid, 
-                            'batch_number', batch.batch_number, 
-                            'batch_date', batch.production_date, 
-                            'batch_quantity', batch.total_quantity::float8, 
+                            'dyeing_batch_uuid', batch.uuid, 
+                            'dyeing_batch_number', batch.batch_number, 
+                            'dyeing_batch_date', batch.production_date, 
+                            'dyeing_batch_quantity', batch.total_quantity::float8, 
                             'balance_quantity', batch.total_quantity::float - batch.transfer_quantity::float8)
                         )
                         FILTER (WHERE batch.uuid IS NOT NULL), '[]'
