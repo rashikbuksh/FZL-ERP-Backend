@@ -1,4 +1,4 @@
-import { desc, eq, is, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
@@ -16,10 +16,6 @@ const lockTypeProperties = alias(publicSchema.properties, 'lockTypeProperties');
 const pullerTypeProperties = alias(
 	publicSchema.properties,
 	'pullerTypeProperties'
-);
-const tapeColorProperties = alias(
-	publicSchema.properties,
-	'tapeColorProperties'
 );
 const teethColorProperties = alias(
 	publicSchema.properties,
@@ -61,14 +57,6 @@ const endUserProperties = alias(publicSchema.properties, 'endUserProperties');
 const lightPreferenceProperties = alias(
 	publicSchema.properties,
 	'lightPreferenceProperties'
-);
-const garmentsWashProperties = alias(
-	publicSchema.properties,
-	'garmentsWashProperties'
-);
-const pullerLinkProperties = alias(
-	publicSchema.properties,
-	'pullerLinkProperties'
 );
 
 export async function insert(req, res, next) {

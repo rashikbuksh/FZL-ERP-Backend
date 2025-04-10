@@ -3697,7 +3697,7 @@ export const pathZipperFinishingBatch = {
 		},
 	},
 	'/zipper/finishing-batch/update-is-completed/by/{uuid}': {
-		get: {
+		put: {
 			tags: ['zipper.finishing_batch'],
 			summary: 'Get all Finishing Batch by finishing batch uuid',
 			parameters: [SE.parameter_params('finishing batch to get', 'uuid')],
