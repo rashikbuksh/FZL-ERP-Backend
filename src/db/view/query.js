@@ -62,7 +62,8 @@ export const OrderDetailsView = `
         order_description.multi_color_tape_received::float8,
         order_description.tape_transferred::float8,
         order_description.remarks as order_description_remarks,
-        order_description.revision_no
+        order_description.revision_no,
+        order_description.is_marketing_checked
     FROM
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
@@ -208,7 +209,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_description.order_type,
         order_description.is_multi_color,
         order_description.is_waterproof,
-        order_description.revision_no
+        order_description.revision_no,
+        order_description.is_marketing_checked
   FROM zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
@@ -236,8 +238,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = order_description.end_user
         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
         LEFT JOIN zipper.tape_coil tc ON tc.uuid = order_description.tape_coil_uuid
-        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type
-;
+        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type;
 	`; // required order_description changes
 
 export const PackingListDetailsView = `

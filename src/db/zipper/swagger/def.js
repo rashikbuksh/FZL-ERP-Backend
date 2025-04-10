@@ -127,6 +127,7 @@ export const def_zipper_order_description = SED({
 		is_cm: SE.integer(0),
 		order_type: SE.string('full'),
 		is_multi_color: SE.integer(0),
+		is_marketing_checked: SE.boolean(false),
 	},
 	xml: 'Zipper/Order-Description',
 });

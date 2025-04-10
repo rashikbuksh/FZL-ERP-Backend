@@ -104,6 +104,7 @@ export async function insert(req, res, next) {
 		is_multi_color,
 		is_waterproof,
 		revision_no,
+		is_marketing_checked,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -150,6 +151,7 @@ export async function insert(req, res, next) {
 			is_multi_color,
 			is_waterproof,
 			revision_no,
+			is_marketing_checked,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -212,6 +214,7 @@ export async function update(req, res, next) {
 		is_multi_color,
 		is_waterproof,
 		revision_no,
+		is_marketing_checked,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -258,6 +261,7 @@ export async function update(req, res, next) {
 			is_multi_color,
 			is_waterproof,
 			revision_no,
+			is_marketing_checked,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
@@ -391,6 +395,7 @@ export async function selectAll(req, res, next) {
 			is_multi_color: order_description.is_multi_color,
 			is_waterproof: order_description.is_waterproof,
 			revision_no: order_description.revision_no,
+			is_marketing_checked: order_description.is_marketing_checked,
 		})
 		.from(order_description)
 		.where(
@@ -601,6 +606,7 @@ export async function select(req, res, next) {
 			is_multi_color: order_description.is_multi_color,
 			is_waterproof: order_description.is_waterproof,
 			revision_no: order_description.revision_no,
+			is_marketing_checked: order_description.is_marketing_checked,
 		})
 		.from(order_description)
 		.where(
