@@ -34,14 +34,21 @@ export async function selectProductWiseConsumption(req, res, next) {
 							CASE WHEN vodf.puller_type_name IS NOT NULL THEN ' - ' ELSE '' END,
 							vodf.puller_type_name
                         ) AS item_description,
+                        SUM(
+                            CASE 
+                                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                                WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)
+                                ELSE CAST(oe.size AS NUMERIC)
+                            END
+                        )::float8 as total_cm,
                         SUM(oe.quantity) AS total_quantity,
-						SUM(
-							COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + 
-							COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)
-						)::float8 AS total_dyeing_transaction_quantity,
+						ROUND(SUM(
+							COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0)::float8 + 
+							COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)::float8
+						), 2)::float8 AS total_dyeing_transaction_quantity,
 						tcr.raw_mtr_per_kg,
 						tcr.dyed_mtr_per_kg,
-						SUM(production_sum.coloring_production_quantity) AS total_coloring_production_quantity
+						SUM(production_sum.coloring_production_quantity::float8)::float8 AS total_coloring_production_quantity
 					FROM
 						zipper.v_order_details_full vodf
 					LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
