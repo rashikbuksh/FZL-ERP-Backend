@@ -727,6 +727,7 @@ export const finishing_batch = zipper.table('finishing_batch', {
 	production_date: DateTime('production_date')
 		.notNull()
 		.default('2024-01-01 00:00:00'),
+	is_completed: boolean('is_completed').default(false),
 });
 
 export const finishing_batch_entry = zipper.table('finishing_batch_entry', {

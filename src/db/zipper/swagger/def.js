@@ -666,6 +666,7 @@ export const def_finishing_batch = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
+		is_completed: SE.boolean(false),
 	},
 	xml: 'Zipper/Finishing-Batch',
 });

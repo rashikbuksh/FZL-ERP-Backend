@@ -116,6 +116,7 @@ export async function selectAll(req, res, next) {
 			total_batch_production_quantity: sql`finishing_batch_entry_total.total_batch_production_quantity::float8`,
 			colors: sql`finishing_batch_entry_total.colors`,
 			production_date: sql`finishing_batch.production_date::date`,
+			is_completed: finishing_batch.is_completed,
 		})
 		.from(finishing_batch)
 		.leftJoin(
@@ -209,6 +210,7 @@ export async function select(req, res, next) {
 			production_date: sql`finishing_batch.production_date::date`,
 			end_type_uuid: viewSchema.v_order_details_full.end_type,
 			end_type_name: viewSchema.v_order_details_full.end_type_name,
+			is_completed: finishing_batch.is_completed,
 		})
 		.from(finishing_batch)
 		.leftJoin(

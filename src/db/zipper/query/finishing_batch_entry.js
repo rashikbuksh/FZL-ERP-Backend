@@ -575,6 +575,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 		LEFT JOIN finishing_batch_productions fbp ON zfbe.uuid = fbp.finishing_batch_entry_uuid
 		WHERE
 			vodf.tape_coil_uuid IS NOT NULL
+			AND zfb.is_completed = FALSE
 			AND vodf.is_sample = 0
 			${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vodf.nylon_stopper_name) = 'plastic'` : sql`AND lower(vodf.nylon_stopper_name) != 'plastic'`) : sql``}
