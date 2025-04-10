@@ -12,14 +12,47 @@ import * as marketingTeamMemberTargetOperations from './query/marketing_team_mem
 import * as marketingTeamEntryOperations from './query/marketing_team_entry.js';
 import * as productionCapacityOperations from './query/production_capacity.js';
 
+import Cache from 'memory-cache';
+
 const publicRouter = Router();
 
 // Route to fetch buyers with caching and a custom cache key
 publicRouter.get('/buyer/:uuid', buyerOperations.select);
-publicRouter.get('/buyer', buyerOperations.selectAll);
-publicRouter.post('/buyer', buyerOperations.insert);
-publicRouter.put('/buyer/:uuid', buyerOperations.update);
-publicRouter.delete('/buyer/:uuid', buyerOperations.remove);
+publicRouter.get('/buyer', (req, res, next) => {
+	const cacheKey = 'buyerData'; // Custom cache key for buyer data
+	// Check if data is already cached
+	const cachedData = Cache.get(cacheKey);
+	if (cachedData) {
+		console.log('Cache hit for buyer data');
+		return res.status(200).json(cachedData);
+	}
+	// If not cached, fetch data from the database
+	buyerOperations
+		.selectAll(req, res)
+		.then((data) => {
+			Cache.put(cacheKey, data, 2 * 60 * 1000);
+			return res.status(200).json(data);
+		})
+		.catch((error) => {
+			console.error('Error fetching buyer data:', error);
+			next(error); // Pass error to error-handling middleware
+		});
+});
+publicRouter.post('/buyer', (req, res, next) => {
+	const cacheKey = 'buyerData';
+	Cache.del(cacheKey);
+	buyerOperations.insert(req, res, next);
+});
+publicRouter.put('/buyer/:uuid', (req, res, next) => {
+	const cacheKey = 'buyerData';
+	Cache.del(cacheKey);
+	buyerOperations.update(req, res, next);
+});
+publicRouter.delete('/buyer/:uuid', (req, res, next) => {
+	const cacheKey = 'buyerData';
+	Cache.del(cacheKey);
+	buyerOperations.remove(req, res, next);
+});
 
 // factory routes
 publicRouter.get('/factory', factoryOperations.selectAll);

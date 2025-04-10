@@ -3,6 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { buyer } from '../schema.js';
+import Cache from 'memory-cache';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -80,7 +81,7 @@ export async function remove(req, res, next) {
 	}
 }
 
-export async function selectAll(req, res, next) {
+export async function selectAll(req, res, next, cacheTrue) {
 	const buyerPromise = db
 		.select({
 			uuid: buyer.uuid,
@@ -104,7 +105,12 @@ export async function selectAll(req, res, next) {
 			message: 'Buyer',
 		};
 
-		return await res.status(200).json({ toast, data });
+		const combinedData = {
+			toast,
+			data,
+		};
+
+		return combinedData;
 	} catch (error) {
 		await handleError({ error, res });
 	}
