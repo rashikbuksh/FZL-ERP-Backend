@@ -36,6 +36,7 @@ import {
 	selectItemWiseProduction,
 	selectItemZipperEndWiseProduction,
 } from './query/production_query.js';
+import { selectProductWiseConsumption } from './query/product_wise_consumption.js';
 
 const reportRouter = Router();
 
@@ -196,6 +197,12 @@ reportRouter.get('/item-wise-production-report', selectItemWiseProduction);
 reportRouter.get(
 	'/item-zipper-end-wise-production-report',
 	selectItemZipperEndWiseProduction
+);
+
+// * Product Wise Consumption Report
+reportRouter.get(
+	'/product-wise-consumption-report',
+	selectProductWiseConsumption
 );
 
 export const pathReport = {
@@ -1197,6 +1204,29 @@ export const pathReport = {
 					zipper_number_name: SE.string('Zipper Number Name'),
 					end_type_name: SE.string('End Type Name'),
 					total_production: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/product-wise-consumption-report': {
+		get: {
+			summary: 'Product Wise Consumption Report',
+			description: 'Product Wise Consumption Report',
+			tags: ['report'],
+			operationId: 'selectProductWiseConsumptionReport',
+			parameters: [
+				SE.parameter_query(
+					'type',
+					'type',
+					['nylon_plastic', 'nylon', 'vislon', 'metal'],
+					true
+				),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					product_name: SE.string('Product Name'),
+					total_consumption: SE.number(610),
 				}),
 			},
 		},

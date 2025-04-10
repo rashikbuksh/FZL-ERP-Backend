@@ -6,7 +6,7 @@ import db from '../../index.js';
 export async function selectProductWiseConsumption(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { own_uuid } = req?.query;
+	const { own_uuid, type } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -42,13 +42,16 @@ export async function selectProductWiseConsumption(req, res, next) {
                             END
                         )::float8 as total_cm,
                         SUM(oe.quantity) AS total_quantity,
-						ROUND(SUM(
-							COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0)::float8 + 
-							COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)::float8
-						), 2)::float8 AS total_dyeing_transaction_quantity,
-						tcr.raw_mtr_per_kg,
-						tcr.dyed_mtr_per_kg,
-						SUM(production_sum.coloring_production_quantity::float8)::float8 AS total_coloring_production_quantity
+						ROUND(
+							CAST(
+								SUM(
+									COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0)::float8 + 
+									COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)::float8
+								) AS NUMERIC
+							), 2
+						)::float8 AS total_dyeing_transaction_quantity,
+						COALESCE(tcr.raw_mtr_per_kg, 0)::float8 AS mtr_per_kg,
+						COALESCE(SUM(production_sum.coloring_production_quantity::float8),0)::float8 AS total_coloring_production_quantity
 					FROM
 						zipper.v_order_details_full vodf
 					LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
@@ -82,14 +85,20 @@ export async function selectProductWiseConsumption(req, res, next) {
 							lower(vodf.item_name) != 'nylon' 
 							OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 						)
+						AND ${
+							type == 'nylon_plastic'
+								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic'`
+								: type == 'nylon'
+									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic'`
+									: sql`lower(vodf.item_name) != ${type}`
+						}
 					GROUP BY
 						vodf.item_name,
 						vodf.nylon_stopper_name,
 						vodf.zipper_number_name,
 						vodf.end_type_name,
 						vodf.puller_type_name,
-						tcr.raw_mtr_per_kg,
-						tcr.dyed_mtr_per_kg
+						tcr.raw_mtr_per_kg
 					ORDER BY
                         vodf.item_name
 						`;
