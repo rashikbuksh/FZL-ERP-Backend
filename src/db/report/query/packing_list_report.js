@@ -73,7 +73,9 @@ export async function selectPackingList(req, res, next) {
 							dvl.marketing_uuid,
 							dvl.marketing_name,
 							vodf.order_type,
-							vodf.is_inch
+							vodf.is_inch,
+							dvl.warehouse_received_date,
+                            dvl.gate_pass_date
 						ORDER BY dvl.created_at DESC;`;
 
 	try {
