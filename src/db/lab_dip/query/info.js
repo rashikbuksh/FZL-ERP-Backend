@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, ne, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
@@ -11,23 +11,18 @@ import * as viewSchema from '../../view/schema.js';
 import { info } from '../schema.js';
 
 const thread = alias(threadSchema.order_info, 'thread');
-const zipper = alias(zipperSchema.order_info, 'zipper');
+const threadOrderEntry = alias(threadSchema.order_entry, 'thread_order_entry');
 const threadBuyer = alias(publicSchema.buyer, 'thread_buyer');
-const zipperBuyer = alias(publicSchema.buyer, 'zipper_buyer');
 const threadParty = alias(publicSchema.party, 'thread_party');
-const zipperParty = alias(publicSchema.party, 'zipper_party');
 const threadMarketing = alias(publicSchema.marketing, 'thread_marketing');
-const zipperMarketing = alias(publicSchema.marketing, 'zipper_marketing');
 const threadMerchandiser = alias(
 	publicSchema.merchandiser,
 	'thread_merchandiser'
 );
-const zipperMerchandiser = alias(
-	publicSchema.merchandiser,
-	'zipper_merchandiser'
-);
 const threadFactory = alias(publicSchema.factory, 'thread_factory');
-const zipperFactory = alias(publicSchema.factory, 'zipper_factory');
+
+const zipperOrderEntry = alias(zipperSchema.order_entry, 'zipper_order_entry');
+const zipperSfg = alias(zipperSchema.sfg, 'zipper_sfg');
 
 // export async function insert(req, res, next) {
 // 	if (!(await validateRequest(req, next))) return;
@@ -185,6 +180,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { type, completed } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: info.uuid,
@@ -232,7 +229,22 @@ export async function selectAll(req, res, next) {
 			viewSchema.v_order_details,
 			eq(info.order_info_uuid, viewSchema.v_order_details.order_info_uuid)
 		)
+		.leftJoin(
+			zipperOrderEntry,
+			eq(
+				viewSchema.v_order_details.order_description_uuid,
+				zipperOrderEntry.order_description_uuid
+			)
+		)
+		.leftJoin(
+			zipperSfg,
+			eq(zipperOrderEntry.uuid, zipperSfg.order_entry_uuid)
+		)
 		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
+		.leftJoin(
+			threadOrderEntry,
+			eq(thread.uuid, threadOrderEntry.order_info_uuid)
+		)
 		.leftJoin(threadBuyer, eq(thread.buyer_uuid, threadBuyer.uuid))
 		.leftJoin(threadParty, eq(thread.party_uuid, threadParty.uuid))
 		.leftJoin(
@@ -244,7 +256,25 @@ export async function selectAll(req, res, next) {
 			eq(thread.merchandiser_uuid, threadMerchandiser.uuid)
 		)
 		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
-
+		.where(
+			and(
+				type === 'sample'
+					? or(
+							eq(viewSchema.v_order_details.is_sample, 1),
+							eq(thread.is_sample, 1)
+						)
+					: type === 'bulk'
+						? or(
+								eq(viewSchema.v_order_details.is_sample, 0),
+								eq(thread.is_sample, 0)
+							)
+						: sql`TRUE`,
+				or(
+					gt(threadOrderEntry.quantity, threadOrderEntry.delivered),
+					gt(zipperOrderEntry.quantity, zipperSfg.delivered)
+				)
+			)
+		)
 		.orderBy(desc(info.created_at));
 
 	try {

@@ -7,7 +7,14 @@ export const pathLabDipInfo = {
 			tags: ['lab_dip.info'],
 			summary: 'Get all lab dip info',
 			description: 'Get all lab dip info',
-			parameters: [],
+			parameters: [
+				SE.parameter_query(
+					'type',
+					'type',
+					['sample', 'bulk', 'all'],
+					true
+				),
+			],
 			responses: {
 				200: {
 					description: 'Returns all lab dip info',

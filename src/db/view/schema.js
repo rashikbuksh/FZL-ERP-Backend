@@ -69,6 +69,7 @@ export const v_order_details = zipper
 		order_description_updated_at: DateTime('order_description_updated_at'),
 		tape_received: PG_DECIMAL('tape_received'),
 		tape_transferred: PG_DECIMAL('tape_transferred'),
+		is_cancelled: boolean('is_cancelled'),
 	})
 	.existing();
 

@@ -242,8 +242,6 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			size: order_entry.size,
 			is_inch: order_entry.is_inch,
 			quantity: decimalToNumber(order_entry.quantity),
-			total_planning_quantity: sum(finishing_batch_entry.quantity),
-			total_dyeing_quantity: sum(dyeing_batch_entry.quantity),
 			company_price: decimalToNumber(order_entry.company_price),
 			party_price: decimalToNumber(order_entry.party_price),
 			order_entry_status: order_entry.status,
@@ -283,7 +281,11 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			total_short_quantity: decimalToNumber(sfg.short_quantity),
 			index: order_entry.index,
 			planning_batch_quantity: sql`
-				SUM(finishing_batch_entry.quantity)::float8
+				(
+					SELECT SUM(finishing_batch_entry.quantity)::float8
+					FROM zipper.finishing_batch_entry
+					WHERE finishing_batch_entry.sfg_uuid = sfg.uuid
+				)
 			`,
 		})
 		.from(order_entry)
@@ -304,27 +306,11 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			)
 		)
 		.leftJoin(dyeing_batch_entry, eq(sfg.uuid, dyeing_batch_entry.sfg_uuid))
-		.leftJoin(
-			deliverySchema.packing_list_entry,
-			eq(deliverySchema.packing_list_entry.sfg_uuid, sfg.uuid)
-		)
-		.leftJoin(
-			deliverySchema.packing_list,
-			eq(
-				deliverySchema.packing_list.uuid,
-				deliverySchema.packing_list_entry.packing_list_uuid
-			)
-		)
-		.leftJoin(
-			deliverySchema.challan,
-			eq(
-				deliverySchema.challan.uuid,
-				deliverySchema.packing_list.challan_uuid
-			)
-		)
 		.where(eq(order_description.uuid, order_description_uuid))
 		.groupBy(order_entry.uuid, sfg.uuid)
 		.orderBy(asc(order_entry.index));
+
+	console.log('orderEntryPromise', new Date().toISOString());
 
 	try {
 		const data = await orderEntryPromise;
