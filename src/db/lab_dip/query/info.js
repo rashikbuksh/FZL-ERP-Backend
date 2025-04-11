@@ -180,7 +180,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { type, completed } = req.query;
+	const { type } = req.query;
 
 	const resultPromise = db
 		.select({
@@ -257,19 +257,17 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
 		.where(
-				type === 'sample'
+			type === 'sample'
+				? or(
+						eq(viewSchema.v_order_details.is_sample, 1),
+						eq(thread.is_sample, 1)
+					)
+				: type === 'bulk'
 					? or(
-							eq(viewSchema.v_order_details.is_sample, 1),
-							eq(thread.is_sample, 1)
+							eq(viewSchema.v_order_details.is_sample, 0),
+							eq(thread.is_sample, 0)
 						)
-					: type === 'bulk'
-						? or(
-								eq(viewSchema.v_order_details.is_sample, 0),
-								eq(thread.is_sample, 0)
-							)
-						: sql`TRUE`
-				
-			
+					: sql`1=1`
 		)
 		.orderBy(desc(info.created_at));
 
