@@ -257,7 +257,6 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
 		.where(
-			and(
 				type === 'sample'
 					? or(
 							eq(viewSchema.v_order_details.is_sample, 1),
@@ -268,12 +267,9 @@ export async function selectAll(req, res, next) {
 								eq(viewSchema.v_order_details.is_sample, 0),
 								eq(thread.is_sample, 0)
 							)
-						: sql`TRUE`,
-				or(
-					gt(threadOrderEntry.quantity, threadOrderEntry.delivered),
-					gt(zipperOrderEntry.quantity, zipperSfg.delivered)
-				)
-			)
+						: sql`TRUE`
+				
+			
 		)
 		.orderBy(desc(info.created_at));
 
