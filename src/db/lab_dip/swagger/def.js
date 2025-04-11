@@ -83,59 +83,12 @@ export const defLabDipRecipeEntry = SED({
 	xml: 'LabDip/RecipeEntry',
 });
 
-// * Shade Recipe * //
-export const defShadeRecipe = SED({
-	required: [
-		'uuid',
-		'name',
-		'sub_streat',
-		'lab_status',
-		'created_by',
-		'created_at',
-	],
-	properties: {
-		uuid: SE.uuid(),
-		name: SE.string('Shade Recipe 1'),
-		sub_streat: SE.string('Sub Streat 1'),
-		lab_status: SE.number(0),
-		bleaching: SE.string('bleach'),
-		created_by: SE.uuid(),
-		created_at: SE.date_time(),
-		updated_at: SE.date_time(),
-		remarks: SE.string('remarks'),
-	},
-	xml: 'LabDip/ShareRecipe',
-});
-
-// * Shade Recipe Entry * //
-export const defShadeRecipeEntry = SED({
-	required: [
-		'uuid',
-		'shade_recipe_uuid',
-		'material_uuid',
-		'quantity',
-		'created_at',
-	],
-	properties: {
-		uuid: SE.uuid(),
-		shade_recipe_uuid: SE.uuid(),
-		material_uuid: SE.uuid(),
-		quantity: SE.number(10),
-		created_at: SE.date_time(),
-		updated_at: SE.date_time(),
-		remarks: SE.string('remarks'),
-	},
-	xml: 'LabDip/ShareRecipeEntry',
-});
-
 // * Marge All
 export const defLabDip = {
 	info: defLabDipInfo,
 	info_entry: defLabDipInfoEntry,
 	recipe: defLabDipRecipe,
 	recipe_entry: defLabDipRecipeEntry,
-	shade_recipe: defShadeRecipe,
-	shade_recipe_entry: defShadeRecipeEntry,
 };
 
 // * Tag
@@ -156,14 +109,6 @@ export const tagLabDip = [
 	{
 		name: 'lab_dip.recipe_entry',
 		description: 'Operations about recipe entry of Lab dip',
-	},
-	{
-		name: 'lab_dip.shade_recipe',
-		description: 'Operations about share recipe of Thread',
-	},
-	{
-		name: 'lab_dip.shade_recipe_entry',
-		description: 'Operations about share recipe entry of Thread',
 	},
 	{
 		name: 'lab_dip.info_entry',

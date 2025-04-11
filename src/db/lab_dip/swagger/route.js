@@ -23,100 +23,30 @@ export const pathLabDipInfo = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
-									info_id: {
-										type: 'string',
-										example: 'LDI24-0001',
-									},
-									name: {
-										type: 'string',
-										example: 'Lab Dip 1',
-									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									thread_order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
-									buyer_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_name: {
-										type: 'string',
-										example: 'Buyer 1',
-									},
-									party_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									party_name: {
-										type: 'string',
-										example: 'Party 1',
-									},
-									marketing_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									marketing_name: {
-										type: 'string',
-										example: 'Marketing 1',
-									},
-									merchandiser_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									merchandiser_name: {
-										type: 'string',
-										example: 'Merchandiser 1',
-									},
-									factory_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									factory_name: {
-										type: 'string',
-										example: 'Factory 1',
-									},
-									lab_status: {
-										type: 'string',
-										example: 'Pending',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									uuid: SE.uuid(),
+									id: SE.number(1),
+									info_id: SE.string('LDI24-0001'),
+									name: SE.string('Lab Dip 1'),
+									order_info_uuid: SE.uuid(),
+									thread_order_info_uuid: SE.uuid(),
+									order_number: SE.string('ZS25-0001'),
+									buyer_uuid: SE.uuid(),
+									buyer_name: SE.string('Buyer 1'),
+									party_uuid: SE.uuid(),
+									party_name: SE.string('Party 1'),
+									marketing_uuid: SE.uuid(),
+									marketing_name: SE.string('Marketing 1'),
+									merchandiser_uuid: SE.uuid(),
+									merchandiser_name:
+										SE.string('Merchandiser 1'),
+									factory_uuid: SE.uuid(),
+									factory_name: SE.string('Factory 1'),
+									lab_status: SE.string('pending'),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('name'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -181,14 +111,8 @@ export const pathLabDipInfo = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
+									uuid: SE.uuid(),
+									id: SE.integer(0),
 									info_id: {
 										type: 'string',
 										example: 'LDI24-0001',
@@ -197,84 +121,26 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'Lab Dip 1',
 									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									thread_order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
-									buyer_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_name: {
-										type: 'string',
-										example: 'Buyer 1',
-									},
-									party_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									party_name: {
-										type: 'string',
-										example: 'Party 1',
-									},
-									marketing_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									marketing_name: {
-										type: 'string',
-										example: 'Marketing 1',
-									},
-									merchandiser_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									merchandiser_name: {
-										type: 'string',
-										example: 'Merchandiser 1',
-									},
-									factory_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									factory_name: {
-										type: 'string',
-										example: 'Factory 1',
-									},
-									lab_status: {
-										type: 'string',
-										example: 'Pending',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									order_info_uuid: SE.uuid(),
+									thread_order_info_uuid: SE.uuid(),
+									order_number: SE.string('ZS25-0001'),
+									buyer_uuid: SE.uuid(),
+									buyer_name: SE.string('Buyer 1'),
+									party_uuid: SE.uuid(),
+									party_name: SE.string('Party 1'),
+									marketing_uuid: SE.uuid(),
+									marketing_name: SE.string('Marketing 1'),
+									merchandiser_uuid: SE.uuid(),
+									merchandiser_name:
+										SE.string('Merchandiser 1'),
+									factory_uuid: SE.uuid(),
+									factory_name: SE.string('Factory 1'),
+									lab_status: SE.string('pending'),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('name'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -373,14 +239,8 @@ export const pathLabDipInfo = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
+									uuid: SE.uuid(),
+									id: SE.integer(0),
 									info_id: {
 										type: 'string',
 										example: 'LDI24-0001',
@@ -389,91 +249,30 @@ export const pathLabDipInfo = {
 										type: 'string',
 										example: 'Lab Dip 1',
 									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									thread_order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
-									buyer_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									buyer_name: {
-										type: 'string',
-										example: 'Buyer 1',
-									},
-									party_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									party_name: {
-										type: 'string',
-										example: 'Party 1',
-									},
-									marketing_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									marketing_name: {
-										type: 'string',
-										example: 'Marketing 1',
-									},
-									merchandiser_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									merchandiser_name: {
-										type: 'string',
-										example: 'Merchandiser 1',
-									},
-									factory_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									factory_name: {
-										type: 'string',
-										example: 'Factory 1',
-									},
-									lab_status: {
-										type: 'string',
-										example: 'Pending',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									order_info_uuid: SE.uuid(),
+									thread_order_info_uuid: SE.uuid(),
+									order_number: SE.string('ZS25-0001'),
+									buyer_uuid: SE.uuid(),
+									buyer_name: SE.string('Buyer 1'),
+									party_uuid: SE.uuid(),
+									party_name: SE.string('Party 1'),
+									marketing_uuid: SE.uuid(),
+									marketing_name: SE.string('Marketing 1'),
+									merchandiser_uuid: SE.uuid(),
+									merchandiser_name:
+										SE.string('Merchandiser 1'),
+									factory_uuid: SE.uuid(),
+									factory_name: SE.string('Factory 1'),
+									lab_status: SE.string('pending'),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('name'),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 									recipe: {
 										type: 'object',
 										properties: {
-											recipe_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
+											recipe_uuid: SE.uuid(),
 											recipe_name: {
 												type: 'string',
 												example:
@@ -549,45 +348,15 @@ export const pathLabDipInfoEntry = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									lab_dip_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									recipe_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									approved: {
-										type: 'number',
-										example: 0,
-									},
-									approved_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									uuid: SE.uuid(),
+									lab_dip_info_uuid: SE.uuid(),
+									recipe_uuid: SE.uuid(),
+									approved: SE.integer(0),
+									approved_date: SE.date_time(),
+									created_by: SE.uuid(),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -653,45 +422,15 @@ export const pathLabDipInfoEntry = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									lab_dip_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									recipe_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									approved: {
-										type: 'number',
-										example: 0,
-									},
-									approved_date: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									uuid: SE.uuid(),
+									lab_dip_info_uuid: SE.uuid(),
+									recipe_uuid: SE.uuid(),
+									approved: SE.integer(0),
+									approved_date: SE.date_time(),
+									created_by: SE.uuid(),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -785,54 +524,27 @@ export const pathLabDipRecipe = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
+									uuid: SE.uuid(),
+									id: SE.integer(0),
 									recipe_id: {
 										type: 'string',
 										example: 'LDR24-0001',
 									},
-									lab_dip_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									lab_dip_info_uuid: SE.uuid(),
 									info_id: {
 										type: 'string',
 										example: 'LDI24-0001',
 									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
+									order_info_uuid: SE.uuid(),
+									order_number: SE.string('ZS25-0001'),
 									name: {
 										type: 'string',
 										example: 'Recipe 1',
 									},
-									approved: {
-										type: 'number',
-										example: 0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									status: {
-										type: 'number',
-										example: 0,
-									},
+									approved: SE.integer(0),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('name'),
+									status: SE.integer(0),
 									sub_streat: {
 										type: 'string',
 										example: 'Sub Streat 1',
@@ -841,20 +553,9 @@ export const pathLabDipRecipe = {
 										type: 'string',
 										example: 'bleach',
 									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -919,54 +620,27 @@ export const pathLabDipRecipe = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
+									uuid: SE.uuid(),
+									id: SE.integer(0),
 									recipe_id: {
 										type: 'string',
 										example: 'LDR24-0001',
 									},
-									lab_dip_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									lab_dip_info_uuid: SE.uuid(),
 									info_id: {
 										type: 'string',
 										example: 'LDI24-0001',
 									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
+									order_info_uuid: SE.uuid(),
+									order_number: SE.string('ZS25-0001'),
 									name: {
 										type: 'string',
 										example: 'Recipe 1',
 									},
-									approved: {
-										type: 'number',
-										example: 0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									status: {
-										type: 'number',
-										example: 0,
-									},
+									approved: SE.integer(0),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('name'),
+									status: SE.integer(0),
 									sub_streat: {
 										type: 'string',
 										example: 'Sub Streat 1',
@@ -975,20 +649,9 @@ export const pathLabDipRecipe = {
 										type: 'string',
 										example: 'bleach',
 									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -1090,54 +753,27 @@ export const pathLabDipRecipe = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
+									uuid: SE.uuid(),
+									id: SE.integer(0),
 									recipe_id: {
 										type: 'string',
 										example: 'LDR24-0001',
 									},
-									lab_dip_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									lab_dip_info_uuid: SE.uuid(),
 									info_id: {
 										type: 'string',
 										example: 'LDI24-0001',
 									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
+									order_info_uuid: SE.uuid(),
+									order_number: SE.string('ZS25-0001'),
 									name: {
 										type: 'string',
 										example: 'Recipe 1',
 									},
-									approved: {
-										type: 'number',
-										example: 0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									status: {
-										type: 'number',
-										example: 0,
-									},
+									approved: SE.integer(0),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('name'),
+									status: SE.integer(0),
 									sub_streat: {
 										type: 'string',
 										example: 'Sub Streat 1',
@@ -1146,35 +782,15 @@ export const pathLabDipRecipe = {
 										type: 'string',
 										example: 'bleach',
 									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 									recipe_entry: {
 										type: 'object',
 										properties: {
-											uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											recipe_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											recipe_name: {
-												type: 'string',
-												example: 'Recipe 1',
-											},
+											uuid: SE.uuid(),
+											recipe_uuid: SE.uuid(),
+											recipe_name: SE.string('Recipe 1'),
 											color: {
 												type: 'string',
 												example: 'Red',
@@ -1183,10 +799,7 @@ export const pathLabDipRecipe = {
 												type: 'number',
 												example: 10.0,
 											},
-											material_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
+											material_uuid: SE.uuid(),
 											material_name: {
 												type: 'string',
 												example: 'Material 1',
@@ -1249,68 +862,30 @@ export const pathLabDipRecipe = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
+									uuid: SE.uuid(),
+									id: SE.integer(0),
 									recipe_id: {
 										type: 'string',
 										example: 'LDR24-0001',
 									},
-									lab_dip_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									lab_dip_info_uuid: SE.uuid(),
 									info_id: {
 										type: 'string',
 										example: 'LDI24-0001',
 									},
-									order_info_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0001',
-									},
+									order_info_uuid: SE.uuid(),
+									order_number: SE.string('ZS25-0001'),
 									name: {
 										type: 'string',
 										example: 'Recipe 1',
 									},
-									approved: {
-										type: 'number',
-										example: 0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									status: {
-										type: 'number',
-										example: 0,
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									approved: SE.integer(0),
+									created_by: SE.uuid(),
+									created_by_name: SE.string('name'),
+									status: SE.integer(0),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -1425,14 +1000,8 @@ export const pathLabDipRecipeEntry = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									recipe_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									recipe_uuid: SE.uuid(),
 									recipe_name: {
 										type: 'string',
 										example: 'Recipe 1',
@@ -1445,10 +1014,7 @@ export const pathLabDipRecipeEntry = {
 										type: 'number',
 										example: 10.0,
 									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									material_uuid: SE.uuid(),
 									material_name: {
 										type: 'string',
 										example: 'Material 1',
@@ -1457,20 +1023,9 @@ export const pathLabDipRecipeEntry = {
 										type: 'string',
 										example: 'kg',
 									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -1623,14 +1178,8 @@ export const pathLabDipRecipeEntry = {
 							schema: {
 								type: 'object',
 								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									recipe_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									uuid: SE.uuid(),
+									recipe_uuid: SE.uuid(),
 									recipe_name: {
 										type: 'string',
 										example: 'Recipe 1',
@@ -1643,10 +1192,7 @@ export const pathLabDipRecipeEntry = {
 										type: 'number',
 										example: 10.0,
 									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
+									material_uuid: SE.uuid(),
 									material_name: {
 										type: 'string',
 										example: 'Material 1',
@@ -1655,20 +1201,9 @@ export const pathLabDipRecipeEntry = {
 										type: 'string',
 										example: 'kg',
 									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
 								},
 							},
 						},
@@ -1684,722 +1219,10 @@ export const pathLabDipRecipeEntry = {
 		},
 	},
 };
-export const pathLabDipShadeRecipe = {
-	'/lab-dip/shade-recipe': {
-		get: {
-			tags: ['lab_dip.shade_recipe'],
-			summary: 'Get all lab dip shade recipe',
-			description: 'Get all lab dip shade recipe',
-			responses: {
-				200: {
-					description: 'Returns all lab dip shade recipe',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
-									shade_recipe_id: {
-										type: 'string',
-										example: 'TSR24-0001',
-									},
-									name: {
-										type: 'string',
-										example: 'Recipe 1',
-									},
-									sub_streat: {
-										type: 'string',
-										example: 'Sub Streat',
-									},
-									lab_status: {
-										type: 'number',
-										example: 0,
-									},
-									bleaching: {
-										type: 'string',
-										example: 'Bleach',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		post: {
-			tags: ['lab_dip.shade_recipe'],
-			summary: 'Create a lab dip shade recipe',
-			description: 'Create a lab dip shade recipe',
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/lab_dip/shade_recipe',
-						},
-					},
-				},
-			},
-			responses: {
-				200: {
-					description: 'Lab dip shade recipe created successfully',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/lab_dip/shade_recipe',
-							},
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
-			},
-		},
-	},
-
-	'/lab-dip/shade-recipe/{uuid}': {
-		get: {
-			tags: ['lab_dip.shade_recipe'],
-			summary: 'Get lab dip shade recipe by uuid',
-			description: 'Get lab dip shade recipe by uuid',
-			operationId: 'getLabDipShadeRecipe',
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'lab dip shade recipe to get',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Lab dip shade recipe found',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
-									shade_recipe_id: {
-										type: 'string',
-										example: 'TSR24-0001',
-									},
-									name: {
-										type: 'string',
-										example: 'Recipe 1',
-									},
-									sub_streat: {
-										type: 'string',
-										example: 'Sub Streat',
-									},
-									lab_status: {
-										type: 'number',
-										example: 0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Lab dip shade recipe not found',
-				},
-			},
-		},
-		put: {
-			tags: ['lab_dip.shade_recipe'],
-			summary: 'Update an existing lab dip shade recipe',
-			description: 'Update an existing lab dip shade recipe',
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Lab dip shade recipe to update',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/lab_dip/shade_recipe',
-						},
-					},
-				},
-			},
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Lab dip shade recipe not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
-			},
-		},
-
-		delete: {
-			tags: ['lab_dip.shade_recipe'],
-			summary: 'Delete a lab dip shade recipe',
-			description: 'Delete a lab dip shade recipe',
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Lab dip shade recipe to delete',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Lab dip shade recipe not found',
-				},
-			},
-		},
-	},
-	'/lab-dip/shade-recipe-details/by/{shade_recipe_uuid}': {
-		get: {
-			tags: ['lab_dip.shade_recipe'],
-			summary: 'Get lab dip shade recipe details by shade_recipe_uuid',
-			description:
-				'Get lab dip shade recipe details by shade_recipe_uuid',
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'shade_recipe_uuid',
-					in: 'path',
-					description: 'lab dip shade recipe to get',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Lab dip shade recipe details found',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									id: {
-										type: 'number',
-										example: 1,
-									},
-									shade_recipe_id: {
-										type: 'string',
-										example: 'TSR24-0001',
-									},
-									name: {
-										type: 'string',
-										example: 'Recipe 1',
-									},
-									sub_streat: {
-										type: 'string',
-										example: 'Sub Streat',
-									},
-									lab_status: {
-										type: 'number',
-										example: 0,
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-									shade_recipe_entry: {
-										type: 'object',
-										properties: {
-											uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											shade_recipe_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											shade_recipe_name: {
-												type: 'string',
-												example: 'Recipe 1',
-											},
-											material_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											material_name: {
-												type: 'string',
-												example: 'Material 1',
-											},
-											quantity: {
-												type: 'number',
-												example: 10.0,
-											},
-											unit: {
-												type: 'string',
-												example: 'kg',
-											},
-											created_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											updated_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											remarks: {
-												type: 'string',
-												example: 'Remarks',
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Lab dip shade recipe details not found',
-				},
-			},
-		},
-	},
-};
-
-export const pathLabDipShadeRecipeEntry = {
-	'/lab-dip/shade-recipe-entry': {
-		get: {
-			tags: ['lab_dip.shade_recipe_entry'],
-			summary: 'Get all lab dip shade recipe entry',
-			description: 'Get all lab dip shade recipe entry',
-			responses: {
-				200: {
-					description: 'Returns all lab dip shade recipe entry',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									shade_recipe_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									shade_recipe_name: {
-										type: 'string',
-										example: 'Recipe 1',
-									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									material_name: {
-										type: 'string',
-										example: 'Material 1',
-									},
-									quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									unit: {
-										type: 'string',
-										example: 'kg',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		post: {
-			tags: ['lab_dip.shade_recipe_entry'],
-			summary: 'Create a lab dip shade recipe entry',
-			description: 'Create a lab dip shade recipe entry',
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/lab_dip/shade_recipe_entry',
-						},
-					},
-				},
-			},
-			responses: {
-				200: {
-					description:
-						'Lab dip shade recipe entry created successfully',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/definitions/lab_dip/shade_recipe_entry',
-							},
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
-			},
-		},
-	},
-
-	'/lab-dip/shade-recipe-entry/{uuid}': {
-		get: {
-			tags: ['lab_dip.shade_recipe_entry'],
-			summary: 'Get lab dip shade recipe entry by uuid',
-			description: 'Get lab dip shade recipe entry by uuid',
-			operationId: 'getLabDipShadeRecipeEntry',
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'lab dip shade recipe entry to get',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Lab dip shade recipe entry found',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									shade_recipe_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									shade_recipe_name: {
-										type: 'string',
-										example: 'Recipe 1',
-									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									material_name: {
-										type: 'string',
-										example: 'Material 1',
-									},
-									quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									unit: {
-										type: 'string',
-										example: 'kg',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Lab dip shade recipe entry not found',
-				},
-			},
-		},
-
-		put: {
-			tags: ['lab_dip.shade_recipe_entry'],
-			summary: 'Update an existing lab dip shade recipe entry',
-			description: 'Update an existing lab dip shade recipe entry',
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Lab dip shade recipe entry to update',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/lab_dip/shade_recipe_entry',
-						},
-					},
-				},
-			},
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Lab dip shade recipe entry not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
-			},
-		},
-
-		delete: {
-			tags: ['lab_dip.shade_recipe_entry'],
-			summary: 'Delete a lab dip shade recipe entry',
-			description: 'Delete a lab dip shade recipe entry',
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'Lab dip shade recipe entry to delete',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Lab dip shade recipe entry not found',
-				},
-			},
-		},
-	},
-	'/lab-dip/shade-recipe-entry/by/{shade_recipe_uuid}': {
-		get: {
-			tags: ['lab_dip.shade_recipe_entry'],
-			summary: 'Get lab dip shade recipe entry by shade_recipe_uuid',
-			description: 'Get lab dip shade recipe entry by shade_recipe_uuid',
-			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'shade_recipe_uuid',
-					in: 'path',
-					description: 'lab dip shade recipe to get',
-					required: true,
-					type: 'string',
-					example: 'igD0v9DIJQhJeet',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Lab dip shade recipe entry found',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									shade_recipe_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									shade_recipe_name: {
-										type: 'string',
-										example: 'Recipe 1',
-									},
-									material_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									material_name: {
-										type: 'string',
-										example: 'Material 1',
-									},
-									quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									unit: {
-										type: 'string',
-										example: 'kg',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'Remarks',
-									},
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Lab dip shade recipe entry not found',
-				},
-			},
-		},
-	},
-};
 
 export const pathLabDip = {
 	...pathLabDipInfo,
 	...pathLabDipInfoEntry,
 	...pathLabDipRecipe,
 	...pathLabDipRecipeEntry,
-	...pathLabDipShadeRecipe,
-	...pathLabDipShadeRecipeEntry,
 };
