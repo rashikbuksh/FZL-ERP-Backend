@@ -242,17 +242,15 @@ export async function selectAll(req, res, next) {
 		)
 		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
 		.where(
-			type === 'sample'
-				? or(
-						eq(viewSchema.v_order_details.is_sample, 1),
-						eq(thread.is_sample, 1)
-					)
-				: type === 'bulk'
-					? or(
-							eq(viewSchema.v_order_details.is_sample, 0),
-							eq(thread.is_sample, 0)
-						)
-					: sql`1=1`
+			type === 'zipper_sample'
+				? eq(viewSchema.v_order_details.is_sample, 1)
+				: type === 'zipper_bulk'
+					? eq(viewSchema.v_order_details.is_sample, 0)
+					: type === 'thread_sample'
+						? eq(thread.is_sample, 1)
+						: type === 'thread_bulk'
+							? eq(thread.is_sample, 0)
+							: sql`TRUE`
 		)
 		.orderBy(desc(info.created_at));
 

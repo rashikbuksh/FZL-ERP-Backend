@@ -11,7 +11,13 @@ export const pathLabDipInfo = {
 				SE.parameter_query(
 					'type',
 					'type',
-					['sample', 'bulk', 'all'],
+					[
+						'zipper_sample',
+						'zipper_bulk',
+						'thread_sample',
+						'thread_bulk',
+						'all',
+					],
 					true
 				),
 			],
