@@ -229,22 +229,7 @@ export async function selectAll(req, res, next) {
 			viewSchema.v_order_details,
 			eq(info.order_info_uuid, viewSchema.v_order_details.order_info_uuid)
 		)
-		.leftJoin(
-			zipperOrderEntry,
-			eq(
-				viewSchema.v_order_details.order_description_uuid,
-				zipperOrderEntry.order_description_uuid
-			)
-		)
-		.leftJoin(
-			zipperSfg,
-			eq(zipperOrderEntry.uuid, zipperSfg.order_entry_uuid)
-		)
 		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
-		.leftJoin(
-			threadOrderEntry,
-			eq(thread.uuid, threadOrderEntry.order_info_uuid)
-		)
 		.leftJoin(threadBuyer, eq(thread.buyer_uuid, threadBuyer.uuid))
 		.leftJoin(threadParty, eq(thread.party_uuid, threadParty.uuid))
 		.leftJoin(
@@ -256,22 +241,20 @@ export async function selectAll(req, res, next) {
 			eq(thread.merchandiser_uuid, threadMerchandiser.uuid)
 		)
 		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
-
+		.where(
+			type === 'sample'
+				? or(
+						eq(viewSchema.v_order_details.is_sample, 1),
+						eq(thread.is_sample, 1)
+					)
+				: type === 'bulk'
+					? or(
+							eq(viewSchema.v_order_details.is_sample, 0),
+							eq(thread.is_sample, 0)
+						)
+					: sql`1=1`
+		)
 		.orderBy(desc(info.created_at));
-
-	// .where(
-	// 	type === 'sample'
-	// 		? or(
-	// 				eq(viewSchema.v_order_details.is_sample, 1),
-	// 				eq(thread.is_sample, 1)
-	// 			)
-	// 		: type === 'bulk'
-	// 			? or(
-	// 					eq(viewSchema.v_order_details.is_sample, 0),
-	// 					eq(thread.is_sample, 0)
-	// 				)
-	// 			: sql`1=1`
-	// )
 
 	try {
 		const data = await resultPromise;
