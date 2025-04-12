@@ -2001,7 +2001,7 @@ export async function dailyProductionReport(req, res, next) {
 					vodf.order_info_uuid,
 					vodf.order_number,
 					vodf.item_name,
-					CASE WHEN vodf.order_type = 'slider' THEN 'Slider' ELSE vodf.item_name END as type,
+					vodf.item_name as type,
 					vodf.party_uuid,
 					vodf.party_name,
 					vodf.order_description_uuid,
