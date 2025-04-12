@@ -2213,11 +2213,10 @@ export async function dailyProductionReport(req, res, next) {
 
 			const item = findOrCreateArray(
 				order.items,
-				['item_description', 'order_description_uuid'],
-				[item_description, order_description_uuid],
+				['item_description'],
+				[item_description],
 				() => ({
 					item_description,
-					order_description_uuid,
 					other: [],
 				})
 			);
