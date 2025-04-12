@@ -48,6 +48,7 @@ export async function selectItemWiseProduction(req, res, next) {
                     zipper.order_description od ON oe.order_description_uuid = od.uuid
                 WHERE
                     pl.item_for NOT IN ('thread', 'sample_thread') 
+                    AND od.uuid IS NOT null
                     AND ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 GROUP BY
                     od.uuid
@@ -81,7 +82,8 @@ export async function selectItemWiseProduction(req, res, next) {
                 LEFT JOIN
                     thread.order_entry oe ON ple.thread_order_entry_uuid = oe.uuid
                 WHERE
-                    pl.item_for IN ('thread', 'sample_thread') AND ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    oe.order_info_uuid IS NOT null
+                    AND pl.item_for IN ('thread', 'sample_thread') AND ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                 GROUP BY
                     oe.order_info_uuid
         ) packing_list_sum ON toi.uuid = packing_list_sum.order_info_uuid
