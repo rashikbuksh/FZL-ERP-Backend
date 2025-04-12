@@ -1946,27 +1946,28 @@ export async function dailyProductionReport(req, res, next) {
 		const query = sql`
             WITH running_all_sum AS (
                 SELECT 
-                    DISTINCT oe.uuid as order_entry_uuid, 
+                    oe.uuid as order_entry_uuid, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN ple.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_close_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN ple.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_open_end_quantity, 
-                    coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity
+                    coalesce(SUM(ple.quantity), 0)::float8 as total_prod_quantity
                 FROM 
-                    delivery.v_packing_list_details vpl 
-                    LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
-                    LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
-                    AND oe.order_description_uuid = vodf.order_description_uuid 
+                    delivery.packing_list_entry ple
+                    LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+                    LEFT JOIN zipper.sfg ON ple.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid 
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid 
                 WHERE 
-                    ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} 
+                    ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} 
                     AND ${type == 'bulk' ? sql`vodf.is_sample = 0` : type == 'bulk' ? sql`vodf.is_sample = 1` : sql`1=1`}
                 GROUP BY 
                     oe.uuid, vodf.order_type
@@ -1976,19 +1977,20 @@ export async function dailyProductionReport(req, res, next) {
                         toe.uuid as order_entry_uuid,
                         coalesce(
                             SUM(
-                                CASE WHEN vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread' THEN vpl.quantity ::float8 ELSE 0 END
+                                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN ple.quantity ::float8 ELSE 0 END
                             ),
                             0
                         )::float8 AS total_close_end_quantity,
                         0 as total_open_end_quantity,
-                        coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity
+                        coalesce(SUM(ple.quantity), 0)::float8 as total_prod_quantity
                     FROM
-                        delivery.v_packing_list_details vpl
-                        LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
-                        LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
+                        delivery.packing_list_entry ple
+                        LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+                        LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+                        LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
                         AND toi.uuid = toe.order_info_uuid
                     WHERE
-                        ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                        ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                         AND ${type == 'bulk' ? sql`toi.is_sample = 0` : type == 'bulk' ? sql`toi.is_sample = 1` : sql`1=1`}
                     GROUP BY
                         toe.uuid, toe.company_price
@@ -2033,12 +2035,6 @@ export async function dailyProductionReport(req, res, next) {
                     zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid 
                 LEFT JOIN 
                     running_all_sum ON oe.uuid = running_all_sum.order_entry_uuid 
-                LEFT JOIN (
-                            SELECT 
-                                jsonb_array_elements_text(order_info_uuids::jsonb) AS order_info_uuid
-                            FROM 
-                                commercial.pi_cash
-                        ) pi_cash ON vodf.order_info_uuid::text = pi_cash.order_info_uuid
                 LEFT JOIN (
                         SELECT
                             vodf.order_info_uuid,
@@ -2107,12 +2103,6 @@ export async function dailyProductionReport(req, res, next) {
                     LEFT JOIN public.party party ON toi.party_uuid = party.uuid
                     LEFT JOIN public.marketing marketing ON toi.marketing_uuid = marketing.uuid
                     LEFT JOIN running_all_sum_thread ON toe.uuid = running_all_sum_thread.order_entry_uuid
-                    LEFT JOIN (
-                        SELECT 
-                            jsonb_array_elements_text(order_info_uuids::jsonb) AS order_info_uuid
-                        FROM 
-                            commercial.pi_cash
-                    ) pi_cash ON toi.uuid::text = pi_cash.order_info_uuid
                     LEFT JOIN (
                         SELECT 
                             toi.uuid as order_info_uuid,
