@@ -116,13 +116,15 @@ export async function selectParty(req, res, next) {
 	const { marketing, item_for, is_cash, page, has_factory, is_pi, own_uuid } =
 		req.query;
 
+	let marketingUuidData;
+
 	if (own_uuid) {
 		const marketingUuidQuery = sql`
 				SELECT uuid
 				FROM public.marketing
 				WHERE user_uuid = ${own_uuid};`;
 
-		const marketingUuidData = await db.execute(marketingUuidQuery);
+		marketingUuidData = await db.execute(marketingUuidQuery);
 	}
 
 	let query = sql`
@@ -240,9 +242,9 @@ export async function selectParty(req, res, next) {
 
 			if (own_uuid) {
 				query = query.append(
-					hasZipper
-						? sql` AND vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
-						: sql` WHERE vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+					hasThread
+						? sql` AND oi.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+						: sql` WHERE oi.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
 				);
 				hasThread = true;
 			}
@@ -252,7 +254,7 @@ export async function selectParty(req, res, next) {
 		default:
 			let hasWhere = false;
 
-			if (marketing || is_cash || is_pi) {
+			if (marketing || is_cash || is_pi || own_uuid) {
 				query = query.append(
 					sql`LEFT JOIN zipper.v_order_details vod ON party.uuid = vod.party_uuid
 					LEFT JOIN commercial.pi_cash ON pi_cash.party_uuid = party.uuid`
@@ -301,7 +303,7 @@ export async function selectParty(req, res, next) {
 
 			if (own_uuid) {
 				query = query.append(
-					hasZipper
+					hasWhere
 						? sql` AND vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
 						: sql` WHERE vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
 				);
@@ -374,9 +376,9 @@ export async function selectParty(req, res, next) {
 
 				if (own_uuid) {
 					query = query.append(
-						hasZipper
-							? sql` AND vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
-							: sql` WHERE vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+						hasWhere
+							? sql` AND oi.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+							: sql` WHERE oi.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
 					);
 					hasWhere = true;
 				}
