@@ -322,7 +322,7 @@ export async function deliveryStatementReport(req, res, next) {
                 WHERE 
                     vodf.item_description IS NOT NULL AND vodf.item_description != '---' 
                     AND COALESCE(
-                            COALESCE(running_all_sum.total_close_end_quantity, 0)::float8 + COALESCE(running_all_sum.total_open_end_quantity, 0)::float8,
+                            COALESCE(running_all_sum.total_prod_quantity, 0)::float8,
                             0
                         )::float8 > 0
                     AND ${marketing ? sql`vodf.marketing_uuid = ${marketing}` : sql`1=1`}
@@ -418,7 +418,7 @@ export async function deliveryStatementReport(req, res, next) {
                     ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
                 WHERE
                     COALESCE(
-                            COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8, 
+                            COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8, 
                             0
                         )::float8 > 0 
                     AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}

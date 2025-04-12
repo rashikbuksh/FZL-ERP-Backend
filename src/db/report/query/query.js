@@ -1970,7 +1970,7 @@ export async function dailyProductionReport(req, res, next) {
                     ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`} 
                     AND ${type == 'bulk' ? sql`vodf.is_sample = 0` : type == 'bulk' ? sql`vodf.is_sample = 1` : sql`1=1`}
                 GROUP BY 
-                    oe.uuid, vodf.order_type
+                    oe.uuid
                 ),
                 running_all_sum_thread AS (
                     SELECT 
@@ -1993,7 +1993,7 @@ export async function dailyProductionReport(req, res, next) {
                         ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                         AND ${type == 'bulk' ? sql`toi.is_sample = 0` : type == 'bulk' ? sql`toi.is_sample = 1` : sql`1=1`}
                     GROUP BY
-                        toe.uuid, toe.company_price
+                        toe.uuid
                 )
                 SELECT 
                     vodf.marketing_uuid,
@@ -2001,7 +2001,7 @@ export async function dailyProductionReport(req, res, next) {
 					vodf.order_info_uuid,
 					vodf.order_number,
 					vodf.item_name,
-					vodf.item_name as type,
+					CASE WHEN vodf.order_type = 'slider' THEN 'Slider' ELSE vodf.item_name END as type,
 					vodf.party_uuid,
 					vodf.party_name,
 					vodf.order_description_uuid,
@@ -2048,8 +2048,8 @@ export async function dailyProductionReport(req, res, next) {
                     ) order_info_total_quantity ON vodf.order_info_uuid = order_info_total_quantity.order_info_uuid
                 WHERE 
                     vodf.item_description IS NOT NULL AND vodf.item_description != '---'
-                    AND (coalesce(running_all_sum.total_close_end_quantity, 0)::float8 + coalesce(running_all_sum.total_open_end_quantity, 0)::float8) > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
-                    AND ${type == 'bulk' ? sql`vodf.is_sample = 0` : type == 'sample' ? sql`vodf.is_sample = 1` : sql`TRUE`}
+                    AND coalesce(running_all_sum.total_prod_quantity, 0) > 0 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                    AND ${type == 'bulk' ? sql`vodf.is_sample = 0` : type == 'sample' ? sql`vodf.is_sample = 1` : sql`TRUE`}  
                 GROUP BY 
                     oe.company_price,
                     oe.color,
