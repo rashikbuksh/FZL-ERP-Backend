@@ -113,8 +113,17 @@ export async function selectOpenSlotMachine(req, res, next) {
 }
 
 export async function selectParty(req, res, next) {
-	const { marketing, item_for, is_cash, page, has_factory, is_pi } =
+	const { marketing, item_for, is_cash, page, has_factory, is_pi, own_uuid } =
 		req.query;
+
+	if (own_uuid) {
+		const marketingUuidQuery = sql`
+				SELECT uuid
+				FROM public.marketing
+				WHERE user_uuid = ${own_uuid};`;
+
+		const marketingUuidData = await db.execute(marketingUuidQuery);
+	}
 
 	let query = sql`
 		SELECT DISTINCT
@@ -154,7 +163,7 @@ export async function selectParty(req, res, next) {
 						? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 						: sql` WHERE vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 				);
-				hasZipper = false;
+				hasZipper = true;
 			}
 
 			if (!marketing && is_cash === 'true') {
@@ -163,12 +172,23 @@ export async function selectParty(req, res, next) {
 						? sql` AND vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 						: sql` WHERE vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 				);
+				hasZipper = true;
 			} else if (!marketing && is_cash === 'false') {
 				query = query.append(
 					hasZipper
 						? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 						: sql` WHERE vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 				);
+				hasZipper = true;
+			}
+
+			if (own_uuid) {
+				query = query.append(
+					hasZipper
+						? sql` AND vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+						: sql` WHERE vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+				);
+				hasZipper = true;
 			}
 			break;
 
@@ -192,13 +212,14 @@ export async function selectParty(req, res, next) {
 						? sql` AND oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 						: sql` WHERE oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 				);
+				hasThread = true;
 			} else if (marketing && is_cash === 'false') {
 				query = query.append(
 					hasThread
 						? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 						: sql` WHERE oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 				);
-				hasThread = false;
+				hasThread = true;
 			}
 
 			if (!marketing && is_cash === 'true') {
@@ -207,12 +228,23 @@ export async function selectParty(req, res, next) {
 						? sql` AND oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 						: sql` WHERE oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 				);
+				hasThread = true;
 			} else if (!marketing && is_cash === 'false') {
 				query = query.append(
 					hasThread
 						? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 						: sql` WHERE oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 				);
+				hasThread = true;
+			}
+
+			if (own_uuid) {
+				query = query.append(
+					hasZipper
+						? sql` AND vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+						: sql` WHERE vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+				);
+				hasThread = true;
 			}
 
 			break;
@@ -240,13 +272,14 @@ export async function selectParty(req, res, next) {
 							? sql` AND vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 							: sql` WHERE vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 					);
+					hasWhere = true;
 				} else if (marketing && is_cash === 'false') {
 					query = query.append(
 						hasWhere
 							? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 							: sql` WHERE vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 					);
-					hasWhere = false;
+					hasWhere = true;
 				}
 
 				if (!marketing && is_cash === 'true') {
@@ -255,13 +288,24 @@ export async function selectParty(req, res, next) {
 							? sql` AND vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 							: sql` WHERE vod.is_cash = 1 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 					);
+					hasWhere = true;
 				} else if (!marketing && is_cash === 'false') {
 					query = query.append(
 						hasWhere
 							? sql` AND vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 							: sql` WHERE vod.is_cash = 0 AND (vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))`
 					);
+					hasWhere = true;
 				}
+			}
+
+			if (own_uuid) {
+				query = query.append(
+					hasZipper
+						? sql` AND vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+						: sql` WHERE vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+				);
+				hasWhere = true;
 			}
 
 			if (is_pi === 'true') {
@@ -283,6 +327,7 @@ export async function selectParty(req, res, next) {
 				WHERE pub_fac.fac_count > 0
 				`
 				);
+				hasWhere = true;
 			}
 
 			if (marketing || is_cash || is_pi) {
@@ -317,13 +362,23 @@ export async function selectParty(req, res, next) {
 							? sql` AND oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 							: sql` WHERE oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 					);
+					hasWhere = true;
 				} else if (marketing && is_cash === 'false') {
 					query = query.append(
 						hasWhere
 							? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 							: sql` WHERE oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 					);
-					hasWhere = false;
+					hasWhere = true;
+				}
+
+				if (own_uuid) {
+					query = query.append(
+						hasZipper
+							? sql` AND vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+							: sql` WHERE vod.marketing_uuid = ${marketingUuidData?.rows[0]?.uuid}`
+					);
+					hasWhere = true;
 				}
 
 				if (!marketing && is_cash === 'true') {
@@ -332,12 +387,14 @@ export async function selectParty(req, res, next) {
 							? sql` AND oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 							: sql` WHERE oi.is_cash = 1 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 					);
+					hasWhere = true;
 				} else if (!marketing && is_cash === 'false') {
 					query = query.append(
 						hasWhere
 							? sql` AND oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 							: sql` WHERE oi.is_cash = 0 AND (oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))`
 					);
+					hasWhere = true;
 				}
 				if (is_pi === 'true') {
 					query = query.append(
@@ -345,6 +402,7 @@ export async function selectParty(req, res, next) {
 							? sql` AND pi_cash.is_pi = 1`
 							: sql` WHERE pi_cash.is_pi = 1`
 					);
+					hasWhere = true;
 				}
 
 				if (has_factory === 'true') {
@@ -353,6 +411,7 @@ export async function selectParty(req, res, next) {
 							? sql` AND pub_fac.fac_count > 0`
 							: sql` WHERE pub_fac.fac_count > 0`
 					);
+					hasWhere = true;
 				}
 			}
 

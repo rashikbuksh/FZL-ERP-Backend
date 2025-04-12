@@ -272,6 +272,7 @@ const pathPublic = {
 					'false',
 				]),
 				SE.parameter_query('is_pi', 'is_pi', ['true', 'false']),
+				SE.parameter_query('own_uuid', 'own_uuid', [SE.uuid()]),
 			],
 			responses: {
 				200: {
