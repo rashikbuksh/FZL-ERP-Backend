@@ -51,6 +51,16 @@ export async function selectPackingList(req, res, next) {
 								ELSE CONCAT (toe.style, ' / ', toe.color) 
 							END) as style_color_size,
 							CASE 
+								WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape'
+								THEN oe.company_price
+								ELSE toe.company_price
+							END as company_price,
+							CASE 
+								WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape'
+								THEN oe.party_price
+								ELSE toe.party_price
+							END as party_price,
+							CASE 
                                 WHEN vodf.order_type = 'tape' THEN 'Meter' 
                                 WHEN vodf.order_type = 'slider' THEN 'Pcs' 
                                 WHEN vodf.is_inch = 1 THEN 'Inch' 
@@ -64,7 +74,19 @@ export async function selectPackingList(req, res, next) {
 							) as item_description,
 							ch.created_at as challan_created_at,
 							CASE WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN pcg.pi_numbers ELSE pcgt.pi_numbers END as pi_numbers,
-							CASE WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN pcg.lc_numbers ELSE pcgt.lc_numbers END as lc_numbers
+							CASE WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN pcg.lc_numbers ELSE pcgt.lc_numbers END as lc_numbers,
+							CASE WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' 
+								THEN (SUM(ple.quantity) / 12)::float8 * oe.company_price ELSE (SUM(ple.quantity) / 12)::float8 * toe.company_price 
+							END as total_amount_without_commission,
+							CASE WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' 
+								THEN (SUM(ple.quantity) / 12)::float8 * oe.party_price ELSE (SUM(ple.quantity) / 12)::float8 * toe.party_price 
+							END as total_amount_with_commission,
+							CASE WHEN ch.uuid IS NOT NULL 
+								THEN (SUM(ple.quantity) / 12)::float8 * oe.company_price ELSE (SUM(ple.quantity) / 12)::float8 * toe.company_price 
+							END as challan_total_amount_without_commission,
+							CASE WHEN ch.uuid IS NOT NULL 
+								THEN (SUM(ple.quantity) / 12)::float8 * oe.party_price ELSE (SUM(ple.quantity) / 12)::float8 * toe.party_price 
+							END as challan_total_amount_with_commission
 						FROM delivery.v_packing_list dvl
 						LEFT JOIN delivery.challan ch ON dvl.challan_uuid = ch.uuid
 						LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
@@ -121,7 +143,11 @@ export async function selectPackingList(req, res, next) {
 							pcg.pi_numbers,
 							pcg.lc_numbers,
 							pcgt.pi_numbers,
-							pcgt.lc_numbers
+							pcgt.lc_numbers,
+							oe.company_price,
+							oe.party_price,
+							toe.company_price,
+							toe.party_price
 						ORDER BY dvl.created_at DESC;`;
 
 	try {
