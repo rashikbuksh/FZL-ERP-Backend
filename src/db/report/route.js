@@ -1218,7 +1218,7 @@ export const pathReport = {
 				SE.parameter_query(
 					'type',
 					'type',
-					['nylon_plastic', 'nylon', 'vislon', 'metal'],
+					['nylon_plastic', 'nylon', 'vislon', 'metal', 'all'],
 					true
 				),
 				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
