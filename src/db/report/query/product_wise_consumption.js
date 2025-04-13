@@ -91,7 +91,7 @@ export async function selectProductWiseConsumption(req, res, next) {
 									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic'`
 									: type == 'all'
 										? sql`TRUE`
-										: sql`lower(vodf.item_name) != ${type}`
+										: sql`lower(vodf.item_name) = ${type}`
 						}
 						AND ${
 							from_date && to_date
