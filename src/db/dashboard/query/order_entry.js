@@ -9,10 +9,6 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
 ) {
 	if (!(await validateRequest(req, next))) return;
 
-	const current_date = new Date();
-
-	console.log('current_date', current_date);
-
 	const query = sql`
               	SELECT 
 					COALESCE(z.date, t.date) AS date,
