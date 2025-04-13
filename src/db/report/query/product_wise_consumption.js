@@ -1,12 +1,11 @@
-import { eq, sql } from 'drizzle-orm';
-import { createApi } from '../../../util/api.js';
+import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectProductWiseConsumption(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { own_uuid, type } = req?.query;
+	const { own_uuid, type, from_date, to_date } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -91,6 +90,11 @@ export async function selectProductWiseConsumption(req, res, next) {
 								: type == 'nylon'
 									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic'`
 									: sql`lower(vodf.item_name) != ${type}`
+						}
+						AND ${
+							from_date && to_date
+								? sql`vodf.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
+								: sql`TRUE`
 						}
 					GROUP BY
 						vodf.item_name,
