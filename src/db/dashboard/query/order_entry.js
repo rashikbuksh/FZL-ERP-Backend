@@ -9,79 +9,50 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
 ) {
 	if (!(await validateRequest(req, next))) return;
 
+	const current_date = new Date();
+
+	console.log('current_date', current_date);
+
 	const query = sql`
               	SELECT 
-                    COALESCE(z.date) as date,
-                    COALESCE(z.total_quantity, 0)::float8 as zipper,
-                    0 as thread,
-                    COALESCE(z.nylon_plastic_quantity, 0)::float8 as nylon_plastic,
-                    COALESCE(z.nylon_quantity, 0)::float8 as nylon,
-                    COALESCE(z.metal_quantity, 0)::float8 as metal,
-                    COALESCE(z.vislon_quantity, 0)::float8 as vislon
-                FROM 
-                    (
+					COALESCE(z.date, t.date) AS date,
+					COALESCE(z.total_quantity, 0)::float8 AS zipper,
+					COALESCE(t.total_quantity, 0)::float8 AS thread,
+					COALESCE(z.nylon_plastic_quantity, 0)::float8 AS nylon_plastic,
+					COALESCE(z.nylon_quantity, 0)::float8 AS nylon,
+					COALESCE(z.metal_quantity, 0)::float8 AS metal,
+					COALESCE(z.vislon_quantity, 0)::float8 AS vislon
+				FROM 
+					(
 						SELECT 
-							DATE(vodf.order_description_created_at) as date, 
-							SUM(zoe.quantity) as total_quantity,
-							SUM(CASE WHEN (lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) = 'plastic') THEN zoe.quantity ELSE 0 END)::float8 as nylon_plastic_quantity,
-							SUM(CASE WHEN (lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic') THEN zoe.quantity ELSE 0 END)::float8 as nylon_quantity,
-							SUM(CASE WHEN (lower(vodf.item_name) = 'metal') THEN zoe.quantity ELSE 0 END)::float8 as metal_quantity,
-							SUM(CASE WHEN (lower(vodf.item_name) = 'vislon') THEN zoe.quantity ELSE 0 END)::float8 as vislon_quantity
+							DATE(vodf.order_description_created_at) AS date, 
+							SUM(zoe.quantity) AS total_quantity,
+							SUM(CASE WHEN (LOWER(vodf.item_name) = 'nylon' AND LOWER(vodf.nylon_stopper_name) = 'plastic') THEN zoe.quantity ELSE 0 END)::float8 AS nylon_plastic_quantity,
+							SUM(CASE WHEN (LOWER(vodf.item_name) = 'nylon' AND LOWER(vodf.nylon_stopper_name) != 'plastic') THEN zoe.quantity ELSE 0 END)::float8 AS nylon_quantity,
+							SUM(CASE WHEN (LOWER(vodf.item_name) = 'metal') THEN zoe.quantity ELSE 0 END)::float8 AS metal_quantity,
+							SUM(CASE WHEN (LOWER(vodf.item_name) = 'vislon') THEN zoe.quantity ELSE 0 END)::float8 AS vislon_quantity
 						FROM zipper.order_entry zoe
 						LEFT JOIN zipper.v_order_details_full vodf ON zoe.order_description_uuid = vodf.order_description_uuid
+						WHERE vodf.order_description_created_at >= NOW() - INTERVAL '30 days'
 						GROUP BY DATE(vodf.order_description_created_at)
 					) z
-				UNION 
-				SELECT
-					COALESCE(t.date) as date,
-					0 as zipper,
-					COALESCE(t.total_quantity, 0)::float8 as thread,
-					0 as nylon_plastic,
-					0 as nylon,
-					0 as metal,
-					0 as vislon
-                FROM 
-                    (
-						SELECT DATE(toi.created_at) as date, SUM(toe.quantity) as total_quantity
+				FULL OUTER JOIN 
+					(
+						SELECT 
+							DATE(toi.created_at) AS date, 
+							SUM(toe.quantity) AS total_quantity
 						FROM thread.order_entry toe 
 						LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+						WHERE toi.created_at >= NOW() - INTERVAL '30 days'
 						GROUP BY DATE(toi.created_at)
 					) t
+				ON z.date = t.date
 				ORDER BY date DESC;
-                    `;
+                `;
 	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
-
-		// same date showing twice, so need to merge them
-
-		const response = data.rows?.reduce((acc, curr) => {
-			const date = curr.date;
-
-			const existing = acc.find((item) => item.date === date);
-
-			if (existing) {
-				existing.zipper += curr.zipper;
-				existing.thread += curr.thread;
-				existing.nylon_plastic += curr.nylon_plastic;
-				existing.nylon += curr.nylon;
-				existing.metal += curr.metal;
-				existing.vislon += curr.vislon;
-			} else {
-				acc.push({
-					date,
-					zipper: curr.zipper,
-					thread: curr.thread,
-					nylon_plastic: curr.nylon_plastic,
-					nylon: curr.nylon,
-					metal: curr.metal,
-					vislon: curr.vislon,
-				});
-			}
-
-			return acc;
-		}, []);
 
 		const toast = {
 			status: 200,
@@ -89,7 +60,7 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
 			message: 'Order entry',
 		};
 
-		return await res.status(200).json({ toast, data: response });
+		return await res.status(200).json({ toast, data: data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
