@@ -60,7 +60,7 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
 			message: 'Order entry',
 		};
 
-		return await res.status(200).json({ toast, data: data });
+		return await res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
