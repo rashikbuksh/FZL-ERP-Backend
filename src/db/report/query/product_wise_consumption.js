@@ -33,11 +33,16 @@ export async function selectProductWiseConsumption(req, res, next) {
 							CASE WHEN vodf.puller_type_name IS NOT NULL THEN ' - ' ELSE '' END,
 							vodf.puller_type_name
                         ) AS item_description,
+						vodf.item_name,
+						vodf.nylon_stopper_name,
+						vodf.zipper_number_name,
+						vodf.end_type_name,
+						vodf.puller_type_name,
                         SUM(
                             CASE 
-                                WHEN vodf.is_inch = 1 THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+                                WHEN vodf.is_inch = 1 THEN oe.quantity * CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
                                 WHEN vodf.order_type = 'tape' THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)
-                                ELSE CAST(oe.size AS NUMERIC)
+                                ELSE oe.quantity * CAST(oe.size AS NUMERIC)
                             END
                         )::float8 as total_cm,
                         SUM(oe.quantity) AS total_quantity,

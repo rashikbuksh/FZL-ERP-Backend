@@ -84,14 +84,14 @@ export async function selectPackingList(req, res, next) {
 							CASE 
 								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape'))
 								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3) 
-								WHEN dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape')
+								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape'))
 								THEN ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3)
 								ELSE NULL
 							END as challan_total_amount_without_commission,
 							CASE 
 								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape'))
 								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.party_price, 3) 
-								WHEN dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape')
+								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape'))
 								THEN ROUND((SUM(ple.quantity))::numeric * toe.party_price, 3)
 								ELSE NULL
 							END as challan_total_amount_with_commission
