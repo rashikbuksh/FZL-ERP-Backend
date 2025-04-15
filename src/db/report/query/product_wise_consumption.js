@@ -55,6 +55,8 @@ export async function selectProductWiseConsumption(req, res, next) {
 							), 2
 						)::float8 AS total_dyeing_transaction_quantity,
 						COALESCE(tcr.raw_mtr_per_kg, 0)::float8 AS mtr_per_kg,
+						COALESCE(tcr.top, 0)::float8 as top,
+						COALESCE(tcr.bottom, 0)::float8 as bottom,
 						COALESCE(SUM(production_sum.coloring_production_quantity::float8),0)::float8 AS total_coloring_production_quantity
 					FROM
 						zipper.v_order_details_full vodf
@@ -109,7 +111,9 @@ export async function selectProductWiseConsumption(req, res, next) {
 						vodf.zipper_number_name,
 						vodf.end_type_name,
 						vodf.puller_type_name,
-						tcr.raw_mtr_per_kg
+						tcr.raw_mtr_per_kg,
+						tcr.top,
+						tcr.bottom
 					HAVING SUM(COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + 
 							COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)) > 0
 						AND SUM(COALESCE(production_sum.coloring_production_quantity, 0)) > 0
