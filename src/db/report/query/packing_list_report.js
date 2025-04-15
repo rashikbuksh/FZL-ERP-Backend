@@ -150,7 +150,9 @@ export async function selectPackingList(req, res, next) {
 							oe.party_price,
 							toe.company_price,
 							toe.party_price,
-							ch.uuid
+							ch.uuid,
+							pcg.pi_cash_uuid,
+							pcgt.pi_cash_uuid
 						ORDER BY dvl.created_at DESC;`;
 
 	try {
