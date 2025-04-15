@@ -334,7 +334,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 export async function getBatchEntryByBatchUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { type } = req.query;
-	console.log('type', type);
+	
 	const query = sql`
 						SELECT 
 							be.uuid as batch_entry_uuid,

@@ -547,7 +547,7 @@ export async function selectPiUuidByPiId(req, res, next) {
 		);
 	try {
 		const data = await piPromise;
-		console.log(data);
+		
 		const toast = {
 			status: 200,
 			type: 'select',

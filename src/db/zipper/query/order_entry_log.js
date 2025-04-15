@@ -83,7 +83,6 @@ export async function remove(req, res, next) {
 }
 
 export async function select(req, res, next) {
-	console.log(req.params.id);
 	const orderEntryLogPromise = db
 		.select({
 			id: order_entry_log.id,

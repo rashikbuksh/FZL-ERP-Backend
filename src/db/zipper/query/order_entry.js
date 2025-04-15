@@ -310,8 +310,6 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 		.groupBy(order_entry.uuid, sfg.uuid)
 		.orderBy(asc(order_entry.index));
 
-	console.log('orderEntryPromise', new Date().toISOString());
-
 	try {
 		const data = await orderEntryPromise;
 		const toast = {
