@@ -9,6 +9,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 
 	try {
 		const query = sql`
+            
             WITH challan_agg AS (
 				SELECT 
 					vodf.order_info_uuid,
@@ -48,7 +49,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
 				LEFT JOIN delivery.packing_list pl ON vodf.order_info_uuid = pl.order_info_uuid
 				LEFT JOIN delivery.challan ON pl.challan_uuid = challan.uuid
-				INNER JOIN (
+				LEFT JOIN (
 					SELECT 
 						pl.challan_uuid, 
 						ple.sfg_uuid,
@@ -65,9 +66,9 @@ export async function selectOrderRegisterReport(req, res, next) {
 			),
 			pi_cash_grouped AS (
 				SELECT 
-					vodf.order_info_uuid, 
-					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
-					array_agg(DISTINCT lc.lc_number) as lc_numbers
+					DISTINCT pi_cash.uuid as pi_cash_uuid,
+					CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END as pi_numbers,
+					vodf.order_info_uuid
 				FROM
 					zipper.v_order_details_full vodf
 				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -76,7 +77,6 @@ export async function selectOrderRegisterReport(req, res, next) {
 				LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
 				LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
 				WHERE pi_cash.id IS NOT NULL
-				GROUP BY vodf.order_info_uuid
 			),
 			challan_agg_thread AS (
 				SELECT 
@@ -108,7 +108,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 				LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 				LEFT JOIN delivery.packing_list pl ON toi.uuid = pl.order_info_uuid
 				LEFT JOIN delivery.challan ON pl.challan_uuid = challan.uuid
-				INNER JOIN (
+				LEFT JOIN (
 					SELECT 
 						pl.challan_uuid, 
 						ple.thread_order_entry_uuid,
@@ -125,17 +125,15 @@ export async function selectOrderRegisterReport(req, res, next) {
 			),
 			pi_cash_grouped_thread AS (
 				SELECT 
-					toi.uuid as order_info_uuid,
-					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
-					array_agg(DISTINCT lc.lc_number) as lc_numbers
+					DISTINCT pi_cash.uuid as pi_cash_uuid,
+					CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END as pi_numbers,
+					toe.order_info_uuid as order_info_uuid
 				FROM
-					thread.order_info toi
-				LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+					thread.order_entry toe
 				LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
 				LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
 				LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
 				WHERE pi_cash.id IS NOT NULL
-				GROUP BY toi.uuid
 			)
 			SELECT 
 				vodf.order_info_uuid,
@@ -146,7 +144,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 				vodf.merchandiser_name,
 				vodf.marketing_name,
 				pi_cash_grouped.pi_numbers,
-				pi_cash_grouped.lc_numbers,
+				pi_cash_grouped.pi_cash_uuid,
 				jsonb_agg(
 					jsonb_build_object(
 						'order_description_uuid', vodf.order_description_uuid,
@@ -167,7 +165,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 			LEFT JOIN challan_agg ON vodf.order_info_uuid = challan_agg.order_info_uuid
 			WHERE
 				vodf.order_info_uuid = ${order_info_uuid}
-			GROUP BY vodf.order_info_uuid, vodf.order_number, vodf.created_at, vodf.party_name, vodf.buyer_name, vodf.merchandiser_name, vodf.marketing_name, pi_cash_grouped.pi_numbers, pi_cash_grouped.lc_numbers
+			GROUP BY vodf.order_info_uuid, vodf.order_number, vodf.created_at, vodf.party_name, vodf.buyer_name, vodf.merchandiser_name, vodf.marketing_name, pi_cash_grouped.pi_numbers
 
 			UNION ALL
 
@@ -180,7 +178,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 				m.name as merchandiser_name,
 				mk.name as marketing_name,
 				pi_cash_grouped_thread.pi_numbers,
-				pi_cash_grouped_thread.lc_numbers,
+				pi_cash_grouped_thread.pi_cash_uuid,
 				jsonb_agg(
 					jsonb_build_object(
 						'order_entry_uuid', challan_agg_thread.order_entry_uuid,
@@ -202,7 +200,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 			LEFT JOIN challan_agg_thread ON toi.uuid = challan_agg_thread.order_info_uuid
 			WHERE
 				toi.uuid = ${order_info_uuid}
-			GROUP BY toi.uuid, toi.created_at, p.name, b.name, m.name, mk.name, pi_cash_grouped_thread.pi_numbers, pi_cash_grouped_thread.lc_numbers;
+			GROUP BY toi.uuid, toi.created_at, p.name, b.name, m.name, mk.name, pi_cash_grouped_thread.pi_numbers;
         `;
 
 		const resultPromise = db.execute(query);

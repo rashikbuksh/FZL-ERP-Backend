@@ -3,37 +3,32 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectPackingList(req, res, next) {
-	const { type } = req.query;
+	const { type, from_date, to_date } = req.query;
 
 	let query = sql`
 					WITH pi_cash_grouped AS (
 						SELECT 
-							vodf.order_info_uuid, 
-							array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
-							array_agg(DISTINCT lc.lc_number) as lc_numbers
+							DISTINCT pi_cash.uuid as pi_cash_uuid,
+							CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END as pi_numbers,
+							vodf.order_info_uuid
 						FROM
 							zipper.v_order_details_full vodf
 						LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
 						LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 						LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
 						LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
-						LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
 						WHERE pi_cash.id IS NOT NULL
-						GROUP BY vodf.order_info_uuid
 					),
 					pi_cash_grouped_thread AS (
 						SELECT 
-							toi.uuid as order_info_uuid,
-							array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
-							array_agg(DISTINCT lc.lc_number) as lc_numbers
+							DISTINCT pi_cash.uuid as pi_cash_uuid,
+							CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END as pi_numbers,
+							toe.order_info_uuid as order_info_uuid
 						FROM
-							thread.order_info toi
-						LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+							thread.order_entry toe
 						LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
 						LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
-						LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
 						WHERE pi_cash.id IS NOT NULL
-						GROUP BY toi.uuid
 					)
                     SELECT  dvl.*,
 							SUM(ple.quantity)::float8 as total_quantity,
@@ -74,7 +69,7 @@ export async function selectPackingList(req, res, next) {
 							) as item_description,
 							ch.created_at as challan_created_at,
 							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN pcg.pi_numbers ELSE pcgt.pi_numbers END as pi_numbers,
-							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN pcg.lc_numbers ELSE pcgt.lc_numbers END as lc_numbers,
+							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN pcg.pi_cash_uuid ELSE pcgt.pi_cash_uuid END as pi_cash_uuid,
 							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') 
 								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3) ELSE ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3) 
 							END as total_amount_without_commission,
@@ -115,6 +110,7 @@ export async function selectPackingList(req, res, next) {
 										? sql`AND dvl.gate_pass = 1`
 										: sql``
 						}
+						${from_date && to_date ? sql`AND dvl.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
 						GROUP BY dvl.uuid,
 							dvl.order_info_uuid,
 							dvl.packing_list_wise_rank,
@@ -149,9 +145,7 @@ export async function selectPackingList(req, res, next) {
                             dvl.gate_pass_date,
 							ch.created_at,
 							pcg.pi_numbers,
-							pcg.lc_numbers,
 							pcgt.pi_numbers,
-							pcgt.lc_numbers,
 							oe.company_price,
 							oe.party_price,
 							toe.company_price,

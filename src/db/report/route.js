@@ -1147,8 +1147,8 @@ export const pathReport = {
 			tags: ['report'],
 			operationId: 'selectPackingListReport',
 			parameters: [
-				SE.parameter_query('from', 'from', '2024-10-01'),
-				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
 				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
 			],
 			responses: {
