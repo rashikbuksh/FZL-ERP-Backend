@@ -151,7 +151,7 @@ export async function selectAll(req, res, next) {
 			SELECT
 				pi_cash.uuid AS pi_cash_uuid,
 				COALESCE(
-					JSONB_AGG(JSONB_BUILD_OBJECT('order_info_uuid', vodf.order_info_uuid, 'order_number', vodf.order_number))
+					JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('order_info_uuid', vodf.order_info_uuid, 'order_number', vodf.order_number))
 					FILTER (WHERE vodf.order_number IS NOT NULL), '[]'
 				) AS order_numbers,
 				jsonb_agg(DISTINCT vodf.order_type) AS order_type
@@ -170,7 +170,7 @@ export async function selectAll(req, res, next) {
 			SELECT
 				pi_cash.uuid AS pi_cash_uuid,
 				COALESCE(
-					JSONB_AGG(
+					JSONB_AGG( DISTINCT
 						JSONB_BUILD_OBJECT(
 							'thread_order_info_uuid', 
 							oi.uuid, 
