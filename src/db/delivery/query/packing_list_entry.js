@@ -398,6 +398,7 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 			CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) as packing_number,
 			ple.packing_list_uuid,
 			ple.sfg_uuid,
+			ple.thread_order_entry_uuid,
 			coalesce(ple.quantity,0)::float8 as quantity,
 			coalesce(ple.poli_quantity,0)::float8 as poli_quantity,
 			coalesce(ple.short_quantity,0)::float8 as short_quantity,

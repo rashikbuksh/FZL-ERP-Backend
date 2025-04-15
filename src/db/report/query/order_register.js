@@ -9,7 +9,6 @@ export async function selectOrderRegisterReport(req, res, next) {
 
 	try {
 		const query = sql`
-            
             WITH challan_agg AS (
 				SELECT 
 					vodf.order_info_uuid,
@@ -32,10 +31,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						DISTINCT CASE WHEN challan.uuid IS NOT NULL THEN 
 							jsonb_build_object(
 							'challan_number', 
-							CASE WHEN pl.item_for IN ('thread', 'sample_thread') 
-								THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
-								ELSE concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
-							END,
+							concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')),
 							'challan_uuid', challan.uuid,
 							'challan_date', challan.created_at,
 							'quantity', ple_sum.quantity,
@@ -62,6 +58,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						pl.item_for NOT IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
 					GROUP BY pl.challan_uuid, ple.sfg_uuid
 				) ple_sum ON challan.uuid = ple_sum.challan_uuid AND sfg.uuid = ple_sum.sfg_uuid
+				WHERE ple_sum.quantity IS NOT NULL
 				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description, vodf.order_type, vodf.is_inch
 			),
 			pi_cash_grouped AS (
@@ -91,10 +88,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						DISTINCT CASE WHEN challan.uuid IS NOT NULL THEN 
 							jsonb_build_object(
 								'challan_number', 
-								CASE WHEN pl.item_for IN ('thread', 'sample_thread') 
-									THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
-									ELSE concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))
-								END,
+								concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')),
 								'challan_uuid', challan.uuid,
 								'challan_date', challan.created_at,
 								'quantity', ple_sum.quantity,
@@ -106,7 +100,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 					thread.order_entry toe 
 				LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
 				LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-				LEFT JOIN delivery.packing_list pl ON toi.uuid = pl.order_info_uuid
+				LEFT JOIN delivery.packing_list pl ON toi.uuid = pl.thread_order_info_uuid
 				LEFT JOIN delivery.challan ON pl.challan_uuid = challan.uuid
 				LEFT JOIN (
 					SELECT 
@@ -120,7 +114,8 @@ export async function selectOrderRegisterReport(req, res, next) {
 					WHERE 
 						pl.item_for IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
 					GROUP BY pl.challan_uuid, ple.thread_order_entry_uuid
-				) ple_sum ON challan.uuid = ple_sum.challan_uuid AND toe.uuid = ple_sum.thread_order_entry_uuid
+				) ple_sum ON (challan.uuid = ple_sum.challan_uuid AND toe.uuid = ple_sum.thread_order_entry_uuid)
+				WHERE ple_sum.quantity IS NOT NULL
 				GROUP BY toe.order_info_uuid, toe.uuid, cl.count, cl.length, toe.style, toe.color, toe.quantity
 			),
 			pi_cash_grouped_thread AS (
@@ -183,7 +178,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 					jsonb_build_object(
 						'order_entry_uuid', challan_agg_thread.order_entry_uuid,
 						'unit', challan_agg_thread.unit,
-						'count_length_name', challan_agg_thread.count_length_name,
+						'item_description', challan_agg_thread.count_length_name,
 						'style', challan_agg_thread.style,
 						'color', challan_agg_thread.color,
 						'order_quantity', challan_agg_thread.order_quantity,
