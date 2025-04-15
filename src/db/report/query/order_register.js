@@ -165,7 +165,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 			LEFT JOIN challan_agg ON vodf.order_info_uuid = challan_agg.order_info_uuid
 			WHERE
 				vodf.order_info_uuid = ${order_info_uuid}
-			GROUP BY vodf.order_info_uuid, vodf.order_number, vodf.created_at, vodf.party_name, vodf.buyer_name, vodf.merchandiser_name, vodf.marketing_name, pi_cash_grouped.pi_numbers
+			GROUP BY vodf.order_info_uuid, vodf.order_number, vodf.created_at, vodf.party_name, vodf.buyer_name, vodf.merchandiser_name, vodf.marketing_name, pi_cash_grouped.pi_numbers, pi_cash_grouped.pi_cash_uuid
 
 			UNION ALL
 
@@ -200,7 +200,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 			LEFT JOIN challan_agg_thread ON toi.uuid = challan_agg_thread.order_info_uuid
 			WHERE
 				toi.uuid = ${order_info_uuid}
-			GROUP BY toi.uuid, toi.created_at, p.name, b.name, m.name, mk.name, pi_cash_grouped_thread.pi_numbers;
+			GROUP BY toi.uuid, toi.created_at, p.name, b.name, m.name, mk.name, pi_cash_grouped_thread.pi_numbers, pi_cash_grouped_thread.pi_cash_uuid;
         `;
 
 		const resultPromise = db.execute(query);
