@@ -74,18 +74,18 @@ export async function selectPackingList(req, res, next) {
 							) as item_description,
 							ch.created_at as challan_created_at,
 							CASE WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN pcg.pi_numbers ELSE pcgt.pi_numbers END as pi_numbers,
-							CASE WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN pcg.lc_numbers ELSE pcgt.lc_numbers END as lc_numbers,
-							CASE WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' 
-								THEN (SUM(ple.quantity) / 12)::float8 * oe.company_price ELSE (SUM(ple.quantity) / 12)::float8 * toe.company_price 
+							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN pcg.lc_numbers ELSE pcgt.lc_numbers END as lc_numbers,
+							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') 
+								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3) ELSE ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3) 
 							END as total_amount_without_commission,
-							CASE WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' 
-								THEN (SUM(ple.quantity) / 12)::float8 * oe.party_price ELSE (SUM(ple.quantity) / 12)::float8 * toe.party_price 
+							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') 
+								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.party_price, 3) ELSE ROUND((SUM(ple.quantity))::numeric * toe.party_price, 3) 
 							END as total_amount_with_commission,
-							CASE WHEN ch.uuid IS NOT NULL 
-								THEN (SUM(ple.quantity) / 12)::float8 * oe.company_price ELSE (SUM(ple.quantity) / 12)::float8 * toe.company_price 
+							CASE WHEN dvl.challan_uuid IS NOT NULL 
+								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3) ELSE ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3)
 							END as challan_total_amount_without_commission,
-							CASE WHEN ch.uuid IS NOT NULL 
-								THEN (SUM(ple.quantity) / 12)::float8 * oe.party_price ELSE (SUM(ple.quantity) / 12)::float8 * toe.party_price 
+							CASE WHEN dvl.challan_uuid IS NOT NULL 
+								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.party_price, 3) ELSE ROUND((SUM(ple.quantity))::numeric * toe.party_price, 3)
 							END as challan_total_amount_with_commission
 						FROM delivery.v_packing_list dvl
 						LEFT JOIN delivery.challan ch ON dvl.challan_uuid = ch.uuid
