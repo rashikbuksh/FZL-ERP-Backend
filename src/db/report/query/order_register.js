@@ -118,7 +118,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 					LEFT JOIN 
 						delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
 					WHERE 
-						pl.item_for NOT IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
+						pl.item_for IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
 					GROUP BY pl.challan_uuid, ple.thread_order_entry_uuid
 				) ple_sum ON challan.uuid = ple_sum.challan_uuid AND toe.uuid = ple_sum.thread_order_entry_uuid
 				GROUP BY toe.order_info_uuid, toe.uuid, cl.count, cl.length, toe.style, toe.color, toe.quantity
