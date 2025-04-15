@@ -154,7 +154,7 @@ export async function selectAll(req, res, next) {
 					JSONB_AGG(JSONB_BUILD_OBJECT('order_info_uuid', vodf.order_info_uuid, 'order_number', vodf.order_number))
 					FILTER (WHERE vodf.order_number IS NOT NULL), '[]'
 				) AS order_numbers,
-				ARRAY_AGG(DISTINCT vodf.order_type) AS order_type
+				jsonb_agg(DISTINCT vodf.order_type) AS order_type
 			FROM
 				commercial.pi_cash
 			LEFT JOIN
