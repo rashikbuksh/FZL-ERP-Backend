@@ -48,16 +48,16 @@ export async function selectProductWiseConsumption(req, res, next) {
                         SUM(oe.quantity) AS total_quantity,
 						ROUND(
 							CAST(
-								SUM(
-									COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0)::float8 + 
-									COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)::float8
-								) AS NUMERIC
+									(
+										COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0)::float8 + 
+										COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)::float8
+									) AS NUMERIC
 							), 2
 						)::float8 AS total_dyeing_transaction_quantity,
 						COALESCE(tcr.raw_mtr_per_kg, 0)::float8 AS mtr_per_kg,
 						COALESCE(tcr.top, 0)::float8 as top,
 						COALESCE(tcr.bottom, 0)::float8 as bottom,
-						COALESCE(SUM(production_sum.coloring_production_quantity::float8),0)::float8 AS total_coloring_production_quantity
+						COALESCE((production_sum.coloring_production_quantity::float8),0)::float8 AS total_coloring_production_quantity
 					FROM
 						zipper.v_order_details_full vodf
 					LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
@@ -67,30 +67,79 @@ export async function selectProductWiseConsumption(req, res, next) {
 						AND (CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END)
 					LEFT JOIN (
 						SELECT 
-							SUM(dtt.trx_quantity) AS total_trx_quantity, dtt.order_description_uuid
+							SUM(dtt.trx_quantity) AS total_trx_quantity, 
+							vodf.item,
+							vodf.zipper_number,
+							vodf.nylon_stopper,
+							vodf.puller_type
 						FROM zipper.dyed_tape_transaction dtt
-						GROUP BY dtt.order_description_uuid
-					) dyed_tape_transaction_sum ON dyed_tape_transaction_sum.order_description_uuid = vodf.order_description_uuid
+						LEFT JOIN zipper.v_order_details_full vodf ON dtt.order_description_uuid = vodf.order_description_uuid
+						GROUP BY 
+							vodf.item,
+							vodf.zipper_number,
+							vodf.nylon_stopper,
+							vodf.puller_type
+					) dyed_tape_transaction_sum ON 
+					 	(vodf.item = dyed_tape_transaction_sum.item
+						AND vodf.zipper_number = dyed_tape_transaction_sum.zipper_number
+						AND (
+							lower(vodf.item_name) != 'nylon' 
+							OR vodf.nylon_stopper = dyed_tape_transaction_sum.nylon_stopper
+						)
+						AND vodf.puller_type = dyed_tape_transaction_sum.puller_type)
 					LEFT JOIN (
-						SELECT SUM(dttfs.trx_quantity) AS total_trx_quantity, dttfs.order_description_uuid
+						SELECT SUM(dttfs.trx_quantity) AS total_trx_quantity, 
+							vodf.item,
+							vodf.zipper_number,
+							vodf.nylon_stopper,
+							vodf.puller_type
 						FROM zipper.dyed_tape_transaction_from_stock dttfs
-						GROUP BY dttfs.order_description_uuid
-					) dyed_tape_transaction_from_stock_sum ON dyed_tape_transaction_from_stock_sum.order_description_uuid = vodf.order_description_uuid
-					 LEFT JOIN (
+						LEFT JOIN zipper.v_order_details_full vodf ON dttfs.order_description_uuid = vodf.order_description_uuid
+						GROUP BY 
+							vodf.item,
+							vodf.zipper_number,
+							vodf.nylon_stopper,
+							vodf.puller_type
+					) dyed_tape_transaction_from_stock_sum ON 
+					 	(vodf.item = dyed_tape_transaction_from_stock_sum.item
+						AND vodf.zipper_number = dyed_tape_transaction_from_stock_sum.zipper_number
+						AND (
+							lower(vodf.item_name) != 'nylon' 
+							OR vodf.nylon_stopper = dyed_tape_transaction_from_stock_sum.nylon_stopper
+						)
+						AND vodf.puller_type = dyed_tape_transaction_from_stock_sum.puller_type)
+					LEFT JOIN (
 						SELECT 
-							od.uuid as order_description_uuid,
-							SUM(CASE WHEN section = 'coloring' THEN production_quantity ELSE 0 END) AS coloring_production_quantity
+							SUM(CASE WHEN section = 'coloring' THEN production_quantity ELSE 0 END) AS coloring_production_quantity,
+							od.item,
+							od.zipper_number,
+							od.nylon_stopper,
+							od.puller_type
 						FROM slider.production
 						LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
 						LEFT JOIN zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
 						LEFT JOIN zipper.order_description od ON finishing_batch.order_description_uuid = od.uuid
-						GROUP BY od.uuid
-					) production_sum ON production_sum.order_description_uuid = vodf.order_description_uuid
+						GROUP BY 
+							od.item,
+							od.zipper_number,
+							od.nylon_stopper,
+							od.puller_type
+					) production_sum ON 
+						(vodf.item = production_sum.item
+						AND vodf.zipper_number = production_sum.zipper_number
+						AND (
+							lower(vodf.item_name) != 'nylon'
+							OR vodf.nylon_stopper = production_sum.nylon_stopper
+						)
+						AND vodf.puller_type = production_sum.puller_type)
                     WHERE 
 						(
 							lower(vodf.item_name) != 'nylon' 
 							OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 						)
+						AND (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + 
+							COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)) > 0
+						AND COALESCE(production_sum.coloring_production_quantity, 0) > 0
 						AND ${
 							type == 'nylon_plastic'
 								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) = 'plastic'`
@@ -113,10 +162,10 @@ export async function selectProductWiseConsumption(req, res, next) {
 						vodf.puller_type_name,
 						tcr.raw_mtr_per_kg,
 						tcr.top,
-						tcr.bottom
-					HAVING SUM(COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + 
-							COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)) > 0
-						AND SUM(COALESCE(production_sum.coloring_production_quantity, 0)) > 0
+						tcr.bottom,
+						dyed_tape_transaction_sum.total_trx_quantity,
+						dyed_tape_transaction_from_stock_sum.total_trx_quantity,
+						production_sum.coloring_production_quantity
 					ORDER BY
                         vodf.item_name
 						`;
