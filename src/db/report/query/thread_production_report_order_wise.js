@@ -137,35 +137,35 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 AND ${from && to ? sql` order_info.created_at::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
             `;
 
-		query.append(
-			sql`GROUP BY
-                order_info.uuid, party.name, marketing.name, thread_batch.thread_batch, order_info.created_at, order_info.updated_at, order_info.party_uuid, order_info.marketing_uuid, order_info.is_sample, order_info.id, thread_challan_sum.total_delivery_delivered_quantity, thread_challan_sum.total_delivery_balance_quantity, thread_challan_sum.total_short_quantity, thread_challan_sum.total_reject_quantity
-            `
-		);
+		// query.append(
+		// 	sql`GROUP BY
+		//         order_info.uuid, party.name, marketing.name, thread_batch.thread_batch, order_info.created_at, order_info.updated_at, order_info.party_uuid, order_info.marketing_uuid, order_info.is_sample, order_info.id, thread_challan_sum.total_delivery_delivered_quantity, thread_challan_sum.total_delivery_balance_quantity, thread_challan_sum.total_short_quantity, thread_challan_sum.total_reject_quantity
+		//     `
+		// );
 
 		if (status === 'completed') {
 			query.append(
-				sql`HAVING SUM(order_entry.quantity) = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+				sql`and SUM(order_entry.quantity) = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
 			);
 		} else if (status === 'pending') {
 			query.append(
-				sql`HAVING SUM(order_entry.quantity) > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+				sql`and SUM(order_entry.quantity) > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
 			);
 		} else if (status === 'over_delivered') {
 			query.append(
-				sql`HAVING SUM(order_entry.quantity) < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+				sql`and SUM(order_entry.quantity) < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
 			);
 		} else if (status === 'sample_completed') {
 			query.append(
-				sql`HAVING SUM(order_entry.quantity) = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+				sql`and SUM(order_entry.quantity) = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 			);
 		} else if (status === 'sample_pending') {
 			query.append(
-				sql`HAVING SUM(order_entry.quantity) > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+				sql`and SUM(order_entry.quantity) > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 			);
 		} else if (status === 'sample_over_delivered') {
 			query.append(
-				sql`HAVING SUM(order_entry.quantity) < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+				sql`and SUM(order_entry.quantity) < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 			);
 		}
 
