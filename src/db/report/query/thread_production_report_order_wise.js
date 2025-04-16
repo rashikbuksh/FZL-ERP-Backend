@@ -145,27 +145,27 @@ export async function threadProductionStatusOrderWise(req, res, next) {
 
 		if (status === 'completed') {
 			query.append(
-				sql`and SUM(order_entry.quantity) = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+				sql`and order_entry.quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
 			);
 		} else if (status === 'pending') {
 			query.append(
-				sql`and SUM(order_entry.quantity) > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+				sql`and order_entry.quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
 			);
 		} else if (status === 'over_delivered') {
 			query.append(
-				sql`and SUM(order_entry.quantity) < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+				sql`and order_entry.quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
 			);
 		} else if (status === 'sample_completed') {
 			query.append(
-				sql`and SUM(order_entry.quantity) = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+				sql`and order_entry.quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 			);
 		} else if (status === 'sample_pending') {
 			query.append(
-				sql`and SUM(order_entry.quantity) > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+				sql`and order_entry.quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 			);
 		} else if (status === 'sample_over_delivered') {
 			query.append(
-				sql`and SUM(order_entry.quantity) < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+				sql`and order_entry.quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
 			);
 		}
 
