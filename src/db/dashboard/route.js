@@ -629,8 +629,10 @@ const pathDashboard = {
 			tags: ['Dashboard'],
 			summary: 'Get order entry summary',
 			description: 'Get order entry summary',
-			parameters: [],
-
+			parameters: [
+				SE.parameter_query('from', 'from', SE.date_time()),
+				SE.parameter_query('to', 'to', SE.date_time()),
+			],
 			responses: {
 				200: {
 					description: 'Successful operation',
