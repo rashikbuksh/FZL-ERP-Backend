@@ -246,14 +246,24 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 								CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE '' END, 
 								')'
 							)
-							ELSE '' END,
-						as specification,
-						oe.style,
-						oe.color,
-						oe.size,
-						oe.quantity,
-						sfg.delivered,
-
+							ELSE '' END
+						) AS specification,
+						ARRAY_AGG(oe.style) as styles,
+						ARRAY_AGG(oe.color) as colors,
+						CONCAT(
+							MIN(
+								CASE 
+									WHEN vodf.is_inch = 1 
+										THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+								ELSE CAST(oe.size AS NUMERIC) END), ' - ', 
+							MAX(
+								CASE 
+									WHEN vodf.is_inch = 1 
+										THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
+								ELSE CAST(oe.size AS NUMERIC) END)
+						) AS sizes,
+						SUM(oe.quantity) as total_order_quantity,
+						SUM(sfg.delivered) as total_delivered_quantity,
                         SUM(
                             CASE 
                                 WHEN vodf.is_inch = 1 THEN oe.quantity * CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
@@ -277,6 +287,7 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 					FROM
 						zipper.v_order_details_full vodf
 					LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
+					LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN zipper.tape_coil_required tcr 
 						ON vodf.item = tcr.item_uuid 
 						AND vodf.zipper_number = tcr.zipper_number_uuid 
@@ -284,79 +295,31 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 					LEFT JOIN (
 						SELECT 
 							SUM(dtt.trx_quantity) AS total_trx_quantity, 
-							vodf.item,
-							vodf.zipper_number,
-							vodf.nylon_stopper,
-							vodf.end_type,
-							vodf.puller_type
+							vodf.order_description_uuid
 						FROM zipper.dyed_tape_transaction dtt
 						LEFT JOIN zipper.v_order_details_full vodf ON dtt.order_description_uuid = vodf.order_description_uuid
-						GROUP BY 
-							vodf.item,
-							vodf.zipper_number,
-							vodf.nylon_stopper,
-							vodf.end_type,
-							vodf.puller_type
-					) dyed_tape_transaction_sum ON 
-					 	(vodf.item = dyed_tape_transaction_sum.item
-						AND vodf.zipper_number = dyed_tape_transaction_sum.zipper_number
-						AND (
-							lower(vodf.item_name) != 'nylon' 
-							OR vodf.nylon_stopper = dyed_tape_transaction_sum.nylon_stopper
-						)
-						AND vodf.end_type = dyed_tape_transaction_sum.end_type
-						AND vodf.puller_type = dyed_tape_transaction_sum.puller_type)
+						GROUP BY vodf.order_description_uuid
+					) dyed_tape_transaction_sum ON vodf.order_description_uuid = dyed_tape_transaction_sum.order_description_uuid
 					LEFT JOIN (
-						SELECT SUM(dttfs.trx_quantity) AS total_trx_quantity, 
-							vodf.item,
-							vodf.zipper_number,
-							vodf.nylon_stopper,
-							vodf.end_type,
-							vodf.puller_type
+						SELECT 
+							SUM(dttfs.trx_quantity) AS total_trx_quantity, 
+							vodf.order_description_uuid
 						FROM zipper.dyed_tape_transaction_from_stock dttfs
 						LEFT JOIN zipper.v_order_details_full vodf ON dttfs.order_description_uuid = vodf.order_description_uuid
 						GROUP BY 
-							vodf.item,
-							vodf.zipper_number,
-							vodf.nylon_stopper,
-							vodf.end_type,
-							vodf.puller_type
+							vodf.order_description_uuid
 					) dyed_tape_transaction_from_stock_sum ON 
-					 	(vodf.item = dyed_tape_transaction_from_stock_sum.item
-						AND vodf.zipper_number = dyed_tape_transaction_from_stock_sum.zipper_number
-						AND (
-							lower(vodf.item_name) != 'nylon' 
-							OR vodf.nylon_stopper = dyed_tape_transaction_from_stock_sum.nylon_stopper
-						)
-						AND vodf.end_type = dyed_tape_transaction_from_stock_sum.end_type
-						AND vodf.puller_type = dyed_tape_transaction_from_stock_sum.puller_type)
+						vodf.order_description_uuid = dyed_tape_transaction_from_stock_sum.order_description_uuid
 					LEFT JOIN (
 						SELECT 
 							SUM(CASE WHEN section = 'coloring' THEN production_quantity ELSE 0 END) AS coloring_production_quantity,
-							od.item,
-							od.zipper_number,
-							od.nylon_stopper,
-							od.end_type,
-							od.puller_type
+							od.uuid as order_description_uuid
 						FROM slider.production
 						LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
 						LEFT JOIN zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
 						LEFT JOIN zipper.order_description od ON finishing_batch.order_description_uuid = od.uuid
-						GROUP BY 
-							od.item,
-							od.zipper_number,
-							od.nylon_stopper,
-							od.end_type,
-							od.puller_type
-					) production_sum ON 
-						(vodf.item = production_sum.item
-						AND vodf.zipper_number = production_sum.zipper_number
-						AND (
-							lower(vodf.item_name) != 'nylon'
-							OR vodf.nylon_stopper = production_sum.nylon_stopper
-						)
-						AND vodf.end_type = production_sum.end_type
-						AND vodf.puller_type = production_sum.puller_type)
+						GROUP BY od.uuid
+					) production_sum ON vodf.order_description_uuid = production_sum.order_description_uuid
                     WHERE 
 						(
 							lower(vodf.item_name) != 'nylon' 
@@ -379,8 +342,33 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 								? sql`vodf.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
 								: sql`TRUE`
 						}
+					GROUP BY 
+						vodf.marketing_name,
+                        vodf.order_number,
+						vodf.party_name,
+						vodf.factory_name,
+						vodf.created_at,
+						vodf.item_description,
+						vodf.lock_type_name, 
+						vodf.teeth_color_name, 
+						vodf.puller_color_name, 
+						vodf.hand_name, 
+						vodf.coloring_type_name, 
+						vodf.slider_name, 
+						vodf.top_stopper_name, 
+						vodf.bottom_stopper_name, 
+						vodf.logo_type_name, 
+						vodf.is_logo_body,
+						vodf.is_logo_puller,
+						dyed_tape_transaction_sum.total_trx_quantity,
+						dyed_tape_transaction_from_stock_sum.total_trx_quantity,
+						production_sum.coloring_production_quantity,
+						tcr.raw_mtr_per_kg,
+						tcr.top,
+						tcr.bottom,
+						vodf.item_name
 					ORDER BY
-                        vodf.item_name
+                        vodf.marketing_name
 						`;
 
 		const resultPromise = db.execute(query);

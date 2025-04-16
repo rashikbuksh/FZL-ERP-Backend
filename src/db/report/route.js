@@ -36,7 +36,10 @@ import {
 	selectItemWiseProduction,
 	selectItemZipperEndWiseProduction,
 } from './query/production_query.js';
-import { selectProductWiseConsumption } from './query/product_wise_consumption.js';
+import {
+	selectProductWiseConsumption,
+	selectProductWiseConsumptionForOrder,
+} from './query/product_wise_consumption.js';
 
 const reportRouter = Router();
 
@@ -203,6 +206,12 @@ reportRouter.get(
 reportRouter.get(
 	'/product-wise-consumption-report',
 	selectProductWiseConsumption
+);
+
+// * Product Wise Consumption For Order Report
+reportRouter.get(
+	'/product-wise-consumption-for-order-report',
+	selectProductWiseConsumptionForOrder
 );
 
 export const pathReport = {
@@ -1214,6 +1223,31 @@ export const pathReport = {
 			description: 'Product Wise Consumption Report',
 			tags: ['report'],
 			operationId: 'selectProductWiseConsumptionReport',
+			parameters: [
+				SE.parameter_query(
+					'type',
+					'type',
+					['nylon_plastic', 'nylon', 'vislon', 'metal', 'all'],
+					true
+				),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					product_name: SE.string('Product Name'),
+					total_consumption: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/product-wise-consumption-for-order-report': {
+		get: {
+			summary: 'Product Wise Consumption For Order Report',
+			description: 'Product Wise Consumption For Order Report',
+			tags: ['report'],
+			operationId: 'selectProductWiseConsumptionForOrderReport',
 			parameters: [
 				SE.parameter_query(
 					'type',
