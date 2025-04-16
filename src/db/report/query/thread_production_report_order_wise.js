@@ -32,17 +32,17 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 party.name as party_name,
                 order_info.marketing_uuid,
                 marketing.name as marketing_name,
-                ARRAY_AGG(DISTINCT order_entry.style) as style,
-                ARRAY_AGG(DISTINCT order_entry.color) as color,
-                ARRAY_AGG(DISTINCT order_entry.swatch_approval_date) as swatch_approval_date,
-                ARRAY_AGG(DISTINCT CONCAT(count_length.count, ' - ', count_length.length)) as count_length_name,
-                ROUND(SUM(coalesce(order_entry.quantity::float8, 0))::numeric,3)::float8 as total_quantity,
-                ROUND(SUM(coalesce(CASE WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8 ELSE 0 END, 0))::numeric,3)::float8 as total_approved_quantity,
-                ROUND(SUM(coalesce(order_entry_batch_entry_quantity_length.total_weight::float8, 0))::numeric,3)::float8 as total_weight,
-                ROUND(SUM(coalesce(order_entry_batch_entry_quantity_length.yarn_quantity::float8, 0))::numeric,3)::float8 as yarn_quantity,
-                ROUND(SUM(coalesce(order_entry_batch_entry_coning.total_coning_production_quantity::float8, 0))::numeric,3)::float8 as total_coning_production_quantity,
-                ROUND(SUM(coalesce(order_entry.warehouse::float8, 0))::numeric,3)::float8 as warehouse,
-                (SUM(coalesce(order_entry.quantity::float8, 0)) - coalesce(thread_challan_sum.total_delivery_delivered_quantity,0)::numeric - coalesce(thread_challan_sum.total_delivery_balance_quantity,0)::numeric)::float8 as balance_quantity,
+                order_entry.style as style,
+                order_entry.color as color,
+                order_entry.swatch_approval_date as swatch_approval_date,
+                CONCAT('"', count_length.count, ' - ', count_length.length) as count_length_name,
+                ROUND(coalesce(order_entry.quantity::float8, 0)::numeric,3)::float8 as total_quantity,
+                ROUND(coalesce(CASE WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8 ELSE 0 END, 0)::numeric,3)::float8 as total_approved_quantity,
+                ROUND(coalesce(order_entry_batch_entry_quantity_length.total_weight::float8, 0)::numeric,3)::float8 as total_weight,
+                ROUND(coalesce(order_entry_batch_entry_quantity_length.yarn_quantity::float8, 0)::numeric,3)::float8 as yarn_quantity,
+                ROUND(coalesce(order_entry_batch_entry_coning.total_coning_production_quantity::float8, 0)::numeric,3)::float8 as total_coning_production_quantity,
+                ROUND(coalesce(order_entry.warehouse::float8, 0)::numeric,3)::float8 as warehouse,
+                (coalesce(order_entry.quantity::float8, 0) - coalesce(thread_challan_sum.total_delivery_delivered_quantity,0)::numeric - coalesce(thread_challan_sum.total_delivery_balance_quantity,0)::numeric)::float8 as balance_quantity,
                 ROUND(coalesce(thread_challan_sum.total_delivery_delivered_quantity,0)::numeric,3)::float8 as total_delivery_delivered_quantity,
                 ROUND(coalesce(thread_challan_sum.total_delivery_balance_quantity,0)::numeric,3)::float8 as total_delivery_balance_quantity,
                 ROUND(coalesce(thread_challan_sum.total_short_quantity,0)::numeric,3)::float8 as total_short_quantity,
@@ -85,7 +85,7 @@ export async function threadProductionStatusOrderWise(req, res, next) {
             ) order_entry_batch_entry_coning ON order_entry.uuid = order_entry_batch_entry_coning.order_entry_uuid
              LEFT JOIN (
                 SELECT 
-                    toi.uuid as order_info_uuid,
+                    toe.uuid as order_entry_uuid,
                     SUM(CASE WHEN (pl.gate_pass = 1 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
                     SUM(CASE WHEN (pl.gate_pass = 0 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_balance_quantity,
                     SUM(ple.short_quantity)AS total_short_quantity,
@@ -103,7 +103,7 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 WHERE 
                     ple.thread_order_entry_uuid IS NOT NULL
                 GROUP BY
-                    toi.uuid
+                    toe.uuid
             ) thread_challan_sum ON thread_challan_sum.order_info_uuid = order_info.uuid
             LEFT JOIN (
                 SELECT 
