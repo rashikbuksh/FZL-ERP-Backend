@@ -161,7 +161,7 @@ export async function selectAll(req, res, next) {
 				zipper.v_order_details_full vodf ON vodf.order_info_uuid = ANY(
 					SELECT elem
 					FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.order_info_uuids::jsonb) AS elem
-					WHERE elem IS NOT NULL AND elem != 'null'
+					WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.order_info_uuids != '[]' AND pi_cash.order_info_uuids IS NOT NULL
 				)
 			GROUP BY
 				pi_cash.uuid
@@ -185,7 +185,7 @@ export async function selectAll(req, res, next) {
 				thread.order_info oi ON oi.uuid = ANY(
 					SELECT elem
 					FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.thread_order_info_uuids::jsonb) AS elem
-					WHERE elem IS NOT NULL AND elem != 'null'
+					WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.thread_order_info_uuids != '[]' AND pi_cash.thread_order_info_uuids IS NOT NULL
 				)
 			GROUP BY
 				pi_cash.uuid
@@ -195,8 +195,10 @@ export async function selectAll(req, res, next) {
 				pi_cash_entry.pi_cash_uuid AS pi_cash_uuid,
 				COALESCE(SUM(
 					CASE 
-						WHEN pi_cash_entry.sfg_uuid IS NULL THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
-						WHEN od.order_type = 'tape' THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
+						WHEN pi_cash_entry.sfg_uuid IS NULL 
+							THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
+						WHEN od.order_type = 'tape' 
+							THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
 						ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price / 12, 0)
 					END
 				)::float8, 0) AS total_amount
@@ -284,27 +286,6 @@ export async function selectAll(req, res, next) {
 						? sql` AND pi_cash.is_completed = true`
 						: sql``
 			}
-		GROUP BY
-			pi_cash.uuid, 
-			lc.lc_number, 
-			public.marketing.name, 
-			public.party.name, 
-			public.party.address, 
-			public.merchandiser.name, 
-			public.factory.name, 
-			bank.name, 
-			hr.users.name,
-			pi_cash.created_at,
-			pi_cash.updated_at,
-			pi_cash.remarks,
-			pi_cash.is_pi,
-			pi_cash.is_rtgs,
-			pi_cash.conversion_rate,
-			pi_cash.receive_amount,
-			total_pi_amount.total_amount,
-			order_numbers_agg.order_numbers,
-			thread_order_numbers_agg.thread_order_numbers,
-			order_numbers_agg.order_type
 		ORDER BY 
 			pi_cash.created_at DESC;
 		`;
