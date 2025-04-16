@@ -10,35 +10,59 @@ export async function selectPackingList(req, res, next) {
 						SELECT 
 							jsonb_agg(
 								json_build_object(
-                                    'pi_cash_uuid', pi_cash.uuid, 
-                                    'pi_numbers', CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END
-                            	)
-							) as pi_object,
-							vodf.order_info_uuid
-						FROM
-							zipper.v_order_details_full vodf
-						LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-						LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-						LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
-						LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
-						WHERE pi_cash.id IS NOT NULL
-						GROUP BY vodf.order_info_uuid
+									'pi_cash_uuid', subquery.uuid, 
+									'pi_numbers', 
+									CASE 
+										WHEN subquery.is_pi = 1 THEN concat('PI', to_char(subquery.created_at, 'YY'), '-', LPAD(subquery.id::text, 4, '0')) 
+										ELSE concat('CI', to_char(subquery.created_at, 'YY'), '-', LPAD(subquery.id::text, 4, '0')) 
+									END
+								)
+							) AS pi_object,
+							subquery.order_info_uuid
+						FROM (
+							SELECT DISTINCT ON (pi_cash.uuid, vodf.order_info_uuid)
+								pi_cash.uuid,
+								pi_cash.is_pi,
+								pi_cash.created_at,
+								pi_cash.id,
+								vodf.order_info_uuid
+							FROM 
+								zipper.v_order_details_full vodf
+							LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+							LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+							LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
+							LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+							WHERE pi_cash.id IS NOT NULL
+						) subquery
+						GROUP BY subquery.order_info_uuid
 					),
 					pi_cash_grouped_thread AS (
 						SELECT 
 							jsonb_agg(
 								json_build_object(
-                                    'pi_cash_uuid', pi_cash.uuid, 
-                                    'pi_numbers', CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END
-                            	)
-							) as pi_object,
-							toe.order_info_uuid as order_info_uuid
-						FROM
-							thread.order_entry toe
-						LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
-						LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
-						WHERE pi_cash.id IS NOT NULL
-						GROUP BY toe.order_info_uuid
+									'pi_cash_uuid', subquery.uuid, 
+									'pi_numbers', 
+									CASE 
+										WHEN subquery.is_pi = 1 THEN concat('PI', to_char(subquery.created_at, 'YY'), '-', LPAD(subquery.id::text, 4, '0')) 
+										ELSE concat('CI', to_char(subquery.created_at, 'YY'), '-', LPAD(subquery.id::text, 4, '0')) 
+									END
+								)
+							) AS pi_object,
+							subquery.order_info_uuid
+						FROM (
+							SELECT DISTINCT ON (pi_cash.uuid, toe.order_info_uuid)
+								pi_cash.uuid,
+								pi_cash.is_pi,
+								pi_cash.created_at,
+								pi_cash.id,
+								toe.order_info_uuid
+							FROM 
+								thread.order_entry toe
+							LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
+							LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+							WHERE pi_cash.id IS NOT NULL
+						) subquery
+						GROUP BY subquery.order_info_uuid
 					)
                     SELECT  dvl.*,
 							SUM(ple.quantity)::float8 as total_quantity,
