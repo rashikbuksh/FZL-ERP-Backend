@@ -104,7 +104,7 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                     ple.thread_order_entry_uuid IS NOT NULL
                 GROUP BY
                     toe.uuid
-            ) thread_challan_sum ON thread_challan_sum.order_info_uuid = order_info.uuid
+            ) thread_challan_sum ON thread_challan_sum.order_entry_uuid = order_entry.uuid
             LEFT JOIN (
                 SELECT 
                     toi.uuid as order_info_uuid,
