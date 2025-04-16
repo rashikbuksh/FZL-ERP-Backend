@@ -22,6 +22,7 @@ export async function selectPackingList(req, res, next) {
 						LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
 						LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
 						WHERE pi_cash.id IS NOT NULL
+						GROUP BY vodf.order_info_uuid
 					),
 					pi_cash_grouped_thread AS (
 						SELECT 
@@ -37,6 +38,7 @@ export async function selectPackingList(req, res, next) {
 						LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
 						LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
 						WHERE pi_cash.id IS NOT NULL
+						GROUP BY toe.order_info_uuid
 					)
                     SELECT  dvl.*,
 							SUM(ple.quantity)::float8 as total_quantity,
@@ -151,15 +153,13 @@ export async function selectPackingList(req, res, next) {
 							dvl.warehouse_received_date,
                             dvl.gate_pass_date,
 							ch.created_at,
-							pcg.pi_numbers,
-							pcgt.pi_numbers,
 							oe.company_price,
 							oe.party_price,
 							toe.company_price,
 							toe.party_price,
 							ch.uuid,
-							pcg.pi_cash_uuid,
-							pcgt.pi_cash_uuid
+							pcg.pi_object,
+							pcgt.pi_object
 						ORDER BY dvl.created_at DESC;`;
 
 	try {
