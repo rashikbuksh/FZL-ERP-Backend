@@ -8,8 +8,12 @@ export async function selectPackingList(req, res, next) {
 	let query = sql`
 					WITH pi_cash_grouped AS (
 						SELECT 
-							DISTINCT pi_cash.uuid as pi_cash_uuid,
-							CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END as pi_numbers,
+							jsonb_agg(
+								json_build_object(
+                                    'pi_cash_uuid', pi_cash.uuid, 
+                                    'pi_numbers', CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END
+                            	)
+							) as pi_object,
 							vodf.order_info_uuid
 						FROM
 							zipper.v_order_details_full vodf
@@ -21,8 +25,12 @@ export async function selectPackingList(req, res, next) {
 					),
 					pi_cash_grouped_thread AS (
 						SELECT 
-							DISTINCT pi_cash.uuid as pi_cash_uuid,
-							CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END as pi_numbers,
+							jsonb_agg(
+								json_build_object(
+                                    'pi_cash_uuid', pi_cash.uuid, 
+                                    'pi_numbers', CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END
+                            	)
+							) as pi_object,
 							toe.order_info_uuid as order_info_uuid
 						FROM
 							thread.order_entry toe
@@ -68,8 +76,7 @@ export async function selectPackingList(req, res, next) {
 								END
 							) as item_description,
 							ch.created_at as challan_created_at,
-							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN pcg.pi_numbers ELSE pcgt.pi_numbers END as pi_numbers,
-							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN pcg.pi_cash_uuid ELSE pcgt.pi_cash_uuid END as pi_cash_uuid,
+							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN pcg.pi_object ELSE pcgt.pi_object END as pi_numbers,
 							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') 
 								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3) ELSE ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3) 
 							END as total_amount_without_commission,
