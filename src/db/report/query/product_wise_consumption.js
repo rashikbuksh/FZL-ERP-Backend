@@ -71,6 +71,7 @@ export async function selectProductWiseConsumption(req, res, next) {
 							vodf.item,
 							vodf.zipper_number,
 							vodf.nylon_stopper,
+							vodf.end_type,
 							vodf.puller_type
 						FROM zipper.dyed_tape_transaction dtt
 						LEFT JOIN zipper.v_order_details_full vodf ON dtt.order_description_uuid = vodf.order_description_uuid
@@ -78,6 +79,7 @@ export async function selectProductWiseConsumption(req, res, next) {
 							vodf.item,
 							vodf.zipper_number,
 							vodf.nylon_stopper,
+							vodf.end_type,
 							vodf.puller_type
 					) dyed_tape_transaction_sum ON 
 					 	(vodf.item = dyed_tape_transaction_sum.item
@@ -86,12 +88,14 @@ export async function selectProductWiseConsumption(req, res, next) {
 							lower(vodf.item_name) != 'nylon' 
 							OR vodf.nylon_stopper = dyed_tape_transaction_sum.nylon_stopper
 						)
+						AND vodf.end_type = dyed_tape_transaction_sum.end_type
 						AND vodf.puller_type = dyed_tape_transaction_sum.puller_type)
 					LEFT JOIN (
 						SELECT SUM(dttfs.trx_quantity) AS total_trx_quantity, 
 							vodf.item,
 							vodf.zipper_number,
 							vodf.nylon_stopper,
+							vodf.end_type,
 							vodf.puller_type
 						FROM zipper.dyed_tape_transaction_from_stock dttfs
 						LEFT JOIN zipper.v_order_details_full vodf ON dttfs.order_description_uuid = vodf.order_description_uuid
@@ -99,6 +103,7 @@ export async function selectProductWiseConsumption(req, res, next) {
 							vodf.item,
 							vodf.zipper_number,
 							vodf.nylon_stopper,
+							vodf.end_type,
 							vodf.puller_type
 					) dyed_tape_transaction_from_stock_sum ON 
 					 	(vodf.item = dyed_tape_transaction_from_stock_sum.item
@@ -107,6 +112,7 @@ export async function selectProductWiseConsumption(req, res, next) {
 							lower(vodf.item_name) != 'nylon' 
 							OR vodf.nylon_stopper = dyed_tape_transaction_from_stock_sum.nylon_stopper
 						)
+						AND vodf.end_type = dyed_tape_transaction_from_stock_sum.end_type
 						AND vodf.puller_type = dyed_tape_transaction_from_stock_sum.puller_type)
 					LEFT JOIN (
 						SELECT 
@@ -114,6 +120,7 @@ export async function selectProductWiseConsumption(req, res, next) {
 							od.item,
 							od.zipper_number,
 							od.nylon_stopper,
+							od.end_type,
 							od.puller_type
 						FROM slider.production
 						LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
@@ -123,6 +130,7 @@ export async function selectProductWiseConsumption(req, res, next) {
 							od.item,
 							od.zipper_number,
 							od.nylon_stopper,
+							od.end_type,
 							od.puller_type
 					) production_sum ON 
 						(vodf.item = production_sum.item
@@ -131,6 +139,7 @@ export async function selectProductWiseConsumption(req, res, next) {
 							lower(vodf.item_name) != 'nylon'
 							OR vodf.nylon_stopper = production_sum.nylon_stopper
 						)
+						AND vodf.end_type = production_sum.end_type
 						AND vodf.puller_type = production_sum.puller_type)
                     WHERE 
 						(

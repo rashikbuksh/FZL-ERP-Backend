@@ -121,13 +121,16 @@ export async function selectAll(req, res, next) {
             ELSE vod.item_name
         END as item_name,
 		ARRAY_AGG(DISTINCT CASE 
-            WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END) as color
+            WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END
+		) as color,
+		cl.cone_per_carton
     FROM delivery.v_packing_list dvl
     LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 	LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 	LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 	LEFT JOIN zipper.v_order_details vod ON vod.order_description_uuid = oe.order_description_uuid
 	LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+	LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
     WHERE 1=1
     ${challan_uuid ? sql`AND dvl.challan_uuid = ${challan_uuid}` : sql``}
     ${
@@ -197,7 +200,8 @@ export async function selectAll(req, res, next) {
 		dvl.warehouse_received_date,
 		dvl.gate_pass_date,
 		vod.item_name,
-		vod.nylon_stopper_name
+		vod.nylon_stopper_name,
+		cl.cone_per_carton
     ORDER BY 
         dvl.created_at DESC`
 	);
