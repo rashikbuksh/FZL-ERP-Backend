@@ -785,13 +785,6 @@ export async function selectPiByLcUuid(req, res, next) {
 	try {
 		const data = await piPromise;
 
-		data.forEach((item) => {
-			item.order_info_uuids = JSON.parse(item.order_info_uuids);
-			item.thread_order_info_uuids = JSON.parse(
-				item.thread_order_info_uuids
-			);
-		});
-
 		const toast = {
 			status: 200,
 			type: 'select_all',
