@@ -1247,7 +1247,7 @@ export const pathReport = {
 			summary: 'Product Wise Consumption For Order Report',
 			description: 'Product Wise Consumption For Order Report',
 			tags: ['report'],
-			operationId: 'selectProductWiseConsumptionForOrderReport',
+			operationId: 'selectProductWiseConsumptionForOrder',
 			parameters: [
 				SE.parameter_query(
 					'type',
