@@ -1817,7 +1817,7 @@ export async function selectPi(req, res, next) {
 		pi_cash.uuid AS value,
 		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
 		bank.name AS pi_bank,
-		SUM(
+		ROUND(SUM(
 			CASE 
 				WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
 				THEN 
@@ -1827,7 +1827,7 @@ export async function selectPi(req, res, next) {
 					END
 				ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
 			END
-		)::float8 AS pi_value,
+		)::numeric,2)::float8 AS pi_value,
 		ARRAY_AGG(DISTINCT 
 				CASE 
 					WHEN pi_cash_entry.sfg_uuid IS NOT NULL 
