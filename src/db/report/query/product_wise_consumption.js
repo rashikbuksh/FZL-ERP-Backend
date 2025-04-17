@@ -262,8 +262,8 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 										THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
 								ELSE CAST(oe.size AS NUMERIC) END)
 						) AS sizes,
-						SUM(oe.quantity) as total_order_quantity,
-						SUM(sfg.delivered) as total_delivered_quantity,
+						SUM(oe.quantity)::float8 AS total_quantity,
+						SUM(sfg.delivered)::float8 as total_delivered_quantity,
                         SUM(
                             CASE 
                                 WHEN vodf.is_inch = 1 THEN oe.quantity * CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
@@ -271,7 +271,6 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
                                 ELSE oe.quantity * CAST(oe.size AS NUMERIC)
                             END
                         )::float8 as total_cm,
-                        SUM(oe.quantity) AS total_quantity,
 						ROUND(
 							CAST(
 									(
