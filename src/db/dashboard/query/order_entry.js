@@ -31,7 +31,7 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
 							SUM(CASE WHEN (LOWER(vodf.item_name) = 'vislon') THEN zoe.quantity ELSE 0 END)::float8 AS vislon_quantity
 						FROM zipper.order_entry zoe
 						LEFT JOIN zipper.v_order_details_full vodf ON zoe.order_description_uuid = vodf.order_description_uuid
-						WHERE ${from && to ? sql` vodf.order_description_created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql` vodf.order_description_created_at >= NOW() - INTERVAL '30 days'`}
+						WHERE ${from && to ? sql` vodf.order_description_created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
 							AND vodf.is_cancelled = false
 						GROUP BY DATE(vodf.order_description_created_at)
 					) z
@@ -42,7 +42,7 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
 							SUM(toe.quantity) AS total_quantity
 						FROM thread.order_entry toe 
 						LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-						WHERE ${from && to ? sql` toi.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql` toi.created_at >= NOW() - INTERVAL '30 days'`}
+						WHERE ${from && to ? sql` toi.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
 							AND toi.is_cancelled = false
 						GROUP BY DATE(toi.created_at)
 					) t
