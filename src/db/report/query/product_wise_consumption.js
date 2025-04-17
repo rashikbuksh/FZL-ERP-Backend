@@ -57,10 +57,12 @@ export async function selectProductWiseConsumption(req, res, next) {
 						COALESCE(tcr.raw_mtr_per_kg, 0)::float8 AS mtr_per_kg,
 						COALESCE(tcr.top, 0)::float8 as top,
 						COALESCE(tcr.bottom, 0)::float8 as bottom,
-						COALESCE((production_sum.coloring_production_quantity::float8),0)::float8 AS total_coloring_production_quantity
+						COALESCE((production_sum.coloring_production_quantity::float8),0)::float8 AS total_coloring_production_quantity,
+						SUM(sfg.delivered)::float8 as total_delivered_quantity
 					FROM
 						zipper.v_order_details_full vodf
 					LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
+					LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN zipper.tape_coil_required tcr 
 						ON vodf.item = tcr.item_uuid 
 						AND vodf.zipper_number = tcr.zipper_number_uuid 
