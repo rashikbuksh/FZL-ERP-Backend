@@ -331,7 +331,11 @@ export const pathDeliveryPackingList = {
 			tags: ['delivery.packing-list'],
 			summary: 'Get all packing list received log',
 			description: 'Get all packing list received log',
-			// operationId: "getPackingListReceivedLog",
+			operationId: "getPackingListReceivedLog",
+			parameters: [
+				SE.parameter_query('from', 'from', SE.date_time()),
+				SE.parameter_query('to', 'to', SE.date_time()),
+			],
 			responses: {
 				200: {
 					description: 'Return list of packing list received log',
@@ -359,7 +363,11 @@ export const pathDeliveryPackingList = {
 			tags: ['delivery.packing-list'],
 			summary: 'Get all packing list warehouse out log',
 			description: 'Get all packing list warehouse out log',
-			// operationId: "getPackingListWarehouseOutLog",
+			operationId: 'getPackingListWarehouseOutLog',
+			parameters: [
+				SE.parameter_query('from', 'from', SE.date_time()),
+				SE.parameter_query('to', 'to', SE.date_time()),
+			],
 			responses: {
 				200: {
 					description:
@@ -372,6 +380,39 @@ export const pathDeliveryPackingList = {
 									uuid: SE.uuid(),
 									packing_list_uuid: SE.uuid(),
 									warehouse_out_quantity: SE.number(0),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/delivery/packing-list-received-warehouse-notout-log': {
+		get: {
+			tags: ['delivery.packing-list'],
+			summary: 'Get all packing list received warehouse not out log',
+			description: 'Get all packing list received warehouse not out log',
+			operationId: 'getPackingListReceivedWarehouseNotOutLog',
+			parameters: [
+				SE.parameter_query('from', 'from', SE.date_time()),
+				SE.parameter_query('to', 'to', SE.date_time()),
+			],
+			responses: {
+				200: {
+					description:
+						'Return list of packing list received warehouse not out log',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: SE.uuid(),
+									packing_list_uuid: SE.uuid(),
+									received_quantity: SE.number(0),
 									created_at: SE.date_time(),
 									updated_at: SE.date_time(),
 									remarks: SE.string('remarks'),

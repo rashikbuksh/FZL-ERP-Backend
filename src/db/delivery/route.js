@@ -44,6 +44,10 @@ deliveryRouter.get(
 	'/packing-list-warehouse-out-log',
 	packingListOperations.selectPackingListWarehouseOutLog
 );
+deliveryRouter.get(
+	'/packing-list-received-warehouse-notout-log',
+	packingListOperations.selectPackingListReceivedWarehouseLog
+);
 
 // packing_list_entry routes
 deliveryRouter.get('/packing-list-entry', packingListEntryOperations.selectAll);
