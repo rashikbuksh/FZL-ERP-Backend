@@ -34,6 +34,7 @@ export const OrderDetailsView = `
         party.name AS party_name,
         order_info.marketing_uuid,
         marketing.name AS marketing_name,
+        marketing_user.phone AS marketing_phone,
         order_info.merchandiser_uuid,
         merchandiser.name AS merchandiser_name,
         order_info.factory_uuid,
@@ -46,6 +47,7 @@ export const OrderDetailsView = `
         order_info.status,
         order_info.created_by AS created_by_uuid,
         users.name AS created_by_name,
+        users.phone AS created_by_phone,
         order_info.created_at AS created_at,
         order_info.updated_at AS updated_at,
         order_info.remarks,
@@ -68,6 +70,7 @@ export const OrderDetailsView = `
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
+        LEFT JOIN hr.users marketing_user ON marketing_user.uuid = marketing.user_uuid
         LEFT JOIN public.buyer ON buyer.uuid = order_info.buyer_uuid
         LEFT JOIN public.merchandiser ON merchandiser.uuid = order_info.merchandiser_uuid
         LEFT JOIN public.factory ON factory.uuid = order_info.factory_uuid
@@ -103,6 +106,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_description.slider_finishing_stock::float8,
         order_info.marketing_uuid,
         marketing.name AS marketing_name,
+        marketing_user.phone AS marketing_phone,
         order_info.buyer_uuid,
         buyer.name AS buyer_name,
         order_info.merchandiser_uuid,
@@ -114,6 +118,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         party.name AS party_name,
         order_info.created_by AS created_by_uuid,
         users.name AS created_by_name,
+        users.phone AS created_by_phone,
         order_info.is_cash,
         order_info.is_bill,
         order_info.is_sample,
@@ -214,6 +219,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
   FROM zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
+        LEFT JOIN hr.users marketing_user ON marketing_user.uuid = marketing.user_uuid
         LEFT JOIN public.buyer ON buyer.uuid = order_info.buyer_uuid
         LEFT JOIN public.merchandiser ON merchandiser.uuid = order_info.merchandiser_uuid
         LEFT JOIN public.factory ON factory.uuid = order_info.factory_uuid
