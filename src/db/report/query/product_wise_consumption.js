@@ -347,6 +347,7 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 					GROUP BY 
 						vodf.marketing_name,
                         vodf.order_number,
+						vodf.order_description_uuid,
 						vodf.party_name,
 						vodf.factory_name,
 						vodf.created_at,
