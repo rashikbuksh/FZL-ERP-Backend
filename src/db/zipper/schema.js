@@ -191,6 +191,7 @@ export const order_description = zipper.table('order_description', {
 	is_waterproof: boolean('is_waterproof').default(false),
 	revision_no: integer('revision_no').default(0),
 	is_marketing_checked: boolean('is_marketing_checked').default(false),
+	marketing_checked_at: DateTime('marketing_checked_at').default(null),
 });
 
 export const order_entry = zipper.table('order_entry', {

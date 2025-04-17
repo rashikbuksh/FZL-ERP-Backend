@@ -65,7 +65,8 @@ export const OrderDetailsView = `
         order_description.tape_transferred::float8,
         order_description.remarks as order_description_remarks,
         order_description.revision_no,
-        order_description.is_marketing_checked
+        order_description.is_marketing_checked,
+        order_description.marketing_checked_at
     FROM
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
@@ -215,7 +216,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_description.is_multi_color,
         order_description.is_waterproof,
         order_description.revision_no,
-        order_description.is_marketing_checked
+        order_description.is_marketing_checked,
+        order_description.marketing_checked_at
   FROM zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid

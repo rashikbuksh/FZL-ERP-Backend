@@ -105,6 +105,7 @@ export async function insert(req, res, next) {
 		is_waterproof,
 		revision_no,
 		is_marketing_checked,
+		marketing_checked_at,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -152,6 +153,7 @@ export async function insert(req, res, next) {
 			is_waterproof,
 			revision_no,
 			is_marketing_checked,
+			marketing_checked_at,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -215,6 +217,7 @@ export async function update(req, res, next) {
 		is_waterproof,
 		revision_no,
 		is_marketing_checked,
+		marketing_checked_at,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -262,6 +265,7 @@ export async function update(req, res, next) {
 			is_waterproof,
 			revision_no,
 			is_marketing_checked,
+			marketing_checked_at,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
@@ -396,6 +400,7 @@ export async function selectAll(req, res, next) {
 			is_waterproof: order_description.is_waterproof,
 			revision_no: order_description.revision_no,
 			is_marketing_checked: order_description.is_marketing_checked,
+			marketing_checked_at: order_description.marketing_checked_at,
 		})
 		.from(order_description)
 		.where(
@@ -607,6 +612,7 @@ export async function select(req, res, next) {
 			is_waterproof: order_description.is_waterproof,
 			revision_no: order_description.revision_no,
 			is_marketing_checked: order_description.is_marketing_checked,
+			marketing_checked_at: order_description.marketing_checked_at,
 		})
 		.from(order_description)
 		.where(
