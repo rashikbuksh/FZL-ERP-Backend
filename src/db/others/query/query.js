@@ -1827,7 +1827,7 @@ export async function selectPi(req, res, next) {
 					END
 				ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
 			END
-		)::float8,2) AS pi_value,
+		)::numeric,2)::float8 AS pi_value,
 		ARRAY_AGG(DISTINCT 
 				CASE 
 					WHEN pi_cash_entry.sfg_uuid IS NOT NULL 
