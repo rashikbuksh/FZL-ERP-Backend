@@ -137,9 +137,22 @@ export async function selectAll(req, res, next) {
 			users.name AS created_by_name,
 			lc.created_at,
 			lc.updated_at,
-			lc.remarks
+			lc.remarks,
+			ARRAY_AGG(lc_entry.payment_date) as payment_date,
+			ARRAY_AGG(lc_entry.ldbc_fdbc) as ldbc_fdbc,
+			ARRAY_AGG(lc_entry.acceptance_date) as acceptance_date,
+			ARRAY_AGG(lc_entry.maturity_date) as maturity_date,
+			ARRAY_AGG(lc_entry.handover_date) as handover_date,
+			ARRAY_AGG(lc_entry.receive_date) as receive_date,
+			ARRAY_AGG(lc_entry.document_submission_date) as document_submission_date,
+			ARRAY_AGG(lc_entry.bank_forward_date) as bank_forward_date,
+			ARRAY_AGG(lc_entry.document_receive_date) as document_receive_date,
+			ARRAY_AGG(lc_entry.payment_value::float8) as payment_value,
+            ARRAY_AGG(lc_entry.amount::float8) as amount
 		FROM
 			commercial.lc
+		LEFT JOIN 
+			commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
 		LEFT JOIN
 			hr.users ON lc.created_by = users.uuid
 		LEFT JOIN

@@ -223,6 +223,7 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 						vodf.factory_name,
 						vodf.created_at,
 						vodf.item_description,
+						vodf.order_description_uuid,
 						CONCAT(
 							vodf.lock_type_name, 
 							CASE WHEN (vodf.teeth_color_name IS NOT NULL OR vodf.teeth_color_name != '---') THEN ', teeth: ' ELSE '' END,
