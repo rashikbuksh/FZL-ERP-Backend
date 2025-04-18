@@ -498,7 +498,7 @@ export async function selectStockByFromSection(req, res, next) {
 			GROUP BY oe.order_description_uuid
 		) oe_style_color ON oe_style_color.order_description_uuid = finishing_batch.order_description_uuid
 		WHERE 
-			zfb.is_completed = false
+			finishing_batch.is_completed = false
 		ORDER BY 
 			stock.created_at DESC
 	 ;`;
