@@ -2244,10 +2244,12 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
             stock.uuid
     ) AS slider_transaction_given ON stock.uuid = slider_transaction_given.stock_uuid
 	WHERE 
-		(stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0
+		zfb.is_completed = false
 	GROUP BY
 		stock.uuid, zfb.created_at, zfb.id, vodf.order_number, vodf.item_description, rwn.short_name, stock.batch_quantity, slider_transaction_given.trx_quantity	
 	;`;
+
+	// ! Slider Where condition (stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0
 
 	const stockPromise = db.execute(query);
 

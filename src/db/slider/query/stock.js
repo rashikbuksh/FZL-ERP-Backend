@@ -498,10 +498,12 @@ export async function selectStockByFromSection(req, res, next) {
 			GROUP BY oe.order_description_uuid
 		) oe_style_color ON oe_style_color.order_description_uuid = finishing_batch.order_description_uuid
 		WHERE 
-			(stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0
+			zfb.is_completed = false
 		ORDER BY 
 			stock.created_at DESC
 	 ;`;
+
+	// ! Slider Where condition (stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0 REMOVED
 
 	try {
 		const data = await db.execute(query);
