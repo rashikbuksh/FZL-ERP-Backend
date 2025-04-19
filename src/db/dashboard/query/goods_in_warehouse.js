@@ -6,9 +6,9 @@ export async function selectGoodsInWarehouse(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const query = sql`
-		WITH challan_data AS (
+		WITH packing_list_data AS (
             SELECT
-                sum(sfg.warehouse)::float8 as amount,
+                sum(ple.quantity)::float8 as amount,
                 pl_count.count as number_of_carton,
                 TRIM(BOTH ' ' FROM LOWER(CASE 
                     WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
@@ -24,10 +24,10 @@ export async function selectGoodsInWarehouse(req, res, next) {
                 LEFT JOIN (
                     SELECT COUNT(*) as count, packing_list.order_info_uuid
                     FROM delivery.packing_list 
-					WHERE packing_list.challan_uuid IS NULL
+					WHERE packing_list.challan_uuid IS NULL AND packing_list.is_warehouse_received = true
                     GROUP BY packing_list.order_info_uuid
                 ) AS pl_count ON pl.order_info_uuid = pl_count.order_info_uuid
-            WHERE pl.challan_uuid IS NULL
+            WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
             GROUP BY
                 TRIM(BOTH ' ' FROM LOWER(CASE 
                     WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
@@ -38,21 +38,31 @@ export async function selectGoodsInWarehouse(req, res, next) {
                 pl_count.count
             UNION
             SELECT
-                sum(toe.warehouse)::float8  as amount,
-                CEIL(sum(toe.warehouse) / cl.max_weight)::float8 as number_of_carton,
+                sum(ple.quantity)::float8  as amount,
+                pl_count.count as number_of_carton,
                 'Sewing Thread' as item_name
             FROM
-                thread.order_entry toe
+                delivery.packing_list pl
+            LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
+            LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
             LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
+            LEFT JOIN (
+                    SELECT COUNT(*) as count, packing_list.order_info_uuid
+                    FROM delivery.packing_list 
+					WHERE packing_list.challan_uuid IS NULL AND packing_list.is_warehouse_received = true
+                    GROUP BY packing_list.order_info_uuid
+            ) AS pl_count ON pl.order_info_uuid = pl_count.order_info_uuid
+            WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
             GROUP BY
-                item_name, cl.max_weight
+                item_name, 
+                pl_count.count
         )
-    SELECT
+        SELECT
             SUM(amount) as amount,
             SUM(number_of_carton) as number_of_carton,
             item_name,
-            (SELECT SUM(number_of_carton) FROM challan_data) as total_number
-        FROM challan_data
+            (SELECT SUM(number_of_carton) FROM packing_list_data) as total_number
+        FROM packing_list_data
         WHERE item_name IS NOT NULL
         GROUP BY
                 item_name;
