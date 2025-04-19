@@ -570,8 +570,9 @@ export async function selectPackingListReceivedLog(req, res, next) {
 
 	const query = sql`
 					SELECT dvl.*,
-						vodf.item_description,
-						vodf.order_description_uuid,
+						JSONB_AGG(DISTINCT 
+							JSONB_BUILD_OBJECT('item_description', vodf.item_description, 'order_description_uuid', vodf.order_description_uuid)
+						) as item_description,
 						CASE 
 							WHEN item_for IN ('thread', 'sample_thread') 
 							THEN 'Thread' 
@@ -598,8 +599,6 @@ export async function selectPackingListReceivedLog(req, res, next) {
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
-						vodf.item_description,
-						vodf.order_description_uuid,
 						vodf.item_name,
 						vodf.nylon_stopper_name,
 						dvl.packing_list_wise_rank,
@@ -656,8 +655,9 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 
 	const query = sql`
 					SELECT dvl.*,
-						vodf.item_description,
-						vodf.order_description_uuid,
+						JSONB_AGG(DISTINCT 
+							JSONB_BUILD_OBJECT('item_description', vodf.item_description, 'order_description_uuid', vodf.order_description_uuid)
+						) as item_description,
 						CASE 
 							WHEN item_for IN ('thread', 'sample_thread') 
 							THEN 'Thread' 
@@ -684,8 +684,6 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
-						vodf.item_description,
-						vodf.order_description_uuid,
 						vodf.item_name,
 						vodf.nylon_stopper_name,
 						dvl.packing_list_wise_rank,
@@ -741,8 +739,9 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 
 	const query = sql`
 					SELECT dvl.*,
-						vodf.item_description,
-						vodf.order_description_uuid,
+						JSONB_AGG(DISTINCT 
+							JSONB_BUILD_OBJECT('item_description', vodf.item_description, 'order_description_uuid', vodf.order_description_uuid)
+						) as item_description,
 						CASE 
 							WHEN item_for IN ('thread', 'sample_thread') 
 							THEN 'Thread' 
@@ -769,8 +768,6 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
-						vodf.item_description,
-						vodf.order_description_uuid,
 						vodf.item_name,
 						vodf.nylon_stopper_name,
 						dvl.packing_list_wise_rank,
