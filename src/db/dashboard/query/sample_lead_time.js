@@ -10,15 +10,30 @@ export async function selectSampleLeadTime(req, res, next) {
         SELECT
             CONCAT('Z', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')) AS sample_order_no,
             oi.created_at AS issue_date,
-            CASE WHEN MAX(pl.challan_uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
+            CASE 
+                WHEN MAX(pl.challan_uuid) IS NULL THEN 'Pending' 
+                ELSE 'Processing' 
+            END AS status,
             MAX(c.created_at) AS delivery_last_date,
             SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) AS delivery_quantity,
-            SUM(CASE WHEN od.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END) AS order_quantity,
-            CONCAT(SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END), '/', SUM(CASE WHEN od.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END)) AS delivery_order_quantity
+            oe_sum.order_quantity AS order_quantity,
+            CONCAT(SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END), '/', oe_sum.order_quantity) AS delivery_order_quantity
         FROM
             zipper.order_info oi
             LEFT JOIN zipper.order_description od ON oi.uuid = od.order_info_uuid
             LEFT JOIN zipper.order_entry oe ON od.uuid = oe.order_description_uuid
+            LEFT JOIN (
+                SELECT 
+                    SUM(CASE WHEN vodf.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END) AS order_quantity,
+                    vodf.order_description_uuid
+                FROM
+                    zipper.order_entry oe
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                WHERE
+                    vodf.is_sample = 1
+                GROUP BY
+                    vodf.order_description_uuid
+            ) oe_sum ON oe.order_description_uuid = oe_sum.order_description_uuid
             LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
             LEFT JOIN delivery.packing_list_entry ple ON sfg.uuid = ple.sfg_uuid
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -26,9 +41,9 @@ export async function selectSampleLeadTime(req, res, next) {
         WHERE
             oi.is_sample = 1 AND od.uuid IS NOT NULL
         GROUP BY
-            oi.id, oi.is_sample, oi.created_at
+            oi.id, oi.is_sample, oi.created_at, oe_sum.order_quantity
         HAVING
-            SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) < SUM(CASE WHEN od.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END)
+            SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) < oe_sum.order_quantity
     ),
     thread_results AS (
         SELECT

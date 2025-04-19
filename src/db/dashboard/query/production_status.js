@@ -9,34 +9,25 @@ export async function selectProductionStatus(req, res, next) {
 
 	const query = sql`
                 SELECT 
-                        CONCAT(vodf.item_name, ' ', vodf.nylon_stopper_name ) as item_name,
-                        SUM(
-                            sfg_production_sum.teeth_molding_quantity::float8 + 
-                            sfg_production_sum.teeth_coloring_quantity::float8 + 
-                            sfg_production_sum.finishing_quantity::float8
-                        )::float8 AS total_quantity
+                    TRIM(BOTH ' ' FROM LOWER(CASE 
+                        WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
+                        WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                        ELSE vodf.item_name
+                    END)) as item_name,
+                    COALESCE(sfg_production_sum.finishing_quantity::float8, 0) AS total_quantity
                 FROM
                     zipper.v_order_details_full vodf
                 LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
                 LEFT JOIN zipper.sfg ON oe.uuid = sfg.order_entry_uuid
                 LEFT JOIN (
                     SELECT 
-                        vodf.item,
-                        vodf.nylon_stopper,
+                        TRIM(BOTH ' ' FROM LOWER(CASE 
+                            WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
+                            WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                            ELSE vodf.item_name
+                        END)) as item_name,
                         SUM(CASE 
-                            WHEN fb_prod.section = 'teeth_molding' THEN 
-                                CASE 
-                                    WHEN fb_prod.production_quantity > 0 THEN fb_prod.production_quantity 
-                                    ELSE fb_prod.production_quantity_in_kg 
-                                END 
-                            ELSE 0 
-                        END) AS teeth_molding_quantity,
-                        SUM(CASE 
-                            WHEN fb_prod.section = 'teeth_coloring' THEN fb_prod.production_quantity 
-                            ELSE 0 
-                        END) AS teeth_coloring_quantity,
-                        SUM(CASE 
-                            WHEN fb_prod.section = 'finishing' THEN fb_prod.production_quantity 
+                            WHEN fb_prod.section = 'finishing' THEN fb_prod.production_quantity::float8 
                             ELSE 0 
                         END) AS finishing_quantity
                     FROM 
@@ -49,17 +40,28 @@ export async function selectProductionStatus(req, res, next) {
                         zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     LEFT JOIN 
                         zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                    WHERE ${start_date ? sql`fb_prod.created_at BETWEEN ${start_date}::TIMESTAMP AND ${end_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    WHERE 
+                        fb_prod.created_at BETWEEN '2025-04-19'::TIMESTAMP AND '2025-04-19'::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
                     GROUP BY 
-                        vodf.item, vodf.nylon_stopper
-                ) sfg_production_sum ON sfg_production_sum.item = vodf.item AND (
-						lower(vodf.item_name) != 'nylon' 
-						OR vodf.nylon_stopper = sfg_production_sum.nylon_stopper
-					)
+                        TRIM(BOTH ' ' FROM LOWER(CASE 
+                            WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
+                            WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                            ELSE vodf.item_name
+                        END))
+                    ) sfg_production_sum ON sfg_production_sum.item_name = TRIM(BOTH ' ' FROM LOWER(CASE 
+                            WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
+                            WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                            ELSE vodf.item_name
+                        END))
                 WHERE vodf.order_description_uuid IS NOT NULL
                     AND vodf.is_cancelled = FALSE
                 GROUP BY 
-                vodf.item_name, vodf.nylon_stopper_name
+                    TRIM(BOTH ' ' FROM LOWER(CASE 
+                        WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
+                        WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                        ELSE vodf.item_name
+                    END)),
+                    sfg_production_sum.finishing_quantity
 
                 UNION    
 
