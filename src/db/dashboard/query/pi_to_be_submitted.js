@@ -25,7 +25,7 @@ export async function selectPiToBeSubmittedDashboard(req, res, next) {
                     SUM((order_entry.quantity - sfg.pi) * order_entry.party_price) AS total_balance_pi_value,
                     SUM(sfg.pi) AS total_pi,
                     SUM(sfg.delivered) AS total_delivered,
-                    SUM(sfg.pi - sfg.delivered) AS total_undelivered_balance_quantity,
+                    SUM(order_entry.quantity - sfg.delivered) AS total_undelivered_balance_quantity,
                     vodf.party_uuid,
                     vodf.party_name
                 FROM
