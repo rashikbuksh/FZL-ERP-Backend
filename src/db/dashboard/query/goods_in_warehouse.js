@@ -17,16 +17,16 @@ export async function selectGoodsInWarehouse(req, res, next) {
                 END)) as item_name
             FROM
                 delivery.packing_list pl
-                LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
-                LEFT JOIN zipper.sfg ON ple.sfg_uuid = sfg.uuid
-                LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-                LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-                LEFT JOIN (
-                    SELECT COUNT(*) as count, packing_list.order_info_uuid
-                    FROM delivery.packing_list 
-					WHERE packing_list.challan_uuid IS NULL AND packing_list.is_warehouse_received = true
-                    GROUP BY packing_list.order_info_uuid
-                ) AS pl_count ON pl.order_info_uuid = pl_count.order_info_uuid
+            LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
+            LEFT JOIN zipper.sfg ON ple.sfg_uuid = sfg.uuid
+            LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+            LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN (
+                SELECT COUNT(*) as count, packing_list.order_info_uuid
+                FROM delivery.packing_list 
+				WHERE packing_list.challan_uuid IS NULL AND packing_list.is_warehouse_received = true
+                GROUP BY packing_list.order_info_uuid
+            ) AS pl_count ON pl.order_info_uuid = pl_count.order_info_uuid
             WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
             GROUP BY
                 TRIM(BOTH ' ' FROM LOWER(CASE 
@@ -39,23 +39,16 @@ export async function selectGoodsInWarehouse(req, res, next) {
             UNION
             SELECT
                 sum(ple.quantity)::float8  as amount,
-                pl_count.count as number_of_carton,
+                sum(ROUND(COALESCE(ple.quantity / cl.max_weight, 0), 2))::float8 as number_of_carton,
                 'Sewing Thread' as item_name
             FROM
                 delivery.packing_list pl
             LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
             LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
             LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
-            LEFT JOIN (
-                    SELECT COUNT(*) as count, packing_list.order_info_uuid
-                    FROM delivery.packing_list 
-					WHERE packing_list.challan_uuid IS NULL AND packing_list.is_warehouse_received = true
-                    GROUP BY packing_list.order_info_uuid
-            ) AS pl_count ON pl.order_info_uuid = pl_count.order_info_uuid
             WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
             GROUP BY
-                item_name, 
-                pl_count.count
+                item_name
         )
         SELECT
             SUM(amount) as amount,
@@ -65,7 +58,7 @@ export async function selectGoodsInWarehouse(req, res, next) {
         FROM packing_list_data
         WHERE item_name IS NOT NULL
         GROUP BY
-                item_name;
+            item_name;
 	`;
 	const resultPromise = db.execute(query);
 
