@@ -39,7 +39,7 @@ export async function selectGoodsInWarehouse(req, res, next) {
             UNION
             SELECT
                 sum(ple.quantity)::float8  as amount,
-                sum(ROUND(COALESCE(ple.quantity / cl.max_weight, 0), 2))::float8 as number_of_carton,
+                CEIL(sum(COALESCE(ple.quantity / cl.max_weight, 0))::float8) as number_of_carton,
                 'Sewing Thread' as item_name
             FROM
                 delivery.packing_list pl
