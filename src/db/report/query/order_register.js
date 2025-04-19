@@ -22,7 +22,6 @@ export async function selectOrderRegisterReport(req, res, next) {
 					END as unit,
 					sfg.order_entry_uuid,
 					sfg.uuid AS sfg_uuid,
-					oe.order_description_uuid,
 					oe.style,
 					oe.color,
 					oe.size,
@@ -157,7 +156,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 			FROM
 				zipper.v_order_details_full vodf
 			LEFT JOIN pi_cash_grouped ON vodf.order_info_uuid = pi_cash_grouped.order_info_uuid
-			LEFT JOIN challan_agg ON vodf.order_info_uuid = challan_agg.order_info_uuid
+			LEFT JOIN challan_agg ON vodf.order_description_uuid = challan_agg.order_description_uuid
 			WHERE
 				vodf.order_info_uuid = ${order_info_uuid}
 			GROUP BY vodf.order_info_uuid, vodf.order_number, vodf.created_at, vodf.party_name, vodf.buyer_name, vodf.merchandiser_name, vodf.marketing_name, pi_cash_grouped.pi_numbers, pi_cash_grouped.pi_cash_uuid
