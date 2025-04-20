@@ -414,11 +414,19 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
             ELSE toi_marketing.name 
         END AS marketing_name,
         packing_list.warehouse_received_date,
-        packing_list.gate_pass_date
+        packing_list.gate_pass_date,
+        packing_list.warehouse_received_by,
+        warehouse_received_by.name AS warehouse_received_by_name,
+        packing_list.gate_pass_by,
+        gate_pass_by.name AS gate_pass_by_name
     FROM
         delivery.packing_list
     LEFT JOIN
         hr.users ON packing_list.created_by = hr.users.uuid
+    LEFT JOIN 
+        hr.users warehouse_received_by ON packing_list.warehouse_received_by = warehouse_received_by.uuid
+    LEFT JOIN 
+        hr.users gate_pass_by ON packing_list.gate_pass_by = gate_pass_by.uuid
     LEFT JOIN
         zipper.order_info ON packing_list.order_info_uuid = zipper.order_info.uuid
     LEFT JOIN 

@@ -54,6 +54,12 @@ export const packing_list = delivery.table('packing_list', {
 		.default(null),
 	warehouse_received_date: DateTime('warehouse_received_date').default(null),
 	gate_pass_date: DateTime('gate_pass_date').default(null),
+	warehouse_received_by: defaultUUID('warehouse_received_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
+	gate_pass_by: defaultUUID('gate_pass_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 });
 
 export const packing_list_entry = delivery.table('packing_list_entry', {

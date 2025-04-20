@@ -26,6 +26,13 @@ export const defPackingList = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 		is_warehouse_received: SE.boolean(false),
+		gate_pass: SE.number(0),
+		item_for: SE.string('zipper'),
+		thread_order_info_uuid: SE.uuid(),
+		warehouse_received_date: SE.date_time(),
+		gate_pass_date: SE.date_time(),
+		warehouse_received_by: SE.uuid(),
+		gate_pass_by: SE.uuid(),
 	},
 	xml: 'Delivery/PackingList',
 });

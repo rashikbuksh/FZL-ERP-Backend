@@ -201,7 +201,9 @@ export async function selectAll(req, res, next) {
 		dvl.gate_pass_date,
 		vod.item_name,
 		vod.nylon_stopper_name,
-		cl.cone_per_carton
+		cl.cone_per_carton,
+		dvl.warehouse_received_by,
+		dvl.gate_pass_by
     ORDER BY 
         dvl.created_at DESC`
 	);
@@ -261,7 +263,9 @@ export async function select(req, res, next) {
 			dvl.marketing_uuid,
 			dvl.marketing_name,
 			dvl.warehouse_received_date,
-			dvl.gate_pass_date
+			dvl.gate_pass_date,
+			dvl.warehouse_received_by,
+			dvl.gate_pass_by
 		ORDER BY 
 			dvl.created_at DESC
 		
@@ -585,6 +589,8 @@ export async function selectPackingListReceivedLog(req, res, next) {
 								ELSE vodf.item_name 
                         	END 
 						END as item_name,
+						dvl.warehouse_received_by,
+						dvl.warehouse_received_by_name
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
@@ -628,7 +634,9 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						dvl.marketing_uuid,
 						dvl.marketing_name,
 						dvl.warehouse_received_date,
-						dvl.gate_pass_date
+						dvl.gate_pass_date,
+						dvl.warehouse_received_by,
+						dvl.warehouse_received_by_name
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -670,6 +678,8 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 								ELSE vodf.item_name 
                         	END 
 						END as item_name,
+						dvl.gate_pass_by,
+						dvl.gate_pass_by_name,
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
@@ -713,7 +723,9 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						dvl.marketing_uuid,
 						dvl.marketing_name,
 						dvl.warehouse_received_date,
-						dvl.gate_pass_date
+						dvl.gate_pass_date,
+						dvl.gate_pass_by,
+						dvl.gate_pass_by_name
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -754,6 +766,8 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 								ELSE vodf.item_name 
                         	END 
 						END as item_name,
+						dvl.warehouse_received_by,
+						dvl.warehouse_received_by_name,
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
@@ -797,7 +811,9 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 						dvl.marketing_uuid,
 						dvl.marketing_name,
 						dvl.warehouse_received_date,
-						dvl.gate_pass_date
+						dvl.gate_pass_date,
+						dvl.warehouse_received_by,
+						dvl.warehouse_received_by_name
 					ORDER BY
 						dvl.created_at DESC
 	`;
