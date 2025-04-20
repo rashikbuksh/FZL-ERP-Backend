@@ -203,7 +203,9 @@ export async function selectAll(req, res, next) {
 		vod.nylon_stopper_name,
 		cl.cone_per_carton,
 		dvl.warehouse_received_by,
-		dvl.gate_pass_by
+		dvl.warehouse_received_by_name,
+		dvl.gate_pass_by,
+		dvl.gate_pass_by_name
     ORDER BY 
         dvl.created_at DESC`
 	);
@@ -265,7 +267,9 @@ export async function select(req, res, next) {
 			dvl.warehouse_received_date,
 			dvl.gate_pass_date,
 			dvl.warehouse_received_by,
-			dvl.gate_pass_by
+			dvl.warehouse_received_by_name,
+			dvl.gate_pass_by,
+			dvl.gate_pass_by_name
 		ORDER BY 
 			dvl.created_at DESC
 		
