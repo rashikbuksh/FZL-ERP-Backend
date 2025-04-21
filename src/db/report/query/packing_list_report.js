@@ -68,24 +68,24 @@ export async function selectPackingList(req, res, next) {
 							SUM(ple.quantity)::float8 as total_quantity,
 							SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 							ARRAY_AGG(DISTINCT CASE 
-								WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END) as color,
+								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
 							ARRAY_AGG(DISTINCT CASE
-								WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.size ELSE NULL END) as size,
+								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.size ELSE NULL END) as size,
 							ARRAY_AGG(DISTINCT CASE
-								WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.style ELSE toe.style END) as style,
+								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.style ELSE toe.style END) as style,
 							ARRAY_AGG(DISTINCT 
 							CASE 
-								WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape'
+								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
 								THEN CONCAT(oe.style, ' / ', oe.color, ' / ', oe.size) 
 								ELSE CONCAT (toe.style, ' / ', toe.color) 
 							END) as style_color_size,
 							CASE 
-								WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape'
+								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
 								THEN oe.company_price
 								ELSE toe.company_price
 							END as company_price,
 							CASE 
-								WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape'
+								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
 								THEN oe.party_price
 								ELSE toe.party_price
 							END as party_price,
@@ -93,7 +93,7 @@ export async function selectPackingList(req, res, next) {
                                 WHEN vodf.order_type = 'tape' THEN 'Meter' 
                                 WHEN vodf.order_type = 'slider' THEN 'Pcs' 
                                 WHEN vodf.is_inch = 1 THEN 'Inch' 
-                                WHEN dvl.item_for = 'thread' OR dvl.item_for = 'sample_thread' THEN 'Cone' 
+                                WHEN dvl.item_for IN ('thread', 'sample_thread') THEN 'Cone' 
                                 ELSE 'Cm' 
                             END as unit,
 							ARRAY_AGG(

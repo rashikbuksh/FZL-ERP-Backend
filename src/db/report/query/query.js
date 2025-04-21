@@ -334,7 +334,7 @@ export async function dailyChallanReport(req, res, next) {
                         challan.uuid,
                         challan.created_at AS challan_date,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
                             ELSE CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
                         END AS challan_id,
@@ -342,12 +342,12 @@ export async function dailyChallanReport(req, res, next) {
                         challan.created_by,
                         users.name AS created_by_name,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN challan.thread_order_info_uuid 
                             ELSE challan.order_info_uuid 
                         END AS order_info_uuid,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN CONCAT('ST', 
                                 CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END,
                                 to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')
@@ -355,12 +355,12 @@ export async function dailyChallanReport(req, res, next) {
                             ELSE vodf.order_number 
                         END AS order_number,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tpc.uuid 
                             ELSE pi_cash.uuid 
                         END AS pi_cash_uuid,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN CASE 
                                 WHEN tpc.uuid IS NOT NULL 
                                 THEN concat('PI', to_char(tpc.created_at, 'YY'), '-', LPAD(tpc.id::text, 4, '0')) 
@@ -373,52 +373,52 @@ export async function dailyChallanReport(req, res, next) {
                             END 
                         END AS pi_cash_id,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tlc.uuid 
                             ELSE lc.uuid 
                         END AS lc_uuid,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tlc.lc_number 
                             ELSE lc.lc_number 
                         END AS lc_number,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tpm.uuid 
                             ELSE vodf.marketing_uuid 
                         END AS marketing_uuid,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tpm.name 
                             ELSE vodf.marketing_name 
                         END AS marketing_name,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tpp.uuid 
                             ELSE vodf.party_uuid 
                         END AS party_uuid,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tpp.name 
                             ELSE vodf.party_name 
                         END AS party_name,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tpf.uuid 
                             ELSE vodf.factory_uuid 
                         END AS factory_uuid,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tpf.name 
                             ELSE vodf.factory_name 
                         END AS factory_name,
                         ARRAY_AGG(CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN toe.uuid 
                             ELSE oe.uuid 
                         END) AS order_entry_uuid,
                         ARRAY_AGG(CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN CONCAT(toe.style, ' - ', toe.color) 
                             ELSE CONCAT(oe.style, ' - ', oe.color, ' - ', 
                                 CASE 
@@ -428,7 +428,7 @@ export async function dailyChallanReport(req, res, next) {
                                 END) 
                         END) AS style_color_size,
                         ARRAY_AGG(CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN CONCAT(tcl.count, ' - ', tcl.length) 
                             ELSE NULL 
                         END )AS count_length_name,
@@ -437,7 +437,7 @@ export async function dailyChallanReport(req, res, next) {
                         packing_list_grouped.total_short_quantity::float8,
                         packing_list_grouped.total_reject_quantity::float8,
                         CASE 
-                            WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN 'thread' 
                             ELSE 'zipper' 
                         END AS product
@@ -490,7 +490,7 @@ export async function dailyChallanReport(req, res, next) {
                     LEFT JOIN commercial.pi_cash tpc ON tpc.thread_order_info_uuids IN (toi.uuid)
                     LEFT JOIN commercial.lc tlc ON tpc.lc_uuid = tlc.uuid 
                     WHERE
-                        ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
+                        ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for IN ('thread', 'sample_thread') THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
                         AND ${
 							status == 'pending'
 								? sql`challan.receive_status = 0`
@@ -1977,7 +1977,7 @@ export async function dailyProductionReport(req, res, next) {
                         toe.uuid as order_entry_uuid,
                         coalesce(
                             SUM(
-                                CASE WHEN pl.item_for = 'thread' OR pl.item_for = 'sample_thread' THEN ple.quantity ::float8 ELSE 0 END
+                                CASE WHEN pl.item_for IN ('thread', 'sample_thread') THEN ple.quantity ::float8 ELSE 0 END
                             ),
                             0
                         )::float8 AS total_close_end_quantity,

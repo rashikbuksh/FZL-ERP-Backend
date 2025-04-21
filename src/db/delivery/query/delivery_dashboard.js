@@ -32,7 +32,7 @@ export async function selectDelivery(req, res, next) {
         LEFT JOIN
             public.party p ON oi.party_uuid = p.uuid
         WHERE 
-            vpl.item_for = 'zipper' OR vpl.item_for = 'sample_zipper'`;
+            vpl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')`;
 
 	try {
 		const data = await db.execute(query);
@@ -77,7 +77,7 @@ export async function selectDeliveryThread(req, res, next) {
                 LEFT JOIN
                     public.party p ON oi.party_uuid = p.uuid
                 WHERE 
-                    vpl.item_for = 'thread' OR vpl.item_for = 'sample_thread'`;
+                    vpl.item_for IN ('thread', 'sample_thread')`;
 
 	try {
 		const data = await db.execute(query);

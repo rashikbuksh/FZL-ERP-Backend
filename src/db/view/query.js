@@ -258,7 +258,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         carton.name as carton_name,
         carton.size as carton_size,
         pl.carton_weight,
-        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape' THEN pl.order_info_uuid ELSE pl.thread_order_info_uuid END as order_info_uuid,
+        CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN pl.order_info_uuid ELSE pl.thread_order_info_uuid END as order_info_uuid,
         pl.challan_uuid,
         pl.created_by as created_by_uuid,
         users.name as created_by_name,
@@ -269,7 +269,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         pl.item_for,
         CASE WHEN pl.challan_uuid IS NOT NULL 
             THEN 
-                CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape'
+                CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
                     THEN CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
                     ELSE CONCAT('TC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
                 END 
@@ -286,42 +286,42 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         ple.created_at as entry_created_at,
         ple.updated_at as entry_updated_at,
         ple.remarks as entry_remarks,
-        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape' THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
-        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape' THEN oe.style ELSE toe.style END as style,
-        CASE WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape' THEN oe.color ELSE toe.color END as color,
+        CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
+        CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.style ELSE toe.style END as style,
+        CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END as color,
         oe.size,
         vodf.is_inch,
         vodf.is_meter,
         vodf.is_cm,
         CASE 
-            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape'
+            WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN CONCAT(oe.style, ' / ', oe.color, ' / ', oe.size) 
             ELSE CONCAT (toe.style, ' / ', toe.color) 
         END as style_color_size,
         CASE 
-            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape'
+            WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN oe.quantity::float8 ELSE toe.quantity 
         END as order_quantity,
         vodf.order_description_uuid,
         CASE 
-            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape'
+            WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN vodf.order_number ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
         END as order_number,
         CASE 
-            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape'
+            WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN vodf.item_description ELSE CONCAT(tc.count, ' - ', tc.length) 
         END as item_description,
         CASE 
-            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape'
+            WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN sfg.warehouse::float8 ELSE toe.warehouse::float8 
         END as warehouse,
 		CASE 
-            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape'
+            WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN sfg.delivered::float8 ELSE toe.delivered::float8 
         END as delivered,
         vodf.order_type,
 		CASE 
-            WHEN pl.item_for = 'zipper' OR pl.item_for = 'sample_zipper' OR pl.item_for = 'slider' OR pl.item_for = 'tape'
+            WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN 
                 CASE 
                     WHEN order_type = 'tape' 
@@ -350,12 +350,12 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
     SELECT 
         packing_list.uuid,
         CASE 
-            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+            WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid 
         END as order_info_uuid,
         ROW_NUMBER() OVER (
                         PARTITION BY CASE 
-                            WHEN (packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape')
+                            WHEN (packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape'))
                             THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid 
                         END
                         ORDER BY packing_list.created_at
@@ -363,7 +363,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         packing_list_wise_counts.packing_list_wise_count,
         CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0')) AS packing_number,
         CASE 
-            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+            WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
                 THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
                 ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
             END AS order_number,
@@ -371,19 +371,19 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         CASE
             WHEN packing_list.challan_uuid IS NOT NULL 
                 THEN 
-                    CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+                    CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
                         THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
                         ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
                     END 
                 ELSE NULL
         END AS challan_number,
         CASE 
-            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+            WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN order_info.party_uuid 
             ELSE toi.party_uuid
         END AS party_uuid,
         CASE 
-            WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+            WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN party.name 
             ELSE toi_party.name 
         END AS party_name,
@@ -392,10 +392,10 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         packing_list.carton_uuid,
         carton.name AS carton_name,
         packing_list.is_warehouse_received,
-        CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN order_info.factory_uuid ELSE toi.factory_uuid END AS factory_uuid,
-        CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN factory.name ELSE toi_fac.name END AS factory_name,
-        CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN order_info.buyer_uuid ELSE toi.buyer_uuid END AS buyer_uuid,
-        CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN buyer.name ELSE toi_buyer.name END AS buyer_name,
+        CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_info.factory_uuid ELSE toi.factory_uuid END AS factory_uuid,
+        CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN factory.name ELSE toi_fac.name END AS factory_name,
+        CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_info.buyer_uuid ELSE toi.buyer_uuid END AS buyer_uuid,
+        CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN buyer.name ELSE toi_buyer.name END AS buyer_name,
         packing_list.created_by,
         users.name AS created_by_name,
         packing_list.created_at,
@@ -404,12 +404,12 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         packing_list.gate_pass AS gate_pass,
         packing_list.item_for,
         CASE WHEN 
-            packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+            packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN zipper.order_info.marketing_uuid 
             ELSE toi.marketing_uuid 
         END AS marketing_uuid,
         CASE WHEN 
-            packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+            packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN marketing.name 
             ELSE toi_marketing.name 
         END AS marketing_name,
@@ -458,7 +458,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                     FROM
                         delivery.packing_list
                     WHERE
-                        packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape'
+                        packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
                     GROUP BY
                         packing_list.order_info_uuid
 
@@ -470,9 +470,9 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                     FROM
                         delivery.packing_list
                     WHERE
-                        packing_list.item_for != 'zipper'
+                        packing_list.item_for IN ('thread', 'sample_thread')
                     GROUP BY
                         packing_list.thread_order_info_uuid
                 ) packing_list_wise_counts
-                ON packing_list_wise_counts.order_info_uuid = CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END;
+                ON packing_list_wise_counts.order_info_uuid = CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END;
 `;

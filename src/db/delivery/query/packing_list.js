@@ -121,7 +121,7 @@ export async function selectAll(req, res, next) {
             ELSE vod.item_name
         END as item_name,
 		ARRAY_AGG(DISTINCT CASE 
-            WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END
+            WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END
 		) as color,
 		cl.cone_per_carton
     FROM delivery.v_packing_list dvl
@@ -596,7 +596,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
-							WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END) as color
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
@@ -685,7 +685,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
-							WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END) as color
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
@@ -773,7 +773,7 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
-							WHEN dvl.item_for = 'zipper' OR dvl.item_for = 'sample_zipper' OR dvl.item_for = 'slider' OR dvl.item_for = 'tape' THEN oe.color ELSE toe.color END) as color
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid

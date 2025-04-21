@@ -33,47 +33,47 @@ export async function selectChallanPdf(req, res, next) {
 		(
 			SELECT
 				DISTINCT challan.uuid AS uuid,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					CONCAT('ZC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE
 					CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) END AS challan_number,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					challan.order_info_uuid ELSE
 					challan.thread_order_info_uuid END AS order_info_uuid,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE
 					CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
 				packing_list_count.packing_list_count AS total_carton_quantity,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					zipper.order_info.buyer_uuid ELSE
 					toi.buyer_uuid END AS buyer_uuid,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					public.buyer.name ELSE
 					pb.name END AS buyer_name,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					zipper.order_info.party_uuid ELSE
 					toi.party_uuid END AS party_uuid,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					public.party.name ELSE
 					pp.name END AS party_name,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					zipper.order_info.merchandiser_uuid ELSE
 					toi.merchandiser_uuid END AS merchandiser_uuid,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					public.merchandiser.name ELSE
 					pm.name END AS merchandiser_name,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					zipper.order_info.factory_uuid ELSE
 					toi.factory_uuid END AS factory_uuid,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					public.factory.name ELSE
 					pf.name END AS factory_name,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					public.factory.address ELSE
 					pf.address END AS factory_address,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					zipper.order_info.marketing_uuid ELSE
 					toi.marketing_uuid END AS marketing_uuid,
-				CASE WHEN packing_list.item_for = 'zipper' OR packing_list.item_for = 'sample_zipper' OR packing_list.item_for = 'slider' OR packing_list.item_for = 'tape' THEN
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					public.marketing.name ELSE
 					pmm.name END AS marketing_name,
 				challan.vehicle_uuid AS vehicle_uuid,

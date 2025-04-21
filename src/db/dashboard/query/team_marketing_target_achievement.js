@@ -32,19 +32,16 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                 SELECT 
                     SUM(
                         CASE 
-                            WHEN pl.item_for = 'zipper' 
-                            THEN 
-                                CASE 
-                                    WHEN vodf.order_type = 'tape'
-                                    THEN coalesce(oe.size::float8 * oe.company_price::float8,0)::float8
-                                    ELSE coalesce(ple.quantity::float8 * oe.company_price::float8/12,0)::float8
-                                END
+                            WHEN item_for IN ('zipper', 'sample_zipper', 'slider') 
+                            THEN coalesce(ple.quantity::float8 * oe.company_price::float8/12,0)::float8
+                            WHEN item_for IN ('tape')
+                            THEN coalesce(oe.size::float8 * oe.company_price::float8,0)::float8
                             ELSE 0
                         END
                     ) as zipper_achievement, 
                     SUM(
                         CASE 
-                            WHEN pl.item_for = 'thread'
+                            WHEN pl.item_for IN ('thread', 'sample_thread')
                             THEN coalesce(ple.quantity * toe.company_price,0)::float8
                             ELSE 0
                         END
@@ -94,26 +91,24 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
             LEFT JOIN
                 public.marketing_team_member_target ON marketing.uuid = marketing_team_member_target.marketing_uuid
             LEFT JOIN (
-                SELECT SUM(
-                    CASE 
-                        WHEN pl.item_for = 'zipper' 
-                        THEN 
-                            CASE 
-                                WHEN vodf.order_type = 'tape'
-                                THEN coalesce(oe.size::float8 * oe.company_price::float8,0)::float8
-                                ELSE coalesce(ple.quantity::float8 * oe.company_price::float8/12,0)::float8
-                            END
-                        ELSE 0
-                    END
-                ) as zipper_achievement, 
-                SUM(
-                    CASE 
-                        WHEN pl.item_for = 'thread'
-                        THEN coalesce(ple.quantity * toe.company_price,0)::float8
-                        ELSE 0
-                    END
-                ) as thread_achievement,
-                marketing.uuid as marketing_uuid
+                SELECT 
+                    SUM(
+                        CASE 
+                            WHEN item_for IN ('zipper', 'sample_zipper', 'slider') 
+                            THEN coalesce(ple.quantity::float8 * oe.company_price::float8/12,0)::float8
+                            WHEN item_for IN ('tape')
+                            THEN coalesce(oe.size::float8 * oe.company_price::float8,0)::float8
+                            ELSE 0
+                        END
+                    ) as zipper_achievement, 
+                    SUM(
+                        CASE 
+                            WHEN pl.item_for IN ('thread', 'sample_thread')
+                            THEN coalesce(ple.quantity * toe.company_price,0)::float8
+                            ELSE 0
+                        END
+                    ) as thread_achievement,
+                    marketing.uuid as marketing_uuid
                 FROM
                     delivery.challan
                 LEFT JOIN 
