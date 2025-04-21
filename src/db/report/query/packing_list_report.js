@@ -183,7 +183,11 @@ export async function selectPackingList(req, res, next) {
 							toe.party_price,
 							ch.uuid,
 							pcg.pi_object,
-							pcgt.pi_object
+							pcgt.pi_object,
+							dvl.warehouse_received_by,
+							dvl.warehouse_received_by_name,
+							dvl.gate_pass_by,
+							dvl.gate_pass_by_name
 						ORDER BY dvl.created_at DESC;`;
 
 	try {
