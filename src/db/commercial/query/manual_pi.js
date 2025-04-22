@@ -105,6 +105,7 @@ export async function selectAll(req, res, next) {
 							pmr.name AS merchandiser_name,
 							cmp.factory_uuid,
 							pf.name AS factory_name,
+							pf.address AS factory_address,
 							cmp.bank_uuid,
 							cb.name AS bank_name,
 							cb.address AS bank_address,
@@ -191,7 +192,8 @@ export async function selectAll(req, res, next) {
 							cmp.created_at,
 							cmp.updated_at,
 							cmpe_total_value.total_value,
-							cmpe_total_value.order_number
+							cmpe_total_value.order_number,
+							pf.address
 						ORDER BY
 							cmp.created_at ASC`;
 
@@ -228,6 +230,7 @@ export async function select(req, res, next) {
 			merchandiser_name: publicSchema.merchandiser.name,
 			factory_uuid: manual_pi.factory_uuid,
 			factory_name: publicSchema.factory.name,
+			factory_address: publicSchema.factory.address,
 			bank_uuid: manual_pi.bank_uuid,
 			bank_name: bank.name,
 			bank_address: bank.address,
