@@ -163,8 +163,6 @@ export async function selectAll(req, res, next) {
 					FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.order_info_uuids::jsonb) AS elem
 					WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.order_info_uuids != '[]' AND pi_cash.order_info_uuids IS NOT NULL
 				)
-			WHERE 
-                pi_cash.order_info_uuids != '[]'
 			GROUP BY
 				pi_cash.uuid
 		),
@@ -189,8 +187,6 @@ export async function selectAll(req, res, next) {
 					FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.thread_order_info_uuids::jsonb) AS elem
 					WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.thread_order_info_uuids != '[]' AND pi_cash.thread_order_info_uuids IS NOT NULL
 				)
-			WHERE 
-                pi_cash.thread_order_info_uuids != '[]'
 			GROUP BY
 				pi_cash.uuid
 		),
