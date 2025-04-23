@@ -522,6 +522,14 @@ export const pathLabDipRecipe = {
 			tags: ['lab_dip.recipe'],
 			summary: 'Get all lab dip recipe',
 			description: 'Get all lab dip recipe',
+			parameters: [
+				SE.parameter_query(
+					'type',
+					'type',
+					['txp', 'ssp', 'zipper_sample', 'bulk', 'others'],
+					true
+				),
+			],
 			responses: {
 				200: {
 					description: 'Returns all lab dip recipe',
