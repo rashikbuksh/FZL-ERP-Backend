@@ -85,6 +85,9 @@ export async function remove(req, res, next) {
 
 export async function selectAll(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	const { sub_streat } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: recipe.uuid,
@@ -122,6 +125,7 @@ export async function selectAll(req, res, next) {
 			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
 		)
 		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
+		.where(sub_streat ? eq(recipe.sub_streat, sub_streat) : true)
 		.orderBy(desc(recipe.created_at));
 
 	try {
