@@ -7,7 +7,13 @@ import { packing_list_entry } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { item_for } = req.body;
+	// req.body.map((item) => {
+	// 	if (item.item_for == 'thread' || item.item_for == 'sample_thread') {
+	// 		const { order_entry_uuid } = item;
+	// 		item.thread_order_entry_uuid = order_entry_uuid;
+	// 		item.order_entry_uuid = null;
+	// 	}
+	// });
 
 	if (item_for == 'thread' || item_for == 'sample_thread') {
 		const { order_entry_uuid } = req.body;
