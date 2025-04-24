@@ -137,7 +137,7 @@ export async function selectAll(req, res, next) {
 		type === 'pending'
 			? sql`AND dvl.challan_uuid IS NULL`
 			: type === 'challan'
-				? sql`AND dvl.challan_uuid IS NOT NULL`
+				? sql`AND dvl.challan_uuid IS NOT NULL AND dvl.gate_pass = 0`
 				: type === 'gate_pass'
 					? sql`AND dvl.gate_pass = 1`
 					: sql``
