@@ -30,7 +30,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						DISTINCT CASE WHEN challan.uuid IS NOT NULL THEN 
 							jsonb_build_object(
 							'challan_number', 
-							concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')),
+							concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')),
 							'challan_uuid', challan.uuid,
 							'challan_date', challan.created_at,
 							'quantity', ple_sum.quantity,
@@ -87,7 +87,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						DISTINCT CASE WHEN challan.uuid IS NOT NULL THEN 
 							jsonb_build_object(
 								'challan_number', 
-								concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')),
+								concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')),
 								'challan_uuid', challan.uuid,
 								'challan_date', challan.created_at,
 								'quantity', ple_sum.quantity,

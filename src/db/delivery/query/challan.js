@@ -42,8 +42,8 @@ export async function insert(req, res, next) {
 			insertedId:
 				req.body.item_for !== 'sample_thread' ||
 				req.body.item_for !== 'thread'
-					? sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`
-					: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+					? sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`
+					: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`,
 			updatedUuid: challan.uuid,
 		});
 	try {
@@ -93,7 +93,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(challan.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			updatedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`,
 			updatedUuid: challan.uuid,
 		});
 
@@ -117,7 +117,7 @@ export async function remove(req, res, next) {
 		.delete(challan)
 		.where(eq(challan.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			deletedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`,
 		});
 
 	try {
@@ -210,8 +210,8 @@ export async function selectAll(req, res, next) {
 			SELECT
 				DISTINCT challan.uuid AS uuid,
 				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-					CONCAT('ZC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE
-					CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) END AS challan_number,
+					CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) ELSE
+					CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) END AS challan_number,
 				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					challan.order_info_uuid ELSE
 					challan.thread_order_info_uuid END AS order_info_uuid,
@@ -393,8 +393,8 @@ export async function select(req, res, next) {
 								SELECT
 										challan.uuid as uuid,
 									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										CONCAT('ZC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE
-										CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) END AS challan_number,
+										CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) ELSE
+										CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) END AS challan_number,
 									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 										challan.order_info_uuid ELSE
 										challan.thread_order_info_uuid END AS order_info_uuid,
@@ -617,7 +617,7 @@ export async function updateReceivedStatus(req, res, next) {
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
-			concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) as challan_number,
+			concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
 			receive_status
 	`;
 
@@ -652,7 +652,7 @@ export async function updateDelivered(req, res, next) {
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
-			concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) as challan_number,
+			concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
 			receive_status
 	`;
 

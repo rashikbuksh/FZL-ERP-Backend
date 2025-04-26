@@ -34,8 +34,8 @@ export async function selectChallanPdf(req, res, next) {
 			SELECT
 				DISTINCT challan.uuid AS uuid,
 				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-					CONCAT('ZC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) ELSE
-					CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) END AS challan_number,
+					CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) ELSE
+					CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) END AS challan_number,
 				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					challan.order_info_uuid ELSE
 					challan.thread_order_info_uuid END AS order_info_uuid,

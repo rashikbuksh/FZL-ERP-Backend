@@ -372,8 +372,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
             WHEN packing_list.challan_uuid IS NOT NULL 
                 THEN 
                     CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
-                        THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
-                        ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
+                        THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) 
+                        ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) 
                     END 
                 ELSE NULL
         END AS challan_number,

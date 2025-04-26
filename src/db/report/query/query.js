@@ -335,8 +335,8 @@ export async function dailyChallanReport(req, res, next) {
                         challan.created_at AS challan_date,
                         CASE 
                             WHEN pl.item_for IN ('thread', 'sample_thread') 
-                            THEN CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
-                            ELSE CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) 
+                            THEN CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) 
+                            ELSE CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) 
                         END AS challan_id,
                         packing_list_grouped.gate_pass,
                         challan.created_by,

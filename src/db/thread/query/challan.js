@@ -15,7 +15,7 @@ export async function insert(req, res, next) {
 		.insert(challan)
 		.values(req.body)
 		.returning({
-			insertedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			insertedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`,
 		});
 
 	try {
@@ -41,7 +41,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(challan.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			updatedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`,
 		});
 
 	try {
@@ -64,7 +64,7 @@ export async function remove(req, res, next) {
 		.delete(challan)
 		.where(eq(challan.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0'))`,
+			deletedId: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`,
 		});
 	try {
 		const data = await resultPromise;
@@ -85,7 +85,7 @@ export async function selectAll(req, res, next) {
 	const query = sql`
 		SELECT 
 			challan.uuid,
-			CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
+			CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) AS challan_id,
 			challan.order_info_uuid,
 			toi.buyer_uuid,
 			pb.name AS buyer_name,
@@ -181,7 +181,7 @@ export async function select(req, res, next) {
 	const query = sql`
 		SELECT 
 			challan.uuid,
-			CONCAT('TC', TO_CHAR(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 4, '0')) AS challan_id,
+			CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) AS challan_id,
 			challan.order_info_uuid,
 			toi.buyer_uuid,
 			pb.name AS buyer_name,
