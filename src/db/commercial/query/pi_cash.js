@@ -58,8 +58,14 @@ export async function insert(req, res, next) {
 		.returning({
 			insertedId: sql`concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))`,
 		});
+
+	const piViewPromise = sql`
+	REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
+	`;
+
 	try {
 		const data = await piPromise;
+		const piEntryData = await db.execute(piViewPromise);
 		const toast = {
 			status: 201,
 			type: 'create',
@@ -83,8 +89,13 @@ export async function update(req, res, next) {
 			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
 		});
 
+	const piViewPromise = sql`
+	REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
+	`;
+
 	try {
 		const data = await piPromise;
+		const piEntryData = await db.execute(piViewPromise);
 		const toast = {
 			status: 201,
 			type: 'update',
@@ -107,8 +118,14 @@ export async function remove(req, res, next) {
 			deletedId: sql`pi_cash_entry.uuid`,
 		});
 
+	const piViewPromise = sql`
+	REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
+	`;
+
 	try {
 		const piEntryData = await piEntryPromise;
+
+		const piViewData = await db.execute(piViewPromise);
 
 		const piPromise = db
 			.delete(pi_cash)
@@ -147,74 +164,6 @@ export async function selectAll(req, res, next) {
 		}
 
 		const query = sql`
-		WITH order_numbers_agg AS (
-			SELECT
-				pi_cash.uuid AS pi_cash_uuid,
-				COALESCE(
-					JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('order_info_uuid', vodf.order_info_uuid, 'order_number', vodf.order_number))
-					FILTER (WHERE vodf.order_number IS NOT NULL), '[]'
-				) AS order_numbers,
-				jsonb_agg(DISTINCT vodf.order_type) AS order_type
-			FROM
-				commercial.pi_cash
-			LEFT JOIN
-				zipper.v_order_details_full vodf ON vodf.order_info_uuid = ANY(
-					SELECT elem
-					FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.order_info_uuids::jsonb) AS elem
-					WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.order_info_uuids != '[]' AND pi_cash.order_info_uuids IS NOT NULL
-				)
-			GROUP BY
-				pi_cash.uuid
-		),
-		thread_order_numbers_agg AS (
-			SELECT
-				pi_cash.uuid AS pi_cash_uuid,
-				COALESCE(
-					JSONB_AGG( DISTINCT
-						JSONB_BUILD_OBJECT(
-							'thread_order_info_uuid', 
-							oi.uuid, 
-							'thread_order_number', 
-							CONCAT('ST', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0'))
-						))
-					FILTER (WHERE oi.uuid IS NOT NULL), '[]'
-				) AS thread_order_numbers
-			FROM
-				commercial.pi_cash
-			LEFT JOIN
-				thread.order_info oi ON oi.uuid = ANY(
-					SELECT elem
-					FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.thread_order_info_uuids::jsonb) AS elem
-					WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.thread_order_info_uuids != '[]' AND pi_cash.thread_order_info_uuids IS NOT NULL
-				)
-			GROUP BY
-				pi_cash.uuid
-		),
-		total_pi_amount AS (
-			SELECT 
-				pi_cash_entry.pi_cash_uuid AS pi_cash_uuid,
-				COALESCE(SUM(
-					CASE 
-						WHEN pi_cash_entry.sfg_uuid IS NULL 
-							THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
-						WHEN od.order_type = 'tape' 
-							THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
-						ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price / 12, 0)
-					END
-				)::float8, 0) AS total_amount
-			FROM 
-				commercial.pi_cash_entry
-			LEFT JOIN 
-				zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-			LEFT JOIN 
-				zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-			LEFT JOIN 
-				zipper.order_description od ON order_entry.order_description_uuid = od.uuid
-			LEFT JOIN 
-				thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
-			GROUP BY 
-				pi_cash_entry.pi_cash_uuid
-		)
 		SELECT 
 			pi_cash.uuid,
 			CASE 
@@ -224,10 +173,10 @@ export async function selectAll(req, res, next) {
 			pi_cash.lc_uuid,
 			lc.lc_number,
 			COALESCE(pi_cash.order_info_uuids, '[]') AS order_info_uuids,
-			order_numbers_agg.order_numbers,
-			COALESCE(order_numbers_agg.order_type, null) AS order_type,
+			vpc.order_numbers,
+			COALESCE(vpc.order_type, null) AS order_type,
 			COALESCE(pi_cash.thread_order_info_uuids, '[]') AS thread_order_info_uuids,
-			thread_order_numbers_agg.thread_order_numbers,
+			vpc.thread_order_numbers,
 			public.marketing.name AS marketing_name,
 			public.party.name AS party_name,
 			public.party.address AS party_address,
@@ -243,8 +192,8 @@ export async function selectAll(req, res, next) {
 			pi_cash.conversion_rate::float8,
 			pi_cash.receive_amount::float8,
 			CASE 
-				WHEN pi_cash.is_pi = 1 THEN COALESCE(ROUND(total_pi_amount.total_amount::numeric, 2), 0)
-				ELSE COALESCE(ROUND(total_pi_amount.total_amount::numeric, 2) * pi_cash.conversion_rate::float8, 0)
+				WHEN pi_cash.is_pi = 1 THEN COALESCE(ROUND(vpc.total_amount::numeric, 2), 0)
+				ELSE COALESCE(ROUND(vpc.total_amount::numeric, 2) * pi_cash.conversion_rate::float8, 0)
 			END AS total_amount,
 			pi_cash.is_completed
 		FROM 
@@ -264,11 +213,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN 
 			commercial.lc ON pi_cash.lc_uuid = lc.uuid
 		LEFT JOIN 
-			order_numbers_agg ON order_numbers_agg.pi_cash_uuid = pi_cash.uuid
-		LEFT JOIN 
-			thread_order_numbers_agg ON thread_order_numbers_agg.pi_cash_uuid = pi_cash.uuid
-		LEFT JOIN 
-			total_pi_amount ON total_pi_amount.pi_cash_uuid = pi_cash.uuid
+			commercial.v_pi_cash vpc ON vpc.pi_cash_uuid = pi_cash.uuid
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
