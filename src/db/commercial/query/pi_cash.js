@@ -164,6 +164,31 @@ export async function selectAll(req, res, next) {
 		}
 
 		const query = sql`
+		WITH total_amount AS (
+			SELECT 
+				pi_cash_entry.pi_cash_uuid AS pi_cash_uuid,
+				COALESCE(SUM(
+					CASE 
+						WHEN pi_cash_entry.sfg_uuid IS NULL 
+							THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
+						WHEN od.order_type = 'tape' 
+							THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
+						ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price / 12, 0)
+					END
+				)::float8, 0) AS total_amount
+			FROM 
+				commercial.pi_cash_entry
+			LEFT JOIN 
+				zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+			LEFT JOIN 
+				zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+			LEFT JOIN 
+				zipper.order_description od ON order_entry.order_description_uuid = od.uuid
+			LEFT JOIN 
+				thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+			GROUP BY 
+				pi_cash_entry.pi_cash_uuid
+		)
 		SELECT 
 			pi_cash.uuid,
 			CASE 
@@ -192,8 +217,8 @@ export async function selectAll(req, res, next) {
 			pi_cash.conversion_rate::float8,
 			pi_cash.receive_amount::float8,
 			CASE 
-				WHEN pi_cash.is_pi = 1 THEN COALESCE(ROUND(vpc.total_amount::numeric, 2), 0)
-				ELSE COALESCE(ROUND(vpc.total_amount::numeric, 2) * pi_cash.conversion_rate::float8, 0)
+				WHEN pi_cash.is_pi = 1 THEN COALESCE(ROUND(total_amount.total_amount::numeric, 2), 0)
+				ELSE COALESCE(ROUND(total_amount.total_amount::numeric, 2) * pi_cash.conversion_rate::float8, 0)
 			END AS total_amount,
 			pi_cash.is_completed
 		FROM 
@@ -214,6 +239,8 @@ export async function selectAll(req, res, next) {
 			commercial.lc ON pi_cash.lc_uuid = lc.uuid
 		LEFT JOIN 
 			commercial.v_pi_cash vpc ON vpc.pi_cash_uuid = pi_cash.uuid
+		LEFT JOIN 
+			total_amount ON total_amount.pi_cash_uuid = pi_cash.uuid
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
