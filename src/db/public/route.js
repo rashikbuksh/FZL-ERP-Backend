@@ -23,13 +23,14 @@ publicRouter.get('/buyer', (req, res, next) => {
 	// Check if data is already cached
 	const cachedData = Cache.get(cacheKey);
 	if (cachedData) {
-		console.log('Cache hit for buyer data');
+		console.log('Returning cached buyer data');
 		return res.status(200).json(cachedData);
 	}
 	// If not cached, fetch data from the database
 	buyerOperations
 		.selectAll(req, res)
 		.then((data) => {
+			console.log('Fetched buyer data from database:');
 			Cache.put(cacheKey, data, 2 * 60 * 1000);
 			return res.status(200).json(data);
 		})

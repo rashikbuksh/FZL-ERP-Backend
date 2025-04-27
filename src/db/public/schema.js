@@ -1,4 +1,11 @@
-import { boolean, integer, pgEnum, pgTable, text } from 'drizzle-orm/pg-core';
+import {
+	boolean,
+	index,
+	integer,
+	pgEnum,
+	pgTable,
+	text,
+} from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -72,18 +79,25 @@ export const section = pgTable('section', {
 	remarks: text('remarks').default(null),
 });
 
-export const properties = pgTable('properties', {
-	uuid: uuid_primary,
-	item_for: text('item_for').notNull(),
-	type: text('type').notNull(),
-	name: text('name').notNull(),
-	short_name: text('short_name').notNull(),
-	order_sheet_name: text('order_sheet_name'),
-	created_by: defaultUUID('created_by'),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});
+export const properties = pgTable(
+	'properties',
+	{
+		uuid: uuid_primary,
+		item_for: text('item_for').notNull(),
+		type: text('type').notNull(),
+		name: text('name').notNull(),
+		short_name: text('short_name').notNull(),
+		order_sheet_name: text('order_sheet_name'),
+		created_by: defaultUUID('created_by'),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		remarks: text('remarks').default(null),
+	},
+	(table) => [
+		index('public_properties_type_idx').on(table.type),
+		index('public_properties_name_idx').on(table.name),
+	]
+);
 
 export const machine = pgTable('machine', {
 	uuid: uuid_primary,
