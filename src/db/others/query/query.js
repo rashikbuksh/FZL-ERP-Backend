@@ -2677,8 +2677,8 @@ export async function selectChallan(req, res, next) {
 				SELECT
 					ch.uuid AS value,
 					CASE WHEN ch.thread_order_info_uuid IS NULL 
-						THEN concat('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
-						ELSE concat('TC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) 
+						THEN concat('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 5, '0')) 
+						ELSE concat('TC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 5, '0')) 
 					END AS label
 				FROM
 					delivery.challan ch 

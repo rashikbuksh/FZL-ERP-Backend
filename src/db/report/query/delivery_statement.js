@@ -240,7 +240,7 @@ export async function deliveryStatementReport(req, res, next) {
                     vodf.is_inch,
                     concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
                     DATE(pl.created_at) as packing_list_created_at,
-                    CONCAT('ZC', TO_CHAR(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) AS challan_number,
+                    CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 5, '0')) AS challan_number,
                     DATE(ch.created_at) as challan_created_at,
                     oe.size,
                     CASE 
@@ -350,7 +350,7 @@ export async function deliveryStatementReport(req, res, next) {
                     null as is_inch,
                     concat('PL', to_char(pl.created_at, 'YY'::text), '-', lpad((pl.id)::text, 4, '0'::text)) AS packing_number,
                     DATE(pl.created_at) as packing_list_created_at,
-                    CONCAT('TC', TO_CHAR(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 4, '0')) AS challan_number,
+                    CONCAT('TC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 5, '0')) AS challan_number,
                     DATE(ch.created_at) as challan_created_at,
                     count_length.length::text as size,
                     'Mtr' as unit,
