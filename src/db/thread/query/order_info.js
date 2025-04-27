@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, ne, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -378,7 +378,9 @@ export async function selectThreadSwatch(req, res, next) {
 					: type === 'completed'
 						? sql`order_entry.recipe_uuid IS NOT NULL`
 						: sql`1 = 1`,
-				sql`order_entry.uuid IS NOT NULL`
+				sql`order_entry.uuid IS NOT NULL`,
+				ne(order_info.is_cancelled, 1),
+				ne(order_entry.quantity, order_entry.delivered)
 			)
 		)
 		.orderBy(
