@@ -171,10 +171,10 @@ export async function selectSwatchInfo(req, res, next) {
 					sfg.uuid as uuid,
 					sfg.order_entry_uuid as order_entry_uuid,
 					oe.order_description_uuid as order_description_uuid,
-					od.order_info_uuid,
+					vod.order_info_uuid,
 					oe.style as style,
 					oe.color as color,
-					od.is_inch,
+					vod.is_inch,
 					oe.size,
 					CASE 
 						WHEN vod.order_type = 'tape' THEN 'Meter' 
@@ -190,7 +190,7 @@ export async function selectSwatchInfo(req, res, next) {
 					vod.order_number as order_number,
 					vod.item_description as item_description,
 					vod.order_type,
-					od.created_at,
+					vod.order_description_created_at,
 					oe.swatch_approval_date,
 					CASE 
 						WHEN (SELECT SUM(dyeing_batch_entry.quantity) 
@@ -206,7 +206,7 @@ export async function selectSwatchInfo(req, res, next) {
 					LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
 					LEFT JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
 				WHERE 
-					od.order_type != 'slider' 
+					vod.order_type != 'slider' 
 					AND vod.is_cancelled = FALSE
 					${
 						type === 'pending'
@@ -217,7 +217,7 @@ export async function selectSwatchInfo(req, res, next) {
 					}
 					AND oe.quantity != sfg.delivered
 				ORDER BY 
-					od.created_at DESC,
+					vod.order_description_created_at DESC,
 					sfg.recipe_uuid ASC`;
 
 	const swatchPromise = db.execute(query);
