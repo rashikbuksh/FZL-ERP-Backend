@@ -144,7 +144,7 @@ export async function selectChallanPdf(req, res, next) {
 				jsonb_build_object(
 					'uuid', ple.uuid,
 					'packing_list_entry_uuid', ple.uuid,
-					'packing_number', CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')),
+					'packing_number', CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text),
 					'packing_list_uuid', ple.packing_list_uuid,
 					'sfg_uuid', ple.sfg_uuid,
 					'quantity', coalesce(ple.quantity, 0)::float8,
@@ -255,11 +255,11 @@ export async function selectChallanPdf(req, res, next) {
 				ELSE 0
 			END AS gate_pass,
 			ARRAY_AGG(DISTINCT pl.uuid) AS packing_list_uuids,
-			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0'))) AS packing_numbers,
+			ARRAY_AGG(DISTINCT CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text)) AS packing_numbers,
 			jsonb_agg(
 					DISTINCT jsonb_build_object(
 					'packing_list_uuid', pl.uuid, 
-					'packing_number', CONCAT('PL', TO_CHAR(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')),
+					'packing_number', CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text),
 					'carton_weight', pl.carton_weight)
 					) AS packing_list_numbers,
 			SUM(ple.quantity)::float8 AS total_quantity,

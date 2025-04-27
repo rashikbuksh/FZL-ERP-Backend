@@ -2575,7 +2575,7 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 	let query = sql`
     SELECT
         pl.uuid AS value,
-        concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) AS label
+        CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text) as label
     FROM
         delivery.packing_list pl
     WHERE
@@ -2725,7 +2725,7 @@ export async function selectPackingList(req, res, next) {
 	const query = sql`
 	SELECT
 		pl.uuid AS value,
-		concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) AS label
+        CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text) as label
 	FROM
 		delivery.packing_list pl 
 		WHERE

@@ -149,18 +149,6 @@ export async function removeChallanAndPLRef(req, res, next) {
 	try {
 		const packingListData = await packingListPromise;
 
-		// // packinglistData has two item_for values, so we need to check which any of one is not thread or sample_thread then we will use ZC as challan prefix otherwise TC
-		// let challanPrefix = 'ZC'; // Default prefix
-
-		// if (packingListData && packingListData.length > 0) {
-		// 	// Check if any of the item_for values is 'thread' or 'sample_thread'
-		// 	challanPrefix = packingListData.some((data) =>
-		// 		['thread', 'sample_thread'].includes(data.updatedId)
-		// 	)
-		// 		? 'TC'
-		// 		: 'ZC';
-		// }
-
 		const challanPromise = db
 			.delete(challan)
 			.where(eq(challan.uuid, uuid))
@@ -336,11 +324,11 @@ export async function selectAll(req, res, next) {
 		SELECT
 			packing_list.challan_uuid,
 			ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
-			ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0'))) AS packing_numbers,
+			ARRAY_AGG(DISTINCT CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text)) AS packing_numbers,
 			jsonb_agg(
 				DISTINCT jsonb_build_object(
 					'packing_list_uuid', packing_list.uuid, 
-					'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0')),
+					'packing_number', CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text),
 					'carton_weight', packing_list.carton_weight
 				)
 			) AS packing_list_numbers,
@@ -527,11 +515,11 @@ export async function select(req, res, next) {
 							SELECT
 								packing_list.challan_uuid,
 								ARRAY_AGG(DISTINCT packing_list.uuid) AS packing_list_uuids,
-								ARRAY_AGG(DISTINCT CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0'))) AS packing_numbers,
+								ARRAY_AGG(DISTINCT CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text)) AS packing_numbers,
 								jsonb_agg(
 									DISTINCT jsonb_build_object(
 										'packing_list_uuid', packing_list.uuid, 
-										'packing_number', CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0')),
+										'packing_number', CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text),
 										'carton_weight', packing_list.carton_weight
 									)
 								) AS packing_list_numbers,
