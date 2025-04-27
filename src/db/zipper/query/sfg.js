@@ -215,6 +215,7 @@ export async function selectSwatchInfo(req, res, next) {
 								? sql`AND sfg.recipe_uuid IS NOT NULL`
 								: sql``
 					}
+					AND oe.quantity != sfg.delivered
 				ORDER BY 
 					od.created_at DESC,
 					sfg.recipe_uuid ASC`;

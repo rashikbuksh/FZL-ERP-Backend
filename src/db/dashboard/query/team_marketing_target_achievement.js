@@ -14,12 +14,12 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
             SELECT
                 marketing_team.name as team_name,
                 ARRAY_AGG(marketing.name) as marketing_name,
-                SUM(marketing_team_member_target.zipper_amount) as zipper_target,
-                SUM(marketing_team_member_target.thread_amount) as thread_target,
+                SUM(marketing_team_member_target.zipper_amount)::float8 as zipper_target,
+                SUM(marketing_team_member_target.thread_amount)::float8 as thread_target,
                 coalesce(marketing_team_member_target.year) as year,
                 marketing_team_member_target.month,
-                SUM(achievement.zipper_achievement) as zipper_achievement,
-                SUM(achievement.thread_achievement) as thread_achievement
+                ROUND(SUM(achievement.zipper_achievement)::numeric, 3) as zipper_achievement,
+                ROUND(SUM(achievement.thread_achievement)::numeric, 3) as thread_achievement
             FROM
                 public.marketing
             LEFT JOIN
@@ -76,12 +76,12 @@ export async function selectTeamOrMarketingTargetAchievement(req, res, next) {
                 marketing_team_entry.marketing_uuid,
                 marketing.name,
                 marketing_team_entry.is_team_leader,
-                coalesce(marketing_team_member_target.zipper_amount,0) as zipper_target,
-                coalesce(marketing_team_member_target.thread_amount,0) as thread_target,
+                SUM(marketing_team_member_target.zipper_amount)::float8 as zipper_target,
+                SUM(marketing_team_member_target.thread_amount)::float8 as thread_target,
                 coalesce(marketing_team_member_target.year,0) as year,
                 marketing_team_member_target.month,
-                coalesce(achievement.zipper_achievement,0) as zipper_achievement,
-                coalesce(achievement.thread_achievement,0) as thread_achievement
+                ROUND(SUM(achievement.zipper_achievement)::numeric, 3) as zipper_achievement,
+                ROUND(SUM(achievement.thread_achievement)::numeric, 3) as thread_achievement
             FROM
                 public.marketing
             LEFT JOIN
