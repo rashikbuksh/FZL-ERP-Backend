@@ -12,13 +12,13 @@ import * as zipperSchema from '../zipper/schema.js';
 
 export const delivery = pgSchema('delivery');
 
-// export const packing_list_sequence = delivery.sequence(
-// 	'packing_list_sequence',
-// 	{
-// 		startWith: 1,
-// 		increment: 1,
-// 	}
-// );
+export const packing_list_sequence = delivery.sequence(
+	'packing_list_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
 
 export const item_for_enum = delivery.enum('item_for_enum', [
 	'zipper',
@@ -30,8 +30,7 @@ export const item_for_enum = delivery.enum('item_for_enum', [
 ]);
 
 export const packing_list = delivery.table('packing_list', {
-	id: integer('id'),
-	// .default(sql`nextval('delivery.packing_list_sequence')`),
+	id: integer('id').default(sql`nextval('delivery.packing_list_sequence')`),
 	uuid: uuid_primary,
 	carton_weight: text('carton_weight').default(null),
 	order_info_uuid: defaultUUID('order_info_uuid')

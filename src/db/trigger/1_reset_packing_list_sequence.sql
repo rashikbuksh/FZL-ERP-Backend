@@ -1,0 +1,1 @@
+SELECT setval('delivery.packing_list_sequence', 1, false);

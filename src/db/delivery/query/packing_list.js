@@ -3,18 +3,9 @@ import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { packing_list } from '../schema.js';
-import { generateDynamicId } from '../../../lib/dynamic_id.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
-	const newId = await generateDynamicId(
-		packing_list,
-		packing_list.id,
-		packing_list.created_at
-	);
-
-	req.body.id = newId;
 
 	const item_for = req.body.item_for;
 
