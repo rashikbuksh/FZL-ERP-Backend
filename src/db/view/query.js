@@ -254,7 +254,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
     SELECT 
         pl.id as packing_list_id,
         pl.uuid as packing_list_uuid,
-        CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) as packing_number,
+        CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) as packing_number_v1,
+        CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text) as packing_number,
         carton.name as carton_name,
         carton.size as carton_size,
         pl.carton_weight,
@@ -361,7 +362,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                         ORDER BY packing_list.created_at
                     ) AS packing_list_wise_rank, 
         packing_list_wise_counts.packing_list_wise_count,
-        CONCAT('PL', TO_CHAR(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0')) AS packing_number,
+        CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0')) as packing_number_v1,
+        CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text) as packing_number,
         CASE 
             WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
                 THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
@@ -479,59 +481,21 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
 
 export const pi_cash_view = `
 CREATE MATERIALIZED VIEW commercial.v_pi_cash AS
-SELECT 
+ SELECT 
     pi_cash.uuid AS pi_cash_uuid,
-    -- Combine order numbers from both zipper and thread orders
-    COALESCE(
-        JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('order_info_uuid', vodf.order_info_uuid, 'order_number', vodf.order_number))
-        FILTER (WHERE vodf.order_number IS NOT NULL), '[]'
-    ) AS order_numbers,
-    -- Combine thread order numbers
-    COALESCE(
-        JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT(
-            'thread_order_info_uuid', oi.uuid, 
-            'thread_order_number', CONCAT('ST', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0'))
-        ))
-        FILTER (WHERE oi.uuid IS NOT NULL), '[]'
-    ) AS thread_order_numbers,
-    -- Combine order types
-    jsonb_agg(DISTINCT vodf.order_type) AS order_type,
-    -- Calculate total PI amount
-    COALESCE(SUM(
-        CASE 
-            WHEN pi_cash_entry.sfg_uuid IS NULL 
-                THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
-            WHEN od.order_type = 'tape' 
-                THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
-            ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price / 12, 0)
-        END
-    )::float8, 0) AS total_amount
-FROM 
-    commercial.pi_cash
--- Join for zipper order numbers
-LEFT JOIN 
-    zipper.v_order_details_full vodf ON vodf.order_info_uuid = ANY(
-        SELECT elem
-        FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.order_info_uuids::jsonb) AS elem
-        WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.order_info_uuids != '[]' AND pi_cash.order_info_uuids IS NOT NULL
-    )
--- Join for thread order numbers
-LEFT JOIN 
-    thread.order_info oi ON oi.uuid = ANY(
-        SELECT elem
-        FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.thread_order_info_uuids::jsonb) AS elem
-        WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.thread_order_info_uuids != '[]' AND pi_cash.thread_order_info_uuids IS NOT NULL
-    )
--- Join for total PI amount
-LEFT JOIN 
-    commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
-LEFT JOIN 
-    zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-LEFT JOIN 
-    zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-LEFT JOIN 
-    zipper.order_description od ON order_entry.order_description_uuid = od.uuid
-LEFT JOIN 
-    thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
-GROUP BY 
-    pi_cash.uuid`;
+    COALESCE(jsonb_agg(DISTINCT jsonb_build_object('order_info_uuid', vodf.order_info_uuid, 'order_number', vodf.order_number)) FILTER (WHERE vodf.order_number IS NOT NULL), '[]'::jsonb) AS order_numbers,
+    COALESCE(jsonb_agg(DISTINCT jsonb_build_object('thread_order_info_uuid', oi.uuid, 'thread_order_number', concat('ST',
+        CASE
+            WHEN oi.is_sample = 1 THEN 'S'::text
+            ELSE ''::text
+        END, to_char(oi.created_at, 'YY'::text), '-', lpad(oi.id::text, 4, '0'::text)))) FILTER (WHERE oi.uuid IS NOT NULL), '[]'::jsonb) AS thread_order_numbers,
+    jsonb_agg(DISTINCT vodf.order_type) AS order_type
+   FROM commercial.pi_cash
+     LEFT JOIN zipper.v_order_details_full vodf ON (vodf.order_info_uuid IN ( SELECT elem.value AS elem
+           FROM jsonb_array_elements_text(pi_cash.order_info_uuids::jsonb) elem(value)
+          WHERE elem.value IS NOT NULL AND elem.value <> 'null'::text AND pi_cash.order_info_uuids <> '[]'::text AND pi_cash.order_info_uuids IS NOT NULL))
+     LEFT JOIN thread.order_info oi ON (oi.uuid IN ( SELECT elem.value AS elem
+           FROM jsonb_array_elements_text(pi_cash.thread_order_info_uuids::jsonb) elem(value)
+          WHERE elem.value IS NOT NULL AND elem.value <> 'null'::text AND pi_cash.thread_order_info_uuids <> '[]'::text AND pi_cash.thread_order_info_uuids IS NOT NULL))
+  GROUP BY pi_cash.uuid
+`;

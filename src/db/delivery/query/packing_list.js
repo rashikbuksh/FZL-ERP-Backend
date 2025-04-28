@@ -24,7 +24,7 @@ export async function insert(req, res, next) {
 		.insert(packing_list)
 		.values(req.body)
 		.returning({
-			insertedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0'))`,
+			insertedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text)`,
 			insertedUuid: packing_list.uuid,
 		});
 	try {
@@ -61,7 +61,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(packing_list.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0'))`,
+			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text)`,
 		});
 
 	try {
@@ -85,7 +85,7 @@ export async function remove(req, res, next) {
 		.delete(packing_list)
 		.where(eq(packing_list.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0'))`,
+			deletedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text)`,
 		});
 
 	try {
@@ -174,6 +174,7 @@ export async function selectAll(req, res, next) {
         dvl.packing_list_wise_rank,
         dvl.packing_list_wise_count,
         dvl.packing_number,
+		dvl.packing_number_v1,
         dvl.order_number,
         dvl.item_for,
         dvl.challan_uuid,
@@ -241,6 +242,7 @@ export async function select(req, res, next) {
 			dvl.packing_list_wise_rank,
 			dvl.packing_list_wise_count,
 			dvl.packing_number,
+			dvl.packing_number_v1,
 			dvl.order_number,
 			dvl.item_for,
 			dvl.challan_uuid,
@@ -545,7 +547,7 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 		.set({ challan_uuid })
 		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
 		.returning({
-			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0'))`,
+			updatedId: sql`CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text)`,
 		});
 
 	const packingListGatePassPromise = db
@@ -553,7 +555,7 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 		.set({ gate_pass })
 		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
 		.returning({
-			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0'))`,
+			updatedId: sql`CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text)`,
 		});
 
 	try {
@@ -612,6 +614,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						dvl.packing_list_wise_rank,
 						dvl.packing_list_wise_count,
 						dvl.packing_number,
+						dvl.packing_number_v1,
 						dvl.order_number,
 						dvl.item_for,
 						dvl.challan_uuid,
@@ -701,6 +704,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						dvl.packing_list_wise_rank,
 						dvl.packing_list_wise_count,
 						dvl.packing_number,
+						dvl.packing_number_v1,
 						dvl.order_number,
 						dvl.item_for,
 						dvl.challan_uuid,
@@ -789,6 +793,7 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 						dvl.packing_list_wise_rank,
 						dvl.packing_list_wise_count,
 						dvl.packing_number,
+						dvl.packing_number_v1,
 						dvl.order_number,
 						dvl.item_for,
 						dvl.challan_uuid,
