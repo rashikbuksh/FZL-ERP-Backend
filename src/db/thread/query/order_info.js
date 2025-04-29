@@ -337,7 +337,7 @@ export async function selectOrderDetailsByOrderInfoUuid(req, res, next) {
 }
 
 export async function selectThreadSwatch(req, res, next) {
-	const { type } = req.query;
+	const { type, order_type } = req.query;
 	const resultPromise = db
 		.select({
 			uuid: order_info.uuid,
@@ -377,10 +377,14 @@ export async function selectThreadSwatch(req, res, next) {
 					? sql`order_entry.recipe_uuid IS NULL`
 					: type === 'completed'
 						? sql`order_entry.recipe_uuid IS NOT NULL`
-						: sql`1 = 1`,
+						: sql`1=1`,
 				sql`order_entry.uuid IS NOT NULL`,
-				ne(order_info.is_cancelled, 1),
-				ne(order_entry.quantity, order_entry.delivered)
+				eq(order_info.is_cancelled, false),
+				order_type === 'complete_order'
+					? eq(order_entry.quantity, order_entry.delivered)
+					: order_type === 'incomplete_order'
+						? ne(order_entry.quantity, order_entry.delivered)
+						: sql`1=1`
 			)
 		)
 		.orderBy(

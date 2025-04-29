@@ -194,6 +194,10 @@ export const pathThreadOrderInfo = {
 					'completed',
 					'all',
 				]),
+				SE.parameter_query('order_type', 'order_type', [
+					'complete_order',
+					'incomplete_order',
+				]),
 			],
 
 			responses: {

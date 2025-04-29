@@ -207,6 +207,7 @@ export const defCommercialPiCash = SED({
 		'is_pi',
 		'conversion_rate',
 		'receive_amount',
+		'pi_date',
 	],
 	properties: {
 		uuid: SE.uuid(),
@@ -232,6 +233,7 @@ export const defCommercialPiCash = SED({
 		receive_amount: SE.number(1000.0),
 		thread_order_info_uuids: SE.array([SE.uuid()]),
 		is_completed: SE.boolean(false),
+		pi_date: SE.date_time(),
 	},
 	xml: 'Commercial/PiCash',
 });

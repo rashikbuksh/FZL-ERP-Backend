@@ -208,6 +208,7 @@ export const pi_cash = commercial.table('pi_cash', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 	is_completed: boolean('is_completed').default(false),
+	pi_date: DateTime('pi_date').default(null),
 });
 
 export const pi_cash_entry = commercial.table('pi_cash_entry', {

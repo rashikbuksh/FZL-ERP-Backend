@@ -1,11 +1,8 @@
 import { eq, sql, and } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
-import { decimalToNumber } from '../../variables.js';
-import { bank, lc, pi_cash, pi_cash_entry } from '../schema.js';
+import { pi_cash, pi_cash_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -30,6 +27,7 @@ export async function insert(req, res, next) {
 		weight,
 		cross_weight,
 		receive_amount,
+		pi_date,
 	} = req.body;
 
 	const piPromise = db
@@ -54,6 +52,7 @@ export async function insert(req, res, next) {
 			weight,
 			cross_weight,
 			receive_amount,
+			pi_date,
 		})
 		.returning({
 			insertedId: sql`concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))`,
@@ -220,7 +219,8 @@ export async function selectAll(req, res, next) {
 				WHEN pi_cash.is_pi = 1 THEN COALESCE(ROUND(total_amount.total_amount::numeric, 2), 0)
 				ELSE COALESCE(ROUND(total_amount.total_amount::numeric, 2) * pi_cash.conversion_rate::float8, 0)
 			END AS total_amount,
-			pi_cash.is_completed
+			pi_cash.is_completed,
+			pi_cash.pi_date
 		FROM 
 			commercial.pi_cash
 		LEFT JOIN 
@@ -323,7 +323,8 @@ export async function select(req, res, next) {
 				pi_cash.weight::float8,
 				pi_cash.cross_weight::float8,
 				pi_cash.receive_amount::float8,
-				pi_cash.is_completed
+				pi_cash.is_completed,
+				pi_cash.pi_date
 			FROM 
 				commercial.pi_cash
 			LEFT JOIN 
@@ -700,7 +701,8 @@ export async function selectPiByLcUuid(req, res, next) {
 				pi_cash.is_completed,
 				COALESCE(order_numbers_agg.order_numbers, '[]') AS order_numbers,
 				COALESCE(order_numbers_agg.order_type, null) AS order_type,
-				COALESCE(thread_order_numbers_agg.thread_order_numbers, '[]') AS thread_order_numbers
+				COALESCE(thread_order_numbers_agg.thread_order_numbers, '[]') AS thread_order_numbers,
+				pi_cash.pi_date
 			FROM 
 				commercial.pi_cash
 			LEFT JOIN hr.users 

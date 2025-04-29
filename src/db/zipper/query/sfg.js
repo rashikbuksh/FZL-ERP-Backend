@@ -164,7 +164,7 @@ export async function select(req, res, next) {
 
 export async function selectSwatchInfo(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	const { type } = req.query;
+	const { type, order_type } = req.query;
 
 	const query = sql`
 				SELECT
@@ -214,7 +214,13 @@ export async function selectSwatchInfo(req, res, next) {
 								? sql`AND sfg.recipe_uuid IS NOT NULL`
 								: sql``
 					}
-					AND oe.quantity != sfg.delivered
+					${
+						order_type === 'complete_order'
+							? sql`AND oe.quantity = sfg.delivered`
+							: order_type === 'incomplete_order'
+								? sql`AND oe.quantity != sfg.delivered`
+								: sql``
+					}
 				ORDER BY 
 					vod.order_description_created_at DESC,
 					sfg.recipe_uuid ASC`;

@@ -1188,6 +1188,10 @@ export const pathZipperSfg = {
 					'completed',
 					'all',
 				]),
+				SE.parameter_query('order_type', 'order_type', [
+					'complete_order',
+					'incomplete_order',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {
