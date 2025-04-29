@@ -563,7 +563,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			vodf.party_name,
 			vodf.buyer_name,
 			vodf.factory_name,
-			zfbe.created_at
+			zfbe.created_at,
+			vodf.slider_provided
 		FROM
 			zipper.finishing_batch_entry zfbe
 		LEFT JOIN zipper.sfg sfg ON zfbe.sfg_uuid = sfg.uuid
