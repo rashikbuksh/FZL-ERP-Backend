@@ -547,7 +547,7 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 		.set({ challan_uuid })
 		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
 		.returning({
-			updatedId: sql`CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text)`,
+			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text)`,
 		});
 
 	const packingListGatePassPromise = db
@@ -555,7 +555,7 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 		.set({ gate_pass })
 		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
 		.returning({
-			updatedId: sql`CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text)`,
+			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text)`,
 		});
 
 	try {
