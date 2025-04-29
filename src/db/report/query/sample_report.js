@@ -201,7 +201,7 @@ export async function selectSampleReportByDate(req, res, next) {
                                         'challan_uuid', ch.uuid,
                                         'challan_number', CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', ch.id),
                                         'challan_date', ch.created_at,
-                                        'delivered', ch.is_delivered
+                                        'is_delivered', ch.is_delivered
                                     )
                                 ) AS challan_info
                             FROM
