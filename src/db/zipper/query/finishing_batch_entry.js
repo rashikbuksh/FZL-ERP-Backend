@@ -565,7 +565,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			vodf.factory_name,
 			zfbe.created_at,
 			CASE WHEN 
-				vodf.slider_provided == 'completely_provided' THEN true
+				vodf.slider_provided = 'completely_provided' 
+				THEN true
 				ELSE false
 			END AS slider_provided
 		FROM
