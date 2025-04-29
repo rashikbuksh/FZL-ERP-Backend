@@ -109,18 +109,10 @@ export async function selectSampleReportByDate(req, res, next) {
 		toDate = date;
 	}
 
-	// if (!date || !toDate) {
-	// 	throw new Error('Both date and toDate must be provided');
-	// }
-
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
-			if (
-				marketingUuidData &&
-				marketingUuidData.rows &&
-				marketingUuidData.rows.length > 0
-			) {
+			if (marketingUuidData.rows.length > 0) {
 				marketing_uuid = marketingUuidData.rows[0].uuid;
 			} else {
 				marketing_uuid = null;
@@ -129,103 +121,96 @@ export async function selectSampleReportByDate(req, res, next) {
 
 		const query = sql`
                      SELECT 
-                           CONCAT('Z', 
-                                    CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
-                                    to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')
-                                ) AS order_number,
-                            oi.uuid as order_info_uuid,
-                           pm.name AS marketing_name,
-                           pp.name AS party_name,
-                           op_item.name AS item_name,
-                           oe.created_at::date AS issue_date,
-                           vodf.item_description,
-                           od.uuid as order_description_uuid,
-                           oe.size,
-                           od.is_inch,
-                           od.is_meter,
-                           od.is_cm,
-                           oe.quantity::float8,
-                           oe.remarks,
-                           od.order_type,
-                           oe.style,
-                           oe.color,
-                           oe.company_price::float8,
-                           oe.party_price::float8,
-                           sfg.pi::float8,
-                           sfg.finishing_prod::float8,
-                           (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) as balance,
-                           sfg.warehouse::float8,
-                           sfg.delivered::float8,
-                           oe.quantity::float8 - sfg.delivered::float8 as delivered_balance,
-                           CONCAT(
-                                CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
-                                CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN op_zipper.name ELSE '' END,
-                                CASE WHEN op_end.name IS NOT NULL AND op_end.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_end.name IS NOT NULL AND op_end.name != '---' THEN op_end.name ELSE '' END,
-                                CASE WHEN op_hand.name IS NOT NULL AND op_hand.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_hand.name IS NOT NULL AND op_hand.name != '---' THEN op_hand.name ELSE '' END,
-                                CASE WHEN op_teeth_type.name IS NOT NULL AND op_teeth_type.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_teeth_type.name IS NOT NULL AND op_teeth_type.name != '---' THEN op_teeth_type.name ELSE '' END,
-                                CASE WHEN op_teeth_color.name IS NOT NULL AND op_teeth_color.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_teeth_color.name IS NOT NULL AND op_teeth_color.name != '---' THEN op_teeth_color.name ELSE '' END,
-                                CASE WHEN op_nylon_stopper.name IS NOT NULL AND op_nylon_stopper.name != '---' THEN ', ' ELSE '' END,
-                                CASE WHEN op_nylon_stopper.name IS NOT NULL AND op_nylon_stopper.name != '---' THEN op_nylon_stopper.name ELSE '' END
-                                ) AS item_details,
-                        CONCAT(
-                                COALESCE(op_puller.name, ''),
-                                CASE WHEN op_puller_color.name IS NOT NULL THEN ', ' ELSE '' END,
-                                COALESCE(op_puller_color.name, ''),
-                                CASE WHEN op_coloring.name IS NOT NULL THEN ', ' ELSE '' END,
-                                COALESCE(op_coloring.name, ''),
-                                CASE WHEN op_slider.name IS NOT NULL THEN ', ' ELSE '' END,
-                                COALESCE(op_slider.name, ''),
-                                CASE WHEN op_top_stopper.name IS NOT NULL THEN ', ' ELSE '' END,
-                                COALESCE(op_top_stopper.name, ''),
-                                CASE WHEN op_bottom_stopper.name IS NOT NULL THEN ', ' ELSE '' END,
-                                COALESCE(op_bottom_stopper.name, ''),
-                                CASE WHEN op_logo.name IS NOT NULL THEN ', ' ELSE '' END,
-                                COALESCE(op_logo.name, ''),
-                                CASE WHEN op_slider_body_shape.name IS NOT NULL THEN ', ' ELSE '' END,
-                                COALESCE(op_slider_body_shape.name, ''),
-                                CASE WHEN op_slider_link.name IS NOT NULL THEN ', ' ELSE '' END,
-                                COALESCE(op_slider_link.name, '')
+                            vodf.order_number,
+                            vodf.order_info_uuid,
+                            vodf.marketing_name,
+                            vodf.party_name,
+                            vodf.item_name,
+                            oe.created_at::date AS issue_date,
+                            vodf.item_description,
+                            vodf.order_description_uuid,
+                            oe.size,
+                            vodf.is_inch,
+                            vodf.is_meter,
+                            vodf.is_cm,
+                            oe.quantity::float8,
+                            oe.remarks,
+                            vodf.order_type,
+                            oe.style,
+                            oe.color,
+                            oe.company_price::float8,
+                            oe.party_price::float8,
+                            sfg.pi::float8,
+                            sfg.finishing_prod::float8,
+                            (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) as balance,
+                            sfg.warehouse::float8,
+                            sfg.delivered::float8,
+                            oe.quantity::float8 - sfg.delivered::float8 as delivered_balance,
+                            CONCAT(
+                                CASE WHEN vodf.item_name IS NOT NULL AND vodf.item_name != '---' THEN vodf.item_name ELSE '' END,
+                                CASE WHEN vodf.zipper_number_name IS NOT NULL AND vodf.zipper_number_name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN vodf.zipper_number_name IS NOT NULL AND vodf.zipper_number_name != '---' THEN vodf.zipper_number_name ELSE '' END,
+                                CASE WHEN vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---' THEN vodf.end_type_name ELSE '' END,
+                                CASE WHEN vodf.hand_name IS NOT NULL AND vodf.hand_name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN vodf.hand_name IS NOT NULL AND vodf.hand_name != '---' THEN vodf.hand_name ELSE '' END,
+                                CASE WHEN vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---' THEN vodf.teeth_type_name ELSE '' END,
+                                CASE WHEN vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---' THEN vodf.teeth_color_name ELSE '' END,
+                                CASE WHEN vodf.nylon_stopper_name IS NOT NULL AND vodf.nylon_stopper_name != '---' THEN ', ' ELSE '' END,
+                                CASE WHEN vodf.nylon_stopper_name IS NOT NULL AND vodf.nylon_stopper_name != '---' THEN vodf.nylon_stopper_name ELSE '' END
+                            ) AS item_details,
+                            CONCAT(
+                                COALESCE(vodf.puller_type_name, ''),
+                                CASE WHEN vodf.puller_color_name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(vodf.puller_color_name, ''),
+                                CASE WHEN vodf.coloring_type_name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(vodf.coloring_type_name, ''),
+                                CASE WHEN vodf.slider_name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(vodf.slider_name, ''),
+                                CASE WHEN vodf.top_stopper_name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(vodf.top_stopper_name, ''),
+                                CASE WHEN vodf.bottom_stopper_name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(vodf.bottom_stopper_name, ''),
+                                CASE WHEN vodf.logo_type_name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(vodf.logo_type_name, ''),
+                                CASE WHEN vodf.slider_body_shape_name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(vodf.slider_body_shape_name, ''),
+                                CASE WHEN vodf.slider_link_name IS NOT NULL THEN ', ' ELSE '' END,
+                                COALESCE(vodf.slider_link_name, '')
                             ) AS slider_details,
-                        CONCAT(
-                                od.garment,
-                                COALESCE(op_end_user.name, ''),
-                                CASE WHEN op_light_preference.name IS NOT NULL THEN ' ,' ELSE '' END,
-                                COALESCE(op_light_preference.name, '')
-                            ) AS other_details
+                            CONCAT(
+                                vodf.garment,
+                                COALESCE(vodf.end_user_name, ''),
+                                CASE WHEN vodf.light_preference_name IS NOT NULL THEN ' ,' ELSE '' END,
+                                COALESCE(vodf.light_preference_name, '')
+                            ) AS other_details,
+                            ch_details.challan_info
                         FROM
                             zipper.order_info oi
                         LEFT JOIN zipper.order_description od ON od.order_info_uuid = oi.uuid
                         LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = od.uuid
-                        LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = od.uuid 
+                        LEFT JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid 
                         LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
-                        LEFT JOIN public.marketing pm ON pm.uuid = oi.marketing_uuid
-                        LEFT JOIN public.party pp ON pp.uuid = oi.party_uuid
-                        LEFT JOIN public.properties op_item ON op_item.uuid = od.item
-                        LEFT JOIN public.properties op_zipper ON op_zipper.uuid = od.zipper_number
-                        LEFT JOIN public.properties op_end ON op_end.uuid = od.end_type
-                        LEFT JOIN public.properties op_hand ON op_hand.uuid = od.hand
-                        LEFT JOIN public.properties op_lock ON op_lock.uuid = od.lock_type
-                        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = od.teeth_type
-                        LEFT JOIN public.properties op_teeth_color ON op_teeth_color.uuid = od.teeth_color
-                        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = od.nylon_stopper
-                        LEFT JOIN public.properties op_puller ON op_puller.uuid = od.puller_type
-                        LEFT JOIN public.properties op_puller_color ON op_puller_color.uuid = od.puller_color
-                        LEFT JOIN public.properties op_coloring ON op_coloring.uuid = od.coloring_type
-                        LEFT JOIN public.properties op_slider ON op_slider.uuid = od.slider
-                        LEFT JOIN public.properties op_top_stopper ON op_top_stopper.uuid = od.top_stopper
-                        LEFT JOIN public.properties op_bottom_stopper ON op_bottom_stopper.uuid = od.bottom_stopper
-                        LEFT JOIN public.properties op_logo ON op_logo.uuid = od.logo_type
-                        LEFT JOIN public.properties op_slider_body_shape ON op_slider_body_shape.uuid = od.slider_body_shape
-                        LEFT JOIN public.properties op_slider_link ON op_slider_link.uuid = od.slider_link
-                        LEFT JOIN public.properties op_end_user ON op_end_user.uuid = od.end_user
-                        LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = od.light_preference
-                       WHERE
-                            oi.is_sample = ${is_sample}
+                        LEFT JOIN (
+                            SELECT 
+                                ch.order_info_uuid,
+                                json_agg(
+                                    jsonb_build_object(
+                                        'challan_uuid', ch.uuid,
+                                        'challan_number', CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', ch.id),
+                                        'challan_date', ch.created_at,
+                                        'delivered', ch.is_delivered
+                                    )
+                                ) AS challan_info
+                            FROM
+                                delivery.challan ch
+                            GROUP BY 
+                                ch.order_info_uuid
+                        ) ch_details ON ch_details.order_info_uuid = oi.uuid
+                        WHERE
+                            ${is_sample ? sql`oi.is_sample = ${is_sample}` : sql`1=1`}
                             AND ${
 								date && toDate
 									? sql`od.created_at BETWEEN ${date}::TIMESTAMP 
@@ -233,7 +218,7 @@ export async function selectSampleReportByDate(req, res, next) {
 									: sql`TRUE`
 							}
                             AND ${own_uuid ? sql`oi.marketing_uuid = ${marketing_uuid}` : sql`TRUE`}
-                           AND ${
+                            AND ${
 								show_zero_balance == 1
 									? sql`TRUE`
 									: sql`(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) > 0`
