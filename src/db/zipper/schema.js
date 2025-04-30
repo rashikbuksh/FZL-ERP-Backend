@@ -779,4 +779,23 @@ export const order_entry_log = zipper.table('order_entry_log', {
 	created_at: DateTime('created_at').notNull(),
 });
 
+export const tape_transfer_type_enum = zipper.enum('tape_transfer_type', [
+	'to_dyeing',
+	'to_store',
+]);
+
+export const tape_transfer_to_dyeing = zipper.table('tape_transfer_to_dyeing', {
+	uuid: uuid_primary,
+	tape_coil_uuid: defaultUUID('tape_coil_uuid').references(
+		() => tape_coil.uuid
+	),
+	trx_quantity: PG_DECIMAL('trx_quantity').default(0),
+	tape_transfer_type:
+		tape_transfer_type_enum('tape_transfer_type').default('to_dyeing'),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
 export default zipper;

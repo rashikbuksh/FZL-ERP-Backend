@@ -397,9 +397,9 @@ export async function selectThreadSwatch(req, res, next) {
 		}
 		${
 			order_type === 'complete_order'
-				? sql`AND order_entry.quantity >= order_entry.delivered AND order_entry.recipe_uuid IS NOT NULL`
+				? sql`AND order_entry.quantity <= order_entry.delivered AND order_entry.recipe_uuid IS NOT NULL`
 				: order_type === 'incomplete_order'
-					? sql`AND order_entry.quantity < order_entry.delivered`
+					? sql`AND order_entry.quantity > order_entry.delivered`
 					: sql``
 		}
 	ORDER BY 
