@@ -1,8 +1,10 @@
 import { and, asc, desc, eq, gte, lte, ne, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
+import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { count_length, order_entry, order_info } from '../schema.js';
 
@@ -336,73 +338,72 @@ export async function selectOrderDetailsByOrderInfoUuid(req, res, next) {
 
 export async function selectThreadSwatch(req, res, next) {
 	const { type, order_type } = req.query;
-	const resultPromise = db
-		.select({
-			uuid: order_info.uuid,
-			id: order_info.id,
-			order_number: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
-			order_entry_uuid: order_entry.uuid,
-			style: order_entry.style,
-			color: order_entry.color,
-			recipe_uuid: order_entry.recipe_uuid,
-			recipe_name: labDipSchema.recipe.name,
-			bleaching: order_entry.bleaching,
-			count_length_uuid: order_entry.count_length_uuid,
-			count: count_length.count,
-			length: count_length.length,
-			count_length_name: sql`concat(count_length.count, ' - ', count_length.length)`,
-			order_quantity: decimalToNumber(order_entry.quantity),
-			created_at: order_info.created_at,
-			updated_at: order_info.updated_at,
-			remarks: order_info.remarks,
-			swatch_approval_date: order_entry.swatch_approval_date,
-			is_batch_created: sql`COALESCE(batch_status.is_batch_created, FALSE)`,
-		})
-		.from(order_info)
-		.leftJoin(order_entry, eq(order_info.uuid, order_entry.order_info_uuid))
-		.leftJoin(
-			count_length,
-			eq(order_entry.count_length_uuid, count_length.uuid)
-		)
-		.leftJoin(
-			labDipSchema.recipe,
-			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
-		)
-		.leftJoin(
-			sql`(
-            SELECT 
-                batch_entry.order_entry_uuid,
-                CASE 
-                    WHEN SUM(batch_entry.quantity) > 0 THEN TRUE 
-                    ELSE FALSE 
-                END AS is_batch_created
-            FROM thread.batch_entry
-            GROUP BY batch_entry.order_entry_uuid
-        ) AS batch_status`,
-			eq(order_entry.uuid, sql`batch_status.order_entry_uuid`)
-		)
-		.where(
-			and(
-				type === 'pending'
-					? sql`order_entry.recipe_uuid IS NULL`
-					: type === 'completed'
-						? sql`order_entry.recipe_uuid IS NOT NULL`
-						: sql`1=1`,
-				eq(order_info.is_cancelled, false),
-				order_type === 'complete_order'
-					? and(
-							gte(order_entry.quantity, order_entry.delivered),
-							ne(order_entry.recipe_uuid, null)
-						)
-					: order_type === 'incomplete_order'
-						? lte(order_entry.quantity, order_entry.delivered)
-						: sql`1=1`
-			)
-		)
-		.orderBy(
-			desc(order_entry.created_at, order_info.created_at),
-			asc(order_entry.uuid)
-		);
+
+	const query = sql`
+	SELECT 
+		order_info.uuid,
+		CONCAT('ST', 
+			CASE 
+				WHEN order_info.is_sample = 1 THEN 'S' 
+				ELSE '' 
+			END, 
+			TO_CHAR(order_info.created_at, 'YY'), '-', 
+			LPAD(order_info.id::text, 4, '0')
+		) AS order_number,
+		order_entry.uuid AS order_entry_uuid,
+		order_entry.style,
+		order_entry.color,
+		order_entry.recipe_uuid,
+		lab_dip_recipe.name AS recipe_name,
+		order_entry.bleaching,
+		order_entry.count_length_uuid,
+		count_length.count,
+		count_length.length,
+		CONCAT(count_length.count, ' - ', count_length.length) AS count_length_name,
+		order_entry.quantity::float8 AS order_quantity,
+		order_info.created_at,
+		order_info.updated_at,
+		order_info.remarks,
+		order_entry.swatch_approval_date,
+		CASE 
+			WHEN (
+				SELECT SUM(batch_entry.quantity) 
+				FROM thread.batch_entry 
+				WHERE batch_entry.order_entry_uuid = order_entry.uuid
+			) > 0 THEN TRUE 
+			ELSE FALSE 
+		END AS is_batch_created
+	FROM 
+		thread.order_info
+	LEFT JOIN 
+		thread.order_entry ON order_info.uuid = order_entry.order_info_uuid
+	LEFT JOIN 
+		thread.count_length ON order_entry.count_length_uuid = count_length.uuid
+	LEFT JOIN 
+		lab_dip.recipe AS lab_dip_recipe ON order_entry.recipe_uuid = lab_dip_recipe.uuid
+	WHERE 
+		order_info.is_cancelled = FALSE
+		${
+			type === 'pending'
+				? sql`AND order_entry.recipe_uuid IS NULL`
+				: type === 'completed'
+					? sql`AND order_entry.recipe_uuid IS NOT NULL`
+					: sql``
+		}
+		${
+			order_type === 'complete_order'
+				? sql`AND order_entry.quantity >= order_entry.delivered AND order_entry.recipe_uuid IS NOT NULL`
+				: order_type === 'incomplete_order'
+					? sql`AND order_entry.quantity <= order_entry.delivered`
+					: sql``
+		}
+	ORDER BY 
+		order_entry.created_at DESC, 
+		order_info.created_at DESC, 
+		order_entry.uuid ASC;
+	`;
+
+	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
@@ -412,7 +413,7 @@ export async function selectThreadSwatch(req, res, next) {
 			message: 'Order Swatch',
 		};
 
-		return await res.status(200).json({ toast, data: data });
+		return await res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
