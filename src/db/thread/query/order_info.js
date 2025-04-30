@@ -1,10 +1,8 @@
-import { and, asc, desc, eq, ne, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, lte, ne, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
-import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { count_length, order_entry, order_info } from '../schema.js';
 
@@ -349,7 +347,6 @@ export async function selectThreadSwatch(req, res, next) {
 			recipe_uuid: order_entry.recipe_uuid,
 			recipe_name: labDipSchema.recipe.name,
 			bleaching: order_entry.bleaching,
-			po: order_entry.po,
 			count_length_uuid: order_entry.count_length_uuid,
 			count: count_length.count,
 			length: count_length.length,
@@ -359,7 +356,7 @@ export async function selectThreadSwatch(req, res, next) {
 			updated_at: order_info.updated_at,
 			remarks: order_info.remarks,
 			swatch_approval_date: order_entry.swatch_approval_date,
-			is_batch_created: sql`CASE WHEN (SELECT SUM(batch_entry.quantity) FROM thread.batch_entry WHERE batch_entry.order_entry_uuid = order_entry.uuid) > 0 THEN TRUE ELSE FALSE END`,
+			is_batch_created: sql`COALESCE(batch_status.is_batch_created, FALSE)`,
 		})
 		.from(order_info)
 		.leftJoin(order_entry, eq(order_info.uuid, order_entry.order_info_uuid))
@@ -371,6 +368,19 @@ export async function selectThreadSwatch(req, res, next) {
 			labDipSchema.recipe,
 			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		)
+		.leftJoin(
+			sql`(
+            SELECT 
+                batch_entry.order_entry_uuid,
+                CASE 
+                    WHEN SUM(batch_entry.quantity) > 0 THEN TRUE 
+                    ELSE FALSE 
+                END AS is_batch_created
+            FROM thread.batch_entry
+            GROUP BY batch_entry.order_entry_uuid
+        ) AS batch_status`,
+			eq(order_entry.uuid, sql`batch_status.order_entry_uuid`)
+		)
 		.where(
 			and(
 				type === 'pending'
@@ -378,12 +388,14 @@ export async function selectThreadSwatch(req, res, next) {
 					: type === 'completed'
 						? sql`order_entry.recipe_uuid IS NOT NULL`
 						: sql`1=1`,
-				sql`order_entry.uuid IS NOT NULL`,
 				eq(order_info.is_cancelled, false),
 				order_type === 'complete_order'
-					? eq(order_entry.quantity, order_entry.delivered)
+					? and(
+							gte(order_entry.quantity, order_entry.delivered),
+							ne(order_entry.recipe_uuid, null)
+						)
 					: order_type === 'incomplete_order'
-						? ne(order_entry.quantity, order_entry.delivered)
+						? lte(order_entry.quantity, order_entry.delivered)
 						: sql`1=1`
 			)
 		)

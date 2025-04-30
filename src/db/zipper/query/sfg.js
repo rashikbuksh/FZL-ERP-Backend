@@ -168,12 +168,12 @@ export async function selectSwatchInfo(req, res, next) {
 
 	const query = sql`
 				SELECT
-					sfg.uuid as uuid,
-					sfg.order_entry_uuid as order_entry_uuid,
-					oe.order_description_uuid as order_description_uuid,
+					sfg.uuid AS uuid,
+					sfg.order_entry_uuid AS order_entry_uuid,
+					oe.order_description_uuid AS order_description_uuid,
 					vod.order_info_uuid,
-					oe.style as style,
-					oe.color as color,
+					oe.style AS style,
+					oe.color AS color,
 					vod.is_inch,
 					oe.size,
 					CASE 
@@ -181,29 +181,32 @@ export async function selectSwatchInfo(req, res, next) {
 						WHEN vod.order_type = 'slider' THEN 'Pcs'
 						WHEN vod.is_inch = 1 THEN 'Inch'
 						ELSE 'CM' 
-					END as unit,
+					END AS unit,
 					oe.bleaching,
-					oe.quantity::float8 as quantity,
-					sfg.recipe_uuid as recipe_uuid,
-					recipe.name as recipe_name,
-					sfg.remarks as remarks,
-					vod.order_number as order_number,
-					vod.item_description as item_description,
+					oe.quantity::float8 AS quantity,
+					sfg.recipe_uuid AS recipe_uuid,
+					recipe.name AS recipe_name,
+					sfg.remarks AS remarks,
+					vod.order_number AS order_number,
+					vod.item_description AS item_description,
 					vod.order_type,
 					vod.order_description_created_at,
 					oe.swatch_approval_date,
-					CASE 
-						WHEN (SELECT SUM(dyeing_batch_entry.quantity) 
-							FROM zipper.dyeing_batch_entry 
-							WHERE dyeing_batch_entry.sfg_uuid = sfg.uuid) > 0 
-						THEN TRUE 
-						ELSE FALSE 
-					END as is_batch_created
+					COALESCE(dyeing_batch.total_quantity > 0, FALSE) AS is_batch_created
 				FROM
 					zipper.sfg sfg
-					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-					LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
-					LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
+				LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+				LEFT JOIN (
+					SELECT 
+						dyeing_batch_entry.sfg_uuid,
+						SUM(dyeing_batch_entry.quantity) AS total_quantity
+					FROM 
+						zipper.dyeing_batch_entry
+					GROUP BY 
+						dyeing_batch_entry.sfg_uuid
+				) dyeing_batch ON dyeing_batch.sfg_uuid = sfg.uuid
 				WHERE 
 					vod.order_type != 'slider' 
 					AND vod.is_cancelled = FALSE
