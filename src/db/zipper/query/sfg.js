@@ -216,9 +216,9 @@ export async function selectSwatchInfo(req, res, next) {
 					}
 					${
 						order_type === 'complete_order'
-							? sql`AND oe.quantity = sfg.delivered`
+							? sql`AND oe.quantity >= sfg.delivered AND sfg.recipe_uuid IS NOT NULL`
 							: order_type === 'incomplete_order'
-								? sql`AND oe.quantity != sfg.delivered`
+								? sql`AND oe.quantity < sfg.delivered`
 								: sql``
 					}
 				ORDER BY 
