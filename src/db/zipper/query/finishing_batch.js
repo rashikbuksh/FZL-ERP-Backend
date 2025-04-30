@@ -154,9 +154,9 @@ export async function selectAll(req, res, next) {
 		)
 		.where(
 			type === 'pending'
-				? sql`finishing_batch_entry_total.total_batch_quantity - finishing_batch_entry_total.total_batch_production_quantity > 0`
+				? sql`finishing_batch.is_completed = false`
 				: type === 'completed'
-					? sql`finishing_batch_entry_total.total_batch_quantity - finishing_batch_entry_total.total_batch_production_quantity = 0`
+					? sql`finishing_batch.is_completed = true`
 					: sql`1=1`
 		)
 		.orderBy(desc(finishing_batch.created_at));
