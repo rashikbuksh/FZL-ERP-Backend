@@ -3,10 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import {
-	finishing_batch_entry,
-	finishing_batch_production,
-} from '../schema.js';
+import { finishing_batch_production } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

@@ -1,4 +1,4 @@
-import SE, { SED } from '../../../util/swagger_example.js';
+import SE from '../../../util/swagger_example.js';
 
 // * Zipper Order Info * //
 export const pathZipperOrderInfo = {
@@ -4104,6 +4104,121 @@ export const pathOrderEntryLog = {
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params('order entry log to delete', 'id'),
+			],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
+// * zipper tape_transfer_to_dyeing * //
+export const pathZipperTapeTransferToDyeing = {
+	'/zipper/tape-transfer-to-dyeing': {
+		get: {
+			tags: ['zipper.tape_transfer_to_dyeing'],
+			summary: 'Get all Tape Transfer To Dyeing',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					tape_coil_uuid: SE.uuid(),
+					tape_coil_name: SE.string('Tape Coil 1'),
+					trx_quantity: SE.number(100),
+					tape_transfer_type: SE.string('tape_to_dyeing'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+		post: {
+			tags: ['zipper.tape_transfer_to_dyeing'],
+			summary: 'create a tape transfer to dyeing',
+			description: '',
+			// operationId: "add
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/tape_transfer_to_dyeing'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/tape_transfer_to_dyeing'
+				),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/tape-transfer-to-dyeing/{uuid}': {
+		get: {
+			tags: ['zipper.tape_transfer_to_dyeing'],
+			summary: 'Gets a tape transfer to dyeing',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('tape transfer to dyeing to get', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					tape_coil_uuid: SE.uuid(),
+					tape_coil_name: SE.string('Tape Coil 1'),
+					trx_quantity: SE.number(100),
+					tape_transfer_type: SE.string('tape_to_dyeing'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['zipper.tape_transfer_to_dyeing'],
+			summary: 'Update an existing tape transfer to dyeing',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_schema_ref(
+					'tape transfer to dyeing to update',
+					'uuid'
+				),
+			],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/tape_transfer_to_dyeing'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/tape_transfer_to_dyeing'
+				),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['zipper.tape_transfer_to_dyeing'],
+			summary: 'Deletes a tape transfer to dyeing',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'tape transfer to dyeing to delete',
+					'uuid'
+				),
 			],
 			responses: {
 				200: SE.response(200),

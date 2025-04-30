@@ -1,9 +1,8 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	validateRequest,
 } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
 import { decimalToNumber } from '../../variables.js';

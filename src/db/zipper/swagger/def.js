@@ -726,6 +726,28 @@ export const def_order_entry_log = SED({
 	xml: 'Zipper/Order-Entry-Log',
 });
 
+export const def_zipper_tape_transfer_to_dyeing = SED({
+	required: [
+		'uuid',
+		'tape_coil_uuid',
+		'tape_transfer_type',
+		'trx_quantity',
+		'created_by',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		tape_coil_uuid: SE.uuid(),
+		trx_quantity: SE.number('100.0'),
+		tape_transfer_type: SE.string('tape_to_dyeing'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
+	},
+	xml: 'Zipper/Tape-Transfer-To-Dyeing',
+});
+
 //....................FOR TESTING.......................
 export const defZipper = {
 	order_info: def_zipper_order_info,
@@ -754,6 +776,7 @@ export const defZipper = {
 	finishing_batch: def_finishing_batch,
 	finishing_batch_entry: def_finishing_batch_entry,
 	order_entry_log: def_order_entry_log,
+	tape_transfer_to_dyeing: def_zipper_tape_transfer_to_dyeing,
 };
 
 // * Zipper Tag * //
@@ -853,5 +876,9 @@ export const tagZipper = [
 	{
 		name: 'zipper.order_entry_log',
 		description: 'Zipper Order Entry Log',
+	},
+	{
+		name: 'zipper.tape_transfer_to_dyeing',
+		description: 'Zipper Tape Transfer To Dyeing',
 	},
 ];

@@ -1,21 +1,8 @@
-import { desc, eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
+import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
-import { decimalToNumber } from '../../variables.js';
 import { batch } from '../schema.js';
-
-const labCreated = alias(hrSchema.users, 'labCreated');
-const yarnIssueCreated = alias(hrSchema.users, 'yarnIssueCreated');
-const dyeingOperator = alias(hrSchema.users, 'dyeingOperator');
-const dyeingSupervisor = alias(hrSchema.users, 'dyeingSupervisor');
-const coningCreatedBy = alias(hrSchema.users, 'coningCreatedBy');
-const passBy = alias(hrSchema.users, 'passBy');
-const coningOperator = alias(hrSchema.users, 'coningOperator');
-const coningSupervisor = alias(hrSchema.users, 'coningSupervisor');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

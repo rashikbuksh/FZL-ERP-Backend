@@ -1,12 +1,9 @@
-import { and, asc, desc, eq, or, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
-import { decimalToNumber } from '../../variables.js';
 import { tape_coil, tape_coil_required } from '../schema.js';
 
 const item_properties = alias(publicSchema.properties, 'item_properties');

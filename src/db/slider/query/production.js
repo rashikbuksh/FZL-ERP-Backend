@@ -1,9 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-
-import * as hrSchema from '../../hr/schema.js';
 
 import { production } from '../schema.js';
 

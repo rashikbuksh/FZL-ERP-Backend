@@ -1,10 +1,7 @@
 import { eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
-import * as zipperSchema from '../../zipper/schema.js';
-import slider, { stock, transaction } from '../schema.js';
+import { stock } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

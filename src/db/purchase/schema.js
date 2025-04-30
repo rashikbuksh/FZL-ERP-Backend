@@ -1,4 +1,4 @@
-import { decimal, integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import { decimal, integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 import { sql } from 'drizzle-orm';

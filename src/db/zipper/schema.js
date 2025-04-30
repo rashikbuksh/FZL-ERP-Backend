@@ -5,8 +5,7 @@ import {
 	integer,
 	pgSchema,
 	serial,
-	text,
-	uuid,
+	text
 } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
@@ -780,8 +779,10 @@ export const order_entry_log = zipper.table('order_entry_log', {
 });
 
 export const tape_transfer_type_enum = zipper.enum('tape_transfer_type', [
-	'to_dyeing',
-	'to_store',
+	'tape_to_dyeing',
+	'tape_to_store',
+	'coil_to_dyeing',
+	'coil_to_store',
 ]);
 
 export const tape_transfer_to_dyeing = zipper.table('tape_transfer_to_dyeing', {
@@ -791,7 +792,7 @@ export const tape_transfer_to_dyeing = zipper.table('tape_transfer_to_dyeing', {
 	),
 	trx_quantity: PG_DECIMAL('trx_quantity').default(0),
 	tape_transfer_type:
-		tape_transfer_type_enum('tape_transfer_type').default('to_dyeing'),
+		tape_transfer_type_enum('tape_transfer_type').default('tape_to_dyeing'),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

@@ -1,16 +1,10 @@
-import { asc, desc, eq, min, sql } from 'drizzle-orm';
-import { createApi } from '../../../util/api.js';
+import { asc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import {
-	count_length,
-	order_entry,
-	order_info,
-	batch_entry,
-} from '../schema.js';
+import { count_length, order_entry, order_info } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

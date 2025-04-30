@@ -1,44 +1,7 @@
-import { desc, eq, ne, or, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
-import { createApi } from '../../../util/api.js';
+import { eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
-import { decimalToNumber } from '../../variables.js';
-import zipper, {
-	dyed_tape_transaction_from_stock,
-	tape_coil,
-} from '../schema.js';
-
-const item_properties = alias(publicSchema.properties, 'item_properties');
-const zipper_number_properties = alias(
-	publicSchema.properties,
-	'zipper_number_properties'
-);
-
-// export async function insert(req, res, next) {
-//     if (!(await validateRequest(req, next))) return;
-
-//     const dyedTapeTransactionFromStockPromise = db
-//         .insert(dyedTapeTransactionFromStock)
-//         .values(req.body)
-//         .returning({ insertedUuid: dyedTapeTransactionFromStock.uuid });
-
-//     try {
-//         const data = await dyedTapeTransactionFromStockPromise;
-
-//         const toast = {
-//             status: 201,
-//             type: 'insert',
-//             message: `${data[0].insertedUuid} inserted`,
-//         };
-
-//         res.status(201).json({ toast, data });
-//     } catch (error) {
-//         await handleError({ error, res });
-//     }
-// }
+import { dyed_tape_transaction_from_stock } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

@@ -1,16 +1,12 @@
-import { eq, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import {
 	boolean,
-	decimal,
 	integer,
 	numeric,
 	pgSchema,
 	primaryKey,
-	serial,
 	text,
-	uuid,
 } from 'drizzle-orm/pg-core';
-import * as deliverySchema from '../delivery/schema.js';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
 import * as materialSchema from '../material/schema.js';
@@ -293,39 +289,3 @@ export const thread_challan_sequence = thread.sequence(
 		increment: 1,
 	}
 );
-
-export const challan = thread.table('challan', {
-	uuid: uuid_primary,
-	order_info_uuid: defaultUUID('order_info_uuid').references(
-		() => order_info.uuid
-	),
-	id: integer('id').default(sql`nextval('thread.thread_challan_sequence')`),
-	carton_quantity: integer('carton_quantity').default(0),
-	vehicle_uuid: defaultUUID('vehicle_uuid').references(
-		() => deliverySchema.vehicle.uuid
-	),
-	gate_pass: integer('gate_pass').default(0),
-	received: integer('received').default(0),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	is_hand_delivery: boolean('is_hand_delivery').default(false),
-	name: text('name').default(null),
-	delivery_cost: PG_DECIMAL('delivery_cost').default(0),
-	remarks: text('remarks').default(null),
-});
-
-export const challan_entry = thread.table('challan_entry', {
-	uuid: uuid_primary,
-	challan_uuid: defaultUUID('challan_uuid').references(() => challan.uuid),
-	order_entry_uuid: defaultUUID('order_entry_uuid').references(
-		() => order_entry.uuid
-	),
-	quantity: PG_DECIMAL('quantity').notNull(),
-	short_quantity: PG_DECIMAL('short_quantity').default(0),
-	reject_quantity: PG_DECIMAL('reject_quantity').default(0),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	remarks: text('remarks').default(null),
-});

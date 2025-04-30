@@ -3,8 +3,6 @@ import * as batchOperations from './query/batch.js';
 import * as batch_entryOperations from './query/batch_entry.js';
 import * as batchEntryProductionOperations from './query/batch_entry_production.js';
 import * as batchEntryTrxOperations from './query/batch_entry_trx.js';
-import * as challanOperations from './query/challan.js';
-import * as challanEntryOperations from './query/challan_entry.js';
 import * as count_lengthOperations from './query/count_length.js';
 import * as dyes_categoryOperations from './query/dyes_category.js';
 import * as order_entryOperations from './query/order_entry.js';
@@ -122,32 +120,6 @@ threadRouter.delete('/batch-entry-trx/:uuid', batchEntryTrxOperations.remove);
 threadRouter.get(
 	'/batch-entry-trx-details',
 	batchEntryTrxOperations.getBatchEntryTrxDetails
-);
-
-// challan routes
-threadRouter.get('/challan', challanOperations.selectAll);
-threadRouter.get('/challan/:uuid', challanOperations.select);
-threadRouter.post('/challan', challanOperations.insert);
-threadRouter.put('/challan/:uuid', challanOperations.update);
-threadRouter.delete('/challan/:uuid', challanOperations.remove);
-threadRouter.get(
-	'/order-details-for-challan/by/:order_info_uuid',
-	challanOperations.selectByOrderInfoUuid
-);
-threadRouter.get(
-	'/challan-details/by/:challan_uuid',
-	challanOperations.selectThreadChallanDetailsByChallanUuid
-);
-
-// challan_entry routes
-threadRouter.get('/challan-entry', challanEntryOperations.selectAll);
-threadRouter.get('/challan-entry/:uuid', challanEntryOperations.select);
-threadRouter.post('/challan-entry', challanEntryOperations.insert);
-threadRouter.put('/challan-entry/:uuid', challanEntryOperations.update);
-threadRouter.delete('/challan-entry/:uuid', challanEntryOperations.remove);
-threadRouter.get(
-	'/challan-entry/by/:challan_uuid',
-	challanEntryOperations.selectThreadChallanEntryByChallanUuid
 );
 
 export { threadRouter };

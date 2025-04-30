@@ -1,4 +1,4 @@
-import { asc, desc, eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import {
 	handleError,
 	validateRequest,

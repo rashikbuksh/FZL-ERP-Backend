@@ -1,10 +1,7 @@
-import { desc } from 'drizzle-orm';
 import { Router } from 'express';
-import { validateUuidParam } from '../../lib/validator.js';
 import * as descriptionOperations from './query/description.js';
 import * as entryOperations from './query/entry.js';
 import * as vendorOperations from './query/vendor.js';
-import purchase from './schema.js';
 
 const purchaseRouter = Router();
 

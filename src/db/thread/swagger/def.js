@@ -1,4 +1,4 @@
-import SE, { SED } from '../../../util/swagger_example.js';
+import SE from '../../../util/swagger_example.js';
 
 export const defThreadCountLength = {
 	type: 'object',
@@ -354,68 +354,6 @@ export const defThreadBatchEntryTrx = {
 	},
 };
 
-export const defThreadChallan = {
-	type: 'object',
-	required: [
-		'uuid',
-		'order_info_uuid',
-		'carton_quantity',
-		'assign_to',
-		'gate_pass',
-		'received',
-		'created_by',
-		'created_at',
-	],
-
-	properties: {
-		uuid: SE.uuid(),
-		order_info_uuid: SE.uuid(),
-		carton_quantity: SE.number(10),
-		assign_to: SE.uuid(),
-		gate_pass: SE.number(0),
-		received: SE.number(0),
-		created_by: SE.uuid(),
-		created_at: SE.date_time(),
-		updated_at: SE.date_time(),
-		remarks: SE.string('remarks'),
-	},
-	xml: {
-		name: 'Thread/Challan',
-	},
-};
-
-export const defThreadChallanEntry = {
-	type: 'object',
-	required: [
-		'uuid',
-		'challan_uuid',
-		'order_entry_uuid',
-		'quantity',
-		'carton_quantity',
-		'short_quantity',
-		'reject_quantity',
-		'created_by',
-		'created_at',
-	],
-
-	properties: {
-		uuid: SE.uuid(),
-		challan_uuid: SE.uuid(),
-		order_entry_uuid: SE.uuid(),
-		quantity: SE.number(10),
-		carton_quantity: SE.number(10),
-		short_quantity: SE.number(10),
-		reject_quantity: SE.number(10),
-		created_by: SE.uuid(),
-		created_at: SE.date_time(),
-		updated_at: SE.date_time(),
-		remarks: SE.string('remarks'),
-	},
-	xml: {
-		name: 'Thread/ChallanEntry',
-	},
-};
-
 // * Marge All
 
 export const defThread = {
@@ -428,8 +366,6 @@ export const defThread = {
 	programs: defThreadPrograms,
 	batch_entry_production: defThreadBatchEntryProduction,
 	batch_entry_trx: defThreadBatchEntryTrx,
-	challan: defThreadChallan,
-	challan_entry: defThreadChallanEntry,
 };
 
 // * Tag

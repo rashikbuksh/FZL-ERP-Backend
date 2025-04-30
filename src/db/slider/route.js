@@ -9,7 +9,6 @@ import * as productionOperations from './query/production.js';
 import * as stockOperations from './query/stock.js';
 import * as transactionOperations from './query/transaction.js';
 import * as trxAgainstStockOperations from './query/trx_against_stock.js';
-import slider from './schema.js';
 
 const sliderRouter = Router();
 

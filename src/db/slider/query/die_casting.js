@@ -1,12 +1,10 @@
-import { and, desc, eq, or, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import * as materialSchema from '../../material/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import * as zipperSchema from '../../zipper/schema.js';
 import { die_casting } from '../schema.js';
 
 const itemProperties = alias(publicSchema.properties, 'itemProperties');
@@ -16,26 +14,6 @@ const pullerTypeProperties = alias(
 	publicSchema.properties,
 	'pullerTypeProperties'
 );
-const teethColorProperties = alias(
-	publicSchema.properties,
-	'teethColorProperties'
-);
-const pullerColorProperties = alias(
-	publicSchema.properties,
-	'pullerColorProperties'
-);
-const handProperties = alias(publicSchema.properties, 'handProperties');
-const stopperProperties = alias(publicSchema.properties, 'stopperProperties');
-const coloringProperties = alias(publicSchema.properties, 'coloringProperties');
-const sliderProperties = alias(publicSchema.properties, 'sliderProperties');
-const topStopperProperties = alias(
-	publicSchema.properties,
-	'topStopperProperties'
-);
-const bottomStopperProperties = alias(
-	publicSchema.properties,
-	'bottomStopperProperties'
-);
 const logoTypeProperties = alias(publicSchema.properties, 'logoTypeProperties');
 const sliderBodyShapeProperties = alias(
 	publicSchema.properties,
@@ -44,15 +22,6 @@ const sliderBodyShapeProperties = alias(
 const sliderLinkProperties = alias(
 	publicSchema.properties,
 	'sliderLinkProperties'
-);
-const endUserProperties = alias(publicSchema.properties, 'endUserProperties');
-const lightPreferenceProperties = alias(
-	publicSchema.properties,
-	'lightPreferenceProperties'
-);
-const garmentsWashProperties = alias(
-	publicSchema.properties,
-	'garmentsWashProperties'
 );
 
 export async function insert(req, res, next) {

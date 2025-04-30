@@ -1,5 +1,4 @@
-import { asc, desc, eq, sql } from 'drizzle-orm';
-import { createApi } from '../../../util/api.js';
+import { asc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';

@@ -1,15 +1,7 @@
 import {
 	and,
-	asc,
-	desc,
 	eq,
-	gt,
-	gte,
-	lt,
-	lte,
-	not,
-	or,
-	sql,
+	sql
 } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';

@@ -1,6 +1,4 @@
-import { response } from 'express';
-import SE, { SED } from '../../../util/swagger_example.js';
-import slider from '../schema.js';
+import SE from '../../../util/swagger_example.js';
 
 // * Slider Stock * //
 export const pathSliderStock = {

@@ -3,7 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { batch_entry, batch_entry_production } from '../schema.js';
+import { batch_entry_production } from '../schema.js';
 
 import * as hrSchema from '../../hr/schema.js';
 

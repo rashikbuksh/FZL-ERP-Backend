@@ -1,14 +1,10 @@
-import { asc, desc, eq, sql } from 'drizzle-orm';
-import { createApi } from '../../../util/api.js';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { asc, eq } from 'drizzle-orm';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
-import { dyes_category } from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
+import { dyes_category } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

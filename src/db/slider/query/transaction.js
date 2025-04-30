@@ -1,8 +1,7 @@
 import { eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { stock, transaction } from '../schema.js';
+import { transaction } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

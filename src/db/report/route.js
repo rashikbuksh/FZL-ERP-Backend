@@ -2,6 +2,12 @@ import { Router } from 'express';
 
 import SE, { SED } from '../../util/swagger_example.js';
 import { selectCashInvoice } from './query/cash_invoice.js';
+import { selectChallanPdf } from './query/challan_pdf.js';
+import { selectCountLengthWiseDeliveryReport } from './query/count_length_wise_delivery_report.js';
+import {
+	selectDeliveryReportThread,
+	selectDeliveryReportZipper,
+} from './query/delivery_report.js';
 import { deliveryStatementReport } from './query/delivery_statement.js';
 import {
 	selectItemZipperEndApprovedQuantity,
@@ -9,8 +15,20 @@ import {
 } from './query/item_zipper_number_end_wise_approved.js';
 import { selectLabDip } from './query/lab_dip.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
+import { selectOrderRegisterReport } from './query/order_register.js';
+import { selectOrderSheetPdf } from './query/order_sheet_pdf.js';
+import { selectPackingList } from './query/packing_list_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
+import {
+	selectProductWiseConsumption,
+	selectProductWiseConsumptionForOrder,
+} from './query/product_wise_consumption.js';
+import {
+	selectItemWiseProduction,
+	selectItemZipperEndWiseProduction,
+} from './query/production_query.js';
 import * as reportOperations from './query/query.js';
+import { selectEDReport } from './query/report_for_ed.js';
 import {
 	selectSampleReport,
 	selectSampleReportByDate,
@@ -22,24 +40,6 @@ import {
 	threadProductionReportPartyWiseByDate,
 } from './query/thread_production_report_by_date.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
-import { selectOrderSheetPdf } from './query/order_sheet_pdf.js';
-import { selectChallanPdf } from './query/challan_pdf.js';
-import { selectEDReport } from './query/report_for_ed.js';
-import { selectOrderRegisterReport } from './query/order_register.js';
-import {
-	selectDeliveryReportThread,
-	selectDeliveryReportZipper,
-} from './query/delivery_report.js';
-import { selectCountLengthWiseDeliveryReport } from './query/count_length_wise_delivery_report.js';
-import { selectPackingList } from './query/packing_list_report.js';
-import {
-	selectItemWiseProduction,
-	selectItemZipperEndWiseProduction,
-} from './query/production_query.js';
-import {
-	selectProductWiseConsumption,
-	selectProductWiseConsumptionForOrder,
-} from './query/product_wise_consumption.js';
 
 const reportRouter = Router();
 

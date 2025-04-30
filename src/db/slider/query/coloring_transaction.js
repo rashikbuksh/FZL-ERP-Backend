@@ -6,7 +6,7 @@ import {
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
-import { coloring_transaction, stock } from '../schema.js';
+import { coloring_transaction } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

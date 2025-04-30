@@ -17,8 +17,6 @@ export async function getOrderDetailsPagination(req, res, next) {
 		order_info_uuid,
 	} = req.query;
 
-	// console.log(all, '- all', approved, '- approved');
-
 	let marketingUuid = null;
 
 	// get marketing_uuid from own_uuid

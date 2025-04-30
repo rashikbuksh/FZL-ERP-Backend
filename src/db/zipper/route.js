@@ -13,6 +13,7 @@ import * as multiColorDashboardOperations from './query/multi_color_dashboard.js
 import * as multiColorTapeReceiveOperations from './query/multi_color_tape_receive.js';
 import * as orderDescriptionOperations from './query/order_description.js';
 import * as orderEntryOperations from './query/order_entry.js';
+import * as orderEntryLogOperations from './query/order_entry_log.js';
 import * as orderInfoOperations from './query/order_info.js';
 import * as planningOperations from './query/planning.js';
 import * as planningEntryOperations from './query/planning_entry.js';
@@ -21,8 +22,8 @@ import * as tapeCoilOperations from './query/tape_coil.js';
 import * as tapeCoilProductionOperations from './query/tape_coil_production.js';
 import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
+import * as tapeTransferToDyeingOperations from './query/tape_transfer_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
-import * as orderEntryLogOperations from './query/order_entry_log.js';
 
 const zipperRouter = Router();
 
@@ -559,5 +560,27 @@ zipperRouter.get('/order-entry-log/:id', orderEntryLogOperations.select);
 zipperRouter.post('/order-entry-log', orderEntryLogOperations.insert);
 zipperRouter.put('/order-entry-log/:id', orderEntryLogOperations.update);
 zipperRouter.delete('/order-entry-log/:id', orderEntryLogOperations.remove);
+
+// ? --------------------- Tape Transfer To Dyeing ROUTES ---------------------
+zipperRouter.get(
+	'/tape-transfer-to-dyeing',
+	tapeTransferToDyeingOperations.selectAll
+);
+zipperRouter.get(
+	'/tape-transfer-to-dyeing/:uuid',
+	tapeTransferToDyeingOperations.select
+);
+zipperRouter.post(
+	'/tape-transfer-to-dyeing',
+	tapeTransferToDyeingOperations.insert
+);
+zipperRouter.put(
+	'/tape-transfer-to-dyeing/:uuid',
+	tapeTransferToDyeingOperations.update
+);
+zipperRouter.delete(
+	'/tape-transfer-to-dyeing/:uuid',
+	tapeTransferToDyeingOperations.remove
+);
 
 export { zipperRouter };

@@ -1,12 +1,7 @@
 import { eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
-import * as hrSchema from '../../hr/schema.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { die_casting, trx_against_stock } from '../schema.js';
+import { trx_against_stock } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
