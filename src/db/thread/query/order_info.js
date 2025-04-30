@@ -365,14 +365,7 @@ export async function selectThreadSwatch(req, res, next) {
 		order_info.updated_at,
 		order_info.remarks,
 		order_entry.swatch_approval_date,
-		CASE 
-			WHEN (
-				SELECT SUM(batch_entry.quantity) 
-				FROM thread.batch_entry 
-				WHERE batch_entry.order_entry_uuid = order_entry.uuid
-			) > 0 THEN TRUE 
-			ELSE FALSE 
-		END AS is_batch_created
+		COALESCE(batch_status.is_batch_created, FALSE) AS is_batch_created
 	FROM 
 		thread.order_info
 	LEFT JOIN 
@@ -381,6 +374,18 @@ export async function selectThreadSwatch(req, res, next) {
 		thread.count_length ON order_entry.count_length_uuid = count_length.uuid
 	LEFT JOIN 
 		lab_dip.recipe AS lab_dip_recipe ON order_entry.recipe_uuid = lab_dip_recipe.uuid
+	LEFT JOIN (
+		SELECT 
+			batch_entry.order_entry_uuid,
+			CASE 
+				WHEN SUM(batch_entry.quantity) > 0 THEN TRUE 
+				ELSE FALSE 
+			END AS is_batch_created
+		FROM 
+			thread.batch_entry
+		GROUP BY 
+			batch_entry.order_entry_uuid
+	) AS batch_status ON order_entry.uuid = batch_status.order_entry_uuid
 	WHERE 
 		order_info.is_cancelled = FALSE
 		${
@@ -394,7 +399,7 @@ export async function selectThreadSwatch(req, res, next) {
 			order_type === 'complete_order'
 				? sql`AND order_entry.quantity >= order_entry.delivered AND order_entry.recipe_uuid IS NOT NULL`
 				: order_type === 'incomplete_order'
-					? sql`AND order_entry.quantity <= order_entry.delivered`
+					? sql`AND order_entry.quantity < order_entry.delivered`
 					: sql``
 		}
 	ORDER BY 
