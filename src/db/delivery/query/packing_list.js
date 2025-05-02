@@ -607,7 +607,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
-					WHERE dvl.is_warehouse_received = TRUE AND dvl.warehouse_received_date::date BETWEEN ${from} AND ${to}
+					WHERE dvl.is_warehouse_received = TRUE AND dvl.warehouse_received_date BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
@@ -698,7 +698,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
-					WHERE dvl.gate_pass = 1 AND dvl.gate_pass_date::date BETWEEN ${from} AND ${to}
+					WHERE dvl.gate_pass = 1 AND dvl.gate_pass_date BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
