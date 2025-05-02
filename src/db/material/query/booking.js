@@ -107,16 +107,28 @@ export async function selectAll(req, res, next) {
 			eq(booking.marketing_uuid, publicSchema.marketing.uuid)
 		);
 
-	if (s_type != undefined && from_date != undefined && to_date != undefined) {
+	if (
+		s_type != undefined &&
+		s_type != null &&
+		from_date != undefined &&
+		from_date != null &&
+		to_date != undefined &&
+		to_date != null
+	) {
 		bookingPromise.where(
 			and(
 				sql`booking.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`,
 				eq(info.store_type, s_type)
 			)
 		);
-	} else if (s_type != undefined) {
+	} else if (s_type != undefined && s_type != null) {
 		bookingPromise.where(eq(info.store_type, s_type));
-	} else if (from_date != undefined && to_date != undefined) {
+	} else if (
+		from_date != undefined &&
+		from_date != null &&
+		to_date != undefined &&
+		to_date != null
+	) {
 		bookingPromise.where(
 			sql`booking.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
 		);

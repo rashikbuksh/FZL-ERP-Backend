@@ -369,6 +369,11 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                 THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
                 ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
             END AS order_number,
+        CASE 
+            WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
+            THEN order_info.is_sample
+            ELSE toi.is_sample
+        END AS is_sample,
         packing_list.challan_uuid,
         CASE
             WHEN packing_list.challan_uuid IS NOT NULL 

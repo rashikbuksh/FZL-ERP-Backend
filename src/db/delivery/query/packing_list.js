@@ -206,7 +206,8 @@ export async function selectAll(req, res, next) {
 		dvl.warehouse_received_by,
 		dvl.warehouse_received_by_name,
 		dvl.gate_pass_by,
-		dvl.gate_pass_by_name
+		dvl.gate_pass_by_name,
+		dvl.is_sample
     ORDER BY 
         dvl.created_at DESC`
 	);
@@ -271,7 +272,8 @@ export async function select(req, res, next) {
 			dvl.warehouse_received_by,
 			dvl.warehouse_received_by_name,
 			dvl.gate_pass_by,
-			dvl.gate_pass_by_name
+			dvl.gate_pass_by_name,
+			dvl.is_sample
 		ORDER BY 
 			dvl.created_at DESC
 		
@@ -643,7 +645,8 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						dvl.warehouse_received_by,
 						dvl.warehouse_received_by_name,
 						dvl.gate_pass_by,
-						dvl.gate_pass_by_name
+						dvl.gate_pass_by_name,
+						dvl.is_sample
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -733,7 +736,8 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						dvl.warehouse_received_by,
 						dvl.warehouse_received_by_name,
 						dvl.gate_pass_by,
-						dvl.gate_pass_by_name
+						dvl.gate_pass_by_name,
+						dvl.is_sample
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -822,7 +826,8 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 						dvl.warehouse_received_by,
 						dvl.warehouse_received_by_name,
 						dvl.gate_pass_by,
-						dvl.gate_pass_by_name
+						dvl.gate_pass_by_name,
+						dvl.is_sample
 					ORDER BY
 						dvl.created_at DESC
 	`;
