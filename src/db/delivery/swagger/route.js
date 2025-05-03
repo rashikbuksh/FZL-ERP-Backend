@@ -305,7 +305,7 @@ export const pathDeliveryPackingList = {
 			},
 		},
 	},
-	'/delivery/update-challan-uuid/for-packing-list/{uuid}': {
+	'/delivery/update-challan-uuid/for-packing-list/{packing_list_uuid}': {
 		put: {
 			tags: ['delivery.packing-list'],
 			summary: 'Update challan_uuid for packing list',
@@ -331,7 +331,7 @@ export const pathDeliveryPackingList = {
 			tags: ['delivery.packing-list'],
 			summary: 'Get all packing list received log',
 			description: 'Get all packing list received log',
-			operationId: "getPackingListReceivedLog",
+			operationId: 'getPackingListReceivedLog',
 			parameters: [
 				SE.parameter_query('from', 'from', SE.date_time()),
 				SE.parameter_query('to', 'to', SE.date_time()),

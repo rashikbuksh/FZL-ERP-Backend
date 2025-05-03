@@ -761,7 +761,11 @@ export async function selectOrderInfo(req, res, next) {
 		let orderInfoPromise = db
 			.select({
 				value: zipperSchema.order_info.uuid,
-				label: sql`CASE WHEN ${party_name} = 'true' THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name) ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) END`,
+				label: sql`
+					CASE WHEN ${party_name} = 'true' 
+						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name) 
+						ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
+					END`,
 			})
 			.from(zipperSchema.order_info)
 			.leftJoin(
@@ -773,7 +777,7 @@ export async function selectOrderInfo(req, res, next) {
 
 		if (own_uuid) {
 			orderInfoPromise = orderInfoPromise.where(
-				sql`order_info.marketing_uuid = ${marketingUuid}`
+				sql` order_info.marketing_uuid = ${marketingUuid}`
 			);
 		}
 

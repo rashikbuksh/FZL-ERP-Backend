@@ -3,6 +3,7 @@ import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { packing_list } from '../schema.js';
+import { GetDateTime } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -539,36 +540,38 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 	const { challan_uuid, item_for } = req.body;
 
 	let gate_pass = 0;
+	let gate_pass_date = null;
 
 	if (item_for == 'sample_zipper' || item_for == 'sample_thread') {
 		gate_pass = 1;
+		gate_pass_date = GetDateTime();
 	}
 
 	const packingListPromise = db
 		.update(packing_list)
-		.set({ challan_uuid })
+		.set({ challan_uuid, gate_pass, gate_pass_date })
 		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
 		.returning({
 			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text)`,
 		});
 
-	const packingListGatePassPromise = db
-		.update(packing_list)
-		.set({ gate_pass })
-		.where(eq(packing_list.uuid, req.params.packing_list_uuid))
-		.returning({
-			updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text)`,
-		});
+	// const packingListGatePassPromise = db
+	// 	.update(packing_list)
+	// 	.set({ gate_pass })
+	// 	.where(eq(packing_list.uuid, req.params.packing_list_uuid))
+	// 	.returning({
+	// 		updatedId: sql`CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text)`,
+	// 	});
 
 	try {
 		const data = await packingListPromise;
-		const dataGatePass = await packingListGatePassPromise;
+		// const dataGatePass = await packingListGatePassPromise;
 		const toast = {
 			status: 201,
 			type: challan_uuid != null ? 'insert' : 'delete',
 			message: `${data[0].updatedId} updated`,
 		};
-		return await res.status(201).json({ toast, data, extra: dataGatePass });
+		return await res.status(201).json({ toast, data });
 	} catch (error) {
 		console.error(error);
 		handleError({ error, res });

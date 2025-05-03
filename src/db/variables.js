@@ -1,13 +1,7 @@
-import { asc, desc, eq, like, or, sql } from 'drizzle-orm';
-import {
-	decimal,
-	integer,
-	pgSchema,
-	serial,
-	text,
-	timestamp,
-	uuid,
-} from 'drizzle-orm/pg-core';
+import { asc, desc, like, or, sql } from 'drizzle-orm';
+import { decimal, text, timestamp } from 'drizzle-orm/pg-core';
+
+import { format } from 'date-fns';
 
 export const defaultUUID = (column = 'uuid') =>
 	text(column, {
@@ -85,3 +79,5 @@ export function constructSelectAllQuery(
 
 	return baseQuery;
 }
+
+export const GetDateTime = () => format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
