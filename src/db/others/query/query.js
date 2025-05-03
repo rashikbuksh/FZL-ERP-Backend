@@ -1558,14 +1558,13 @@ export async function selectOrderNumberForPi(req, res, next) {
 				vod.order_number AS label
 			FROM
 				zipper.v_order_details vod
-				LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
 				LEFT JOIN zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 			WHERE
 				vod.is_cash = 1 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
-				oi.party_uuid = ${req.params.party_uuid} AND 
-				(oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))
+				vod.party_uuid = ${req.params.party_uuid} AND 
+				(vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))
 				${pi_uuid ? sql`AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql`AND oe.quantity - sfg.pi > 0`}
 			ORDER BY
 				vod.order_number ASC
@@ -1577,14 +1576,13 @@ export async function selectOrderNumberForPi(req, res, next) {
 				vod.order_number AS label
 			FROM
 				zipper.v_order_details vod
-				LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
 				LEFT JOIN zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 			WHERE
 				vod.is_cash = 0 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
-				oi.party_uuid = ${req.params.party_uuid} AND 
-				(oi.is_sample = 0 OR (oi.is_sample = 1 AND oi.is_bill = 1))
+				vod.party_uuid = ${req.params.party_uuid} AND 
+				(vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))
 				${pi_uuid ? sql`AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql`AND oe.quantity - sfg.pi > 0`}
 			ORDER BY
 				vod.order_number ASC`;

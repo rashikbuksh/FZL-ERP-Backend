@@ -134,7 +134,7 @@ export async function threadProductionStatusOrderWise(req, res, next) {
             ) thread_batch ON thread_batch.order_info_uuid = order_info.uuid
             WHERE
                 ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
-                AND ${from && to ? sql` order_info.created_at::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
+                AND ${from && to ? sql` order_info.created_at BETWEEN ${from}::timestamp AND ${to}::timestamp + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
             `;
 
 		// query.append(
@@ -145,31 +145,31 @@ export async function threadProductionStatusOrderWise(req, res, next) {
 
 		if (status === 'completed') {
 			query.append(
-				sql`and order_entry.quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+				sql` AND order_entry.quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0 `
 			);
 		} else if (status === 'pending') {
 			query.append(
-				sql`and order_entry.quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+				sql` AND order_entry.quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0 `
 			);
 		} else if (status === 'over_delivered') {
 			query.append(
-				sql`and order_entry.quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0`
+				sql` AND order_entry.quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 0 `
 			);
 		} else if (status === 'sample_completed') {
 			query.append(
-				sql`and order_entry.quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+				sql` AND order_entry.quantity = coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1 `
 			);
 		} else if (status === 'sample_pending') {
 			query.append(
-				sql`and order_entry.quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+				sql` AND order_entry.quantity > coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1 `
 			);
 		} else if (status === 'sample_over_delivered') {
 			query.append(
-				sql`and order_entry.quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1`
+				sql` AND order_entry.quantity < coalesce(thread_challan_sum.total_delivery_delivered_quantity,0) AND order_info.is_sample = 1 `
 			);
 		}
 
-		query.append(sql`ORDER BY order_info.created_at DESC`);
+		query.append(sql` ORDER BY order_info.created_at DESC`);
 
 		const resultPromise = db.execute(query);
 
