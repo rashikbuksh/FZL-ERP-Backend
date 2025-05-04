@@ -222,7 +222,7 @@ export const tagDelivery = [
 		},
 	},
 	{
-		name: 'delivery.quantity-return',
+		name: 'delivery.quantity_return',
 		description: 'Operations about Quantity Return',
 		externalDocs: {
 			description: 'Find out more',

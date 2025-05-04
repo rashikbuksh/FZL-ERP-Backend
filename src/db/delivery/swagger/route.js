@@ -1465,9 +1465,9 @@ export const pathDeliveryCarton = {
 };
 
 export const pathDeliveryQuantityReturn = {
-	'/delivery/quantity-return': {
+	'/delivery/quantity_return': {
 		get: {
-			tags: ['delivery.quantity-return'],
+			tags: ['delivery.quantity_return'],
 			summary: 'Get all quantity returns',
 			description: 'Get all quantity returns',
 			// operationId: "getQuantityReturn",
@@ -1493,7 +1493,7 @@ export const pathDeliveryQuantityReturn = {
 			},
 		},
 		post: {
-			tags: ['delivery.quantity-return'],
+			tags: ['delivery.quantity_return'],
 			summary: 'Create a new quantity return',
 			description: 'Create a new quantity return',
 			// operationId: "createQuantityReturn",
@@ -1526,9 +1526,9 @@ export const pathDeliveryQuantityReturn = {
 			},
 		},
 	},
-	'/delivery/quantity-return/{uuid}': {
+	'/delivery/quantity_return/{uuid}': {
 		get: {
-			tags: ['delivery.quantity-return'],
+			tags: ['delivery.quantity_return'],
 			summary: 'Get a quantity return by uuid',
 			description: 'Get a quantity return by uuid',
 			// operationId: "getQuantityReturnByUuid",
@@ -1554,7 +1554,7 @@ export const pathDeliveryQuantityReturn = {
 			},
 		},
 		put: {
-			tags: ['delivery.quantity-return'],
+			tags: ['delivery.quantity_return'],
 			summary: 'Update a quantity return by uuid',
 			description: 'Update a quantity return by uuid',
 			// operationId: "updateQuantityReturnByUuid",
@@ -1592,7 +1592,7 @@ export const pathDeliveryQuantityReturn = {
 			},
 		},
 		delete: {
-			tags: ['delivery.quantity-return'],
+			tags: ['delivery.quantity_return'],
 			summary: 'Delete a quantity return by uuid',
 			description: 'Delete a quantity return by uuid',
 			// operationId: "deleteQuantityReturnByUuid",
@@ -1628,4 +1628,5 @@ export const pathDelivery = {
 	// ...pathDeliveryChallanEntry,
 	...pathDeliveryVehicle,
 	...pathDeliveryCarton,
+	...pathDeliveryQuantityReturn,
 };
