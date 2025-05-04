@@ -18,6 +18,10 @@ export const pathDeliveryPackingList = {
 					'gate_pass',
 					'all',
 				]),
+				SE.parameter_query('order_type', 'order_type', [
+					'bulk',
+					'sample',
+				]),
 			],
 			responses: {
 				200: {

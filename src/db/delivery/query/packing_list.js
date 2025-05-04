@@ -104,7 +104,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { challan_uuid, can_show, type } = req.query;
+	const { challan_uuid, can_show, type, order_type } = req.query;
 
 	let query = sql`
     SELECT dvl.*,
@@ -167,6 +167,12 @@ export async function selectAll(req, res, next) {
 		query.append(sql`)`);
 	}
 
+	if (order_type == 'bulk') {
+		query.append(sql`AND dvl.is_sample = 0`);
+	} else if (order_type == 'sample') {
+		query.append(sql`AND dvl.is_sample = 1`);
+	}
+	
 	query.append(
 		sql`
     GROUP BY 
