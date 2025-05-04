@@ -332,11 +332,12 @@ export async function selectParty(req, res, next) {
 				hasWhere = true;
 			}
 
-			if (marketing || is_cash || is_pi) {
+			if (marketing || is_cash || is_pi || own_uuid) {
 				query = query.append(sql` UNION `);
 				hasWhere = false;
 				query = query.append(
-					sql`SELECT DISTINCT
+					sql`
+					SELECT DISTINCT
 						party.uuid AS value,
 						party.name AS label
 					FROM public.party
