@@ -40,6 +40,7 @@ import {
 	threadProductionReportPartyWiseByDate,
 } from './query/thread_production_report_by_date.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
+import { selectThreadBatchReport } from './query/thread_batch_report.js';
 
 const reportRouter = Router();
 
@@ -213,6 +214,9 @@ reportRouter.get(
 	'/product-wise-consumption-for-order-report',
 	selectProductWiseConsumptionForOrder
 );
+
+// * Thread Batch Report
+reportRouter.get('/thread-batch-report', selectThreadBatchReport);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -1263,6 +1267,32 @@ export const pathReport = {
 				200: SE.response_schema(200, {
 					product_name: SE.string('Product Name'),
 					total_consumption: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/thread-batch-report': {
+		get: {
+			summary: 'Thread Batch Report',
+			description: 'Thread Batch Report',
+			tags: ['report'],
+			operationId: 'selectThreadBatchReport',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					batch_number: SE.string('Batch Number'),
+					production_date: SE.date_time(),
+					production_quantity: SE.number(610),
+					production_value: SE.number(101555),
+					production_status: SE.string('Production Status'),
+					production_type: SE.string('Production Type'),
+					production_remarks: SE.string('Production Remarks'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
 				}),
 			},
 		},
