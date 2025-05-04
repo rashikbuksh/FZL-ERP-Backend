@@ -1,0 +1,161 @@
+import { desc, eq } from 'drizzle-orm';
+import { handleError, validateRequest } from '../../../util/index.js';
+import * as hrSchema from '../../hr/schema.js';
+import db from '../../index.js';
+
+import { quantity_return } from '../schema.js';
+import { alias } from 'drizzle-orm/pg-core';
+
+const completed_by_user = alias(hrSchema.users, 'completed_by_user');
+
+export async function insert(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const quantity_returnPromise = db
+		.insert(quantity_return)
+		.values(req.body)
+		.returning({ insertedName: quantity_return.id });
+
+	try {
+		const data = await quantity_returnPromise;
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${data[0].insertedName} inserted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		handleError({ error, res });
+	}
+}
+
+export async function update(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const quantity_returnPromise = db
+		.update(quantity_return)
+		.set(req.body)
+		.where(eq(quantity_return.uuid, req.params.uuid))
+		.returning({ updatedName: quantity_return.id });
+
+	try {
+		const data = await quantity_returnPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedName} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		handleError({ error, res });
+	}
+}
+
+export async function remove(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const quantity_returnPromise = db
+		.delete(quantity_return)
+		.where(eq(quantity_return.uuid, req.params.uuid))
+		.returning({ deletedName: quantity_return.id });
+
+	try {
+		const data = await quantity_returnPromise;
+		const toast = {
+			status: 201,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		handleError({ error, res });
+	}
+}
+
+export async function selectAll(req, res, next) {
+	const quantity_returnPromise = db
+		.select({
+			uuid: quantity_return.uuid,
+			id: quantity_return.id,
+			order_entry_uuid: quantity_return.order_entry_uuid,
+			thread_order_entry_uuid: quantity_return.thread_order_entry_uuid,
+			fresh_quantity: quantity_return.fresh_quantity,
+			repair_quantity: quantity_return.repair_quantity,
+			is_completed: quantity_return.is_completed,
+			completed_date: quantity_return.completed_date,
+			completed_by: quantity_return.completed_by,
+			completed_by_name: completed_by_user.name,
+			created_by: quantity_return.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: quantity_return.created_at,
+			updated_at: quantity_return.updated_at,
+			remarks: quantity_return.remarks,
+		})
+		.from(quantity_return)
+		.leftJoin(
+			hrSchema.users,
+			eq(quantity_return.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			completed_by_user,
+			eq(quantity_return.completed_by, completed_by_user.uuid)
+		)
+		.orderBy(desc(quantity_return.created_at));
+
+	try {
+		const data = await quantity_returnPromise;
+		const toast = {
+			status: 200,
+			type: 'select all',
+			message: 'quantity_return list',
+		};
+		return res.status(200).json({ toast, data });
+	} catch (error) {
+		handleError({ error, res });
+	}
+}
+
+export async function select(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const quantity_returnPromise = db
+		.select({
+			uuid: quantity_return.uuid,
+			id: quantity_return.id,
+			order_entry_uuid: quantity_return.order_entry_uuid,
+			thread_order_entry_uuid: quantity_return.thread_order_entry_uuid,
+			fresh_quantity: quantity_return.fresh_quantity,
+			repair_quantity: quantity_return.repair_quantity,
+			is_completed: quantity_return.is_completed,
+			completed_date: quantity_return.completed_date,
+			completed_by: quantity_return.completed_by,
+			completed_by_name: completed_by_user.name,
+			created_by: quantity_return.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: quantity_return.created_at,
+			updated_at: quantity_return.updated_at,
+			remarks: quantity_return.remarks,
+		})
+		.from(quantity_return)
+		.leftJoin(
+			hrSchema.users,
+			eq(quantity_return.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			completed_by_user,
+			eq(quantity_return.completed_by, completed_by_user.uuid)
+		)
+		.where(eq(quantity_return.uuid, req.params.uuid));
+
+	try {
+		const data = await quantity_returnPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'quantity_return',
+		};
+		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		handleError({ error, res });
+	}
+}

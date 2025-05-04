@@ -1464,6 +1464,163 @@ export const pathDeliveryCarton = {
 	},
 };
 
+export const pathDeliveryQuantityReturn = {
+	'/delivery/quantity-return': {
+		get: {
+			tags: ['delivery.quantity-return'],
+			summary: 'Get all quantity returns',
+			description: 'Get all quantity returns',
+			// operationId: "getQuantityReturn",
+			responses: {
+				200: {
+					description: 'Return list of quantity returns',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: SE.uuid(),
+									packing_list_uuid: SE.uuid(),
+									quantity_returned: SE.number(0),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			tags: ['delivery.quantity-return'],
+			summary: 'Create a new quantity return',
+			description: 'Create a new quantity return',
+			// operationId: "createQuantityReturn",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/quantity_return',
+						},
+					},
+				},
+			},
+
+			responses: {
+				200: {
+					description: 'successful operation',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/delivery/quantity_return',
+						},
+					},
+				},
+				405: {
+					description: 'Invalid input',
+				},
+			},
+		},
+	},
+	'/delivery/quantity-return/{uuid}': {
+		get: {
+			tags: ['delivery.quantity-return'],
+			summary: 'Get a quantity return by uuid',
+			description: 'Get a quantity return by uuid',
+			// operationId: "getQuantityReturnByUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' quantity return to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Quantity return not found',
+				},
+			},
+		},
+		put: {
+			tags: ['delivery.quantity-return'],
+			summary: 'Update a quantity return by uuid',
+			description: 'Update a quantity return by uuid',
+			// operationId: "updateQuantityReturnByUuid",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' quantity return to update',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							$ref: '#/definitions/delivery/quantity_return',
+						},
+					},
+				},
+			},
+
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Quantity return not found',
+				},
+				405: { description: 'Validation exception' },
+			},
+		},
+		delete: {
+			tags: ['delivery.quantity-return'],
+			summary: 'Delete a quantity return by uuid',
+			description: 'Delete a quantity return by uuid',
+			// operationId: "deleteQuantityReturnByUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: 'quantity return to delete',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Quantity return not found',
+				},
+			},
+		},
+	},
+};
+
 export const pathDelivery = {
 	...pathDeliveryPackingList,
 	...pathDeliveryPackingListEntry,

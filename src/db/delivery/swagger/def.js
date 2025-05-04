@@ -33,6 +33,9 @@ export const defPackingList = SED({
 		gate_pass_date: SE.date_time(),
 		warehouse_received_by: SE.uuid(),
 		gate_pass_by: SE.uuid(),
+		is_deleted: SE.boolean(false),
+		deleted_time: SE.date_time(),
+		deleted_by: SE.uuid(),
 	},
 	xml: 'Delivery/PackingList',
 });
@@ -144,6 +147,27 @@ export const defCarton = SED({
 	xml: 'Delivery/Carton',
 });
 
+export const defQuantityReturn = SED({
+	// type: 'object',
+	required: ['uuid', 'created_at', 'created_by'],
+	properties: {
+		uuid: SE.uuid(),
+		id: SE.number(1),
+		order_entry_uuid: SE.uuid(),
+		thread_order_entry_uuid: SE.uuid(),
+		fresh_quantity: SE.number(0),
+		repair_quantity: SE.number(0),
+		is_completed: SE.boolean(false),
+		completed_date: SE.date_time(),
+		completed_by: SE.uuid(),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Delivery/QuantityReturn',
+});
+
 // * Marge All
 
 export const defDelivery = {
@@ -152,6 +176,7 @@ export const defDelivery = {
 	challan: defChallan,
 	vehicle: defVehicle,
 	carton: defCarton,
+	quantity_return: defQuantityReturn,
 };
 
 // * Tag
@@ -191,6 +216,14 @@ export const tagDelivery = [
 	{
 		name: 'delivery.carton',
 		description: 'Operations about Carton',
+		externalDocs: {
+			description: 'Find out more',
+			url: 'http://swagger.io',
+		},
+	},
+	{
+		name: 'delivery.quantity-return',
+		description: 'Operations about Quantity Return',
 		externalDocs: {
 			description: 'Find out more',
 			url: 'http://swagger.io',

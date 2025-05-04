@@ -5,6 +5,7 @@ import * as deliveryOperations from './query/delivery_dashboard.js';
 import * as packingListOperations from './query/packing_list.js';
 import * as packingListEntryOperations from './query/packing_list_entry.js';
 import * as vehicleOperations from './query/vehicle.js';
+import * as quantityReturnOperations from './query/quantity_return.js';
 
 const deliveryRouter = Router();
 
@@ -150,6 +151,16 @@ deliveryRouter.get('/dashboard', deliveryOperations.selectDelivery);
 deliveryRouter.get(
 	'/dashboard-thread',
 	deliveryOperations.selectDeliveryThread
+);
+
+// * quantity_return routes
+deliveryRouter.get('/quantity-return', quantityReturnOperations.selectAll);
+deliveryRouter.get('/quantity-return/:uuid', quantityReturnOperations.select);
+deliveryRouter.post('/quantity-return', quantityReturnOperations.insert);
+deliveryRouter.put('/quantity-return/:uuid', quantityReturnOperations.update);
+deliveryRouter.delete(
+	'/quantity-return/:uuid',
+	quantityReturnOperations.remove
 );
 
 export { deliveryRouter };

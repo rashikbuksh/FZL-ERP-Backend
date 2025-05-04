@@ -60,6 +60,11 @@ export const packing_list = delivery.table('packing_list', {
 	gate_pass_by: defaultUUID('gate_pass_by')
 		.references(() => hrSchema.users.uuid)
 		.default(null),
+	is_deleted: boolean('is_deleted').default(false),
+	deleted_time: DateTime('deleted_time').default(null),
+	deleted_by: defaultUUID('deleted_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 });
 
 export const packing_list_entry = delivery.table('packing_list_entry', {
@@ -138,6 +143,38 @@ export const carton = delivery.table('carton', {
 	name: text('name').notNull(),
 	used_for: text('used_for').notNull(),
 	active: integer('active').default(1),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const quantity_return_sequence = delivery.sequence(
+	'quantity_return_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
+
+export const quantity_return = delivery.table('quantity_return', {
+	uuid: uuid_primary,
+	id: integer('id').default(
+		sql`nextval('delivery.quantity_return_sequence')`
+	),
+	order_entry_uuid: defaultUUID('order_entry_uuid').references(
+		() => zipperSchema.order_entry.uuid
+	),
+	thread_order_entry_uuid: defaultUUID('thread_order_entry_uuid').references(
+		() => threadSchema.order_entry.uuid
+	),
+	fresh_quantity: PG_DECIMAL('fresh_quantity').default(0),
+	repair_quantity: PG_DECIMAL('repair_quantity').default(0),
+	is_completed: boolean('is_completed').default(false),
+	completed_date: DateTime('completed_date').default(null),
+	completed_by: defaultUUID('completed_by').references(
+		() => hrSchema.users.uuid
+	),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
