@@ -58,13 +58,13 @@ export async function insert(req, res, next) {
 			insertedId: sql`concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))`,
 		});
 
-	const piViewPromise = sql`
-	REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
-	`;
+	// const piViewPromise = sql`
+	// REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
+	// `;
 
 	try {
 		const data = await piPromise;
-		const piEntryData = await db.execute(piViewPromise);
+		// const piEntryData = await db.execute(piViewPromise);
 		const toast = {
 			status: 201,
 			type: 'create',
@@ -88,13 +88,13 @@ export async function update(req, res, next) {
 			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
 		});
 
-	const piViewPromise = sql`
-	REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
-	`;
+	// const piViewPromise = sql`
+	// REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
+	// `;
 
 	try {
 		const data = await piPromise;
-		const piEntryData = await db.execute(piViewPromise);
+		// const piEntryData = await db.execute(piViewPromise);
 		const toast = {
 			status: 201,
 			type: 'update',
@@ -117,14 +117,14 @@ export async function remove(req, res, next) {
 			deletedId: sql`pi_cash_entry.uuid`,
 		});
 
-	const piViewPromise = sql`
-	REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
-	`;
+	// const piViewPromise = sql`
+	// REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
+	// `;
 
 	try {
 		const piEntryData = await piEntryPromise;
 
-		const piViewData = await db.execute(piViewPromise);
+		// const piViewData = await db.execute(piViewPromise);
 
 		const piPromise = db
 			.delete(pi_cash)

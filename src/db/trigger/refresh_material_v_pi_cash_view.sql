@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION refresh_v_pi_cash()
+CREATE OR REPLACE FUNCTION commercial.refresh_v_pi_cash()
 RETURNS TRIGGER AS $$
 BEGIN
     REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
@@ -10,4 +10,4 @@ CREATE TRIGGER refresh_v_pi_cash_trigger
 AFTER INSERT OR UPDATE OR DELETE
 ON commercial.pi_cash
 FOR EACH STATEMENT
-EXECUTE FUNCTION refresh_v_pi_cash();
+EXECUTE FUNCTION commercial.refresh_v_pi_cash();
