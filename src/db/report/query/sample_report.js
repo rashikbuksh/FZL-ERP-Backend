@@ -120,7 +120,7 @@ export async function selectSampleReportByDate(req, res, next) {
 		}
 
 		const query = sql`
-                     SELECT 
+                        SELECT 
                             vodf.order_number,
                             vodf.order_info_uuid,
                             vodf.marketing_name,
@@ -195,7 +195,7 @@ export async function selectSampleReportByDate(req, res, next) {
                         LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
                         LEFT JOIN (
                             SELECT 
-                                ch.order_info_uuid,
+                                ple.sfg_uuid,
                                 json_agg(
                                     jsonb_build_object(
                                         'challan_uuid', ch.uuid,
@@ -207,9 +207,11 @@ export async function selectSampleReportByDate(req, res, next) {
                                 ) AS challan_info
                             FROM
                                 delivery.challan ch
+                            LEFT JOIN delivery.packing_list pl ON ch.uuid = pl.challan_uuid
+                            LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
                             LEFT JOIN (
                                 SELECT 
-                                    pl.challan_uuid,
+                                    ple.sfg_uuid,
                                     SUM(ple.quantity) as challan_quantity
                                 FROM 
                                     delivery.packing_list_entry ple
@@ -217,17 +219,16 @@ export async function selectSampleReportByDate(req, res, next) {
                                 WHERE 
                                     pl.challan_uuid IS NOT NULL
                                 GROUP BY
-                                    pl.challan_uuid
-                            ) challan_quantity ON challan_quantity.challan_uuid = ch.uuid
+                                    ple.sfg_uuid
+                            ) challan_quantity ON challan_quantity.sfg_uuid = ple.sfg_uuid
                             GROUP BY 
-                                ch.order_info_uuid
-                        ) ch_details ON ch_details.order_info_uuid = oi.uuid
+                                ple.sfg_uuid
+                        ) ch_details ON ch_details.sfg_uuid = sfg.uuid
                         WHERE
                             ${is_sample ? sql`oi.is_sample = ${is_sample}` : sql`1=1`}
                             AND ${
 								date && toDate
-									? sql`od.created_at BETWEEN ${date}::TIMESTAMP 
-                                        AND ${toDate}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'`
+									? sql`od.created_at BETWEEN ${date}::TIMESTAMP AND ${toDate}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'`
 									: sql`TRUE`
 							}
                             AND ${own_uuid ? sql`oi.marketing_uuid = ${marketing_uuid}` : sql`TRUE`}

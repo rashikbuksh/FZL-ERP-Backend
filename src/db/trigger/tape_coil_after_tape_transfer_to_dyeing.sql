@@ -60,7 +60,7 @@ BEGIN
         quantity_in_coil = quantity_in_coil - 
             CASE 
                 WHEN OLD.tape_transfer_type = 'coil_to_store' THEN OLD.trx_quantity
-                WHEN OLD.tape_transfer_type = 'coil_transfer_to_dyeing' THEN -OLD.trx_quantity
+                WHEN OLD.tape_transfer_type = 'coil_to_dyeing' THEN -OLD.trx_quantity
                 ELSE 0
             END + 
             CASE 
