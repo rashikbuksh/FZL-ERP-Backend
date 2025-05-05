@@ -1,4 +1,5 @@
 import SE from '../../../util/swagger_example.js';
+
 // * Public Buyer * //
 const pathPublicBuyer = {
 	'/public/buyer': {

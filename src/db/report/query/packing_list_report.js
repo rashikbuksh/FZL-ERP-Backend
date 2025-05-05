@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { handleError, validateRequest } from '../../../util/index.js';
+import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectPackingList(req, res, next) {

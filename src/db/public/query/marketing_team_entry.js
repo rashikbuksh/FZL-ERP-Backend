@@ -1,8 +1,7 @@
-import { desc, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import { marketing, marketing_team, marketing_team_entry } from '../schema.js';
 
 export async function insert(req, res, next) {

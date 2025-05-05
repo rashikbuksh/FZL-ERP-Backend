@@ -1,4 +1,3 @@
-// import { ComparePass, CreateToken } from "@/middleware/auth.js";
 import { desc, eq } from 'drizzle-orm';
 import {
 	ComparePass,

@@ -7,7 +7,6 @@ import * as publicSchema from '../../public/schema.js';
 import { order_info } from '../schema.js';
 
 export async function insert(req, res, next) {
-	// insert issue persists (insert issue)
 	if (!validateRequest(req, next)) return;
 
 	const {

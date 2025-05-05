@@ -7,7 +7,6 @@ import * as stockToSfgOperations from './query/stock_to_sfg.js';
 import * as trxOperations from './query/trx.js';
 import * as typeOperations from './query/type.js';
 import * as usedOperations from './query/used.js';
-import material from './schema.js';
 
 const materialRouter = Router();
 

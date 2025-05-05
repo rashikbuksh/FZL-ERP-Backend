@@ -1,6 +1,5 @@
-import { eq, sql } from 'drizzle-orm';
-import { createApi } from '../../../util/api.js';
-import { handleError, validateRequest } from '../../../util/index.js';
+import { sql } from 'drizzle-orm';
+import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectChallanPdf(req, res, next) {

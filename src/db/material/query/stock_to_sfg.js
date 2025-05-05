@@ -1,10 +1,6 @@
 import { eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import { info, stock_to_sfg } from '../schema.js';
 
 export async function insert(req, res, next) {

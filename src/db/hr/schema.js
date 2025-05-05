@@ -1,4 +1,4 @@
-import { integer, pgSchema, text, uuid } from 'drizzle-orm/pg-core';
+import { integer, pgSchema, text } from 'drizzle-orm/pg-core';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 
 const hr = pgSchema('hr');

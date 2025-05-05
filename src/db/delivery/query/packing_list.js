@@ -2,8 +2,8 @@ import { eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { packing_list } from '../schema.js';
 import { GetDateTime } from '../../variables.js';
+import { packing_list } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

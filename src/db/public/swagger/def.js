@@ -1,4 +1,5 @@
 import SE, { SED } from '../../../util/swagger_example.js';
+
 //* ./schema.js#buyer
 export const defPublicBuyer = SED({
 	required: ['uuid', 'name'],

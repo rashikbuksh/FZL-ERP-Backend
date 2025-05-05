@@ -1,7 +1,6 @@
-// * Delivery PackingList * //
-
 import SE from '../../../util/swagger_example.js';
 
+// * Delivery PackingList * //
 export const pathDeliveryPackingList = {
 	'/delivery/packing-list': {
 		get: {

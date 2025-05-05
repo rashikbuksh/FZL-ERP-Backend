@@ -1,4 +1,4 @@
-import SE, { SED } from '../../../util/swagger_example.js';
+import SE from '../../../util/swagger_example.js';
 
 // * Material Info * //
 export const pathMaterialInfo = {
@@ -11,60 +11,23 @@ export const pathMaterialInfo = {
 				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
 			],
 			responses: {
-				200: {
-					description: 'Returns all material info',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									section_uuid: SE.uuid(),
-									section_name: {
-										type: 'string',
-										example: 'section 1',
-									},
-									type_uuid: SE.uuid(),
-									type_name: {
-										type: 'string',
-										example: 'type 1',
-									},
-									name: {
-										type: 'string',
-										example: 'material 1',
-									},
-									short_name: {
-										type: 'string',
-										example: 'm1',
-									},
-									stock: SE.number(10.0),
-									booking_quantity: SE.number(10.0),
-									unit: { type: 'string', example: 'kg' },
-									threshold: {
-										type: 'number',
-										example: 10.0,
-									},
-									description: {
-										type: 'string',
-										example: 'material 1',
-									},
-									created_at: {
-										type: 'string',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'This is an entry',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					section_uuid: SE.uuid(),
+					section_name: SE.string('section 1'),
+					type_uuid: SE.uuid(),
+					type_name: SE.string('type 1'),
+					name: SE.string('material 1'),
+					short_name: SE.string('m1'),
+					stock: SE.number(10.0),
+					booking_quantity: SE.number(10.0),
+					unit: SE.string('kg'),
+					threshold: SE.number(10.0),
+					description: SE.string('material 1'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+				}),
 			},
 		},
 
@@ -77,18 +40,8 @@ export const pathMaterialInfo = {
 			parameters: [],
 			requestBody: SE.requestBody_schema_ref('material/info'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/material/info',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref('material/info'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -100,71 +53,25 @@ export const pathMaterialInfo = {
 			produces: ['application/json'],
 			parameters: [SE.parameter_params('material info to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							section_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							section_name: {
-								type: 'string',
-								example: 'section 1',
-							},
-							type_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							type_name: {
-								type: 'string',
-								example: 'type 1',
-							},
-							name: {
-								type: 'string',
-								example: 'material 1',
-							},
-							short_name: {
-								type: 'string',
-								example: 'm1',
-							},
-							stock: SE.number(10.0),
-							booking_quantity: SE.number(10.0),
-							unit: { type: 'string', example: 'kg' },
-							threshold: {
-								type: 'number',
-								example: 10.0,
-							},
-							description: {
-								type: 'string',
-								example: 'material 1',
-							},
-							created_at: {
-								type: 'string',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'This is an entry',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material info not found',
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					section_uuid: SE.uuid(),
+					section_name: SE.string('section 1'),
+					type_uuid: SE.uuid(),
+					type_name: SE.string('type 1'),
+					name: SE.string('material 1'),
+					short_name: SE.string('m1'),
+					stock: SE.number(10.0),
+					booking_quantity: SE.number(10.0),
+					unit: SE.string('kg'),
+					threshold: SE.number(10.0),
+					description: SE.string('material 1'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -178,15 +85,9 @@ export const pathMaterialInfo = {
 			],
 			requestBody: SE.requestBody_schema_ref('material/info'),
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material info not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -198,12 +99,8 @@ export const pathMaterialInfo = {
 				SE.parameter_params('material info to delete', 'uuid'),
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material info not found',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -217,19 +114,7 @@ export const pathMaterialSection = {
 			summary: 'Get all material section',
 			description: 'Get all material section',
 			responses: {
-				200: {
-					description: 'Returns all material section',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/material/section',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'material/section'),
 			},
 		},
 		post: {
@@ -241,18 +126,8 @@ export const pathMaterialSection = {
 			parameters: [],
 			requestBody: SE.requestBody_schema_ref('material/section'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/material/section',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'material/section'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -263,28 +138,16 @@ export const pathMaterialSection = {
 			description: 'Get material section by uuid',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' material section to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
+				SE.parameter_params(
+					'material section to get',
+					'uuid',
+					'string'
+				),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						$ref: '#/definitions/material/section',
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material section not found',
-				},
+				200: SE.response_schema_ref(200, 'material/section'),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -294,40 +157,18 @@ export const pathMaterialSection = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material section to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
+				SE.parameter_params(
+					'material section to update',
+					'uuid',
+					'string'
+				),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/section',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('material/section'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						$ref: '#/definitions/material/section',
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material section not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'material/section'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -336,22 +177,15 @@ export const pathMaterialSection = {
 			description: 'Delete a material section',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material section to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
+				SE.parameter_params(
+					'material section to delete',
+					'uuid',
+					'string'
+				),
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material section not found',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -366,128 +200,40 @@ export const pathMaterialStock = {
 			summary: 'Get all material stock',
 			description: 'Get all material stock',
 			responses: {
-				200: {
-					description: 'Returns all material stock',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									material_uuid: SE.uuid(),
-									material_name: {
-										type: 'string',
-										example: 'material 1',
-									},
-									stock: SE.number(10.0),
-									lab_dip: SE.number(10.0),
-									tape_making: {
-										type: 'number',
-										example: 10.0,
-									},
-									coil_forming: {
-										type: 'number',
-										example: 10.0,
-									},
-									dying_and_iron: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_gapping: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_gapping: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_teeth_molding: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_teeth_molding: {
-										type: 'number',
-										example: 10.0,
-									},
-									teeth_assembling_and_polishing: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_teeth_cleaning: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_teeth_cleaning: {
-										type: 'number',
-										example: 10.0,
-									},
-									plating_and_iron: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_sealing: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_sealing: {
-										type: 'number',
-										example: 10.0,
-									},
-									n_t_cutting: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_t_cutting: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_stopper: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_stopper: {
-										type: 'number',
-										example: 10.0,
-									},
-									n_stopper: {
-										type: 'number',
-										example: 10.0,
-									},
-									cutting: SE.number(10.0),
-									m_qc_and_packing: {
-										type: 'number',
-										example: 1000.0,
-									},
-									v_qc_and_packing: {
-										type: 'number',
-										example: 1000.0,
-									},
-									n_qc_and_packing: {
-										type: 'number',
-										example: 1000.0,
-									},
-									s_qc_and_packing: {
-										type: 'number',
-										example: 1000.0,
-									},
-									die_casting: {
-										type: 'number',
-										example: 10.0,
-									},
-									slider_assembly: {
-										type: 'number',
-										example: 10.0,
-									},
-									coloring: { type: 'string', example: 10.0 },
-									remarks: {
-										type: 'string',
-										example: 'This is an entry',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					stock: SE.number(10.0),
+					lab_dip: SE.number(10.0),
+					tape_making: SE.number(10.0),
+					coil_forming: SE.number(10.0),
+					dying_and_iron: SE.number(10.0),
+					m_gapping: SE.number(10.0),
+					v_gapping: SE.number(10.0),
+					v_teeth_molding: SE.number(10.0),
+					m_teeth_molding: SE.number(10.0),
+					teeth_assembling_and_polishing: SE.number(10.0),
+					m_teeth_cleaning: SE.number(10.0),
+					v_teeth_cleaning: SE.number(10.0),
+					plating_and_iron: SE.number(10.0),
+					m_sealing: SE.number(10.0),
+					v_sealing: SE.number(10.0),
+					n_t_cutting: SE.number(10.0),
+					v_t_cutting: SE.number(10.0),
+					m_stopper: SE.number(10.0),
+					v_stopper: SE.number(10.0),
+					n_stopper: SE.number(10.0),
+					cutting: SE.number(10.0),
+					m_qc_and_packing: SE.number(10.0),
+					v_qc_and_packing: SE.number(10.0),
+					n_qc_and_packing: SE.number(10.0),
+					s_qc_and_packing: SE.number(10.0),
+					die_casting: SE.number(10.0),
+					slider_assembly: SE.number(10.0),
+					coloring: { type: 'string', example: 10.0 },
+					remarks: SE.string('This is an entry'),
+				}),
 			},
 		},
 		post: {
@@ -497,28 +243,10 @@ export const pathMaterialStock = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/stock',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('material/stock'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/material/stock',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'material/stock'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -530,21 +258,11 @@ export const pathMaterialStock = {
 			description: 'Get material stock by uuid',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' material stock to get',
-					required: true,
-					type: 'string',
-				},
+				SE.parameter_params('material stock to get', 'uuid', 'string'),
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material stock not found',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -554,33 +272,17 @@ export const pathMaterialStock = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material stock to update',
-					required: true,
-					type: 'string',
-				},
+				SE.parameter_params(
+					'material stock to update',
+					'uuid',
+					'string'
+				),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/stock',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('material/stock'),
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material stock not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -589,21 +291,15 @@ export const pathMaterialStock = {
 			description: 'Delete a material stock',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material stock to delete',
-					required: true,
-					type: 'string',
-				},
+				SE.parameter_params(
+					'material stock to delete',
+					'uuid',
+					'string'
+				),
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material stock not found',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -613,19 +309,7 @@ export const pathMaterialStock = {
 			summary: 'Get all material stock below threshold',
 			description: 'Get all material stock below threshold',
 			responses: {
-				200: {
-					description: 'Returns all material stock below threshold',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/material/stock',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'material/stock'),
 			},
 		},
 	},
@@ -636,48 +320,24 @@ export const pathMaterialStock = {
 			description: 'Get material stock for a field name',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'fieldName',
-					in: 'path',
-					description: ' field name to get stock',
-					required: true,
-					type: 'string',
-					example: 'tape_making',
-				},
+				SE.parameter_params(
+					'field name to get material stock',
+					'fieldName',
+					'string',
+					'stock'
+				),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_name: {
-								type: 'string',
-								example: 'material 1',
-							},
-							stock: SE.number(10.0),
-							fieldName: SE.number(10.0),
-							remarks: {
-								type: 'string',
-								example: 'This is an entry',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material stock not found',
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					stock: SE.number(10.0),
+					fieldName: SE.number(10.0),
+					remarks: SE.string('This is an entry'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -688,48 +348,24 @@ export const pathMaterialStock = {
 			description: 'Get material stock for multiple field names',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'fieldNames',
-					in: 'path',
-					description: ' field names to get stock',
-					required: true,
-					type: 'string',
-					example: 'tape_making,coil_forming',
-				},
+				SE.parameter_params(
+					'fieldNames',
+					'fieldNames',
+					'string',
+					'comma separated field names'
+				),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_name: {
-								type: 'string',
-								example: 'material 1',
-							},
-							stock: SE.number(10.0),
-							fieldNames: SE.number(10.0),
-							remarks: {
-								type: 'string',
-								example: 'This is an entry',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material stock not found',
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					stock: SE.number(10.0),
+					fieldNames: SE.number(10.0),
+					remarks: SE.string('This is an entry'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -748,53 +384,22 @@ export const pathMaterialTrx = {
 				SE.parameter_query('to_date', 'to_date', 'string'),
 			],
 			responses: {
-				200: {
-					description: 'Returns all material trx',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									material_uuid: SE.uuid(),
-									material_name: {
-										type: 'string',
-										example: 'material 1',
-									},
-									trx_to: {
-										type: 'string',
-										example: 'tape_making',
-									},
-									trx_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									created_by: SE.uuid(),
-									created_by_name: {
-										type: 'string',
-										example: 'admin',
-									},
-									user_designation: {
-										type: 'string',
-										example: 'Admin',
-									},
-									user_department: {
-										type: 'string',
-										example: 'Admin',
-									},
-									created_at: SE.date_time(),
-									updated_at: SE.date_time(),
-									remarks: {
-										type: 'string',
-										example: 'This is an entry',
-									},
-									booking_uuid: SE.uuid(),
-									booking_number: SE.string('MB24-0001'),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					trx_to: SE.string('tape_making'),
+					trx_quantity: SE.number(10.0),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					user_designation: SE.string('admin'),
+					user_department: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+					booking_uuid: SE.uuid(),
+					booking_number: SE.string('MB24-0001'),
+				}),
 			},
 		},
 		post: {
@@ -805,18 +410,8 @@ export const pathMaterialTrx = {
 			produces: ['application/json'],
 			parameters: [SE.requestBody_schema_ref('material/trx')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/material/trx',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'material/trx'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -827,82 +422,27 @@ export const pathMaterialTrx = {
 			description: 'Get material trx by uuid',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' material trx to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
+				SE.parameter_params('material trx to get', 'uuid', 'string'),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_name: {
-								type: 'string',
-								example: 'material 1',
-							},
-							trx_to: {
-								type: 'string',
-								example: 'tape_making',
-							},
-							trx_quantity: {
-								type: 'number',
-								example: 10.0,
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'admin',
-							},
-							user_designation: {
-								type: 'string',
-								example: 'Admin',
-							},
-							user_department: {
-								type: 'string',
-								example: 'Admin',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'This is an entry',
-							},
-							booking_uuid: SE.uuid(),
-							booking_number: SE.string('MB24-0001'),
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material trx not found',
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					trx_to: SE.string('section'),
+					trx_quantity: SE.number(10.0),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					user_designation: SE.string('admin'),
+					user_department: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+					booking_uuid: SE.uuid(),
+					booking_number: SE.string('MB24-0001'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -911,62 +451,19 @@ export const pathMaterialTrx = {
 			description: 'Update an existing material trx',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material trx to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							material_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							trx_to: {
-								type: 'string',
-								example: 'tape_making',
-							},
-							trx_quantity: {
-								type: 'number',
-								example: 10.0,
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'This is an entry',
-							},
-							booking_uuid: SE.uuid(),
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_params('material trx to update', 'uuid')],
+			requestBody: SE.requestBody({
+				material_uuid: SE.uuid(),
+				trx_to: SE.string('section'),
+				trx_quantity: SE.number(10.0),
+				created_by: SE.uuid(),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				remarks: SE.string('This is an entry'),
+				booking_uuid: SE.uuid(),
+			}),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						$ref: '#/definitions/material/trx',
-					},
-				},
+				200: SE.response_schema_ref(200, 'material/trx'),
 				400: SE.response(400),
 				404: SE.response(404),
 				405: SE.response(405),
@@ -998,18 +495,9 @@ export const pathMaterialTrx = {
 				SE.parameter_params('trx_to', 'trx_to', 'string'),
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						$ref: '#/definitions/material/trx',
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material trx not found',
-				},
+				200: SE.response_schema_ref(200, 'material/trx'),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1023,19 +511,7 @@ export const pathMaterialType = {
 			summary: 'Get all material type',
 			description: 'Get all material type',
 			responses: {
-				200: {
-					description: 'Returns all material type',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'array',
-								items: {
-									$ref: '#/definitions/material/type',
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'material/type'),
 			},
 		},
 		post: {
@@ -1047,18 +523,8 @@ export const pathMaterialType = {
 			parameters: [],
 			requestBody: SE.requestBody_schema_ref('material/type'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/material/type',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref('material/type'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1068,29 +534,11 @@ export const pathMaterialType = {
 			summary: 'Get material type by uuid',
 			description: 'Get material type by uuid',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' material type to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_params('material type to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						$ref: '#/definitions/material/type',
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material type not found',
-				},
+				200: SE.response_schema_ref(200, 'material/type'),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -1100,40 +548,14 @@ export const pathMaterialType = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material type to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
+				SE.parameter_params('material type to update', 'uuid'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/type',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('material/type'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						$ref: '#/definitions/material/type',
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material type not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'material/type'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1142,22 +564,11 @@ export const pathMaterialType = {
 			description: 'Delete a material type',
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material type to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
+				SE.parameter_params('material type to delete', 'uuid'),
 			],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material type not found',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1171,144 +582,47 @@ export const pathMaterialUsed = {
 			summary: 'Get all material used',
 			description: 'Get all material used',
 			responses: {
-				200: {
-					description: 'Returns all material used',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									material_uuid: SE.uuid(),
-									material_name: {
-										type: 'string',
-										example: 'material 1',
-									},
-									stock: SE.number(10.0),
-									lab_dip: SE.number(10.0),
-									tape_making: {
-										type: 'number',
-										example: 10.0,
-									},
-									coil_forming: {
-										type: 'number',
-										example: 10.0,
-									},
-									dying_and_iron: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_gapping: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_gapping: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_teeth_molding: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_teeth_molding: {
-										type: 'number',
-										example: 10.0,
-									},
-									teeth_assembling_and_polishing: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_teeth_cleaning: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_teeth_cleaning: {
-										type: 'number',
-										example: 10.0,
-									},
-									plating_and_iron: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_sealing: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_sealing: {
-										type: 'number',
-										example: 10.0,
-									},
-									n_t_cutting: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_t_cutting: {
-										type: 'number',
-										example: 10.0,
-									},
-									m_stopper: {
-										type: 'number',
-										example: 10.0,
-									},
-									v_stopper: {
-										type: 'number',
-										example: 10.0,
-									},
-									n_stopper: {
-										type: 'number',
-										example: 10.0,
-									},
-									cutting: SE.number(10.0),
-									m_qc_and_packing: {
-										type: 'number',
-										example: 1000.0,
-									},
-									v_qc_and_packing: {
-										type: 'number',
-										example: 1000.0,
-									},
-									n_qc_and_packing: {
-										type: 'number',
-										example: 1000.0,
-									},
-									s_qc_and_packing: {
-										type: 'number',
-										example: 1000.0,
-									},
-									die_casting: {
-										type: 'number',
-										example: 10.0,
-									},
-									slider_assembly: {
-										type: 'number',
-										example: 10.0,
-									},
-									coloring: SE.number(10.0),
-									used_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									wastage: SE.number(10.0),
-									section: {
-										type: 'string',
-										example: 'tape_making',
-									},
-									created_by: SE.uuid(),
-									created_by_name: {
-										type: 'string',
-										example: 'admin',
-									},
-									created_at: SE.date_time(),
-									updated_at: SE.date_time(),
-									remarks: {
-										type: 'string',
-										example: 'This is an entry',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					stock: SE.number(10.0),
+					lab_dip: SE.number(10.0),
+					tape_making: SE.number(10.0),
+					coil_forming: SE.number(10.0),
+					dying_and_iron: SE.number(10.0),
+					m_gapping: SE.number(10.0),
+					v_gapping: SE.number(10.0),
+					v_teeth_molding: SE.number(10.0),
+					m_teeth_molding: SE.number(10.0),
+					teeth_assembling_and_polishing: SE.number(10.0),
+					m_teeth_cleaning: SE.number(10.0),
+					v_teeth_cleaning: SE.number(10.0),
+					plating_and_iron: SE.number(10.0),
+					m_sealing: SE.number(10.0),
+					v_sealing: SE.number(10.0),
+					n_t_cutting: SE.number(10.0),
+					v_t_cutting: SE.number(10.0),
+					m_stopper: SE.number(10.0),
+					v_stopper: SE.number(10.0),
+					n_stopper: SE.number(10.0),
+					cutting: SE.number(10.0),
+					m_qc_and_packing: SE.number(10.0),
+					v_qc_and_packing: SE.number(10.0),
+					n_qc_and_packing: SE.number(10.0),
+					s_qc_and_packing: SE.number(10.0),
+					die_casting: SE.number(10.0),
+					slider_assembly: SE.number(10.0),
+					coloring: SE.number(10.0),
+					used_quantity: SE.number(10.0),
+					wastage: SE.number(10.0),
+					section: SE.string('tape_making'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+				}),
 			},
 		},
 		post: {
@@ -1317,28 +631,10 @@ export const pathMaterialUsed = {
 			description: 'Create a new material used',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/used',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('material/used'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/material/used',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema_ref(200, 'material/used'),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1348,117 +644,55 @@ export const pathMaterialUsed = {
 			summary: 'Get material used by uuid',
 			description: 'Get material used by uuid',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' material used to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_params('material used to get', 'uuid')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_name: {
-								type: 'string',
-								example: 'material 1',
-							},
-							stock: SE.number(10.0),
-							lab_dip: SE.number(10.0),
-							tape_making: SE.number(10.0),
-							coil_forming: SE.number(10.0),
-							dying_and_iron: SE.number(10.0),
-							m_gapping: SE.number(10.0),
-							v_gapping: SE.number(10.0),
-							v_teeth_molding: SE.number(10.0),
-							m_teeth_molding: SE.number(10.0),
-							teeth_assembling_and_polishing: {
-								type: 'number',
-								example: 10.0,
-							},
-							m_teeth_cleaning: SE.number(10.0),
-							v_teeth_cleaning: SE.number(10.0),
-							plating_and_iron: SE.number(10.0),
-							m_sealing: SE.number(10.0),
-							v_sealing: SE.number(10.0),
-							n_t_cutting: SE.number(10.0),
-							v_t_cutting: SE.number(10.0),
-							m_stopper: SE.number(10.0),
-							v_stopper: SE.number(10.0),
-							n_stopper: SE.number(10.0),
-							cutting: SE.number(10.0),
-							m_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							v_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							n_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							s_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							die_casting: SE.number(10.0),
-							slider_assembly: SE.number(10.0),
-							coloring: SE.number(10.0),
-							used_quantity: {
-								type: 'number',
-								example: 10.0,
-							},
-							wastage: SE.number(10.0),
-							section: {
-								type: 'string',
-								example: 'tape_making',
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'admin',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'This is an entry',
-							},
-						},
-					},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					stock: SE.number(10.0),
+					lab_dip: SE.number(10.0),
+					tape_making: SE.number(10.0),
+					coil_forming: SE.number(10.0),
+					dying_and_iron: SE.number(10.0),
+					m_gapping: SE.number(10.0),
+					v_gapping: SE.number(10.0),
+					v_teeth_molding: SE.number(10.0),
+					m_teeth_molding: SE.number(10.0),
+					teeth_assembling_and_polishing: SE.number(10.0),
+					m_teeth_cleaning: SE.number(10.0),
+					v_teeth_cleaning: SE.number(10.0),
+					plating_and_iron: SE.number(10.0),
+					m_sealing: SE.number(10.0),
+					v_sealing: SE.number(10.0),
+					n_t_cutting: SE.number(10.0),
+					v_t_cutting: SE.number(10.0),
+					m_stopper: SE.number(10.0),
+					v_stopper: SE.number(10.0),
+					n_stopper: SE.number(10.0),
+					cutting: SE.number(10.0),
+					m_qc_and_packing: SE.number(10.0),
+					v_qc_and_packing: SE.number(10.0),
+					n_qc_and_packing: SE.number(10.0),
+					s_qc_and_packing: SE.number(10.0),
+					die_casting: SE.number(10.0),
+					slider_assembly: SE.number(10.0),
+					coloring: SE.number(10.0),
+					used_quantity: SE.number(10.0),
+					wastage: SE.number(10.0),
+					section: SE.string('section'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+				}),
+				400: {
+					description: 'Invalid UUID supplied',
 				},
-			},
-			400: {
-				description: 'Invalid UUID supplied',
-			},
-			404: {
-				description: 'Material used not found',
+				404: {
+					description: 'Material used not found',
+				},
 			},
 		},
 		put: {
@@ -1468,40 +702,14 @@ export const pathMaterialUsed = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material used to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
+				SE.parameter_params('material used to update', 'uuid'),
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/used',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('material/used'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						$ref: '#/definitions/material/used',
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material used not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema_ref(200, 'material/used'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -1509,26 +717,13 @@ export const pathMaterialUsed = {
 			summary: 'Delete a material used',
 			description: 'Delete a material used',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material used to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_params('uuid', 'uuid', 'string')],
 			responses: {
 				200: {
 					description: 'successful operation',
 				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material used not found',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1538,117 +733,51 @@ export const pathMaterialUsed = {
 			summary: 'Get material used by section',
 			description: 'Get material used by section',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'section',
-					in: 'path',
-					description: ' section to get',
-					required: true,
-					type: 'string',
-					example: 'tape_making',
-				},
-			],
+			parameters: [SE.parameter_params('section', 'section', 'string')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_name: {
-								type: 'string',
-								example: 'material 1',
-							},
-							stock: SE.number(10.0),
-							lab_dip: SE.number(10.0),
-							tape_making: SE.number(10.0),
-							coil_forming: SE.number(10.0),
-							dying_and_iron: SE.number(10.0),
-							m_gapping: SE.number(10.0),
-							v_gapping: SE.number(10.0),
-							v_teeth_molding: SE.number(10.0),
-							m_teeth_molding: SE.number(10.0),
-							teeth_assembling_and_polishing: {
-								type: 'number',
-								example: 10.0,
-							},
-							m_teeth_cleaning: SE.number(10.0),
-							v_teeth_cleaning: SE.number(10.0),
-							plating_and_iron: SE.number(10.0),
-							m_sealing: SE.number(10.0),
-							v_sealing: SE.number(10.0),
-							n_t_cutting: SE.number(10.0),
-							v_t_cutting: SE.number(10.0),
-							m_stopper: SE.number(10.0),
-							v_stopper: SE.number(10.0),
-							n_stopper: SE.number(10.0),
-							cutting: SE.number(10.0),
-							m_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							v_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							n_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							s_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							die_casting: SE.number(10.0),
-							slider_assembly: SE.number(10.0),
-							coloring: SE.number(10.0),
-							used_quantity: {
-								type: 'number',
-								example: 10.0,
-							},
-							wastage: SE.number(10.0),
-							section: {
-								type: 'string',
-								example: 'tape_making',
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'admin',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'This is an entry',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material used not found',
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					stock: SE.number(10.0),
+					lab_dip: SE.number(10.0),
+					tape_making: SE.number(10.0),
+					coil_forming: SE.number(10.0),
+					dying_and_iron: SE.number(10.0),
+					m_gapping: SE.number(10.0),
+					v_gapping: SE.number(10.0),
+					v_teeth_molding: SE.number(10.0),
+					m_teeth_molding: SE.number(10.0),
+					teeth_assembling_and_polishing: SE.number(10.0),
+					m_teeth_cleaning: SE.number(10.0),
+					v_teeth_cleaning: SE.number(10.0),
+					plating_and_iron: SE.number(10.0),
+					m_sealing: SE.number(10.0),
+					v_sealing: SE.number(10.0),
+					n_t_cutting: SE.number(10.0),
+					v_t_cutting: SE.number(10.0),
+					m_stopper: SE.number(10.0),
+					v_stopper: SE.number(10.0),
+					n_stopper: SE.number(10.0),
+					cutting: SE.number(10.0),
+					m_qc_and_packing: SE.number(10.0),
+					v_qc_and_packing: SE.number(10.0),
+					n_qc_and_packing: SE.number(10.0),
+					s_qc_and_packing: SE.number(10.0),
+					die_casting: SE.number(10.0),
+					slider_assembly: SE.number(10.0),
+					coloring: SE.number(10.0),
+					used_quantity: SE.number(10.0),
+					wastage: SE.number(10.0),
+					section: SE.string('section'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1669,106 +798,49 @@ export const pathMaterialUsed = {
 				},
 			],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_name: {
-								type: 'string',
-								example: 'material 1',
-							},
-							stock: SE.number(10.0),
-							lab_dip: SE.number(10.0),
-							tape_making: SE.number(10.0),
-							coil_forming: SE.number(10.0),
-							dying_and_iron: SE.number(10.0),
-							m_gapping: SE.number(10.0),
-							v_gapping: SE.number(10.0),
-							v_teeth_molding: SE.number(10.0),
-							m_teeth_molding: SE.number(10.0),
-							teeth_assembling_and_polishing: {
-								type: 'number',
-								example: 10.0,
-							},
-							m_teeth_cleaning: SE.number(10.0),
-							v_teeth_cleaning: SE.number(10.0),
-							plating_and_iron: SE.number(10.0),
-							m_sealing: SE.number(10.0),
-							v_sealing: SE.number(10.0),
-							n_t_cutting: SE.number(10.0),
-							v_t_cutting: SE.number(10.0),
-							m_stopper: SE.number(10.0),
-							v_stopper: SE.number(10.0),
-							n_stopper: SE.number(10.0),
-							cutting: SE.number(10.0),
-							m_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							v_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							n_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							s_qc_and_packing: {
-								type: 'number',
-								example: 1000.0,
-							},
-							die_casting: SE.number(10.0),
-							slider_assembly: SE.number(10.0),
-							coloring: SE.number(10.0),
-							used_quantity: {
-								type: 'number',
-								example: 10.0,
-							},
-							wastage: SE.number(10.0),
-							section: {
-								type: 'string',
-								example: 'tape_making',
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'admin',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'This is an entry',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material used not found',
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					stock: SE.number(10.0),
+					lab_dip: SE.number(10.0),
+					tape_making: SE.number(10.0),
+					coil_forming: SE.number(10.0),
+					dying_and_iron: SE.number(10.0),
+					m_gapping: SE.number(10.0),
+					v_gapping: SE.number(10.0),
+					v_teeth_molding: SE.number(10.0),
+					m_teeth_molding: SE.number(10.0),
+					teeth_assembling_and_polishing: SE.number(10.0),
+					m_teeth_cleaning: SE.number(10.0),
+					v_teeth_cleaning: SE.number(10.0),
+					plating_and_iron: SE.number(10.0),
+					m_sealing: SE.number(10.0),
+					v_sealing: SE.number(10.0),
+					n_t_cutting: SE.number(10.0),
+					v_t_cutting: SE.number(10.0),
+					m_stopper: SE.number(10.0),
+					v_stopper: SE.number(10.0),
+					n_stopper: SE.number(10.0),
+					cutting: SE.number(10.0),
+					m_qc_and_packing: SE.number(10.0),
+					v_qc_and_packing: SE.number(10.0),
+					n_qc_and_packing: SE.number(10.0),
+					s_qc_and_packing: SE.number(10.0),
+					die_casting: SE.number(10.0),
+					slider_assembly: SE.number(10.0),
+					coloring: SE.number(10.0),
+					used_quantity: SE.number(10.0),
+					wastage: SE.number(10.0),
+					section: SE.string('section'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -1783,71 +855,30 @@ export const pathMaterialStockToSFG = {
 			summary: 'Get all material stock_to_sfg',
 			description: 'Get all material stock_to_sfg',
 			responses: {
-				200: {
-					description: 'Returns all material stock_to_sfg',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									material_uuid: SE.uuid(),
-									material_name: {
-										type: 'string',
-										example: 'material 1',
-									},
-									unit: { type: 'string', example: 'kg' },
-									stock: SE.number(10.0),
-									order_entry_uuid: SE.uuid(),
-									order_description_uuid: SE.uuid(),
-									trx_to: {
-										type: 'string',
-										example: 'tape_making',
-									},
-									trx_quantity: {
-										type: 'number',
-										example: 10.0,
-									},
-									created_by: SE.uuid(),
-									created_by_name: {
-										type: 'string',
-										example: 'admin',
-									},
-									created_at: SE.date_time(),
-									updated_at: SE.date_time(),
-									remarks: {
-										type: 'string',
-										example: 'This is an entry',
-									},
-									order_number: {
-										type: 'string',
-										example: 'Z24-0010',
-									},
-									item_description: {
-										type: 'string',
-										example: 'item description',
-									},
-									style: {
-										type: 'string',
-										example: 'st1',
-									},
-									color: {
-										type: 'string',
-										example: 'black',
-									},
-									size: {
-										type: 'string',
-										example: '10',
-									},
-									style_color_size: {
-										type: 'string',
-										example: 'st1-black-10',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					unit: SE.string('kg'),
+					stock: SE.number(10.0),
+					order_entry_uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					trx_to: SE.string('tape_making'),
+					trx_quantity: SE.number(10.0),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('item description'),
+					style: SE.string('st1'),
+					color: SE.string('black'),
+					size: SE.string('10'),
+					style_color_size: SE.string('st1-black-10'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		post: {
@@ -1856,28 +887,11 @@ export const pathMaterialStockToSFG = {
 			description: 'Create a new material stock_to_sfg',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/stock_to_sfg',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('material/stock_to_sfg'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/material/stock_to_sfg',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema(200, 'material/stock_to_sfg'),
+				400: SE.response(400),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -1887,109 +901,32 @@ export const pathMaterialStockToSFG = {
 			summary: 'Get material stock_to_sfg by uuid',
 			description: 'Get material stock_to_sfg by uuid',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' material stock_to_sfg to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_params('uuid', 'uuid', 'string')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						items: {
-							properties: {
-								uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								material_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								material_name: {
-									type: 'string',
-									example: 'material 1',
-								},
-								unit: { type: 'string', example: 'kg' },
-								stock: SE.number(10.0),
-								order_entry_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								order_description_uuid: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								trx_to: {
-									type: 'string',
-									example: 'tape_making',
-								},
-								trx_quantity: {
-									type: 'number',
-									example: 10.0,
-								},
-								created_by: {
-									type: 'string',
-									example: 'igD0v9DIJQhJeet',
-								},
-								created_by_name: {
-									type: 'string',
-									example: 'admin',
-								},
-								created_at: {
-									type: 'string',
-									format: 'date-time',
-									example: '2024-01-01 00:00:00',
-								},
-								updated_at: {
-									type: 'string',
-									format: 'date-time',
-									example: '2024-01-01 00:00:00',
-								},
-								remarks: {
-									type: 'string',
-									example: 'This is an entry',
-								},
-								order_number: {
-									type: 'string',
-									example: 'Z24-0010',
-								},
-								item_description: {
-									type: 'string',
-									example: 'item description',
-								},
-								style: {
-									type: 'string',
-									example: 'st1',
-								},
-								color: {
-									type: 'string',
-									example: 'black',
-								},
-								size: {
-									type: 'string',
-									example: '10',
-								},
-								style_color_size: {
-									type: 'string',
-									example: 'st1-black-10',
-								},
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material stock_to_sfg not found',
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					unit: SE.string('kg'),
+					stock: SE.number(10.0),
+					order_entry_uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					trx_to: SE.string('tape_making'),
+					trx_quantity: SE.number(10.0),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('item description'),
+					style: SE.string('st1'),
+					color: SE.string('black'),
+					size: SE.string('10'),
+					style_color_size: SE.string('st1-black-10'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -1998,41 +935,13 @@ export const pathMaterialStockToSFG = {
 			description: 'Update an existing material stock_to_sfg',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material stock_to_sfg to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/stock_to_sfg',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_params('uuid', 'uuid', 'string')],
+			requestBody: SE.requestBody_schema_ref('material/stock_to_sfg'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						$ref: '#/definitions/material/stock_to_sfg',
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material stock_to_sfg not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema(200, 'material/stock_to_sfg'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2040,23 +949,10 @@ export const pathMaterialStockToSFG = {
 			summary: 'Delete a material stock_to_sfg',
 			description: 'Delete a material stock_to_sfg',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material stock_to_sfg to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_params('uuid', 'uuid', 'string')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material stock_to_sfg not found',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},
@@ -2074,32 +970,22 @@ export const pathMaterialBooking = {
 				SE.parameter_query('to_date', 'to_date', 'date'),
 			],
 			responses: {
-				200: {
-					description: 'Returns all material booking',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									id: { type: 'number', example: 1 },
-									material_uuid: SE.uuid(),
-									material_name: SE.string('material 1'),
-									marketing_uuid: SE.uuid(),
-									marketing_name: SE.string('marketing 1'),
-									quantity: SE.number(10.0),
-									trx_quantity: SE.number(10.0),
-									created_by: SE.uuid(),
-									created_by_name: SE.string('admin'),
-									created_at: SE.date_time(),
-									updated_at: SE.date_time(),
-									remarks: SE.string(),
-									store_type: SE.string('rm'),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.number(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					marketing_uuid: SE.uuid(),
+					marketing_name: SE.string('marketing 1'),
+					quantity: SE.number(10.0),
+					trx_quantity: SE.number(10.0),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+					store_type: SE.string('rm'),
+				}),
 			},
 		},
 		post: {
@@ -2108,28 +994,11 @@ export const pathMaterialBooking = {
 			description: 'Create a new material booking',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/booking',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_schema_ref('material/booking'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'array',
-						items: {
-							$ref: '#/definitions/material/booking',
-						},
-					},
-				},
-				405: {
-					description: 'Invalid input',
-				},
+				200: SE.response_schema(200, 'material/booking'),
+				400: SE.response(400),
+				405: SE.response(405),
 			},
 		},
 	},
@@ -2140,80 +1009,25 @@ export const pathMaterialBooking = {
 			summary: 'Get material booking by uuid',
 			description: 'Get material booking by uuid',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: ' material booking to get',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
-
+			parameters: [SE.parameter_params('uuid', 'uuid', 'string')],
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						type: 'object',
-						properties: {
-							uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							id: { type: 'number', example: 1 },
-							material_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							material_name: {
-								type: 'string',
-								example: 'material 1',
-							},
-							marketing_uuid: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							marketing_name: {
-								type: 'string',
-								example: 'marketing 1',
-							},
-							quantity: SE.number(10.0),
-							trx_quantity: {
-								type: 'number',
-								example: 10.0,
-							},
-							created_by: {
-								type: 'string',
-								example: 'igD0v9DIJQhJeet',
-							},
-							created_by_name: {
-								type: 'string',
-								example: 'admin',
-							},
-							created_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							updated_at: {
-								type: 'string',
-								format: 'date-time',
-								example: '2024-01-01 00:00:00',
-							},
-							remarks: {
-								type: 'string',
-								example: 'This is an entry',
-							},
-						},
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material booking not found',
-				},
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.number(),
+					material_uuid: SE.uuid(),
+					material_name: SE.string('material 1'),
+					marketing_uuid: SE.uuid(),
+					marketing_name: SE.string('marketing 1'),
+					quantity: SE.number(10.0),
+					trx_quantity: SE.number(10.0),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('admin'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('This is an entry'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 		put: {
@@ -2222,41 +1036,13 @@ export const pathMaterialBooking = {
 			description: 'Update an existing material booking',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material booking to update',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/material/booking',
-						},
-					},
-				},
-			},
+			parameters: [SE.parameter_params('uuid', 'uuid', 'string')],
+			requestBody: SE.requestBody_schema_ref('material/booking'),
 			responses: {
-				200: {
-					description: 'successful operation',
-					schema: {
-						$ref: '#/definitions/material/booking',
-					},
-				},
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material booking not found',
-				},
-				405: {
-					description: 'Validation exception',
-				},
+				200: SE.response_schema(200, 'material/booking'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
 			},
 		},
 		delete: {
@@ -2264,23 +1050,10 @@ export const pathMaterialBooking = {
 			summary: 'Delete a material booking',
 			description: 'Delete a material booking',
 			produces: ['application/json'],
-			parameters: [
-				{
-					name: 'uuid',
-					in: 'path',
-					description: 'material booking to delete',
-					required: true,
-					type: 'string',
-					format: 'uuid',
-				},
-			],
+			parameters: [SE.parameter_params('uuid', 'uuid', 'string')],
 			responses: {
-				400: {
-					description: 'Invalid UUID supplied',
-				},
-				404: {
-					description: 'Material booking not found',
-				},
+				400: SE.response(400),
+				404: SE.response(404),
 			},
 		},
 	},

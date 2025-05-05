@@ -1,7 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 
 export async function selectAmountAndDoc(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

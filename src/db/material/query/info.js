@@ -1,8 +1,6 @@
-import { asc, avg, desc, eq, lt, sql } from 'drizzle-orm';
-import { description } from '../../../db/purchase/schema.js';
+import { asc, eq, lt, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
-import * as purchaseSchema from '../../purchase/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { booking, info, section, stock, type } from '../schema.js';

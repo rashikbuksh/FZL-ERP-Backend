@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
-import { param } from 'express-validator';
-import SE, { SED } from '../../util/swagger_example.js';
+import SE from '../../util/swagger_example.js';
 import * as otherOperations from './query/query.js';
 
 const otherRouter = Router();

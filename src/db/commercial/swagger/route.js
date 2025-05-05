@@ -1,7 +1,4 @@
-import { is } from 'drizzle-orm';
-import { response } from 'express';
-import SE, { SED } from '../../../util/swagger_example.js';
-import { lc_entry_others } from '../schema.js';
+import SE from '../../../util/swagger_example.js';
 
 // * Commercial Bank * //
 export const pathCommercialBank = {

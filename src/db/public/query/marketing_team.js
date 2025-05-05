@@ -1,10 +1,9 @@
-import { desc, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
 import { marketing_team } from '../schema.js';
-import { createApi } from '../../../util/api.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

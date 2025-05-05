@@ -35,12 +35,12 @@ import {
 	selectSampleReportByDateCombined,
 	selectThreadSampleReportByDate,
 } from './query/sample_report.js';
+import { selectThreadBatchReport } from './query/thread_batch_report.js';
 import {
 	threadProductionReportByDate,
 	threadProductionReportPartyWiseByDate,
 } from './query/thread_production_report_by_date.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
-import { selectThreadBatchReport } from './query/thread_batch_report.js';
 
 const reportRouter = Router();
 

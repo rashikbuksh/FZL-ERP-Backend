@@ -1,4 +1,4 @@
-import SE, { SED } from '../../../util/swagger_example.js';
+import SE from '../../../util/swagger_example.js';
 
 // * LabDip Info * //
 export const pathLabDipInfo = {

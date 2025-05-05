@@ -1,25 +1,8 @@
 import { and, eq, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import * as publicSchema from '../../public/schema.js';
 import * as sliderSchema from '../../slider/schema.js';
-import { tape_coil, tape_coil_required } from '../schema.js';
-
-const item_properties = alias(publicSchema.properties, 'item_properties');
-const zipper_number_properties = alias(
-	publicSchema.properties,
-	'zipper_number_properties'
-);
-const nylon_stopper_properties = alias(
-	publicSchema.properties,
-	'nylon_stopper_properties'
-);
-
-const tape_coil_required_custom = alias(
-	tape_coil_required,
-	'tape_coil_required_custom'
-);
+import { tape_coil } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

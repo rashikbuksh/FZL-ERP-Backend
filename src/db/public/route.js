@@ -3,14 +3,14 @@ import * as buyerOperations from './query/buyer.js';
 import * as factoryOperations from './query/factory.js';
 import * as machineOperations from './query/machine.js';
 import * as marketingOperations from './query/marketing.js';
+import * as marketingTeamOperations from './query/marketing_team.js';
+import * as marketingTeamEntryOperations from './query/marketing_team_entry.js';
+import * as marketingTeamMemberTargetOperations from './query/marketing_team_member_target.js';
 import * as merchandiserOperations from './query/merchandiser.js';
 import * as partyOperations from './query/party.js';
+import * as productionCapacityOperations from './query/production_capacity.js';
 import * as propertiesOperations from './query/properties.js';
 import * as sectionOperations from './query/section.js';
-import * as marketingTeamOperations from './query/marketing_team.js';
-import * as marketingTeamMemberTargetOperations from './query/marketing_team_member_target.js';
-import * as marketingTeamEntryOperations from './query/marketing_team_entry.js';
-import * as productionCapacityOperations from './query/production_capacity.js';
 
 import Cache from 'memory-cache';
 

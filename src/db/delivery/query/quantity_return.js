@@ -3,8 +3,8 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
-import { quantity_return } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core';
+import { quantity_return } from '../schema.js';
 
 const completed_by_user = alias(hrSchema.users, 'completed_by_user');
 

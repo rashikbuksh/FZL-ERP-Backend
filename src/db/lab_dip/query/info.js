@@ -1,4 +1,4 @@
-import { and, desc, eq, gt, ne, or, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
@@ -6,12 +6,11 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import * as threadSchema from '../../thread/schema.js';
-import * as zipperSchema from '../../zipper/schema.js';
 import * as viewSchema from '../../view/schema.js';
+import * as zipperSchema from '../../zipper/schema.js';
 import { info } from '../schema.js';
 
 const thread = alias(threadSchema.order_info, 'thread');
-const threadOrderEntry = alias(threadSchema.order_entry, 'thread_order_entry');
 const threadBuyer = alias(publicSchema.buyer, 'thread_buyer');
 const threadParty = alias(publicSchema.party, 'thread_party');
 const threadMarketing = alias(publicSchema.marketing, 'thread_marketing');
@@ -20,9 +19,6 @@ const threadMerchandiser = alias(
 	'thread_merchandiser'
 );
 const threadFactory = alias(publicSchema.factory, 'thread_factory');
-
-const zipperOrderEntry = alias(zipperSchema.order_entry, 'zipper_order_entry');
-const zipperSfg = alias(zipperSchema.sfg, 'zipper_sfg');
 
 // export async function insert(req, res, next) {
 // 	if (!(await validateRequest(req, next))) return;

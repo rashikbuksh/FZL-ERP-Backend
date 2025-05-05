@@ -4,8 +4,8 @@ import * as challanOperations from './query/challan.js';
 import * as deliveryOperations from './query/delivery_dashboard.js';
 import * as packingListOperations from './query/packing_list.js';
 import * as packingListEntryOperations from './query/packing_list_entry.js';
-import * as vehicleOperations from './query/vehicle.js';
 import * as quantityReturnOperations from './query/quantity_return.js';
+import * as vehicleOperations from './query/vehicle.js';
 
 const deliveryRouter = Router();
 

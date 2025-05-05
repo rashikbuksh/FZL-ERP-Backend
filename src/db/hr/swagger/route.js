@@ -1,5 +1,4 @@
 import SE from '../../../util/swagger_example.js';
-import { update } from '../query/department.js';
 
 // * Hr User * //
 export const pathHrUser = {

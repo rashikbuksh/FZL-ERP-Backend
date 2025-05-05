@@ -1,10 +1,10 @@
-import { desc, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
 import { production_capacity, properties } from '../schema.js';
-import { alias } from 'drizzle-orm/pg-core';
 const item_properties = alias(properties, 'item_properties');
 const nylon_stopper_properties = alias(properties, 'nylon_stopper_properties');
 const zipper_number_properties = alias(properties, 'zipper_number_properties');

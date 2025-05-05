@@ -1,4 +1,4 @@
-import { desc, eq, gt, lt, sql } from 'drizzle-orm';
+import { eq, lt, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';

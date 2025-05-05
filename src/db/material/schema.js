@@ -3,8 +3,7 @@ import {
 	integer,
 	pgSchema,
 	serial,
-	text,
-	uuid,
+	text
 } from 'drizzle-orm/pg-core';
 import {
 	DateTime,
