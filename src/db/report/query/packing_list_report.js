@@ -149,6 +149,7 @@ export async function selectPackingList(req, res, next) {
 							dvl.packing_list_wise_rank,
 							dvl.packing_list_wise_count,
 							dvl.packing_number,
+                            dvl.packing_number_v1,
 							dvl.order_number,
 							dvl.item_for,
 							dvl.challan_uuid,
@@ -187,7 +188,8 @@ export async function selectPackingList(req, res, next) {
 							dvl.warehouse_received_by,
 							dvl.warehouse_received_by_name,
 							dvl.gate_pass_by,
-							dvl.gate_pass_by_name
+							dvl.gate_pass_by_name,
+                            dvl.is_sample
 						ORDER BY dvl.created_at DESC;`;
 
 	try {
