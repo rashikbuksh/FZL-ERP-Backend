@@ -1,10 +1,4 @@
-import {
-	decimal,
-	integer,
-	pgSchema,
-	serial,
-	text
-} from 'drizzle-orm/pg-core';
+import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -18,6 +12,11 @@ import * as zipperSchema from '../zipper/schema.js';
 
 const material = pgSchema('material');
 
+export const store_type_enum = material.enum('store_type_enum', [
+	'rm',
+	'accessories',
+]);
+
 export const section = material.table('section', {
 	uuid: uuid_primary,
 	name: text('name').notNull().unique(),
@@ -27,6 +26,7 @@ export const section = material.table('section', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 	index: integer('index').default(0),
+	store_type: store_type_enum('store_type').default('rm'),
 });
 
 export const type = material.table('type', {
@@ -37,12 +37,8 @@ export const type = material.table('type', {
 	updated_at: DateTime('updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
+	store_type: store_type_enum('store_type').default('rm'),
 });
-
-export const store_type_enum = material.enum('store_type_enum', [
-	'rm',
-	'accessories',
-]);
 
 export const info = material.table('info', {
 	uuid: uuid_primary,

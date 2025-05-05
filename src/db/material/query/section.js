@@ -2,7 +2,7 @@ import { asc, eq } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { section } from '../schema.js';
+import { section, store_type_enum } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -83,6 +83,7 @@ export async function selectAll(req, res, next) {
 			created_by: section.created_by,
 			created_by_name: hrSchema.users.name,
 			index: section.index,
+			store_type: section.store_type,
 		})
 		.from(section)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))
@@ -115,6 +116,7 @@ export async function select(req, res, next) {
 			created_by: section.created_by,
 			created_by_name: hrSchema.users.name,
 			index: section.index,
+			store_type: section.store_type,
 		})
 		.from(section)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))

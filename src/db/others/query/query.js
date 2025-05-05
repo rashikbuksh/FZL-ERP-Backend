@@ -1668,12 +1668,18 @@ export async function selectVendor(req, res, next) {
 
 // material
 export async function selectMaterialSection(req, res, next) {
+	const { store_type } = req.query;
+
 	const sectionPromise = db
 		.select({
 			value: materialSchema.section.uuid,
 			label: materialSchema.section.name,
 		})
 		.from(materialSchema.section);
+
+	if (store_type) {
+		sectionPromise.where(eq(materialSchema.section.store_type, store_type));
+	}
 
 	try {
 		const data = await sectionPromise;
@@ -1691,12 +1697,18 @@ export async function selectMaterialSection(req, res, next) {
 }
 
 export async function selectMaterialType(req, res, next) {
+	const { store_type } = req.query;
+
 	const typePromise = db
 		.select({
 			value: materialSchema.type.uuid,
 			label: materialSchema.type.name,
 		})
 		.from(materialSchema.type);
+
+	if (store_type) {
+		typePromise.where(eq(materialSchema.type.store_type, store_type));
+	}
 
 	try {
 		const data = await typePromise;
@@ -1714,7 +1726,7 @@ export async function selectMaterialType(req, res, next) {
 }
 
 export async function selectMaterial(req, res, next) {
-	const type = req.query.type;
+	const { type } = req.query;
 
 	const typeArray = type ? type.split(',') : null;
 

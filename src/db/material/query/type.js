@@ -80,6 +80,7 @@ export async function selectAll(req, res, next) {
 			updated_at: type.updated_at,
 			created_by: type.created_by,
 			created_by_name: hrSchema.users.name,
+			store_type: type.store_type,
 		})
 		.from(type)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, type.created_by))
@@ -112,6 +113,7 @@ export async function select(req, res, next) {
 			updated_at: type.updated_at,
 			created_by: type.created_by,
 			created_by_name: hrSchema.users.name,
+			store_type: type.store_type,
 		})
 		.from(type)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, type.created_by))

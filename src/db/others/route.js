@@ -599,21 +599,17 @@ const pathMaterial = {
 			summary: 'get all material sections',
 			description: 'All material sections',
 			operationId: 'getAllMaterialSections',
+			parameters: [
+				SE.parameter_query('store_type', 'store_type', [
+					'rm',
+					'accessories',
+				]),
+			],
 			responses: {
-				200: {
-					description: 'Returns a all material sections.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									value: SE.string('2ggcphnwHGzEUGy'),
-									label: SE.string('section 1'),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					value: SE.string('2ggcphnwHGzEUGy'),
+					label: SE.string('section 1'),
+				}),
 			},
 		},
 	},
@@ -623,21 +619,19 @@ const pathMaterial = {
 			summary: 'get all material types',
 			description: 'All material types',
 			operationId: 'getAllMaterialTypes',
+			parameters: [
+				SE.parameter_query(
+					'store_type',
+					'store_type',
+					['rm', 'accessories'],
+					true
+				),
+			],
 			responses: {
-				200: {
-					description: 'Returns a all material types.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									value: SE.string('2ggcphnwHGzEUGy'),
-									label: SE.string('type 1'),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					value: SE.string('2ggcphnwHGzEUGy'),
+					label: SE.string('type 1'),
+				}),
 			},
 		},
 	},
@@ -649,22 +643,12 @@ const pathMaterial = {
 			operationId: 'getAllMaterials',
 			parameters: [SE.parameter_query('type', 'type', ['dyes'])],
 			responses: {
-				200: {
-					description: 'Returns a all materials.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									value: SE.string('2ggcphnwHGzEUGy'),
-									label: SE.string('material 1'),
-									unit: SE.string('kg'),
-									stock: SE.number(10),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					value: SE.string('2ggcphnwHGzEUGy'),
+					label: SE.string('material 1'),
+					unit: SE.string('kg'),
+					stock: SE.number(10),
+				}),
 			},
 		},
 	},

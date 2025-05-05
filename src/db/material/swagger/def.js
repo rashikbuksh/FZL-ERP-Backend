@@ -12,6 +12,7 @@ export const defMaterialSection = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 		index: SE.number(0),
+		store_type: SE.string('rm'),
 	},
 	xml: 'Material/Section',
 });
@@ -26,6 +27,7 @@ export const defMaterialType = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		store_type: SE.string('rm'),
 	},
 	xml: 'Material/Type',
 });
