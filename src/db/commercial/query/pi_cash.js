@@ -110,19 +110,19 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const piEntryPromise = db
-		.delete(pi_cash_entry)
-		.where(eq(pi_cash_entry.pi_cash_uuid, req.params.uuid))
-		.returning({
-			deletedId: sql`pi_cash_entry.uuid`,
-		});
+	// const piEntryPromise = db
+	// 	.delete(pi_cash_entry)
+	// 	.where(eq(pi_cash_entry.pi_cash_uuid, req.params.uuid))
+	// 	.returning({
+	// 		deletedId: sql`pi_cash_entry.uuid`,
+	// 	});
 
 	// const piViewPromise = sql`
 	// REFRESH MATERIALIZED VIEW commercial.v_pi_cash;
 	// `;
 
 	try {
-		const piEntryData = await piEntryPromise;
+		// const piEntryData = await piEntryPromise;
 
 		// const piViewData = await db.execute(piViewPromise);
 
