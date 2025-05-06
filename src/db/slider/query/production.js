@@ -313,6 +313,8 @@ export async function select(req, res, next) {
 export async function selectProductionBySection(req, res, next) {
 	const { section } = req.params;
 
+	const { from, to } = req.query;
+
 	const query = sql`
 		SELECT
 			production.uuid,
@@ -412,6 +414,7 @@ export async function selectProductionBySection(req, res, next) {
 			public.party pp ON order_info.party_uuid = pp.uuid
 		WHERE 
 			production.section = ${section}
+			${from && to ? sql`AND production.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
 		ORDER BY
 			production.created_at DESC
 	`;
