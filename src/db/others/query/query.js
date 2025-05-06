@@ -1644,12 +1644,19 @@ export async function selectFinishingBatch(req, res, next) {
 
 // purchase
 export async function selectVendor(req, res, next) {
+	const { store_type } = req.query;
+
 	const vendorPromise = db
 		.select({
 			value: purchaseSchema.vendor.uuid,
 			label: purchaseSchema.vendor.name,
 		})
-		.from(purchaseSchema.vendor);
+		.from(purchaseSchema.vendor)
+		.where(
+			store_type
+				? eq(purchaseSchema.vendor.store_type, store_type)
+				: sql`1=1`
+		);
 
 	try {
 		const data = await vendorPromise;

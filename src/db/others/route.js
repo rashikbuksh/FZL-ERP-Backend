@@ -572,21 +572,17 @@ const pathPurchase = {
 			summary: 'get all vendors',
 			description: 'All vendors',
 			operationId: 'getAllVendors',
+			parameters: [
+				SE.parameter_query('store_type', 'store_type', [
+					'rm',
+					'accessories',
+				]),
+			],
 			responses: {
-				200: {
-					description: 'Returns a all vendors.',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									value: SE.string('2ggcphnwHGzEUGy'),
-									label: SE.string('vendor 1'),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema(200, {
+					value: SE.string('2ggcphnwHGzEUGy'),
+					label: SE.string('vendor 1'),
+				}),
 			},
 		},
 	},

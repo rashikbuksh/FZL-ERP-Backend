@@ -7,6 +7,11 @@ import * as materialSchema from '../material/schema.js';
 
 const purchase = pgSchema('purchase');
 
+export const store_type_enum = purchase.enum('store_type_enum', [
+	'rm',
+	'accessories',
+]);
+
 export const vendor = purchase.table('vendor', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
@@ -18,6 +23,7 @@ export const vendor = purchase.table('vendor', {
 	updated_at: DateTime('updated_at').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
+	store_type: store_type_enum('store_type').default('rm'),
 });
 
 export const purchase_description_sequence = purchase.sequence(
@@ -27,11 +33,6 @@ export const purchase_description_sequence = purchase.sequence(
 		increment: 1,
 	}
 );
-
-export const store_type_enum = purchase.enum('store_type_enum', [
-	'rm',
-	'accessories',
-]);
 
 export const description = purchase.table('description', {
 	uuid: uuid_primary,

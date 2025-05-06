@@ -21,6 +21,7 @@ export const defPurchaseVendor = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('This is a vendor'),
+		store_type: SE.string('rm'),
 	},
 	xml: 'Purchase/Vendor',
 });
