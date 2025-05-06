@@ -287,6 +287,8 @@ export async function select(req, res, next) {
 export async function selectTransactionByFromSection(req, res, next) {
 	const { from_section } = req.params;
 
+	const { from, to } = req.query;
+
 	const query = sql`
 		SELECT
 			DISTINCT transaction.uuid,
@@ -385,6 +387,12 @@ export async function selectTransactionByFromSection(req, res, next) {
 		LEFT JOIN zipper.v_order_details_full vodf_fbe_trx ON oe.order_description_uuid = vodf_fbe_trx.order_description_uuid
 		WHERE 
 			transaction.from_section = ${from_section}
+			${
+				from && to
+					? sql`AND transaction.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
+					: sql``
+			}
+		ORDER BY transaction.created_at DESC
 	`;
 
 	const transactionPromise = db.execute(query);

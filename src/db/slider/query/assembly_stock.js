@@ -1,8 +1,4 @@
-import {
-	and,
-	eq,
-	sql
-} from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import * as zipperSchema from '../../zipper/schema.js';
@@ -146,7 +142,8 @@ export async function selectAll(req, res, next) {
 			assembly_stock.remarks,
 			transaction_total_trx.total_transaction_quantity::float8,
 			assembly_stock.material_uuid,
-			info.name AS material_name
+			info.name AS material_name,
+			assembly_stock.piece_per_kg::float8
 		FROM 
 			slider.assembly_stock
 		LEFT JOIN 
@@ -219,7 +216,8 @@ export async function select(req, res, next) {
 			assembly_stock.remarks,
 			transaction_total_trx.total_transaction_quantity::float8,
 			assembly_stock.material_uuid,
-			info.name AS material_name
+			info.name AS material_name,
+			assembly_stock.piece_per_kg::float8
 		FROM 
 			slider.assembly_stock
 		LEFT JOIN 

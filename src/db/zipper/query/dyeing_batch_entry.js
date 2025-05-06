@@ -323,7 +323,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 				END
 				- coalesce(be_given.given_quantity::float8,0)
 			,0)::float8 as balance_quantity,
-				coalesce(
+			coalesce(
 				CASE 
 					WHEN vodf.order_type = 'tape' 
 					THEN oe.size::float8 

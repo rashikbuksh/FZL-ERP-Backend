@@ -332,6 +332,8 @@ export async function select(req, res, next) {
 export async function selectStockByFromSection(req, res, next) {
 	const { from_section } = req.params;
 
+	const { from, to } = req.query;
+
 	const query = sql`
 		SELECT
 			DISTINCT stock.uuid,
@@ -496,6 +498,7 @@ export async function selectStockByFromSection(req, res, next) {
 		) oe_style_color ON oe_style_color.order_description_uuid = finishing_batch.order_description_uuid
 		WHERE 
 			(stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0	
+			${from && to ? sql` AND stock.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
 		ORDER BY 
 			stock.created_at DESC
 	 ;`;
