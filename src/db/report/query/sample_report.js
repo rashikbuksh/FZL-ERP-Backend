@@ -225,17 +225,19 @@ export async function selectSampleReportByDate(req, res, next) {
                                 ple.sfg_uuid
                         ) ch_details ON ch_details.sfg_uuid = sfg.uuid
                         WHERE
-                            ${is_sample ? sql`oi.is_sample = ${is_sample}` : sql`1=1`}
-                            AND ${
+                            oe.quantity IS NOT NULL
+                            AND vodf.order_description_uuid IS NOT NULL
+                            ${is_sample ? sql` AND oi.is_sample = ${is_sample}` : sql``}
+                            ${
 								date && toDate
-									? sql`od.created_at BETWEEN ${date}::TIMESTAMP AND ${toDate}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'`
-									: sql`TRUE`
+									? sql` AND od.created_at BETWEEN ${date}::TIMESTAMP AND ${toDate}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'`
+									: sql``
 							}
-                            AND ${own_uuid ? sql`oi.marketing_uuid = ${marketing_uuid}` : sql`TRUE`}
-                            AND ${
+                            ${own_uuid ? sql` AND oi.marketing_uuid = ${marketing_uuid}` : sql``}
+                            ${
 								show_zero_balance == 1
-									? sql`TRUE`
-									: sql`(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) > 0`
+									? sql``
+									: sql` AND (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) > 0`
 							}
                         ORDER BY
                             order_number ASC, item_description ASC`;
