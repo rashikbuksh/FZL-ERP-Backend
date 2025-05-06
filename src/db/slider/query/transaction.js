@@ -289,6 +289,8 @@ export async function selectTransactionByFromSection(req, res, next) {
 
 	const { from, to } = req.query;
 
+	console.log(from, to, 'from to');
+
 	const query = sql`
 		SELECT
 			DISTINCT transaction.uuid,
@@ -389,7 +391,7 @@ export async function selectTransactionByFromSection(req, res, next) {
 			transaction.from_section = ${from_section}
 			${
 				from && to
-					? sql`AND transaction.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
+					? sql` AND transaction.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
 					: sql``
 			}
 		ORDER BY transaction.created_at DESC
