@@ -1733,7 +1733,7 @@ export async function selectMaterialType(req, res, next) {
 }
 
 export async function selectMaterial(req, res, next) {
-	const { type } = req.query;
+	const { type, store_type } = req.query;
 
 	const typeArray = type ? type.split(',') : null;
 
@@ -1765,6 +1765,10 @@ export async function selectMaterial(req, res, next) {
 		} else {
 			infoPromise.where(sql`lower(material.type.name) = lower(${type})`);
 		}
+	}
+
+	if (store_type) {
+		infoPromise.where(eq(materialSchema.info.store_type, store_type));
 	}
 
 	try {
