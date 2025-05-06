@@ -202,25 +202,15 @@ export async function selectSampleReportByDate(req, res, next) {
                                         'challan_number', CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', ch.id),
                                         'challan_date', ch.created_at,
                                         'is_delivered', ch.is_delivered,
-                                        'challan_quantity', COALESCE(challan_quantity.challan_quantity, 0)
+                                        'challan_quantity', COALESCE(ple.quantity, 0)::float8,
+                                        'packing_list_uuid', pl.uuid,
+                                        'packing_list_number', CONCAT('ZP', to_char(pl.created_at, 'YY'), '-', pl.id)
                                     )
                                 ) AS challan_info
                             FROM
                                 delivery.challan ch
                             LEFT JOIN delivery.packing_list pl ON ch.uuid = pl.challan_uuid
                             LEFT JOIN delivery.packing_list_entry ple ON pl.uuid = ple.packing_list_uuid
-                            LEFT JOIN (
-                                SELECT 
-                                    ple.sfg_uuid,
-                                    SUM(ple.quantity) as challan_quantity
-                                FROM 
-                                    delivery.packing_list_entry ple
-                                LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
-                                WHERE 
-                                    pl.challan_uuid IS NOT NULL
-                                GROUP BY
-                                    ple.sfg_uuid
-                            ) challan_quantity ON challan_quantity.sfg_uuid = ple.sfg_uuid
                             GROUP BY 
                                 ple.sfg_uuid
                         ) ch_details ON ch_details.sfg_uuid = sfg.uuid
