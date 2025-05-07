@@ -289,8 +289,6 @@ export async function selectTransactionByFromSection(req, res, next) {
 
 	const { from_date, to_date } = req.query;
 
-	console.log(from_date, to_date, 'from to');
-
 	const query = sql`
 		SELECT
 			transaction.uuid,
@@ -401,8 +399,6 @@ export async function selectTransactionByFromSection(req, res, next) {
 
 	try {
 		const data = await transactionPromise;
-
-		console.log(data.rows.length, 'data');
 
 		const toast = {
 			status: 200,
