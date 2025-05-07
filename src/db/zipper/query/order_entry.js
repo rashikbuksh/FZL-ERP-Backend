@@ -46,7 +46,6 @@ export async function insert(req, res, next) {
 		created_by,
 		created_at,
 		remarks,
-		is_inch,
 		index,
 	} = req.body;
 
@@ -68,7 +67,6 @@ export async function insert(req, res, next) {
 			created_by,
 			created_at,
 			remarks,
-			is_inch,
 			index,
 		})
 		.returning({ insertedUuid: order_entry.uuid });
@@ -107,7 +105,6 @@ export async function update(req, res, next) {
 		created_at,
 		updated_at,
 		remarks,
-		is_inch,
 		index,
 	} = req.body;
 
@@ -129,7 +126,6 @@ export async function update(req, res, next) {
 			created_at,
 			updated_at,
 			remarks,
-			is_inch,
 			index,
 		})
 		.where(eq(order_entry.uuid, req.params.uuid))
@@ -237,7 +233,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			style: order_entry.style,
 			color: order_entry.color,
 			size: order_entry.size,
-			is_inch: order_entry.is_inch,
+			is_inch: order_description.is_inch,
 			quantity: decimalToNumber(order_entry.quantity),
 			company_price: decimalToNumber(order_entry.company_price),
 			party_price: decimalToNumber(order_entry.party_price),
@@ -451,8 +447,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
             oe.color, 
             oe.size, 
             vodf.is_inch,
-            oe.bleaching, 
-            vodf.is_inch
+            oe.bleaching
 		ORDER BY
 			oe.size::float8 ASC
 	`;
