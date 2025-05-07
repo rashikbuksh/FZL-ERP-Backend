@@ -94,8 +94,8 @@ export async function selectAll(req, res, next) {
         LEFT JOIN hr.users u ON tttd.created_by = u.uuid
         LEFT JOIN zipper.tape_coil tc ON tttd.tape_coil_uuid = tc.uuid
         WHERE 
-            ${from && to ? sql`tttd.created_at BETWEEN ${from}::timestamp AND ${to}::timestamp + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
-			${transfer_type ? sql`AND tttd.tape_transfer_type = ${transfer_type}` : sql``}
+            ${from && to ? sql` tttd.created_at BETWEEN ${from}::timestamp AND ${to}::timestamp + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
+			${transfer_type ? sql` AND tttd.tape_transfer_type = ${transfer_type}` : sql``}
         ORDER BY tttd.created_at DESC
     `;
 
