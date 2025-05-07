@@ -1,9 +1,6 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, between, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
@@ -204,6 +201,8 @@ export async function select(req, res, next) {
 export async function selectTapeCoilProductionBySection(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { from, to } = req.query;
+
 	const tapeCoilProductionPromise = db
 		.select({
 			uuid: tape_coil_production.uuid,
@@ -247,7 +246,18 @@ export async function selectTapeCoilProductionBySection(req, res, next) {
 			zipper_number_properties,
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
-		.where(eq(tape_coil_production.section, req.params.section))
+		.where(
+			and(
+				eq(tape_coil_production.section, req.params.section),
+				from && to
+					? between(
+							tape_coil_production.created_at,
+							sql`${from}::TIMESTAMP`,
+							sql`${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
+						)
+					: true
+			)
+		)
 		.orderBy(desc(tape_coil_production.created_at));
 
 	try {

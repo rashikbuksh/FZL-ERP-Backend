@@ -76,7 +76,7 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { from_date, to_date, transfer_type } = req.query;
+	const { from, to, transfer_type } = req.query;
 
 	const query = sql`
         SELECT
@@ -94,7 +94,7 @@ export async function selectAll(req, res, next) {
         LEFT JOIN hr.users u ON tttd.created_by = u.uuid
         LEFT JOIN zipper.tape_coil tc ON tttd.tape_coil_uuid = tc.uuid
         WHERE 
-            ${from_date && to_date ? sql`tttd.created_at BETWEEN ${from_date}::timestamp AND ${to_date}::timestamp + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
+            ${from && to ? sql`tttd.created_at BETWEEN ${from}::timestamp AND ${to}::timestamp + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
 			${transfer_type ? sql`AND tttd.tape_transfer_type = ${transfer_type}` : sql``}
         ORDER BY tttd.created_at DESC
     `;

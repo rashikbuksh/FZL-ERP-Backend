@@ -2510,6 +2510,8 @@ export const pathZipperTapeCoilProduction = {
 					'section',
 					'string'
 				),
+				SE.parameter_query('from', 'from', SE.date_time()),
+				SE.parameter_query('to', 'to', SE.date_time()),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -2647,6 +2649,8 @@ export const pathZipperTapeTrx = {
 			summary: 'Get all Tape Trx by Section',
 			parameters: [
 				SE.parameter_params('tape trx to get', 'section', 'string'),
+				SE.parameter_query('from', 'from', SE.date_time()),
+				SE.parameter_query('to', 'to', SE.date_time()),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -3098,6 +3102,10 @@ export const pathZipperTapeCoilToDyeing = {
 		get: {
 			tags: ['zipper.tape_coil_to_dyeing'],
 			summary: 'Get all Tape Coil To Dyeing by type nylon',
+			parameter: [
+				SE.parameter_query('from', 'from', SE.date_time()),
+				SE.parameter_query('to', 'to', SE.date_time()),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -3122,6 +3130,10 @@ export const pathZipperTapeCoilToDyeing = {
 		get: {
 			tags: ['zipper.tape_coil_to_dyeing'],
 			summary: 'Get all Tape Coil To Dyeing by type tape',
+			parameter: [
+				SE.parameter_query('from', 'from', SE.date_time()),
+				SE.parameter_query('to', 'to', SE.date_time()),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),
@@ -4120,6 +4132,16 @@ export const pathZipperTapeTransferToDyeing = {
 		get: {
 			tags: ['zipper.tape_transfer_to_dyeing'],
 			summary: 'Get all Tape Transfer To Dyeing',
+			parameters: [
+				SE.parameter_query('transfer_type', 'transfer_type', [
+					'tape_to_dyeing',
+					'dyeing_to_tape',
+					'tape_to_dyeing_and_dyeing_to_tape',
+				]),
+
+				SE.parameter_query('from', 'from', ['2024-01-01']),
+				SE.parameter_query('to', 'to', ['2024-01-01']),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),

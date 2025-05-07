@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, between, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -186,6 +186,7 @@ export async function select(req, res, next) {
 
 export async function selectBySection(req, res, next) {
 	const { section } = req.params;
+	const { from, to } = req.query;
 
 	if (!(await validateRequest(req, next))) return;
 
@@ -227,11 +228,20 @@ export async function selectBySection(req, res, next) {
 			eq(tape_coil.zipper_number_uuid, zipper_number_properties.uuid)
 		)
 		.where(
-			section.toLowerCase() === 'tape'
-				? sql`LOWER(${item_properties.name}) != 'nylon' OR (LOWER(${item_properties.name}) = 'nylon' AND LOWER(${tape_trx.to_section}) = 'coil')`
-				: section.toLowerCase() === 'coil'
-					? sql`(LOWER(${item_properties.name}) = 'nylon' AND LOWER(${tape_trx.to_section}) != 'coil')`
-					: sql`true`
+			and(
+				section.toLowerCase() === 'tape'
+					? sql`LOWER(${item_properties.name}) != 'nylon' OR (LOWER(${item_properties.name}) = 'nylon' AND LOWER(${tape_trx.to_section}) = 'coil')`
+					: section.toLowerCase() === 'coil'
+						? sql`(LOWER(${item_properties.name}) = 'nylon' AND LOWER(${tape_trx.to_section}) != 'coil')`
+						: sql`true`,
+				from && to
+					? between(
+							tape_trx.created_at,
+							sql`${from}::TIMESTAMP`,
+							sql`${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
+						)
+					: true
+			)
 		)
 		.orderBy(desc(tape_trx.created_at));
 	try {

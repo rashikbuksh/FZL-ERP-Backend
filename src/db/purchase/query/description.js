@@ -14,7 +14,10 @@ export async function insert(req, res, next) {
 		.insert(description)
 		.values(req.body)
 		.returning({
-			insertedId: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+			insertedId: sql`CASE WHEN description.store_type = 'rm' 
+								THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+								ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+							END`,
 		});
 
 	try {
@@ -38,7 +41,10 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(description.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+			updatedId: sql`CASE WHEN description.store_type = 'rm' 
+								THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+								ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+							END`,
 		});
 
 	try {
@@ -62,7 +68,10 @@ export async function remove(req, res, next) {
 		.delete(description)
 		.where(eq(description.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+			deletedId: sql`CASE WHEN description.store_type = 'rm' 
+								THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+								ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+							END`,
 		});
 
 	try {
@@ -85,7 +94,10 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: description.uuid,
-			purchase_id: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+			purchase_id: sql`CASE WHEN description.store_type = 'rm' 
+								THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+								ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+							END`,
 			vendor_uuid: description.vendor_uuid,
 			vendor_name: vendor.name,
 			is_local: description.is_local,
@@ -130,7 +142,10 @@ export async function select(req, res, next) {
 	const descriptionPromise = db
 		.select({
 			uuid: description.uuid,
-			purchase_id: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+			purchase_id: sql`CASE WHEN description.store_type = 'rm' 
+								THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+								ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+							END`,
 			vendor_uuid: description.vendor_uuid,
 			vendor_name: vendor.name,
 			is_local: description.is_local,
@@ -209,7 +224,10 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: description.uuid,
-			purchase_id: sql`CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))`,
+			purchase_id: sql`CASE WHEN description.store_type = 'rm' 
+								THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+								ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+							END`,
 			vendor_uuid: description.vendor_uuid,
 			vendor_name: vendor.name,
 			is_local: description.is_local,

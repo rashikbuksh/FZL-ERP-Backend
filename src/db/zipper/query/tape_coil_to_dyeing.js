@@ -1,8 +1,5 @@
 import { eq, sql } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { tape_coil_to_dyeing } from '../schema.js';
 
@@ -221,6 +218,8 @@ export async function select(req, res, next) {
 export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { from, to } = req.query;
+
 	const query = sql`
 		SELECT
 			tape_coil_to_dyeing.uuid,
@@ -254,6 +253,7 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid 
 		WHERE 
 			lower(item_properties.name) = 'nylon'
+			${from && to ? sql` AND tape_coil_to_dyeing.created_at BETWEEN ${from}::timestamp AND ${to}::timestamp + interval '23 hours 59 minutes 59 seconds'` : sql``}
 		ORDER BY
 			tape_coil_to_dyeing.created_at DESC
 	`;
@@ -277,6 +277,8 @@ export async function selectTapeCoilToDyeingByNylon(req, res, next) {
 
 export async function selectTapeCoilToDyeingForTape(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	const { from, to } = req.query;
 
 	const query = sql`
 		SELECT
@@ -311,6 +313,7 @@ export async function selectTapeCoilToDyeingForTape(req, res, next) {
 		LEFT JOIN public.properties zipper_number_properties ON tape_coil.zipper_number_uuid = zipper_number_properties.uuid
 		WHERE
 			lower(item_properties.name) != 'nylon'
+			${from && to ? sql` AND tape_coil_to_dyeing.created_at BETWEEN ${from}::timestamp AND ${to}::timestamp + interval '23 hours 59 minutes 59 seconds'` : sql``}
 		ORDER BY
 			tape_coil_to_dyeing.created_at DESC
 	`;
