@@ -1603,8 +1603,8 @@ const pathSliderTransaction = {
 					'string',
 					'sa_prod'
 				),
-				SE.parameter_query('from', 'from', SE.date_time()),
-				SE.parameter_query('to', 'to', SE.date_time()),
+				SE.parameter_query('from_date', 'from_date', SE.date_time()),
+				SE.parameter_query('to_date', 'to_date', SE.date_time()),
 			],
 			responses: {
 				200: SE.response_schema(200, {
