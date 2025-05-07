@@ -402,7 +402,7 @@ export async function selectTransactionByFromSection(req, res, next) {
 	try {
 		const data = await transactionPromise;
 
-		console.log(data.rows, 'data');
+		console.log(data.rows.length, 'data');
 
 		const toast = {
 			status: 200,
