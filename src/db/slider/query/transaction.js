@@ -289,7 +289,7 @@ export async function selectTransactionByFromSection(req, res, next) {
 
 	const { from_date, to_date } = req.query;
 
-	console.log(from, to, 'from to');
+	console.log(from_date, to_date, 'from to');
 
 	const query = sql`
 		SELECT
