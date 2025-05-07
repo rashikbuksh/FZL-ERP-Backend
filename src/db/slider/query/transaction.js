@@ -287,7 +287,7 @@ export async function select(req, res, next) {
 export async function selectTransactionByFromSection(req, res, next) {
 	const { from_section } = req.params;
 
-	const { from, to } = req.query;
+	const { from_date, to_date } = req.query;
 
 	console.log(from, to, 'from to');
 
@@ -390,8 +390,8 @@ export async function selectTransactionByFromSection(req, res, next) {
 		WHERE 
 			transaction.from_section = ${from_section}
 			AND ${
-				from && to
-					? sql`transaction.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' `
+				from_date && to_date
+					? sql`transaction.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' `
 					: sql`true`
 			}
 		ORDER BY transaction.created_at DESC
@@ -401,6 +401,8 @@ export async function selectTransactionByFromSection(req, res, next) {
 
 	try {
 		const data = await transactionPromise;
+
+		console.log(data.rows, 'data');
 
 		const toast = {
 			status: 200,
