@@ -76,7 +76,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 COALESCE(delivery_sum.total_short_quantity, 0)::float8 AS total_short_quantity,
                 COALESCE(delivery_sum.total_reject_quantity, 0)::float8 AS total_reject_quantity,
                 vodf.remarks,
-                expected.expected_kg AS total_tape_expected_kg
+                expected.expected_kg::float8 AS total_tape_expected_kg
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -194,7 +194,16 @@ export async function zipperProductionStatusReport(req, res, next) {
                         FILTER (WHERE finishing_batch.uuid IS NOT NULL), '[]'
                     ) AS finishing_batch,
                     COALESCE(
-                        jsonb_agg(DISTINCT jsonb_build_object('dyeing_batch_uuid', dyeing_batch.dyeing_batch_uuid, 'dyeing_batch_number', dyeing_batch.dyeing_batch_number, 'dyeing_batch_date', dyeing_batch.production_date, 'dyeing_batch_quantity', dyeing_batch.total_quantity::float8, 'received', dyeing_batch.received))
+                        jsonb_agg(DISTINCT 
+                            jsonb_build_object(
+                            'dyeing_batch_uuid', dyeing_batch.dyeing_batch_uuid, 
+                            'dyeing_batch_number', dyeing_batch.dyeing_batch_number, 
+                            'dyeing_batch_date', dyeing_batch.production_date, 
+                            'dyeing_batch_quantity', dyeing_batch.total_quantity::float8, 
+                            'received', dyeing_batch.received,
+                            'total_production_quantity', dyeing_batch.total_production_quantity::float8
+                            )
+                        )
                         FILTER (WHERE dyeing_batch_uuid IS NOT NULL), '[]'
                     ) AS dyeing_batch
                 FROM
@@ -222,6 +231,7 @@ export async function zipperProductionStatusReport(req, res, next) {
 							dyeing_batch.production_date::date,
                             oe.order_description_uuid,
 							SUM(dyeing_batch_entry.quantity) as total_quantity,
+                            SUM(dyeing_batch_entry.production_quantity_in_kg) as total_production_quantity,
                             CASE WHEN dyeing_batch.received = 1 THEN TRUE ELSE FALSE END as received
 						FROM
 							zipper.dyeing_batch
