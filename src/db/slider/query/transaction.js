@@ -401,8 +401,6 @@ export async function selectTransactionByFromSection(req, res, next) {
 	try {
 		const data = await transactionPromise;
 
-		console.log(data?.rows);
-
 		const toast = {
 			status: 200,
 			type: 'select_all',
