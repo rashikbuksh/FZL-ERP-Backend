@@ -54,6 +54,12 @@ export async function zipperProductionStatusReport(req, res, next) {
                         THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC)
                     ELSE CAST(oe.size AS NUMERIC)
                 END)) AS sizes,
+                CASE 
+                    WHEN vodf.order_type = 'tape' THEN 'Meter' 
+                    WHEN vodf.order_type = 'slider' THEN 'Pcs'
+                    WHEN vodf.is_inch = 1 THEN 'Inch'
+				    ELSE 'Cm'
+			    END as unit,
                 COUNT(DISTINCT oe.size) AS size_count,
                 SUM(oe.quantity)::float8 AS total_quantity,
                 COALESCE(production_sum.assembly_production_quantity, 0)::float8 AS assembly_production_quantity,
@@ -69,7 +75,8 @@ export async function zipperProductionStatusReport(req, res, next) {
                 COALESCE(delivery_sum.total_delivery_balance_quantity, 0)::float8 AS total_delivery_balance_quantity,
                 COALESCE(delivery_sum.total_short_quantity, 0)::float8 AS total_short_quantity,
                 COALESCE(delivery_sum.total_reject_quantity, 0)::float8 AS total_reject_quantity,
-                vodf.remarks
+                vodf.remarks,
+                expected.expected_kg AS total_tape_expected_kg
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -230,13 +237,42 @@ export async function zipperProductionStatusReport(req, res, next) {
                 GROUP BY
                     vod.order_description_uuid
             ) finishing_dyeing_batch ON finishing_dyeing_batch.order_description_uuid = oe.order_description_uuid
+            LEFT JOIN (
+                SELECT 
+                    ROUND(
+                        SUM((
+                            CASE 
+                                WHEN vodf.order_type = 'tape' 
+                                    THEN ((tcr.top + tcr.bottom + oe.quantity) * 1) / 100 / tcr.dyed_mtr_per_kg::float8
+                                ELSE ((tcr.top + tcr.bottom + CASE 
+                                        WHEN vodf.is_inch = 1 
+                                            THEN CAST(CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC) 
+                                        ELSE CAST(oe.size AS NUMERIC)
+                                        END) * oe.quantity::float8) / 100 / tcr.dyed_mtr_per_kg::float8
+                            END
+                    )::numeric), 3) as expected_kg, 
+                    vodf.order_description_uuid
+                FROM zipper.order_entry oe
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    LEFT JOIN 
+                        zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid AND vodf.item = tcr.item_uuid 
+                        AND vodf.zipper_number = tcr.zipper_number_uuid 
+                        AND (CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END)
+                    LEFT JOIN
+                        zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid
+                WHERE 
+                    lower(vodf.item_name) != 'nylon' 
+                    OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+                GROUP BY vodf.order_description_uuid
+            ) AS expected ON vodf.order_description_uuid = expected.order_description_uuid
             WHERE vodf.order_description_uuid IS NOT NULL 
                 AND vodf.is_cancelled = FALSE
                 AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
         `;
 
 		query.append(
-			sql` GROUP BY
+			sql` 
+            GROUP BY
                 vodf.order_info_uuid,
                 vodf.order_number,
                 finishing_dyeing_batch.finishing_batch,
@@ -269,7 +305,10 @@ export async function zipperProductionStatusReport(req, res, next) {
                 delivery_sum.total_delivery_balance_quantity,
                 delivery_sum.total_short_quantity,
                 delivery_sum.total_reject_quantity,
-                vodf.remarks`
+                vodf.remarks,
+                expected.expected_kg,
+                vodf.is_inch
+            `
 		);
 
 		if (status === 'completed') {
