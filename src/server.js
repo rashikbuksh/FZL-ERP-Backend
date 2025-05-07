@@ -10,7 +10,7 @@ const server = express();
 
 server.use(cors);
 server.use(urlencoded({ extended: true }));
-server.use(json({ limit: '100mb' }));
+server.use(json({ limit: '50mb' }));
 
 server.use(VerifyToken);
 server.use('/uploads', express.static('uploads'));
