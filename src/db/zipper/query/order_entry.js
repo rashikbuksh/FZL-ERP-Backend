@@ -300,7 +300,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 		)
 		.leftJoin(dyeing_batch_entry, eq(sfg.uuid, dyeing_batch_entry.sfg_uuid))
 		.where(eq(order_description.uuid, order_description_uuid))
-		.groupBy(order_entry.uuid, sfg.uuid)
+		.groupBy(order_entry.uuid, sfg.uuid, order_description.is_inch)
 		.orderBy(asc(order_entry.index));
 
 	try {
