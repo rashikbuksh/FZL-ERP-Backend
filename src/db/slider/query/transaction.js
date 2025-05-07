@@ -129,14 +129,14 @@ export async function selectAll(req, res, next) {
 			zfb.uuid as finishing_batch_uuid,
 			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			CASE WHEN transaction.finishing_batch_entry_uuid IS NULL THEN vodf.order_type ELSE vodf_fbe_trx.order_type END as order_type,
-			stock.sa_prod::float8,
-			stock.coloring_stock::float8,
-			stock.coloring_prod::float8,
-			stock.trx_to_finishing::float8,
+			coalesce(stock.sa_prod::float8, 0) as sa_prod,
+			coalesce(stock.coloring_stock::float8, 0) as coloring_stock,
+			coalesce(stock.coloring_prod::float8, 0) as coloring_prod,
+			coalesce(stock.trx_to_finishing::float8, 0) as trx_to_finishing,
 			transaction.assembly_stock_uuid,
 			assembly_stock.name as assembly_stock_name,
-			assembly_stock.quantity::float8 as assembly_stock_quantity,
-			assembly_stock.quantity::float8 + transaction.trx_quantity::float8 as max_assembly_stock_quantity,
+			coalesce(assembly_stock.quantity::float8, 0) as assembly_stock_quantity,
+			coalesce(assembly_stock.quantity::float8 + transaction.trx_quantity::float8, 0) as max_assembly_stock_quantity,
 			transaction.finishing_batch_entry_uuid
 		FROM
 			slider.transaction
@@ -165,12 +165,13 @@ export async function selectAll(req, res, next) {
 
 	try {
 		const data = await transactionPromise;
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
 			message: 'Transaction list',
 		};
-		return await res.status(200).json({ toast, data: data?.rows });
+		return res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -240,14 +241,14 @@ export async function select(req, res, next) {
 			zfb.uuid as finishing_batch_uuid,
 			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			CASE WHEN transaction.finishing_batch_entry_uuid IS NULL THEN vodf.order_type ELSE vodf_fbe_trx.order_type END as order_type,
-			stock.sa_prod::float8,
-			stock.coloring_stock::float8,
-			stock.coloring_prod::float8,
-			stock.trx_to_finishing::float8,
+			coalesce(stock.sa_prod::float8, 0) as sa_prod,
+			coalesce(stock.coloring_stock::float8, 0) as coloring_stock,
+			coalesce(stock.coloring_prod::float8, 0) as coloring_prod,
+			coalesce(stock.trx_to_finishing::float8, 0) as trx_to_finishing,
 			transaction.assembly_stock_uuid,
 			assembly_stock.name as assembly_stock_name,
-			assembly_stock.quantity::float8 as assembly_stock_quantity,
-			assembly_stock.quantity::float8 + transaction.trx_quantity::float8 as max_assembly_stock_quantity,
+			coalesce(assembly_stock.quantity::float8, 0) as assembly_stock_quantity,
+			coalesce(assembly_stock.quantity::float8 + transaction.trx_quantity::float8, 0) as max_assembly_stock_quantity,
 			transaction.finishing_batch_entry_uuid
 		FROM
 			slider.transaction
@@ -278,7 +279,7 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: 'transaction',
 		};
-		return await res.status(200).json({ toast, data: data?.rows[0] });
+		return res.status(200).json({ toast, data: data?.rows[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -350,17 +351,17 @@ export async function selectTransactionByFromSection(req, res, next) {
 			zfb.uuid as finishing_batch_uuid,
 			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
 			CASE WHEN transaction.finishing_batch_entry_uuid IS NULL THEN vodf.order_type ELSE vodf_fbe_trx.order_type END as order_type,
-			stock.sa_prod::float8,
-			stock.coloring_stock::float8,
-			stock.coloring_prod::float8,
-			st_given.trx_quantity::float8 as total_trx_quantity,
-			(stock.sa_prod::float8 + transaction.trx_quantity::float8) as max_sa_quantity,
-			(stock.coloring_prod::float8 + transaction.trx_quantity::float8) as max_coloring_quantity,
-			(stock.trx_to_finishing::float8 + transaction.trx_quantity::float8) as max_trx_to_finishing_quantity,
+			coalesce(stock.sa_prod::float8, 0) as sa_prod,
+			coalesce(stock.coloring_stock::float8, 0) as coloring_stock,
+			coalesce(stock.coloring_prod::float8, 0) as coloring_prod,
+			coalesce(st_given.trx_quantity::float8, 0) as total_trx_quantity,
+			coalesce(stock.sa_prod::float8 + transaction.trx_quantity::float8, 0) as max_sa_quantity,
+			coalesce(stock.coloring_prod::float8 + transaction.trx_quantity::float8, 0) as max_coloring_quantity,
+			coalesce(stock.trx_to_finishing::float8 + transaction.trx_quantity::float8, 0) as max_trx_to_finishing_quantity,
 			transaction.assembly_stock_uuid,
 			assembly_stock.name as assembly_stock_name,
-			assembly_stock.quantity::float8 as assembly_stock_quantity,
-			assembly_stock.quantity::float8 + transaction.trx_quantity::float8 as max_assembly_stock_quantity,
+			coalesce(assembly_stock.quantity::float8, 0) as assembly_stock_quantity,
+			coalesce(assembly_stock.quantity::float8 + transaction.trx_quantity::float8, 0) as max_assembly_stock_quantity,
 			transaction.finishing_batch_entry_uuid
 		FROM
 			slider.transaction
@@ -400,12 +401,14 @@ export async function selectTransactionByFromSection(req, res, next) {
 	try {
 		const data = await transactionPromise;
 
+		console.log(data?.rows);
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
 			message: 'Transaction list',
 		};
-		return await res.status(200).json({ toast, data: data?.rows });
+		return res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}

@@ -396,7 +396,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			oe.style,
 			oe.color,
 			oe.size::float8,
-			oe.is_inch,
+			vodf.is_inch,
 			SUM(oe.quantity)::float8 as quantity,
 			oe.bleaching,
 			CASE 
@@ -450,7 +450,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
             oe.style, 
             oe.color, 
             oe.size, 
-            oe.is_inch,
+            vodf.is_inch,
             oe.bleaching, 
             vodf.is_inch
 		ORDER BY
