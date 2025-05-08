@@ -402,7 +402,9 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 						WHEN vodf.order_type = 'tape' THEN 'Meter'
 						ELSE 'CM'
 					END 
-			END as unit
+			END as unit,
+			vodf.order_description_created_at,
+			vodf.order_description_updated_at
 		FROM 
 			zipper.v_order_details_full vodf
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -447,7 +449,9 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
             oe.color, 
             oe.size, 
             vodf.is_inch,
-            oe.bleaching
+            oe.bleaching,
+			vodf.order_description_created_at,
+			vodf.order_description_updated_at
 		ORDER BY
 			oe.size::float8 ASC
 	`;
@@ -492,6 +496,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				updated_at,
 				index,
 				order_entry_remarks,
+				order_description_created_at,
+				order_description_updated_at,
 			} = row;
 
 			// group using style then tape,slider and other vodf fields, then order_entry fields
@@ -502,6 +508,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				[style],
 				() => ({
 					style,
+					order_description_created_at,
+					order_description_updated_at,
 					item_description: [],
 				})
 			);
@@ -586,6 +594,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 					updated_at,
 					index,
 					order_entry_remarks,
+					order_description_created_at,
+					order_description_updated_at,
 				} = row;
 
 				// group using style then tape,slider and other vodf fields, then order_entry fields
@@ -596,6 +606,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 					[style],
 					() => ({
 						style,
+						order_description_created_at,
+						order_description_updated_at,
 						item_description: [],
 					})
 				);
