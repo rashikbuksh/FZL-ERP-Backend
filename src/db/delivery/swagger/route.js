@@ -1464,7 +1464,7 @@ export const pathDeliveryCarton = {
 };
 
 export const pathDeliveryQuantityReturn = {
-	'/delivery/quantity_return': {
+	'/delivery/quantity-return': {
 		get: {
 			tags: ['delivery.quantity_return'],
 			summary: 'Get all quantity returns',
@@ -1525,7 +1525,7 @@ export const pathDeliveryQuantityReturn = {
 			},
 		},
 	},
-	'/delivery/quantity_return/{uuid}': {
+	'/delivery/quantity-return/{uuid}': {
 		get: {
 			tags: ['delivery.quantity_return'],
 			summary: 'Get a quantity return by uuid',
@@ -1624,7 +1624,6 @@ export const pathDelivery = {
 	...pathDeliveryPackingList,
 	...pathDeliveryPackingListEntry,
 	...pathDeliveryChallan,
-	// ...pathDeliveryChallanEntry,
 	...pathDeliveryVehicle,
 	...pathDeliveryCarton,
 	...pathDeliveryQuantityReturn,
