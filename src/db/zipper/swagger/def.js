@@ -412,6 +412,13 @@ export const def_zipper_tape_coil = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('Remarks'),
+		material_uuid: SE.uuid(),
+		thread_material_uuid: SE.uuid(),
+		thread_consumption_per_kg: SE.number('100.0'),
+		cord_material_uuid: SE.uuid(),
+		cord_consumption_per_kg: SE.number('100.0'),
+		monofilament_material_uuid: SE.uuid(),
+		monofilament_consumption_per_kg: SE.number('100.0'),
 	},
 	xml: 'Zipper/Tape-Coil',
 });

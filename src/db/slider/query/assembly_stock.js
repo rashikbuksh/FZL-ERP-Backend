@@ -143,7 +143,7 @@ export async function selectAll(req, res, next) {
 			transaction_total_trx.total_transaction_quantity::float8,
 			assembly_stock.material_uuid,
 			info.name AS material_name,
-			assembly_stock.piece_per_kg::float8
+			assembly_stock.pcs_per_kg::float8
 		FROM 
 			slider.assembly_stock
 		LEFT JOIN 
@@ -217,7 +217,7 @@ export async function select(req, res, next) {
 			transaction_total_trx.total_transaction_quantity::float8,
 			assembly_stock.material_uuid,
 			info.name AS material_name,
-			assembly_stock.piece_per_kg::float8
+			assembly_stock.pcs_per_kg::float8
 		FROM 
 			slider.assembly_stock
 		LEFT JOIN 

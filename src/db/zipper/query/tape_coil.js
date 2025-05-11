@@ -143,7 +143,16 @@ export async function selectAll(req, res, next) {
 		tape_coil.updated_at,
 		tape_coil.remarks,
 		tape_coil.material_uuid,
-		material.info.name AS material_name
+		material.info.name AS material_name,
+		tape_coil.thread_material_uuid,
+		thread_material.name AS thread_material_name,
+		tape_coil.thread_consumption_per_kg,
+		tape_coil.cord_material_uuid,
+		cord_material.name AS cord_material_name,
+		tape_coil.cord_consumption_per_kg,
+		tape_coil.monofilament_material_uuid,
+		monofilament_material.name AS monofilament_material_name,
+		tape_coil.monofilament_consumption_per_kg
 	FROM
 		zipper.tape_coil
 	LEFT JOIN hr.users ON tape_coil.created_by = hr.users.uuid
@@ -168,6 +177,12 @@ export async function selectAll(req, res, next) {
 			)
 		)
 	) tape_coil_required ON tape_coil.uuid = tape_coil_required.tape_coil_uuid AND tape_coil_required.rn = 1
+	LEFT JOIN 
+		material.info thread_material ON tape_coil.thread_material_uuid = thread_material.uuid
+	LEFT JOIN
+		material.info cord_material ON tape_coil.cord_material_uuid = cord_material.uuid
+	LEFT JOIN
+		material.info monofilament_material ON tape_coil.monofilament_material_uuid = monofilament_material.uuid
 	ORDER BY
 		lower(item_properties.name) = 'nylon' DESC,
 		item_properties.name ASC,
@@ -217,7 +232,16 @@ export async function select(req, res, next) {
 		tape_coil.updated_at,
 		tape_coil.remarks,
 		tape_coil.material_uuid,
-		material.info.name AS material_name
+		material.info.name AS material_name,
+		tape_coil.thread_material_uuid,
+		thread_material.name AS thread_material_name,
+		tape_coil.thread_consumption_per_kg,
+		tape_coil.cord_material_uuid,
+		cord_material.name AS cord_material_name,
+		tape_coil.cord_consumption_per_kg,
+		tape_coil.monofilament_material_uuid,
+		monofilament_material.name AS monofilament_material_name,
+		tape_coil.monofilament_consumption_per_kg
 	FROM
 		zipper.tape_coil
 	LEFT JOIN hr.users ON tape_coil.created_by = hr.users.uuid
@@ -242,6 +266,12 @@ export async function select(req, res, next) {
 			)
 		)
 	) tape_coil_required ON tape_coil.uuid = tape_coil_required.tape_coil_uuid AND tape_coil_required.rn = 1
+	LEFT JOIN 
+		material.info thread_material ON tape_coil.thread_material_uuid = thread_material.uuid
+	LEFT JOIN
+		material.info cord_material ON tape_coil.cord_material_uuid = cord_material.uuid
+	LEFT JOIN
+		material.info monofilament_material ON tape_coil.monofilament_material_uuid = monofilament_material.uuid
 	WHERE
 		tape_coil.uuid = ${req.params.uuid};`;
 
@@ -289,7 +319,16 @@ export async function selectByNylon(req, res, next) {
 		tape_coil.updated_at,
 		tape_coil.remarks,
 		tape_coil.material_uuid,
-		material.info.name AS material_name
+		material.info.name AS material_name,
+		tape_coil.thread_material_uuid,
+		thread_material.name AS thread_material_name,
+		tape_coil.thread_consumption_per_kg,
+		tape_coil.cord_material_uuid,
+		cord_material.name AS cord_material_name,
+		tape_coil.cord_consumption_per_kg,
+		tape_coil.monofilament_material_uuid,
+		monofilament_material.name AS monofilament_material_name,
+		tape_coil.monofilament_consumption_per_kg
 	FROM
 		zipper.tape_coil
 	LEFT JOIN hr.users ON tape_coil.created_by = hr.users.uuid
@@ -314,6 +353,12 @@ export async function selectByNylon(req, res, next) {
 			)
 		)
 	) tape_coil_required ON tape_coil.uuid = tape_coil_required.tape_coil_uuid AND tape_coil_required.rn = 1
+	LEFT JOIN 
+		material.info thread_material ON tape_coil.thread_material_uuid = thread_material.uuid
+	LEFT JOIN
+		material.info cord_material ON tape_coil.cord_material_uuid = cord_material.uuid
+	LEFT JOIN
+		material.info monofilament_material ON tape_coil.monofilament_material_uuid = monofilament_material.uuid
 	WHERE
 		lower(item_properties.name) = 'nylon'
 	ORDER BY

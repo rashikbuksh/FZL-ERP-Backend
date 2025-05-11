@@ -177,7 +177,7 @@ export const assembly_stock = slider.table('assembly_stock', {
 		.references(() => materialSchema.info.uuid)
 		.unique()
 		.default(null),
-	piece_per_kg: PG_DECIMAL('piece_per_kg').default(0),
+	pcs_per_kg: PG_DECIMAL('pcs_per_kg').default(0),
 });
 
 export const die_casting_to_assembly_stock = slider.table(

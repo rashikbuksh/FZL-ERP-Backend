@@ -5,7 +5,7 @@ import {
 	integer,
 	pgSchema,
 	serial,
-	text
+	text,
 } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as labDipSchema from '../lab_dip/schema.js';
@@ -474,6 +474,22 @@ export const tape_coil = zipper.table('tape_coil', {
 		.references(() => materialSchema.info.uuid)
 		.unique()
 		.default(null),
+	thread_material_uuid: defaultUUID('thread_material_uuid')
+		.references(() => materialSchema.info.uuid)
+		.default(null),
+	thread_consumption_per_kg: PG_DECIMAL('thread_consumption_per_kg').default(
+		0.0
+	),
+	cord_material_uuid: defaultUUID('cord_material_uuid')
+		.references(() => materialSchema.info.uuid)
+		.default(null),
+	cord_consumption_per_kg: PG_DECIMAL('cord_consumption_per_kg').default(0.0),
+	monofilament_material_uuid: defaultUUID('monofilament_material_uuid')
+		.references(() => materialSchema.info.uuid)
+		.default(null),
+	monofilament_consumption_per_kg: PG_DECIMAL(
+		'monofilament_consumption_per_kg'
+	).default(0.0),
 });
 
 export const tape_trx = zipper.table('tape_trx', {

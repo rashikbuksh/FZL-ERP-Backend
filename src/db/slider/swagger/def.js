@@ -108,7 +108,7 @@ export const defAssemblyStock = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 		material_uuid: SE.uuid(),
-		piece_per_kg: SE.number(0.0),
+		pcs_per_kg: SE.number(0.0),
 	},
 	xml: 'Slider/AssemblyStock',
 });
