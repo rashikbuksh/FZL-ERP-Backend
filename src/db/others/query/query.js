@@ -912,7 +912,7 @@ export async function selectOrderZipperThread(req, res, next) {
 								: sql``
 						}
 						WHERE 
-							vodf.item_description != '---' AND vodf.item_description != '' AND vodf.is_cancelled = false
+							vodf.item_description != '---' AND vodf.item_description != '' AND vodf.item_description IS NOT NULL AND vodf.is_cancelled = false
 							${
 								page == 'production_statement'
 									? sql` 
