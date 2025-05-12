@@ -154,12 +154,12 @@ deliveryRouter.get(
 );
 
 // * quantity_return routes
-deliveryRouter.get('/quantity_return', quantityReturnOperations.selectAll);
-deliveryRouter.get('/quantity_return/:uuid', quantityReturnOperations.select);
-deliveryRouter.post('/quantity_return', quantityReturnOperations.insert);
-deliveryRouter.put('/quantity_return/:uuid', quantityReturnOperations.update);
+deliveryRouter.get('/quantity-return', quantityReturnOperations.selectAll);
+deliveryRouter.get('/quantity-return/:uuid', quantityReturnOperations.select);
+deliveryRouter.post('/quantity-return', quantityReturnOperations.insert);
+deliveryRouter.put('/quantity-return/:uuid', quantityReturnOperations.update);
 deliveryRouter.delete(
-	'/quantity_return/:uuid',
+	'/quantity-return/:uuid',
 	quantityReturnOperations.remove
 );
 
