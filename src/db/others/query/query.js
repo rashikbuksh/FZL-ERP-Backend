@@ -890,7 +890,8 @@ export async function selectOrderZipperThread(req, res, next) {
 						SELECT
 							oz.uuid AS value,
 							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label,
-							ARRAY_AGG(DISTINCT oe.color) as colors
+							ARRAY_AGG(DISTINCT oe.color) as colors,
+							true as is_zipper
 						FROM
 							zipper.order_info oz
 						LEFT JOIN zipper.v_order_details vodf ON oz.uuid = vodf.order_info_uuid
@@ -934,7 +935,8 @@ export async function selectOrderZipperThread(req, res, next) {
 						SELECT
 							ot.uuid AS value,
 							CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label,
-							ARRAY_AGG(DISTINCT toe.color) as colors
+							ARRAY_AGG(DISTINCT toe.color) as colors,
+							false as is_zipper
 						FROM
 							thread.order_info ot
 						LEFT JOIN thread.order_entry toe ON ot.uuid = toe.order_info_uuid
