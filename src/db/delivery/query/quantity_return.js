@@ -393,8 +393,8 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 					WHERE finishing_batch_entry.sfg_uuid = sfg.uuid
 				)
 			`,
-			fresh_quantity: 0,
-			repair_quantity: 0,
+			fresh_quantity: sql`0`,
+			repair_quantity: sql`0`,
 		})
 		.from(zipperSchema.order_entry)
 		.leftJoin(
@@ -513,8 +513,8 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			batch_quantity: decimalToNumber(
 				sql`COALESCE(batch.total_batch_quantity, 0)`
 			),
-			fresh_quantity: 0,
-			repair_quantity: 0,
+			fresh_quantity: sql`0`,
+			repair_quantity: sql`0`,
 		})
 		.from(threadSchema.order_entry)
 		.leftJoin(
