@@ -172,7 +172,7 @@ export async function selectAll(req, res, next) {
 	} else if (order_type == 'sample') {
 		query.append(sql`AND dvl.is_sample = 1`);
 	}
-	
+
 	query.append(
 		sql`
     GROUP BY 
@@ -609,13 +609,15 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
-							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
+						COALESCE(cl.cone_per_carton, 0) as cone_per_carton
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+					LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
 					WHERE dvl.is_warehouse_received = TRUE AND dvl.warehouse_received_date BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 					GROUP BY
 						dvl.uuid,
@@ -655,7 +657,8 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						dvl.warehouse_received_by_name,
 						dvl.gate_pass_by,
 						dvl.gate_pass_by_name,
-						dvl.is_sample
+						dvl.is_sample,
+						cl.cone_per_carton
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -700,13 +703,15 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
-							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
+						COALESCE(cl.cone_per_carton, 0) as cone_per_carton
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+					LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
 					WHERE dvl.gate_pass = 1 AND dvl.gate_pass_date BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 					GROUP BY
 						dvl.uuid,
@@ -746,7 +751,8 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						dvl.warehouse_received_by_name,
 						dvl.gate_pass_by,
 						dvl.gate_pass_by_name,
-						dvl.is_sample
+						dvl.is_sample,
+						cl.cone_per_carton
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -790,13 +796,15 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 						SUM(ple.quantity)::float8 as total_quantity,
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
-							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
+						COALESCE(cl.cone_per_carton, 0) as cone_per_carton
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+					LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
 					WHERE dvl.is_warehouse_received = TRUE AND dvl.gate_pass = 0 AND dvl.warehouse_received_date BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
 					GROUP BY
 						dvl.uuid,
@@ -836,7 +844,8 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 						dvl.warehouse_received_by_name,
 						dvl.gate_pass_by,
 						dvl.gate_pass_by_name,
-						dvl.is_sample
+						dvl.is_sample,
+						cl.cone_per_carton
 					ORDER BY
 						dvl.created_at DESC
 	`;

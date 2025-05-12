@@ -1,12 +1,19 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
 import { alias } from 'drizzle-orm/pg-core';
 import { quantity_return } from '../schema.js';
+import * as zipperSchema from '../../zipper/schema.js';
+import * as viewScehma from '../../view/schema.js';
+import * as threadSchema from '../../thread/schema.js';
 
 const completed_by_user = alias(hrSchema.users, 'completed_by_user');
+const thread_order_entry = alias(
+	threadSchema.order_entry,
+	'thread_order_entry'
+);
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -77,6 +84,30 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: quantity_return.uuid,
 			id: quantity_return.id,
+			order_number: sql`
+				CASE 
+					WHEN quantity_return.order_entry_uuid IS NOT NULL 
+					THEN v_order_details_full.order_number 
+					ELSE CONCAT('ST', 
+							CASE 
+								WHEN order_info.is_sample = 1 THEN 'S' 
+								ELSE '' 
+							END, 
+							TO_CHAR(order_info.created_at, 'YY'), '-', 
+							LPAD(order_info.id::text, 4, '0')
+						)
+				END`,
+			item_description: sql`
+				CASE
+					WHEN quantity_return.order_entry_uuid IS NOT NULL
+					THEN v_order_details_full.item_description
+					ELSE null
+				END`,
+			count: threadSchema.count_length.count,
+			length: threadSchema.count_length.length,
+			style: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.style ELSE thread_order_entry.style END`,
+			color: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.color ELSE thread_order_entry.color END`,
+			quantity: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.quantity ELSE thread_order_entry.quantity END`,
 			order_entry_uuid: quantity_return.order_entry_uuid,
 			thread_order_entry_uuid: quantity_return.thread_order_entry_uuid,
 			fresh_quantity: quantity_return.fresh_quantity,
@@ -99,6 +130,32 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			completed_by_user,
 			eq(quantity_return.completed_by, completed_by_user.uuid)
+		)
+		.leftJoin(
+			zipperSchema.order_entry,
+			eq(quantity_return.order_entry_uuid, zipperSchema.order_entry.uuid)
+		)
+		.leftJoin(
+			viewScehma.v_order_details_full,
+			eq(
+				zipperSchema.order_entry.order_description_uuid,
+				viewScehma.v_order_details_full.order_description_uuid
+			)
+		)
+		.leftJoin(
+			thread_order_entry,
+			eq(quantity_return.thread_order_entry_uuid, thread_order_entry.uuid)
+		)
+		.leftJoin(
+			threadSchema.count_length,
+			eq(
+				thread_order_entry.count_length_uuid,
+				threadSchema.count_length.uuid
+			)
+		)
+		.leftJoin(
+			threadSchema.order_info,
+			eq(thread_order_entry.order_info_uuid, threadSchema.order_info.uuid)
 		)
 		.orderBy(desc(quantity_return.created_at));
 
@@ -122,6 +179,30 @@ export async function select(req, res, next) {
 		.select({
 			uuid: quantity_return.uuid,
 			id: quantity_return.id,
+			order_number: sql`
+			CASE 
+				WHEN quantity_return.order_entry_uuid IS NOT NULL 
+				THEN v_order_details_full.order_number 
+				ELSE CONCAT('ST', 
+						CASE 
+							WHEN order_info.is_sample = 1 THEN 'S' 
+							ELSE '' 
+						END, 
+						TO_CHAR(order_info.created_at, 'YY'), '-', 
+						LPAD(order_info.id::text, 4, '0')
+					)
+			END`,
+			item_description: sql`
+			CASE
+				WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN v_order_details_full.item_description
+				ELSE null
+			END`,
+			count: threadSchema.count_length.count,
+			length: threadSchema.count_length.length,
+			style: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.style ELSE thread_order_entry.style END`,
+			color: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.color ELSE thread_order_entry.color END`,
+			quantity: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.quantity ELSE thread_order_entry.quantity END`,
 			order_entry_uuid: quantity_return.order_entry_uuid,
 			thread_order_entry_uuid: quantity_return.thread_order_entry_uuid,
 			fresh_quantity: quantity_return.fresh_quantity,
@@ -144,6 +225,32 @@ export async function select(req, res, next) {
 		.leftJoin(
 			completed_by_user,
 			eq(quantity_return.completed_by, completed_by_user.uuid)
+		)
+		.leftJoin(
+			zipperSchema.order_entry,
+			eq(quantity_return.order_entry_uuid, zipperSchema.order_entry.uuid)
+		)
+		.leftJoin(
+			viewScehma.v_order_details_full,
+			eq(
+				zipperSchema.order_entry.order_description_uuid,
+				viewScehma.v_order_details_full.order_description_uuid
+			)
+		)
+		.leftJoin(
+			thread_order_entry,
+			eq(quantity_return.thread_order_entry_uuid, thread_order_entry.uuid)
+		)
+		.leftJoin(
+			threadSchema.count_length,
+			eq(
+				thread_order_entry.count_length_uuid,
+				threadSchema.count_length.uuid
+			)
+		)
+		.leftJoin(
+			threadSchema.order_info,
+			eq(thread_order_entry.order_info_uuid, threadSchema.order_info.uuid)
 		)
 		.where(eq(quantity_return.uuid, req.params.uuid));
 
