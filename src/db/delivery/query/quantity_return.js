@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { asc, desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
@@ -9,6 +9,7 @@ import * as zipperSchema from '../../zipper/schema.js';
 import * as viewScehma from '../../view/schema.js';
 import * as threadSchema from '../../thread/schema.js';
 import { decimalToNumber } from '../../variables.js';
+import * as labDipSchema from '../../lab_dip/schema.js';
 
 const completed_by_user = alias(hrSchema.users, 'completed_by_user');
 const thread_order_entry = alias(
@@ -398,27 +399,41 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 		.from(zipperSchema.order_entry)
 		.leftJoin(
 			zipperSchema.order_description,
-			eq(order_entry.order_description_uuid, order_description.uuid)
+			eq(
+				zipperSchema.order_entry.order_description_uuid,
+				zipperSchema.order_description.uuid
+			)
 		)
-		.leftJoin(zipperSchema.sfg, eq(order_entry.uuid, sfg.order_entry_uuid))
+		.leftJoin(
+			zipperSchema.sfg,
+			eq(zipperSchema.order_entry.uuid, zipperSchema.sfg.order_entry_uuid)
+		)
 		.leftJoin(
 			zipperSchema.finishing_batch_entry,
-			eq(sfg.uuid, finishing_batch_entry.sfg_uuid)
+			eq(
+				zipperSchema.sfg.uuid,
+				zipperSchema.finishing_batch_entry.sfg_uuid
+			)
 		)
 		.leftJoin(
 			zipperSchema.finishing_batch_production,
 			eq(
-				finishing_batch_entry.uuid,
-				finishing_batch_production.finishing_batch_entry_uuid
+				zipperSchema.finishing_batch_entry.uuid,
+				zipperSchema.finishing_batch_production
+					.finishing_batch_entry_uuid
 			)
 		)
 		.leftJoin(
 			zipperSchema.dyeing_batch_entry,
-			eq(sfg.uuid, dyeing_batch_entry.sfg_uuid)
+			eq(zipperSchema.sfg.uuid, zipperSchema.dyeing_batch_entry.sfg_uuid)
 		)
-		.where(eq(order_description.uuid, order_description_uuid))
-		.groupBy(order_entry.uuid, sfg.uuid, order_description.is_inch)
-		.orderBy(asc(order_entry.index));
+		.where(eq(zipperSchema.order_description.uuid, order_description_uuid))
+		.groupBy(
+			zipperSchema.order_entry.uuid,
+			zipperSchema.sfg.uuid,
+			zipperSchema.order_description.is_inch
+		)
+		.orderBy(asc(zipperSchema.order_entry.index));
 
 	try {
 		const data = await orderEntryPromise;
@@ -436,6 +451,8 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 
 export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	const { order_info_uuid } = req.params;
 
 	const resultPromise = db
 		.select({
@@ -502,15 +519,18 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 		.from(threadSchema.order_entry)
 		.leftJoin(
 			hrSchema.users,
-			eq(order_entry.created_by, hrSchema.users.uuid)
+			eq(threadSchema.order_entry.created_by, hrSchema.users.uuid)
 		)
 		.leftJoin(
 			labDipSchema.recipe,
-			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
+			eq(threadSchema.order_entry.recipe_uuid, labDipSchema.recipe.uuid)
 		)
 		.leftJoin(
 			threadSchema.count_length,
-			eq(order_entry.count_length_uuid, count_length.uuid)
+			eq(
+				threadSchema.order_entry.count_length_uuid,
+				threadSchema.count_length.uuid
+			)
 		)
 		.leftJoin(
 			sql`
@@ -524,8 +544,8 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			`,
 			sql`batch.order_entry_uuid = order_entry.uuid`
 		)
-		.where(eq(order_entry.order_info_uuid, req.params.order_info_uuid))
-		.orderBy(asc(order_entry.index));
+		.where(eq(threadSchema.order_entry.order_info_uuid, order_info_uuid))
+		.orderBy(asc(threadSchema.order_entry.index));
 
 	try {
 		const data = await resultPromise;
