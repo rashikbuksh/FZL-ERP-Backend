@@ -135,6 +135,12 @@ export async function selectAll(req, res, next) {
 			created_at: quantity_return.created_at,
 			updated_at: quantity_return.updated_at,
 			remarks: quantity_return.remarks,
+			is_zipper: sql`
+			CASE
+				WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN true
+				ELSE false
+			END`,
 		})
 		.from(quantity_return)
 		.leftJoin(
@@ -243,6 +249,12 @@ export async function select(req, res, next) {
 			created_at: quantity_return.created_at,
 			updated_at: quantity_return.updated_at,
 			remarks: quantity_return.remarks,
+			is_zipper: sql`
+			CASE
+				WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN true
+				ELSE false
+			END`,
 		})
 		.from(quantity_return)
 		.leftJoin(
