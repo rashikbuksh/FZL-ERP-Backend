@@ -162,12 +162,12 @@ export const quantity_return = delivery.table('quantity_return', {
 	id: integer('id').default(
 		sql`nextval('delivery.quantity_return_sequence')`
 	),
-	order_entry_uuid: defaultUUID('order_entry_uuid').references(
-		() => zipperSchema.order_entry.uuid
-	),
-	thread_order_entry_uuid: defaultUUID('thread_order_entry_uuid').references(
-		() => threadSchema.order_entry.uuid
-	),
+	order_entry_uuid: defaultUUID('order_entry_uuid')
+		.references(() => zipperSchema.order_entry.uuid)
+		.default(null),
+	thread_order_entry_uuid: defaultUUID('thread_order_entry_uuid')
+		.references(() => threadSchema.order_entry.uuid)
+		.default(null),
 	fresh_quantity: PG_DECIMAL('fresh_quantity').default(0),
 	repair_quantity: PG_DECIMAL('repair_quantity').default(0),
 	is_completed: boolean('is_completed').default(false),

@@ -648,6 +648,12 @@ export const pathReport = {
 			parameters: [
 				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
 				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+				SE.parameter_query(
+					'store_type',
+					'store_type',
+					['rm', 'accessories'],
+					true
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {

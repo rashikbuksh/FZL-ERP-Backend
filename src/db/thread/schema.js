@@ -129,6 +129,8 @@ export const order_entry = thread.table('order_entry', {
 	carton_quantity: integer('carton_quantity').default(0),
 	index: integer('index').notNull().default(1),
 	damage_quantity: PG_DECIMAL('damage_quantity').default(0),
+	fresh_quantity: PG_DECIMAL('fresh_quantity').default(0),
+	repair_quantity: PG_DECIMAL('repair_quantity').default(0),
 });
 
 export const thread_batch_sequence = thread.sequence('thread_batch_sequence', {

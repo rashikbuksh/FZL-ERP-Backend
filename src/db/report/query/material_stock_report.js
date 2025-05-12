@@ -3,8 +3,7 @@ import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function MaterialStockReport(req, res, next) {
-	const { from_date, to_date } = req.query;
-	const { own_uuid } = req?.query;
+	const { from_date, to_date, own_uuid, store_type } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -39,8 +38,11 @@ export async function MaterialStockReport(req, res, next) {
                         SUM(quantity)::float8 as total_purchase_quantity
                     FROM 
                         purchase.entry
+                    LEFT JOIN
+                        material.info mi ON mi.uuid = purchase.entry.material_uuid
                     WHERE 
-                        created_at < ${from_date}::TIMESTAMP
+                        entry.created_at < ${from_date}::TIMESTAMP
+                        AND ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
                     GROUP BY 
                         material_uuid
                 ) opening_purchase ON m.uuid = opening_purchase.material_uuid
@@ -51,8 +53,11 @@ export async function MaterialStockReport(req, res, next) {
                         SUM(quantity)::float8 as total_purchase_quantity
                     FROM
                         purchase.entry
+                    LEFT JOIN 
+                        material.info mi ON mi.uuid = purchase.entry.material_uuid
                     WHERE 
-                        created_at >= ${from_date}::TIMESTAMP AND created_at <= ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+                        entry.created_at >= ${from_date}::TIMESTAMP AND entry.created_at <= ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+                        AND ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
                     GROUP BY
                         material_uuid
                 ) purchase ON m.uuid = purchase.material_uuid
@@ -65,6 +70,8 @@ export async function MaterialStockReport(req, res, next) {
                         material.info mi
                     LEFT JOIN 
                         material.trx mtrx ON (mi.uuid = mtrx.material_uuid AND mtrx.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
+                    WHERE 
+                        ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
                     GROUP BY 
                         mi.uuid
                 ) material_consumption ON m.uuid = material_consumption.material_uuid
@@ -77,6 +84,8 @@ export async function MaterialStockReport(req, res, next) {
                         material.info mi
                     LEFT JOIN 
                         zipper.material_trx_against_order_description s2s ON (mi.uuid = s2s.material_uuid AND s2s.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
+                    WHERE 
+                        ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
                     GROUP BY 
                         mi.uuid
                 ) s2s_consumption ON m.uuid = s2s_consumption.material_uuid
@@ -89,6 +98,8 @@ export async function MaterialStockReport(req, res, next) {
                         material.info mi
                     LEFT JOIN 
                         material.trx mtrx ON mi.uuid = mtrx.material_uuid AND mtrx.created_at <= ${from_date}::TIMESTAMP
+                    WHERE
+                        ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
                     GROUP BY 
                         mi.uuid
                 ) opening_material_consumption ON m.uuid = opening_material_consumption.material_uuid
@@ -101,11 +112,13 @@ export async function MaterialStockReport(req, res, next) {
                         material.info mi
                     LEFT JOIN 
                         zipper.material_trx_against_order_description s2s ON mi.uuid = s2s.material_uuid AND s2s.created_at <= ${from_date}::TIMESTAMP
+                    WHERE 
+                        ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
                     GROUP BY 
                         mi.uuid
                 ) opening_s2s_consumption ON m.uuid = opening_s2s_consumption.material_uuid
             WHERE
-                m.store_type = 'rm'
+                ${store_type ? sql`m.store_type = ${store_type}` : sql`true`}
             ORDER BY ms.index, m.name;
     `;
 

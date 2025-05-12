@@ -213,6 +213,8 @@ export const order_entry = zipper.table('order_entry', {
 	remarks: text('remarks').default(null),
 	index: integer('index').notNull().default(1),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	fresh_quantity: PG_DECIMAL('fresh_quantity').default(0),
+	repair_quantity: PG_DECIMAL('repair_quantity').default(0),
 });
 
 export const sfg = zipper.table('sfg', {
