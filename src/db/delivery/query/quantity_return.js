@@ -307,3 +307,200 @@ export async function select(req, res, next) {
 		handleError({ error, res });
 	}
 }
+
+export async function selectOrderEntryFullByOrderDescriptionUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { order_description_uuid } = req.params;
+
+	const orderEntryPromise = db
+		.select({
+			order_entry_uuid: order_entry.uuid,
+			order_description_uuid: order_entry.order_description_uuid,
+			style: order_entry.style,
+			color: order_entry.color,
+			size: order_entry.size,
+			is_inch: order_description.is_inch,
+			quantity: decimalToNumber(order_entry.quantity),
+			company_price: decimalToNumber(order_entry.company_price),
+			party_price: decimalToNumber(order_entry.party_price),
+			order_entry_status: order_entry.status,
+			swatch_status: order_entry.swatch_status,
+			swatch_approval_date: order_entry.swatch_approval_date,
+			bleaching: order_entry.bleaching,
+			created_at: order_entry.created_at,
+			updated_at: order_entry.updated_at,
+			teeth_molding_stock: decimalToNumber(sfg.teeth_molding_stock),
+			teeth_molding_prod: decimalToNumber(sfg.teeth_molding_prod),
+			dying_and_iron_prod: decimalToNumber(sfg.dying_and_iron_prod),
+			total_teeth_molding: sql`
+				SUM(
+					CASE WHEN finishing_batch_production.section = 'teeth_molding' THEN finishing_batch_production.production_quantity ELSE 0 END
+				)::float8
+			`,
+			teeth_coloring_stock: decimalToNumber(sfg.teeth_coloring_stock),
+			teeth_coloring_prod: decimalToNumber(sfg.teeth_coloring_prod),
+			total_teeth_coloring: sql`
+				SUM(
+					CASE WHEN finishing_batch_production.section = 'teeth_coloring' THEN finishing_batch_production.production_quantity ELSE 0 END
+				)::float8
+			`,
+			finishing_stock: decimalToNumber(sfg.finishing_stock),
+			finishing_prod: decimalToNumber(sfg.finishing_prod),
+			finishing_balance: sql`(order_entry.quantity - sfg.warehouse - sfg.delivered)::float8`,
+			total_finishing: sql`
+				SUM(
+					CASE WHEN finishing_batch_production.section = 'finishing' THEN finishing_batch_production.production_quantity ELSE 0 END
+				)::float8
+			`,
+			coloring_prod: decimalToNumber(sfg.coloring_prod),
+			total_pi_quantity: decimalToNumber(sfg.pi),
+			total_warehouse_quantity: decimalToNumber(sfg.warehouse),
+			total_delivery_quantity: decimalToNumber(sfg.delivered),
+			total_reject_quantity: decimalToNumber(sfg.reject_quantity),
+			total_short_quantity: decimalToNumber(sfg.short_quantity),
+			index: order_entry.index,
+			planning_batch_quantity: sql`
+				(
+					SELECT SUM(finishing_batch_entry.quantity)::float8
+					FROM zipper.finishing_batch_entry
+					WHERE finishing_batch_entry.sfg_uuid = sfg.uuid
+				)
+			`,
+			fresh_quantity: 0,
+			repair_quantity: 0,
+		})
+		.from(order_entry)
+		.leftJoin(
+			order_description,
+			eq(order_entry.order_description_uuid, order_description.uuid)
+		)
+		.leftJoin(sfg, eq(order_entry.uuid, sfg.order_entry_uuid))
+		.leftJoin(
+			finishing_batch_entry,
+			eq(sfg.uuid, finishing_batch_entry.sfg_uuid)
+		)
+		.leftJoin(
+			finishing_batch_production,
+			eq(
+				finishing_batch_entry.uuid,
+				finishing_batch_production.finishing_batch_entry_uuid
+			)
+		)
+		.leftJoin(dyeing_batch_entry, eq(sfg.uuid, dyeing_batch_entry.sfg_uuid))
+		.where(eq(order_description.uuid, order_description_uuid))
+		.groupBy(order_entry.uuid, sfg.uuid, order_description.is_inch)
+		.orderBy(asc(order_entry.index));
+
+	try {
+		const data = await orderEntryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Entry Full',
+		};
+
+		res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const resultPromise = db
+		.select({
+			uuid: order_entry.uuid,
+			order_entry_uuid: order_entry.uuid,
+			order_info_uuid: order_entry.order_info_uuid,
+			lab_reference: order_entry.lab_reference,
+			color: order_entry.color,
+			recipe_uuid: order_entry.recipe_uuid,
+			recipe_name: labDipSchema.recipe.name,
+			po: order_entry.po,
+			style: order_entry.style,
+			count_length_uuid: order_entry.count_length_uuid,
+			count: count_length.count,
+			length: count_length.length,
+			count_length_name: sql`concat(count_length.count, ' - ', count_length.length)`,
+			max_weight: count_length.max_weight,
+			min_weight: count_length.min_weight,
+			cone_per_carton: count_length.cone_per_carton,
+			quantity: decimalToNumber(order_entry.quantity),
+			company_price: decimalToNumber(order_entry.company_price),
+			party_price: decimalToNumber(order_entry.party_price),
+			swatch_approval_date: order_entry.swatch_approval_date,
+			production_quantity: decimalToNumber(
+				order_entry.production_quantity
+			),
+			bleaching: order_entry.bleaching,
+			transfer_quantity: decimalToNumber(order_entry.transfer_quantity),
+			carton_quantity: decimalToNumber(order_entry.carton_quantity),
+			created_by: order_entry.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: order_entry.created_at,
+			updated_at: order_entry.updated_at,
+			remarks: order_entry.remarks,
+			pi: decimalToNumber(order_entry.pi),
+			delivered: decimalToNumber(order_entry.delivered),
+			warehouse: decimalToNumber(order_entry.warehouse),
+			short_quantity: decimalToNumber(order_entry.short_quantity),
+			reject_quantity: decimalToNumber(order_entry.reject_quantity),
+			production_quantity_in_kg: decimalToNumber(
+				order_entry.production_quantity_in_kg
+			),
+			carton_quantity: order_entry.carton_quantity,
+			index: order_entry.index,
+			damage_quantity: decimalToNumber(order_entry.damage_quantity),
+			batch_quantity: decimalToNumber(
+				sql`COALESCE(batch.total_batch_quantity, 0)`
+			),
+			fresh_quantity: 0,
+			repair_quantity: 0,
+		})
+		.from(order_entry)
+		.leftJoin(
+			hrSchema.users,
+			eq(order_entry.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			labDipSchema.recipe,
+			eq(order_entry.recipe_uuid, labDipSchema.recipe.uuid)
+		)
+		.leftJoin(
+			count_length,
+			eq(order_entry.count_length_uuid, count_length.uuid)
+		)
+		.leftJoin(
+			sql`
+				(
+					SELECT 
+						batch_entry.order_entry_uuid,
+						SUM(batch_entry.quantity) AS total_batch_quantity
+					FROM thread.batch_entry
+					GROUP BY batch_entry.order_entry_uuid
+				) AS batch
+			`,
+			sql`batch.order_entry_uuid = order_entry.uuid`
+		)
+		.where(eq(order_entry.order_info_uuid, req.params.order_info_uuid))
+		.orderBy(asc(order_entry.index));
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'order_entry list',
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

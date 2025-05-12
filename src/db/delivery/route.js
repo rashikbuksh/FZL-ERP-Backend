@@ -162,5 +162,13 @@ deliveryRouter.delete(
 	'/quantity-return/:uuid',
 	quantityReturnOperations.remove
 );
+deliveryRouter.get(
+	'/zipper-order-entry/by/:order_description_uuid',
+	quantityReturnOperations.selectOrderEntryFullByOrderDescriptionUuid
+);
+deliveryRouter.get(
+	'/thread-order-entry/by/:order_info_uuid',
+	quantityReturnOperations.selectOrderEntryByOrderInfoUuid
+);
 
 export { deliveryRouter };

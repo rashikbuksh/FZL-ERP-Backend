@@ -1471,24 +1471,7 @@ export const pathDeliveryQuantityReturn = {
 			description: 'Get all quantity returns',
 			// operationId: "getQuantityReturn",
 			responses: {
-				200: {
-					description: 'Return list of quantity returns',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: SE.uuid(),
-									packing_list_uuid: SE.uuid(),
-									quantity_returned: SE.number(0),
-									created_at: SE.date_time(),
-									updated_at: SE.date_time(),
-									remarks: SE.string('remarks'),
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'delivery/quantity_return'),
 			},
 		},
 		post: {
@@ -1609,6 +1592,94 @@ export const pathDeliveryQuantityReturn = {
 				},
 			],
 			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Quantity return not found',
+				},
+			},
+		},
+	},
+	'/delivery/zipper-order-entry/by/{order_description_uuid}': {
+		get: {
+			tags: ['delivery.quantity_return'],
+			summary: 'Get a quantity return by order_description_uuid',
+			description: 'Get a quantity return by order_description_uuid',
+			// operationId: "getQuantityReturnByPackingListUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'order_description_uuid',
+					in: 'path',
+					description: ' quantity return to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Return quantity return',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: SE.uuid(),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
+								},
+							},
+						},
+					},
+				},
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Quantity return not found',
+				},
+			},
+		},
+	},
+	'/delivery/thread-order-entry/by/{order_info_uuid}': {
+		get: {
+			tags: ['delivery.quantity_return'],
+			summary: 'Get a quantity return by order_info_uuid',
+			description: 'Get a quantity return by order_info_uuid',
+			// operationId: "getQuantityReturnByPackingListUuid",
+			produces: ['application/json'],
+			parameters: [
+				{
+					name: 'order_info_uuid',
+					in: 'path',
+					description: ' quantity return to get',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Return quantity return',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: SE.uuid(),
+									created_at: SE.date_time(),
+									updated_at: SE.date_time(),
+									remarks: SE.string('remarks'),
+								},
+							},
+						},
+					},
+				},
 				400: {
 					description: 'Invalid UUID supplied',
 				},
