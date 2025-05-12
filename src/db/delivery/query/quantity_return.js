@@ -104,10 +104,10 @@ export async function selectAll(req, res, next) {
 				THEN v_order_details_full.item_description
 				ELSE null
 			END`,
-			count: sql`CONCAT('"', thread.count_length.count)`,
+			count: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN null ELSE CONCAT('"', thread.count_length.count) END`,
 			length: threadSchema.count_length.length,
 			count_length_uuid: threadSchema.count_length.uuid,
-			count_length_name: sql`CONCAT('"', thread.count_length.count, ' - ', thread.count_length.length)`,
+			count_length_name: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN null ELSE CONCAT('"', thread.count_length.count, ' - ', thread.count_length.length) END`,
 			style: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.style ELSE thread_order_entry.style END`,
 			color: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.color ELSE thread_order_entry.color END`,
 			quantity: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.quantity::float8 ELSE thread_order_entry.quantity::float8 END`,
@@ -201,10 +201,10 @@ export async function select(req, res, next) {
 				THEN v_order_details_full.item_description
 				ELSE null
 			END`,
-			count: sql`CONCAT('"', thread.count_length.count)`,
+			count: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN null ELSE CONCAT('"', thread.count_length.count) END`,
 			length: threadSchema.count_length.length,
 			count_length_uuid: threadSchema.count_length.uuid,
-			count_length_name: sql`CONCAT('"', thread.count_length.count, ' - ', thread.count_length.length)`,
+			count_length_name: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN null ELSE CONCAT('"', thread.count_length.count, ' - ', thread.count_length.length) END`,
 			style: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.style ELSE thread_order_entry.style END`,
 			color: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.color ELSE thread_order_entry.color END`,
 			quantity: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.quantity::float8 ELSE thread_order_entry.quantity::float8 END`,
