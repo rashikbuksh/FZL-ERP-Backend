@@ -8,6 +8,7 @@ import { quantity_return } from '../schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import * as viewScehma from '../../view/schema.js';
 import * as threadSchema from '../../thread/schema.js';
+import { decimalToNumber } from '../../variables.js';
 
 const completed_by_user = alias(hrSchema.users, 'completed_by_user');
 const thread_order_entry = alias(
@@ -85,33 +86,33 @@ export async function selectAll(req, res, next) {
 			uuid: quantity_return.uuid,
 			id: quantity_return.id,
 			order_number: sql`
-				CASE 
-					WHEN quantity_return.order_entry_uuid IS NOT NULL 
-					THEN v_order_details_full.order_number 
-					ELSE CONCAT('ST', 
-							CASE 
-								WHEN order_info.is_sample = 1 THEN 'S' 
-								ELSE '' 
-							END, 
-							TO_CHAR(order_info.created_at, 'YY'), '-', 
-							LPAD(order_info.id::text, 4, '0')
-						)
-				END`,
+			CASE 
+				WHEN quantity_return.order_entry_uuid IS NOT NULL 
+				THEN v_order_details_full.order_number 
+				ELSE CONCAT('ST', 
+						CASE 
+							WHEN order_info.is_sample = 1 THEN 'S' 
+							ELSE '' 
+						END, 
+						TO_CHAR(order_info.created_at, 'YY'), '-', 
+						LPAD(order_info.id::text, 4, '0')
+					)
+			END`,
 			item_description: sql`
-				CASE
-					WHEN quantity_return.order_entry_uuid IS NOT NULL
-					THEN v_order_details_full.item_description
-					ELSE null
-				END`,
-			count: threadSchema.count_length.count,
+			CASE
+				WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN v_order_details_full.item_description
+				ELSE null
+			END`,
+			count: sql`CONCAT('"', thread.count_length.count)`,
 			length: threadSchema.count_length.length,
 			style: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.style ELSE thread_order_entry.style END`,
 			color: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.color ELSE thread_order_entry.color END`,
-			quantity: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.quantity ELSE thread_order_entry.quantity END`,
+			quantity: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.quantity::float8 ELSE thread_order_entry.quantity::float8 END`,
 			order_entry_uuid: quantity_return.order_entry_uuid,
 			thread_order_entry_uuid: quantity_return.thread_order_entry_uuid,
-			fresh_quantity: quantity_return.fresh_quantity,
-			repair_quantity: quantity_return.repair_quantity,
+			fresh_quantity: decimalToNumber(quantity_return.fresh_quantity),
+			repair_quantity: decimalToNumber(quantity_return.repair_quantity),
 			is_completed: quantity_return.is_completed,
 			completed_date: quantity_return.completed_date,
 			completed_by: quantity_return.completed_by,
@@ -198,15 +199,15 @@ export async function select(req, res, next) {
 				THEN v_order_details_full.item_description
 				ELSE null
 			END`,
-			count: threadSchema.count_length.count,
+			count: sql`CONCAT('"', thread.count_length.count)`,
 			length: threadSchema.count_length.length,
 			style: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.style ELSE thread_order_entry.style END`,
 			color: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.color ELSE thread_order_entry.color END`,
-			quantity: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.quantity ELSE thread_order_entry.quantity END`,
+			quantity: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN zipper.order_entry.quantity::float8 ELSE thread_order_entry.quantity::float8 END`,
 			order_entry_uuid: quantity_return.order_entry_uuid,
 			thread_order_entry_uuid: quantity_return.thread_order_entry_uuid,
-			fresh_quantity: quantity_return.fresh_quantity,
-			repair_quantity: quantity_return.repair_quantity,
+			fresh_quantity: decimalToNumber(quantity_return.fresh_quantity),
+			repair_quantity: decimalToNumber(quantity_return.repair_quantity),
 			is_completed: quantity_return.is_completed,
 			completed_date: quantity_return.completed_date,
 			completed_by: quantity_return.completed_by,
