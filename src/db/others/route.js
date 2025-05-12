@@ -479,6 +479,11 @@ const pathPublic = {
 					true
 				),
 				SE.parameter_query('own_uuid', 'own_uuid', '2ggcphnwHGzEUGy'),
+				SE.parameter_query(
+					'is_description_needed',
+					'is_description_needed',
+					['true', 'false']
+				),
 			],
 			responses: {
 				200: {

@@ -797,7 +797,8 @@ export async function selectOrderInfo(req, res, next) {
 export async function selectOrderZipperThread(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { from_date, to_date, page, own_uuid } = req.query;
+	const { from_date, to_date, page, own_uuid, is_description_needed } =
+		req.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -888,8 +889,8 @@ export async function selectOrderZipperThread(req, res, next) {
 							toi.uuid, toe.company_price
 						)
 						SELECT
-							oz.uuid AS value,
-							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0')) as label,
+							${is_description_needed == 'true' ? sql`vodf.order_description_uuid ` : sql`oz.uuid`} AS value,
+							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0') ${is_description_needed == 'true' ? sql`,' - ', vodf.item_description` : sql``}) as label,
 							ARRAY_AGG(DISTINCT oe.color) as colors,
 							true as is_zipper
 						FROM
@@ -930,7 +931,7 @@ export async function selectOrderZipperThread(req, res, next) {
 							${page == 'challan_pdf' ? sql`AND challan.uuid IS NOT NULL` : sql``}
 							${own_uuid ? sql`AND oz.marketing_uuid = ${marketingUuid}` : sql``}
 						GROUP BY
-							oz.uuid, oz.is_sample, oz.created_at, oz.id
+							oz.uuid, oz.is_sample, oz.created_at, oz.id ${is_description_needed == 'true' ? sql`, vodf.order_description_uuid, vodf.item_description` : sql``}
 						UNION 
 						SELECT
 							ot.uuid AS value,
