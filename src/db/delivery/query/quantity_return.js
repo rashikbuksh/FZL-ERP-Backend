@@ -98,10 +98,21 @@ export async function selectAll(req, res, next) {
 						LPAD(order_info.id::text, 4, '0')
 					)
 			END`,
+			order_info_uuid: sql`
+			CASE WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN v_order_details_full.order_info_uuid
+				ELSE thread_order_entry.order_info_uuid
+			END`,
 			item_description: sql`
 			CASE
 				WHEN quantity_return.order_entry_uuid IS NOT NULL
 				THEN v_order_details_full.item_description
+				ELSE null
+			END`,
+			order_description_uuid: sql`
+			CASE
+				WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN v_order_details_full.order_description_uuid
 				ELSE null
 			END`,
 			count: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN null ELSE CONCAT('"', thread.count_length.count) END`,
@@ -195,10 +206,21 @@ export async function select(req, res, next) {
 						LPAD(order_info.id::text, 4, '0')
 					)
 			END`,
+			order_info_uuid: sql`
+			CASE WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN v_order_details_full.order_info_uuid
+				ELSE thread_order_entry.order_info_uuid
+			END`,
 			item_description: sql`
 			CASE
 				WHEN quantity_return.order_entry_uuid IS NOT NULL
 				THEN v_order_details_full.item_description
+				ELSE null
+			END`,
+			order_description_uuid: sql`
+			CASE
+				WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN v_order_details_full.order_description_uuid
 				ELSE null
 			END`,
 			count: sql`CASE WHEN quantity_return.order_entry_uuid IS NOT NULL THEN null ELSE CONCAT('"', thread.count_length.count) END`,
