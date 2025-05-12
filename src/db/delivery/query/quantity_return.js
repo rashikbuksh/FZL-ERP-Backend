@@ -384,7 +384,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			total_short_quantity: decimalToNumber(
 				zipperSchema.sfg.short_quantity
 			),
-			index: order_entry.index,
+			index: zipperSchema.order_entry.index,
 			planning_batch_quantity: sql`
 				(
 					SELECT SUM(finishing_batch_entry.quantity)::float8
