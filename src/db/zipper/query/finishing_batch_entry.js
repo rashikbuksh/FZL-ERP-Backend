@@ -568,7 +568,58 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 				vodf.slider_provided = 'completely_provided' 
 				THEN true
 				ELSE false
-			END AS slider_provided
+			END AS slider_provided,
+			CONCAT(
+                    CASE WHEN (vodf.zipper_number_name IS NOT NULL AND vodf.zipper_number_name != '---') THEN '#' ELSE '' END,
+                    vodf.zipper_number_name, 
+                    CASE WHEN (vodf.item_name IS NOT NULL AND vodf.item_name != '---') THEN ' - ' ELSE '' END,
+                    vodf.item_name, 
+                    CASE WHEN (vodf.nylon_stopper_name IS NOT NULL AND vodf.nylon_stopper_name != '---') THEN ' / ' ELSE '' END,
+                    CASE WHEN (vodf.nylon_stopper_name IS NOT NULL AND vodf.nylon_stopper_name != '---') THEN vodf.nylon_stopper_name ELSE '' END,
+                    CASE WHEN is_multi_color = 1 THEN ' (Multi Color) ' ELSE '' END,
+					CASE WHEN order_type = 'tape' THEN ' Long Chain ' ELSE '' END, 
+					CASE WHEN (vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---') THEN ' / ' ELSE '' END,
+					CASE WHEN (vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---') THEN vodf.end_type_name ELSE '' END,
+					CASE WHEN (vodf.hand_name IS NOT NULL AND vodf.hand_name != '---' AND (lower(vodf.end_type_name) != 'close end' AND lower(vodf.end_type_name) != '2 way - close end')) THEN ' / ' ELSE '' END,
+					CASE WHEN (lower(vodf.end_type_name) != 'close end' AND lower(vodf.end_type_name) != '2 way - close end') THEN vodf.hand_name ELSE '' END,
+					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN ' / Teeth: ' ELSE '' END,
+					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN vodf.teeth_type_name ELSE '' END,
+					CASE WHEN (vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---') THEN ' / Teeth: ' ELSE '' END,
+					CASE WHEN (vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---') THEN vodf.teeth_color_name ELSE '' END,
+					CASE WHEN vodf.is_waterproof = true THEN ' (Waterproof) ' ELSE '' END
+				) as tape,
+			CONCAT(
+                vodf.puller_type_name, 
+                CASE WHEN (vodf.puller_type_name IS NOT NULL AND vodf.puller_type_name != '---') THEN ' Puller' ELSE '' END,
+                CASE WHEN (vodf.lock_type_name IS NOT NULL AND vodf.lock_type_name != '---') THEN ' / ' ELSE '' END,
+                CASE WHEN (vodf.lock_type_name IS NOT NULL AND vodf.lock_type_name != '---') THEN vodf.lock_type_name ELSE '' END,
+                CASE WHEN (vodf.coloring_type_name IS NOT NULL AND vodf.coloring_type_name != '---') THEN ' / ' ELSE '' END,
+                CASE WHEN (vodf.coloring_type_name IS NOT NULL AND vodf.coloring_type_name != '---') THEN vodf.coloring_type_name ELSE '' END, 
+                CASE WHEN (vodf.puller_color_name IS NOT NULL AND vodf.puller_color_name != '---') THEN ' / Slider: ' ELSE '' END,
+                CASE WHEN (vodf.puller_color_name IS NOT NULL AND vodf.puller_color_name != '---') THEN vodf.puller_color_name ELSE '' END,
+                CASE WHEN (vodf.slider_name IS NOT NULL AND vodf.slider_name != '---') THEN ' / ' ELSE '' END,
+                CASE WHEN (vodf.slider_name IS NOT NULL AND vodf.slider_name != '---') THEN vodf.slider_name ELSE '' END,
+                CASE WHEN (vodf.slider_body_shape_name IS NOT NULL AND vodf.slider_body_shape_name != '---') THEN ' / ' ELSE '' END,
+                CASE WHEN (vodf.slider_body_shape_name IS NOT NULL AND vodf.slider_body_shape_name != '---') THEN vodf.slider_body_shape_name ELSE '' END,
+                CASE WHEN (vodf.slider_link_name IS NOT NULL AND vodf.slider_link_name != '---') THEN ' / ' ELSE '' END,
+                CASE WHEN (vodf.slider_link_name IS NOT NULL AND vodf.slider_link_name != '---') THEN vodf.slider_link_name ELSE '' END,
+                CASE WHEN (vodf.logo_type_name IS NOT NULL AND vodf.logo_type_name != '---') THEN ' / ' ELSE '' END,
+                CASE WHEN (vodf.logo_type_name IS NOT NULL AND vodf.logo_type_name != '---') THEN vodf.logo_type_name ELSE '' END,
+                CASE WHEN (vodf.logo_type_name IS NOT NULL AND vodf.logo_type_name != '---') THEN 
+                    CONCAT(
+                        ' (', 
+                        CASE WHEN vodf.is_logo_body = 1 THEN 'B' ELSE '' END, 
+                        CASE WHEN vodf.is_logo_puller = 1 THEN ' P' ELSE '' END, 
+                        ')'
+                    ) 
+                ELSE '' END,
+                CASE WHEN (vodf.top_stopper_name IS NOT NULL AND vodf.top_stopper_name != '---') THEN ' / Top Stopper: ' ELSE '' END,
+                CASE WHEN (vodf.top_stopper_name IS NOT NULL AND vodf.top_stopper_name != '---') THEN vodf.top_stopper_name ELSE '' END,
+                CASE WHEN (vodf.bottom_stopper_name IS NOT NULL AND vodf.bottom_stopper_name != '---') THEN ' / Bottom Stopper: ' ELSE '' END,
+                CASE WHEN (vodf.bottom_stopper_name IS NOT NULL AND vodf.bottom_stopper_name != '---') THEN vodf.bottom_stopper_name ELSE '' END,
+                ' / ',
+                REPLACE(vodf.slider_provided::text, '_', ' ')
+            ) as slider
 		FROM
 			zipper.finishing_batch_entry zfbe
 		LEFT JOIN zipper.sfg sfg ON zfbe.sfg_uuid = sfg.uuid
