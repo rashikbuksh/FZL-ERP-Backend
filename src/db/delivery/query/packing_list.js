@@ -587,7 +587,7 @@ export async function setChallanUuidOfPackingList(req, res, next) {
 export async function selectPackingListReceivedLog(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { from, to } = req.query;
+	const { from, to, is_sample } = req.query;
 
 	const query = sql`
 					SELECT dvl.*,
@@ -619,6 +619,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
 					LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
 					WHERE dvl.is_warehouse_received = TRUE AND dvl.warehouse_received_date BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+					${is_sample ? (is_sample = true ? sql` AND dvl.is_sample = 1` : sql` AND dvl.is_sample = 0`) : sql``}
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
@@ -681,7 +682,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 export async function selectPackingListWarehouseOutLog(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { from, to } = req.query;
+	const { from, to, is_sample } = req.query;
 
 	const query = sql`
 					SELECT dvl.*,
@@ -713,6 +714,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
 					LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
 					WHERE dvl.gate_pass = 1 AND dvl.gate_pass_date BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+					${is_sample ? (is_sample = true ? sql` AND dvl.is_sample = 1` : sql` AND dvl.is_sample = 0`) : sql``}
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,
@@ -774,7 +776,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { from, to } = req.query;
+	const { from, to, is_sample } = req.query;
 
 	const query = sql`
 					SELECT dvl.*,
@@ -806,6 +808,7 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
 					LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
 					WHERE dvl.is_warehouse_received = TRUE AND dvl.gate_pass = 0 AND dvl.warehouse_received_date BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+					${is_sample ? (is_sample = true ? sql` AND dvl.is_sample = 1` : sql` AND dvl.is_sample = 0`) : sql``}
 					GROUP BY
 						dvl.uuid,
 						dvl.order_info_uuid,

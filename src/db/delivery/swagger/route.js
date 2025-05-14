@@ -338,6 +338,7 @@ export const pathDeliveryPackingList = {
 			parameters: [
 				SE.parameter_query('from', 'from', SE.date_time()),
 				SE.parameter_query('to', 'to', SE.date_time()),
+				SE.parameter_query('is_sample', 'is_sample', [true, false]),
 			],
 			responses: {
 				200: {
@@ -370,6 +371,7 @@ export const pathDeliveryPackingList = {
 			parameters: [
 				SE.parameter_query('from', 'from', SE.date_time()),
 				SE.parameter_query('to', 'to', SE.date_time()),
+				SE.parameter_query('is_sample', 'is_sample', [true, false]),
 			],
 			responses: {
 				200: {
@@ -403,6 +405,7 @@ export const pathDeliveryPackingList = {
 			parameters: [
 				SE.parameter_query('from', 'from', SE.date_time()),
 				SE.parameter_query('to', 'to', SE.date_time()),
+				SE.parameter_query('is_sample', 'is_sample', [true, false]),
 			],
 			responses: {
 				200: {
