@@ -767,11 +767,53 @@ export async function selectOrderInfo(req, res, next) {
 						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name) 
 						ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
 					END`,
+				...(page === 'order_sheet' && {
+					party_uuid: zipperSchema.order_info.party_uuid,
+					party_name: publicSchema.party.name,
+					merchandiser_uuid:
+						zipperSchema.order_info.merchandiser_uuid,
+					merchandiser_name: publicSchema.merchandiser.name,
+					buyer_uuid: zipperSchema.order_info.buyer_uuid,
+					buyer_name: publicSchema.buyer.name,
+					marketing_uuid: zipperSchema.order_info.marketing_uuid,
+					marketing_name: publicSchema.marketing.name,
+					factory_uuid: zipperSchema.order_info.factory_uuid,
+					factory_name: publicSchema.factory.name,
+					is_cash: zipperSchema.order_info.is_cash,
+					is_sample: zipperSchema.order_info.is_sample,
+					is_bill: zipperSchema.order_info.is_bill,
+					is_cancelled: zipperSchema.order_info.is_cancelled,
+				}),
 			})
 			.from(zipperSchema.order_info)
 			.leftJoin(
 				publicSchema.party,
 				eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
+			)
+			.leftJoin(
+				publicSchema.marketing,
+				eq(
+					zipperSchema.order_info.marketing_uuid,
+					publicSchema.marketing.uuid
+				)
+			)
+			.leftJoin(
+				publicSchema.merchandiser,
+				eq(
+					zipperSchema.order_info.merchandiser_uuid,
+					publicSchema.merchandiser.uuid
+				)
+			)
+			.leftJoin(
+				publicSchema.buyer,
+				eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
+			)
+			.leftJoin(
+				publicSchema.factory,
+				eq(
+					zipperSchema.order_info.factory_uuid,
+					publicSchema.factory.uuid
+				)
 			);
 
 		orderInfoPromise = orderInfoPromise.where(filterCondition);
