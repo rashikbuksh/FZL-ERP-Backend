@@ -476,6 +476,7 @@ export async function deliveryStatementReport(req, res, next) {
                     COALESCE(opening_all_sum_thread.total_prod_value_company, 0)::float8 as opening_total_value_company,
                     'running' as running,
                     COALESCE(running_all_sum_thread.total_close_end_quantity, 0)::float8 as running_total_close_end_quantity,
+                    0 as running_total_open_end_quantity,
                     COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 as running_total_quantity,
                     COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 / 12 as running_total_quantity_dzn,
                     COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 as running_total_close_end_value,
