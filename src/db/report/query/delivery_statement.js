@@ -61,15 +61,41 @@ export async function deliveryStatementReport(req, res, next) {
                             CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
-                    )::float8 as total_close_end_value, 
+                    )::float8 as total_close_end_value,
+                    coalesce(
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
+                        0
+                    )::float8 as total_close_end_value_party,
+                    coalesce(
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+                        0
+                    )::float8 as total_close_end_value_company,
                     coalesce(
                         SUM(
                             CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_open_end_value,
+                    coalesce(
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
+                        0
+                    )::float8 as total_open_end_value_party,
+                    coalesce(
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+                        0
+                    )::float8 as total_open_end_value_company,
                     coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 0)::float8 as total_prod_value
+                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 0)::float8 as total_prod_value,
+                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 0)::float8 as total_prod_value_party,
+                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value_company
                 FROM 
                     delivery.v_packing_list_details vpl 
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
@@ -108,12 +134,38 @@ export async function deliveryStatementReport(req, res, next) {
                     )::float8 as total_close_end_value, 
                     coalesce(
                         SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
+                        0
+                    )::float8 as total_close_end_value_party,
+                    coalesce(
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+                        0
+                    )::float8 as total_close_end_value_company,
+                    coalesce(
+                        SUM(
                             CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_open_end_value,
+                    coalesce(
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
+                        0
+                    )::float8 as total_open_end_value_party,
+                    coalesce(
+                        SUM(
+                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                        ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
+                        0
+                    )::float8 as total_open_end_value_company,
                     coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 0)::float8 as total_prod_value
+                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 0)::float8 as total_prod_value,
+                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 0)::float8 as total_prod_value_party,
+                    coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value_company
                 FROM 
                     delivery.v_packing_list_details vpl 
                     LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
@@ -145,9 +197,25 @@ export async function deliveryStatementReport(req, res, next) {
                             ) * ${price_for === 'party' ? sql`toe.party_price` : sql`toe.company_price`}, 
                             0
                         )::float8 as total_close_end_value,
+                        coalesce(
+                            SUM(
+                                vpl.quantity ::float8
+                            ) * toe.party_price, 
+                            0
+                        )::float8 as total_close_end_value_party,
+                        coalesce(
+                            SUM(
+                                vpl.quantity ::float8
+                            ) * toe.company_price, 
+                            0
+                        )::float8 as total_close_end_value_company,
                         0 as total_open_end_value,
+                        0 as total_open_end_value_party,
+                        0 as total_open_end_value_company,
                         coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                        coalesce(SUM(vpl.quantity) * ${price_for === 'party' ? sql`toe.party_price` : sql`toe.company_price`}, 0)::float8 as total_prod_value
+                        coalesce(SUM(vpl.quantity) * ${price_for === 'party' ? sql`toe.party_price` : sql`toe.company_price`}, 0)::float8 as total_prod_value,
+                        coalesce(SUM(vpl.quantity) * toe.party_price, 0)::float8 as total_prod_value_party,
+                        coalesce(SUM(vpl.quantity) * toe.company_price, 0)::float8 as total_prod_value_company
                     FROM
                         delivery.v_packing_list_details vpl
                         LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
@@ -176,9 +244,25 @@ export async function deliveryStatementReport(req, res, next) {
                             ) * ${price_for === 'party' ? sql`toe.party_price` : sql`toe.company_price`},
                             0
                         )::float8 as total_close_end_value,
+                        coalesce(
+                            SUM(
+                                vpl.quantity ::float8
+                            ) * toe.party_price,
+                            0
+                        )::float8 as total_close_end_value_party,
+                        coalesce(
+                            SUM(
+                                vpl.quantity ::float8
+                            ) * toe.company_price,
+                            0
+                        )::float8 as total_close_end_value_company,
                         0 as total_open_end_value,
+                        0 as total_open_end_value_party,
+                        0 as total_open_end_value_company,
                         coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                        coalesce(SUM(vpl.quantity) * ${price_for === 'party' ? sql`toe.party_price` : sql`toe.company_price`}, 0)::float8 as total_prod_value
+                        coalesce(SUM(vpl.quantity) * ${price_for === 'party' ? sql`toe.party_price` : sql`toe.company_price`}, 0)::float8 as total_prod_value,
+                        coalesce(SUM(vpl.quantity) * toe.party_price, 0)::float8 as total_prod_value_party,
+                        coalesce(SUM(vpl.quantity) * toe.company_price, 0)::float8 as total_prod_value_company
                     FROM
                         delivery.v_packing_list_details vpl
                         LEFT JOIN thread.order_info toi ON vpl.order_info_uuid = toi.uuid
@@ -260,25 +344,43 @@ export async function deliveryStatementReport(req, res, next) {
                     COALESCE(opening_all_sum.total_open_end_quantity, 0)::float8 as opening_total_open_end_quantity, 
                     COALESCE(opening_all_sum.total_prod_quantity, 0)::float8 as opening_total_quantity, 
                     COALESCE(opening_all_sum.total_prod_quantity, 0)::float8 / 12 as opening_total_quantity_dzn, 
-                    COALESCE(opening_all_sum.total_close_end_value, 0)::float8 as opening_total_close_end_value, 
+                    COALESCE(opening_all_sum.total_close_end_value, 0)::float8 as opening_total_close_end_value,
+                    COALESCE(opening_all_sum.total_close_end_value_party, 0)::float8 as opening_total_close_end_value_party,
+                    COALESCE(opening_all_sum.total_close_end_value_company, 0)::float8 as opening_total_close_end_value_company,
                     COALESCE(opening_all_sum.total_open_end_value, 0)::float8 as opening_total_open_end_value, 
+                    COALESCE(opening_all_sum.total_open_end_value_party, 0)::float8 as opening_total_open_end_value_party, 
+                    COALESCE(opening_all_sum.total_open_end_value_company, 0)::float8 as opening_total_open_end_value_company, 
                     COALESCE(opening_all_sum.total_prod_value, 0)::float8 as opening_total_value, 
+                    COALESCE(opening_all_sum.total_prod_value_party, 0)::float8 as opening_total_value_party,
+                    COALESCE(opening_all_sum.total_prod_value_company, 0)::float8 as opening_total_value_company,
                     'running' as running, 
                     COALESCE(running_all_sum.total_close_end_quantity, 0)::float8 as running_total_close_end_quantity, 
                     COALESCE(running_all_sum.total_open_end_quantity, 0)::float8 as running_total_open_end_quantity, 
                     COALESCE(running_all_sum.total_prod_quantity, 0)::float8 as running_total_quantity, 
                     COALESCE(running_all_sum.total_prod_quantity, 0)::float8 / 12 as running_total_quantity_dzn, 
                     COALESCE(running_all_sum.total_close_end_value, 0)::float8 as running_total_close_end_value, 
+                    COALESCE(running_all_sum.total_close_end_value_party, 0)::float8 as running_total_close_end_value_party, 
+                    COALESCE(running_all_sum.total_close_end_value_company, 0)::float8 as running_total_close_end_value_company, 
                     COALESCE(running_all_sum.total_open_end_value, 0)::float8 as running_total_open_end_value, 
+                    COALESCE(running_all_sum.total_open_end_value_party, 0)::float8 as running_total_open_end_value_party,
+                    COALESCE(running_all_sum.total_open_end_value_company, 0)::float8 as running_total_open_end_value_company,
                     COALESCE(running_all_sum.total_prod_value, 0)::float8 as running_total_value, 
+                    COALESCE(running_all_sum.total_prod_value_party, 0)::float8 as running_total_value_party,
+                    COALESCE(running_all_sum.total_prod_value_company, 0)::float8 as running_total_value_company,
                     'closing' as closing, 
                     COALESCE(running_all_sum.total_close_end_quantity, 0)::float8 + COALESCE(opening_all_sum.total_close_end_quantity, 0)::float8 as closing_total_close_end_quantity, 
                     COALESCE(running_all_sum.total_open_end_quantity, 0)::float8 + COALESCE(opening_all_sum.total_open_end_quantity, 0)::float8 as closing_total_open_end_quantity, 
                     COALESCE(running_all_sum.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum.total_prod_quantity, 0)::float8 as closing_total_quantity, 
                     (COALESCE(running_all_sum.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum.total_prod_quantity, 0)::float8) / 12 as closing_total_quantity_dzn, 
                     COALESCE(running_all_sum.total_close_end_value, 0)::float8 + COALESCE(opening_all_sum.total_close_end_value, 0)::float8 as closing_total_close_end_value, 
+                    COALESCE(running_all_sum.total_close_end_value_party, 0)::float8 + COALESCE(opening_all_sum.total_close_end_value_party, 0)::float8 as closing_total_close_end_value_party,
+                    COALESCE(running_all_sum.total_close_end_value_company, 0)::float8 + COALESCE(opening_all_sum.total_close_end_value_company, 0)::float8 as closing_total_close_end_value_company,
                     COALESCE(running_all_sum.total_open_end_value, 0)::float8 + COALESCE(opening_all_sum.total_open_end_value, 0)::float8 as closing_total_open_end_value, 
+                    COALESCE(running_all_sum.total_open_end_value_party, 0)::float8 + COALESCE(opening_all_sum.total_open_end_value_party, 0)::float8 as closing_total_open_end_value_party,
+                    COALESCE(running_all_sum.total_open_end_value_company, 0)::float8 + COALESCE(opening_all_sum.total_open_end_value_company, 0)::float8 as closing_total_open_end_value_company,
                     COALESCE(running_all_sum.total_prod_value, 0)::float8 + COALESCE(opening_all_sum.total_prod_value, 0)::float8 as closing_total_value,
+                    COALESCE(running_all_sum.total_prod_value_party, 0)::float8 + COALESCE(opening_all_sum.total_prod_value_party, 0)::float8 as closing_total_value_party,
+                    COALESCE(running_all_sum.total_prod_value_company, 0)::float8 + COALESCE(opening_all_sum.total_prod_value_company, 0)::float8 as closing_total_value_company,
                     pi_cash.is_pi,
                     CASE 
                         WHEN (vodf.is_cash = 0 AND pi_cash.conversion_rate IS NULL) THEN '80'::float8 
@@ -364,6 +466,8 @@ export async function deliveryStatementReport(req, res, next) {
                     COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8 as opening_total_quantity,
                     COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8 / 12 as opening_total_quantity_dzn,
                     COALESCE(opening_all_sum_thread.total_close_end_value, 0)::float8 as opening_total_close_end_value,
+                    COALESCE(opening_all_sum_thread.total_close_end_value_party, 0)::float8 as opening_total_close_end_value_party,
+                    COALESCE(opening_all_sum_thread.total_close_end_value_company, 0)::float8 as opening_total_close_end_value_company,
                     0 as opening_total_open_end_value,
                     COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as opening_total_value,
                     'running' as running,
@@ -372,6 +476,8 @@ export async function deliveryStatementReport(req, res, next) {
                     COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 as running_total_quantity,
                     COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 / 12 as running_total_quantity_dzn,
                     COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 as running_total_close_end_value,
+                    COALESCE(running_all_sum_thread.total_close_end_value_party, 0)::float8 as running_total_close_end_value_party,
+                    COALESCE(running_all_sum_thread.total_close_end_value_company, 0)::float8 as running_total_close_end_value_company,
                     0 as running_total_open_end_value,
                     COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 as running_total_value,
                     'closing' as closing,
@@ -380,6 +486,8 @@ export async function deliveryStatementReport(req, res, next) {
                     COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8 as closing_total_quantity,
                     (COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8) / 12 as closing_total_quantity_dzn,
                     COALESCE(running_all_sum_thread.total_close_end_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_value, 0)::float8 as closing_total_close_end_value,
+                    COALESCE(running_all_sum_thread.total_close_end_value_party, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_value_party, 0)::float8 as closing_total_close_end_value_party,
+                    COALESCE(running_all_sum_thread.total_close_end_value_company, 0)::float8 + COALESCE(opening_all_sum_thread.total_close_end_value_company, 0)::float8 as closing_total_close_end_value_company,
                     0 as closing_total_open_end_value,
                     COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as closing_total_value,
                     pi_cash.is_pi,
