@@ -495,6 +495,8 @@ export async function deliveryStatementReport(req, res, next) {
                     0 as closing_total_open_end_value_party,
                     0 as closing_total_open_end_value_company,
                     COALESCE(running_all_sum_thread.total_prod_value, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value, 0)::float8 as closing_total_value,
+                    COALESCE(running_all_sum_thread.total_prod_value_party, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value_party, 0)::float8 as closing_total_value_party,
+                    COALESCE(running_all_sum_thread.total_prod_value_company, 0)::float8 + COALESCE(opening_all_sum_thread.total_prod_value_company, 0)::float8 as closing_total_value_company,
                     pi_cash.is_pi,
                     CASE 
                         WHEN toi.is_cash = 0 THEN '80'::float8 
