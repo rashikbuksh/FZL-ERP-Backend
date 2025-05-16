@@ -1112,7 +1112,7 @@ export async function LCReport(req, res, next) {
 // shows multiple rows for order_entry.count_length_uuid, count_length.count,count_length.length,order_entry.uuid as order_entry_uuid,order_info.uuid as order_info_uuid columns
 
 export async function threadProductionStatusBatchWise(req, res, next) {
-	const { status, own_uuid, from, to, time_from, time_to } = req.query;
+	const { status, own_uuid, time_from, time_to } = req.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -1265,7 +1265,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 			);
 		}
 
-		query.append(sql`ORDER BY batch.created_at DESC`);
+		query.append(sql` ORDER BY batch.created_at DESC`);
 
 		const resultPromise = db.execute(query);
 
