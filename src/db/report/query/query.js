@@ -1607,7 +1607,8 @@ export async function ProductionReportSnm(req, res, next) {
                     FROM
                         zipper.dyeing_batch_entry dyeing_batch_entry
                     GROUP BY
-                        dyeing_batch_entry.dyeing_batch_uuid, dyeing_batch_entry.sfg_uuid
+                        dyeing_batch_entry.dyeing_batch_uuid, 
+                        dyeing_batch_entry.sfg_uuid
                 ) dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
                 LEFT JOIN 
                     zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
@@ -1796,18 +1797,18 @@ export async function ProductionReportThreadSnm(req, res, next) {
                     ) as batches
                 FROM
                     thread.batch
-                    LEFT JOIN (
-                        SELECT
-                            SUM(batch_entry.quantity) as total_quantity,
-                            SUM(batch_entry.yarn_quantity) as total_weight,
-                            batch_entry.batch_uuid,
-                            batch_entry.order_entry_uuid
-                        FROM thread.batch_entry
-                        GROUP BY
-                            batch_entry.batch_uuid,
-                            batch_entry.order_entry_uuid
-                    ) batch_entry_quantity_length ON batch.uuid = batch_entry_quantity_length.batch_uuid
-                    LEFT JOIN thread.order_entry ON batch_entry_quantity_length.order_entry_uuid = order_entry.uuid
+                LEFT JOIN (
+                    SELECT
+                        SUM(batch_entry.quantity) as total_quantity,
+                        SUM(batch_entry.yarn_quantity) as total_weight,
+                        batch_entry.batch_uuid,
+                        batch_entry.order_entry_uuid
+                    FROM thread.batch_entry
+                    GROUP BY
+                        batch_entry.batch_uuid,
+                        batch_entry.order_entry_uuid
+                ) batch_entry_quantity_length ON batch.uuid = batch_entry_quantity_length.batch_uuid
+                LEFT JOIN thread.order_entry ON batch_entry_quantity_length.order_entry_uuid = order_entry.uuid
                 GROUP BY
                     order_entry.uuid
             ) batch ON order_entry.uuid = batch.order_entry_uuid
