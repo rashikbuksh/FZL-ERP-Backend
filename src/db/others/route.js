@@ -1653,6 +1653,11 @@ const pathDelivery = {
 			operationId: 'getAllChallans',
 			parameters: [
 				SE.parameter_query('get_pass', 'get_pass', ['true', 'false']),
+				SE.parameter_query(
+					'order_info_uuid',
+					'order_info_uuid',
+					SE.uuid()
+				),
 			],
 			responses: {
 				200: {

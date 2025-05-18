@@ -1,8 +1,5 @@
 import { desc, eq } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
 import { decimalToNumber } from '../../variables.js';
@@ -21,7 +18,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'create',
-			message: `${data[0].insertedId} created`,
+			message: `${data.length} created`,
 		};
 
 		return await res.status(201).json({ toast, data });

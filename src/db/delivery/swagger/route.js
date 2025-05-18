@@ -1616,16 +1616,16 @@ export const pathDeliveryQuantityReturn = {
 			},
 		},
 	},
-	'/delivery/zipper-order-entry/by/{order_description_uuid}': {
+	'/delivery/zipper-order-entry/by/{order_info_uuid}': {
 		get: {
 			tags: ['delivery.quantity_return'],
-			summary: 'Get a quantity return by order_description_uuid',
-			description: 'Get a quantity return by order_description_uuid',
+			summary: 'Get a quantity return by order_info_uuid',
+			description: 'Get a quantity return by order_info_uuid',
 			// operationId: "getQuantityReturnByPackingListUuid",
 			produces: ['application/json'],
 			parameters: [
 				{
-					name: 'order_description_uuid',
+					name: 'order_info_uuid',
 					in: 'path',
 					description: ' quantity return to get',
 					required: true,

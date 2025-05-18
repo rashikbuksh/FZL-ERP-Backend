@@ -309,14 +309,10 @@ export async function select(req, res, next) {
 	}
 }
 
-export async function selectOrderEntryFullByOrderDescriptionUuid(
-	req,
-	res,
-	next
-) {
+export async function selectOrderEntryFullByOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_description_uuid } = req.params;
+	const { order_info_uuid } = req.params;
 
 	const orderEntryPromise = db
 		.select({
@@ -338,41 +334,6 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			bleaching: zipperSchema.order_entry.bleaching,
 			created_at: zipperSchema.order_entry.created_at,
 			updated_at: zipperSchema.order_entry.updated_at,
-			teeth_molding_stock: decimalToNumber(
-				zipperSchema.sfg.teeth_molding_stock
-			),
-			teeth_molding_prod: decimalToNumber(
-				zipperSchema.sfg.teeth_molding_prod
-			),
-			dying_and_iron_prod: decimalToNumber(
-				zipperSchema.sfg.dying_and_iron_prod
-			),
-			total_teeth_molding: sql`
-				SUM(
-					CASE WHEN finishing_batch_production.section = 'teeth_molding' THEN finishing_batch_production.production_quantity ELSE 0 END
-				)::float8
-			`,
-			teeth_coloring_stock: decimalToNumber(
-				zipperSchema.sfg.teeth_coloring_stock
-			),
-			teeth_coloring_prod: decimalToNumber(
-				zipperSchema.sfg.teeth_coloring_prod
-			),
-			total_teeth_coloring: sql`
-				SUM(
-					CASE WHEN finishing_batch_production.section = 'teeth_coloring' THEN finishing_batch_production.production_quantity ELSE 0 END
-				)::float8
-			`,
-			finishing_stock: decimalToNumber(zipperSchema.sfg.finishing_stock),
-			finishing_prod: decimalToNumber(zipperSchema.sfg.finishing_prod),
-			finishing_balance: sql`(order_entry.quantity - sfg.warehouse - sfg.delivered)::float8`,
-			total_finishing: sql`
-				SUM(
-					CASE WHEN finishing_batch_production.section = 'finishing' THEN finishing_batch_production.production_quantity ELSE 0 END
-				)::float8
-			`,
-			coloring_prod: decimalToNumber(zipperSchema.sfg.coloring_prod),
-			total_pi_quantity: decimalToNumber(zipperSchema.sfg.pi),
 			total_warehouse_quantity: decimalToNumber(
 				zipperSchema.sfg.warehouse
 			),
@@ -386,13 +347,6 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 				zipperSchema.sfg.short_quantity
 			),
 			index: zipperSchema.order_entry.index,
-			planning_batch_quantity: sql`
-				(
-					SELECT SUM(finishing_batch_entry.quantity)::float8
-					FROM zipper.finishing_batch_entry
-					WHERE finishing_batch_entry.sfg_uuid = sfg.uuid
-				)
-			`,
 			fresh_quantity: sql`0`,
 			repair_quantity: sql`0`,
 		})
@@ -427,12 +381,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			zipperSchema.dyeing_batch_entry,
 			eq(zipperSchema.sfg.uuid, zipperSchema.dyeing_batch_entry.sfg_uuid)
 		)
-		.where(eq(zipperSchema.order_description.uuid, order_description_uuid))
-		.groupBy(
-			zipperSchema.order_entry.uuid,
-			zipperSchema.sfg.uuid,
-			zipperSchema.order_description.is_inch
-		)
+		.where(eq(zipperSchema.order_info.uuid, order_info_uuid))
 		.orderBy(asc(zipperSchema.order_entry.index));
 
 	try {
@@ -510,9 +459,6 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			damage_quantity: decimalToNumber(
 				threadSchema.order_entry.damage_quantity
 			),
-			batch_quantity: decimalToNumber(
-				sql`COALESCE(batch.total_batch_quantity, 0)`
-			),
 			fresh_quantity: sql`0`,
 			repair_quantity: sql`0`,
 		})
@@ -531,18 +477,6 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 				threadSchema.order_entry.count_length_uuid,
 				threadSchema.count_length.uuid
 			)
-		)
-		.leftJoin(
-			sql`
-				(
-					SELECT 
-						batch_entry.order_entry_uuid,
-						SUM(batch_entry.quantity) AS total_batch_quantity
-					FROM thread.batch_entry
-					GROUP BY batch_entry.order_entry_uuid
-				) AS batch
-			`,
-			sql`batch.order_entry_uuid = order_entry.uuid`
 		)
 		.where(eq(threadSchema.order_entry.order_info_uuid, order_info_uuid))
 		.orderBy(asc(threadSchema.order_entry.index));

@@ -167,8 +167,8 @@ deliveryRouter.delete(
 	quantityReturnOperations.remove
 );
 deliveryRouter.get(
-	'/zipper-order-entry/by/:order_description_uuid',
-	quantityReturnOperations.selectOrderEntryFullByOrderDescriptionUuid
+	'/zipper-order-entry/by/:order_info_uuid',
+	quantityReturnOperations.selectOrderEntryFullByOrderInfoUuid
 );
 deliveryRouter.get(
 	'/thread-order-entry/by/:order_info_uuid',

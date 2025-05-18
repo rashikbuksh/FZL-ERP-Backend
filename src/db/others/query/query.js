@@ -2586,7 +2586,7 @@ export async function selectCarton(req, res, next) {
 }
 
 export async function selectChallan(req, res, next) {
-	const { gate_pass } = req.query;
+	const { gate_pass, order_info_uuid } = req.query;
 	const query = sql`
 				SELECT
 					ch.uuid AS value,
@@ -2613,6 +2613,11 @@ export async function selectChallan(req, res, next) {
 							) AS sub_query ON ch.uuid = sub_query.challan_uuid
 							WHERE
 								sub_query.gate_pass = 0`
+						: sql``
+				}
+				${
+					order_info_uuid
+						? sql`WHERE ch.thread_order_info_uuid = ${order_info_uuid} OR ch.order_info_uuid = ${order_info_uuid}`
 						: sql``
 				}
 				`;

@@ -179,6 +179,9 @@ export const quantity_return = delivery.table('quantity_return', {
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	challan_uuid: defaultUUID('challan_uuid')
+		.references(() => challan.uuid)
+		.default(null),
 });
 
 export default delivery;
