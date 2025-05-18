@@ -319,6 +319,8 @@ export async function selectOrderEntryFullByOrderInfoUuid(req, res, next) {
 			order_entry_uuid: zipperSchema.order_entry.uuid,
 			order_description_uuid:
 				zipperSchema.order_entry.order_description_uuid,
+			order_info_uuid: zipperSchema.order_description.order_info_uuid,
+			item_description: viewScehma.v_order_details_full.item_description,
 			style: zipperSchema.order_entry.style,
 			color: zipperSchema.order_entry.color,
 			size: zipperSchema.order_entry.size,
@@ -356,6 +358,13 @@ export async function selectOrderEntryFullByOrderInfoUuid(req, res, next) {
 			eq(
 				zipperSchema.order_entry.order_description_uuid,
 				zipperSchema.order_description.uuid
+			)
+		)
+		.leftJoin(
+			viewScehma.v_order_details_full,
+			eq(
+				zipperSchema.order_description.uuid,
+				viewScehma.v_order_details_full.order_description_uuid
 			)
 		)
 		.leftJoin(
