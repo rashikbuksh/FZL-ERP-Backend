@@ -1,10 +1,15 @@
-import { asc, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 
 import { alias } from 'drizzle-orm/pg-core';
-import { quantity_return } from '../schema.js';
+import {
+	quantity_return,
+	challan,
+	packing_list_entry,
+	packing_list,
+} from '../schema.js';
 import * as zipperSchema from '../../zipper/schema.js';
 import * as viewScehma from '../../view/schema.js';
 import * as threadSchema from '../../thread/schema.js';
@@ -30,7 +35,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedName} inserted`,
+			message: `${data.length} inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -143,6 +148,15 @@ export async function selectAll(req, res, next) {
 				THEN true
 				ELSE false
 			END`,
+			challan_uuid: quantity_return.challan_uuid,
+			challan_number: sql`
+			CASE
+				WHEN quantity_return.challan_uuid IS NULL
+				THEN null
+				WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))
+				ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))
+			END`,
 		})
 		.from(quantity_return)
 		.leftJoin(
@@ -179,6 +193,7 @@ export async function selectAll(req, res, next) {
 			threadSchema.order_info,
 			eq(thread_order_entry.order_info_uuid, threadSchema.order_info.uuid)
 		)
+		.leftJoin(challan, eq(quantity_return.challan_uuid, challan.uuid))
 		.orderBy(desc(quantity_return.created_at));
 
 	try {
@@ -258,6 +273,15 @@ export async function select(req, res, next) {
 				THEN true
 				ELSE false
 			END`,
+			challan_uuid: quantity_return.challan_uuid,
+			challan_number: sql`
+			CASE
+				WHEN quantity_return.challan_uuid IS NULL
+				THEN null
+				WHEN quantity_return.order_entry_uuid IS NOT NULL
+				THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))
+				ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))
+			END`,
 		})
 		.from(quantity_return)
 		.leftJoin(
@@ -294,6 +318,7 @@ export async function select(req, res, next) {
 			threadSchema.order_info,
 			eq(thread_order_entry.order_info_uuid, threadSchema.order_info.uuid)
 		)
+		.leftJoin(challan, eq(quantity_return.challan_uuid, challan.uuid))
 		.where(eq(quantity_return.uuid, req.params.uuid));
 
 	try {
@@ -313,6 +338,8 @@ export async function selectOrderEntryFullByOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { order_info_uuid } = req.params;
+
+	const { challan_uuid } = req.query;
 
 	const orderEntryPromise = db
 		.select({
@@ -413,6 +440,8 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { order_info_uuid } = req.params;
+
+	const { challan_uuid } = req.query;
 
 	const resultPromise = db
 		.select({

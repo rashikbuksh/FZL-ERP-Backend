@@ -1633,6 +1633,7 @@ export const pathDeliveryQuantityReturn = {
 					format: 'uuid',
 					example: 'igD0v9DIJQhJeet',
 				},
+				SE.parameter_query('challan_uuid', 'challan_uuid'),
 			],
 			responses: {
 				200: {
@@ -1677,6 +1678,7 @@ export const pathDeliveryQuantityReturn = {
 					format: 'uuid',
 					example: 'igD0v9DIJQhJeet',
 				},
+				SE.parameter_query('challan_uuid', 'challan_uuid'),
 			],
 			responses: {
 				200: {
