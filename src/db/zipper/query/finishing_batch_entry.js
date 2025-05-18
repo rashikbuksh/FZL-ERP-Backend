@@ -20,7 +20,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedUuid} inserted`,
+			message: `${data.length} row(s) inserted`,
 		};
 
 		res.status(201).json({ toast, data });
@@ -276,6 +276,10 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			- coalesce(fbe_given.given_quantity,0)
 			) > 0
 		AND vodf.order_description_uuid = ${req.params.order_description_uuid}
+		ORDER BY 
+			oe.style,
+			oe.color,
+			oe.size
 		`;
 
 	// AND coalesce(oe.quantity,0) - coalesce(fbe_given.given_quantity,0) > 0

@@ -85,31 +85,56 @@ export async function selectAll(req, res, next) {
 		}
 
 		const query = sql`
+		WITH
+			lc_entry_agg AS (
+				SELECT lc_uuid, JSONB_AGG(
+						JSONB_BUILD_OBJECT(
+							'payment_date', payment_date, 'ldbc_fdbc', ldbc_fdbc, 'acceptance_date', acceptance_date, 'maturity_date', maturity_date, 'handover_date', handover_date, 'receive_date', receive_date, 'document_submission_date', document_submission_date, 'bank_forward_date', bank_forward_date, 'document_receive_date', document_receive_date, 'payment_value', payment_value, 'amount', amount
+						)
+					) AS lc_entry
+				FROM commercial.lc_entry
+				GROUP BY
+					lc_uuid
+			)
 		SELECT
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-				concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))
+				concat(
+					'PI',
+					to_char(pi_cash.created_at, 'YY'),
+					'-',
+					LPAD(pi_cash.id::text, 4, '0')
+				)
 			) as pi_ids,
 			party.name AS party_name,
-			CASE WHEN is_old_pi = 0 THEN(	
-				SELECT 
-					SUM(
-						CASE 
-							WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
-							THEN coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12 
-							ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
-						END
-					)
-				FROM commercial.pi_cash 
-					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
-					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
-					LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
-				WHERE pi_cash.lc_uuid = lc.uuid
-			) ELSE lc.lc_value::float8 END AS total_value,
+			CASE
+				WHEN is_old_pi = 0 THEN (
+					SELECT SUM(
+							CASE
+								WHEN pi_cash_entry.thread_order_entry_uuid IS NULL THEN coalesce(
+									pi_cash_entry.pi_cash_quantity, 0
+								) * coalesce(order_entry.party_price, 0) / 12
+								ELSE coalesce(
+									pi_cash_entry.pi_cash_quantity, 0
+								) * coalesce(toe.party_price, 0)
+							END
+						)
+					FROM commercial.pi_cash
+						LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+						LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+						LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+						LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+					WHERE
+						pi_cash.lc_uuid = lc.uuid
+				)
+				ELSE lc.lc_value::float8
+			END AS total_value,
 			concat(
-			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
+				'LC',
+				to_char(lc.created_at, 'YY'),
+				'-',
+				LPAD(lc.id::text, 4, '0')
 			) as file_number,
 			lc.lc_number,
 			lc.lc_date,
@@ -138,33 +163,14 @@ export async function selectAll(req, res, next) {
 			lc.created_at,
 			lc.updated_at,
 			lc.remarks,
-			JSONB_AGG(
-				JSONB_BUILD_OBJECT(
-					'payment_date', lc_entry.payment_date,
-					'ldbc_fdbc', lc_entry.ldbc_fdbc,
-					'acceptance_date', lc_entry.acceptance_date,
-					'maturity_date', lc_entry.maturity_date,
-					'handover_date', lc_entry.handover_date,
-					'receive_date', lc_entry.receive_date,
-					'document_submission_date', lc_entry.document_submission_date,
-					'bank_forward_date', lc_entry.bank_forward_date,
-					'document_receive_date', lc_entry.document_receive_date,
-					'payment_value', lc_entry.payment_value,
-					'amount', lc_entry.amount
-				)
-			) as lc_entry
-		FROM
-			commercial.lc
-		LEFT JOIN 
-			commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
-		LEFT JOIN
-			hr.users ON lc.created_by = users.uuid
-		LEFT JOIN
-			public.party ON lc.party_uuid = party.uuid
-		LEFT JOIN
-			commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
+			COALESCE(lc_entry_agg.lc_entry, '[]') AS lc_entry
+		FROM commercial.lc
+		LEFT JOIN lc_entry_agg ON lc.uuid = lc_entry_agg.lc_uuid
+		LEFT JOIN hr.users ON lc.created_by = users.uuid
+		LEFT JOIN public.party ON lc.party_uuid = party.uuid
+		LEFT JOIN commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
 		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
-		GROUP BY lc.uuid, party.name, users.name
+		GROUP BY lc.uuid, party.name, users.name, lc_entry_agg.lc_entry
 		ORDER BY lc.created_at DESC
 		`;
 		const resultPromise = db.execute(query);
