@@ -30,45 +30,28 @@ const findOrCreateArray = (array, key, value, createFn) => {
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const {
-		uuid,
-		order_description_uuid,
-		style,
-		color,
-		size,
-		quantity,
-		company_price,
-		party_price,
-		status,
-		swatch_status,
-		swap_approval_date,
-		bleaching,
-		created_by,
-		created_at,
-		remarks,
-		index,
-	} = req.body;
+	// const {
+	// 	uuid,
+	// 	order_description_uuid,
+	// 	style,
+	// 	color,
+	// 	size,
+	// 	quantity,
+	// 	company_price,
+	// 	party_price,
+	// 	status,
+	// 	swatch_status,
+	// 	swap_approval_date,
+	// 	bleaching,
+	// 	created_by,
+	// 	created_at,
+	// 	remarks,
+	// 	index,
+	// } = req.body;
 
 	const order_entryPromise = db
 		.insert(order_entry)
-		.values({
-			uuid,
-			order_description_uuid,
-			style,
-			color,
-			size,
-			quantity,
-			company_price,
-			party_price,
-			status,
-			swatch_status,
-			swap_approval_date,
-			bleaching,
-			created_by,
-			created_at,
-			remarks,
-			index,
-		})
+		.values(req.body)
 		.returning({ insertedUuid: order_entry.uuid });
 
 	try {
@@ -77,7 +60,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedUuid} added`,
+			message: `${data.length} added`,
 		};
 
 		res.status(201).send({ toast, data });

@@ -430,6 +430,18 @@ export const pathDeliveryPackingList = {
 			},
 		},
 	},
+	'/delivery/sync-packing-list-challan-for-order': {
+		get: {
+			tags: ['delivery.packing-list'],
+			summary: 'Sync packing list and challan for all order',
+			description:
+				'Sync packing list and challan for all order (for testing purpose)',
+			operationId: 'syncPackingListAndChallanForAllOrder',
+			responses: {
+				200: SE.response_schema(200, 'Sync packing list and challan'),
+			},
+		},
+	},
 };
 
 // * Delivery PackingListEntry * //

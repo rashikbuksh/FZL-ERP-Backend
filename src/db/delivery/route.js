@@ -49,6 +49,10 @@ deliveryRouter.get(
 	'/packing-list-received-warehouse-notout-log',
 	packingListOperations.selectPackingListReceivedWarehouseLog
 );
+deliveryRouter.get(
+	'/sync-packing-list-challan-for-order',
+	packingListOperations.syncPackingListAndChallanForAllOrder
+);
 
 // packing_list_entry routes
 deliveryRouter.get('/packing-list-entry', packingListEntryOperations.selectAll);

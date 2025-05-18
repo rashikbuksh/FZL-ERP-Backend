@@ -866,3 +866,38 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function syncPackingListAndChallanForAllOrder(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const query = sql`
+	UPDATE zipper.sfg
+	SET 
+		warehouse = subquery.warehouse_quantity, 
+		delivered = subquery.delivered_quantity
+	FROM (
+		SELECT 
+			ple.sfg_uuid,
+			SUM(CASE WHEN pl.is_warehouse_received = true AND pl.gate_pass = 0 THEN ple.quantity ELSE 0 END) AS warehouse_quantity,
+			SUM(CASE WHEN pl.gate_pass = 1 THEN ple.quantity ELSE 0 END) AS delivered_quantity
+		FROM delivery.packing_list_entry ple
+		LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+		GROUP BY ple.sfg_uuid
+	) AS subquery
+	WHERE zipper.sfg.uuid = subquery.sfg_uuid;`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `All Order's Packing list and challan updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		console.error(error);
+		handleError({ error, res });
+	}
+}

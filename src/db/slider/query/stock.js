@@ -2,6 +2,7 @@ import { eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { stock } from '../schema.js';
+import * as zipperSchema from '../../zipper/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -16,14 +17,24 @@ export async function insert(req, res, next) {
 			batch_quantity,
 			created_at,
 		})
-		.returning({ insertedId: stock.uuid });
+		.returning({ insertedId: stock.finishing_batch_uuid });
+
+	const finishingBatchPromise = db
+		.select({
+			batch_number: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+		})
+		.from(zipperSchema.finishing_batch_entry)
+		.where(
+			eq(zipperSchema.finishing_batch_entry.uuid, finishing_batch_uuid)
+		);
 
 	try {
 		const data = await stockPromise;
+		const batchNumber = await finishingBatchPromise;
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedId} inserted`,
+			message: `${batchNumber[0].batch_number} slider batch inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -41,12 +52,23 @@ export async function update(req, res, next) {
 		.set({ uuid, finishing_batch_uuid, batch_quantity, created_at })
 		.where(eq(stock.uuid, req.params.uuid))
 		.returning({ updatedId: stock.uuid });
+
+	const finishingBatchPromise = db
+		.select({
+			batch_number: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+		})
+		.from(zipperSchema.finishing_batch_entry)
+		.where(
+			eq(zipperSchema.finishing_batch_entry.uuid, finishing_batch_uuid)
+		);
+
 	try {
 		const data = await stockPromise;
+		const batchNumber = await finishingBatchPromise;
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedId} updated`,
+			message: `${batchNumber[0].batch_number} slider batch updated`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -61,12 +83,21 @@ export async function remove(req, res, next) {
 		.delete(stock)
 		.where(eq(stock.uuid, req.params.uuid))
 		.returning({ deletedId: stock.uuid });
+
+	const finishingBatchPromise = db
+		.select({
+			batch_number: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+		})
+		.from(zipperSchema.finishing_batch_entry)
+		.where(eq(zipperSchema.finishing_batch_entry.uuid, req.params.uuid));
+
 	try {
 		const data = await stockPromise;
+		const batchNumber = await finishingBatchPromise;
 		const toast = {
 			status: 201,
 			type: 'delete',
-			message: `${data[0].deletedId} deleted`,
+			message: `${batchNumber[0].batch_number} slider batch deleted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -189,8 +220,7 @@ export async function selectAll(req, res, next) {
 	) oe_style_color ON oe_style_color.order_description_uuid = finishing_batch.order_description_uuid
 	WHERE 
 		(stock.batch_quantity - COALESCE(slider_transaction_given.trx_quantity, 0)) > 0
-	ORDER BY stock.created_at DESC
-	;
+	ORDER BY stock.created_at DESC;
 	`;
 
 	const resultPromise = db.execute(query);
