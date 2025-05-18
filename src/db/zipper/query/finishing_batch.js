@@ -1037,7 +1037,7 @@ export async function getOrderOverviewForFinishingBatch(req, res, next) {
 			message: 'finishing_batch',
 		};
 
-		res.status(200).json({ toast, data });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
