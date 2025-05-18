@@ -381,7 +381,9 @@ export async function selectOrderEntryFullByOrderInfoUuid(req, res, next) {
 			zipperSchema.dyeing_batch_entry,
 			eq(zipperSchema.sfg.uuid, zipperSchema.dyeing_batch_entry.sfg_uuid)
 		)
-		.where(eq(zipperSchema.order_info.uuid, order_info_uuid))
+		.where(
+			eq(zipperSchema.order_description.order_info_uuid, order_info_uuid)
+		)
 		.orderBy(asc(zipperSchema.order_entry.index));
 
 	try {
