@@ -7,19 +7,21 @@ import { packing_list_entry } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	req.body.map((item) => {
-		if (item.item_for == 'thread' || item.item_for == 'sample_thread') {
-			const { order_entry_uuid } = item;
-			item.thread_order_entry_uuid = order_entry_uuid;
-			item.order_entry_uuid = null;
-		}
-	});
+	const { item_for } = req.body;
 
-	// if (item_for == 'thread' || item_for == 'sample_thread') {
-	// 	const { order_entry_uuid } = req.body;
-	// 	req.body.thread_order_entry_uuid = order_entry_uuid;
-	// 	req.body.order_entry_uuid = null;
-	// }
+	// req.body.map((item) => {
+	// 	if (item.item_for == 'thread' || item.item_for == 'sample_thread') {
+	// 		const { order_entry_uuid } = item;
+	// 		item.thread_order_entry_uuid = order_entry_uuid;
+	// 		item.order_entry_uuid = null;
+	// 	}
+	// });
+
+	if (item_for == 'thread' || item_for == 'sample_thread') {
+		const { order_entry_uuid } = req.body;
+		req.body.thread_order_entry_uuid = order_entry_uuid;
+		req.body.order_entry_uuid = null;
+	}
 
 	const packing_list_entryPromise = db
 		.insert(packing_list_entry)
@@ -31,7 +33,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data.length} inserted`,
+			message: `${data[0].insertedId} inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
