@@ -870,7 +870,7 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 export async function syncPackingListAndChallanForAllOrder(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const query = sql`
+	const sfg_query = sql`
 	UPDATE zipper.sfg
 	SET 
 		warehouse = subquery.warehouse_quantity, 
@@ -886,16 +886,47 @@ export async function syncPackingListAndChallanForAllOrder(req, res, next) {
 	) AS subquery
 	WHERE zipper.sfg.uuid = subquery.sfg_uuid;`;
 
-	const resultPromise = db.execute(query);
+	const thread_query = sql`
+	UPDATE thread.order_entry
+	SET
+		warehouse = subquery.warehouse_quantity,
+		delivered = subquery.delivered_quantity
+	FROM (
+			SELECT
+				ple.thread_order_entry_uuid, SUM(
+					CASE
+						WHEN pl.is_warehouse_received = true
+						AND pl.gate_pass = 0 THEN ple.quantity
+						ELSE 0
+					END
+				) AS warehouse_quantity, SUM(
+					CASE
+						WHEN pl.gate_pass = 1 THEN ple.quantity
+						ELSE 0
+					END
+				) AS delivered_quantity
+			FROM delivery.packing_list_entry ple
+				LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+			GROUP BY
+				ple.thread_order_entry_uuid
+		) AS subquery
+	WHERE
+		thread.order_entry.uuid = subquery.thread_order_entry_uuid;`;
+
+	const resultPromise = db.execute(sfg_query);
+	const resultPromise2 = db.execute(thread_query);
 
 	try {
 		const data = await resultPromise;
+		const data2 = await resultPromise2;
 		const toast = {
 			status: 201,
 			type: 'update',
 			message: `All Order's Packing list and challan updated`,
 		};
-		return await res.status(201).json({ toast, data });
+		return await res
+			.status(201)
+			.json({ toast, data: { ...data, ...data2 } });
 	} catch (error) {
 		console.error(error);
 		handleError({ error, res });
