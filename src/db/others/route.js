@@ -970,7 +970,6 @@ const pathZipper = {
 					'false',
 					'true',
 				]),
-				SE.parameter_query('page', 'page', ['finishing_batch', 'true']),
 				SE.parameter_query('is_update', 'is_update', ['true', 'false']),
 				SE.parameter_query('is_slider_needed', 'is_slider_needed', [
 					'true',

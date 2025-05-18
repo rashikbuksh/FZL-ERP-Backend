@@ -3767,8 +3767,32 @@ export const pathZipperFinishingBatch = {
 			tags: ['zipper.finishing_batch'],
 			summary: 'Get all Finishing Batch Order Overview',
 			parameters: [
-				SE.parameter_query('from_date', 'from_date', ['2024-01-01']),
-				SE.parameter_query('to_date', 'to_date', ['2024-01-01']),
+				SE.parameter_query('item', 'item', [
+					'all',
+					'nylon',
+					'without-nylon',
+				]),
+				SE.parameter_query('tape_received', 'tape_received', [
+					'false',
+					'true',
+				]),
+				SE.parameter_query('swatch_approved', 'swatch_approved', [
+					'false',
+					'true',
+				]),
+				SE.parameter_query('dyed_tape_required', 'dyed_tape_required', [
+					'false',
+					'true',
+				]),
+				SE.parameter_query('is_balance', 'is_balance', [
+					'false',
+					'true',
+				]),
+				SE.parameter_query('is_update', 'is_update', ['true', 'false']),
+				SE.parameter_query('is_slider_needed', 'is_slider_needed', [
+					'true',
+					'false',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {

@@ -880,7 +880,7 @@ export async function getOrderOverviewForFinishingBatch(req, res, next) {
 		is_slider_needed,
 	} = req.query;
 
-	page_query = sql`
+	const page_query = sql`
 				SELECT
 					sfg.uuid as sfg_uuid,
 					vodf.order_description_uuid AS value,
@@ -1025,6 +1025,8 @@ export async function getOrderOverviewForFinishingBatch(req, res, next) {
 	}
 
 	page_query.append(sql` ORDER BY vodf.order_number`);
+
+	const resultPromise = db.execute(page_query);
 
 	try {
 		const data = await resultPromise;
