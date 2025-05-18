@@ -1152,7 +1152,6 @@ export async function selectOrderDescription(req, res, next) {
 		dyed_tape_required,
 		swatch_approved,
 		is_balance,
-		page,
 		is_update,
 		is_slider_needed,
 		type,
@@ -1271,114 +1270,13 @@ export async function selectOrderDescription(req, res, next) {
 						ELSE sfg.recipe_uuid IS NOT NULL END
 				`;
 
-	let page_query = sql``;
-	if (page == 'finishing_batch') {
-		page_query = sql`
-				SELECT
-					sfg.uuid as sfg_uuid,
-					vodf.order_description_uuid AS value,
-					CONCAT(vodf.order_number, ' ⇾ ', vodf.item_description, 
-						CASE 
-							WHEN vodf.order_type = 'slider' 
-							THEN ' - Slider' 
-							WHEN vodf.order_type = 'tape'
-							THEN ' - Tape'
-							WHEN vodf.is_multi_color = 1
-							THEN ' - Multi Color'
-							ELSE ''
-							END
-						) AS label,
-					CASE 
-						WHEN vodf.order_type = 'tape' THEN 'Meter' 
-						WHEN vodf.order_type = 'slider' THEN 'Pcs'
-						WHEN vodf.is_inch = 1 THEN 'Inch'
-						ELSE 'CM' 
-					END as unit,
-					vodf.order_type,
-					vodf.order_number,
-					vodf.item_description,
-					vodf.order_description_uuid,
-					vodf.item_name,
-					vodf.tape_received::float8,
-					vodf.tape_transferred::float8,
-					sfg.recipe_uuid as recipe_uuid,
-					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
-					ie.approved,
-					ie.approved_date,
-					ie.is_pps_req,
-					ie.is_pps_req_date,
-					oe.style,
-					oe.color,
-					oe.size,
-					oe.quantity::float8 as order_quantity,
-					fbe_given.balance_quantity,
-					vodf.slider_provided,
-					vodf.end_type as end_type_uuid,
-					vodf.end_type_name
-				FROM
-					zipper.v_order_details_full vodf
-				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
-				LEFT JOIN lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
-				LEFT JOIN lab_dip.info ldi ON ldi.order_info_uuid = vodf.order_info_uuid
-				INNER JOIN lab_dip.info_entry ie ON (sfg.recipe_uuid = ie.recipe_uuid AND ie.lab_dip_info_uuid = ldi.uuid)
-				LEFT JOIN 
-						(
-							SELECT
-								oe.uuid as order_entry_uuid,
-								SUM(
-									CASE 
-										WHEN vodf.order_type = 'tape' 
-										THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
-										ELSE oe.quantity::float8 
-									END
-								) - COALESCE(SUM(fbe.quantity::float8), 0) AS balance_quantity,
-								SUM(fbe.quantity::float8) as given_quantity
-							FROM
-								zipper.sfg
-							LEFT JOIN 
-								zipper.finishing_batch_entry fbe ON fbe.sfg_uuid = sfg.uuid
-							LEFT JOIN
-								zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-							LEFT JOIN 
-								zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-							GROUP BY
-								oe.uuid
-					) AS fbe_given ON oe.uuid = fbe_given.order_entry_uuid
-				LEFT JOIN zipper.tape_coil ON vodf.tape_coil_uuid = tape_coil.uuid
-				LEFT JOIN (
-						SELECT COUNT(oe.swatch_approval_date) AS swatch_approval_count, oe.order_description_uuid
-						FROM zipper.order_entry oe
-						GROUP BY oe.order_description_uuid
-				) swatch_approval_counts ON vodf.order_description_uuid = swatch_approval_counts.order_description_uuid
-				LEFT JOIN zipper.multi_color_dashboard mcd ON vodf.order_description_uuid = mcd.order_description_uuid
-				WHERE 
-					vodf.item_description != '---' AND vodf.item_description != '' AND vodf.order_description_uuid IS NOT NULL 
-					AND vodf.is_cancelled = FALSE
-					AND vodf.is_sample = 0 
-					AND CASE 
-						WHEN order_type = 'slider' THEN 1=1 
-						WHEN (vodf.is_multi_color = 1 AND mcd.is_swatch_approved = 1) THEN 1=1
-						ELSE sfg.recipe_uuid IS NOT NULL 
-					END
-		`;
-	}
-
 	if (is_slider_needed == 'false') {
 		query.append(sql` AND vodf.order_type != 'slider'`);
-		page == 'finishing_batch'
-			? page_query.append(sql` AND vodf.order_type != 'slider'`)
-			: '';
 	}
 
 	if (dyed_tape_required == 'false') {
 	} else if (dyed_tape_required == 'true') {
 		query.append(sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`);
-		page == 'finishing_batch'
-			? page_query.append(
-					sql` AND tape_coil.dyed_per_kg_meter IS NOT NULL`
-				)
-			: '';
 	}
 
 	if (swatch_approved === 'true') {
@@ -1388,37 +1286,17 @@ export async function selectOrderDescription(req, res, next) {
 			WHEN vodf.is_multi_color = 1 THEN 1=1
 			ELSE swatch_approval_counts.swatch_approval_count > 0 END`
 		);
-		page == 'finishing_batch'
-			? page_query.append(
-					sql` AND CASE
-						WHEN order_type = 'slider' THEN 1=1
-						WHEN vodf.is_multi_color = 1 THEN 1=1
-						ELSE swatch_approval_counts.swatch_approval_count > 0
-					END`
-				)
-			: '';
 	}
 	if (item == 'nylon') {
 		query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`);
-		// page == 'finishing_batch'
-		// 	? page_query.append(sql` AND LOWER(vodf.item_name) = 'nylon'`)
-		// 	: '';
 	} else if (item == 'without-nylon') {
 		query.append(sql` AND LOWER(vodf.item_name) != 'nylon'`);
-		page == 'finishing_batch'
-			? page_query.append(sql` AND LOWER(vodf.item_name) != 'nylon'`)
-			: '';
 	}
 
 	if (tape_received == 'true') {
 		query.append(
 			sql` AND CASE WHEN is_multi_color = 1 THEN 1=1 ELSE tape_received > 0 END`
 		);
-		page == 'finishing_batch'
-			? page_query.append(
-					sql` AND CASE WHEN is_multi_color = 1 THEN 1=1 ELSE tape_received > 0 END`
-				)
-			: '';
 	}
 	if (
 		is_balance == 'true' &&
@@ -1433,51 +1311,16 @@ export async function selectOrderDescription(req, res, next) {
 				- coalesce(fbe_given.given_quantity,0)
 				) > 0
 			`);
-		page == 'finishing_batch'
-			? page_query.append(sql` AND (
-				CASE
-					WHEN vodf.order_type = 'tape'
-					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8
-					ELSE oe.quantity::float8
-				END
-				- coalesce(fbe_given.given_quantity,0)
-				) > 0
-			`)
-			: '';
 	} else if (is_balance == 'true' && is_update == 'true') {
-		page == 'finishing_batch'
-			? page_query.append(sql` AND (
-				CASE
-					WHEN vodf.order_type = 'tape'
-					THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8
-					ELSE oe.quantity::float8
-				END
-				- coalesce(fbe_given.given_quantity,0)
-				) > 0
-			`)
-			: '';
 	}
 
 	query.append(sql` ORDER BY vodf.order_number`);
-	page == 'finishing_batch'
-		? page_query.append(sql` ORDER BY vodf.order_number`)
-		: '';
 
 	const orderEntryPromise = db.execute(query);
 
-	let pagePromise = '';
-	if (page == 'finishing_batch') {
-		pagePromise = db.execute(page_query);
-	}
-
 	try {
 		const dataData = await orderEntryPromise;
-		const pageData = pagePromise ? await pagePromise : null;
-
-		// data pass as array and pageData pass as object
-		const response = page
-			? { data: dataData?.rows, pageData: pageData?.rows }
-			: { data: dataData?.rows };
+		const response = { data: dataData?.rows };
 
 		const toast = {
 			status: 200,

@@ -24,6 +24,7 @@ import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTransferToDyeingOperations from './query/tape_transfer_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
+import zipper from './schema.js';
 
 const zipperRouter = Router();
 
@@ -512,6 +513,10 @@ zipperRouter.get(
 zipperRouter.put(
 	'/finishing-batch/update-is-completed/by/:uuid',
 	finishingBatchOperations.updateFinishingBatchPutIsCompletedByFinishingBatchUuid
+);
+zipperRouter.get(
+	'/finishing-batch-order-overview',
+	finishingBatchOperations.getOrderOverviewForFinishingBatch
 );
 
 // --------------------- FINISHING BATCH ENTRY ROUTES ---------------------

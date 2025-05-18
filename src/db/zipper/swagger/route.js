@@ -3762,6 +3762,29 @@ export const pathZipperFinishingBatch = {
 			},
 		},
 	},
+	'/zipper/finishing-batch-order-overview': {
+		get: {
+			tags: ['zipper.finishing_batch'],
+			summary: 'Get all Finishing Batch Order Overview',
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', ['2024-01-01']),
+				SE.parameter_query('to_date', 'to_date', ['2024-01-01']),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					order_number: SE.string('Z24-0001'),
+					style: SE.string('Style 1'),
+					color: SE.string('Color 1'),
+					size: SE.number(100),
+					quantity: SE.number(100),
+					batch_quantity: SE.number(100),
+					batch_status: SE.string('pending'),
+				}),
+			},
+		},
+	},
 };
 
 // * Zipper Finishing Batch Entry * //
