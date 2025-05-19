@@ -1573,10 +1573,13 @@ export async function ProductionReportSnm(req, res, next) {
                             'total_quantity', dyeing_batch_entry.total_quantity,
                             'total_production_quantity', dyeing_batch_entry.total_production_quantity,
                             'received', CASE WHEN dyeing_batch.received = 1 THEN TRUE ELSE FALSE END
+                            'dyeing_machine', machine.name,
                         )
                     ) as dyeing_batches
 				FROM
 					zipper.dyeing_batch dyeing_batch
+                LEFT JOIN 
+                    public.machine machine ON dyeing_batch.machine_uuid = machine.uuid
                 LEFT JOIN (
                     SELECT 
                         SUM(dyeing_batch_entry.quantity) as total_quantity,
