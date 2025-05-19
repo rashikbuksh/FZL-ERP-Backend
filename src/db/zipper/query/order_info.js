@@ -367,19 +367,19 @@ export async function getOrderDetails(req, res, next) {
 			GROUP BY oe.order_description_uuid
         ) all_approval_counts ON vod.order_description_uuid = all_approval_counts.order_description_uuid
         WHERE vod.order_description_uuid IS NOT NULL 
-            AND ${
+            ${
 				all === 'true'
-					? sql`1=1`
+					? sql``
 					: approved === 'true'
-						? sql`swatch_approval_counts.swatch_approval_count > 0`
-						: sql`1=1`
+						? sql` AND swatch_approval_counts.swatch_approval_count > 0`
+						: sql``
 			}
             ${
 				type === 'bulk'
-					? sql`AND vod.is_sample = 0`
+					? sql` AND vod.is_sample = 0`
 					: type === 'sample'
-						? sql`AND vod.is_sample = 1`
-						: sql`AND 1=1`
+						? sql` AND vod.is_sample = 1`
+						: sql``
 			}
             ${marketingUuid != null ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
         ORDER BY vod.order_description_created_at DESC, order_number_wise_rank ASC`;
