@@ -1511,6 +1511,7 @@ export async function ProductionReportSnm(req, res, next) {
                 coalesce(pi_cash_grouped.pi_numbers, '{}') as pi_numbers,
                 coalesce(pi_cash_grouped.lc_numbers, '{}') as lc_numbers,
                 expected.expected_kg,
+                dyeing_batch.dyeing_batch_uuid,
                 dyeing_batch.dyeing_batch_number,
                 dyeing_batch.production_date,
                 dyeing_batch.total_quantity::float8,
