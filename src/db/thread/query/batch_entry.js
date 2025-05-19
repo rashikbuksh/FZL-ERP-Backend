@@ -7,50 +7,48 @@ import { batch_entry, order_entry } from '../schema.js';
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	let {
-		uuid,
-		batch_uuid,
-		order_entry_uuid,
-		quantity,
-		coning_production_quantity,
-		coning_carton_quantity,
-		coning_created_at,
-		coning_updated_at,
-		transfer_quantity,
-		transfer_carton_quantity,
-		created_at,
-		updated_at,
-		remarks,
-		yarn_quantity,
-	} = req.body;
+	// let {
+	// 	uuid,
+	// 	batch_uuid,
+	// 	order_entry_uuid,
+	// 	quantity,
+	// 	coning_production_quantity,
+	// 	coning_carton_quantity,
+	// 	coning_created_at,
+	// 	coning_updated_at,
+	// 	transfer_quantity,
+	// 	transfer_carton_quantity,
+	// 	created_at,
+	// 	updated_at,
+	// 	remarks,
+	// 	yarn_quantity,
+	// } = req.body;
 
-	quantity = quantity ? Number(quantity) : 0;
-	coning_production_quantity = coning_production_quantity
-		? Number(coning_production_quantity)
-		: 0;
-	coning_carton_quantity = coning_carton_quantity
-		? Number(coning_carton_quantity)
-		: 0;
-	yarn_quantity = yarn_quantity ? Number(yarn_quantity) : 0;
+	req.body.map((item) => {
+		item.quantity = item.quantity ? Number(item.quantity) : 0;
+		item.coning_production_quantity = item.coning_production_quantity
+			? Number(item.coning_production_quantity)
+			: 0;
+		item.coning_carton_quantity = item.coning_carton_quantity
+			? Number(item.coning_carton_quantity)
+			: 0;
+		item.yarn_quantity = item.yarn_quantity
+			? Number(item.yarn_quantity)
+			: 0;
+	});
+
+	// quantity = quantity ? Number(quantity) : 0;
+	// coning_production_quantity = coning_production_quantity
+	// 	? Number(coning_production_quantity)
+	// 	: 0;
+	// coning_carton_quantity = coning_carton_quantity
+	// 	? Number(coning_carton_quantity)
+	// 	: 0;
+	// yarn_quantity = yarn_quantity ? Number(yarn_quantity) : 0;
 
 	const resultPromise = db
 		.insert(batch_entry)
-		.values({
-			uuid,
-			batch_uuid,
-			order_entry_uuid,
-			quantity,
-			coning_production_quantity,
-			coning_carton_quantity,
-			coning_created_at,
-			coning_updated_at,
-			transfer_quantity,
-			transfer_carton_quantity,
-			created_at,
-			updated_at,
-			remarks,
-			yarn_quantity,
-		})
+		.values(req.body)
 		.returning({ insertedId: batch_entry.uuid });
 
 	try {
@@ -59,7 +57,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedId} inserted`,
+			message: `${data.length} row(s) inserted`,
 		};
 
 		return await res.status(201).json({ toast, data });
@@ -334,7 +332,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 export async function getBatchEntryByBatchUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { type } = req.query;
-	
+
 	const query = sql`
 						SELECT 
 							be.uuid as batch_entry_uuid,
