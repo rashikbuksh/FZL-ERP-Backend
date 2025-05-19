@@ -1776,11 +1776,17 @@ export async function ProductionReportThreadSnm(req, res, next) {
                         jsonb_build_object(
                             'batch_uuid', batch.uuid, 'batch_number', CONCAT(
                                 'B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')
-                            ), 'production_date', batch.production_date::date, 'total_quantity', batch_entry_quantity_length.total_quantity, 'yarn_issued', batch_entry_quantity_length.total_weight, 'is_drying_complete', batch.is_drying_complete
+                            ), 
+                            'production_date', batch.production_date::date, 
+                            'total_quantity', batch_entry_quantity_length.total_quantity, 
+                            'yarn_issued', batch_entry_quantity_length.total_weight, 
+                            'is_drying_complete', batch.is_drying_complete,
+                            'machine', machine.name
                         )
                     ) as batches
                 FROM
                     thread.batch
+                LEFT JOIN public.machine ON batch.machine_uuid = machine.uuid
                 LEFT JOIN (
                     SELECT
                         SUM(batch_entry.quantity) as total_quantity,
