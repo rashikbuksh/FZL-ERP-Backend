@@ -1465,7 +1465,14 @@ export async function ProductionReportSnm(req, res, next) {
                 vodf.order_description_uuid,
                 vodf.item_description,
                 vodf.item_name,
-                CONCAT(vodf.item_name, CASE WHEN vodf.nylon_stopper_name IS NOT NULL THEN ' - ' ELSE '' END, vodf.nylon_stopper_name) as item_name_with_stopper,
+                CONCAT(
+                    vodf.item_name,
+                    CASE
+                        WHEN vodf.nylon_stopper_name IS NOT NULL THEN ' - '
+                        ELSE ' '
+                    END,
+                    vodf.nylon_stopper_name
+                ) as item_name_with_stopper,
                 vodf.nylon_stopper,
                 vodf.nylon_stopper_name,
                 vodf.zipper_number,
@@ -1544,7 +1551,7 @@ export async function ProductionReportSnm(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     od.uuid as order_description_uuid,
-                    SUM(production.production_quantity) AS coloring_production_quantity
+                    SUM(production.production_quantity) AS coloring_production_quantity,
                     SUM(production.weight) as coloring_production_quantity_weight
                 FROM slider.production
                 LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
