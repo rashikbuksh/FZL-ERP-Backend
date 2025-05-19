@@ -17,25 +17,14 @@ export async function insert(req, res, next) {
 			batch_quantity,
 			created_at,
 		})
-		.returning({ insertedId: stock.finishing_batch_uuid });
+		.returning({ insertedId: stock.uuid });
 
 	try {
 		const data = await stockPromise;
-
-		const finishingBatchPromise = db
-			.select({
-				batch_number: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
-			})
-			.from(zipperSchema.finishing_batch_entry)
-			.where(
-				eq(zipperSchema.finishing_batch_entry.uuid, data[0].insertedId)
-			);
-
-		const batchNumber = await finishingBatchPromise;
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${batchNumber[0].batch_number} slider batch inserted`,
+			message: `${data[0].insertedId} slider batch inserted`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -54,22 +43,13 @@ export async function update(req, res, next) {
 		.where(eq(stock.uuid, req.params.uuid))
 		.returning({ updatedId: stock.uuid });
 
-	const finishingBatchPromise = db
-		.select({
-			batch_number: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
-		})
-		.from(zipperSchema.finishing_batch_entry)
-		.where(
-			eq(zipperSchema.finishing_batch_entry.uuid, finishing_batch_uuid)
-		);
-
 	try {
 		const data = await stockPromise;
 		const batchNumber = await finishingBatchPromise;
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${batchNumber[0].batch_number} slider batch updated`,
+			message: `${data[0].updatedId} slider batch updated`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
