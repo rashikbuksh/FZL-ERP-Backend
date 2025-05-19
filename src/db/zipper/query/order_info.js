@@ -381,7 +381,7 @@ export async function getOrderDetails(req, res, next) {
 						? sql` AND vod.is_sample = 1`
 						: sql``
 			}
-            ${marketingUuid != null ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
+            ${marketingUuid != null ? sql` AND vod.marketing_uuid = ${marketingUuid}` : sql``}
         ORDER BY vod.order_description_created_at DESC, order_number_wise_rank ASC`;
 
 		const orderInfoPromise = db.execute(query);
