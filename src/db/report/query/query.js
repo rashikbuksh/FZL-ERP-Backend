@@ -1572,8 +1572,8 @@ export async function ProductionReportSnm(req, res, next) {
                             'production_date', dyeing_batch.production_date::date,
                             'total_quantity', dyeing_batch_entry.total_quantity,
                             'total_production_quantity', dyeing_batch_entry.total_production_quantity,
-                            'received', CASE WHEN dyeing_batch.received = 1 THEN TRUE ELSE FALSE END
-                            'dyeing_machine', machine.name,
+                            'received', CASE WHEN dyeing_batch.received = 1 THEN TRUE ELSE FALSE END,
+                            'dyeing_machine', machine.name
                         )
                     ) as dyeing_batches
 				FROM
