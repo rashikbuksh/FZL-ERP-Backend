@@ -1457,7 +1457,6 @@ export async function ProductionReportSnm(req, res, next) {
                 vodf.item,
                 vodf.created_at,
                 vodf.updated_at,
-                vodf.item_name,
                 vodf.order_number,
                 vodf.party_uuid,
                 vodf.party_name,
@@ -1465,6 +1464,12 @@ export async function ProductionReportSnm(req, res, next) {
                 vodf.marketing_name,
                 vodf.order_description_uuid,
                 vodf.item_description,
+                vodf.item_name,
+                CONCAT(vodf.item_name, CASE WHEN vodf.nylon_stopper_name IS NOT NULL THEN ' - ' ELSE '' END, vodf.nylon_stopper_name) as item_name_with_stopper,
+                vodf.nylon_stopper,
+                vodf.nylon_stopper_name,
+                vodf.zipper_number,
+                vodf.zipper_number_name,
                 vodf.end_type,
                 vodf.end_type_name,
                 oe.uuid as order_entry_uuid,
@@ -1474,11 +1479,13 @@ export async function ProductionReportSnm(req, res, next) {
                 oe.quantity::float8,
                 oe.party_price::float8,
                 oe.company_price::float8,
+                CASE WHEN sfg.recipe_uuid IS NOT NULL THEN oe.swatch_approval_date ELSE null END as swatch_approval_date,
                 CASE WHEN sfg.recipe_uuid IS NULL THEN oe.quantity::float8 ELSE 0 END as not_approved_quantity,
                 CASE WHEN sfg.recipe_uuid IS NOT NULL THEN oe.quantity::float8 ELSE 0 END as approved_quantity,
-                coalesce(close_end_sum.total_close_end_quantity,0)::float8 as total_close_end_quantity,
-                coalesce(open_end_sum.total_open_end_quantity,0)::float8 as total_open_end_quantity,
-                coalesce(close_end_sum.total_close_end_quantity + open_end_sum.total_open_end_quantity,0)::float8 as total_quantity,
+                sfg.recipe_uuid,
+                recipe.name as recipe_name,
+                coalesce(oe.quantity,0)::float8 as total_quantity,
+                CASE WHEN (vodf.end_type_name = '2 Way - Close End' OR vodf.end_type_name = '2 Way - Open End') THEN oe.quantity::float8 * 2 ELSE oe.quantity::float8 END as total_slider_required,
                 sfg.delivered::float8,
                 sfg.warehouse::float8,
                 (oe.quantity::float8 - sfg.delivered::float8) as balance_quantity,
@@ -1493,6 +1500,7 @@ export async function ProductionReportSnm(req, res, next) {
                 coalesce(sfg_production_sum.finishing_quantity,0)::float8 as total_finishing_quantity,
                 (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0))::float8 AS total_dyeing_quantity,
                 coalesce(slider_production_sum.coloring_production_quantity,0)::float8 as total_coloring_quantity,
+                coalesce(slider_production_sum.coloring_production_quantity_weight,0)::float8 as total_coloring_quantity_weight,
                 coalesce(pi_cash_grouped.pi_numbers, '{}') as pi_numbers,
                 coalesce(pi_cash_grouped.lc_numbers, '{}') as lc_numbers,
                 expected.expected_kg,
@@ -1503,32 +1511,8 @@ export async function ProductionReportSnm(req, res, next) {
                 zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
             LEFT JOIN 
                 zipper.sfg ON oe.uuid = sfg.order_entry_uuid
-            LEFT JOIN (
-                SELECT 
-                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
-                    oe.uuid as order_entry_uuid
-                FROM
-                    zipper.finishing_batch_production sfg_production
-                    LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_production.finishing_batch_entry_uuid = fbe.uuid
-                    LEFT JOIN zipper.sfg ON fbe.sfg_uuid = sfg.uuid
-                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                GROUP BY
-                    oe.uuid
-            ) close_end_sum ON oe.uuid = close_end_sum.order_entry_uuid
-            LEFT JOIN (
-                SELECT 
-                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
-                    oe.uuid as order_entry_uuid
-                FROM
-                    zipper.finishing_batch_production sfg_production
-                    LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_production.finishing_batch_entry_uuid = fbe.uuid
-                    LEFT JOIN zipper.sfg ON fbe.sfg_uuid = sfg.uuid
-                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                GROUP BY
-                    oe.uuid
-            ) open_end_sum ON oe.uuid = open_end_sum.order_entry_uuid
+            LEFT JOIN
+                lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
             LEFT JOIN (
                 SELECT 
                     oe.uuid as order_entry_uuid,
@@ -1560,7 +1544,8 @@ export async function ProductionReportSnm(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     od.uuid as order_description_uuid,
-                    SUM(production_quantity) AS coloring_production_quantity
+                    SUM(production.production_quantity) AS coloring_production_quantity
+                    SUM(production.weight) as coloring_production_quantity_weight
                 FROM slider.production
                 LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
                 LEFT JOIN zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
