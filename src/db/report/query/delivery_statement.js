@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
+import production_statement from '../../pdf/production_statement/index.js';
 
 const findOrCreateArray = (array, key, value, createFn) => {
 	let index = array.findIndex((item) =>
@@ -747,6 +748,8 @@ export async function deliveryStatementReport(req, res, next) {
 
 			return acc;
 		}, []);
+
+		const pdf = production_statement(groupedData, from_date, to_date);
 
 		const toast = {
 			status: 200,
