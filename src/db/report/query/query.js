@@ -4,7 +4,7 @@ import db from '../../index.js';
 
 // * Zipper Production Status Report
 
-// multiple rows shows for stock.uuid, assembly_production_quantity,coloring_production_quantity, teeth_molding_quantity,teeth_coloring_quantity,finishing_quantity columns
+// multiple rows shows for stock.uuid, coloring_production_quantity, teeth_molding_quantity,teeth_coloring_quantity,finishing_quantity columns
 export async function zipperProductionStatusReport(req, res, next) {
 	const { status } = req.query;
 	const { own_uuid } = req?.query;
@@ -62,7 +62,6 @@ export async function zipperProductionStatusReport(req, res, next) {
 			    END as unit,
                 COUNT(DISTINCT oe.size) AS size_count,
                 SUM(oe.quantity)::float8 AS total_quantity,
-                COALESCE(production_sum.assembly_production_quantity, 0)::float8 AS assembly_production_quantity,
                 COALESCE(production_sum.coloring_production_quantity, 0)::float8 AS coloring_production_quantity,
                 COALESCE(tape_coil_to_dyeing_sum.total_tape_coil_to_dyeing_quantity, 0)::float8 AS total_tape_coil_to_dyeing_quantity,
                 (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0))::float8 AS total_dyeing_transaction_quantity,
@@ -73,8 +72,6 @@ export async function zipperProductionStatusReport(req, res, next) {
                 COALESCE(packing_list_sum.total_packing_list_quantity, 0)::float8 AS total_packing_list_quantity,
                 COALESCE(delivery_sum.total_delivery_delivered_quantity, 0)::float8 AS total_delivery_delivered_quantity,
                 COALESCE(delivery_sum.total_delivery_balance_quantity, 0)::float8 AS total_delivery_balance_quantity,
-                COALESCE(delivery_sum.total_short_quantity, 0)::float8 AS total_short_quantity,
-                COALESCE(delivery_sum.total_reject_quantity, 0)::float8 AS total_reject_quantity,
                 vodf.remarks,
                 expected.expected_kg::float8 AS total_tape_expected_kg
             FROM
@@ -93,7 +90,6 @@ export async function zipperProductionStatusReport(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     od.uuid as order_description_uuid,
-                    SUM(CASE WHEN section = 'sa_prod' THEN production_quantity ELSE 0 END) AS assembly_production_quantity,
                     SUM(CASE WHEN section = 'coloring' THEN production_quantity ELSE 0 END) AS coloring_production_quantity
                 FROM slider.production
                 LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
@@ -168,9 +164,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 SELECT 
                     od.uuid as order_description_uuid,
                     SUM(CASE WHEN packing_list.gate_pass = 1 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
-                    SUM(CASE WHEN packing_list.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity,
-                    SUM(packing_list_entry.short_quantity)AS total_short_quantity,
-                    SUM(packing_list_entry.reject_quantity) AS total_reject_quantity
+                    SUM(CASE WHEN packing_list.gate_pass = 0 THEN packing_list_entry.quantity ELSE 0 END) AS total_delivery_balance_quantity
                 FROM
                     delivery.challan
                 LEFT JOIN
@@ -277,7 +271,7 @@ export async function zipperProductionStatusReport(req, res, next) {
             ) AS expected ON vodf.order_description_uuid = expected.order_description_uuid
             WHERE vodf.order_description_uuid IS NOT NULL 
                 AND vodf.is_cancelled = FALSE
-                AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                ${own_uuid == null ? sql`` : sql` AND vodf.marketing_uuid = ${marketingUuid}`}
         `;
 
 		query.append(
@@ -301,7 +295,6 @@ export async function zipperProductionStatusReport(req, res, next) {
                 vodf.order_type,
                 swatch_approval_counts.swatch_approval_count,
                 order_entry_counts.order_entry_count,
-                production_sum.assembly_production_quantity,
                 production_sum.coloring_production_quantity,
                 tape_coil_to_dyeing_sum.total_tape_coil_to_dyeing_quantity,
                 dyed_tape_transaction_sum.total_trx_quantity,
@@ -313,8 +306,6 @@ export async function zipperProductionStatusReport(req, res, next) {
                 packing_list_sum.total_packing_list_quantity,
                 delivery_sum.total_delivery_delivered_quantity,
                 delivery_sum.total_delivery_balance_quantity,
-                delivery_sum.total_short_quantity,
-                delivery_sum.total_reject_quantity,
                 vodf.remarks,
                 expected.expected_kg,
                 vodf.is_inch
@@ -1159,8 +1150,6 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 coalesce(thread_packing_list_sum.total_packing_list_quantity,0)::float8 as total_packing_list_quantity,
                 coalesce(thread_challan_sum.total_delivery_delivered_quantity,0)::float8 as total_delivery_delivered_quantity,
                 coalesce(thread_challan_sum.total_delivery_balance_quantity,0)::float8 as total_delivery_balance_quantity,
-                coalesce(thread_challan_sum.total_short_quantity,0)::float8 as total_short_quantity,
-                coalesce(thread_challan_sum.total_reject_quantity,0)::float8 as total_reject_quantity,
                 batch.remarks
             FROM
                 thread.batch_entry
@@ -1221,9 +1210,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 SELECT 
                     toe.uuid as order_entry_uuid,
                     SUM(CASE WHEN (pl.gate_pass = 1 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_delivered_quantity,
-                    SUM(CASE WHEN (pl.gate_pass = 0 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_balance_quantity,
-                    SUM(ple.short_quantity)AS total_short_quantity,
-                    SUM(ple.reject_quantity) AS total_reject_quantity
+                    SUM(CASE WHEN (pl.gate_pass = 0 AND ple.thread_order_entry_uuid IS NOT NULL) THEN ple.quantity ELSE 0 END) AS total_delivery_balance_quantity
                 FROM
                     delivery.challan
                 LEFT JOIN

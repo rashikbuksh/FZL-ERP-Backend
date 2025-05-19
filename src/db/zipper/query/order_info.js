@@ -328,14 +328,8 @@ export async function getOrderDetails(req, res, next) {
 	try {
 		if (own_uuid) {
 			const marketingUuidData = await db.execute(marketingUuidQuery);
-			if (
-				marketingUuidData &&
-				marketingUuidData.rows &&
-				marketingUuidData.rows.length > 0
-			) {
+			if (marketingUuidData.rows.length > 0) {
 				marketingUuid = marketingUuidData.rows[0].uuid;
-			} else {
-				marketingUuid = null;
 			}
 		}
 
@@ -368,11 +362,9 @@ export async function getOrderDetails(req, res, next) {
         ) all_approval_counts ON vod.order_description_uuid = all_approval_counts.order_description_uuid
         WHERE vod.order_description_uuid IS NOT NULL 
             ${
-				all === 'true'
-					? sql``
-					: approved === 'true'
-						? sql` AND swatch_approval_counts.swatch_approval_count > 0`
-						: sql``
+				approved === 'true'
+					? sql` AND swatch_approval_counts.swatch_approval_count > 0`
+					: sql``
 			}
             ${
 				type === 'bulk'
@@ -381,7 +373,7 @@ export async function getOrderDetails(req, res, next) {
 						? sql` AND vod.is_sample = 1`
 						: sql``
 			}
-            ${marketingUuid != null ? sql` AND vod.marketing_uuid = ${marketingUuid}` : sql``}
+            ${own_uuid ? sql` AND vod.marketing_uuid = ${marketingUuid}` : sql``}
         ORDER BY vod.order_description_created_at DESC, order_number_wise_rank ASC`;
 
 		const orderInfoPromise = db.execute(query);
