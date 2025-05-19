@@ -1511,7 +1511,12 @@ export async function ProductionReportSnm(req, res, next) {
                 coalesce(pi_cash_grouped.pi_numbers, '{}') as pi_numbers,
                 coalesce(pi_cash_grouped.lc_numbers, '{}') as lc_numbers,
                 expected.expected_kg,
-                dyeing_batch.dyeing_batches
+                dyeing_batch.dyeing_batch_number,
+                dyeing_batch.production_date,
+                dyeing_batch.total_quantity::float8,
+                dyeing_batch.total_production_quantity::float8,
+                dyeing_batch.received,
+                dyeing_batch.dyeing_machine
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN 
@@ -1565,39 +1570,39 @@ export async function ProductionReportSnm(req, res, next) {
             LEFT JOIN (
 				SELECT
                     oe.uuid as order_entry_uuid,
-                    jsonb_agg(
-                        jsonb_build_object(
-                            'dyeing_batch_uuid', dyeing_batch.uuid,
-                            'dyeing_batch_number', CONCAT('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')),
-                            'production_date', dyeing_batch.production_date::date,
-                            'total_quantity', dyeing_batch_entry.total_quantity,
-                            'total_production_quantity', dyeing_batch_entry.total_production_quantity,
-                            'received', CASE WHEN dyeing_batch.received = 1 THEN TRUE ELSE FALSE END,
-                            'dyeing_machine', machine.name
-                        )
-                    ) as dyeing_batches
-				FROM
-					zipper.dyeing_batch dyeing_batch
-                LEFT JOIN 
-                    public.machine machine ON dyeing_batch.machine_uuid = machine.uuid
-                LEFT JOIN (
-                    SELECT 
-                        SUM(dyeing_batch_entry.quantity) as total_quantity,
-                        SUM(dyeing_batch_entry.production_quantity_in_kg) as total_production_quantity,
-                        dyeing_batch_entry.dyeing_batch_uuid,
-                        dyeing_batch_entry.sfg_uuid
-                    FROM
-                        zipper.dyeing_batch_entry dyeing_batch_entry
-                    GROUP BY
-                        dyeing_batch_entry.dyeing_batch_uuid, 
-                        dyeing_batch_entry.sfg_uuid
-                ) dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
-                LEFT JOIN 
-                    zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
-                LEFT JOIN
-                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                GROUP BY
-                    oe.uuid
+                    dyeing_batch.uuid as dyeing_batch_uuid,
+                    CONCAT(
+                        'B',
+                        to_char(dyeing_batch.created_at, 'YY'),
+                        '-',
+                        LPAD(dyeing_batch.id::text, 4, '0')
+                    ) as dyeing_batch_number,
+                    dyeing_batch.production_date as production_date,
+                    dyeing_batch_entry.total_quantity as total_quantity,
+                    dyeing_batch_entry.total_production_quantity as total_production_quantity,
+                    CASE
+                        WHEN dyeing_batch.received = 1 THEN TRUE
+                        ELSE FALSE
+                    END as received,
+                    machine.name as dyeing_machine
+                FROM
+                    zipper.dyeing_batch dyeing_batch
+                    LEFT JOIN public.machine machine ON dyeing_batch.machine_uuid = machine.uuid
+                    LEFT JOIN (
+                        SELECT
+                            SUM(dyeing_batch_entry.quantity) as total_quantity,
+                            SUM(
+                                dyeing_batch_entry.production_quantity_in_kg
+                            ) as total_production_quantity,
+                            dyeing_batch_entry.dyeing_batch_uuid,
+                            dyeing_batch_entry.sfg_uuid
+                        FROM zipper.dyeing_batch_entry dyeing_batch_entry
+                        GROUP BY
+                            dyeing_batch_entry.dyeing_batch_uuid,
+                            dyeing_batch_entry.sfg_uuid
+                    ) dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
+                    LEFT JOIN zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
+                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 			) dyeing_batch ON oe.uuid = dyeing_batch.order_entry_uuid
             LEFT JOIN (
                 SELECT
@@ -1730,8 +1735,14 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 coalesce(pi_cash_grouped_thread.lc_numbers, '{}') as lc_numbers,
                 coalesce(batch_production_sum.coning_production_quantity,0)::float8 as total_coning_production_quantity,
                 coalesce(batch_production_sum.yarn_quantity,0)::float8 as total_yarn_quantity,
-                batch.batches,
-                (order_entry.quantity * count_length.max_weight)::float8 as total_expected_weight
+                (order_entry.quantity * count_length.max_weight)::float8 as total_expected_weight,
+                batch.batch_uuid,
+                batch.batch_number,
+                batch.production_date,
+                batch.total_quantity::float8,
+                batch.yarn_issued::float8,
+                batch.is_drying_complete,
+                batch.machine
             FROM
                 thread.order_info
             LEFT JOIN
@@ -1772,18 +1783,14 @@ export async function ProductionReportThreadSnm(req, res, next) {
                     order_entry.uuid
             ) batch_production_sum ON batch_production_sum.order_entry_uuid = order_entry.uuid
             LEFT JOIN (
-                SELECT order_entry.uuid as order_entry_uuid, jsonb_agg(
-                        jsonb_build_object(
-                            'batch_uuid', batch.uuid, 'batch_number', CONCAT(
-                                'B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')
-                            ), 
-                            'production_date', batch.production_date::date, 
-                            'total_quantity', batch_entry_quantity_length.total_quantity, 
-                            'yarn_issued', batch_entry_quantity_length.total_weight, 
-                            'is_drying_complete', batch.is_drying_complete,
-                            'machine', machine.name
-                        )
-                    ) as batches
+                SELECT order_entry.uuid as order_entry_uuid, 
+                    batch.uuid as batch_uuid, 
+                    CONCAT('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number, 
+                    batch.production_date as production_date, 
+                    batch_entry_quantity_length.total_quantity as total_quantity, 
+                    batch_entry_quantity_length.total_weight as yarn_issued, 
+                    batch.is_drying_complete,
+                    machine.name as machine
                 FROM
                     thread.batch
                 LEFT JOIN public.machine ON batch.machine_uuid = machine.uuid
@@ -1799,8 +1806,6 @@ export async function ProductionReportThreadSnm(req, res, next) {
                         batch_entry.order_entry_uuid
                 ) batch_entry_quantity_length ON batch.uuid = batch_entry_quantity_length.batch_uuid
                 LEFT JOIN thread.order_entry ON batch_entry_quantity_length.order_entry_uuid = order_entry.uuid
-                GROUP BY
-                    order_entry.uuid
             ) batch ON order_entry.uuid = batch.order_entry_uuid
             WHERE 
                 order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
