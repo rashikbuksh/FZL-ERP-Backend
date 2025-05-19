@@ -19,17 +19,18 @@ export async function insert(req, res, next) {
 		})
 		.returning({ insertedId: stock.finishing_batch_uuid });
 
-	const finishingBatchPromise = db
-		.select({
-			batch_number: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
-		})
-		.from(zipperSchema.finishing_batch_entry)
-		.where(
-			eq(zipperSchema.finishing_batch_entry.uuid, finishing_batch_uuid)
-		);
-
 	try {
 		const data = await stockPromise;
+
+		const finishingBatchPromise = db
+			.select({
+				batch_number: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+			})
+			.from(zipperSchema.finishing_batch_entry)
+			.where(
+				eq(zipperSchema.finishing_batch_entry.uuid, data[0].insertedId)
+			);
+
 		const batchNumber = await finishingBatchPromise;
 		const toast = {
 			status: 201,
