@@ -1516,7 +1516,7 @@ export async function ProductionReportSnm(req, res, next) {
                 dyeing_batch.production_date,
                 dyeing_batch.total_quantity::float8,
                 dyeing_batch.total_production_quantity::float8,
-                CASE WHEN dyeing_batch.received = 1 THEN TRUE ELSE FALSE END as received,
+                CASE WHEN dyeing_batch.received = true THEN true ELSE false END as received,
                 dyeing_batch.dyeing_machine
             FROM
                 zipper.v_order_details_full vodf
