@@ -57,7 +57,6 @@ export async function selectOrderRegisterReport(req, res, next) {
 						pl.item_for NOT IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
 					GROUP BY pl.challan_uuid, ple.sfg_uuid
 				) ple_sum ON challan.uuid = ple_sum.challan_uuid AND sfg.uuid = ple_sum.sfg_uuid
-				WHERE ple_sum.quantity IS NOT NULL
 				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description, vodf.order_type, vodf.is_inch
 			),
 			pi_cash_grouped AS (
@@ -114,7 +113,6 @@ export async function selectOrderRegisterReport(req, res, next) {
 						pl.item_for IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
 					GROUP BY pl.challan_uuid, ple.thread_order_entry_uuid
 				) ple_sum ON (challan.uuid = ple_sum.challan_uuid AND toe.uuid = ple_sum.thread_order_entry_uuid)
-				WHERE ple_sum.quantity IS NOT NULL
 				GROUP BY toe.order_info_uuid, toe.uuid, cl.count, cl.length, toe.style, toe.color, toe.quantity
 			),
 			pi_cash_grouped_thread AS (
