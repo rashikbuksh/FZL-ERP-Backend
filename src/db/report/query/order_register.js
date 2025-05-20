@@ -33,7 +33,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 							concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')),
 							'challan_uuid', challan.uuid,
 							'challan_date', challan.created_at,
-							'quantity', ple_sum.quantity,
+							'quantity', COALESCE(ple_sum.quantity::float8, 0),
 							'order_entry_uuid', sfg.order_entry_uuid
 							)
 						ELSE 'null' END
@@ -89,7 +89,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 								concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')),
 								'challan_uuid', challan.uuid,
 								'challan_date', challan.created_at,
-								'quantity', ple_sum.quantity,
+								'quantity', COALESCE(ple_sum.quantity::float8, 0),
 								'order_entry_uuid', toe.uuid
 							)
 						ELSE 'null' END
