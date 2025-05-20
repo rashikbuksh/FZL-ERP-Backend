@@ -18,7 +18,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedUuid} inserted`,
+			message: `${data.length} inserted`,
 		};
 
 		return await res.status(201).json({ toast, data });
