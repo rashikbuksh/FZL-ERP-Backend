@@ -2119,8 +2119,7 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
 	requirements_with_names AS (
 		SELECT 
 			sr.order_description_uuid,
-			sr.value_uuid,
-			p.short_name
+			array_agg(p.short_name) as short_name
 		FROM 
 			special_requirements sr
 		JOIN 

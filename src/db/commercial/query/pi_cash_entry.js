@@ -148,12 +148,13 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 			requirements_with_names AS (
 				SELECT 
 					sr.order_description_uuid,
-					sr.value_uuid,
-					p.short_name
+					array_agg(p.short_name) AS short_name
 				FROM 
 					special_requirements sr
 				JOIN 
 					public.properties p ON sr.value_uuid = p.uuid
+                GROUP BY
+                    sr.order_description_uuid
 			)
 				SELECT
 	                pe.uuid as uuid,
@@ -271,9 +272,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					count_length.length,
 					CASE WHEN pe.uuid IS NOT NULL THEN true ELSE false END as is_checked,
 					vodf.order_type,
-					ARRAY[
-					rwn.short_name
-					] as sp_short_names
+					rwn.short_name as sp_short_names
 	            FROM
 					commercial.pi_cash_entry pe 
 					LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
