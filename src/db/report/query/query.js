@@ -1,7 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
-import { Parser } from 'json2csv';
 
 // * Zipper Production Status Report
 
