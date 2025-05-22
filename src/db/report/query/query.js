@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
+import { Parser } from 'json2csv';
 
 // * Zipper Production Status Report
 
@@ -1659,13 +1660,48 @@ export async function ProductionReportSnm(req, res, next) {
 
 		const data = await resultPromise;
 
+		// filter the data and replace quantity, approved_quantity, not_approved_quantity, total_quantity,
+		// total_slider_required, balance_quantity, total_finishing_quantity, total_dyeing_quantity,
+		// total_coloring_quantity, total_coloring_quantity_weight, expected_kg with dash '-'
+		// if order_entry_uuid is same
+
+		const filteredData = data?.rows?.reduce((acc, curr) => {
+			const exists = acc.some(
+				(item) =>
+					item.order_entry_uuid === curr.order_entry_uuid &&
+					item.order_info_uuid === curr.order_info_uuid
+			);
+			if (exists) {
+				// Push a duplicate with dashes
+				acc.push({
+					...curr,
+					quantity: '-',
+					approved_quantity: '-',
+					not_approved_quantity: '-',
+					total_quantity: '-',
+					total_slider_required: '-',
+					balance_quantity: '-',
+					total_finishing_quantity: '-',
+					total_dyeing_quantity: '-',
+					expected_kg: '-',
+					received: '-',
+					total_coloring_quantity: '-',
+					total_coloring_quantity_weight: '-',
+				});
+			} else {
+				// Push the original with real values
+				acc.push(curr);
+			}
+			return acc;
+		}, []);
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
 			message: 'Production Report S&M',
 		};
 
-		res.status(200).json({ toast, data: data?.rows });
+		res.status(200).json({ toast, data: filteredData });
 	} catch (error) {
 		await handleError({ error, res });
 	}

@@ -2,22 +2,8 @@ CREATE OR REPLACE FUNCTION delivery.delivery_challan_after_packing_list_update_f
 RETURNS TRIGGER AS $$
 
 DECLARE
-    challan_uuid_gp TEXT;
-    old_gate_pass INTEGER;
     item_for_gp TEXT;
 BEGIN
-    -- For Challan
-    SELECT 
-        challan.uuid, challan.gate_pass
-    INTO 
-        challan_uuid_gp, old_gate_pass
-    FROM 
-        delivery.challan 
-    LEFT JOIN 
-        delivery.packing_list pl ON challan_uuid = challan.uuid
-    WHERE 
-       challan.uuid = NEW.challan_uuid;
-
     -- For Challan And zipper, thread
     SELECT
         pl.item_for INTO item_for_gp
@@ -26,88 +12,51 @@ BEGIN
     WHERE
         pl.uuid = NEW.uuid;
 
-    IF (SELECT 
-            COUNT(*) 
-        FROM 
-            delivery.packing_list 
-        WHERE 
-            challan_uuid = challan_uuid_gp AND gate_pass != 1) = 0 THEN
-
-        UPDATE 
-            delivery.challan
-        SET 
-            gate_pass = 1 
-        WHERE 
-            uuid = challan_uuid_gp;
-
-        IF (old_gate_pass = 0 AND OLD.challan_uuid IS NOT NULL) THEN
-
-            IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
-                UPDATE thread.order_entry te
-                SET
-                    warehouse = warehouse - subquery.total_quantity,
-                    delivered = delivered + subquery.total_quantity
-                FROM (
-                    SELECT ple.thread_order_entry_uuid, SUM(ple.quantity) AS total_quantity
-                    FROM delivery.packing_list_entry ple
-                    WHERE ple.packing_list_uuid IN (SELECT uuid FROM delivery.packing_list WHERE challan_uuid = challan_uuid_gp)
-                    GROUP BY ple.thread_order_entry_uuid
-                ) subquery
-                WHERE te.uuid = subquery.thread_order_entry_uuid;
-            ELSE
-                UPDATE 
-                    zipper.sfg zs
-                SET 
-                    warehouse = warehouse - subquery.total_quantity,
-                    delivered = delivered + subquery.total_quantity
-                FROM (
-                    SELECT ple.sfg_uuid, SUM(ple.quantity) AS total_quantity
-                    FROM delivery.packing_list_entry ple
-                    WHERE ple.packing_list_uuid IN (SELECT uuid FROM delivery.packing_list WHERE challan_uuid = challan_uuid_gp)
-                    GROUP BY ple.sfg_uuid
-                ) subquery
-                WHERE zs.uuid = subquery.sfg_uuid;
-            END IF;
-            
+    IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
+        IF OLD.gate_pass = 0 AND NEW.gate_pass = 1 THEN
+            UPDATE 
+                thread.order_entry
+            SET 
+                delivered = delivered + ple.quantity,
+                warehouse = warehouse - ple.quantity
+            FROM delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = order_entry.uuid;
+        ELSIF OLD.gate_pass = 1 AND NEW.gate_pass = 0 THEN 
+            UPDATE 
+                thread.order_entry
+            SET 
+                delivered = delivered - ple.quantity,
+                warehouse = warehouse - ple.quantity
+            FROM delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = order_entry.uuid;
         END IF;
-        
     ELSE
-        UPDATE 
-            delivery.challan
-        SET 
-            gate_pass = 0 
-        WHERE 
-            uuid = challan_uuid_gp;
-
-        IF (old_gate_pass = 1 AND OLD.challan_uuid IS NOT NULL) THEN
-
-            IF item_for_gp = 'thread' OR item_for_gp = 'sample_thread' THEN
-                UPDATE thread.order_entry te
-                SET
-                    warehouse = warehouse + subquery.total_quantity,
-                    delivered = delivered - subquery.total_quantity
-                FROM (
-                    SELECT ple.thread_order_entry_uuid, SUM(ple.quantity) AS total_quantity
-                    FROM delivery.packing_list_entry ple
-                    WHERE ple.packing_list_uuid IN (SELECT uuid FROM delivery.packing_list WHERE challan_uuid = challan_uuid_gp)
-                    GROUP BY ple.thread_order_entry_uuid
-                ) subquery
-                WHERE te.uuid = subquery.thread_order_entry_uuid;
-            ELSE
-                UPDATE 
-                    zipper.sfg zs
-                SET 
-                    warehouse = warehouse + subquery.total_quantity,
-                    delivered = delivered - subquery.total_quantity
-                FROM (
-                    SELECT ple.sfg_uuid, SUM(ple.quantity) AS total_quantity
-                    FROM delivery.packing_list_entry ple
-                    WHERE ple.packing_list_uuid IN (SELECT uuid FROM delivery.packing_list WHERE challan_uuid = challan_uuid_gp)
-                    GROUP BY ple.sfg_uuid
-                ) subquery
-                WHERE zs.uuid = subquery.sfg_uuid;
-            END IF;
-
+        IF OLD.gate_pass = 0 AND NEW.gate_pass = 1 THEN
+            UPDATE 
+                zipper.sfg
+            SET 
+                delivered = delivered + ple.quantity,
+                warehouse = warehouse - ple.quantity
+            FROM 
+                delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
+        ELSIF OLD.gate_pass = 1 AND NEW.gate_pass = 0 THEN 
+            UPDATE 
+                zipper.sfg
+            SET 
+                delivered = delivered - ple.quantity,
+                warehouse = warehouse - ple.quantity
+            FROM 
+                delivery.packing_list_entry ple
+            LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+            WHERE 
+                pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
         END IF;
     END IF;
 
