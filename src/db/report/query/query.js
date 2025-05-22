@@ -1761,7 +1761,6 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 CONCAT('"', count_length.count) as count,
                 count_length.length,
                 CONCAT('"', count_length.count, ' - ', count_length.length) as count_length_name,
-                coalesce(prod_quantity.total_quantity,0)::float8 as total_quantity,
                 coalesce(prod_quantity.total_coning_carton_quantity,0)::float8 as total_coning_carton_quantity,
                 order_info.uuid as order_info_uuid,
                 order_entry.delivered::float8,
@@ -1854,13 +1853,43 @@ export async function ProductionReportThreadSnm(req, res, next) {
 
 		const data = await resultPromise;
 
+		const filteredData = data?.rows?.reduce((acc, curr) => {
+			const exists = acc.some(
+				(item) =>
+					item.order_entry_uuid === curr.order_entry_uuid &&
+					item.order_info_uuid === curr.order_info_uuid
+			);
+			if (exists) {
+				// Push a duplicate with dashes
+				acc.push({
+					...curr,
+					quantity: '-',
+					not_approved_quantity: '-',
+					approved_quantity: '-',
+					total_yarn_quantity: '-',
+					total_coning_production_quantity: '-',
+					delivered: '-',
+					balance_quantity: '-',
+					party_price: '-',
+					company_price: '-',
+					total_expected_weight: '-',
+					total_coning_carton_quantity: '-',
+					total_expected_weight: '-',
+				});
+			} else {
+				// Push the original with real values
+				acc.push(curr);
+			}
+			return acc;
+		}, []);
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
 			message: 'Production Report Director Thread',
 		};
 
-		res.status(200).json({ toast, data: data?.rows });
+		res.status(200).json({ toast, data: filteredData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
