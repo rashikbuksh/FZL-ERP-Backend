@@ -1517,7 +1517,9 @@ export async function ProductionReportSnm(req, res, next) {
                 dyeing_batch.total_quantity::float8,
                 dyeing_batch.total_production_quantity::float8,
                 CASE WHEN dyeing_batch.received = true THEN true ELSE false END as received,
-                dyeing_batch.dyeing_machine
+                dyeing_batch.dyeing_machine,
+                dyeing_batch.batch_created_at,
+                dyeing_batch.expected_kg as batch_expected_kg
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN 
@@ -1545,12 +1547,15 @@ export async function ProductionReportSnm(req, res, next) {
             ) sfg_production_sum ON sfg_production_sum.order_entry_uuid = oe.uuid
             LEFT JOIN (
                 SELECT 
-                    SUM(dtt.trx_quantity) AS total_trx_quantity, dtt.order_description_uuid
+                    SUM(dtt.trx_quantity) AS total_trx_quantity, 
+                    dtt.order_description_uuid
                 FROM zipper.dyed_tape_transaction dtt
                 GROUP BY dtt.order_description_uuid
             ) dyed_tape_transaction_sum ON dyed_tape_transaction_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
-                SELECT SUM(dttfs.trx_quantity) AS total_trx_quantity, dttfs.order_description_uuid
+                SELECT 
+                    SUM(dttfs.trx_quantity) AS total_trx_quantity, 
+                    dttfs.order_description_uuid
                 FROM zipper.dyed_tape_transaction_from_stock dttfs
                 GROUP BY dttfs.order_description_uuid
             ) dyed_tape_transaction_from_stock_sum ON dyed_tape_transaction_from_stock_sum.order_description_uuid = vodf.order_description_uuid
@@ -1585,7 +1590,30 @@ export async function ProductionReportSnm(req, res, next) {
                         WHEN dyeing_batch.received = 1 THEN TRUE
                         ELSE FALSE
                     END as received,
-                    machine.name as dyeing_machine
+                    machine.name as dyeing_machine,
+                    dyeing_batch.created_at as batch_created_at,
+                    ROUND(
+                        (
+                            CASE
+                                WHEN vodf.order_type = 'tape' THEN (
+                                    (
+                                        tcr.top + tcr.bottom + SUM(dyeing_batch_entry.quantity)
+                                    ) * 1
+                                ) / 100 / tcr.dyed_mtr_per_kg::float8
+                                ELSE (
+                                    (
+                                        tcr.top + tcr.bottom + CASE
+                                            WHEN vodf.is_inch = 1 THEN CAST(
+                                                CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC
+                                            )
+                                            ELSE CAST(oe.size AS NUMERIC)
+                                        END
+                                    ) * SUM(dyeing_batch_entry.quantity)::float8
+                                ) / 100 / tcr.dyed_mtr_per_kg::float8
+                            END
+                        )::numeric,
+                        3
+                    ) as expected_kg
                 FROM
                     zipper.dyeing_batch dyeing_batch
                     LEFT JOIN public.machine machine ON dyeing_batch.machine_uuid = machine.uuid
@@ -1598,12 +1626,35 @@ export async function ProductionReportSnm(req, res, next) {
                             dyeing_batch_entry.dyeing_batch_uuid,
                             dyeing_batch_entry.sfg_uuid
                         FROM zipper.dyeing_batch_entry dyeing_batch_entry
+                        LEFT JOIN zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
+                        LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                        LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                        LEFT JOIN zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid
                         GROUP BY
                             dyeing_batch_entry.dyeing_batch_uuid,
-                            dyeing_batch_entry.sfg_uuid
+                            dyeing_batch_entry.sfg_uuid,
+                            vodf.order_type,
+                            vodf.is_inch,
+                            tcr.dyed_mtr_per_kg,
+                            tcr.top,
+                            tcr.bottom,
+                            oe.size
                     ) dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
                     LEFT JOIN zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
                     LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid
+                        AND vodf.zipper_number = tcr.zipper_number_uuid
+                        AND (
+                            CASE
+                                WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT'
+                                ELSE vodf.end_type = tcr.end_type_uuid
+                            END
+                        )
+                    WHERE
+                        vodf.order_description_uuid IS NOT NULL
+                        AND vodf.is_cancelled = FALSE
+                        AND (lower(vodf.item_name) != 'nylon' OR vodf.nylon_stopper = tcr.nylon_stopper_uuid)
 			) dyeing_batch ON oe.uuid = dyeing_batch.order_entry_uuid
             LEFT JOIN (
                 SELECT
@@ -1777,7 +1828,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 batch.total_quantity::float8,
                 batch.yarn_issued::float8,
                 batch.is_drying_complete,
-                batch.machine
+                batch.machine,
+                batch.batch_created_at
             FROM
                 thread.order_info
             LEFT JOIN
@@ -1825,7 +1877,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
                     batch_entry_quantity_length.total_quantity as total_quantity, 
                     batch_entry_quantity_length.total_weight as yarn_issued, 
                     batch.is_drying_complete,
-                    machine.name as machine
+                    machine.name as machine,
+                    batch.created_at as batch_created_at
                 FROM
                     thread.batch
                 LEFT JOIN public.machine ON batch.machine_uuid = machine.uuid
@@ -1844,8 +1897,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
             ) batch ON order_entry.uuid = batch.order_entry_uuid
             WHERE 
                 order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
-                AND ${own_uuid == null ? sql`TRUE` : sql`order_info.marketing_uuid = ${marketingUuid}`}
-                AND ${from && to ? sql`order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
+                ${own_uuid == null ? sql`` : sql` AND order_info.marketing_uuid = ${marketingUuid}`}
+                ${from && to ? sql` AND order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql``}
             ORDER BY party.name DESC
     `;
 
@@ -1874,7 +1927,6 @@ export async function ProductionReportThreadSnm(req, res, next) {
 					company_price: '-',
 					total_expected_weight: '-',
 					total_coning_carton_quantity: '-',
-					total_expected_weight: '-',
 				});
 			} else {
 				// Push the original with real values
