@@ -5,7 +5,6 @@ const whitelist = [
 	'https://www.fortunezip.com',
 	'https://fortunezip.com',
 	'https://backend.fortunezip.com',
-	'',
 	'http://147.79.70.48:4015',
 	'http://www.fortunezip.com',
 	'http://fortunezip.com',
