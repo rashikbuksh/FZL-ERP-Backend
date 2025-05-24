@@ -530,7 +530,7 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 									? sql`AND vod.is_sample = 1`
 									: sql`AND 1=1`
 						}
-					ORDER BY vod.created_at DESC;`;
+					ORDER BY vod.order_description_created_at DESC;`;
 
 		const orderInfoPromise = db.execute(query);
 
