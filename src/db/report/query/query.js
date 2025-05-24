@@ -1437,30 +1437,171 @@ export async function ProductionReportSnm(req, res, next) {
 			marketingUuid = marketingUuidData?.rows[0]?.uuid;
 		}
 		const query = sql`
-            WITH pi_cash_grouped AS (
-				SELECT 
-					vodf.order_info_uuid, 
-					jsonb_agg(DISTINCT jsonb_build_object('pi_number', CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END, 'pi_cash_uuid', pi_cash.uuid)) as pi_numbers,
-					jsonb_agg(DISTINCT jsonb_build_object('lc_number', lc.lc_number, 'lc_uuid', lc.uuid)) as lc_numbers
-				FROM
-					zipper.v_order_details_full vodf
-				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-				LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
-				LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
-				LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
-				WHERE pi_cash.id IS NOT NULL
-				GROUP BY vodf.order_info_uuid
-			)
-            SELECT 
+            WITH
+                pi_cash_grouped AS (
+                    SELECT vodf.order_info_uuid, jsonb_agg(
+                            jsonb_build_object(
+                                'pi_number', CASE
+                                    WHEN pi_cash.is_pi = 1 THEN concat(
+                                        'PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
+                                    )
+                                    ELSE concat(
+                                        'CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
+                                    )
+                                END, 'pi_cash_uuid', pi_cash.uuid
+                            )
+                        ) as pi_numbers, jsonb_agg(
+                            jsonb_build_object(
+                                'lc_number', lc.lc_number, 'lc_uuid', lc.uuid
+                            )
+                        ) as lc_numbers
+                    FROM
+                        zipper.v_order_details_full vodf
+                        LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+                        LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+                        LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
+                        LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+                        LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
+                    WHERE
+                        pi_cash.id IS NOT NULL
+                    GROUP BY
+                        vodf.order_info_uuid
+                ),
+                sfg_production_sum AS (
+                    SELECT
+                        oe.uuid as order_entry_uuid,
+                        SUM(
+                            CASE
+                                WHEN sfg_prod.section = 'finishing' THEN sfg_prod.production_quantity
+                                ELSE 0
+                            END
+                        ) AS finishing_quantity
+                    FROM
+                        zipper.finishing_batch_production sfg_prod
+                        LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_prod.finishing_batch_entry_uuid = fbe.uuid
+                        LEFT JOIN zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
+                        LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                    GROUP BY
+                        oe.uuid
+                ),
+                dyed_tape_transaction_sum AS (
+                    SELECT dtt.order_description_uuid, SUM(dtt.trx_quantity) AS total_trx_quantity
+                    FROM zipper.dyed_tape_transaction dtt
+                    GROUP BY
+                        dtt.order_description_uuid
+                ),
+                dyed_tape_transaction_from_stock_sum AS (
+                    SELECT dttfs.order_description_uuid, SUM(dttfs.trx_quantity) AS total_trx_quantity
+                    FROM zipper.dyed_tape_transaction_from_stock dttfs
+                    GROUP BY
+                        dttfs.order_description_uuid
+                ),
+                slider_production_sum AS (
+                    SELECT
+                        od.uuid as order_description_uuid,
+                        SUM(
+                            CASE
+                                WHEN production.section = 'coloring' THEN production.production_quantity
+                                ELSE 0
+                            END
+                        ) AS coloring_production_quantity,
+                        SUM(
+                            CASE
+                                WHEN production.section = 'coloring' THEN production.weight
+                                ELSE 0
+                            END
+                        ) as coloring_production_quantity_weight
+                    FROM slider.production
+                        LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
+                        LEFT JOIN zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
+                        LEFT JOIN zipper.order_description od ON finishing_batch.order_description_uuid = od.uuid
+                    GROUP BY
+                        od.uuid
+                ),
+                dyeing_batch_entry_sum AS (
+                    SELECT
+                        dyeing_batch_entry.dyeing_batch_uuid,
+                        dyeing_batch_entry.sfg_uuid,
+                        SUM(dyeing_batch_entry.quantity) as total_quantity,
+                        SUM(
+                            dyeing_batch_entry.production_quantity_in_kg
+                        ) as total_production_quantity
+                    FROM zipper.dyeing_batch_entry
+                    GROUP BY
+                        dyeing_batch_entry.dyeing_batch_uuid,
+                        dyeing_batch_entry.sfg_uuid
+                ),
+                dyeing_batch_main AS (
+                    SELECT
+                        oe.uuid as order_entry_uuid,
+                        dyeing_batch.uuid as dyeing_batch_uuid,
+                        CONCAT(
+                            'B',
+                            to_char(dyeing_batch.created_at, 'YY'),
+                            '-',
+                            LPAD(dyeing_batch.id::text, 4, '0')
+                        ) as dyeing_batch_number,
+                        dyeing_batch.production_date as production_date,
+                        dbes.total_quantity as total_quantity,
+                        dbes.total_production_quantity as total_production_quantity,
+                        CASE
+                            WHEN dyeing_batch.received = 1 THEN TRUE
+                            ELSE FALSE
+                        END as received,
+                        machine.name as dyeing_machine,
+                        dyeing_batch.created_at as batch_created_at,
+                        ROUND(
+                            (
+                                CASE
+                                    WHEN vodf.order_type = 'tape' THEN (
+                                        (
+                                            tcr.top + tcr.bottom + dbes.total_quantity
+                                        ) * 1
+                                    ) / 100 / tcr.dyed_mtr_per_kg::float8
+                                    ELSE (
+                                        (
+                                            tcr.top + tcr.bottom + CASE
+                                                WHEN vodf.is_inch = 1 THEN CAST(
+                                                    CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC
+                                                )
+                                                ELSE CAST(oe.size AS NUMERIC)
+                                            END
+                                        ) * dbes.total_quantity::float8
+                                    ) / 100 / tcr.dyed_mtr_per_kg::float8
+                                END
+                            )::numeric,
+                            3
+                        ) as expected_kg
+                    FROM
+                        zipper.dyeing_batch dyeing_batch
+                        LEFT JOIN public.machine machine ON dyeing_batch.machine_uuid = machine.uuid
+                        LEFT JOIN dyeing_batch_entry_sum dbes ON dyeing_batch.uuid = dbes.dyeing_batch_uuid
+                        LEFT JOIN zipper.sfg sfg ON dbes.sfg_uuid = sfg.uuid
+                        LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                        LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                        LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid
+                        AND vodf.zipper_number = tcr.zipper_number_uuid
+                        AND (
+                            CASE
+                                WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT'
+                                ELSE vodf.end_type = tcr.end_type_uuid
+                            END
+                        )
+                    WHERE
+                        vodf.order_description_uuid IS NOT NULL
+                        AND vodf.is_cancelled = FALSE
+                        AND (
+                            lower(vodf.item_name) != 'nylon'
+                            OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+                        )
+                )
+            SELECT
                 vodf.order_info_uuid,
                 vodf.item,
                 vodf.created_at,
                 vodf.updated_at,
                 vodf.order_number,
-                vodf.party_uuid,
                 vodf.party_name,
-                vodf.marketing_uuid,
                 vodf.marketing_name,
                 vodf.order_description_uuid,
                 vodf.item_description,
@@ -1486,215 +1627,96 @@ export async function ProductionReportSnm(req, res, next) {
                 oe.quantity::float8,
                 oe.party_price::float8,
                 oe.company_price::float8,
-                CASE WHEN sfg.recipe_uuid IS NOT NULL THEN oe.swatch_approval_date ELSE null END as swatch_approval_date,
-                CASE WHEN sfg.recipe_uuid IS NULL THEN oe.quantity::float8 ELSE 0 END as not_approved_quantity,
-                CASE WHEN sfg.recipe_uuid IS NOT NULL THEN oe.quantity::float8 ELSE 0 END as approved_quantity,
+                CASE
+                    WHEN sfg.recipe_uuid IS NOT NULL THEN oe.swatch_approval_date
+                    ELSE null
+                END as swatch_approval_date,
+                CASE
+                    WHEN sfg.recipe_uuid IS NULL THEN oe.quantity::float8
+                    ELSE 0
+                END as not_approved_quantity,
+                CASE
+                    WHEN sfg.recipe_uuid IS NOT NULL THEN oe.quantity::float8
+                    ELSE 0
+                END as approved_quantity,
                 sfg.recipe_uuid,
                 recipe.name as recipe_name,
-                coalesce(oe.quantity,0)::float8 as total_quantity,
-                CASE WHEN (vodf.end_type_name = '2 Way - Close End' OR vodf.end_type_name = '2 Way - Open End') THEN oe.quantity::float8 * 2 ELSE oe.quantity::float8 END as total_slider_required,
+                coalesce(oe.quantity, 0)::float8 as total_quantity,
+                CASE
+                    WHEN (
+                        vodf.end_type_name = '2 Way - Close End'
+                        OR vodf.end_type_name = '2 Way - Open End'
+                    ) THEN oe.quantity::float8 * 2
+                    ELSE oe.quantity::float8
+                END as total_slider_required,
                 sfg.delivered::float8,
                 sfg.warehouse::float8,
-                (oe.quantity::float8 - sfg.delivered::float8) as balance_quantity,
+                (
+                    oe.quantity::float8 - sfg.delivered::float8
+                ) as balance_quantity,
                 vodf.order_type,
                 vodf.is_inch,
-                CASE 
-                    WHEN vodf.order_type = 'tape' THEN 'Meter' 
+                CASE
+                    WHEN vodf.order_type = 'tape' THEN 'Meter'
                     WHEN vodf.order_type = 'slider' THEN 'Pcs'
                     WHEN vodf.is_inch = 1 THEN 'Inch'
-				    ELSE 'Cm'
-			    END as unit,
-                coalesce(sfg_production_sum.finishing_quantity,0)::float8 as total_finishing_quantity,
-                (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0))::float8 AS total_dyeing_quantity,
-                coalesce(slider_production_sum.coloring_production_quantity,0)::float8 as total_coloring_quantity,
-                coalesce(slider_production_sum.coloring_production_quantity_weight,0)::float8 as total_coloring_quantity_weight,
-                coalesce(pi_cash_grouped.pi_numbers, '{}') as pi_numbers,
-                coalesce(pi_cash_grouped.lc_numbers, '{}') as lc_numbers,
-                expected.expected_kg,
-                dyeing_batch.dyeing_batch_uuid,
-                dyeing_batch.dyeing_batch_number,
-                dyeing_batch.production_date,
-                dyeing_batch.total_quantity::float8,
-                dyeing_batch.total_production_quantity::float8,
-                CASE WHEN dyeing_batch.received = true THEN true ELSE false END as received,
-                dyeing_batch.dyeing_machine,
-                dyeing_batch.batch_created_at,
-                dyeing_batch.expected_kg as batch_expected_kg
+                    ELSE 'Cm'
+                END as unit,
+                coalesce(
+                    sfg_production_sum.finishing_quantity,
+                    0
+                )::float8 as total_finishing_quantity,
+                (
+                    COALESCE(
+                        dyed_tape_transaction_sum.total_trx_quantity,
+                        0
+                    ) + COALESCE(
+                        dyed_tape_transaction_from_stock_sum.total_trx_quantity,
+                        0
+                    )
+                )::float8 AS total_dyeing_quantity,
+                coalesce(
+                    slider_production_sum.coloring_production_quantity,
+                    0
+                )::float8 as total_coloring_quantity,
+                coalesce(
+                    slider_production_sum.coloring_production_quantity_weight,
+                    0
+                )::float8 as total_coloring_quantity_weight,
+                coalesce(
+                    pi_cash_grouped.pi_numbers,
+                    '{}'
+                ) as pi_numbers,
+                coalesce(
+                    pi_cash_grouped.lc_numbers,
+                    '{}'
+                ) as lc_numbers,
+                dyeing_batch_main.expected_kg,
+                dyeing_batch_main.dyeing_batch_uuid,
+                dyeing_batch_main.dyeing_batch_number,
+                dyeing_batch_main.production_date,
+                dyeing_batch_main.total_quantity::float8,
+                dyeing_batch_main.total_production_quantity::float8,
+                dyeing_batch_main.received,
+                dyeing_batch_main.dyeing_machine,
+                dyeing_batch_main.batch_created_at,
+                dyeing_batch_main.expected_kg as batch_expected_kg
             FROM
                 zipper.v_order_details_full vodf
-            LEFT JOIN 
-                zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-            LEFT JOIN 
-                zipper.sfg ON oe.uuid = sfg.order_entry_uuid
-            LEFT JOIN
-                lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
-            LEFT JOIN (
-                SELECT 
-                    oe.uuid as order_entry_uuid,
-                    SUM(sfg_prod.production_quantity) AS finishing_quantity
-                FROM 
-                    zipper.finishing_batch_production sfg_prod
-                LEFT JOIN
-                    zipper.finishing_batch_entry fbe ON sfg_prod.finishing_batch_entry_uuid = fbe.uuid
-                LEFT JOIN
-                    zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
-                LEFT JOIN 
-                    zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                WHERE
-                    sfg_prod.section = 'finishing'
-                GROUP BY 
-                   oe.uuid
-            ) sfg_production_sum ON sfg_production_sum.order_entry_uuid = oe.uuid
-            LEFT JOIN (
-                SELECT 
-                    SUM(dtt.trx_quantity) AS total_trx_quantity, 
-                    dtt.order_description_uuid
-                FROM zipper.dyed_tape_transaction dtt
-                GROUP BY dtt.order_description_uuid
-            ) dyed_tape_transaction_sum ON dyed_tape_transaction_sum.order_description_uuid = vodf.order_description_uuid
-            LEFT JOIN (
-                SELECT 
-                    SUM(dttfs.trx_quantity) AS total_trx_quantity, 
-                    dttfs.order_description_uuid
-                FROM zipper.dyed_tape_transaction_from_stock dttfs
-                GROUP BY dttfs.order_description_uuid
-            ) dyed_tape_transaction_from_stock_sum ON dyed_tape_transaction_from_stock_sum.order_description_uuid = vodf.order_description_uuid
-            LEFT JOIN (
-                SELECT 
-                    od.uuid as order_description_uuid,
-                    SUM(production.production_quantity) AS coloring_production_quantity,
-                    SUM(production.weight) as coloring_production_quantity_weight
-                FROM slider.production
-                LEFT JOIN slider.stock ON production.stock_uuid = stock.uuid
-                LEFT JOIN zipper.finishing_batch ON stock.finishing_batch_uuid = finishing_batch.uuid
-                LEFT JOIN zipper.order_description od ON finishing_batch.order_description_uuid = od.uuid
-                WHERE 
-                    production.section = 'coloring'
-                GROUP BY od.uuid
-            ) slider_production_sum ON slider_production_sum.order_description_uuid = vodf.order_description_uuid
-            LEFT JOIN pi_cash_grouped ON vodf.order_info_uuid = pi_cash_grouped.order_info_uuid
-            LEFT JOIN (
-				SELECT
-                    oe.uuid as order_entry_uuid,
-                    dyeing_batch.uuid as dyeing_batch_uuid,
-                    CONCAT(
-                        'B',
-                        to_char(dyeing_batch.created_at, 'YY'),
-                        '-',
-                        LPAD(dyeing_batch.id::text, 4, '0')
-                    ) as dyeing_batch_number,
-                    dyeing_batch.production_date as production_date,
-                    dyeing_batch_entry.total_quantity as total_quantity,
-                    dyeing_batch_entry.total_production_quantity as total_production_quantity,
-                    CASE
-                        WHEN dyeing_batch.received = 1 THEN TRUE
-                        ELSE FALSE
-                    END as received,
-                    machine.name as dyeing_machine,
-                    dyeing_batch.created_at as batch_created_at,
-                    ROUND(
-                        (
-                            CASE
-                                WHEN vodf.order_type = 'tape' THEN (
-                                    (
-                                        tcr.top + tcr.bottom + dyeing_batch_entry.total_quantity
-                                    ) * 1
-                                ) / 100 / tcr.dyed_mtr_per_kg::float8
-                                ELSE (
-                                    (
-                                        tcr.top + tcr.bottom + CASE
-                                            WHEN vodf.is_inch = 1 THEN CAST(
-                                                CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC
-                                            )
-                                            ELSE CAST(oe.size AS NUMERIC)
-                                        END
-                                    ) * dyeing_batch_entry.total_quantity::float8
-                                ) / 100 / tcr.dyed_mtr_per_kg::float8
-                            END
-                        )::numeric,
-                        3
-                    ) as expected_kg
-                FROM
-                    zipper.dyeing_batch dyeing_batch
-                    LEFT JOIN public.machine machine ON dyeing_batch.machine_uuid = machine.uuid
-                    LEFT JOIN (
-                        SELECT
-                            SUM(dyeing_batch_entry.quantity) as total_quantity,
-                            SUM(
-                                dyeing_batch_entry.production_quantity_in_kg
-                            ) as total_production_quantity,
-                            dyeing_batch_entry.dyeing_batch_uuid,
-                            dyeing_batch_entry.sfg_uuid
-                        FROM zipper.dyeing_batch_entry
-                        LEFT JOIN zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
-                        LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                        LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                        LEFT JOIN zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid
-                        GROUP BY
-                            dyeing_batch_entry.dyeing_batch_uuid,
-                            dyeing_batch_entry.sfg_uuid
-                    ) dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
-                    LEFT JOIN zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
-                    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                    LEFT JOIN zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid
-                        AND vodf.zipper_number = tcr.zipper_number_uuid
-                        AND (
-                            CASE
-                                WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT'
-                                ELSE vodf.end_type = tcr.end_type_uuid
-                            END
-                        )
-                    WHERE
-                        vodf.order_description_uuid IS NOT NULL
-                        AND vodf.is_cancelled = FALSE
-                        AND (lower(vodf.item_name) != 'nylon' OR vodf.nylon_stopper = tcr.nylon_stopper_uuid)
-			) dyeing_batch ON oe.uuid = dyeing_batch.order_entry_uuid
-            LEFT JOIN (
-                SELECT
-                    ROUND(
-                        (
-                            CASE
-                                WHEN vodf.order_type = 'tape' THEN (
-                                    (
-                                        tcr.top + tcr.bottom + oe.quantity
-                                    ) * 1
-                                ) / 100 / tcr.dyed_mtr_per_kg::float8
-                                ELSE (
-                                    (
-                                        tcr.top + tcr.bottom + CASE
-                                            WHEN vodf.is_inch = 1 THEN CAST(
-                                                CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC
-                                            )
-                                            ELSE CAST(oe.size AS NUMERIC)
-                                        END
-                                    ) * oe.quantity::float8
-                                ) / 100 / tcr.dyed_mtr_per_kg::float8
-                            END
-                        )::numeric,
-                        3
-                    ) as expected_kg,
-                    oe.uuid as order_entry_uuid
-                FROM
-                    zipper.order_entry oe
-                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                    LEFT JOIN zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid
-                    AND vodf.item = tcr.item_uuid
-                    AND vodf.zipper_number = tcr.zipper_number_uuid
-                    AND (
-                        CASE
-                            WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT'
-                            ELSE vodf.end_type = tcr.end_type_uuid
-                        END
-                    )
-                WHERE
-                    lower(vodf.item_name) != 'nylon'
-                    OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-            ) AS expected ON oe.uuid = expected.order_entry_uuid
-            WHERE vodf.order_description_uuid IS NOT NULL 
+                LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+                LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+                LEFT JOIN lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
+                LEFT JOIN sfg_production_sum ON sfg_production_sum.order_entry_uuid = oe.uuid
+                LEFT JOIN dyed_tape_transaction_sum ON dyed_tape_transaction_sum.order_description_uuid = vodf.order_description_uuid
+                LEFT JOIN dyed_tape_transaction_from_stock_sum ON dyed_tape_transaction_from_stock_sum.order_description_uuid = vodf.order_description_uuid
+                LEFT JOIN slider_production_sum ON slider_production_sum.order_description_uuid = vodf.order_description_uuid
+                LEFT JOIN pi_cash_grouped ON vodf.order_info_uuid = pi_cash_grouped.order_info_uuid
+                LEFT JOIN dyeing_batch_main ON oe.uuid = dyeing_batch_main.order_entry_uuid
+            WHERE 
+                vodf.order_description_uuid IS NOT NULL 
                 AND vodf.is_cancelled = FALSE
-                AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
-                AND ${from && to ? sql`vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
+                ${own_uuid ? sql` AND vodf.marketing_uuid = ${marketingUuid}` : sql``}
+                ${from && to ? sql` AND vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
             ORDER BY vodf.item_name DESC
     `;
 
