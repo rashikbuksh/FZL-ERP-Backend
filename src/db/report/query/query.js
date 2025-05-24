@@ -1597,7 +1597,7 @@ export async function ProductionReportSnm(req, res, next) {
                             CASE
                                 WHEN vodf.order_type = 'tape' THEN (
                                     (
-                                        tcr.top + tcr.bottom + SUM(dyeing_batch_entry.quantity)
+                                        tcr.top + tcr.bottom + dyeing_batch_entry.total_quantity
                                     ) * 1
                                 ) / 100 / tcr.dyed_mtr_per_kg::float8
                                 ELSE (
@@ -1608,7 +1608,7 @@ export async function ProductionReportSnm(req, res, next) {
                                             )
                                             ELSE CAST(oe.size AS NUMERIC)
                                         END
-                                    ) * SUM(dyeing_batch_entry.quantity)::float8
+                                    ) * dyeing_batch_entry.total_quantity::float8
                                 ) / 100 / tcr.dyed_mtr_per_kg::float8
                             END
                         )::numeric,
@@ -1625,20 +1625,14 @@ export async function ProductionReportSnm(req, res, next) {
                             ) as total_production_quantity,
                             dyeing_batch_entry.dyeing_batch_uuid,
                             dyeing_batch_entry.sfg_uuid
-                        FROM zipper.dyeing_batch_entry dyeing_batch_entry
+                        FROM zipper.dyeing_batch_entry
                         LEFT JOIN zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
                         LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                         LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                         LEFT JOIN zipper.tape_coil_required tcr ON oe.order_description_uuid = vodf.order_description_uuid
                         GROUP BY
                             dyeing_batch_entry.dyeing_batch_uuid,
-                            dyeing_batch_entry.sfg_uuid,
-                            vodf.order_type,
-                            vodf.is_inch,
-                            tcr.dyed_mtr_per_kg,
-                            tcr.top,
-                            tcr.bottom,
-                            oe.size
+                            dyeing_batch_entry.sfg_uuid
                     ) dyeing_batch_entry ON dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
                     LEFT JOIN zipper.sfg sfg ON dyeing_batch_entry.sfg_uuid = sfg.uuid
                     LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
@@ -1829,7 +1823,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 batch.yarn_issued::float8,
                 batch.is_drying_complete,
                 batch.machine,
-                batch.batch_created_at
+                batch.batch_created_at,
+                batch.expected_kg as batch_expected_kg
             FROM
                 thread.order_info
             LEFT JOIN
@@ -1878,7 +1873,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
                     batch_entry_quantity_length.total_weight as yarn_issued, 
                     batch.is_drying_complete,
                     machine.name as machine,
-                    batch.created_at as batch_created_at
+                    batch.created_at as batch_created_at,
+                    ROUND(batch_entry_quantity_length.total_quantity::numeric * tcl.max_weight::numeric, 3) as expected_kg
                 FROM
                     thread.batch
                 LEFT JOIN public.machine ON batch.machine_uuid = machine.uuid
@@ -1894,6 +1890,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                         batch_entry.order_entry_uuid
                 ) batch_entry_quantity_length ON batch.uuid = batch_entry_quantity_length.batch_uuid
                 LEFT JOIN thread.order_entry ON batch_entry_quantity_length.order_entry_uuid = order_entry.uuid
+                LEFT JOIN thread.count_length tcl ON order_entry.count_length_uuid = tcl.uuid
             ) batch ON order_entry.uuid = batch.order_entry_uuid
             WHERE 
                 order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
