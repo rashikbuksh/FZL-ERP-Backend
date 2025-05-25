@@ -1439,8 +1439,10 @@ export async function ProductionReportSnm(req, res, next) {
 		const query = sql`
             WITH
                 pi_cash_grouped AS (
-                    SELECT vodf.order_info_uuid, jsonb_agg(
-                            jsonb_build_object(
+                    SELECT 
+                        vodf.order_info_uuid, 
+                        jsonb_agg(
+                            DISTINCT jsonb_build_object(
                                 'pi_number', CASE
                                     WHEN pi_cash.is_pi = 1 THEN concat(
                                         'PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
@@ -1450,8 +1452,9 @@ export async function ProductionReportSnm(req, res, next) {
                                     )
                                 END, 'pi_cash_uuid', pi_cash.uuid
                             )
-                        ) as pi_numbers, jsonb_agg(
-                            jsonb_build_object(
+                        ) as pi_numbers, 
+                        jsonb_agg(
+                            DISTINCT jsonb_build_object(
                                 'lc_number', lc.lc_number, 'lc_uuid', lc.uuid
                             )
                         ) as lc_numbers
@@ -1614,11 +1617,8 @@ export async function ProductionReportSnm(req, res, next) {
                     END,
                     vodf.nylon_stopper_name
                 ) as item_name_with_stopper,
-                vodf.nylon_stopper,
                 vodf.nylon_stopper_name,
-                vodf.zipper_number,
                 vodf.zipper_number_name,
-                vodf.end_type,
                 vodf.end_type_name,
                 oe.uuid as order_entry_uuid,
                 oe.style,
@@ -1716,7 +1716,7 @@ export async function ProductionReportSnm(req, res, next) {
                 vodf.order_description_uuid IS NOT NULL 
                 AND vodf.is_cancelled = FALSE
                 ${own_uuid ? sql` AND vodf.marketing_uuid = ${marketingUuid}` : sql``}
-                ${from && to ? sql` AND vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`TRUE`}
+                ${from && to ? sql` AND vodf.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql``}
             ORDER BY vodf.item_name DESC
     `;
 
@@ -1726,12 +1726,23 @@ export async function ProductionReportSnm(req, res, next) {
 
 		const data = await resultPromise;
 
-		// filter the data and replace quantity, approved_quantity, not_approved_quantity, total_quantity,
-		// total_slider_required, balance_quantity, total_finishing_quantity, total_dyeing_quantity,
-		// total_coloring_quantity, total_coloring_quantity_weight, expected_kg with dash '-'
-		// if order_entry_uuid is same
-
 		const filteredData = data?.rows?.reduce((acc, curr) => {
+			const orderDescriptionExists = acc.some(
+				(item) =>
+					item.order_description_uuid === curr.order_description_uuid
+			);
+
+			if (orderDescriptionExists) {
+				acc.push({
+					...curr,
+					total_dyeing_quantity: '-',
+					total_coloring_quantity: '-',
+					total_coloring_quantity_weight: '-',
+				});
+			} else {
+				acc.push(curr);
+			}
+
 			const exists = acc.some(
 				(item) =>
 					item.order_entry_uuid === curr.order_entry_uuid &&
@@ -1748,11 +1759,8 @@ export async function ProductionReportSnm(req, res, next) {
 					total_slider_required: '-',
 					balance_quantity: '-',
 					total_finishing_quantity: '-',
-					total_dyeing_quantity: '-',
 					expected_kg: '-',
 					received: '-',
-					total_coloring_quantity: '-',
-					total_coloring_quantity_weight: '-',
 				});
 			} else {
 				// Push the original with real values
