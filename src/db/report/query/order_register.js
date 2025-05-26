@@ -148,7 +148,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						'color', challan_agg.color,
 						'size', challan_agg.size,
 						'order_quantity', challan_agg.order_quantity,
-						'challan_array', challan_agg.challan_array
+						'challan_array', COALESCE(challan_agg.challan_array, '[]'::jsonb)
 					)
 				) AS order_entry
 			FROM
@@ -179,7 +179,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						'style', challan_agg_thread.style,
 						'color', challan_agg_thread.color,
 						'order_quantity', challan_agg_thread.order_quantity,
-						'challan_array', challan_agg_thread.challan_array
+						'challan_array', COALESCE(challan_agg_thread.challan_array, '[]'::jsonb)
 					)
 				) AS order_entry
 			FROM
