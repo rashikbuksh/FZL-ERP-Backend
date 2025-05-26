@@ -76,12 +76,12 @@ export async function getOrderDetailsPagination(req, res, next) {
 						? sql`AND vod.is_sample = 1`
 						: sql`AND 1=1`
 			}
-			${start_date && end_date ? sql`AND vod.order_description_created_at::date BETWEEN ${start_date}::date AND ${end_date}::date` : sql`AND 1=1`}
-            ${marketingUuid != null ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
-			${order_info_uuid ? sql`AND vod.order_info_uuid = ${order_info_uuid}` : sql`AND 1=1`}
-			${buyer_uuid ? sql`AND vod.buyer_uuid = ${buyer_uuid}` : sql`AND 1=1`}
-			${party_uuid ? sql`AND vod.party_uuid = ${party_uuid}` : sql`AND 1=1`}
-			${marketing_uuid ? sql`AND vod.marketing_uuid = ${marketing_uuid}` : sql`AND 1=1`}
+			${start_date && end_date ? sql` AND vod.order_description_created_at::date BETWEEN ${start_date}::date AND ${end_date}::date` : sql``}
+            ${marketingUuid != null ? sql` AND vod.marketing_uuid = ${marketingUuid}` : sql``}
+			${order_info_uuid ? sql` AND vod.order_info_uuid = ${order_info_uuid}` : sql``}
+			${buyer_uuid ? sql` AND vod.buyer_uuid = ${buyer_uuid}` : sql``}
+			${party_uuid ? sql` AND vod.party_uuid = ${party_uuid}` : sql``}
+			${marketing_uuid ? sql` AND vod.marketing_uuid = ${marketing_uuid}` : sql``}
         `;
 
 		let { limit, page, orderby, sort } = req.query;
@@ -128,15 +128,15 @@ export async function getOrderDetailsPagination(req, res, next) {
 					? sql`AND vod.is_sample = 0`
 					: type === 'sample'
 						? sql`AND vod.is_sample = 1`
-						: sql`AND 1=1`
+						: sql``
 			}
-			${start_date && end_date ? sql`AND vod.order_description_created_at::date BETWEEN ${start_date}::date AND ${end_date}::date` : sql`AND 1=1`}
-            ${marketingUuid != null ? sql`AND vod.marketing_uuid = ${marketingUuid}` : sql`AND 1=1`}
-			${order_info_uuid ? sql`AND vod.order_info_uuid = ${order_info_uuid}` : sql`AND 1=1`}
-			${buyer_uuid ? sql`AND vod.buyer_uuid = ${buyer_uuid}` : sql`AND 1=1`}
-			${party_uuid ? sql`AND vod.party_uuid = ${party_uuid}` : sql`AND 1=1`}
-			${marketing_uuid ? sql`AND vod.marketing_uuid = ${marketing_uuid}` : sql`AND 1=1`}
-        ${orderby || sort ? sql`ORDER BY ${sql.raw(sort)} ${sql.raw(orderby)}` : sql`ORDER BY order_description_created_at DESC`}
+			${start_date && end_date ? sql` AND vod.order_description_created_at::date BETWEEN ${start_date}::date AND ${end_date}::date` : sql``}
+            ${marketingUuid != null ? sql` AND vod.marketing_uuid = ${marketingUuid}` : sql``}
+			${order_info_uuid ? sql` AND vod.order_info_uuid = ${order_info_uuid}` : sql``}
+			${buyer_uuid ? sql` AND vod.buyer_uuid = ${buyer_uuid}` : sql``}
+			${party_uuid ? sql` AND vod.party_uuid = ${party_uuid}` : sql``}
+			${marketing_uuid ? sql` AND vod.marketing_uuid = ${marketing_uuid}` : sql``}
+        ${orderby || sort ? sql` ORDER BY ${sql.raw(sort)} ${sql.raw(orderby)} ` : sql` ORDER BY order_description_created_at DESC `}
         LIMIT ${limit} OFFSET ${page * limit - limit}
 		`;
 

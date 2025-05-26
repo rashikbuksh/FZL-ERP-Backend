@@ -15,7 +15,10 @@ import {
 } from './query/item_zipper_number_end_wise_approved.js';
 import { selectLabDip } from './query/lab_dip.js';
 import { MaterialStockReport } from './query/material_stock_report.js';
-import { selectOrderRegisterReport } from './query/order_register.js';
+import {
+	selectOrderRegisterReport,
+	selectOrderRegisterReportForPackingList,
+} from './query/order_register.js';
 import { selectOrderSheetPdf } from './query/order_sheet_pdf.js';
 import { selectPackingList } from './query/packing_list_report.js';
 import { ProductionReportThreadPartyWise } from './query/party_wise_thread_production_report.js';
@@ -177,6 +180,12 @@ reportRouter.get('/report-for-ed', selectEDReport);
 reportRouter.get(
 	'/order-register-report/:order_info_uuid',
 	selectOrderRegisterReport
+);
+
+// * Order Register Report For Packing List
+reportRouter.get(
+	'/order-register-report-for-packing-list/:order_info_uuid',
+	selectOrderRegisterReportForPackingList
 );
 
 reportRouter.get(
@@ -1051,6 +1060,36 @@ export const pathReport = {
 			description: 'Order Register Report',
 			tags: ['report'],
 			operationId: 'selectOrderRegisterReport',
+			parameters: [
+				SE.parameter_params(
+					'order_info_uuid',
+					'order_info_uuid',
+					SE.uuid()
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/order-register-report-for-packing-list/{order_info_uuid}': {
+		get: {
+			summary: 'Order Register Report for Packing List',
+			description: 'Order Register Report for Packing List',
+			tags: ['report'],
+			operationId: 'selectOrderRegisterReportForPackingList',
 			parameters: [
 				SE.parameter_params(
 					'order_info_uuid',
