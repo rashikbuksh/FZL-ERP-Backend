@@ -36,6 +36,9 @@ export async function selectOrderRegisterReport(req, res, next) {
 							'quantity', COALESCE(ple_sum.quantity::float8, 0),
 							'order_entry_uuid', sfg.order_entry_uuid
 							)
+					) FILTER (
+						WHERE
+							challan.uuid IS NOT NULL
 					) AS challan_array
 				FROM
 					zipper.order_entry oe
@@ -82,7 +85,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 					toe.color,
 					toe.quantity AS order_quantity,
 					jsonb_agg(
-						DISTINCT CASE WHEN challan.uuid IS NOT NULL THEN 
+						DISTINCT 
 							jsonb_build_object(
 								'challan_number', 
 								CASE WHEN challan.uuid IS NOT NULL THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) ELSE NULL END,
@@ -91,7 +94,9 @@ export async function selectOrderRegisterReport(req, res, next) {
 								'quantity', COALESCE(ple_sum.quantity::float8, 0),
 								'order_entry_uuid', toe.uuid
 							)
-						ELSE '{}' END
+					) FILTER (
+						WHERE
+							challan.uuid IS NOT NULL
 					) AS challan_array
 				FROM
 					thread.order_entry toe 
@@ -244,6 +249,9 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 							'quantity', COALESCE(ple_sum.quantity::float8, 0),
 							'order_entry_uuid', sfg.order_entry_uuid
 							)
+					) FILTER (
+						WHERE
+							pl.uuid IS NOT NULL
 					) AS pl_array
 				FROM
 					zipper.order_entry oe
@@ -289,7 +297,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 					toe.color,
 					toe.quantity AS order_quantity,
 					jsonb_agg(
-						DISTINCT CASE WHEN pl.uuid IS NOT NULL THEN 
+						DISTINCT 
 							jsonb_build_object(
 								'packing_list_number', 
 								CASE WHEN pl.uuid IS NOT NULL THEN concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) ELSE NULL END,
@@ -298,7 +306,9 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 								'quantity', COALESCE(ple_sum.quantity::float8, 0),
 								'order_entry_uuid', toe.uuid
 							)
-						ELSE '{}' END
+					) FILTER (
+						WHERE
+							pl.uuid IS NOT NULL
 					) AS pl_array
 				FROM
 					thread.order_entry toe 
