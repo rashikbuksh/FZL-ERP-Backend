@@ -27,16 +27,15 @@ export async function selectOrderRegisterReport(req, res, next) {
 					oe.size,
 					oe.quantity AS order_quantity,
 					jsonb_agg(
-						DISTINCT CASE WHEN challan.uuid IS NOT NULL THEN 
+						DISTINCT 
 							jsonb_build_object(
 							'challan_number', 
-							concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')),
+							CASE WHEN challan.uuid IS NOT NULL THEN concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) ELSE NULL END,
 							'challan_uuid', challan.uuid,
 							'challan_date', challan.created_at,
 							'quantity', COALESCE(ple_sum.quantity::float8, 0),
 							'order_entry_uuid', sfg.order_entry_uuid
 							)
-						ELSE '{}' END
 					) AS challan_array
 				FROM
 					zipper.order_entry oe
@@ -86,7 +85,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						DISTINCT CASE WHEN challan.uuid IS NOT NULL THEN 
 							jsonb_build_object(
 								'challan_number', 
-								concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')),
+								CASE WHEN challan.uuid IS NOT NULL THEN concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) ELSE NULL END,
 								'challan_uuid', challan.uuid,
 								'challan_date', challan.created_at,
 								'quantity', COALESCE(ple_sum.quantity::float8, 0),
@@ -236,16 +235,15 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 					oe.size,
 					oe.quantity AS order_quantity,
 					jsonb_agg(
-						DISTINCT CASE WHEN pl.uuid IS NOT NULL THEN 
+						DISTINCT 
 							jsonb_build_object(
 							'packing_list_number', 
-							concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')),
+							CASE WHEN pl.uuid IS NOT NULL THEN concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) ELSE NULL END,
 							'packing_list_uuid', pl.uuid,
 							'packing_list_date', pl.created_at,
 							'quantity', COALESCE(ple_sum.quantity::float8, 0),
 							'order_entry_uuid', sfg.order_entry_uuid
 							)
-						ELSE '{}' END
 					) AS pl_array
 				FROM
 					zipper.order_entry oe
@@ -294,7 +292,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						DISTINCT CASE WHEN pl.uuid IS NOT NULL THEN 
 							jsonb_build_object(
 								'packing_list_number', 
-								concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')),
+								CASE WHEN pl.uuid IS NOT NULL THEN concat('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) ELSE NULL END,
 								'packing_list_uuid', pl.uuid,
 								'packing_list_date', pl.created_at,
 								'quantity', COALESCE(ple_sum.quantity::float8, 0),
