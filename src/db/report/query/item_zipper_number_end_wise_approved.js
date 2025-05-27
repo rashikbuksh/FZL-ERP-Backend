@@ -37,7 +37,7 @@ export async function selectItemZipperEndApprovedQuantity(req, res, next) {
                         sum(
                             CASE 
                                 WHEN sfg.recipe_uuid IS NULL 
-                                THEN oe.quantity::float8  
+                                THEN oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8
                                 ELSE 0 
                             END
                         )::float8 as not_approved,
