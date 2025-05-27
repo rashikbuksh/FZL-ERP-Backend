@@ -33,13 +33,14 @@ export async function selectItemZipperEndApprovedQuantity(req, res, next) {
                         END as item_name,
                         vodf.zipper_number_name,
                         vodf.end_type_name,
+                        SUM(oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8 as total_quantity,
                         sum(
                             CASE 
                                 WHEN sfg.recipe_uuid IS NULL 
                                 THEN oe.quantity::float8  
                                 ELSE 0 
                             END
-                        ) as not_approved,
+                        )::float8 as not_approved,
                         sum(
                             CASE 
                                 WHEN vodf.order_type = 'slider' 
@@ -48,7 +49,7 @@ export async function selectItemZipperEndApprovedQuantity(req, res, next) {
                                 THEN oe.quantity::float8  - sfg.warehouse::float8 - sfg.delivered::float8
                                 ELSE 0 
                             END
-                        ) as approved
+                        )::float8 as approved
                     FROM
                         zipper.sfg sfg 
                         LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
