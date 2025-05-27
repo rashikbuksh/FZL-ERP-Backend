@@ -891,8 +891,7 @@ export async function selectOrderZipperThread(req, res, next) {
 							LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
 							AND oe.order_description_uuid = vodf.order_description_uuid 
 						WHERE 
-							vpl.is_warehouse_received = true 
-							AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+							${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 							AND vpl.item_for NOT IN ('thread', 'sample_thread')
 						GROUP BY 
 							vodf.order_info_uuid,
@@ -924,8 +923,7 @@ export async function selectOrderZipperThread(req, res, next) {
 							LEFT JOIN thread.order_entry toe ON vpl.order_entry_uuid = toe.uuid
 							AND toi.uuid = toe.order_info_uuid
 						WHERE
-							vpl.is_warehouse_received = true
-							AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+							${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 							AND vpl.item_for IN ('thread', 'sample_thread')
 						GROUP BY
 							toi.uuid, toe.company_price
@@ -959,13 +957,12 @@ export async function selectOrderZipperThread(req, res, next) {
 								page == 'production_statement'
 									? sql` 
 									AND ras.total_prod_quantity > 0
-									AND vpl.is_warehouse_received = true
 									AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 									`
 									: page == 'production_statement_accounts'
 										? sql`
 										AND ras.total_prod_quantity > 0
-										AND vpl.is_warehouse_received = true AND vpl.challan_uuid IS NOT NULL
+										AND vpl.challan_uuid IS NOT NULL
 										AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 										`
 										: sql``
@@ -1003,13 +1000,12 @@ export async function selectOrderZipperThread(req, res, next) {
 								page == 'production_statement'
 									? sql` 
 									AND rast.total_prod_quantity > 0
-									AND vpl.is_warehouse_received = true
 									AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 									`
 									: page == 'production_statement_accounts'
 										? sql`
 										AND rast.total_prod_quantity > 0
-										AND vpl.is_warehouse_received = true AND vpl.challan_uuid IS NOT NULL
+										AND vpl.challan_uuid IS NOT NULL
 										AND ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 										`
 										: sql``
