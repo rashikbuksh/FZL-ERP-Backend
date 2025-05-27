@@ -36,7 +36,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 							'quantity', COALESCE(ple_sum.quantity::float8, 0),
 							'order_entry_uuid', sfg.order_entry_uuid
 							)
-						ELSE 'null' END
+						ELSE '{}' END
 					) AS challan_array
 				FROM
 					zipper.order_entry oe
@@ -92,7 +92,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 								'quantity', COALESCE(ple_sum.quantity::float8, 0),
 								'order_entry_uuid', toe.uuid
 							)
-						ELSE 'null' END
+						ELSE '{}' END
 					) AS challan_array
 				FROM
 					thread.order_entry toe 
@@ -245,7 +245,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 							'quantity', COALESCE(ple_sum.quantity::float8, 0),
 							'order_entry_uuid', sfg.order_entry_uuid
 							)
-						ELSE 'null' END
+						ELSE '{}' END
 					) AS pl_array
 				FROM
 					zipper.order_entry oe
@@ -300,7 +300,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 								'quantity', COALESCE(ple_sum.quantity::float8, 0),
 								'order_entry_uuid', toe.uuid
 							)
-						ELSE 'null' END
+						ELSE '{}' END
 					) AS pl_array
 				FROM
 					thread.order_entry toe 
