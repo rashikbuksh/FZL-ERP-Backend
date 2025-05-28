@@ -5,7 +5,6 @@ import { VerifyToken } from './middleware/auth.js';
 import route from './routes/index.js';
 import swaggerSpec from './swagger.js';
 import cors from './util/cors.js';
-import { apiLogger } from './middleware/logger.js';
 
 const server = express();
 
@@ -17,10 +16,6 @@ server.use(VerifyToken);
 server.use('/uploads', express.static('uploads'));
 
 server.use(route);
-
-// Log all API calls with timestamp
-server.use(apiLogger);
-
 server.use('/api-docs', swaggerUi.serve);
 server.get(
 	'/api-docs',
