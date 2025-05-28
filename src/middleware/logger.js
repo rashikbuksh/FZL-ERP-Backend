@@ -1,6 +1,5 @@
 import winston from 'winston';
 
-
 const { combine, timestamp, json, colorize, printf } = winston.format;
 
 // const fileRotateTransport = new winston.transports.DailyRotateFile({
@@ -32,5 +31,12 @@ const logger = winston.createLogger({
 	// 	new winston.transports.File({ filename: 'rejections.log' }),
 	// ],
 });
+
+export const apiLogger = (req, res, next) => {
+	logger.info(`[${req.method}] ${req.originalUrl}`, {
+		timestamp: new Date().toISOString(),
+	});
+	next();
+};
 
 export default logger;
