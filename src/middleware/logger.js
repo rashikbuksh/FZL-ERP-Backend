@@ -21,10 +21,8 @@ const logger = winston.createLogger({
 		new winston.transports.Console(),
 		new winston.transports.File({ filename: 'error.log', level: 'error' }),
 		new winston.transports.File({ filename: 'combined.log' }),
-		new winston.transports.File({
-			filename: 'info.log',
-			level: 'info',
-		}),
+		// Add a dedicated transport for API logs
+		new winston.transports.File({ filename: 'api.log', level: 'info' }),
 	],
 
 	// transports: [fileRotateTransport],
@@ -35,5 +33,15 @@ const logger = winston.createLogger({
 	// 	new winston.transports.File({ filename: 'rejections.log' }),
 	// ],
 });
+
+export const apiLogger = (req, res, next) => {
+	logger.log({
+		level: 'info',
+		message: `[${req.method}] ${req.originalUrl}`,
+		timestamp: new Date().toISOString(),
+		api: true, // custom flag if you want to filter later
+	});
+	next();
+};
 
 export default logger;

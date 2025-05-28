@@ -5,6 +5,7 @@ import { VerifyToken } from './middleware/auth.js';
 import route from './routes/index.js';
 import swaggerSpec from './swagger.js';
 import cors from './util/cors.js';
+import { apiLogger } from './middleware/logger.js';
 
 const server = express();
 
@@ -14,6 +15,9 @@ server.use(json({ limit: '100mb' }));
 
 server.use(VerifyToken);
 server.use('/uploads', express.static('uploads'));
+
+// api logger for tracking API requests
+server.use(apiLogger);
 
 server.use(route);
 server.use('/api-docs', swaggerUi.serve);
