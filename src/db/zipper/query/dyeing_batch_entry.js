@@ -254,7 +254,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 		WHERE 
 			be.dyeing_batch_uuid = ${dyeing_batch_uuid}
 			AND (
-				 	lower(op_item.name) != 'nylon' 
+				 	lower(vodf.item_name) != 'nylon' 
 					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 				)
 					${
@@ -353,16 +353,6 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			lab_dip.info ldi ON ldi.order_info_uuid = vodf.order_info_uuid
 		INNER JOIN 
 			lab_dip.info_entry ie ON (sfg.recipe_uuid = ie.recipe_uuid AND ie.lab_dip_info_uuid = ldi.uuid)
-        LEFT JOIN 
-            public.properties op_item ON op_item.uuid = vodf.item
-        LEFT JOIN 
-            public.properties op_nylon_stopper ON op_nylon_stopper.uuid = vodf.nylon_stopper
-        LEFT JOIN 
-            public.properties op_zipper ON op_zipper.uuid = vodf.zipper_number
-        LEFT JOIN 
-            public.properties op_end ON op_end.uuid = vodf.end_type
-        LEFT JOIN 
-            public.properties op_puller ON op_puller.uuid = vodf.puller_type
         LEFT JOIN
             zipper.tape_coil_required tcr ON vodf.item = tcr.item_uuid 
 				AND vodf.zipper_number = tcr.zipper_number_uuid 
@@ -403,7 +393,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 				}
 				AND 
 				(
-					lower(op_item.name) != 'nylon' 
+					lower(vodf.item_name) != 'nylon' 
 					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 				) 
 				${order_info_uuid ? sql`AND vodf.order_info_uuid = ${order_info_uuid}` : sql``}
