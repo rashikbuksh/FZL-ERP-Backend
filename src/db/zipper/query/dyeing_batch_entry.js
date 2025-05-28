@@ -337,15 +337,23 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			tcr.raw_mtr_per_kg::float8 as raw_mtr_per_kg,
 			tcr.dyed_mtr_per_kg::float8 as dyed_mtr_per_kg,
 			${batch_type == 'extra' ? sql`'extra'` : sql`'normal'`} as batch_type,
-			vodf.is_sample
+			vodf.is_sample,
+			ie.approved,
+			ie.approved_date,
+			ie.is_pps_req,
+			ie.is_pps_req_date
 		FROM
 			zipper.sfg sfg
-		LEFT JOIN 
-			lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
 		LEFT JOIN
 			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
         LEFT JOIN
             zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		LEFT JOIN 
+			lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
+		LEFT JOIN 
+			lab_dip.info ldi ON ldi.order_info_uuid = vodf.order_info_uuid
+		INNER JOIN 
+			lab_dip.info_entry ie ON (sfg.recipe_uuid = ie.recipe_uuid AND ie.lab_dip_info_uuid = ldi.uuid)
         LEFT JOIN 
             public.properties op_item ON op_item.uuid = vodf.item
         LEFT JOIN 
