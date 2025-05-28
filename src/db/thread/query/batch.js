@@ -86,9 +86,21 @@ export async function selectAll(req, res, next) {
 					SELECT
 						batch.uuid,
 						batch.id,
-						concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_id,
+						concat(
+							'TB',
+							to_char(batch.created_at, 'YY'),
+							'-',
+							LPAD(batch.id::text, 4, '0')
+						) as batch_id,
 						batch.machine_uuid,
-						CONCAT(pm.name, ' (', pm.min_capacity::float8, '-', pm.max_capacity::float8, ')') as machine_name,
+						CONCAT(
+							pm.name,
+							' (',
+							pm.min_capacity::float8,
+							'-',
+							pm.max_capacity::float8,
+							')'
+						) as machine_name,
 						batch.slot,
 						batch.lab_created_by,
 						labCreated.name as lab_created_by_name,
@@ -129,27 +141,50 @@ export async function selectAll(req, res, next) {
 						batch.updated_at,
 						batch.remarks,
 						SUM(batch_entry.yarn_quantity)::float8 as total_yarn_quantity,
-						SUM(batch_entry.quantity * cl.max_weight)::float8 as total_expected_weight,
+						SUM(
+							batch_entry.quantity * cl.max_weight
+						)::float8 as total_expected_weight,
 						SUM(batch_entry.quantity)::float8 as total_cone,
-						jsonb_agg(DISTINCT 
-							jsonb_build_object(
-								'order_info_uuid', order_info.uuid, 
-								'order_number', concat('ST', CASE 
-																WHEN order_info.is_sample = 1 
-																THEN 'S' ELSE '' 
-															END, 
-															to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')))
-						) AS order_numbers,
 						jsonb_agg(
-							DISTINCT order_info.uuid 
-						) as order_uuids,
+							DISTINCT jsonb_build_object(
+								'order_info_uuid',
+								order_info.uuid,
+								'order_number',
+								CASE
+									WHEN order_info.uuid IS NOT NULL THEN concat(
+										'ST',
+										CASE
+											WHEN order_info.is_sample = 1 THEN 'S'
+											ELSE ''
+										END,
+										to_char(order_info.created_at, 'YY'),
+										'-',
+										LPAD(order_info.id::text, 4, '0')
+									)
+									ELSE null
+								END
+							)
+						) AS order_numbers,
+						jsonb_agg(DISTINCT order_info.uuid) as order_uuids,
 						batch.production_date::date as production_date,
 						party.name as party_name,
 						ARRAY_AGG(DISTINCT oe.color) as color,
 						ARRAY_AGG(DISTINCT recipe.name) as recipe_name,
 						batch.batch_type,
 						batch.order_info_uuid,
-						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number,
+						CASE
+							WHEN batch.batch_type = 'extra' THEN concat(
+								'ST',
+								CASE
+									WHEN oi_v2.is_sample = 1 THEN 'S'
+									ELSE ''
+								END,
+								to_char(oi_v2.created_at, 'YY'),
+								'-',
+								LPAD(oi_v2.id::text, 4, '0')
+							)
+							ELSE null
+						END as order_number,
 						oi_v2.is_sample
 					FROM
 						thread.batch
@@ -178,7 +213,7 @@ export async function selectAll(req, res, next) {
 									? sql`batch.is_drying_complete = 'true'`
 									: sql`1 = 1`
 						}
-						
+						AND order_info.uuid IS NOT NULL
 					GROUP BY
 						batch.uuid,
 						batch.id,
