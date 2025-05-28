@@ -1727,27 +1727,33 @@ export async function ProductionReportSnm(req, res, next) {
 		const data = await resultPromise;
 
 		const filteredData = data?.rows?.reduce((acc, curr) => {
-			// const orderDescriptionExists = acc.some(
-			// 	(item) =>
-			// 		item.order_description_uuid === curr.order_description_uuid
-			// );
-
-			// if (orderDescriptionExists) {
-			// 	acc.push({
-			// 		...curr,
-			// 		total_dyeing_quantity: '-',
-			// 		total_coloring_quantity: '-',
-			// 		total_coloring_quantity_weight: '-',
-			// 	});
-			// } else {
-			// 	acc.push(curr);
-			// }
-
-			const exists = acc.some(
+			const orderEntryExists = acc.some(
 				(item) => item.order_entry_uuid === curr.order_entry_uuid
 			);
-			if (exists) {
-				// Push a duplicate with dashes
+			const orderDescriptionExists = acc.some(
+				(item) =>
+					item.order_description_uuid === curr.order_description_uuid
+			);
+
+			if (orderEntryExists && orderDescriptionExists) {
+				// Both duplicate: dashes for all relevant fields
+				acc.push({
+					...curr,
+					quantity: '-',
+					approved_quantity: '-',
+					not_approved_quantity: '-',
+					total_quantity: '-',
+					total_slider_required: '-',
+					balance_quantity: '-',
+					total_finishing_quantity: '-',
+					expected_kg: '-',
+					received: '-',
+					total_dyeing_quantity: '-',
+					total_coloring_quantity: '-',
+					total_coloring_quantity_weight: '-',
+				});
+			} else if (orderEntryExists) {
+				// Duplicate order_entry_uuid: dashes for entry-level fields
 				acc.push({
 					...curr,
 					quantity: '-',
@@ -1760,20 +1766,8 @@ export async function ProductionReportSnm(req, res, next) {
 					expected_kg: '-',
 					received: '-',
 				});
-			} else {
-				// Push the original with real values
-				acc.push(curr);
-			}
-			return acc;
-		}, []);
-
-		const response = filteredData.reduce((acc, curr) => {
-			const orderDescriptionExists = acc.some(
-				(item) =>
-					item.order_description_uuid === curr.order_description_uuid
-			);
-
-			if (orderDescriptionExists) {
+			} else if (orderDescriptionExists) {
+				// Duplicate order_description_uuid: dashes for description-level fields
 				acc.push({
 					...curr,
 					total_dyeing_quantity: '-',
@@ -1781,6 +1775,7 @@ export async function ProductionReportSnm(req, res, next) {
 					total_coloring_quantity_weight: '-',
 				});
 			} else {
+				// First occurrence: real values
 				acc.push(curr);
 			}
 			return acc;
@@ -1792,7 +1787,7 @@ export async function ProductionReportSnm(req, res, next) {
 			message: 'Production Report S&M',
 		};
 
-		res.status(200).json({ toast, data: response });
+		res.status(200).json({ toast, data: filteredData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
