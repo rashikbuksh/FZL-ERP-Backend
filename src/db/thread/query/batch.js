@@ -208,7 +208,7 @@ export async function selectAll(req, res, next) {
 					WHERE
 						${
 							type === 'pending'
-								? sql`batch.is_drying_complete = 'false' OR batch.is_drying_complete IS NULL`
+								? sql`(batch.is_drying_complete = 'false' OR batch.is_drying_complete IS NULL)`
 								: type === 'completed'
 									? sql`batch.is_drying_complete = 'true'`
 									: sql`1 = 1`
