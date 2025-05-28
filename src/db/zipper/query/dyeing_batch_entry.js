@@ -295,6 +295,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		SELECT
 			DISTINCT sfg.uuid as sfg_uuid,
 			sfg.recipe_uuid as recipe_uuid,
+			recipe.name as recipe_name,
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
 			oe.style,
 			oe.color,
