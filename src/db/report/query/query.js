@@ -1727,26 +1727,24 @@ export async function ProductionReportSnm(req, res, next) {
 		const data = await resultPromise;
 
 		const filteredData = data?.rows?.reduce((acc, curr) => {
-			const orderDescriptionExists = acc.some(
-				(item) =>
-					item.order_description_uuid === curr.order_description_uuid
-			);
+			// const orderDescriptionExists = acc.some(
+			// 	(item) =>
+			// 		item.order_description_uuid === curr.order_description_uuid
+			// );
 
-			if (orderDescriptionExists) {
-				acc.push({
-					...curr,
-					total_dyeing_quantity: '-',
-					total_coloring_quantity: '-',
-					total_coloring_quantity_weight: '-',
-				});
-			} else {
-				acc.push(curr);
-			}
+			// if (orderDescriptionExists) {
+			// 	acc.push({
+			// 		...curr,
+			// 		total_dyeing_quantity: '-',
+			// 		total_coloring_quantity: '-',
+			// 		total_coloring_quantity_weight: '-',
+			// 	});
+			// } else {
+			// 	acc.push(curr);
+			// }
 
 			const exists = acc.some(
-				(item) =>
-					item.order_entry_uuid === curr.order_entry_uuid &&
-					item.order_info_uuid === curr.order_info_uuid
+				(item) => item.order_entry_uuid === curr.order_entry_uuid
 			);
 			if (exists) {
 				// Push a duplicate with dashes
@@ -1769,13 +1767,32 @@ export async function ProductionReportSnm(req, res, next) {
 			return acc;
 		}, []);
 
+		const response = filteredData.reduce((acc, curr) => {
+			const orderDescriptionExists = acc.some(
+				(item) =>
+					item.order_description_uuid === curr.order_description_uuid
+			);
+
+			if (orderDescriptionExists) {
+				acc.push({
+					...curr,
+					total_dyeing_quantity: '-',
+					total_coloring_quantity: '-',
+					total_coloring_quantity_weight: '-',
+				});
+			} else {
+				acc.push(curr);
+			}
+			return acc;
+		}, []);
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
 			message: 'Production Report S&M',
 		};
 
-		res.status(200).json({ toast, data: filteredData });
+		res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}
