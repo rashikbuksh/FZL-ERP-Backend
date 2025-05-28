@@ -1151,6 +1151,7 @@ export async function selectOrderDescription(req, res, next) {
 		is_update,
 		is_slider_needed,
 		type,
+		od_uuid,
 	} = req.query;
 
 	const query = sql`
@@ -1308,6 +1309,9 @@ export async function selectOrderDescription(req, res, next) {
 				) > 0
 			`);
 	} else if (is_balance == 'true' && is_update == 'true') {
+		od_uuid
+			? query.append(sql` AND vodf.order_description_uuid = ${od_uuid}`)
+			: null;
 	}
 
 	query.append(sql` ORDER BY vodf.order_number`);

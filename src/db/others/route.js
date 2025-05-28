@@ -976,6 +976,7 @@ const pathZipper = {
 					'false',
 				]),
 				SE.parameter_query('type', 'type', ['all']),
+				SE.parameter_query('od_uuid', 'od_uuid', [SE.uuid()]),
 			],
 			responses: {
 				200: {
