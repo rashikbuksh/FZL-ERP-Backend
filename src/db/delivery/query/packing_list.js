@@ -19,6 +19,7 @@ export async function insert(req, res, next) {
 	if (item_for == 'sample_thread' || item_for == 'sample_zipper') {
 		req.body.is_warehouse_received = true;
 		req.body.warehouse_received_date = req.body.created_at;
+		req.body.warehouse_received_by = req.body.created_by;
 	}
 
 	const packing_listPromise = db
@@ -54,7 +55,6 @@ export async function update(req, res, next) {
 	}
 	if (item_for == 'sample_thread' || item_for == 'sample_zipper') {
 		req.body.is_warehouse_received = true;
-		// req.body.warehouse_received_date = req.body.updated_at;
 	}
 
 	const packing_listPromise = db
