@@ -10,7 +10,7 @@ const { combine, timestamp, json, colorize, printf } = winston.format;
 
 const logger = winston.createLogger({
 	format: combine(
-		colorize({ all: true }),
+		// colorize({ all: true }),
 		// errors({ stack: true }),
 		timestamp({
 			format: 'YYYY-MM-DD hh:mm:ss A',
@@ -44,7 +44,6 @@ export const apiLogger = (req, res, next) => {
 		level: 'info',
 		message: `[${req.method}] ${req.originalUrl} - IP: ${ip}`,
 		timestamp: new Date().toISOString(),
-		api: true,
 	});
 	next();
 };
