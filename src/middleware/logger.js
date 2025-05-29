@@ -35,11 +35,16 @@ const logger = winston.createLogger({
 });
 
 export const apiLogger = (req, res, next) => {
+	const ip =
+		req.headers['x-forwarded-for']?.split(',').shift() ||
+		req.socket?.remoteAddress ||
+		req.ip;
+
 	logger.log({
 		level: 'info',
-		message: `[${req.method}] ${req.originalUrl}`,
+		message: `[${req.method}] ${req.originalUrl} - IP: ${ip}`,
 		timestamp: new Date().toISOString(),
-		api: true, // custom flag if you want to filter later
+		api: true,
 	});
 	next();
 };
