@@ -44,6 +44,18 @@ zipperRouter.put(
 	'/order-info/print-in/update/by/:uuid',
 	orderInfoOperations.updatePrintIn
 );
+zipperRouter.put(
+	'/order-info/send-from-ho/update/by/:uuid',
+	orderInfoOperations.updateSendFromHeadOffice
+);
+zipperRouter.put(
+	'/order-info/receive-from-factory/update/by/:uuid',
+	orderInfoOperations.updateReceiveByFactory
+);
+zipperRouter.put(
+	'/order-info/production-pause/update/by/:uuid',
+	orderInfoOperations.updateProductionPause
+);
 zipperRouter.get('/tape-assigned', orderInfoOperations.getTapeAssigned);
 
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------

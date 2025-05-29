@@ -29,6 +29,11 @@ export async function insert(req, res, next) {
 		remarks,
 		print_in,
 		is_cancelled,
+		sno_from_head_office,
+		sno_from_head_office_time,
+		receive_by_factory,
+		receive_by_factory_time,
+		production_pause,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -53,6 +58,11 @@ export async function insert(req, res, next) {
 			remarks,
 			print_in,
 			is_cancelled,
+			sno_from_head_office,
+			sno_from_head_office_time,
+			receive_by_factory,
+			receive_by_factory_time,
+			production_pause,
 		})
 		.returning({
 			insertedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
@@ -95,6 +105,11 @@ export async function update(req, res, next) {
 		remarks,
 		print_in,
 		is_cancelled,
+		sno_from_head_office,
+		sno_from_head_office_time,
+		receive_by_factory,
+		receive_by_factory_time,
+		production_pause,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -119,6 +134,11 @@ export async function update(req, res, next) {
 			remarks,
 			print_in,
 			is_cancelled,
+			sno_from_head_office,
+			sno_from_head_office_time,
+			receive_by_factory,
+			receive_by_factory_time,
+			production_pause,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -194,6 +214,11 @@ export async function selectAll(req, res, next) {
 			remarks: order_info.remarks,
 			print_in: order_info.print_in,
 			is_cancelled: order_info.is_cancelled,
+			sno_from_head_office: order_info.sno_from_head_office,
+			sno_from_head_office_time: order_info.sno_from_head_office_time,
+			receive_by_factory: order_info.receive_by_factory,
+			receive_by_factory_time: order_info.receive_by_factory_time,
+			production_pause: order_info.production_pause,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -268,6 +293,11 @@ export async function select(req, res, next) {
 			remarks: order_info.remarks,
 			print_in: order_info.print_in,
 			is_cancelled: order_info.is_cancelled,
+			sno_from_head_office: order_info.sno_from_head_office,
+			sno_from_head_office_time: order_info.sno_from_head_office_time,
+			receive_by_factory: order_info.receive_by_factory,
+			receive_by_factory_time: order_info.receive_by_factory_time,
+			production_pause: order_info.production_pause,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -557,6 +587,95 @@ export async function updatePrintIn(req, res, next) {
 		.update(order_info)
 		.set({
 			print_in,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateSendFromHeadOffice(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { sno_from_head_office, sno_from_head_office_time } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			sno_from_head_office,
+			sno_from_head_office_time,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateReceiveByFactory(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { receive_by_factory, receive_by_factory_time } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			receive_by_factory,
+			receive_by_factory_time,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateProductionPause(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { production_pause } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			production_pause,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({

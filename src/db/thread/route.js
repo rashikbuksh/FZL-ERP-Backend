@@ -28,6 +28,18 @@ threadRouter.get(
 	'/order-info-details/by/:order_info_uuid',
 	order_infoOperations.selectOrderDetailsByOrderInfoUuid
 );
+threadRouter.put(
+	'/order-info/send-from-ho/update/by/:uuid',
+	order_infoOperations.updateSendFromHeadOffice
+);
+threadRouter.put(
+	'/order-info/receive-from-factory/update/by/:uuid',
+	order_infoOperations.updateReceiveByFactory
+);
+threadRouter.put(
+	'/order-info/production-pause/update/by/:uuid',
+	order_infoOperations.updateProductionPause
+);
 threadRouter.get('/order-swatch', order_infoOperations.selectThreadSwatch);
 
 // order_entry routes

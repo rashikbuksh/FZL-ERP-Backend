@@ -222,6 +222,68 @@ export const pathThreadOrderInfo = {
 			},
 		},
 	},
+	'/thread/order-info/send-from-ho/update/by/{uuid}': {
+		put: {
+			tags: ['thread.order_info'],
+			summary: 'Update an existing order info send from HO',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('order info to update', 'uuid')],
+			requestBody: SE.requestBody({
+				sno_from_head_office: SE.boolean(true),
+				sno_from_head_office_time: SE.date_time(),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'thread/order_info'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/thread/order-info/receive-from-factory/update/by/{uuid}': {
+		put: {
+			tags: ['thread.order_info'],
+			summary: 'Update an existing order info receive from factory',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('order info to update', 'uuid')],
+			requestBody: SE.requestBody({
+				receive_by_factory: SE.boolean(true),
+				receive_by_factory_time: SE.date_time(),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'thread/order_info'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/thread/order-info/production-pause/update/by/{uuid}': {
+		put: {
+			tags: ['thread.order_info'],
+			summary: 'Update an existing order info production pause',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('order info to update', 'uuid')],
+			requestBody: SE.requestBody({
+				production_pause: SE.boolean(true),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'thread/order_info'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 // * Thread Order Entry * //

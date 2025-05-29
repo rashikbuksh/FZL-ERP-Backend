@@ -140,7 +140,12 @@ export async function selectAll(req, res, next) {
 			CASE WHEN price_approval_counts.price_approval_count IS NULL THEN 0 ELSE price_approval_counts.price_approval_count END AS price_approval_count,
 			CASE WHEN order_entry_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
 			order_info.revision_no,
-			order_info.is_cancelled
+			order_info.is_cancelled,
+			order_info.sno_from_head_office,
+			order_info.sno_from_head_office_time,
+			order_info.receive_by_factory,
+			order_info.receive_by_factory_time,
+			order_info.production_pause
 		FROM 
 			thread.order_info
 		LEFT JOIN 
@@ -240,7 +245,13 @@ export async function select(req, res, next) {
 			CASE WHEN price_approval_counts.price_approval_count IS NULL THEN 0 ELSE price_approval_counts.price_approval_count END AS price_approval_count,
 			CASE WHEN order_entry_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
 			order_info.revision_no,
-			order_info.is_cancelled
+			order_info.is_cancelled,
+			order_info.is_cancelled,
+			order_info.sno_from_head_office,
+			order_info.sno_from_head_office_time,
+			order_info.receive_by_factory,
+			order_info.receive_by_factory_time,
+			order_info.production_pause
 		FROM 
 			thread.order_info
 		LEFT JOIN 
@@ -361,7 +372,13 @@ export async function selectThreadSwatch(req, res, next) {
 		order_info.updated_at,
 		order_info.remarks,
 		order_entry.swatch_approval_date,
-		COALESCE(batch_status.is_batch_created, FALSE) AS is_batch_created
+		COALESCE(batch_status.is_batch_created, FALSE) AS is_batch_created,
+		order_info.is_cancelled,
+		order_info.sno_from_head_office,
+		order_info.sno_from_head_office_time,
+		order_info.receive_by_factory,
+		order_info.receive_by_factory_time,
+		order_info.production_pause
 	FROM 
 		thread.order_info
 	LEFT JOIN 
@@ -415,6 +432,95 @@ export async function selectThreadSwatch(req, res, next) {
 		};
 
 		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateSendFromHeadOffice(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { sno_from_head_office, sno_from_head_office_time } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			sno_from_head_office,
+			sno_from_head_office_time,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateReceiveByFactory(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { receive_by_factory, receive_by_factory_time } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			receive_by_factory,
+			receive_by_factory_time,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateProductionPause(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { production_pause } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			production_pause,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}

@@ -86,6 +86,13 @@ export const order_info = zipper.table('order_info', {
 	remarks: text('remarks').default(null),
 	print_in: print_in_enum('print_in').default('portrait'),
 	is_cancelled: boolean('is_cancelled').default(false),
+	sno_from_head_office: boolean('sno_from_head_office').default(false),
+	sno_from_head_office_time: DateTime(
+		'sno_from_head_office_time'
+	).default(null),
+	receive_by_factory: boolean('receive_by_factory').default(false),
+	receive_by_factory_time: DateTime('receive_by_factory_time').default(null),
+	production_pause: boolean('production_pause').default(false),
 });
 
 export const slider_provided_enum = zipper.enum('slider_provided_enum', [
