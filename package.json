@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "nodemon ./src/server.js",
-		"test": "jest",
+		"test": "jest --passWithNoTests",
 		"db-generate": "drizzle-kit generate",
 		"db-migrate": "drizzle-kit migrate",
 		"db-drop": "drizzle-kit drop",
