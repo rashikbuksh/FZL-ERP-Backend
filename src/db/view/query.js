@@ -284,8 +284,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
     SELECT 
         pl.id as packing_list_id,
         pl.uuid as packing_list_uuid,
-        CONCAT('PL', to_char(pl.created_at, 'YY'), '-', pl.id::text) as packing_number_v1,
-        CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', LPAD(pl.id::text, 5, '0')) as packing_number,
+        CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) as packing_number_v1,
+        CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text) as packing_number,
         carton.name as carton_name,
         carton.size as carton_size,
         pl.carton_weight,
@@ -392,8 +392,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                         ORDER BY packing_list.created_at
                     ) AS packing_list_wise_rank, 
         packing_list_wise_counts.packing_list_wise_count,
-        CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', packing_list.id::text) as packing_number_v1,
-        CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', LPAD(packing_list.id::text, 5, '0')) as packing_number,
+        CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0')) as packing_number_v1,
+        CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text) as packing_number,
         CASE 
             WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
                 THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
