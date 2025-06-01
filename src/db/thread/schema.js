@@ -89,9 +89,19 @@ export const order_info = thread.table('order_info', {
 	sno_from_head_office_time: DateTime('sno_from_head_office_time').default(
 		null
 	),
+	sno_from_head_office_by: defaultUUID('sno_from_head_office_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	receive_by_factory: boolean('receive_by_factory').default(false),
 	receive_by_factory_time: DateTime('receive_by_factory_time').default(null),
+	receive_by_factory_by: defaultUUID('receive_by_factory_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	production_pause: boolean('production_pause').default(false),
+	production_pause_time: DateTime('production_pause_time').default(null),
+	production_pause_by: defaultUUID('production_pause_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 });
 
 export const order_entry = thread.table('order_entry', {

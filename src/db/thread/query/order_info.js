@@ -143,9 +143,16 @@ export async function selectAll(req, res, next) {
 			order_info.is_cancelled,
 			order_info.sno_from_head_office,
 			order_info.sno_from_head_office_time,
+			order_info.sno_from_head_office_by,
+			sno_from_head_office_by.name AS sno_from_head_office_by_name,
 			order_info.receive_by_factory,
 			order_info.receive_by_factory_time,
-			order_info.production_pause
+			order_info.receive_by_factory_by,
+			receive_by_factory_by.name AS receive_by_factory_by_name,
+			order_info.production_pause,
+			order_info.production_pause_time,
+			order_info.production_pause_by,
+			production_pause_by.name AS production_pause_by_name
 		FROM 
 			thread.order_info
 		LEFT JOIN 
@@ -184,6 +191,9 @@ export async function selectAll(req, res, next) {
 			WHERE pi_cash.id IS NOT NULL
 			GROUP BY toi.uuid
 		) pi_cash_grouped ON order_info.uuid = pi_cash_grouped.order_info_uuid
+		LEFT JOIN hr.users sno_from_head_office_by ON order_info.sno_from_head_office_by = sno_from_head_office_by.uuid
+		LEFT JOIN hr.users receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
+		LEFT JOIN hr.users production_pause_by ON order_info.production_pause_by = production_pause_by.uuid
 		 WHERE 
         	${own_uuid ? sql`order_info.marketing_uuid = ${marketing_uuid}` : sql`1 = 1`}
 			${
@@ -246,12 +256,18 @@ export async function select(req, res, next) {
 			CASE WHEN order_entry_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
 			order_info.revision_no,
 			order_info.is_cancelled,
-			order_info.is_cancelled,
 			order_info.sno_from_head_office,
 			order_info.sno_from_head_office_time,
+			order_info.sno_from_head_office_by,
+			sno_from_head_office_by.name AS sno_from_head_office_by_name,
 			order_info.receive_by_factory,
 			order_info.receive_by_factory_time,
-			order_info.production_pause
+			order_info.receive_by_factory_by,
+			receive_by_factory_by.name AS receive_by_factory_by_name,
+			order_info.production_pause,
+			order_info.production_pause_time,
+			order_info.production_pause_by,
+			production_pause_by.name AS production_pause_by_name
 		FROM 
 			thread.order_info
 		LEFT JOIN 
@@ -290,6 +306,9 @@ export async function select(req, res, next) {
 			WHERE pi_cash.id IS NOT NULL
 			GROUP BY toi.uuid
 		) pi_cash_grouped ON order_info.uuid = pi_cash_grouped.order_info_uuid
+		LEFT JOIN hr.users sno_from_head_office_by ON order_info.sno_from_head_office_by = sno_from_head_office_by.uuid
+		LEFT JOIN hr.users receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
+		LEFT JOIN hr.users production_pause_by ON order_info.production_pause_by = production_pause_by.uuid
 		WHERE order_info.uuid = ${req.params.uuid}
 		ORDER BY 
 			order_info.created_at DESC;`;
@@ -440,13 +459,18 @@ export async function selectThreadSwatch(req, res, next) {
 export async function updateSendFromHeadOffice(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { sno_from_head_office, sno_from_head_office_time } = req.body;
+	const {
+		sno_from_head_office,
+		sno_from_head_office_time,
+		sno_from_head_office_by,
+	} = req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
 		.set({
 			sno_from_head_office,
 			sno_from_head_office_time,
+			sno_from_head_office_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -470,13 +494,18 @@ export async function updateSendFromHeadOffice(req, res, next) {
 export async function updateReceiveByFactory(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { receive_by_factory, receive_by_factory_time } = req.body;
+	const {
+		receive_by_factory,
+		receive_by_factory_time,
+		receive_by_factory_by,
+	} = req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
 		.set({
 			receive_by_factory,
 			receive_by_factory_time,
+			receive_by_factory_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -500,12 +529,15 @@ export async function updateReceiveByFactory(req, res, next) {
 export async function updateProductionPause(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { production_pause } = req.body;
+	const { production_pause, production_pause_time, production_pause_by } =
+		req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
 		.set({
 			production_pause,
+			production_pause_time,
+			production_pause_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({

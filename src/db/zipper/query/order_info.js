@@ -5,6 +5,11 @@ import { desc, eq, sql } from 'drizzle-orm';
 import * as hrSchema from '../../hr/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { order_info } from '../schema.js';
+import { alias } from 'drizzle-orm/pg-core';
+
+const snoFromHeadOfficeBy = alias(hrSchema.users, 'sno_from_head_office_by');
+const receiveByFactoryBy = alias(hrSchema.users, 'receive_by_factory_by');
+const productionPauseBy = alias(hrSchema.users, 'production_pause_by');
 
 export async function insert(req, res, next) {
 	if (!validateRequest(req, next)) return;
@@ -31,9 +36,13 @@ export async function insert(req, res, next) {
 		is_cancelled,
 		sno_from_head_office,
 		sno_from_head_office_time,
+		sno_from_head_office_by,
 		receive_by_factory,
 		receive_by_factory_time,
+		receive_by_factory_by,
 		production_pause,
+		production_pause_time,
+		production_pause_by,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -60,9 +69,13 @@ export async function insert(req, res, next) {
 			is_cancelled,
 			sno_from_head_office,
 			sno_from_head_office_time,
+			sno_from_head_office_by,
 			receive_by_factory,
 			receive_by_factory_time,
+			receive_by_factory_by,
 			production_pause,
+			production_pause_time,
+			production_pause_by,
 		})
 		.returning({
 			insertedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
@@ -107,9 +120,13 @@ export async function update(req, res, next) {
 		is_cancelled,
 		sno_from_head_office,
 		sno_from_head_office_time,
+		sno_from_head_office_by,
 		receive_by_factory,
 		receive_by_factory_time,
+		receive_by_factory_by,
 		production_pause,
+		production_pause_time,
+		production_pause_by,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -136,9 +153,13 @@ export async function update(req, res, next) {
 			is_cancelled,
 			sno_from_head_office,
 			sno_from_head_office_time,
+			sno_from_head_office_by,
 			receive_by_factory,
 			receive_by_factory_time,
+			receive_by_factory_by,
 			production_pause,
+			production_pause_time,
+			production_pause_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -216,9 +237,16 @@ export async function selectAll(req, res, next) {
 			is_cancelled: order_info.is_cancelled,
 			sno_from_head_office: order_info.sno_from_head_office,
 			sno_from_head_office_time: order_info.sno_from_head_office_time,
+			sno_from_head_office_by: order_info.sno_from_head_office_by,
+			sno_from_head_office_by_name: snoFromHeadOfficeBy.name,
 			receive_by_factory: order_info.receive_by_factory,
 			receive_by_factory_time: order_info.receive_by_factory_time,
+			receive_by_factory_by: order_info.receive_by_factory_by,
+			receive_by_factory_by_name: receiveByFactoryBy.name,
 			production_pause: order_info.production_pause,
+			production_pause_time: order_info.production_pause_time,
+			production_pause_by: order_info.production_pause_by,
+			production_pause_by_name: productionPauseBy.name,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -244,6 +272,18 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(order_info.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			snoFromHeadOfficeBy,
+			eq(order_info.sno_from_head_office_by, snoFromHeadOfficeBy.uuid)
+		)
+		.leftJoin(
+			receiveByFactoryBy,
+			eq(order_info.receive_by_factory_by, receiveByFactoryBy.uuid)
+		)
+		.leftJoin(
+			productionPauseBy,
+			eq(order_info.production_pause_by, productionPauseBy.uuid)
 		)
 		.orderBy(desc(order_info.created_at));
 
@@ -295,9 +335,16 @@ export async function select(req, res, next) {
 			is_cancelled: order_info.is_cancelled,
 			sno_from_head_office: order_info.sno_from_head_office,
 			sno_from_head_office_time: order_info.sno_from_head_office_time,
+			sno_from_head_office_by: order_info.sno_from_head_office_by,
+			sno_from_head_office_by_name: snoFromHeadOfficeBy.name,
 			receive_by_factory: order_info.receive_by_factory,
 			receive_by_factory_time: order_info.receive_by_factory_time,
+			receive_by_factory_by: order_info.receive_by_factory_by,
+			receive_by_factory_by_name: receiveByFactoryBy.name,
 			production_pause: order_info.production_pause,
+			production_pause_time: order_info.production_pause_time,
+			production_pause_by: order_info.production_pause_by,
+			production_pause_by_name: productionPauseBy.name,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -323,6 +370,18 @@ export async function select(req, res, next) {
 		.leftJoin(
 			hrSchema.users,
 			eq(order_info.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			snoFromHeadOfficeBy,
+			eq(order_info.sno_from_head_office_by, snoFromHeadOfficeBy.uuid)
+		)
+		.leftJoin(
+			receiveByFactoryBy,
+			eq(order_info.receive_by_factory_by, receiveByFactoryBy.uuid)
+		)
+		.leftJoin(
+			productionPauseBy,
+			eq(order_info.production_pause_by, productionPauseBy.uuid)
 		)
 		.where(eq(order_info.uuid, req.params.uuid));
 
@@ -610,13 +669,18 @@ export async function updatePrintIn(req, res, next) {
 export async function updateSendFromHeadOffice(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { sno_from_head_office, sno_from_head_office_time } = req.body;
+	const {
+		sno_from_head_office,
+		sno_from_head_office_time,
+		sno_from_head_office_by,
+	} = req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
 		.set({
 			sno_from_head_office,
 			sno_from_head_office_time,
+			sno_from_head_office_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -640,13 +704,18 @@ export async function updateSendFromHeadOffice(req, res, next) {
 export async function updateReceiveByFactory(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { receive_by_factory, receive_by_factory_time } = req.body;
+	const {
+		receive_by_factory,
+		receive_by_factory_time,
+		receive_by_factory_by,
+	} = req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
 		.set({
 			receive_by_factory,
 			receive_by_factory_time,
+			receive_by_factory_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -670,12 +739,15 @@ export async function updateReceiveByFactory(req, res, next) {
 export async function updateProductionPause(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { production_pause } = req.body;
+	const { production_pause, production_pause_time, production_pause_by } =
+		req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
 		.set({
 			production_pause,
+			production_pause_time,
+			production_pause_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({

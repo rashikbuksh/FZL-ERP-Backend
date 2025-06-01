@@ -69,9 +69,16 @@ export const OrderDetailsView = `
         order_description.marketing_checked_at,
 		order_info.sno_from_head_office,
 		order_info.sno_from_head_office_time,
+		order_info.sno_from_head_office_by,
+        sno_from_head_office_by.name AS sno_from_head_office_by_name,
 		order_info.receive_by_factory,
 		order_info.receive_by_factory_time,
-		order_info.production_pause
+        order_info.receive_by_factory_by,
+        receive_by_factory_by.name AS receive_by_factory_by_name,
+		order_info.production_pause,
+        order_info.production_pause_time,
+        order_info.production_pause_by,
+        production_pause_by.name AS production_pause_by_name
     FROM
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
@@ -86,7 +93,10 @@ export const OrderDetailsView = `
         LEFT JOIN public.properties op_zipper ON op_zipper.uuid = order_description.zipper_number
         LEFT JOIN public.properties op_end ON op_end.uuid = order_description.end_type
         LEFT JOIN public.properties op_puller ON op_puller.uuid = order_description.puller_type
-        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = order_description.nylon_stopper;
+        LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = order_description.nylon_stopper
+        LEFT JOIN hr.users sno_from_head_office_by ON sno_from_head_office_by.uuid = order_info.sno_from_head_office_by
+        LEFT JOIN hr.users receive_by_factory_by ON receive_by_factory_by.uuid = order_info.receive_by_factory_by
+        LEFT JOIN hr.users production_pause_by ON production_pause_by.uuid = order_info.production_pause_by
   `;
 
 export const OrderDetailsFullView = `
@@ -225,9 +235,16 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_description.marketing_checked_at,
         order_info.sno_from_head_office,
 		order_info.sno_from_head_office_time,
+        order_info.sno_from_head_office_by,
+        sno_from_head_office_by.name AS sno_from_head_office_by_name,
 		order_info.receive_by_factory,
 		order_info.receive_by_factory_time,
-		order_info.production_pause
+        order_info.receive_by_factory_by,
+        receive_by_factory_by.name AS receive_by_factory_by_name,
+		order_info.production_pause,
+		order_info.production_pause_time,
+		order_info.production_pause_by,
+		production_pause_by.name AS production_pause_by_name
   FROM zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
@@ -256,7 +273,10 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         LEFT JOIN public.properties op_end_user ON op_end_user.uuid = order_description.end_user
         LEFT JOIN public.properties op_light_preference ON op_light_preference.uuid = order_description.light_preference
         LEFT JOIN zipper.tape_coil tc ON tc.uuid = order_description.tape_coil_uuid
-        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type;
+        LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type
+        LEFT JOIN hr.users sno_from_head_office_by ON sno_from_head_office_by.uuid = order_info.sno_from_head_office_by
+        LEFT JOIN hr.users receive_by_factory_by ON receive_by_factory_by.uuid = order_info.receive_by_factory_by
+        LEFT JOIN hr.users production_pause_by ON production_pause_by.uuid = order_info.production_pause_by
 	`; // required order_description changes
 
 export const PackingListDetailsView = `
