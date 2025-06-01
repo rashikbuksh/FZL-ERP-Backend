@@ -483,6 +483,9 @@ export async function getBatchEntryDetails(req, res, next) {
 		thread.batch ON be.batch_uuid = batch.uuid
 	LEFT JOIN
 	    lab_dip.recipe re ON oe.recipe_uuid = re.uuid
+	WHERE
+		order_info.is_cancelled = false
+		AND order_info.production_pause = false
 	)
 	SELECT * FROM calculated_balance
 	WHERE is_drying_complete = 'true' AND balance_quantity > 0

@@ -210,6 +210,7 @@ export async function selectSwatchInfo(req, res, next) {
 				WHERE 
 					vod.order_type != 'slider' 
 					AND vod.is_cancelled = FALSE
+					AND vod.production_pause = FALSE
 					${
 						type === 'pending'
 							? sql`AND sfg.recipe_uuid IS NULL`

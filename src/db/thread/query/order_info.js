@@ -420,6 +420,7 @@ export async function selectThreadSwatch(req, res, next) {
 	) AS batch_status ON order_entry.uuid = batch_status.order_entry_uuid
 	WHERE 
 		order_info.is_cancelled = FALSE
+		AND order_info.production_pause = FALSE
 		${
 			type === 'pending'
 				? sql`AND order_entry.recipe_uuid IS NULL`
