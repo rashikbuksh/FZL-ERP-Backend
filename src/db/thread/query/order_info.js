@@ -421,6 +421,7 @@ export async function selectThreadSwatch(req, res, next) {
 	WHERE 
 		order_info.is_cancelled = FALSE
 		AND order_info.production_pause = FALSE
+		AND order_info.receive_by_factory = TRUE
 		${
 			type === 'pending'
 				? sql`AND order_entry.recipe_uuid IS NULL`
