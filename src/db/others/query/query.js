@@ -1165,9 +1165,9 @@ export async function selectOrderInfoToGetOrderDescription(req, res, next) {
             vodf.production_pause
 		FROM zipper.v_order_details_full vodf
 		WHERE 
-			v_order_details_full.order_number = ${order_number} 
-			${marketing_uuid ? sql`AND v_order_details_full.marketing_uuid = ${marketing_uuid}` : sql``}
-		ORDER BY v_order_details_full.order_description_created_at ASC	
+			vodf.order_number = ${order_number} 
+			${marketing_uuid ? sql`AND vodf.marketing_uuid = ${marketing_uuid}` : sql``}
+		ORDER BY vodf.order_description_created_at ASC	
 		`;
 	const orderInfoPromise = db.execute(query);
 
