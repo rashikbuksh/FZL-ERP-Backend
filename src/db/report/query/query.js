@@ -1685,11 +1685,11 @@ export async function ProductionReportSnm(req, res, next) {
                 )::float8 as total_coloring_quantity_weight,
                 coalesce(
                     pi_cash_grouped.pi_numbers,
-                    '{}'
+                    '[]'
                 ) as pi_numbers,
                 coalesce(
                     pi_cash_grouped.lc_numbers,
-                    '{}'
+                    '[]'
                 ) as lc_numbers,
                 dyeing_batch_main.expected_kg,
                 dyeing_batch_main.dyeing_batch_uuid,
@@ -1853,8 +1853,8 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 order_entry.delivered::float8,
                 order_entry.warehouse::float8,
                 (order_entry.quantity::float8 - order_entry.delivered::float8) as balance_quantity,
-                coalesce(pi_cash_grouped_thread.pi_numbers, '{}') as pi_numbers,
-                coalesce(pi_cash_grouped_thread.lc_numbers, '{}') as lc_numbers,
+                coalesce(pi_cash_grouped_thread.pi_numbers, '[]') as pi_numbers,
+                coalesce(pi_cash_grouped_thread.lc_numbers, '[]') as lc_numbers,
                 coalesce(batch_production_sum.coning_production_quantity,0)::float8 as total_coning_production_quantity,
                 coalesce(batch_production_sum.yarn_quantity,0)::float8 as total_yarn_quantity,
                 (order_entry.quantity * count_length.max_weight)::float8 as total_expected_weight,
