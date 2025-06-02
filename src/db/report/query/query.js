@@ -1455,7 +1455,7 @@ export async function ProductionReportSnm(req, res, next) {
                         ) as pi_numbers, 
                         jsonb_agg(
                             DISTINCT jsonb_build_object(
-                                'lc_number', lc.lc_number, 'lc_uuid', lc.uuid
+                                'lc_number', CASE WHEN lc.lc_number IS NOT NULL THEN concat('''', lc.lc_number) ELSE NULL END, 'lc_uuid', lc.uuid
                             )
                         ) as lc_numbers
                     FROM
@@ -1813,7 +1813,9 @@ export async function ProductionReportThreadSnm(req, res, next) {
 				SELECT 
 					toi.uuid as order_info_uuid,
 					jsonb_agg(DISTINCT jsonb_build_object('pi_number', CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END, 'pi_cash_uuid', pi_cash.uuid)) as pi_numbers,
-					jsonb_agg(DISTINCT jsonb_build_object('lc_number', lc.lc_number, 'lc_uuid', lc.uuid)) as lc_numbers
+					jsonb_agg(
+                        DISTINCT jsonb_build_object('lc_number', CASE WHEN lc.lc_number IS NOT NULL THEN concat('''', lc.lc_number) ELSE NULL END, 'lc_uuid', lc.uuid)
+                    ) as lc_numbers
 				FROM
 					thread.order_info toi
 				LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
