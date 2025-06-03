@@ -189,7 +189,11 @@ export async function selectPackingList(req, res, next) {
 							dvl.warehouse_received_by_name,
 							dvl.gate_pass_by,
 							dvl.gate_pass_by_name,
-                            dvl.is_sample
+                            dvl.is_sample,
+							dvl.is_deleted,
+							dvl.deleted_time,
+							dvl.deleted_by,
+							dvl.deleted_by_name
 						ORDER BY dvl.created_at DESC;`;
 
 	try {

@@ -455,7 +455,11 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         packing_list.warehouse_received_by,
         warehouse_received_by.name AS warehouse_received_by_name,
         packing_list.gate_pass_by,
-        gate_pass_by.name AS gate_pass_by_name
+        gate_pass_by.name AS gate_pass_by_name,
+        packing_list.is_deleted,
+        packing_list.deleted_time,
+        packing_list.deleted_by,
+        deleted_by.name AS deleted_by_name
     FROM
         delivery.packing_list
     LEFT JOIN
@@ -464,6 +468,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         hr.users warehouse_received_by ON packing_list.warehouse_received_by = warehouse_received_by.uuid
     LEFT JOIN 
         hr.users gate_pass_by ON packing_list.gate_pass_by = gate_pass_by.uuid
+    LEFT JOIN
+        hr.users deleted_by ON packing_list.deleted_by = deleted_by.uuid
     LEFT JOIN
         zipper.order_info ON packing_list.order_info_uuid = zipper.order_info.uuid
     LEFT JOIN 

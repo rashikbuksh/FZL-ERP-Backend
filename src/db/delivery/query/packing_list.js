@@ -132,15 +132,15 @@ export async function selectAll(req, res, next) {
 	LEFT JOIN zipper.v_order_details vod ON vod.order_description_uuid = oe.order_description_uuid
 	LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
 	LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
-    WHERE 1=1
-    ${challan_uuid ? sql`AND dvl.challan_uuid = ${challan_uuid}` : sql``}
+    WHERE dvl.is_deleted = false
+    ${challan_uuid ? sql` AND dvl.challan_uuid = ${challan_uuid}` : sql``}
     ${
 		type === 'pending'
-			? sql`AND dvl.challan_uuid IS NULL`
+			? sql` AND dvl.challan_uuid IS NULL`
 			: type === 'challan'
-				? sql`AND dvl.challan_uuid IS NOT NULL AND dvl.gate_pass = 0`
+				? sql` AND dvl.challan_uuid IS NOT NULL AND dvl.gate_pass = 0`
 				: type === 'gate_pass'
-					? sql`AND dvl.gate_pass = 1`
+					? sql` AND dvl.gate_pass = 1`
 					: sql``
 	}
 `;
@@ -214,7 +214,11 @@ export async function selectAll(req, res, next) {
 		dvl.warehouse_received_by_name,
 		dvl.gate_pass_by,
 		dvl.gate_pass_by_name,
-		dvl.is_sample
+		dvl.is_sample,
+		dvl.is_deleted,
+		dvl.deleted_time,
+		dvl.deleted_by,
+		dvl.deleted_by_name
     ORDER BY 
         dvl.created_at DESC`
 	);
@@ -280,7 +284,11 @@ export async function select(req, res, next) {
 			dvl.warehouse_received_by_name,
 			dvl.gate_pass_by,
 			dvl.gate_pass_by_name,
-			dvl.is_sample
+			dvl.is_sample,
+			dvl.is_deleted,
+			dvl.deleted_time,
+			dvl.deleted_by,
+			dvl.deleted_by_name
 		ORDER BY 
 			dvl.created_at DESC
 		
@@ -659,7 +667,11 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						dvl.gate_pass_by,
 						dvl.gate_pass_by_name,
 						dvl.is_sample,
-						cl.cone_per_carton
+						cl.cone_per_carton,
+						dvl.is_deleted,
+						dvl.deleted_time,
+						dvl.deleted_by,
+						dvl.deleted_by_name
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -754,7 +766,11 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						dvl.gate_pass_by,
 						dvl.gate_pass_by_name,
 						dvl.is_sample,
-						cl.cone_per_carton
+						cl.cone_per_carton,
+						dvl.is_deleted,
+						dvl.deleted_time,
+						dvl.deleted_by,
+						dvl.deleted_by_name
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -848,7 +864,11 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 						dvl.gate_pass_by,
 						dvl.gate_pass_by_name,
 						dvl.is_sample,
-						cl.cone_per_carton
+						cl.cone_per_carton,
+						dvl.is_deleted,
+						dvl.deleted_time,
+						dvl.deleted_by,
+						dvl.deleted_by_name
 					ORDER BY
 						dvl.created_at DESC
 	`;
