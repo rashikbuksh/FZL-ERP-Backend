@@ -28,7 +28,7 @@ BEGIN
                 thread.order_entry
             SET 
                 delivered = delivered - ple.quantity,
-                warehouse = warehouse - ple.quantity
+                warehouse = warehouse + ple.quantity
             FROM delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
             WHERE 
@@ -51,7 +51,7 @@ BEGIN
                 zipper.sfg
             SET 
                 delivered = delivered - ple.quantity,
-                warehouse = warehouse - ple.quantity
+                warehouse = warehouse + ple.quantity
             FROM 
                 delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -112,7 +112,7 @@ BEGIN
             UPDATE 
                 thread.order_entry
             SET 
-                warehouse = warehouse - ple.quantity,
+                warehouse = warehouse - CASE WHEN NEW.is_warehouse_received = TRUE THEN ple.quantity ELSE 0 END,
                 production_quantity = production_quantity + ple.quantity
             FROM delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -122,7 +122,7 @@ BEGIN
             UPDATE 
                 thread.order_entry
             SET 
-                warehouse = warehouse + ple.quantity,
+                warehouse = warehouse + CASE WHEN NEW.is_warehouse_received = TRUE THEN ple.quantity ELSE 0 END,
                 production_quantity = production_quantity - ple.quantity
             FROM delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -130,22 +130,22 @@ BEGIN
                 pl.uuid = NEW.uuid AND ple.thread_order_entry_uuid = order_entry.uuid;
         END IF;
     ELSE
-        IF OLD.is_warehouse_received = FALSE AND NEW.is_warehouse_received = TRUE THEN
+        IF OLD.is_deleted = FALSE AND NEW.is_deleted = TRUE THEN
             UPDATE 
                 zipper.sfg
             SET 
-                warehouse = warehouse - ple.quantity,
+                warehouse = warehouse - CASE WHEN NEW.is_warehouse_received = TRUE THEN ple.quantity ELSE 0 END,
                 finishing_prod = finishing_prod + ple.quantity
             FROM 
                 delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
             WHERE 
                 pl.uuid = NEW.uuid AND ple.sfg_uuid = sfg.uuid;
-        ELSIF OLD.is_warehouse_received = TRUE AND NEW.is_warehouse_received = FALSE THEN 
+        ELSIF OLD.is_deleted = TRUE AND NEW.is_deleted = FALSE THEN 
             UPDATE 
                 zipper.sfg
             SET 
-                warehouse = warehouse + ple.quantity,
+                warehouse = warehouse + CASE WHEN NEW.is_warehouse_received = TRUE THEN ple.quantity ELSE 0 END,
                 finishing_prod = finishing_prod - ple.quantity
             FROM 
                 delivery.packing_list_entry ple
