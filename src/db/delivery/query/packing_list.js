@@ -132,16 +132,18 @@ export async function selectAll(req, res, next) {
 	LEFT JOIN zipper.v_order_details vod ON vod.order_description_uuid = oe.order_description_uuid
 	LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
 	LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
-    WHERE dvl.is_deleted = false
+    WHERE 1=1
     ${challan_uuid ? sql` AND dvl.challan_uuid = ${challan_uuid}` : sql``}
     ${
 		type === 'pending'
-			? sql` AND dvl.challan_uuid IS NULL`
+			? sql` AND dvl.challan_uuid IS NULL AND dvl.is_deleted = false`
 			: type === 'challan'
-				? sql` AND dvl.challan_uuid IS NOT NULL AND dvl.gate_pass = 0`
+				? sql` AND dvl.challan_uuid IS NOT NULL AND dvl.gate_pass = 0 AND dvl.is_deleted = false`
 				: type === 'gate_pass'
-					? sql` AND dvl.gate_pass = 1`
-					: sql``
+					? sql` AND dvl.gate_pass = 1 AND dvl.is_deleted = false`
+					: type === 'deleted'
+						? sql` AND dvl.is_deleted = true`
+						: sql` AND dvl.is_deleted = false`
 	}
 `;
 
@@ -950,5 +952,102 @@ export async function syncPackingListAndChallanForAllOrder(req, res, next) {
 	} catch (error) {
 		console.error(error);
 		handleError({ error, res });
+	}
+}
+
+export async function selectDeletedPackingList(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { from, to, is_sample } = req.query;
+
+	const query = sql`
+					SELECT dvl.*,
+						JSONB_AGG(DISTINCT 
+							JSONB_BUILD_OBJECT('item_description', vodf.item_description, 'order_description_uuid', vodf.order_description_uuid)
+						) as item_description,
+						CASE 
+							WHEN item_for IN ('thread', 'sample_thread') 
+							THEN 'Thread' 
+							ELSE 
+								CASE 
+									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+									THEN vodf.item_name || ' ' || 'Plastic'
+									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+									THEN vodf.item_name
+								ELSE vodf.item_name 
+                        	END 
+						END as item_name,
+						SUM(ple.quantity)::float8 as total_quantity,
+						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
+						ARRAY_AGG(DISTINCT CASE 
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
+						COALESCE(cl.cone_per_carton, 0) as cone_per_carton
+					FROM delivery.v_packing_list dvl
+					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
+					LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_description_uuid = oe.order_description_uuid
+					LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+					LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
+					WHERE dvl.is_deleted = TRUE
+					GROUP BY
+						dvl.uuid,
+						dvl.order_info_uuid,
+						vodf.item_name,
+						vodf.nylon_stopper_name,
+						dvl.packing_list_wise_rank,
+						dvl.packing_list_wise_count,
+						dvl.packing_number,
+						dvl.packing_number_v1,
+						dvl.order_number,
+						dvl.item_for,
+						dvl.challan_uuid,
+						dvl.challan_number,
+						dvl.carton_size,
+						dvl.carton_weight,
+						dvl.carton_uuid,
+						dvl.carton_name,
+						dvl.is_warehouse_received,
+						dvl.factory_uuid,
+						dvl.factory_name,
+						dvl.buyer_uuid,
+						dvl.buyer_name,
+						dvl.party_uuid,
+						dvl.party_name,
+						dvl.created_by,
+						dvl.created_by_name,
+						dvl.created_at,
+						dvl.updated_at,
+						dvl.remarks,
+						dvl.gate_pass,
+						dvl.marketing_uuid,
+						dvl.marketing_name,
+						dvl.warehouse_received_date,
+						dvl.gate_pass_date,
+						dvl.warehouse_received_by,
+						dvl.warehouse_received_by_name,
+						dvl.gate_pass_by,
+						dvl.gate_pass_by_name,
+						dvl.is_sample,
+						cl.cone_per_carton,
+						dvl.is_deleted,
+						dvl.deleted_time,
+						dvl.deleted_by,
+						dvl.deleted_by_name
+					ORDER BY
+						dvl.created_at DESC
+	`;
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Packing list warehouse out log',
+		};
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
 	}
 }

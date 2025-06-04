@@ -389,13 +389,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
             WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
             THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid 
         END as order_info_uuid,
-        ROW_NUMBER() OVER (
-                        PARTITION BY CASE 
-                            WHEN (packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape'))
-                            THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid 
-                        END
-                        ORDER BY packing_list.created_at
-                    ) AS packing_list_wise_rank, 
+        packing_list_rank.packing_list_wise_rank, 
         packing_list_wise_counts.packing_list_wise_count,
         CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0')) as packing_number_v1,
         CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text) as packing_number,
@@ -507,6 +501,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                         delivery.packing_list
                     WHERE
                         packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
+                        AND packing_list.is_deleted = false
                     GROUP BY
                         packing_list.order_info_uuid
 
@@ -519,10 +514,40 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
                         delivery.packing_list
                     WHERE
                         packing_list.item_for IN ('thread', 'sample_thread')
+                        AND packing_list.is_deleted = false
                     GROUP BY
                         packing_list.thread_order_info_uuid
                 ) packing_list_wise_counts
-                ON packing_list_wise_counts.order_info_uuid = CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END;
+                ON packing_list_wise_counts.order_info_uuid = CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN packing_list.order_info_uuid ELSE packing_list.thread_order_info_uuid END
+    LEFT JOIN (
+        SELECT
+            CASE
+                WHEN packing_list.is_deleted = false THEN ROW_NUMBER() OVER (
+                    PARTITION BY
+                        CASE
+                            WHEN packing_list.item_for IN (
+                                'zipper',
+                                'sample_zipper',
+                                'slider',
+                                'tape'
+                            ) THEN packing_list.order_info_uuid
+                            ELSE packing_list.thread_order_info_uuid
+                        END
+                    ORDER BY packing_list.created_at ASC
+                )
+                ELSE NULL
+            END AS packing_list_wise_rank,
+            packing_list.uuid as packing_list_uuid
+        FROM delivery.packing_list
+        WHERE
+            packing_list.is_deleted = false
+        GROUP BY
+            packing_list.uuid,
+            packing_list.is_deleted,
+            packing_list.created_at,
+            packing_list.item_for
+    ) packing_list_rank ON packing_list_rank.packing_list_uuid = packing_list.uuid
+    ;
 `;
 
 export const pi_cash_view = `
