@@ -104,6 +104,7 @@ export async function deliveryStatementReport(req, res, next) {
                 WHERE 
                     ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
+                    AND vpl.is_deleted = false
                     AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
@@ -174,6 +175,7 @@ export async function deliveryStatementReport(req, res, next) {
                 WHERE 
                     ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
+                    AND vpl.is_deleted = false
                     AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
@@ -224,6 +226,7 @@ export async function deliveryStatementReport(req, res, next) {
                     WHERE
                         ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                         AND vpl.item_for IN ('thread', 'sample_thread')
+                        AND vpl.is_deleted = false
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
                         vpl.packing_list_entry_uuid, toe.party_price, toe.company_price
@@ -271,6 +274,7 @@ export async function deliveryStatementReport(req, res, next) {
                     WHERE
                         ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                         AND vpl.item_for IN ('thread', 'sample_thread')
+                        AND vpl.is_deleted = false
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                     GROUP BY
                         vpl.packing_list_entry_uuid, toe.party_price, toe.company_price

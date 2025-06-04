@@ -361,7 +361,11 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
                 END
             ELSE (toe.quantity - toe.warehouse - toe.delivered)::float8 
         END as balance_quantity,
-        ple.thread_order_entry_uuid
+        ple.thread_order_entry_uuid,
+        pl.is_deleted,
+        pl.deleted_time,
+        pl.deleted_by,
+        deleted_by.name AS deleted_by_name
     FROM 
         delivery.packing_list_entry ple
         LEFT JOIN delivery.packing_list pl ON pl.uuid = ple.packing_list_uuid
@@ -373,7 +377,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         LEFT JOIN thread.order_entry toe ON toe.uuid = ple.thread_order_entry_uuid
         LEFT JOIN thread.count_length tc ON tc.uuid = toe.count_length_uuid
         LEFT JOIN thread.order_info toi ON toi.uuid = toe.order_info_uuid
-        LEFT JOIN delivery.challan ch ON ch.uuid = pl.challan_uuid;
+        LEFT JOIN delivery.challan ch ON ch.uuid = pl.challan_uuid
+        LEFT JOIN hr.users deleted_by ON deleted_by.uuid = pl.deleted_by;
 `;
 
 export const PackingListView = `

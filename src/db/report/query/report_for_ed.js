@@ -220,7 +220,8 @@ export async function selectEDReport(req, res, next) {
             ) thread_batch ON thread_batch.order_entry_uuid = vplf.thread_order_entry_uuid
             WHERE
                 challan.uuid IS NOT NULL
-                ${from && to ? sql`AND challan.created_at::date BETWEEN ${from} AND ${to}` : sql``}
+                AND vplf.is_deleted = false
+                ${from && to ? sql` AND challan.created_at::date BETWEEN ${from} AND ${to}` : sql``}
             ORDER BY challan.created_at DESC
             `;
 

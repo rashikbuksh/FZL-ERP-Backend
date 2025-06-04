@@ -101,6 +101,7 @@ export async function selectDeliveryReportZipper(req, res, next) {
                 vpld.item_for IN ('zipper', 'slider', 'tape', 'sample_zipper')
                 AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
+                AND vpld.is_deleted = false
         `;
 		const resultPromise = db.execute(query);
 
@@ -192,6 +193,7 @@ export async function selectDeliveryReportThread(req, res, next) {
                 vpld.item_for IN ('thread', 'sample_thread')
                 AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
+                AND vpld.is_deleted = false
         `;
 		const resultPromise = db.execute(query);
 
