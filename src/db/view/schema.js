@@ -1,4 +1,4 @@
-import { boolean, integer, pgSchema, pgView, text } from 'drizzle-orm/pg-core';
+import { boolean, integer, text } from 'drizzle-orm/pg-core';
 import * as deliverySchema from '../delivery/schema.js';
 import * as hrSchema from '../hr/schema.js';
 import * as publicSchema from '../public/schema.js';

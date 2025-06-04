@@ -97,7 +97,7 @@ export const OrderDetailsView = `
         LEFT JOIN hr.users sno_from_head_office_by ON sno_from_head_office_by.uuid = order_info.sno_from_head_office_by
         LEFT JOIN hr.users receive_by_factory_by ON receive_by_factory_by.uuid = order_info.receive_by_factory_by
         LEFT JOIN hr.users production_pause_by ON production_pause_by.uuid = order_info.production_pause_by
-  `;
+`;
 
 export const OrderDetailsFullView = `
 CREATE OR REPLACE VIEW zipper.v_order_details_full AS
@@ -277,7 +277,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         LEFT JOIN hr.users sno_from_head_office_by ON sno_from_head_office_by.uuid = order_info.sno_from_head_office_by
         LEFT JOIN hr.users receive_by_factory_by ON receive_by_factory_by.uuid = order_info.receive_by_factory_by
         LEFT JOIN hr.users production_pause_by ON production_pause_by.uuid = order_info.production_pause_by
-	`; // required order_description changes
+`; // required order_description changes
 
 export const PackingListDetailsView = `
 CREATE OR REPLACE VIEW delivery.v_packing_list_details AS 
