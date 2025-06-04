@@ -1700,7 +1700,19 @@ export async function ProductionReportSnm(req, res, next) {
                 dyeing_batch_main.received,
                 dyeing_batch_main.dyeing_machine,
                 dyeing_batch_main.batch_created_at,
-                dyeing_batch_main.expected_kg as batch_expected_kg
+                dyeing_batch_main.expected_kg as batch_expected_kg,
+                vodf.sno_from_head_office,
+                vodf.sno_from_head_office_time,
+                vodf.sno_from_head_office_by,
+                vodf.sno_from_head_office_by_name,
+                vodf.receive_by_factory,
+                vodf.receive_by_factory_time,
+                vodf.receive_by_factory_by,
+                vodf.receive_by_factory_by_name,
+                vodf.production_pause,
+                vodf.production_pause_time,
+                vodf.production_pause_by,
+                vodf.production_pause_by_name
             FROM
                 zipper.v_order_details_full vodf
                 LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -1868,7 +1880,19 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 batch.is_drying_complete,
                 batch.machine,
                 batch.batch_created_at,
-                batch.expected_kg as batch_expected_kg
+                batch.expected_kg as batch_expected_kg,
+                order_info.sno_from_head_office,
+                order_info.sno_from_head_office_time,
+                order_info.sno_from_head_office_by,
+                sno_from_head_office_by.name as sno_from_head_office_by_name,
+                order_info.receive_by_factory,
+                order_info.receive_by_factory_time,
+                order_info.receive_by_factory_by,
+                receive_by_factory_by.name as receive_by_factory_by_name,
+                order_info.production_pause,
+                order_info.production_pause_time,
+                order_info.production_pause_by,
+                production_pause_by.name as production_pause_by_name
             FROM
                 thread.order_info
             LEFT JOIN
@@ -1936,6 +1960,9 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 LEFT JOIN thread.order_entry ON batch_entry_quantity_length.order_entry_uuid = order_entry.uuid
                 LEFT JOIN thread.count_length tcl ON order_entry.count_length_uuid = tcl.uuid
             ) batch ON order_entry.uuid = batch.order_entry_uuid
+            LEFT JOIN hr.users sno_from_head_office_by ON order_info.sno_from_head_office_by = sno_from_head_office_by.uuid
+            LEFT JOIN hr.users receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
+            LEFT JOIN hr.users production_pause_by ON order_info.production_pause_by = production_pause_by.uuid
             WHERE 
                 order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
                 ${own_uuid == null ? sql`` : sql` AND order_info.marketing_uuid = ${marketingUuid}`}
