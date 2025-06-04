@@ -192,7 +192,11 @@ export async function selectSwatchInfo(req, res, next) {
 					vod.order_type,
 					vod.order_description_created_at,
 					oe.swatch_approval_date,
-					COALESCE(dyeing_batch.total_quantity > 0, FALSE) AS is_batch_created
+					COALESCE(dyeing_batch.total_quantity > 0, FALSE) AS is_batch_created,
+					vod.receive_by_factory,
+					vod.receive_by_factory_time,
+					vod.receive_by_factory_by,
+					vod.receive_by_factory_by_name
 				FROM
 					zipper.sfg sfg
 				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid

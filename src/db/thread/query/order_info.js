@@ -397,6 +397,8 @@ export async function selectThreadSwatch(req, res, next) {
 		order_info.sno_from_head_office_time,
 		order_info.receive_by_factory,
 		order_info.receive_by_factory_time,
+		order_info.receive_by_factory_by,
+		receive_by_factory_by.name AS receive_by_factory_by_name,
 		order_info.production_pause
 	FROM 
 		thread.order_info
@@ -418,6 +420,7 @@ export async function selectThreadSwatch(req, res, next) {
 		GROUP BY 
 			batch_entry.order_entry_uuid
 	) AS batch_status ON order_entry.uuid = batch_status.order_entry_uuid
+	LEFT JOIN hr.users receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
 	WHERE 
 		order_info.is_cancelled = FALSE
 		AND order_info.production_pause = FALSE
