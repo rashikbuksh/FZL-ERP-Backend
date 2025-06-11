@@ -124,7 +124,7 @@ export async function selectAll(req, res, next) {
 		ARRAY_AGG(DISTINCT CASE 
             WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END
 		) as color,
-		cl.cone_per_carton
+		CEIL(AVG(cl.cone_per_carton))::float8 as cone_per_carton
     FROM delivery.v_packing_list dvl
     LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 	LEFT JOIN zipper.sfg sfg ON ple.sfg_uuid = sfg.uuid
@@ -211,7 +211,6 @@ export async function selectAll(req, res, next) {
 		dvl.gate_pass_date,
 		vod.item_name,
 		vod.nylon_stopper_name,
-		cl.cone_per_carton,
 		dvl.warehouse_received_by,
 		dvl.warehouse_received_by_name,
 		dvl.gate_pass_by,
