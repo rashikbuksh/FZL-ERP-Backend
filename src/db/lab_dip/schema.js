@@ -2,7 +2,12 @@ import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import * as materialSchema from '../material/schema.js';
 import * as threadSchema from '../thread/schema.js';
-import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
+import {
+	DateTime,
+	defaultUUID,
+	PG_DECIMAL,
+	uuid_primary,
+} from '../variables.js';
 import * as zipperSchema from '../zipper/schema.js';
 
 const lab_dip = pgSchema('lab_dip');
@@ -55,8 +60,22 @@ export const recipe_entry = lab_dip.table('recipe_entry', {
 	),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	index: integer('index').default(0),
+});
+
+export const recipe_entry_log = lab_dip.table('recipe_entry_log', {
+	id: serial('id').primaryKey(),
+	recipe_entry_uuid: defaultUUID('recipe_entry_uuid').references(
+		() => recipe_entry.uuid
+	),
+	quantity: PG_DECIMAL('quantity'),
+	updated_at: DateTime('updated_at'),
+	updated_by: defaultUUID('updated_by').references(() => hrSchema.users.uuid),
+	remarks: text('remarks').default(null),
 });
 
 export const info_entry = lab_dip.table('info_entry', {

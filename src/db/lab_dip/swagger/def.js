@@ -83,12 +83,32 @@ export const defLabDipRecipeEntry = SED({
 	xml: 'LabDip/RecipeEntry',
 });
 
+export const defLabDipRecipeEntryLog = SED({
+	required: [
+		'id',
+		'recipe_entry_uuid',
+		'quantity',
+		'updated_at',
+		'updated_by',
+	],
+	properties: {
+		id: SE.integer(1),
+		recipe_entry_uuid: SE.uuid(),
+		quantity: SE.number(10),
+		updated_at: SE.date_time(),
+		updated_by: SE.uuid(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'LabDip/RecipeEntryLog',
+});
+
 // * Marge All
 export const defLabDip = {
 	info: defLabDipInfo,
 	info_entry: defLabDipInfoEntry,
 	recipe: defLabDipRecipe,
 	recipe_entry: defLabDipRecipeEntry,
+	recipe_entry_log: defLabDipRecipeEntryLog,
 };
 
 // * Tag
@@ -113,5 +133,9 @@ export const tagLabDip = [
 	{
 		name: 'lab_dip.info_entry',
 		description: 'Everything about Lab dip info entry',
+	},
+	{
+		name: 'lab_dip.recipe_entry_log',
+		description: 'Operations about recipe entry log of Lab dip',
 	},
 ];

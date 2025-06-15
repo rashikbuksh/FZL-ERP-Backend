@@ -1234,9 +1234,96 @@ export const pathLabDipRecipeEntry = {
 	},
 };
 
+// * LabDip Recipe Entry Log * //
+export const pathLabDipRecipeEntryLog = {
+	'/lab-dip/recipe-entry-log': {
+		get: {
+			tags: ['lab_dip.recipe_entry_log'],
+			summary: 'Get all lab dip recipe entry log',
+			description: 'Get all lab dip recipe entry log',
+			responses: {
+				200: SE.response_schema_ref(200, 'lab_dip/recipe_entry_log'),
+			},
+		},
+		post: {
+			tags: ['lab_dip.recipe_entry_log'],
+			summary: 'Create a lab dip recipe entry log',
+			description: 'Create a lab dip recipe entry log',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref('lab_dip/recipe_entry_log'),
+			responses: {
+				200: SE.response_schema_ref(200, 'lab_dip/recipe_entry_log'),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/lab-dip/recipe-entry-log/{uuid}': {
+		get: {
+			tags: ['lab_dip.recipe_entry_log'],
+			summary: 'Get lab dip recipe entry log by uuid',
+			description: 'Get lab dip recipe entry log by uuid',
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'uuid',
+					'path',
+					'Lab dip recipe entry log to get',
+					SE.uuid()
+				),
+			],
+			responses: {
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['lab_dip.recipe_entry_log'],
+			summary: 'Update an existing lab dip recipe entry log',
+			description: 'Update an existing lab dip recipe entry log',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'uuid',
+					'path',
+					'Lab dip recipe entry log to get',
+					SE.uuid()
+				),
+			],
+			requestBody: SE.requestBody_schema_ref('lab_dip/recipe_entry_log'),
+			responses: {
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['lab_dip.recipe_entry_log'],
+			summary: 'Delete a lab dip recipe entry log',
+			description: 'Delete a lab dip recipe entry log',
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'uuid',
+					'path',
+					'Lab dip recipe entry log to get',
+					SE.uuid()
+				),
+			],
+			responses: {
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
 export const pathLabDip = {
 	...pathLabDipInfo,
 	...pathLabDipInfoEntry,
 	...pathLabDipRecipe,
 	...pathLabDipRecipeEntry,
+	...pathLabDipRecipeEntryLog,
 };

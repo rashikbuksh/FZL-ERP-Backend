@@ -4,6 +4,7 @@ import * as infoOperations from './query/info.js';
 import * as infoEntryOperations from './query/info_entry.js';
 import * as recipeOperations from './query/recipe.js';
 import * as recipeEntryOperations from './query/recipe_entry.js';
+import * as recipeEntryLogOperations from './query/recipe_entry_log.js';
 
 const labDipRouter = Router();
 
@@ -73,6 +74,25 @@ labDipRouter.delete(
 labDipRouter.get(
 	'/recipe-entry/by/:recipe_uuid',
 	recipeEntryOperations.selectRecipeEntryByRecipeUuid
+);
+
+// recipe_entry_log routes
+labDipRouter.get('/recipe-entry-log', recipeEntryLogOperations.selectAll);
+labDipRouter.get(
+	'/recipe-entry-log/:uuid',
+	validateUuidParam(),
+	recipeEntryLogOperations.select
+);
+labDipRouter.post('/recipe-entry-log', recipeEntryLogOperations.insert);
+labDipRouter.put(
+	'/recipe-entry-log/:uuid',
+	validateUuidParam(),
+	recipeEntryLogOperations.update
+);
+labDipRouter.delete(
+	'/recipe-entry-log/:uuid',
+	validateUuidParam(),
+	recipeEntryLogOperations.remove
 );
 
 export { labDipRouter };
