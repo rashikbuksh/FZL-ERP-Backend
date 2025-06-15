@@ -118,7 +118,15 @@ export async function selectOrderSheetSendReceiveReportThread(req, res, next) {
                             order_entry_counts.order_entry_count,
                             CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatches_approved,
                             order_info.revision_no,
-                            order_info.is_cancelled
+                            order_info.is_cancelled,
+                            order_info.sno_from_head_office,
+                            order_info.sno_from_head_office_time,
+                            order_info.sno_from_head_office_by,
+                            sno_from_head_office_by.name as sno_from_head_office_by_name,
+                            order_info.receive_by_factory,
+                            order_info.receive_by_factory_time,
+                            receive_by_factory_by.name AS receive_by_factory_by_name,
+                            order_info.receive_by_factory_by
                         FROM 
                             thread.order_info
                         LEFT JOIN 
@@ -143,6 +151,10 @@ export async function selectOrderSheetSendReceiveReportThread(req, res, next) {
                                     FROM thread.order_entry toe
                                     GROUP BY toe.order_info_uuid
                         ) order_entry_counts ON order_info.uuid = order_entry_counts.order_info_uuid
+                        LEFT JOIN 
+                            hr.users AS sno_from_head_office_by ON order_info.sno_from_head_office_by = sno_from_head_office_by.uuid
+                        LEFT JOIN
+                            hr.users AS receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
                         WHERE
                             ${
 								date_type == 'factory'
