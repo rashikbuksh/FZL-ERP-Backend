@@ -3,7 +3,7 @@ import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectPackingList(req, res, next) {
-	const { type, from_date, to_date } = req.query;
+	const { type, from_date, to_date, order_type } = req.query;
 
 	let query = sql`
 					WITH pi_cash_grouped AS (
@@ -132,19 +132,23 @@ export async function selectPackingList(req, res, next) {
 						LEFT JOIN pi_cash_grouped pcg ON vodf.order_info_uuid = pcg.order_info_uuid
 						LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
 						LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
+						LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 						LEFT JOIN pi_cash_grouped_thread pcgt ON toe.order_info_uuid = pcgt.order_info_uuid
 						WHERE 1=1
 						${
 							type === 'pending'
-								? sql`AND dvl.challan_uuid IS NULL`
+								? sql` AND dvl.challan_uuid IS NULL`
 								: type === 'challan'
-									? sql`AND dvl.challan_uuid IS NOT NULL`
+									? sql` AND dvl.challan_uuid IS NOT NULL`
 									: type === 'gate_pass'
-										? sql`AND dvl.gate_pass = 1`
+										? sql` AND dvl.gate_pass = 1`
 										: sql``
 						}
-						${from_date && to_date ? sql`AND dvl.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
-						GROUP BY dvl.uuid,
+						${from_date && to_date ? sql` AND dvl.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
+						${order_type == 'sample' ? sql` AND (vodf.is_sample = 1 OR toi.is_sample = 1)` : order_type == 'bulk' ? sql` AND (vodf.is_sample = 0 AND toi.is_sample = 0)` : sql``}
+						AND dvl.is_deleted = false
+						GROUP BY 
+							dvl.uuid,
 							dvl.order_info_uuid,
 							dvl.packing_list_wise_rank,
 							dvl.packing_list_wise_count,

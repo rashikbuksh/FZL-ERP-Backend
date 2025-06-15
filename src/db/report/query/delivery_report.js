@@ -3,7 +3,7 @@ import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function selectDeliveryReportZipper(req, res, next) {
-	const { own_uuid, from, to } = req?.query;
+	const { own_uuid, from, to, order_type } = req?.query;
 
 	let marketingUuid = null;
 	const marketingUuidQuery = sql`
@@ -96,11 +96,13 @@ export async function selectDeliveryReportZipper(req, res, next) {
             LEFT JOIN delivery.v_packing_list vpl ON vpld.packing_list_uuid = vpl.uuid
             LEFT JOIN zipper.sfg sfg ON vpld.sfg_uuid = sfg.uuid
             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+            LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN pi_cash_grouped pcg ON vpld.order_info_uuid = pcg.order_info_uuid
             WHERE 
                 vpld.item_for IN ('zipper', 'slider', 'tape', 'sample_zipper')
                 AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
+                AND ${order_type == 'sample' ? sql` vodf.is_sample = 1` : order_type == 'bulk' ? sql` vodf.is_sample = 0` : sql``}
                 AND vpld.is_deleted = false
         `;
 		const resultPromise = db.execute(query);
@@ -120,7 +122,7 @@ export async function selectDeliveryReportZipper(req, res, next) {
 }
 
 export async function selectDeliveryReportThread(req, res, next) {
-	const { own_uuid, from, to } = req?.query;
+	const { own_uuid, from, to, order_type } = req?.query;
 
 	let marketingUuid = null;
 	const marketingUuidQuery = sql`
@@ -193,6 +195,7 @@ export async function selectDeliveryReportThread(req, res, next) {
                 vpld.item_for IN ('thread', 'sample_thread')
                 AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
+                AND ${order_type == 'sample' ? sql` vodf.is_sample = 1` : order_type == 'bulk' ? sql` vodf.is_sample = 0` : sql``}
                 AND vpld.is_deleted = false
         `;
 		const resultPromise = db.execute(query);
