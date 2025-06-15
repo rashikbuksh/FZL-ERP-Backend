@@ -103,7 +103,7 @@ export async function selectDeliveryReportZipper(req, res, next) {
                 AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
                 AND ${order_type == 'sample' ? sql` vodf.is_sample = 1` : order_type == 'bulk' ? sql` vodf.is_sample = 0` : sql`TRUE`}
-                AND vpld.is_deleted = false
+                
         `;
 		const resultPromise = db.execute(query);
 
@@ -196,7 +196,7 @@ export async function selectDeliveryReportThread(req, res, next) {
                 AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
                 AND ${order_type == 'sample' ? sql` vodf.is_sample = 1` : order_type == 'bulk' ? sql` vodf.is_sample = 0` : sql`TRUE`}
-                AND vpld.is_deleted = false
+                
         `;
 		const resultPromise = db.execute(query);
 
