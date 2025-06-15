@@ -40,6 +40,10 @@ threadRouter.put(
 	'/order-info/production-pause/update/by/:uuid',
 	order_infoOperations.updateProductionPause
 );
+threadRouter.put(
+	'/order-info/swatch-attachment/update/by/:uuid',
+	order_infoOperations.updateSwatchAttachment
+);
 threadRouter.get('/order-swatch', order_infoOperations.selectThreadSwatch);
 
 // order_entry routes

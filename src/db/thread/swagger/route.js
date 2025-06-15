@@ -284,6 +284,26 @@ export const pathThreadOrderInfo = {
 			},
 		},
 	},
+	'/thread/order-info/swatch-attachment/update/by/{uuid}': {
+		put: {
+			tags: ['thread.order_info'],
+			summary: 'Update an existing order info swatch attachment',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('order info to update', 'uuid')],
+			requestBody: SE.requestBody({
+				swatch_attachment: SE.boolean(true),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'thread/order_info'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 // * Thread Order Entry * //
