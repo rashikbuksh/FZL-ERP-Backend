@@ -139,7 +139,13 @@ export async function selectItemZipperEndWiseProduction(req, res, next) {
                         vodf.end_type_name,
                         COALESCE(SUM(
                             packing_list_sum.total_packing_list_quantity
-                        ),0)::float8 as total_production
+                        ),0)::float8 as total_production,
+                        CASE 
+                            WHEN vodf.order_type = 'tape' THEN 'Meter' 
+                            WHEN vodf.order_type = 'slider' THEN 'Pcs'
+                            WHEN vodf.is_inch = 1 THEN 'Inch'
+                            ELSE 'CM' 
+                        END as unit
                     FROM
                         zipper.v_order_details_full vodf
                     LEFT JOIN (
