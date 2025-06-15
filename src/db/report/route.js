@@ -44,6 +44,10 @@ import {
 	threadProductionReportPartyWiseByDate,
 } from './query/thread_production_report_by_date.js';
 import { threadProductionStatusOrderWise } from './query/thread_production_report_order_wise.js';
+import {
+	selectOrderSheetSendReceiveReport,
+	selectOrderSheetSendReceiveReportThread,
+} from './query/order_sheet_send_receive_report.js';
 
 const reportRouter = Router();
 
@@ -226,6 +230,16 @@ reportRouter.get(
 
 // * Thread Batch Report
 reportRouter.get('/thread-batch-report', selectThreadBatchReport);
+
+// * Order Sheet Send Receive Report
+reportRouter.get(
+	'/order-sheet-send-receive-report',
+	selectOrderSheetSendReceiveReport
+);
+reportRouter.get(
+	'/order-sheet-send-receive-report-thread',
+	selectOrderSheetSendReceiveReportThread
+);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -1351,6 +1365,70 @@ export const pathReport = {
 					production_status: SE.string('Production Status'),
 					production_type: SE.string('Production Type'),
 					production_remarks: SE.string('Production Remarks'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/order-sheet-send-receive-report': {
+		get: {
+			summary: 'Order Sheet Send Receive Report',
+			description: 'Order Sheet Send Receive Report',
+			tags: ['report'],
+			operationId: 'selectOrderSheetSendReceiveReport',
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query('date_type', 'date_type', [
+					'sno',
+					'factory',
+				]),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/order-sheet-send-receive-report-thread': {
+		get: {
+			summary: 'Order Sheet Send Receive Report Thread',
+			description: 'Order Sheet Send Receive Report Thread',
+			tags: ['report'],
+			operationId: 'selectOrderSheetSendReceiveReportThread',
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query('date_type', 'date_type', [
+					'sno',
+					'factory',
+				]),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					order_info_uuid: SE.uuid(),
+					order_number: SE.string('Order Number'),
+					party_name: SE.string('Party Name'),
+					style: SE.string('Style'),
+					color: SE.string('Color'),
+					count: SE.string('Count'),
+					length: SE.string('Length'),
+					quantity: SE.number(610),
+					weight: SE.number(610),
 					created_at: SE.date_time(),
 					updated_at: SE.date_time(),
 				}),
