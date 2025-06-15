@@ -78,7 +78,8 @@ export const OrderDetailsView = `
 		order_info.production_pause,
         order_info.production_pause_time,
         order_info.production_pause_by,
-        production_pause_by.name AS production_pause_by_name
+        production_pause_by.name AS production_pause_by_name,
+        order_info.is_swatch_attached
     FROM
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
@@ -244,7 +245,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
 		order_info.production_pause,
 		order_info.production_pause_time,
 		order_info.production_pause_by,
-		production_pause_by.name AS production_pause_by_name
+		production_pause_by.name AS production_pause_by_name,
+        order_info.is_swatch_attached
   FROM zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid

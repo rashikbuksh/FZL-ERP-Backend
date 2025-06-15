@@ -126,7 +126,8 @@ export async function selectOrderSheetSendReceiveReportThread(req, res, next) {
                             order_info.receive_by_factory,
                             order_info.receive_by_factory_time,
                             receive_by_factory_by.name AS receive_by_factory_by_name,
-                            order_info.receive_by_factory_by
+                            order_info.receive_by_factory_by,
+                            order_info.is_swatch_attached
                         FROM 
                             thread.order_info
                         LEFT JOIN 

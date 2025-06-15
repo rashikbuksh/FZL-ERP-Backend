@@ -152,7 +152,8 @@ export async function selectAll(req, res, next) {
 			order_info.production_pause,
 			order_info.production_pause_time,
 			order_info.production_pause_by,
-			production_pause_by.name AS production_pause_by_name
+			production_pause_by.name AS production_pause_by_name,
+			order_info.is_swatch_attached
 		FROM 
 			thread.order_info
 		LEFT JOIN 
@@ -267,7 +268,8 @@ export async function select(req, res, next) {
 			order_info.production_pause,
 			order_info.production_pause_time,
 			order_info.production_pause_by,
-			production_pause_by.name AS production_pause_by_name
+			production_pause_by.name AS production_pause_by_name,
+			order_info.is_swatch_attached
 		FROM 
 			thread.order_info
 		LEFT JOIN 
@@ -399,7 +401,8 @@ export async function selectThreadSwatch(req, res, next) {
 		order_info.receive_by_factory_time,
 		order_info.receive_by_factory_by,
 		receive_by_factory_by.name AS receive_by_factory_by_name,
-		order_info.production_pause
+		order_info.production_pause,
+		order_info.is_swatch_attached
 	FROM 
 		thread.order_info
 	LEFT JOIN 
@@ -543,6 +546,35 @@ export async function updateProductionPause(req, res, next) {
 			production_pause,
 			production_pause_time,
 			production_pause_by,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateSwatchAttachment(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { is_swatch_attached } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			is_swatch_attached,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({

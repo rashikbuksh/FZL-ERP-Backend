@@ -43,6 +43,7 @@ export async function insert(req, res, next) {
 		production_pause,
 		production_pause_time,
 		production_pause_by,
+		is_swatch_attached,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -76,6 +77,7 @@ export async function insert(req, res, next) {
 			production_pause,
 			production_pause_time,
 			production_pause_by,
+			is_swatch_attached,
 		})
 		.returning({
 			insertedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
@@ -127,6 +129,7 @@ export async function update(req, res, next) {
 		production_pause,
 		production_pause_time,
 		production_pause_by,
+		is_swatch_attached,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -160,6 +163,7 @@ export async function update(req, res, next) {
 			production_pause,
 			production_pause_time,
 			production_pause_by,
+			is_swatch_attached,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -247,6 +251,7 @@ export async function selectAll(req, res, next) {
 			production_pause_time: order_info.production_pause_time,
 			production_pause_by: order_info.production_pause_by,
 			production_pause_by_name: productionPauseBy.name,
+			is_swatch_attached: order_info.is_swatch_attached,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -345,6 +350,7 @@ export async function select(req, res, next) {
 			production_pause_time: order_info.production_pause_time,
 			production_pause_by: order_info.production_pause_by,
 			production_pause_by_name: productionPauseBy.name,
+			is_swatch_attached: order_info.is_swatch_attached,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -503,7 +509,8 @@ export async function getTapeAssigned(req, res, next) {
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
 						order_entry_counts.order_entry_count,
-						CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
+						CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved,
+						vodf.is_swatch_attached
 					FROM zipper.v_order_details_full vodf
 					LEFT JOIN (
 						SELECT order_number, COUNT(*) AS order_number_wise_count
@@ -748,6 +755,35 @@ export async function updateProductionPause(req, res, next) {
 			production_pause,
 			production_pause_time,
 			production_pause_by,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateSwatchAttachment(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { is_swatch_attached } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			is_swatch_attached,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({

@@ -103,6 +103,7 @@ export const order_info = zipper.table('order_info', {
 	production_pause_by: defaultUUID('production_pause_by')
 		.references(() => hrSchema.users.uuid)
 		.default(null),
+	is_swatch_attached: boolean('is_swatch_attached').default(false),
 });
 
 export const slider_provided_enum = zipper.enum('slider_provided_enum', [

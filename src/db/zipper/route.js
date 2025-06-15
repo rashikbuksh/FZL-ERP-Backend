@@ -56,6 +56,10 @@ zipperRouter.put(
 	'/order-info/production-pause/update/by/:uuid',
 	orderInfoOperations.updateProductionPause
 );
+zipperRouter.put(
+	'/order-info/swatch-attachment/update/by/:uuid',
+	orderInfoOperations.updateSwatchAttachment
+);
 zipperRouter.get('/tape-assigned', orderInfoOperations.getTapeAssigned);
 
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------

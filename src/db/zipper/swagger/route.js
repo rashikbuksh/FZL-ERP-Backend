@@ -402,6 +402,26 @@ export const pathZipperOrderInfo = {
 			},
 		},
 	},
+	'/zipper/order-info/swatch-attachment/update/by/{uuid}': {
+		put: {
+			tags: ['zipper.order_info'],
+			summary: 'Update an existing order info swatch attachment',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('order info to update', 'uuid')],
+			requestBody: SE.requestBody({
+				swatch_attachment: SE.string('swatch attachment'),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/order_info'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 const order_description_fields = {

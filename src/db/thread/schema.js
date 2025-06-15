@@ -102,6 +102,7 @@ export const order_info = thread.table('order_info', {
 	production_pause_by: defaultUUID('production_pause_by')
 		.references(() => hrSchema.users.uuid)
 		.default(null),
+	is_swatch_attached: boolean('is_swatch_attached').default(false),
 });
 
 export const order_entry = thread.table('order_entry', {
