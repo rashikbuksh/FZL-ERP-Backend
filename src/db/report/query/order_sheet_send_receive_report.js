@@ -45,9 +45,9 @@ export async function selectOrderSheetSendReceiveReport(req, res, next) {
 									? sql`v_order_details_full.receive_by_factory_time BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
 									: sql`v_order_details_full.sno_from_head_office_time BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
 							}
-                            AND ${marketing ? sql`v_order_details_full.marketing_uuid = ${marketing}` : sql`TRUE`}
-                            AND ${party ? sql`v_order_details_full.party_uuid = ${party}` : sql`TRUE`}
-                            AND ${own_uuid ? sql`v_order_details_full.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                            ${marketing ? sql` AND v_order_details_full.marketing_uuid = ${marketing}` : sql``}
+                            ${party ? sql` AND v_order_details_full.party_uuid = ${party}` : sql``}
+                            ${own_uuid ? sql` AND v_order_details_full.marketing_uuid = ${marketingUuid}` : sql``}
                         ORDER BY
                             order_number ASC, item_description ASC;`;
 
@@ -149,9 +149,9 @@ export async function selectOrderSheetSendReceiveReportThread(req, res, next) {
 									? sql`order_info.receive_by_factory_time BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
 									: sql`order_info.sno_from_head_office_time BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
 							}
-                            AND ${marketing ? sql`order_info.marketing_uuid = ${marketing}` : sql`TRUE`}
-                            AND ${party ? sql`order_info.party_uuid = ${party}` : sql`TRUE`}
-                            AND ${own_uuid ? sql`order_info.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
+                            ${marketing ? sql` AND order_info.marketing_uuid = ${marketing}` : sql``}
+                            ${party ? sql` AND order_info.party_uuid = ${party}` : sql``}
+                            ${own_uuid ? sql` AND order_info.marketing_uuid = ${marketingUuid}` : sql``}
                         ORDER BY
                             order_number ASC;
                     `;

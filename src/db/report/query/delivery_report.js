@@ -190,14 +190,15 @@ export async function selectDeliveryReportThread(req, res, next) {
             LEFT JOIN delivery.challan challan ON vpld.challan_uuid = challan.uuid
             LEFT JOIN delivery.v_packing_list vpl ON vpld.packing_list_uuid = vpl.uuid
             LEFT JOIN thread.order_entry oe ON vpld.order_entry_uuid = oe.uuid
+            LEFT JOIN thread.order_info toi ON oe.order_info_uuid = toi.uuid
             LEFT JOIN pi_cash_grouped_thread pcg ON vpld.order_info_uuid = pcg.order_info_uuid
             WHERE 
                 vpld.item_for IN ('thread', 'sample_thread')
                 AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
-                AND ${order_type == 'sample' ? sql` vodf.is_sample = 1` : order_type == 'bulk' ? sql` vodf.is_sample = 0` : sql`TRUE`}
-                
+                AND ${order_type == 'sample' ? sql` toi.is_sample = 1` : order_type == 'bulk' ? sql` toi.is_sample = 0` : sql`TRUE`}
         `;
+
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
