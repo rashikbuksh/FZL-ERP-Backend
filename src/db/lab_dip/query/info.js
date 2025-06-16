@@ -178,11 +178,113 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { type } = req.query;
 
+	const query = sql`
+		SELECT
+			DISTINCT info.uuid,
+			info.id,
+			CONCAT(
+				'LDI',
+				TO_CHAR(info.created_at, 'YY'),
+				'-',
+				LPAD(info.id::text, 4, '0')
+			) AS info_id,
+			info.name,
+			CASE
+				WHEN info.order_info_uuid IS NOT NULL THEN info.order_info_uuid
+				ELSE info.thread_order_info_uuid
+			END AS order_info_uuid,
+			CASE
+				WHEN info.thread_order_info_uuid IS NOT NULL THEN TRUE
+				ELSE FALSE
+			END AS is_thread_order,
+			CASE
+				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.order_number
+				WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT(
+					'ST',
+					CASE
+						WHEN thread.is_sample = 1 THEN 'S'
+						ELSE ''
+					END,
+					TO_CHAR(thread.created_at, 'YY'),
+					'-',
+					LPAD(thread.id::text, 4, '0')
+				)
+				ELSE NULL
+			END AS order_number,
+			-- buyer_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.buyer_uuid ELSE thread.buyer_uuid END,
+			CASE
+				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.buyer_name
+				ELSE thread_buyer.name
+			END AS buyer_name,
+			-- party_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.party_uuid ELSE thread.party_uuid END,
+			CASE
+				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.party_name
+				ELSE thread_party.name
+			END AS party_name,
+			-- marketing_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.marketing_uuid ELSE thread.marketing_uuid END,
+			CASE
+				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.marketing_name
+				ELSE thread_marketing.name
+			END AS marketing_name,
+			-- merchandiser_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.merchandiser_uuid ELSE thread.merchandiser_uuid END,
+			CASE
+				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.merchandiser_name
+				ELSE thread_merchandiser.name
+			END AS merchandiser_name,
+			-- factory_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.factory_uuid ELSE thread.factory_uuid END,
+			CASE
+				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.factory_name
+				ELSE thread_factory.name
+			END AS factory_name,
+			info.lab_status,
+			info.created_by,
+			users.name AS created_by_name,
+			info.created_at,
+			info.updated_at,
+			info.remarks,
+			recipe_array.recipe_array
+		FROM
+			lab_dip.info AS info
+			LEFT JOIN hr.users AS users ON info.created_by = users.uuid
+			LEFT JOIN zipper.v_order_details AS v_order_details ON info.order_info_uuid = v_order_details.order_info_uuid
+			LEFT JOIN thread.order_info AS thread ON info.thread_order_info_uuid = thread.uuid
+			LEFT JOIN public.buyer AS thread_buyer ON thread.buyer_uuid = thread_buyer.uuid
+			LEFT JOIN public.party AS thread_party ON thread.party_uuid = thread_party.uuid
+			LEFT JOIN public.marketing AS thread_marketing ON thread.marketing_uuid = thread_marketing.uuid
+			LEFT JOIN public.merchandiser AS thread_merchandiser ON thread.merchandiser_uuid = thread_merchandiser.uuid
+			LEFT JOIN public.factory AS thread_factory ON thread.factory_uuid = thread_factory.uuid
+			LEFT JOIN (
+				SELECT DISTINCT jsonb_agg(
+						json_build_object(
+							'recipe_uuid', info_entry.recipe_uuid, 'recipe_name', recipe.name, 'is_pps_req', info_entry.is_pps_req, 'approved', info_entry.approved
+						)
+					) AS recipe_array,
+					info_entry.lab_dip_info_uuid
+				FROM lab_dip.info_entry
+					LEFT JOIN lab_dip.recipe ON info_entry.recipe_uuid = recipe.uuid
+				GROUP BY
+					info_entry.lab_dip_info_uuid
+			) AS recipe_array ON info.uuid = recipe_array.lab_dip_info_uuid
+		WHERE
+			${
+				type === 'zipper_sample'
+					? sql`v_order_details.is_sample = 1`
+					: type === 'zipper_bulk'
+						? sql`v_order_details.is_sample = 0`
+						: type === 'thread_sample'
+							? sql`thread.is_sample = 1`
+							: type === 'thread_bulk'
+								? sql`thread.is_sample = 0`
+								: sql`TRUE`
+			}
+		ORDER BY info.created_at DESC;	
+	`;
+
 	const resultPromise = db
 		.select({
 			uuid: info.uuid,
-			// id: info.id,
-			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
+			id: info.id,
+			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', info.id::text)`,
 			name: info.name,
 			order_info_uuid: sql`CASE WHEN info.order_info_uuid IS NOT NULL THEN info.order_info_uuid ELSE info.thread_order_info_uuid END`,
 			is_thread_order: sql`CASE WHEN info.thread_order_info_uuid IS NOT NULL THEN TRUE ELSE FALSE END`,
@@ -213,7 +315,7 @@ export async function selectAll(req, res, next) {
 			remarks: info.remarks,
 			recipe_array: sql`(
 				SELECT 
-					ARRAY_AGG(
+					jsonb_agg(
 						json_build_object(
 							'recipe_uuid', info_entry.recipe_uuid, 
 							'recipe_name', recipe.name, 
@@ -277,7 +379,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: info.uuid,
 			id: info.id,
-			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
+			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', info.id::text)`,
 			name: info.name,
 			order_info_uuid: sql`CASE WHEN info.order_info_uuid IS NOT NULL THEN info.order_info_uuid ELSE info.thread_order_info_uuid END`,
 			is_thread_order: sql`CASE WHEN info.thread_order_info_uuid IS NOT NULL THEN TRUE ELSE FALSE END`,
