@@ -280,84 +280,7 @@ export async function selectAll(req, res, next) {
 		ORDER BY info.created_at DESC;	
 	`;
 
-	const resultPromise = db
-		.select({
-			uuid: info.uuid,
-			id: info.id,
-			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', info.id::text)`,
-			name: info.name,
-			order_info_uuid: sql`CASE WHEN info.order_info_uuid IS NOT NULL THEN info.order_info_uuid ELSE info.thread_order_info_uuid END`,
-			is_thread_order: sql`CASE WHEN info.thread_order_info_uuid IS NOT NULL THEN TRUE ELSE FALSE END`,
-			order_number: sql`
-				CASE 
-					WHEN info.order_info_uuid IS NOT NULL 
-					THEN v_order_details.order_number
-					WHEN info.thread_order_info_uuid IS NOT NULL 
-					THEN CONCAT('ST', CASE WHEN thread.is_sample = 1 THEN 'S' ELSE '' END, to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
-					ELSE NULL
-				END
-			`,
-			// buyer_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.buyer_uuid ELSE thread.buyer_uuid END`,
-			buyer_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.buyer_name ELSE thread_buyer.name END`,
-			// party_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.party_uuid ELSE thread.party_uuid END`,
-			party_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.party_name ELSE thread_party.name END`,
-			// marketing_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.marketing_uuid ELSE thread.marketing_uuid END`,
-			marketing_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.marketing_name ELSE thread_marketing.name END`,
-			// merchandiser_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.merchandiser_uuid ELSE thread.merchandiser_uuid END`,
-			merchandiser_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.merchandiser_name ELSE thread_merchandiser.name END`,
-			// factory_uuid: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.factory_uuid ELSE thread.factory_uuid END`,
-			factory_name: sql` CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.factory_name ELSE thread_factory.name END`,
-			lab_status: info.lab_status,
-			created_by: info.created_by,
-			created_by_name: hrSchema.users.name,
-			created_at: info.created_at,
-			updated_at: info.updated_at,
-			remarks: info.remarks,
-			recipe_array: sql`(
-				SELECT 
-					jsonb_agg(
-						json_build_object(
-							'recipe_uuid', info_entry.recipe_uuid, 
-							'recipe_name', recipe.name, 
-							'is_pps_req', info_entry.is_pps_req, 
-							'approved', info_entry.approved
-						)
-					)
-				FROM lab_dip.info_entry
-				LEFT JOIN lab_dip.recipe ON info_entry.recipe_uuid = recipe.uuid
-				WHERE info_entry.lab_dip_info_uuid = info.uuid
-			)`,
-		})
-		.from(info)
-		.leftJoin(hrSchema.users, eq(info.created_by, hrSchema.users.uuid))
-		.leftJoin(
-			viewSchema.v_order_details,
-			eq(info.order_info_uuid, viewSchema.v_order_details.order_info_uuid)
-		)
-		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
-		.leftJoin(threadBuyer, eq(thread.buyer_uuid, threadBuyer.uuid))
-		.leftJoin(threadParty, eq(thread.party_uuid, threadParty.uuid))
-		.leftJoin(
-			threadMarketing,
-			eq(thread.marketing_uuid, threadMarketing.uuid)
-		)
-		.leftJoin(
-			threadMerchandiser,
-			eq(thread.merchandiser_uuid, threadMerchandiser.uuid)
-		)
-		.leftJoin(threadFactory, eq(thread.factory_uuid, threadFactory.uuid))
-		.where(
-			type === 'zipper_sample'
-				? eq(viewSchema.v_order_details.is_sample, 1)
-				: type === 'zipper_bulk'
-					? eq(viewSchema.v_order_details.is_sample, 0)
-					: type === 'thread_sample'
-						? eq(thread.is_sample, 1)
-						: type === 'thread_bulk'
-							? eq(thread.is_sample, 0)
-							: sql`TRUE`
-		)
-		.orderBy(desc(info.created_at));
+	const resultPromise = db.execute(query);
 
 	try {
 		const data = await resultPromise;
@@ -366,7 +289,7 @@ export async function selectAll(req, res, next) {
 			type: 'select_all',
 			message: 'Info',
 		};
-		return res.status(200).json({ toast, data });
+		return res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
