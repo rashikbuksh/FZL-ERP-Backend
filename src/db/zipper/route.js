@@ -39,9 +39,9 @@ zipperRouter.delete('/order-info/:uuid', orderInfoOperations.remove);
 zipperRouter.get('/order/details', (req, res, next) => {
 	const cacheKey = `orderDetails`;
 	const cachedData = Cache.get(cacheKey);
-	// if (cachedData) {
-	// 	return res.status(200).json(cachedData);
-	// }
+	if (cachedData) {
+		return res.status(200).json(cachedData);
+	}
 	orderInfoOperations
 		.getOrderDetails(req, res)
 		.then((data) => {
