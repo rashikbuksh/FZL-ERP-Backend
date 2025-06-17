@@ -97,34 +97,22 @@ export async function selectAll(req, res, next) {
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', info.id::text)`,
 			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
-			order_number: sql`
-                CASE 
-                    WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', CASE WHEN zipper.order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(zipper.order_info.created_at, 'YY'), '-', zipper.order_info.id::text)
-                    WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('ST', CASE WHEN thread.is_sample = 1 THEN 'S' ELSE '' END, to_char(thread.created_at, 'YY'), '-', thread.id::text)
-                    ELSE NULL
-                END
-            `,
 			name: recipe.name,
 			approved: info_entry.approved,
-			created_by: recipe.created_by,
-			created_by_name: hrSchema.users.name,
 			status: recipe.status,
 			sub_streat: recipe.sub_streat,
 			bleaching: recipe.bleaching,
-			created_at: recipe.created_at,
-			updated_at: recipe.updated_at,
 			remarks: recipe.remarks,
 			approved_date: info_entry.approved_date,
+			created_at: recipe.created_at,
+			updated_at: recipe.updated_at,
+			created_by: recipe.created_by,
+			created_by_name: hrSchema.users.name,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
 		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
 		.leftJoin(info, eq(info_entry.lab_dip_info_uuid, info.uuid))
-		.leftJoin(
-			zipperSchema.order_info,
-			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
 		.where(type ? eq(recipe.sub_streat, type) : true)
 		.orderBy(desc(recipe.created_at));
 
@@ -154,34 +142,22 @@ export async function select(req, res, next) {
 			info_id: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', info.id::text)`,
 			order_info_uuid: info.order_info_uuid,
 			thread_order_info_uuid: info.thread_order_info_uuid,
-			order_number: sql`
-                CASE 
-                    WHEN info.order_info_uuid IS NOT NULL THEN CONCAT('Z', CASE WHEN zipper.order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(zipper.order_info.created_at, 'YY'), '-', zipper.order_info.id::text)
-                    WHEN info.thread_order_info_uuid IS NOT NULL THEN CONCAT('ST', CASE WHEN thread.is_sample = 1 THEN 'S' ELSE '' END, to_char(thread.created_at, 'YY'), '-', thread.id::text)
-                    ELSE NULL
-                END
-            `,
 			name: recipe.name,
 			approved: info_entry.approved,
-			created_by: recipe.created_by,
-			created_by_name: hrSchema.users.name,
 			status: recipe.status,
 			sub_streat: recipe.sub_streat,
 			bleaching: recipe.bleaching,
-			created_at: recipe.created_at,
-			updated_at: recipe.updated_at,
 			remarks: recipe.remarks,
 			approved_date: info_entry.approved_date,
+			created_at: recipe.created_at,
+			updated_at: recipe.updated_at,
+			created_by: recipe.created_by,
+			created_by_name: hrSchema.users.name,
 		})
 		.from(recipe)
 		.leftJoin(hrSchema.users, eq(recipe.created_by, hrSchema.users.uuid))
 		.leftJoin(info_entry, eq(recipe.uuid, info_entry.recipe_uuid))
 		.leftJoin(info, eq(info_entry.lab_dip_info_uuid, info.uuid))
-		.leftJoin(
-			zipperSchema.order_info,
-			eq(info.order_info_uuid, zipperSchema.order_info.uuid)
-		)
-		.leftJoin(thread, eq(info.thread_order_info_uuid, thread.uuid))
 		.where(eq(recipe.uuid, req.params.uuid));
 
 	try {
