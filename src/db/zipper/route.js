@@ -105,12 +105,24 @@ zipperRouter.get('/tape-assigned', orderInfoOperations.getTapeAssigned);
 
 zipperRouter.get('/order-description', orderDescriptionOperations.selectAll);
 zipperRouter.get('/order-description/:uuid', orderDescriptionOperations.select);
-zipperRouter.post('/order-description', orderDescriptionOperations.insert);
-zipperRouter.put('/order-description/:uuid', orderDescriptionOperations.update);
-zipperRouter.delete(
-	'/order-description/:uuid',
-	orderDescriptionOperations.remove
-);
+zipperRouter.post('/order-description', (req, res, next) => {
+	const cacheKey = `orderDetails`;
+	const cachedData = Cache.get(cacheKey);
+	if (cachedData) {
+		return res.status(200).json(cachedData);
+	}
+	orderDescriptionOperations.insert(req, res, next);
+});
+zipperRouter.put('/order-description/:uuid', (req, res, next) => {
+	const cacheKey = `orderDetails`;
+	Cache.del(cacheKey);
+	orderDescriptionOperations.update(req, res, next);
+});
+zipperRouter.delete('/order-description/:uuid', (req, res, next) => {
+	const cacheKey = `orderDetails`;
+	Cache.del(cacheKey);
+	orderDescriptionOperations.remove(req, res, next);
+});
 zipperRouter.get(
 	'/order/description/full/uuid/by/:order_description_uuid',
 	orderDescriptionOperations.selectOrderDescriptionFullByOrderDescriptionUuid
