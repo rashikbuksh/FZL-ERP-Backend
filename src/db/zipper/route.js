@@ -31,26 +31,6 @@ import Cache from 'memory-cache';
 
 // --------------------- ORDER INFO ROUTES ---------------------
 
-// publicRouter.get('/buyer', (req, res, next) => {
-// 	const cacheKey = 'buyerData'; // Custom cache key for buyer data
-// 	// Check if data is already cached
-// 	const cachedData = Cache.get(cacheKey);
-// 	if (cachedData) {
-// 		return res.status(200).json(cachedData);
-// 	}
-// 	// If not cached, fetch data from the database
-// 	buyerOperations
-// 		.selectAll(req, res)
-// 		.then((data) => {
-// 			Cache.put(cacheKey, data, 2 * 60 * 1000);
-// 			return res.status(200).json(data);
-// 		})
-// 		.catch((error) => {
-// 			console.error('Error fetching buyer data:', error);
-// 			next(error); // Pass error to error-handling middleware
-// 		});
-// });
-
 zipperRouter.get('/order-info', orderInfoOperations.selectAll);
 zipperRouter.get('/order-info/:uuid', orderInfoOperations.select);
 zipperRouter.post('/order-info', orderInfoOperations.insert);
@@ -59,9 +39,9 @@ zipperRouter.delete('/order-info/:uuid', orderInfoOperations.remove);
 zipperRouter.get('/order/details', (req, res, next) => {
 	const cacheKey = `orderDetails`;
 	const cachedData = Cache.get(cacheKey);
-	if (cachedData) {
-		return res.status(200).json(cachedData);
-	}
+	// if (cachedData) {
+	// 	return res.status(200).json(cachedData);
+	// }
 	orderInfoOperations
 		.getOrderDetails(req, res)
 		.then((data) => {
