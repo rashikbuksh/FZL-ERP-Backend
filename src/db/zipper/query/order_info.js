@@ -483,7 +483,7 @@ export async function getOrderDetails(req, res, next) {
 
 		const combinedData = {
 			toast,
-			data,
+			data: data?.rows,
 		};
 
 		return combinedData;
