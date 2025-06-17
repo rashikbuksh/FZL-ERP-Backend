@@ -201,7 +201,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			b.batch_type as batch_type,
 			vodf.is_sample,
 			recipe.uuid as recipe_uuid,
-			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text) as recipe_id,
 			recipe.name as recipe_name,
 			recipe.sub_streat,
 			ie.approved,
@@ -294,7 +294,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			DISTINCT sfg.uuid as sfg_uuid,
 			sfg.recipe_uuid as recipe_uuid,
 			recipe.name as recipe_name,
-			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text) as recipe_id,
 			oe.style,
 			oe.color,
 			vodf.order_type,
@@ -397,15 +397,15 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 					OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 				) 
 				${order_info_uuid ? sql`AND vodf.order_info_uuid = ${order_info_uuid}` : sql``}
-				 ${
-						type === 'sample'
-							? sql` AND vodf.is_sample = 1`
-							: type === 'bulk'
-								? sql` AND vodf.is_sample = 0`
-								: type === 'all'
-									? sql``
-									: sql``
-					}
+				${
+					type === 'sample'
+						? sql` AND vodf.is_sample = 1`
+						: type === 'bulk'
+							? sql` AND vodf.is_sample = 0`
+							: type === 'all'
+								? sql``
+								: sql``
+				}
 		`;
 
 	// NOTE: vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END

@@ -14,7 +14,7 @@ export async function insert(req, res, next) {
 		.insert(finishing_batch)
 		.values(req.body)
 		.returning({
-			insertedUuid: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+			insertedUuid: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', (finishing_batch.id)::text)`,
 		});
 
 	try {
@@ -40,7 +40,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(finishing_batch.uuid, req.params.uuid))
 		.returning({
-			updatedUuid: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+			updatedUuid: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', (finishing_batch.id)::text)`,
 		});
 
 	try {
@@ -65,7 +65,7 @@ export async function remove(req, res, next) {
 		.delete(finishing_batch)
 		.where(eq(finishing_batch.uuid, req.params.uuid))
 		.returning({
-			deletedUuid: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+			deletedUuid: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', (finishing_batch.id)::text)`,
 		});
 
 	try {
@@ -88,7 +88,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: sql`DISTINCT finishing_batch.uuid`,
 			id: finishing_batch.id,
-			batch_number: sql`concat('FB', to_char(${finishing_batch.created_at}, 'YY'::text), '-', lpad((${finishing_batch.id})::text, 4, '0'::text))`,
+			batch_number: sql`concat('FB', to_char(${finishing_batch.created_at}, 'YY'::text), '-', (${finishing_batch.id})::text)`,
 			order_info_uuid: viewSchema.v_order_details_full.order_info_uuid,
 			order_number: viewSchema.v_order_details_full.order_number,
 			item_description: viewSchema.v_order_details_full.item_description,
@@ -183,7 +183,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: finishing_batch.uuid,
 			id: finishing_batch.id,
-			batch_number: sql`concat('FB', to_char(${finishing_batch.created_at}, 'YY'::text), '-', lpad((${finishing_batch.id})::text, 4, '0'::text))`,
+			batch_number: sql`concat('FB', to_char(${finishing_batch.created_at}, 'YY'::text), '-', (${finishing_batch.id})::text)`,
 			order_info_uuid: viewSchema.v_order_details_full.order_info_uuid,
 			order_number: viewSchema.v_order_details_full.order_number,
 			item_description: viewSchema.v_order_details_full.item_description,
@@ -386,7 +386,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 					jsonb_agg(DISTINCT 
 						jsonb_build_object(
 							'batch_uuid', finishing_batch.uuid, 
-							'batch_number', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')), 
+							'batch_number', CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', finishing_batch.id::text), 
 							'order_description_uuid', vodf.order_description_uuid, 
 							'order_number', vodf.order_number,
 							'batch_quantity', fb_sum.batch_quantity::float8,
@@ -639,7 +639,7 @@ export async function getDailyProductionPlan(req, res, next) {
 									WHEN vodf.is_inch = 1 THEN 'Inch'
 									ELSE 'Cm'
 								END AS unit,
-								CONCAT('FB', to_char(zfb.created_at, 'YY'), '-', lpad(zfb.id::text, 4, '0')) AS batch_number
+								CONCAT('FB', to_char(zfb.created_at, 'YY'), '-', zfb.id::text) AS batch_number
 							FROM 
 								zipper.finishing_batch zfb
 							LEFT JOIN
@@ -753,7 +753,7 @@ export async function getPlanningInfoFromDateAndOrderDescription(
 		const orderQuery = sql`
 					SELECT 
 						finishing_batch.uuid as batch_uuid, 
-						CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', lpad(finishing_batch.id::text, 4, '0')) as batch_number, 
+						CONCAT('FB', to_char(finishing_batch.created_at, 'YY'), '-', finishing_batch.id::text) as batch_number, 
 						vodf.order_description_uuid as order_description_uuid, 
 						vodf.order_number as order_number,
 						fb_sum.batch_quantity::float8 as batch_quantity,
@@ -841,7 +841,7 @@ export async function updateFinishingBatchPutIsCompletedByFinishingBatchUuid(
 		.set({ is_completed, updated_at })
 		.where(eq(finishing_batch.uuid, uuid))
 		.returning({
-			updatedId: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text))`,
+			updatedId: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', (finishing_batch.id)::text)`,
 		});
 
 	try {
@@ -909,7 +909,7 @@ export async function getOrderOverviewForFinishingBatch(req, res, next) {
 					vodf.tape_received::float8,
 					vodf.tape_transferred::float8,
 					sfg.recipe_uuid as recipe_uuid,
-					concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+					concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text) as recipe_id,
 					ie.approved,
 					ie.approved_date,
 					ie.is_pps_req,

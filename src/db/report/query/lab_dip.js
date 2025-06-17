@@ -21,10 +21,10 @@ export async function selectLabDip(req, res, next) {
 		}
 		const query = sql`
                     SELECT
-                        concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0')) as info_id,
+                        concat('LDI', to_char(info.created_at, 'YY'), '-', info.id::text) as info_id,
                         info.name as lab_dip_name,
                         info.lab_status as lab_status,
-                        concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name ) as recipe_id,
+                        concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text, ' - ', recipe.name ) as recipe_id,
                         recipe.name as recipe_name,
                         recipe.status as recipe_status,
                         order_entry.swatch_approval_date::date,

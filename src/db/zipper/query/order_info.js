@@ -481,7 +481,12 @@ export async function getOrderDetails(req, res, next) {
 			message: 'Order Info list',
 		};
 
-		res.status(200).json({ toast, data: data?.rows });
+		const combinedData = {
+			toast,
+			data,
+		};
+
+		return combinedData;
 	} catch (error) {
 		await handleError({ error, res });
 	}

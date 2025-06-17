@@ -484,7 +484,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 		query = sql`
 		SELECT DISTINCT
 			toi.uuid as order_info_uuid,
-			CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+			CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', toi.id::text) as order_number,
 			CONCAT(cl.count) as item_description,
 			cl.length as size,
 			toe.style,

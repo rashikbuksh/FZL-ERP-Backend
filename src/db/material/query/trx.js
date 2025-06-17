@@ -123,7 +123,7 @@ export async function selectAll(req, res, next) {
 			updated_at: trx.updated_at,
 			remarks: trx.remarks,
 			booking_uuid: trx.booking_uuid,
-			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text))`,
+			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', (booking.id)::text)`,
 			store_type: info.store_type,
 		})
 		.from(trx)
@@ -191,7 +191,7 @@ export async function select(req, res, next) {
 			updated_at: trx.updated_at,
 			remarks: trx.remarks,
 			booking_uuid: trx.booking_uuid,
-			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text))`,
+			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', (booking.id)::text)`,
 		})
 		.from(trx)
 		.leftJoin(info, eq(trx.material_uuid, info.uuid))
@@ -242,7 +242,7 @@ export async function selectMaterialTrxByMaterialTrxTo(req, res, next) {
 			updated_at: trx.updated_at,
 			remarks: trx.remarks,
 			booking_uuid: trx.booking_uuid,
-			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text))`,
+			booking_number: sql`concat('MB', to_char(booking.created_at, 'YY'::text), '-', (booking.id)::text)`,
 		})
 		.from(trx)
 		.leftJoin(info, eq(trx.material_uuid, info.uuid))

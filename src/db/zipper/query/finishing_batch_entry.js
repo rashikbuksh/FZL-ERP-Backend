@@ -183,7 +183,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 		SELECT DISTINCT
 			sfg.uuid as sfg_uuid,
 			sfg.recipe_uuid as recipe_uuid,
-			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text) as recipe_id,
 			oe.style,
 			oe.color,
 			oe.size,
@@ -377,7 +377,7 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 		SELECT
 			fbe.uuid as uuid,
 			sfg.recipe_uuid as recipe_uuid,
-			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0')) as recipe_id,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text) as recipe_id,
 			oe.style,
 			oe.color,
 			oe.size,
@@ -507,7 +507,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 		SELECT
 			zfbe.uuid AS finishing_batch_entry_uuid,
 			zfb.uuid AS finishing_batch_uuid,
-			CONCAT('FB', TO_CHAR(zfb.created_at, 'YY'), '-', LPAD((zfb.id)::text, 4, '0')) AS batch_number,
+			CONCAT('FB', TO_CHAR(zfb.created_at, 'YY'), '-', (zfb.id)::text) AS batch_number,
 			sfg.uuid AS sfg_uuid,
 			sfg.order_entry_uuid AS order_entry_uuid,
 			vodf.order_number AS order_number,

@@ -79,8 +79,8 @@ export async function selectAll(req, res, next) {
 					cash_receive.uuid,
 					cash_receive.pi_cash_uuid,
 					CASE 
-						WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-						ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+						WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)) 
+						ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)) 
 					END AS pi_cash_id,
 					pi_cash.receive_amount::float8,
 					cash_receive.amount::float8,
@@ -164,8 +164,8 @@ export async function select(req, res, next) {
 					cash_receive.uuid,
 					cash_receive.pi_cash_uuid,
 					CASE 
-						WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-						ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+						WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)) 
+						ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)) 
 					END AS pi_cash_id,
 					pi_cash.receive_amount::float8,
 					cash_receive.amount::float8,

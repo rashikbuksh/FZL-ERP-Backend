@@ -24,8 +24,8 @@ export async function selectCashInvoice(req, res, next) {
                     SELECT 
                             pi_cash.uuid,
                             CASE 
-                                WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-                                ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+                                WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
+                                ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
                             END AS id,
                             SUM(CASE 
                                 WHEN pe.thread_order_entry_uuid IS NULL 

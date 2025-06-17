@@ -43,7 +43,7 @@ export async function update(req, res, next) {
 
 		const order_info_number = db
 			.select({
-				updatedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+				updatedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', order_info.id::text)`,
 			})
 			.from(order_info)
 			.where(eq(order_info.uuid, data[0].updatedId));

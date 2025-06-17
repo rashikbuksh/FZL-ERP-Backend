@@ -186,7 +186,7 @@ export async function selectAll(req, res, next) {
 				'LDI',
 				TO_CHAR(info.created_at, 'YY'),
 				'-',
-				LPAD(info.id::text, 4, '0')
+				info.id::text
 			) AS info_id,
 			info.name,
 			CASE
@@ -207,7 +207,7 @@ export async function selectAll(req, res, next) {
 					END,
 					TO_CHAR(thread.created_at, 'YY'),
 					'-',
-					LPAD(thread.id::text, 4, '0')
+					thread.id::text
 				)
 				ELSE NULL
 			END AS order_number,
@@ -311,7 +311,7 @@ export async function select(req, res, next) {
 					WHEN info.order_info_uuid IS NOT NULL 
 					THEN v_order_details.order_number
 					WHEN info.thread_order_info_uuid IS NOT NULL 
-					THEN CONCAT('ST', CASE WHEN thread.is_sample = 1 THEN 'S' ELSE '' END, to_char(thread.created_at, 'YY'), '-', LPAD(thread.id::text, 4, '0'))
+					THEN CONCAT('ST', CASE WHEN thread.is_sample = 1 THEN 'S' ELSE '' END, to_char(thread.created_at, 'YY'), '-', thread.id::text)
 					ELSE NULL
 				END
 			`,
@@ -415,7 +415,7 @@ export async function infoRecipeWithOrderDashboard(req, res, next) {
 			CASE 
 				WHEN info.order_info_uuid IS NOT NULL 
 				THEN vod.order_number
-				ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+				ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', toi.id::text) 
 			END as order_number,
 			CASE WHEN info.order_info_uuid IS NOT NULL THEN vod.order_info_uuid ELSE toi.uuid END as order_info_uuid,
 			info.name as info_name,
@@ -423,7 +423,7 @@ export async function infoRecipeWithOrderDashboard(req, res, next) {
 			info_entry.approved,
 			info_entry.approved_date,
 			recipe.uuid as recipe_uuid,
-			concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name) as recipe_name,
+			concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text, ' - ', recipe.name) as recipe_name,
 			CASE 
 				WHEN info.order_info_uuid IS NOT NULL THEN TRUE 
 				ELSE FALSE

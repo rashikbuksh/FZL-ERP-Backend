@@ -21,7 +21,7 @@ export async function selectDeliveryReportZipper(req, res, next) {
             WITH pi_cash_grouped AS (
 				SELECT 
 					vodf.order_info_uuid, 
-					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
+					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END) as pi_numbers,
 					array_agg(DISTINCT lc.lc_number) as lc_numbers
 				FROM
 					zipper.v_order_details_full vodf
@@ -35,7 +35,7 @@ export async function selectDeliveryReportZipper(req, res, next) {
 			)
             SELECT 
                 challan.uuid AS uuid,
-				CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) AS challan_number,
+				CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text) AS challan_number,
                 challan.delivery_date,
                 challan.receive_status,
                 vpld.item_for,
@@ -140,7 +140,7 @@ export async function selectDeliveryReportThread(req, res, next) {
             WITH pi_cash_grouped_thread AS (
 				SELECT 
 					toi.uuid as order_info_uuid,
-					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END) as pi_numbers,
+					array_agg(DISTINCT CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END) as pi_numbers,
 					array_agg(DISTINCT lc.lc_number) as lc_numbers
 				FROM
 					thread.order_info toi
@@ -153,7 +153,7 @@ export async function selectDeliveryReportThread(req, res, next) {
 			)
             SELECT 
                 challan.uuid AS uuid,
-				CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) AS challan_number,
+				CONCAT('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text) AS challan_number,
                 challan.delivery_date,
                 challan.receive_status,
                 vpld.item_for,
