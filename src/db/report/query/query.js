@@ -1958,7 +1958,8 @@ SELECT
     order_info.production_pause_time,
     order_info.production_pause_by,
     production_pause_by.name as production_pause_by_name
-            thread.order_info
+    FROM 
+        thread.order_info
     LEFT JOIN thread.order_entry ON order_entry.order_info_uuid = order_info.uuid
     LEFT JOIN thread.count_length ON order_entry.count_length_uuid = count_length.uuid
     LEFT JOIN lab_dip.recipe ON order_entry.recipe_uuid = recipe.uuid
