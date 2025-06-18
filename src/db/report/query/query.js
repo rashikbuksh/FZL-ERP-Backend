@@ -277,7 +277,7 @@ export async function zipperProductionStatusReport(req, res, next) {
 
 		query.append(
 			sql` 
-            GROUP BY
+             GROUP BY
                 vodf.order_info_uuid,
                 vodf.order_number,
                 finishing_dyeing_batch.finishing_batch,
