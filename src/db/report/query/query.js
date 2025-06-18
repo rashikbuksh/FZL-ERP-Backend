@@ -1964,7 +1964,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
                 ${own_uuid == null ? sql`` : sql` AND order_info.marketing_uuid = ${marketingUuid}`}
                 ${from && to ? sql` AND order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql``}
-            ORDER BY party.name DESC
+            ORDER BY order_info.created_at DESC
     `;
 
 		const resultPromise = db.execute(query);
