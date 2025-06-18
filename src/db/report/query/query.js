@@ -1989,6 +1989,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
 					approved_quantity: '-',
 					total_yarn_quantity: '-',
 					total_coning_production_quantity: '-',
+					warehouse: '-',
 					delivered: '-',
 					balance_quantity: '-',
 					party_price: '-',
