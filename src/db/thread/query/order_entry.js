@@ -236,6 +236,7 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 			order_info_uuid: order_entry.order_info_uuid,
 			lab_reference: order_entry.lab_reference,
 			color: order_entry.color,
+			color_ref: order_entry.color_ref,
 			recipe_uuid: order_entry.recipe_uuid,
 			recipe_name: labDipSchema.recipe.name,
 			po: order_entry.po,
