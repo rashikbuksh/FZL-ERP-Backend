@@ -195,6 +195,7 @@ export async function selectAll(req, res, next) {
 		SELECT 
 			ARRAY_AGG(DISTINCT oe.style) as style,
 			ARRAY_AGG(DISTINCT oe.color) as color,
+			ARRAY_AGG(DISTINCT oe.color_ref) as color_ref,
 			oe.order_description_uuid
 		FROM zipper.order_entry oe
 		GROUP BY oe.order_description_uuid
@@ -317,6 +318,7 @@ export async function select(req, res, next) {
 		SELECT 
 			ARRAY_AGG(DISTINCT oe.style) as style,
 			ARRAY_AGG(DISTINCT oe.color) as color,
+			ARRAY_AGG(DISTINCT oe.color_ref) as color_ref,
 			oe.order_description_uuid
 		FROM zipper.order_entry oe
 		GROUP BY oe.order_description_uuid
@@ -503,6 +505,7 @@ export async function selectStockByFromSection(req, res, next) {
 			SELECT 
 				ARRAY_AGG(DISTINCT oe.style) as style,
 				ARRAY_AGG(DISTINCT oe.color) as color,
+				ARRAY_AGG(DISTINCT oe.color_ref) as color_ref,
 				oe.order_description_uuid
 			FROM zipper.order_entry oe
 			GROUP BY oe.order_description_uuid

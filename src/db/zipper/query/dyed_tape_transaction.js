@@ -94,6 +94,7 @@ export async function selectAll(req, res, next) {
 			dtt.remarks AS remarks,
 			dtt.sfg_uuid as sfg_uuid,
 			oe.color,
+			oe.color_ref,
 			oe.style,
 			CONCAT(oe.color, ' - ', oe.style) as color_style,
 			dtt.trx_quantity_in_meter::float8
@@ -141,6 +142,7 @@ export async function select(req, res, next) {
 			dtt.remarks AS remarks,
 			dtt.sfg_uuid as sfg_uuid,
 			oe.color,
+			oe.color_ref,
 			oe.style,
 			CONCAT(oe.color, ' - ', oe.style) as color_style,
 			dtt.trx_quantity_in_meter::float8,
@@ -199,6 +201,7 @@ export async function selectDyedTapeTransactionBySection(req, res, next) {
 			dtt.remarks AS remarks,
 			dtt.sfg_uuid as sfg_uuid,
 			oe.color,
+			oe.color_ref,
 			oe.style,
 			CONCAT(oe.color, ' - ', oe.style) as color_style,
 			dtt.trx_quantity_in_meter::float8

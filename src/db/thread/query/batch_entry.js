@@ -244,6 +244,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 	SELECT 
 		oe.uuid as order_entry_uuid,
 	    oe.color as color,
+		oe.color_ref as color_ref,
 		oe.po as po,
 		oe.style as style,
 		oe.count_length_uuid as count_length_uuid,
@@ -339,6 +340,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 							be.batch_uuid,
 							oe.uuid as order_entry_uuid,
 							oe.color as color,
+							oe.color_ref as color_ref,
 							oe.po as po,
 							oe.style as style,
 							oe.count_length_uuid as count_length_uuid,
@@ -448,6 +450,7 @@ export async function getBatchEntryDetails(req, res, next) {
 		order_info.party_uuid,
 		party.name as party_name,
 	    oe.color as color,
+		oe.color_ref as color_ref,
 		oe.po as po,
 		oe.style as style,
 		oe.bleaching as bleaching,

@@ -41,6 +41,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 vodf.order_type,
                 vodf.item_description,
                 ARRAY_AGG(DISTINCT oe.color) AS colors,
+                ARRAY_AGG(DISTINCT oe.color_ref) AS color_refs,
                 CONCAT(swatch_approval_counts.swatch_approval_count, ' / ',
 				order_entry_counts.order_entry_count) AS swatch_approval_count,
                 ARRAY_AGG(DISTINCT oe.style) AS styles,
@@ -1623,6 +1624,7 @@ export async function ProductionReportSnm(req, res, next) {
                 oe.uuid as order_entry_uuid,
                 oe.style,
                 oe.color,
+                oe.color_ref,
                 oe.size::float8,
                 oe.quantity::float8,
                 oe.party_price::float8,
@@ -2103,6 +2105,7 @@ export async function dailyProductionReport(req, res, next) {
 					vodf.order_type,
 					vodf.is_inch,
                     oe.color,
+                    oe.color_ref,
                     oe.size::float8,
                     CASE 
                         WHEN vodf.is_inch = 1 THEN 'Inch'
@@ -2144,6 +2147,7 @@ export async function dailyProductionReport(req, res, next) {
                 GROUP BY 
                     oe.company_price,
                     oe.color,
+                    oe.color_ref,
                     oe.size,
                     vodf.marketing_uuid,
 					vodf.marketing_name,
@@ -2177,6 +2181,7 @@ export async function dailyProductionReport(req, res, next) {
                     null as order_type,
                     null as is_inch,
                     toe.color,
+                    toe.color_ref,
                     count_length.length::float8 as size,
                     'Mtr' as unit,
                     'Cone' as price_unit,
@@ -2210,6 +2215,7 @@ export async function dailyProductionReport(req, res, next) {
                 GROUP BY
                     toe.company_price,
                     toe.color,
+                    toe.color_ref,
                     count_length.length,
                     toi.marketing_uuid,
                     marketing.name,

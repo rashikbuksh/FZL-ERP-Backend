@@ -103,6 +103,9 @@ export const order_info = thread.table('order_info', {
 		.references(() => hrSchema.users.uuid)
 		.default(null),
 	is_swatch_attached: boolean('is_swatch_attached').default(false),
+	color_ref: text('color_ref').default(null),
+	color_ref_entry_date: DateTime('color_ref_entry_date').default(null),
+	color_ref_update_date: DateTime('color_ref_update_date').default(null),
 });
 
 export const order_entry = thread.table('order_entry', {

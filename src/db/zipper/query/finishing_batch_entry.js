@@ -186,6 +186,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text) as recipe_id,
 			oe.style,
 			oe.color,
+			oe.color_ref,
 			oe.size,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 
@@ -279,6 +280,7 @@ export async function getOrderDetailsForFinishingBatchEntry(req, res, next) {
 		ORDER BY 
 			oe.style,
 			oe.color,
+			oe.color_ref,
 			oe.size
 		`;
 
@@ -380,6 +382,7 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text) as recipe_id,
 			oe.style,
 			oe.color,
+			oe.color_ref,
 			oe.size,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 
@@ -516,6 +519,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			oe.order_description_uuid AS order_description_uuid,
 			oe.style AS style,
 			oe.color AS color,
+			oe.color_ref AS color_ref,
 			oe.size,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 

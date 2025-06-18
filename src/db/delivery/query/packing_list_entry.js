@@ -113,6 +113,7 @@ export async function selectAll(req, res, next) {
 			vodf.order_description_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color_ref ELSE toe.color_ref END as color_ref,
 			CASE 
 				WHEN ple.sfg_uuid IS NOT NULL 
 				THEN oe.size::float8 
@@ -193,6 +194,7 @@ export async function select(req, res, next) {
 			vodf.order_description_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color_ref ELSE toe.color_ref END as color_ref,
 			CASE 
 				WHEN ple.sfg_uuid IS NOT NULL 
 				THEN oe.size::float8 
@@ -276,6 +278,7 @@ export async function selectPackingListEntryByPackingListUuid(req, res, next) {
 			vodf.order_description_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color_ref ELSE toe.color_ref END as color_ref,
 			CASE 
 				WHEN ple.sfg_uuid IS NOT NULL THEN 
 					CASE 
@@ -453,6 +456,7 @@ export async function selectPackingListEntryByChallanUuid(req, res, next) {
 			vodf.order_description_uuid,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END as style,
 			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END as color,
+			CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color_ref ELSE toe.color_ref END as color_ref,
 			CASE 
 				WHEN ple.sfg_uuid IS NOT NULL 
 				THEN CAST(oe.size AS NUMERIC)

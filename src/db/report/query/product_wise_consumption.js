@@ -253,6 +253,7 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 						) AS specification,
 						ARRAY_AGG(oe.style) as styles,
 						ARRAY_AGG(oe.color) as colors,
+						ARRAY_AGG(oe.color_ref) as color_refs,
 						CONCAT(
 							MIN(
 								CASE 

@@ -37,6 +37,7 @@ export async function threadProductionReportByDate(req, res, next) {
                 marketing.name as marketing_name,
                 order_entry.style,
                 order_entry.color,
+                order_entry.color_ref,
                 recipe.name as recipe_name,
                 order_entry.swatch_approval_date,
                 order_entry.count_length_uuid,

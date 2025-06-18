@@ -29,6 +29,7 @@ export async function selectEDReport(req, res, next) {
                 CASE WHEN oe.uuid IS NOT NULL THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
                 vplf.style,
                 vplf.color,
+                vplf.color_ref,
                 vplf.size,
                 vplf.style_color_size,
                 CASE WHEN sfg.uuid IS NOT NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as party_price,

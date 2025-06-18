@@ -174,6 +174,7 @@ export async function selectSwatchInfo(req, res, next) {
 					vod.order_info_uuid,
 					oe.style AS style,
 					oe.color AS color,
+					oe.color_ref,
 					vod.is_inch,
 					oe.size,
 					CASE 
@@ -301,6 +302,7 @@ export async function selectSfgBySection(req, res, next) {
 			oe.order_description_uuid as order_description_uuid,
 			oe.style as style,
 			oe.color as color,
+			oe.color_ref as color_ref,
 			oe.size,
 			CASE 
 				WHEN vod.order_type = 'tape' THEN 'Meter' 

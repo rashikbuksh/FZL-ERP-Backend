@@ -943,6 +943,9 @@ const order_entry_merge_schema_fields = {
 	total_finishing: SE.number(10),
 	coloring_prod: SE.number(10),
 	index: SE.number(1),
+	color_ref: SE.string('black'),
+	color_ref_entry_date: SE.date_time(),
+	color_ref_update_date: SE.date_time(),
 };
 
 // * Zipper Order Entry * //

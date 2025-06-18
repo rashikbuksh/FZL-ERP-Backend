@@ -16,6 +16,7 @@ export async function selectDelivery(req, res, next) {
             vpl.item_description,
             vpl.style,
             vpl.color,
+            vpl.color_ref,
             vpl.size,
             vpl.quantity as packing_list_quantity,
             CASE 
@@ -62,6 +63,7 @@ export async function selectDeliveryThread(req, res, next) {
                     vpl.item_description,
                     vpl.style,
                     vpl.color,
+                    vpl.color_ref,
                     vpl.size,
                     vpl.quantity as packing_list_quantity,
                     CASE 

@@ -230,6 +230,7 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			pe.factory_remarks as factory_remarks,
 			oe.style,
 			oe.color,
+			oe.color_ref,
 			oe.size,
 			CASE 
 				WHEN vod.order_type = 'tape' THEN 'Meter' 
@@ -284,6 +285,7 @@ export async function selectPlanningEntryByPlanningWeek(req, res, next) {
 			pe.uuid,
 			oe.style, 
 			oe.color, 
+			oe.color_ref,
 			oe.size, 
 			oe.quantity::float8, 
 			vod.order_number, 
@@ -327,6 +329,7 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			sfg.uuid as sfg_uuid,
 			oe.style,
 			oe.color,
+			oe.color_ref,
 			oe.size,
 			CASE 
 				WHEN vod.order_type = 'tape' THEN 'Meter' 
@@ -372,9 +375,10 @@ export async function getOrderDetailsForPlanningEntry(req, res, next) {
 			sfg.recipe_uuid IS NOT NULL
 			AND vodf.is_cancelled = FALSE
 		GROUP BY 
-			sfg.uuid, 
-			oe.style, 
-			oe.color, 
+			sfg.uuid,
+			oe.style,
+			oe.color,
+			oe.color_ref,
 			oe.size, 
 			oe.quantity::float8, 
 			vod.order_number, 

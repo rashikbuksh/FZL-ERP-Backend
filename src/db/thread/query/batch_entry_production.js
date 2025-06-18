@@ -169,6 +169,7 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		order_info.party_uuid,
 		party.name as party_name,
 	    oe.color as color,
+		oe.color_ref as color_ref,
 		oe.po as po,
 		oe.style as style,
 		oe.bleaching as bleaching,
