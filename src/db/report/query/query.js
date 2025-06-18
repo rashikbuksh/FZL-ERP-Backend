@@ -2239,6 +2239,7 @@ export async function dailyProductionReport(req, res, next) {
 				order_description_uuid,
 				is_inch,
 				color,
+				color_ref,
 				size,
 				unit,
 				price_unit,
@@ -2316,6 +2317,7 @@ export async function dailyProductionReport(req, res, next) {
 			item.other.push({
 				is_inch,
 				color,
+				color_ref,
 				size,
 				unit,
 				price_unit,

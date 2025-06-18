@@ -152,6 +152,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						'unit', challan_agg.unit,
 						'style', challan_agg.style,
 						'color', challan_agg.color,
+						'color_ref', challan_agg.color_ref,
 						'size', challan_agg.size,
 						'order_quantity', challan_agg.order_quantity,
 						'challan_array', COALESCE(challan_agg.challan_array, '[]'::jsonb)
@@ -184,6 +185,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						'item_description', challan_agg_thread.count_length_name,
 						'style', challan_agg_thread.style,
 						'color', challan_agg_thread.color,
+						'color_ref', challan_agg_thread.color_ref,
 						'order_quantity', challan_agg_thread.order_quantity,
 						'challan_array', COALESCE(challan_agg_thread.challan_array, '[]'::jsonb)
 					)
@@ -365,6 +367,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						'unit', packing_list_agg.unit,
 						'style', packing_list_agg.style,
 						'color', packing_list_agg.color,
+						'color_ref', packing_list_agg.color_ref,
 						'size', packing_list_agg.size,
 						'order_quantity', packing_list_agg.order_quantity,
 						'pl_array', COALESCE(packing_list_agg.pl_array, '[]'::jsonb)
@@ -397,6 +400,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						'item_description', packing_list_agg_thread.count_length_name,
 						'style', packing_list_agg_thread.style,
 						'color', packing_list_agg_thread.color,
+						'color_ref', packing_list_agg_thread.color_ref,
 						'order_quantity', packing_list_agg_thread.order_quantity,
 						'pl_array', COALESCE(packing_list_agg_thread.pl_array, '[]'::jsonb)
 					)

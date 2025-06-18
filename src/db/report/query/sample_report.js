@@ -285,27 +285,28 @@ export async function selectSampleReportByDateCombined(req, res, next) {
 
 		const query = sql`
                         SELECT 
-                           CONCAT('Z', 
+                            CONCAT('Z', 
                                     CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
                                     to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')
                                 ) AS order_number,
                             oi.uuid as order_info_uuid,
-                           pm.name AS marketing_name,
-                           pp.name AS party_name,
-                           op_item.name AS item_name,
-                           od.created_at AS issue_date,
-                           CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
-                           od.uuid as order_description_uuid,
-                           od.is_inch,
-                           od.is_meter,
-                           od.is_cm,
-                           od_given.remarks,
-                           od.order_type,
-                           od_given.style,
-                           od_given.color,
-                           od_given.size,
-                           od_given.total_quantity::float8,
-                           CONCAT(
+                            pm.name AS marketing_name,
+                            pp.name AS party_name,
+                            op_item.name AS item_name,
+                            od.created_at AS issue_date,
+                            CONCAT(op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) as item_description,
+                            od.uuid as order_description_uuid,
+                            od.is_inch,
+                            od.is_meter,
+                            od.is_cm,
+                            od_given.remarks,
+                            od.order_type,
+                            od_given.style,
+                            od_given.color,
+                            od_given.color_ref,
+                            od_given.size,
+                            od_given.total_quantity::float8,
+                            CONCAT(
                                 CASE WHEN op_item.name IS NOT NULL AND op_item.name != '---' THEN op_item.name ELSE '' END,
                                 CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN ', ' ELSE '' END,
                                 CASE WHEN op_zipper.name IS NOT NULL AND op_zipper.name != '---' THEN op_zipper.name ELSE '' END,
@@ -320,7 +321,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                                 CASE WHEN op_nylon_stopper.name IS NOT NULL AND op_nylon_stopper.name != '---' THEN ', ' ELSE '' END,
                                 CASE WHEN op_nylon_stopper.name IS NOT NULL AND op_nylon_stopper.name != '---' THEN op_nylon_stopper.name ELSE '' END
                                 ) AS item_details,
-                        CONCAT(
+                            CONCAT(
                                 COALESCE(op_puller.name, ''),
                                 CASE WHEN op_puller_color.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_puller_color.name, ''),
@@ -339,7 +340,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                                 CASE WHEN op_slider_link.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_slider_link.name, '')
                             ) AS slider_details,
-                        CONCAT(
+                            CONCAT(
                                 od.garment,
                                 COALESCE(op_end_user.name, ''),
                                 CASE WHEN op_light_preference.name IS NOT NULL THEN ' ,' ELSE '' END,
