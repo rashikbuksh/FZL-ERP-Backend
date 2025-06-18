@@ -24,6 +24,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 					sfg.uuid AS sfg_uuid,
 					oe.style,
 					oe.color,
+					oe.color_ref,
 					oe.size,
 					oe.quantity AS order_quantity,
 					jsonb_agg(
@@ -59,7 +60,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						pl.item_for NOT IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
 					GROUP BY pl.challan_uuid, ple.sfg_uuid
 				) ple_sum ON challan.uuid = ple_sum.challan_uuid AND sfg.uuid = ple_sum.sfg_uuid
-				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description, vodf.order_type, vodf.is_inch
+				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.color_ref, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description, vodf.order_type, vodf.is_inch
 			),
 			pi_cash_grouped AS (
 				SELECT 
@@ -83,6 +84,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 					CONCAT(cl.count, ' - ', cl.length) as count_length_name,
 					toe.style,
 					toe.color,
+					toe.color_ref,
 					toe.quantity AS order_quantity,
 					jsonb_agg(
 						DISTINCT 
@@ -117,7 +119,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						pl.item_for IN ('thread', 'sample_thread') AND pl.challan_uuid IS NOT NULL
 					GROUP BY pl.challan_uuid, ple.thread_order_entry_uuid
 				) ple_sum ON (challan.uuid = ple_sum.challan_uuid AND toe.uuid = ple_sum.thread_order_entry_uuid)
-				GROUP BY toe.order_info_uuid, toe.uuid, cl.count, cl.length, toe.style, toe.color, toe.quantity
+				GROUP BY toe.order_info_uuid, toe.uuid, cl.count, cl.length, toe.style, toe.color, toe.color_ref, toe.quantity
 			),
 			pi_cash_grouped_thread AS (
 				SELECT 
@@ -150,6 +152,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						'unit', challan_agg.unit,
 						'style', challan_agg.style,
 						'color', challan_agg.color,
+						'color_ref', challan_agg.color_ref,
 						'size', challan_agg.size,
 						'order_quantity', challan_agg.order_quantity,
 						'challan_array', COALESCE(challan_agg.challan_array, '[]'::jsonb)
@@ -182,6 +185,7 @@ export async function selectOrderRegisterReport(req, res, next) {
 						'item_description', challan_agg_thread.count_length_name,
 						'style', challan_agg_thread.style,
 						'color', challan_agg_thread.color,
+						'color_ref', challan_agg_thread.color_ref,
 						'order_quantity', challan_agg_thread.order_quantity,
 						'challan_array', COALESCE(challan_agg_thread.challan_array, '[]'::jsonb)
 					)
@@ -237,6 +241,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 					sfg.uuid AS sfg_uuid,
 					oe.style,
 					oe.color,
+					oe.color_ref,
 					oe.size,
 					oe.quantity AS order_quantity,
 					jsonb_agg(
@@ -271,7 +276,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						pl.item_for NOT IN ('thread', 'sample_thread')
 					GROUP BY pl.uuid, ple.sfg_uuid
 				) ple_sum ON pl.uuid = ple_sum.packing_list_uuid AND sfg.uuid = ple_sum.sfg_uuid
-				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description, vodf.order_type, vodf.is_inch
+				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.color_ref, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description, vodf.order_type, vodf.is_inch
 			),
 			pi_cash_grouped AS (
 				SELECT 
@@ -295,6 +300,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 					CONCAT(cl.count, ' - ', cl.length) as count_length_name,
 					toe.style,
 					toe.color,
+					toe.color_ref,
 					toe.quantity AS order_quantity,
 					jsonb_agg(
 						DISTINCT 
@@ -328,7 +334,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						pl.item_for IN ('thread', 'sample_thread')
 					GROUP BY pl.uuid, ple.thread_order_entry_uuid
 				) ple_sum ON (pl.uuid = ple_sum.packing_list_uuid AND toe.uuid = ple_sum.thread_order_entry_uuid)
-				GROUP BY toe.order_info_uuid, toe.uuid, cl.count, cl.length, toe.style, toe.color, toe.quantity
+				GROUP BY toe.order_info_uuid, toe.uuid, cl.count, cl.length, toe.style, toe.color, toe.color_ref, toe.quantity
 			),
 			pi_cash_grouped_thread AS (
 				SELECT 
@@ -361,6 +367,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						'unit', packing_list_agg.unit,
 						'style', packing_list_agg.style,
 						'color', packing_list_agg.color,
+						'color_ref', packing_list_agg.color_ref,
 						'size', packing_list_agg.size,
 						'order_quantity', packing_list_agg.order_quantity,
 						'pl_array', COALESCE(packing_list_agg.pl_array, '[]'::jsonb)
@@ -393,6 +400,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						'item_description', packing_list_agg_thread.count_length_name,
 						'style', packing_list_agg_thread.style,
 						'color', packing_list_agg_thread.color,
+						'color_ref', packing_list_agg_thread.color_ref,
 						'order_quantity', packing_list_agg_thread.order_quantity,
 						'pl_array', COALESCE(packing_list_agg_thread.pl_array, '[]'::jsonb)
 					)

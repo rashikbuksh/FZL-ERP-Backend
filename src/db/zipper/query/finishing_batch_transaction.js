@@ -249,6 +249,7 @@ export async function selectByTrxFrom(req, res, next) {
 			vodf.item_description,
 			oe.style,
 			oe.color,
+			oe.color_ref,
 			oe.size,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 

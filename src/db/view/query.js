@@ -322,6 +322,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
         CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.style ELSE toe.style END as style,
         CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END as color,
+        CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref ELSE toe.color_ref END as color_ref,
         oe.size,
         vodf.is_inch,
         vodf.is_meter,

@@ -70,6 +70,8 @@ export async function selectPackingList(req, res, next) {
 							ARRAY_AGG(DISTINCT CASE 
 								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
 							ARRAY_AGG(DISTINCT CASE
+								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref ELSE toe.color_ref END) as color_ref,
+							ARRAY_AGG(DISTINCT CASE
 								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.size ELSE NULL END) as size,
 							ARRAY_AGG(DISTINCT CASE
 								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.style ELSE toe.style END) as style,

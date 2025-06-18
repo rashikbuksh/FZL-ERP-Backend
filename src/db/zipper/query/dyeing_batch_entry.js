@@ -177,6 +177,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			be.remarks,
 			oe.style,
 			oe.color,
+			oe.color_ref,
 			oe.size,
 			vodf.party_name,
 			CASE 
@@ -297,6 +298,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 			concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text) as recipe_id,
 			oe.style,
 			oe.color,
+			oe.color_ref,
 			vodf.order_type,
 			vodf.item,
 			vodf.item_name,

@@ -190,6 +190,7 @@ export async function selectChallanPdf(req, res, next) {
 					'order_description_uuid', vodf.order_description_uuid,
 					'style', CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.style ELSE toe.style END,
 					'color', CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color ELSE toe.color END,
+					'color_ref', CASE WHEN ple.sfg_uuid IS NOT NULL THEN oe.color_ref ELSE toe.color_ref END,
 					'size_cm', CASE WHEN ple.sfg_uuid IS NOT NULL THEN CAST(oe.size AS NUMERIC) ELSE tc.length END,
 					'size', CASE WHEN ple.sfg_uuid IS NOT NULL THEN CAST(oe.size AS NUMERIC) ELSE tc.length END,
 					'is_inch', vodf.is_inch,

@@ -103,7 +103,6 @@ export const defThreadOrderEntry = {
 		'carton_quantity',
 		'index',
 	],
-
 	properties: {
 		uuid: SE.uuid(),
 		order_info_uuid: SE.uuid(),
@@ -133,6 +132,9 @@ export const defThreadOrderEntry = {
 		carton_quantity: SE.number(10),
 		index: SE.integer(1),
 		damage_quantity: SE.number(10),
+		color_ref: SE.string('color_ref'),
+		color_ref_entry_date: SE.date_time(),
+		color_ref_update_date: SE.date_time(),
 	},
 	xml: {
 		name: 'Thread/OrderEntry',

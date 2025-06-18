@@ -169,6 +169,7 @@ export async function selectAll(req, res, next) {
 						batch.production_date::date as production_date,
 						party.name as party_name,
 						ARRAY_AGG(DISTINCT oe.color) as color,
+						ARRAY_AGG(DISTINCT oe.color_ref) as color_ref,
 						ARRAY_AGG(DISTINCT recipe.name) as recipe_name,
 						batch.batch_type,
 						batch.order_info_uuid,

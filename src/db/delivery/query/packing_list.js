@@ -124,6 +124,9 @@ export async function selectAll(req, res, next) {
 		ARRAY_AGG(DISTINCT CASE 
             WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END
 		) as color,
+		ARRAY_AGG(DISTINCT CASE
+			WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref ELSE toe.color_ref END
+		) as color_ref,
 		CEIL(AVG(cl.cone_per_carton))::float8 as cone_per_carton
     FROM delivery.v_packing_list dvl
     LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
@@ -422,6 +425,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			vodf.order_description_uuid,
 			oe.style,
 			oe.color,
+			oe.color_ref,
 			oe.size,
 			CASE 
 				WHEN vodf.order_type = 'tape' THEN 'Meter' 
@@ -489,6 +493,7 @@ export async function selectAllOrderForPackingList(req, res, next) {
 			cl.length as size,
 			toe.style,
 			toe.color,
+			toe.color_ref,
 			cl.count,
 			cl.length,
 			toe.quantity::float8  as order_quantity,
@@ -619,6 +624,8 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
 							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
+						ARRAY_AGG(DISTINCT CASE
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref ELSE toe.color_ref END) as color_ref,
 						COALESCE(cl.cone_per_carton, 0) as cone_per_carton
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
@@ -718,6 +725,8 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
 							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
+						ARRAY_AGG(DISTINCT CASE
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref ELSE toe.color_ref END) as color_ref,
 						COALESCE(cl.cone_per_carton, 0) as cone_per_carton
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
@@ -816,6 +825,8 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
 							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
+						ARRAY_AGG(DISTINCT CASE
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref ELSE toe.color_ref END) as color_ref,
 						COALESCE(cl.cone_per_carton, 0) as cone_per_carton
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
@@ -980,6 +991,8 @@ export async function selectDeletedPackingList(req, res, next) {
 						SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 						ARRAY_AGG(DISTINCT CASE 
 							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END) as color,
+						ARRAY_AGG(DISTINCT CASE
+							WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref ELSE toe.color_ref END) as color_ref,
 						COALESCE(cl.cone_per_carton, 0) as cone_per_carton
 					FROM delivery.v_packing_list dvl
 					LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid

@@ -41,6 +41,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 vodf.order_type,
                 vodf.item_description,
                 ARRAY_AGG(DISTINCT oe.color) AS colors,
+                ARRAY_AGG(DISTINCT oe.color_ref) AS color_refs,
                 CONCAT(swatch_approval_counts.swatch_approval_count, ' / ',
 				order_entry_counts.order_entry_count) AS swatch_approval_count,
                 ARRAY_AGG(DISTINCT oe.style) AS styles,
@@ -272,10 +273,6 @@ export async function zipperProductionStatusReport(req, res, next) {
             WHERE vodf.order_description_uuid IS NOT NULL 
                 AND vodf.is_cancelled = FALSE
                 ${own_uuid == null ? sql`` : sql` AND vodf.marketing_uuid = ${marketingUuid}`}
-        `;
-
-		query.append(
-			sql` 
             GROUP BY
                 vodf.order_info_uuid,
                 vodf.order_number,
@@ -309,9 +306,9 @@ export async function zipperProductionStatusReport(req, res, next) {
                 vodf.remarks,
                 expected.expected_kg,
                 vodf.is_inch
-            `
-		);
+        `;
 
+		// HAVING clause logic remains the same
 		if (status === 'completed') {
 			query.append(
 				sql` HAVING coalesce(delivery_sum.total_delivery_delivered_quantity,0) = SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AND vodf.is_sample = 0`
@@ -1136,6 +1133,7 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 marketing.name as marketing_name,
                 order_entry.style,
                 order_entry.color,
+                order_entry.color_ref,
                 recipe.name as recipe_name,
                 order_entry.swatch_approval_date,
                 order_entry.count_length_uuid,
@@ -1481,7 +1479,7 @@ export async function ProductionReportSnm(req, res, next) {
                         ) AS finishing_quantity
                     FROM
                         zipper.finishing_batch_production sfg_prod
-                        LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_prod.finishing_batch_entry_uuid = fbe.uuid
+                        LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_production.finishing_batch_entry_uuid = fbe.uuid
                         LEFT JOIN zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
                         LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     GROUP BY
@@ -1623,6 +1621,7 @@ export async function ProductionReportSnm(req, res, next) {
                 oe.uuid as order_entry_uuid,
                 oe.style,
                 oe.color,
+                oe.color_ref,
                 oe.size::float8,
                 oe.quantity::float8,
                 oe.party_price::float8,
@@ -1905,19 +1904,17 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 public.party ON order_info.party_uuid = party.uuid
             LEFT JOIN
                 public.marketing ON order_info.marketing_uuid = marketing.uuid
+            LEFT JOIN running_all_sum_thread ON toe.uuid = running_all_sum_thread.order_entry_uuid
             LEFT JOIN (
-                SELECT
-                    SUM(batch_entry_production.production_quantity) as total_quantity,
-                    SUM(batch_entry_production.coning_carton_quantity) as total_coning_carton_quantity,
-                    order_entry.uuid as order_entry_uuid
+                SELECT 
+                    toi.uuid as order_info_uuid,
+                    SUM(toe.quantity) as total_quantity
                 FROM
-                    thread.batch_entry_production
-                LEFT JOIN thread.batch_entry ON batch_entry_production.batch_entry_uuid = batch_entry.uuid
-                LEFT JOIN thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+                    thread.order_entry toe
+                    LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
                 GROUP BY
-                    order_entry.uuid
-            ) prod_quantity ON order_entry.uuid = prod_quantity.order_entry_uuid
-            LEFT JOIN pi_cash_grouped_thread ON order_info.uuid = pi_cash_grouped_thread.order_info_uuid
+                    toi.uuid
+            ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
             LEFT JOIN (
                 SELECT 
                     order_entry.uuid as order_entry_uuid,
@@ -1967,7 +1964,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
                 ${own_uuid == null ? sql`` : sql` AND order_info.marketing_uuid = ${marketingUuid}`}
                 ${from && to ? sql` AND order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql``}
-            ORDER BY party.name DESC
+            ORDER BY order_info.created_at DESC
     `;
 
 		const resultPromise = db.execute(query);
@@ -2103,6 +2100,7 @@ export async function dailyProductionReport(req, res, next) {
 					vodf.order_type,
 					vodf.is_inch,
                     oe.color,
+                    oe.color_ref,
                     oe.size::float8,
                     CASE 
                         WHEN vodf.is_inch = 1 THEN 'Inch'
@@ -2144,6 +2142,7 @@ export async function dailyProductionReport(req, res, next) {
                 GROUP BY 
                     oe.company_price,
                     oe.color,
+                    oe.color_ref,
                     oe.size,
                     vodf.marketing_uuid,
 					vodf.marketing_name,
@@ -2177,6 +2176,7 @@ export async function dailyProductionReport(req, res, next) {
                     null as order_type,
                     null as is_inch,
                     toe.color,
+                    toe.color_ref,
                     count_length.length::float8 as size,
                     'Mtr' as unit,
                     'Cone' as price_unit,
@@ -2210,6 +2210,7 @@ export async function dailyProductionReport(req, res, next) {
                 GROUP BY
                     toe.company_price,
                     toe.color,
+                    toe.color_ref,
                     count_length.length,
                     toi.marketing_uuid,
                     marketing.name,
@@ -2238,6 +2239,7 @@ export async function dailyProductionReport(req, res, next) {
 				order_description_uuid,
 				is_inch,
 				color,
+				color_ref,
 				size,
 				unit,
 				price_unit,
@@ -2315,6 +2317,7 @@ export async function dailyProductionReport(req, res, next) {
 			item.other.push({
 				is_inch,
 				color,
+				color_ref,
 				size,
 				unit,
 				price_unit,

@@ -233,6 +233,9 @@ export const order_entry = zipper.table('order_entry', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	fresh_quantity: PG_DECIMAL('fresh_quantity').default(0),
 	repair_quantity: PG_DECIMAL('repair_quantity').default(0),
+	color_ref: text('color_ref').default(null),
+	color_ref_entry_date: DateTime('color_ref_entry_date').default(null),
+	color_ref_update_date: DateTime('color_ref_update_date').default(null),
 });
 
 export const sfg = zipper.table('sfg', {

@@ -121,6 +121,7 @@ export async function selectAll(req, res, next) {
 						vodf.item_description,
 						order_entry.style AS style,
 						order_entry.color AS color,
+						order_entry.color_ref AS color_ref,
 						order_entry.size AS size,
 						CONCAT(order_entry.style, '/', order_entry.color, '/', order_entry.size) AS style_color_size
 					FROM 
@@ -177,6 +178,7 @@ export async function select(req, res, next) {
 						vodf.item_description,
 						order_entry.style AS style,
 						order_entry.color AS color,
+						order_entry.color_ref AS color_ref,
 						order_entry.size AS size,
 						CONCAT(order_entry.style, '/', order_entry.color, '/', order_entry.size) AS style_color_size
 					FROM 

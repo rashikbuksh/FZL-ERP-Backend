@@ -213,6 +213,9 @@ export const def_zipper_sfg = SED({
 		reject_quantity: SE.number(),
 		batch_quantity: SE.number(),
 		remarks: SE.string(),
+		color_ref: SE.string('color_ref'),
+		color_ref_entry_date: SE.date_time(),
+		color_ref_update_date: SE.date_time(),
 	},
 	xml: 'Zipper/Sfg',
 });

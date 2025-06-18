@@ -381,6 +381,7 @@ export async function selectThreadSwatch(req, res, next) {
 		order_entry.uuid AS order_entry_uuid,
 		order_entry.style,
 		order_entry.color,
+		order_entry.color_ref,
 		order_entry.recipe_uuid,
 		lab_dip_recipe.name AS recipe_name,
 		order_entry.bleaching,

@@ -252,7 +252,8 @@ export async function selectAll(req, res, next) {
 				challan.is_own,
 				challan.delivery_type,
 				challan.is_delivered,
-				colors.color
+				colors.color,
+				colors.color_ref
 			FROM
 				delivery.challan
 			LEFT JOIN
@@ -295,7 +296,10 @@ export async function selectAll(req, res, next) {
 					 		delivery.challan.uuid,
 							ARRAY_AGG(DISTINCT CASE
 								WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_entry.color ELSE toe.color END
-							) AS color
+							) AS color,
+							ARRAY_AGG(DISTINCT CASE
+								WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_entry.color_ref ELSE toe.color_ref END
+							) AS color_ref
 					FROM delivery.challan
 					LEFT JOIN delivery.packing_list ON challan.uuid = packing_list.challan_uuid
 					LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
