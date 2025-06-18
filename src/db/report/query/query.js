@@ -1479,7 +1479,7 @@ export async function ProductionReportSnm(req, res, next) {
                         ) AS finishing_quantity
                     FROM
                         zipper.finishing_batch_production sfg_prod
-                        LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_production.finishing_batch_entry_uuid = fbe.uuid
+                        LEFT JOIN zipper.finishing_batch_entry fbe ON sfg_prod.finishing_batch_entry_uuid = fbe.uuid
                         LEFT JOIN zipper.sfg sfg ON fbe.sfg_uuid = sfg.uuid
                         LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     GROUP BY
