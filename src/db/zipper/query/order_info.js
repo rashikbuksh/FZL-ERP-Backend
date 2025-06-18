@@ -612,11 +612,29 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 
 		const query = sql`
 					SELECT 
-						vod.*, 
+						vod.order_number_wise_rank,
+						vod.is_sample,
+						vod.order_info_uuid,
+						vod.order_number,
+						vod.party_name,
+						vod.item_description,
+						vod.order_description_uuid,
+						vod.order_type,
+						vod.is_multi_color,
+						vod.is_inch,
+						vod.marketing_name,
+						vod.is_marketing_checked,
+						vod.marketing_checked_at,
+						vod.buyer_name,
+						vod.remarks,
+						vod.created_by_name,
+						vod.order_description_created_at,
+						vod.order_description_updated_at,
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
-						swatch_approval_counts.swatch_approval_count,
-						order_entry_counts.order_entry_count,
-						CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
+						all_approval_counts.swatch_approval_count,
+						all_approval_counts.order_entry_count,
+						CASE WHEN all_approval_counts.price_approval_count IS NULL THEN 0 ELSE all_approval_counts.price_approval_count END AS price_approval_count,
+						CASE WHEN all_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
 					FROM zipper.v_order_details vod
 					LEFT JOIN (
 						SELECT order_number, COUNT(*) AS order_number_wise_count
