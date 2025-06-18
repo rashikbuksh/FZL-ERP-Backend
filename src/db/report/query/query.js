@@ -1820,151 +1820,218 @@ export async function ProductionReportThreadSnm(req, res, next) {
 			marketingUuid = marketingUuidData?.rows[0]?.uuid;
 		}
 		const query = sql`
-            WITH pi_cash_grouped_thread AS (
-				SELECT 
-					toi.uuid as order_info_uuid,
-					jsonb_agg(DISTINCT jsonb_build_object('pi_number', CASE WHEN pi_cash.is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END, 'pi_cash_uuid', pi_cash.uuid)) as pi_numbers,
-					jsonb_agg(
-                        DISTINCT jsonb_build_object('lc_number', CASE WHEN lc.lc_number IS NOT NULL THEN concat('''', lc.lc_number) ELSE NULL END, 'lc_uuid', lc.uuid)
-                    ) as lc_numbers
-				FROM
-					thread.order_info toi
-				LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
-				LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
-				LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
-				LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
-				WHERE pi_cash.id IS NOT NULL
-				GROUP BY toi.uuid
-			)
-            SELECT 
-                order_info.uuid,
-                order_info.created_at,
-                order_info.updated_at,
-                'Sewing Thread' as item_name,
-                order_info.party_uuid,
-                party.name as party_name,
-                order_info.marketing_uuid,
-                marketing.name as marketing_name,
-                CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
-                order_entry.uuid as order_entry_uuid,
-                order_entry.style,
-                order_entry.color,
-                order_entry.recipe_uuid,
-                order_entry.quantity::float8,
-                order_entry.party_price::float8,
-                order_entry.company_price::float8,
-                order_entry.swatch_approval_date,
-                order_entry.recipe_uuid,
-                recipe.name as recipe_name,
-                CASE WHEN order_entry.recipe_uuid IS NULL THEN order_entry.quantity::float8 ELSE 0 END as not_approved_quantity,
-                CASE WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8 ELSE 0 END as approved_quantity,
-                CONCAT('"', count_length.count) as count,
-                count_length.length,
-                CONCAT('"', count_length.count, ' - ', count_length.length) as count_length_name,
-                coalesce(prod_quantity.total_coning_carton_quantity,0)::float8 as total_coning_carton_quantity,
-                order_info.uuid as order_info_uuid,
-                order_entry.delivered::float8,
-                order_entry.warehouse::float8,
-                (order_entry.quantity::float8 - order_entry.delivered::float8) as balance_quantity,
-                coalesce(pi_cash_grouped_thread.pi_numbers, '[]') as pi_numbers,
-                coalesce(pi_cash_grouped_thread.lc_numbers, '[]') as lc_numbers,
-                coalesce(batch_production_sum.coning_production_quantity,0)::float8 as total_coning_production_quantity,
-                coalesce(batch_production_sum.yarn_quantity,0)::float8 as total_yarn_quantity,
-                (order_entry.quantity * count_length.max_weight)::float8 as total_expected_weight,
-                batch.batch_uuid,
-                batch.batch_number,
-                batch.production_date,
-                batch.total_quantity::float8,
-                batch.yarn_issued::float8,
-                batch.is_drying_complete,
-                batch.machine,
-                batch.batch_created_at,
-                batch.expected_kg as batch_expected_kg,
-                order_info.sno_from_head_office,
-                order_info.sno_from_head_office_time,
-                order_info.sno_from_head_office_by,
-                sno_from_head_office_by.name as sno_from_head_office_by_name,
-                order_info.receive_by_factory,
-                order_info.receive_by_factory_time,
-                order_info.receive_by_factory_by,
-                receive_by_factory_by.name as receive_by_factory_by_name,
-                order_info.production_pause,
-                order_info.production_pause_time,
-                order_info.production_pause_by,
-                production_pause_by.name as production_pause_by_name
-            FROM
-                thread.order_info
-            LEFT JOIN
-                thread.order_entry ON order_entry.order_info_uuid = order_info.uuid
-            LEFT JOIN
-                thread.count_length ON order_entry.count_length_uuid = count_length.uuid
-            LEFT JOIN 
-                lab_dip.recipe ON order_entry.recipe_uuid = recipe.uuid
-            LEFT JOIN
-                public.party ON order_info.party_uuid = party.uuid
-            LEFT JOIN
-                public.marketing ON order_info.marketing_uuid = marketing.uuid
-            LEFT JOIN running_all_sum_thread ON toe.uuid = running_all_sum_thread.order_entry_uuid
+    WITH
+    pi_cash_grouped_thread AS (
+        SELECT
+            toi.uuid as order_info_uuid,
+            jsonb_agg(
+                DISTINCT jsonb_build_object(
+                    'pi_number',
+                    CASE
+                        WHEN pi_cash.is_pi = 1 THEN concat(
+                            'PI',
+                            to_char(pi_cash.created_at, 'YY'),
+                            '-',
+                            LPAD(pi_cash.id::text, 4, '0')
+                        )
+                        ELSE concat(
+                            'CI',
+                            to_char(pi_cash.created_at, 'YY'),
+                            '-',
+                            LPAD(pi_cash.id::text, 4, '0')
+                        )
+                    END,
+                    'pi_cash_uuid',
+                    pi_cash.uuid
+                )
+            ) as pi_numbers,
+            jsonb_agg(
+                DISTINCT jsonb_build_object(
+                    'lc_number',
+                    CASE
+                        WHEN lc.lc_number IS NOT NULL THEN concat('''', lc.lc_number)
+                        ELSE NULL
+                    END,
+                    'lc_uuid',
+                    lc.uuid
+                )
+            ) as lc_numbers
+        FROM
+            thread.order_info toi
+            LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+            LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
+            LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+            LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
+        WHERE
+            pi_cash.id IS NOT NULL
+        GROUP BY
+            toi.uuid
+    )
+SELECT
+    order_info.uuid,
+    order_info.created_at,
+    order_info.updated_at,
+    'Sewing Thread' as item_name,
+    order_info.party_uuid,
+    party.name as party_name,
+    order_info.marketing_uuid,
+    marketing.name as marketing_name,
+    CONCAT(
+        'ST',
+        CASE
+            WHEN order_info.is_sample = 1 THEN 'S'
+            ELSE ''
+        END,
+        to_char(order_info.created_at, 'YY'),
+        '-',
+        LPAD(order_info.id::text, 4, '0')
+    ) as order_number,
+    order_entry.uuid as order_entry_uuid,
+    order_entry.style,
+    order_entry.color,
+    order_entry.recipe_uuid,
+    order_entry.quantity::float8,
+    order_entry.party_price::float8,
+    order_entry.company_price::float8,
+    order_entry.swatch_approval_date,
+    order_entry.recipe_uuid,
+    recipe.name as recipe_name,
+    CASE
+        WHEN order_entry.recipe_uuid IS NULL THEN order_entry.quantity::float8
+        ELSE 0
+    END as not_approved_quantity,
+    CASE
+        WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8
+        ELSE 0
+    END as approved_quantity,
+    CONCAT('"', count_length.count) as count,
+    count_length.length,
+    CONCAT(
+        '"',
+        count_length.count,
+        ' - ',
+        count_length.length
+    ) as count_length_name,
+    order_info.uuid as order_info_uuid,
+    order_entry.delivered::float8,
+    order_entry.warehouse::float8,
+    (
+        order_entry.quantity::float8 - order_entry.delivered::float8
+    ) as balance_quantity,
+    coalesce(
+        pi_cash_grouped_thread.pi_numbers,
+        '[]'
+    ) as pi_numbers,
+    coalesce(
+        pi_cash_grouped_thread.lc_numbers,
+        '[]'
+    ) as lc_numbers,
+    coalesce(
+        batch_production_sum.coning_production_quantity,
+        0
+    )::float8 as total_coning_production_quantity,
+    coalesce(
+        batch_production_sum.yarn_quantity,
+        0
+    )::float8 as total_yarn_quantity,
+    (
+        order_entry.quantity * count_length.max_weight
+    )::float8 as total_expected_weight,
+    batch.batch_uuid,
+    batch.batch_number,
+    batch.production_date,
+    batch.total_quantity::float8,
+    batch.yarn_issued::float8,
+    batch.is_drying_complete,
+    batch.machine,
+    batch.batch_created_at,
+    batch.expected_kg as batch_expected_kg,
+    order_info.sno_from_head_office,
+    order_info.sno_from_head_office_time,
+    order_info.sno_from_head_office_by,
+    sno_from_head_office_by.name as sno_from_head_office_by_name,
+    order_info.receive_by_factory,
+    order_info.receive_by_factory_time,
+    order_info.receive_by_factory_by,
+    receive_by_factory_by.name as receive_by_factory_by_name,
+    order_info.production_pause,
+    order_info.production_pause_time,
+    order_info.production_pause_by,
+    production_pause_by.name as production_pause_by_name
+            thread.order_info
+    LEFT JOIN thread.order_entry ON order_entry.order_info_uuid = order_info.uuid
+    LEFT JOIN thread.count_length ON order_entry.count_length_uuid = count_length.uuid
+    LEFT JOIN lab_dip.recipe ON order_entry.recipe_uuid = recipe.uuid
+    LEFT JOIN public.party ON order_info.party_uuid = party.uuid
+    LEFT JOIN public.marketing ON order_info.marketing_uuid = marketing.uuid
+    LEFT JOIN pi_cash_grouped_thread ON order_info.uuid = pi_cash_grouped_thread.order_info_uuid
+    LEFT JOIN (
+        SELECT
+            toi.uuid as order_info_uuid,
+            SUM(toe.quantity) as total_quantity
+        FROM thread.order_entry toe
+            LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+        GROUP BY
+            toi.uuid
+    ) order_info_total_quantity ON order_info.uuid = order_info_total_quantity.order_info_uuid
+    LEFT JOIN (
+        SELECT
+            order_entry.uuid as order_entry_uuid,
+            SUM(
+                batch_entry.coning_production_quantity
+            ) AS coning_production_quantity,
+            SUM(batch_entry.yarn_quantity) AS yarn_quantity
+        FROM thread.batch_entry
+            LEFT JOIN thread.batch ON batch_entry.batch_uuid = batch.uuid
+            LEFT JOIN thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
+        GROUP BY
+            order_entry.uuid
+    ) batch_production_sum ON batch_production_sum.order_entry_uuid = order_entry.uuid
+    LEFT JOIN (
+        SELECT
+            order_entry.uuid as order_entry_uuid,
+            batch.uuid as batch_uuid,
+            CONCAT(
+                'B',
+                to_char(batch.created_at, 'YY'),
+                '-',
+                LPAD(batch.id::text, 4, '0')
+            ) as batch_number,
+            batch.production_date as production_date,
+            batch_entry_quantity_length.total_quantity as total_quantity,
+            batch_entry_quantity_length.total_weight as yarn_issued,
+            batch.is_drying_complete,
+            machine.name as machine,
+            batch.created_at as batch_created_at,
+            ROUND(
+                batch_entry_quantity_length.total_quantity::numeric * tcl.max_weight::numeric,
+                3
+            ) as expected_kg
+        FROM
+            thread.batch
+            LEFT JOIN public.machine ON batch.machine_uuid = machine.uuid
             LEFT JOIN (
-                SELECT 
-                    toi.uuid as order_info_uuid,
-                    SUM(toe.quantity) as total_quantity
-                FROM
-                    thread.order_entry toe
-                    LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                SELECT
+                    SUM(batch_entry.quantity) as total_quantity,
+                    SUM(batch_entry.yarn_quantity) as total_weight,
+                    batch_entry.batch_uuid,
+                    batch_entry.order_entry_uuid
+                FROM thread.batch_entry
                 GROUP BY
-                    toi.uuid
-            ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
-            LEFT JOIN (
-                SELECT 
-                    order_entry.uuid as order_entry_uuid,
-                    SUM(batch_entry.coning_production_quantity) AS coning_production_quantity,
-                    SUM(batch_entry.yarn_quantity) AS yarn_quantity
-                FROM 
-                    thread.batch_entry
-                LEFT JOIN 
-                    thread.batch ON batch_entry.batch_uuid = batch.uuid
-                LEFT JOIN 
-                    thread.order_entry ON batch_entry.order_entry_uuid = order_entry.uuid
-                GROUP BY 
-                    order_entry.uuid
-            ) batch_production_sum ON batch_production_sum.order_entry_uuid = order_entry.uuid
-            LEFT JOIN (
-                SELECT order_entry.uuid as order_entry_uuid, 
-                    batch.uuid as batch_uuid, 
-                    CONCAT('B', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number, 
-                    batch.production_date as production_date, 
-                    batch_entry_quantity_length.total_quantity as total_quantity, 
-                    batch_entry_quantity_length.total_weight as yarn_issued, 
-                    batch.is_drying_complete,
-                    machine.name as machine,
-                    batch.created_at as batch_created_at,
-                    ROUND(batch_entry_quantity_length.total_quantity::numeric * tcl.max_weight::numeric, 3) as expected_kg
-                FROM
-                    thread.batch
-                LEFT JOIN public.machine ON batch.machine_uuid = machine.uuid
-                LEFT JOIN (
-                    SELECT
-                        SUM(batch_entry.quantity) as total_quantity,
-                        SUM(batch_entry.yarn_quantity) as total_weight,
-                        batch_entry.batch_uuid,
-                        batch_entry.order_entry_uuid
-                    FROM thread.batch_entry
-                    GROUP BY
-                        batch_entry.batch_uuid,
-                        batch_entry.order_entry_uuid
-                ) batch_entry_quantity_length ON batch.uuid = batch_entry_quantity_length.batch_uuid
-                LEFT JOIN thread.order_entry ON batch_entry_quantity_length.order_entry_uuid = order_entry.uuid
-                LEFT JOIN thread.count_length tcl ON order_entry.count_length_uuid = tcl.uuid
-            ) batch ON order_entry.uuid = batch.order_entry_uuid
-            LEFT JOIN hr.users sno_from_head_office_by ON order_info.sno_from_head_office_by = sno_from_head_office_by.uuid
-            LEFT JOIN hr.users receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
-            LEFT JOIN hr.users production_pause_by ON order_info.production_pause_by = production_pause_by.uuid
-            WHERE 
-                order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
-                ${own_uuid == null ? sql`` : sql` AND order_info.marketing_uuid = ${marketingUuid}`}
-                ${from && to ? sql` AND order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql``}
-            ORDER BY order_info.created_at DESC
+                    batch_entry.batch_uuid,
+                    batch_entry.order_entry_uuid
+            ) batch_entry_quantity_length ON batch.uuid = batch_entry_quantity_length.batch_uuid
+            LEFT JOIN thread.order_entry ON batch_entry_quantity_length.order_entry_uuid = order_entry.uuid
+            LEFT JOIN thread.count_length tcl ON order_entry.count_length_uuid = tcl.uuid
+    ) batch ON order_entry.uuid = batch.order_entry_uuid
+    LEFT JOIN hr.users sno_from_head_office_by ON order_info.sno_from_head_office_by = sno_from_head_office_by.uuid
+    LEFT JOIN hr.users receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
+    LEFT JOIN hr.users production_pause_by ON order_info.production_pause_by = production_pause_by.uuid
+    WHERE 
+        order_entry.quantity > 0 AND order_entry.quantity IS NOT NULL
+        ${own_uuid == null ? sql`` : sql` AND order_info.marketing_uuid = ${marketingUuid}`}
+        ${from && to ? sql` AND order_info.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql``}
+    ORDER BY order_info.created_at DESC
     `;
 
 		const resultPromise = db.execute(query);
