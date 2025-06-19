@@ -28,6 +28,7 @@ export async function insert(req, res, next) {
 		cross_weight,
 		receive_amount,
 		pi_date,
+		is_lc_input_manual,
 	} = req.body;
 
 	const piPromise = db
@@ -53,6 +54,7 @@ export async function insert(req, res, next) {
 			cross_weight,
 			receive_amount,
 			pi_date,
+			is_lc_input_manual,
 		})
 		.returning({
 			insertedId: sql`concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))`,
@@ -215,6 +217,7 @@ export async function selectAll(req, res, next) {
 			pi_cash.is_rtgs,
 			pi_cash.conversion_rate::float8,
 			pi_cash.receive_amount::float8,
+			pi_cash.is_lc_input_manual,
 			CASE 
 				WHEN pi_cash.is_pi = 1 THEN COALESCE(ROUND(total_amount.total_amount::numeric, 2), 0)
 				ELSE COALESCE(ROUND(total_amount.total_amount::numeric, 2) * pi_cash.conversion_rate::float8, 0)
@@ -319,6 +322,7 @@ export async function select(req, res, next) {
 				pi_cash.remarks,
 				pi_cash.is_pi::float8,
 				pi_cash.is_rtgs,
+				pi_cash.is_lc_input_manual,
 				pi_cash.conversion_rate::float8,
 				pi_cash.weight::float8,
 				pi_cash.cross_weight::float8,
@@ -694,6 +698,7 @@ export async function selectPiByLcUuid(req, res, next) {
 				pi_cash.weight,
 				pi_cash.cross_weight,
 				pi_cash.receive_amount,
+				pi_cash.is_lc_input_manual,
 				CASE 
 					WHEN pi_cash.is_pi = 1 THEN COALESCE(ROUND(total_pi_amount.total_amount::numeric, 2), 0)
 					ELSE COALESCE(ROUND(total_pi_amount.total_amount::numeric, 2) * pi_cash.conversion_rate::float8, 0)

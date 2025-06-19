@@ -234,6 +234,7 @@ export const defCommercialPiCash = SED({
 		thread_order_info_uuids: SE.array([SE.uuid()]),
 		is_completed: SE.boolean(false),
 		pi_date: SE.date_time(),
+		is_lc_input_manual: SE.boolean(false),
 	},
 	xml: 'Commercial/PiCash',
 });
