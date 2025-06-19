@@ -197,16 +197,16 @@ export async function select(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-				concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))
+				CASE WHEN pi_cash.uuid IS NOT NULL THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END
 			) as pi_ids,
 			party.name AS party_name,
-			CASE WHEN is_old_pi = 0 THEN(	
-				SELECT 
+			CASE WHEN is_old_pi = 0 THEN (
+				SELECT
 					SUM(
-						CASE 
-							WHEN pi_cash_entry.thread_order_entry_uuid IS NULL 
-							THEN coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12 
-							ELSE coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(toe.party_price,0) 
+						CASE
+							WHEN pi_cash_entry.thread_order_entry_uuid IS NULL
+							THEN coalesce(pi_cash_entry.pi_cash_quantity, 0) * coalesce(order_entry.party_price, 0) / 12
+							ELSE coalesce(pi_cash_entry.pi_cash_quantity, 0) * coalesce(toe.party_price, 0)
 						END
 					)
 				FROM commercial.pi_cash 
