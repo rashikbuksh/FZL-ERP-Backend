@@ -367,6 +367,69 @@ export async function dailyChallanReport(req, res, next) {
 		}
 
 		const query = sql`
+                    WITH pi_cash_grouped AS (
+                        SELECT 
+                            vodf.order_info_uuid, 
+                            jsonb_agg(
+                                DISTINCT jsonb_build_object(
+                                    'pi_number', CASE
+                                        WHEN pi_cash.is_pi = 1 THEN concat(
+                                            'PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id
+                                        )
+                                        ELSE concat(
+                                            'CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id
+                                        )
+                                    END, 'pi_cash_uuid', pi_cash.uuid
+                                )
+                            ) as pi_numbers, 
+                            jsonb_agg(
+                                DISTINCT jsonb_build_object(
+                                    'lc_number', CASE WHEN lc.lc_number IS NOT NULL THEN concat('''', lc.lc_number) ELSE NULL END, 'lc_uuid', lc.uuid
+                                )
+                            ) as lc_numbers
+                        FROM
+                            zipper.v_order_details_full vodf
+                            LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+                            LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+                            LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
+                            LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+                            LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
+                        WHERE
+                            pi_cash.id IS NOT NULL
+                        GROUP BY
+                            vodf.order_info_uuid
+                    ),
+                    pi_cash_grouped_thread AS (
+                        SELECT 
+                            toi.uuid as order_info_uuid, 
+                            jsonb_agg(
+                                DISTINCT jsonb_build_object(
+                                    'pi_number', CASE
+                                        WHEN pi_cash.is_pi = 1 THEN concat(
+                                            'PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id
+                                        )
+                                        ELSE concat(
+                                            'CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id
+                                        )
+                                    END, 'pi_cash_uuid', pi_cash.uuid
+                                )
+                            ) as pi_numbers, 
+                            jsonb_agg(
+                                DISTINCT jsonb_build_object(
+                                    'lc_number', CASE WHEN lc.lc_number IS NOT NULL THEN concat('''', lc.lc_number) ELSE NULL END, 'lc_uuid', lc.uuid
+                                )
+                            ) as lc_numbers
+                        FROM
+                            thread.order_info toi
+                            LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+                            LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
+                            LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+                            LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
+                        WHERE
+                            pi_cash.id IS NOT NULL
+                        GROUP BY
+                            toi.uuid
+                    )
                     SELECT 
                         challan.uuid,
                         challan.created_at AS challan_date,
@@ -393,32 +456,14 @@ export async function dailyChallanReport(req, res, next) {
                         END AS order_number,
                         CASE 
                             WHEN pl.item_for IN ('thread', 'sample_thread') 
-                            THEN tpc.uuid 
-                            ELSE pi_cash.uuid 
-                        END AS pi_cash_uuid,
+                            THEN pi_cash_grouped_thread.pi_numbers 
+                            ELSE pi_cash_grouped.pi_numbers 
+                        END AS pi_numbers,
                         CASE 
                             WHEN pl.item_for IN ('thread', 'sample_thread') 
-                            THEN CASE 
-                                WHEN tpc.uuid IS NOT NULL 
-                                THEN concat('PI', to_char(tpc.created_at, 'YY'), '-', LPAD(tpc.id::text, 4, '0')) 
-                                ELSE NULL 
-                            END 
-                            ELSE CASE 
-                                WHEN pi_cash.uuid IS NOT NULL 
-                                THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-                                ELSE NULL 
-                            END 
-                        END AS pi_cash_id,
-                        CASE 
-                            WHEN pl.item_for IN ('thread', 'sample_thread') 
-                            THEN tlc.uuid 
-                            ELSE lc.uuid 
-                        END AS lc_uuid,
-                        CASE 
-                            WHEN pl.item_for IN ('thread', 'sample_thread') 
-                            THEN tlc.lc_number 
-                            ELSE lc.lc_number 
-                        END AS lc_number,
+                            THEN pi_cash_grouped_thread.lc_numbers 
+                            ELSE pi_cash_grouped.lc_numbers 
+                        END AS lc_numbers,
                         CASE 
                             WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN tpm.uuid 
@@ -514,18 +559,14 @@ export async function dailyChallanReport(req, res, next) {
                         zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
                     LEFT JOIN 
                         zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                    LEFT JOIN 
-                        commercial.pi_cash pi_cash ON pi_cash.order_info_uuids IN (vodf.order_info_uuid)
-                    LEFT JOIN
-                        commercial.lc ON pi_cash.lc_uuid = lc.uuid
+                    LEFT JOIN pi_cash_grouped ON vodf.order_info_uuid = pi_cash_grouped.order_info_uuid
                     LEFT JOIN thread.order_entry toe ON toe.uuid = ple.thread_order_entry_uuid
                     LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
                     LEFT JOIN thread.count_length tcl ON toe.count_length_uuid = tcl.uuid
                     LEFT JOIN public.marketing tpm ON toi.marketing_uuid = tpm.uuid
                     LEFT JOIN public.party tpp ON toi.party_uuid = tpp.uuid
                     LEFT JOIN public.factory tpf ON toi.factory_uuid = tpf.uuid
-                    LEFT JOIN commercial.pi_cash tpc ON tpc.thread_order_info_uuids IN (toi.uuid)
-                    LEFT JOIN commercial.lc tlc ON tpc.lc_uuid = tlc.uuid 
+                    LEFT JOIN pi_cash_grouped_thread ON toi.uuid = pi_cash_grouped_thread.order_info_uuid
                     WHERE
                         ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for IN ('thread', 'sample_thread') THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
                         AND ${
@@ -548,16 +589,6 @@ export async function dailyChallanReport(req, res, next) {
                         toi.created_at,
                         toi.id,
                         vodf.order_number,
-                        tpc.uuid,
-                        pi_cash.uuid,
-                        tpc.created_at,
-                        tpc.id,
-                        pi_cash.created_at,
-                        pi_cash.id,
-                        tlc.uuid,
-                        lc.uuid,
-                        tlc.lc_number,
-                        lc.lc_number,
                         tpm.uuid,
                         vodf.marketing_uuid,
                         tpm.name,
@@ -572,7 +603,11 @@ export async function dailyChallanReport(req, res, next) {
                         vodf.factory_name,
                         packing_list_grouped.total_quantity,
                         packing_list_grouped.total_short_quantity,
-                        packing_list_grouped.total_reject_quantity
+                        packing_list_grouped.total_reject_quantity,
+                        pi_cash_grouped_thread.pi_numbers,
+						pi_cash_grouped_thread.lc_numbers,
+						pi_cash_grouped.pi_numbers,
+						pi_cash_grouped.lc_numbers
                     ORDER BY
                         challan.created_at DESC; 
         `;
