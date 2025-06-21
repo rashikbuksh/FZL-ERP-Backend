@@ -1899,7 +1899,7 @@ export async function selectPi(req, res, next) {
 		public.marketing ON toi.marketing_uuid = marketing.uuid OR v_order_details.marketing_uuid = marketing.uuid
 	WHERE
 		pi_cash.is_pi = 1
-		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL`}
+		${is_update === 'true' ? sql`` : sql`AND lc_uuid IS NULL AND pi_cash.is_lc_input_manual = FALSE`}
 		AND (marketing.name is not null)
 		${party_uuid ? sql`AND pi_cash.party_uuid = ${party_uuid}` : sql``}
 		${
