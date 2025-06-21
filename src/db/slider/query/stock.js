@@ -35,17 +35,17 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { uuid, finishing_batch_uuid, batch_quantity, created_at } = req.body;
+	const { uuid, finishing_batch_uuid, batch_quantity, updated_at } = req.body;
 
 	const stockPromise = db
 		.update(stock)
-		.set({ uuid, finishing_batch_uuid, batch_quantity, created_at })
+		.set({ uuid, finishing_batch_uuid, batch_quantity, updated_at })
 		.where(eq(stock.uuid, req.params.uuid))
 		.returning({ updatedId: stock.uuid });
 
 	try {
 		const data = await stockPromise;
-		const batchNumber = await finishingBatchPromise;
+
 		const toast = {
 			status: 201,
 			type: 'update',
