@@ -594,79 +594,11 @@ export async function selectPiByLcUuid(req, res, next) {
 	const { lc_uuid } = req.params;
 
 	const query = sql`
-			WITH order_numbers_agg AS (
-				SELECT
-					pi_cash.uuid AS pi_cash_uuid,
-					COALESCE(
-						JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('order_info_uuid', vodf.order_info_uuid, 'order_number', vodf.order_number))
-						FILTER (WHERE vodf.order_number IS NOT NULL), '[]'
-					) AS order_numbers,
-					jsonb_agg(DISTINCT vodf.order_type) AS order_type
-				FROM
-					commercial.pi_cash
-				LEFT JOIN
-					zipper.v_order_details_full vodf ON vodf.order_info_uuid = ANY(
-						SELECT elem
-						FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.order_info_uuids::jsonb) AS elem
-						WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.order_info_uuids != '[]' AND pi_cash.order_info_uuids IS NOT NULL
-					)
-				GROUP BY
-					pi_cash.uuid
-			),
-			thread_order_numbers_agg AS (
-				SELECT
-					pi_cash.uuid AS pi_cash_uuid,
-					COALESCE(
-						JSONB_AGG( DISTINCT
-							JSONB_BUILD_OBJECT(
-								'thread_order_info_uuid', 
-								oi.uuid, 
-								'thread_order_number', 
-								CONCAT('ST', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0'))
-							))
-						FILTER (WHERE oi.uuid IS NOT NULL), '[]'
-					) AS thread_order_numbers
-				FROM
-					commercial.pi_cash
-				LEFT JOIN
-					thread.order_info oi ON oi.uuid = ANY(
-						SELECT elem
-						FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.thread_order_info_uuids::jsonb) AS elem
-						WHERE elem IS NOT NULL AND elem != 'null' AND pi_cash.thread_order_info_uuids != '[]' AND pi_cash.thread_order_info_uuids IS NOT NULL
-					)
-				GROUP BY
-					pi_cash.uuid
-			),
-			total_pi_amount AS (
-				SELECT 
-					pi_cash_entry.pi_cash_uuid AS pi_cash_uuid,
-					COALESCE(SUM(
-						CASE 
-							WHEN pi_cash_entry.sfg_uuid IS NULL 
-								THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
-							WHEN od.order_type = 'tape' 
-								THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
-							ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price / 12, 0)
-						END
-					)::float8, 0) AS total_amount
-				FROM 
-					commercial.pi_cash_entry
-				LEFT JOIN 
-					zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-				LEFT JOIN 
-					zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-				LEFT JOIN 
-					zipper.order_description od ON order_entry.order_description_uuid = od.uuid
-				LEFT JOIN 
-					thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
-				GROUP BY 
-					pi_cash_entry.pi_cash_uuid
-			)
 			SELECT 
 				pi_cash.uuid,
 				CASE 
-				WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-				ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+					WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+					ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
 				END AS id,
 				pi_cash.lc_uuid,
 				lc.lc_number,
@@ -724,11 +656,56 @@ export async function selectPiByLcUuid(req, res, next) {
 				ON pi_cash.bank_uuid = bank.uuid
 			LEFT JOIN commercial.lc 
 				ON pi_cash.lc_uuid = lc.uuid
-			LEFT JOIN order_numbers_agg
-				ON order_numbers_agg.pi_cash_uuid = pi_cash.uuid
-			LEFT JOIN thread_order_numbers_agg
-				ON thread_order_numbers_agg.pi_cash_uuid = pi_cash.uuid
-			LEFT JOIN total_pi_amount
+			LEFT JOIN LATERAL (
+				SELECT
+					JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('order_info_uuid', vodf.order_info_uuid, 'order_number', vodf.order_number))
+						FILTER (WHERE vodf.order_number IS NOT NULL) AS order_numbers,
+					JSONB_AGG(DISTINCT vodf.order_type) AS order_type
+				FROM zipper.v_order_details_full vodf
+				WHERE vodf.order_info_uuid = ANY (
+					SELECT elem::text
+					FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.order_info_uuids::jsonb) AS elem
+					WHERE elem IS NOT NULL AND elem != 'null'
+				)
+			) order_numbers_agg ON TRUE
+			LEFT JOIN LATERAL (
+				SELECT
+					JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT(
+						'thread_order_info_uuid', oi.uuid, 
+						'thread_order_number', CONCAT('ST', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0'))
+					)) FILTER (WHERE oi.uuid IS NOT NULL) AS thread_order_numbers
+				FROM thread.order_info oi
+				WHERE oi.uuid = ANY (
+					SELECT elem::text
+					FROM JSONB_ARRAY_ELEMENTS_TEXT(pi_cash.thread_order_info_uuids::jsonb) AS elem
+					WHERE elem IS NOT NULL AND elem != 'null'
+				)
+			) thread_order_numbers_agg ON TRUE
+			LEFT JOIN (
+				SELECT 
+					pi_cash_entry.pi_cash_uuid AS pi_cash_uuid,
+					COALESCE(SUM(
+						CASE 
+							WHEN pi_cash_entry.sfg_uuid IS NULL 
+								THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
+							WHEN od.order_type = 'tape' 
+								THEN order_entry.size::float8 * COALESCE(order_entry.party_price, 0)
+							ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price / 12, 0)
+						END
+					)::float8, 0) AS total_amount
+				FROM 
+					commercial.pi_cash_entry
+				LEFT JOIN 
+					zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+				LEFT JOIN 
+					zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+				LEFT JOIN 
+					zipper.order_description od ON order_entry.order_description_uuid = od.uuid
+				LEFT JOIN 
+					thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+				GROUP BY 
+					pi_cash_entry.pi_cash_uuid
+			) total_pi_amount
 				ON total_pi_amount.pi_cash_uuid = pi_cash.uuid
 			WHERE 
 				pi_cash.lc_uuid = ${lc_uuid};
