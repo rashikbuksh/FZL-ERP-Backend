@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION thread_batch_entry_after_batch_entry_production_insert_funct() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION thread.thread_batch_entry_after_batch_entry_production_insert_funct() RETURNS TRIGGER AS $$
 BEGIN
 
     IF NEW.type = 'normal' THEN
@@ -28,9 +28,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-
-CREATE OR REPLACE FUNCTION thread_batch_entry_after_batch_entry_production_delete_funct() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION thread.thread_batch_entry_after_batch_entry_production_delete_funct() RETURNS TRIGGER AS $$
 BEGIN
     IF OLD.type = 'normal' THEN
         UPDATE thread.batch_entry
@@ -57,9 +55,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-
-CREATE OR REPLACE FUNCTION thread_batch_entry_after_batch_entry_production_update_funct() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION thread.thread_batch_entry_after_batch_entry_production_update_funct() RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.type = 'normal' THEN
         UPDATE thread.batch_entry
@@ -89,14 +85,14 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER thread_batch_entry_after_batch_entry_production_insert
 AFTER INSERT ON thread.batch_entry_production
 FOR EACH ROW
-EXECUTE FUNCTION thread_batch_entry_after_batch_entry_production_insert_funct();
+EXECUTE FUNCTION thread.thread_batch_entry_after_batch_entry_production_insert_funct();
 
 CREATE OR REPLACE TRIGGER thread_batch_entry_after_batch_entry_production_delete
 AFTER DELETE ON thread.batch_entry_production
 FOR EACH ROW
-EXECUTE FUNCTION thread_batch_entry_after_batch_entry_production_delete_funct();
+EXECUTE FUNCTION thread.thread_batch_entry_after_batch_entry_production_delete_funct();
 
 CREATE OR REPLACE TRIGGER thread_batch_entry_after_batch_entry_production_update
 AFTER UPDATE ON thread.batch_entry_production
 FOR EACH ROW
-EXECUTE FUNCTION thread_batch_entry_after_batch_entry_production_update_funct();
+EXECUTE FUNCTION thread.thread_batch_entry_after_batch_entry_production_update_funct();
