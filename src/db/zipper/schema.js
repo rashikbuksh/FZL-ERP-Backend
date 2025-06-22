@@ -236,6 +236,7 @@ export const order_entry = zipper.table('order_entry', {
 	color_ref: text('color_ref').default(null),
 	color_ref_entry_date: DateTime('color_ref_entry_date').default(null),
 	color_ref_update_date: DateTime('color_ref_update_date').default(null),
+	bulk_approval_date: DateTime('bulk_approval_date').default(null),
 });
 
 export const sfg = zipper.table('sfg', {

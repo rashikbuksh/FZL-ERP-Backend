@@ -143,6 +143,11 @@ zipperRouter.get(
 	'/order-all-info/by/:order_number',
 	orderEntryOperations.selectOrderAllInfoByOrderInfoUuid
 );
+zipperRouter.get('/bulk-approval', orderEntryOperations.selectBulkApprovalInfo);
+zipperRouter.put(
+	'/bulk-approval/:uuid',
+	orderEntryOperations.updateBulkApprovalBySfgUuid
+);
 
 // --------------------- SFG ROUTES ---------------------
 

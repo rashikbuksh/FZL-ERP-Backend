@@ -673,3 +673,116 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectBulkApprovalInfo(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	const { type, order_type } = req.query;
+
+	const query = sql`
+				SELECT
+					oe.uuid AS uuid,
+					sfg.uuid AS sfg_uuid,
+					oe.order_description_uuid AS order_description_uuid,
+					vod.order_info_uuid,
+					oe.style AS style,
+					oe.color AS color,
+					oe.color_ref,
+					vod.is_inch,
+					oe.size,
+					CASE 
+						WHEN vod.order_type = 'tape' THEN 'Meter' 
+						WHEN vod.order_type = 'slider' THEN 'Pcs'
+						WHEN vod.is_inch = 1 THEN 'Inch'
+						ELSE 'CM' 
+					END AS unit,
+					oe.bleaching,
+					oe.quantity::float8 AS quantity,
+					sfg.recipe_uuid AS recipe_uuid,
+					recipe.name AS recipe_name,
+					sfg.remarks AS remarks,
+					vod.order_number AS order_number,
+					vod.item_description AS item_description,
+					vod.order_type,
+					vod.order_description_created_at,
+					oe.swatch_approval_date,
+					COALESCE(dyeing_batch.total_quantity > 0, FALSE) AS is_batch_created,
+					vod.receive_by_factory,
+					vod.receive_by_factory_time,
+					vod.receive_by_factory_by,
+					vod.receive_by_factory_by_name,
+					oe.bulk_approval_date
+				FROM
+					zipper.sfg sfg
+				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+				LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
+				LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+				LEFT JOIN (
+					SELECT 
+						dyeing_batch_entry.sfg_uuid,
+						SUM(dyeing_batch_entry.quantity) AS total_quantity
+					FROM 
+						zipper.dyeing_batch_entry
+					GROUP BY 
+						dyeing_batch_entry.sfg_uuid
+				) dyeing_batch ON dyeing_batch.sfg_uuid = sfg.uuid
+				WHERE 
+					vod.order_type != 'slider' 
+					AND vod.is_cancelled = FALSE
+					AND vod.production_pause = FALSE
+					AND vod.receive_by_factory = TRUE
+					${
+						type === 'pending'
+							? sql`AND oe.bulk_approval_date IS NULL`
+							: type === 'completed'
+								? sql`AND oe.bulk_approval_date IS NOT NULL`
+								: sql``
+					}
+					${
+						order_type === 'complete_order'
+							? sql`AND oe.quantity <= sfg.delivered AND sfg.recipe_uuid IS NOT NULL`
+							: order_type === 'incomplete_order'
+								? sql`AND oe.quantity > sfg.delivered`
+								: sql``
+					}
+				ORDER BY 
+					vod.order_description_created_at DESC,
+					oe.bulk_approval_date ASC`;
+
+	const swatchPromise = db.execute(query);
+
+	try {
+		const data = await swatchPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'swatch info',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateBulkApprovalBySfgUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const orderEntryPromise = db
+		.update(order_entry)
+		.set({ bulk_approval_date: req.body.bulk_approval_date })
+		.where(eq(order_entry.uuid, req.params.uuid))
+		.returning({ updatedId: order_entry.uuid });
+
+	try {
+		const data = await orderEntryPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

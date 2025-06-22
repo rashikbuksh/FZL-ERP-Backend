@@ -667,7 +667,8 @@ export async function PiRegister(req, res, next) {
                 CASE WHEN lc.uuid IS NOT NULL THEN concat('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) ELSE NULL END as file_number,
                 lc.created_at as lc_created_at,
                 pi_cash_entry_order_numbers.order_object,
-                pi_cash_entry_order_numbers.thread_order_object
+                pi_cash_entry_order_numbers.thread_order_object,
+                pi_cash.is_lc_input_manual
             FROM
                 commercial.pi_cash
             LEFT JOIN

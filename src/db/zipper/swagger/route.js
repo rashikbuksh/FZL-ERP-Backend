@@ -1138,6 +1138,59 @@ export const pathZipperOrderEntry = {
 			},
 		},
 	},
+	'/zipper/bulk-approval': {
+		get: {
+			tags: ['zipper.order_entry'],
+			summary: 'Get all Order Entry for Bulk Approval',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+				SE.parameter_query('order_type', 'order_type', [
+					'complete_order',
+					'incomplete_order',
+				]),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					sfg_uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					style: SE.string('style 1'),
+					color: SE.string('black'),
+					size: SE.number(10),
+					quantity: SE.number(100),
+					recipe_uuid: SE.uuid(),
+					recipe_name: SE.string('recipe 1'),
+					remarks: SE.string('Remarks'),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-SP'),
+				}),
+			},
+		},
+	},
+	'/zipper/bulk-approval/{uuid}': {
+		put: {
+			tags: ['zipper.order_entry'],
+			summary: 'Update an existing order entry by uuid',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('order entry to update', 'uuid')],
+			requestBody: SE.requestBody({
+				bulk_approval_date: SE.date_time(),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/order_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 const sfg_extra_fields = {
