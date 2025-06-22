@@ -710,7 +710,8 @@ export async function selectBulkApprovalInfo(req, res, next) {
 					vod.receive_by_factory_time,
 					vod.receive_by_factory_by,
 					vod.receive_by_factory_by_name,
-					oe.bulk_approval_date
+					oe.bulk_approval_date,
+					oe.bulk_approval
 				FROM
 					zipper.sfg sfg
 				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
@@ -732,14 +733,14 @@ export async function selectBulkApprovalInfo(req, res, next) {
 					AND vod.receive_by_factory = TRUE
 					${
 						type === 'pending'
-							? sql`AND oe.bulk_approval_date IS NULL`
+							? sql`AND oe.bulk_approval = FALSE`
 							: type === 'completed'
-								? sql`AND oe.bulk_approval_date IS NOT NULL`
+								? sql`AND oe.bulk_approval = TRUE`
 								: sql``
 					}
 					${
 						order_type === 'complete_order'
-							? sql`AND oe.quantity <= sfg.delivered AND sfg.recipe_uuid IS NOT NULL`
+							? sql`AND oe.quantity <= sfg.delivered AND oe.bulk_approval = TRUE`
 							: order_type === 'incomplete_order'
 								? sql`AND oe.quantity > sfg.delivered`
 								: sql``
@@ -770,7 +771,10 @@ export async function updateBulkApprovalBySfgUuid(req, res, next) {
 
 	const orderEntryPromise = db
 		.update(order_entry)
-		.set({ bulk_approval_date: req.body.bulk_approval_date })
+		.set({
+			bulk_approval_date: req.body.bulk_approval_date,
+			bulk_approval: req.body.bulk_approval,
+		})
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ updatedId: order_entry.uuid });
 

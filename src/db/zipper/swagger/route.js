@@ -1182,6 +1182,7 @@ export const pathZipperOrderEntry = {
 			parameters: [SE.parameter_params('order entry to update', 'uuid')],
 			requestBody: SE.requestBody({
 				bulk_approval_date: SE.date_time(),
+				bulk_approval: SE.boolean(true),
 			}),
 			responses: {
 				200: SE.response_schema_ref(200, 'zipper/order_entry'),
