@@ -731,6 +731,7 @@ export async function selectBulkApprovalInfo(req, res, next) {
 					AND vod.is_cancelled = FALSE
 					AND vod.production_pause = FALSE
 					AND vod.receive_by_factory = TRUE
+					AND vod.is_sample = 0
 					${
 						type === 'pending'
 							? sql`AND oe.bulk_approval = FALSE`
