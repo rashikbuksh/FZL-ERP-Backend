@@ -3,6 +3,7 @@ RETURNS TRIGGER AS $$
 BEGIN 
     IF (OLD.style IS DISTINCT FROM NEW.style OR
         OLD.color IS DISTINCT FROM NEW.color OR
+        OLD.color_ref IS DISTINCT FROM NEW.color_ref OR
         OLD.size IS DISTINCT FROM NEW.size OR
         OLD.quantity IS DISTINCT FROM NEW.quantity OR
         OLD.company_price IS DISTINCT FROM NEW.company_price OR
@@ -14,6 +15,7 @@ BEGIN
             order_entry_uuid, 
             style, 
             color, 
+            color_ref,
             size, 
             quantity, 
             company_price, 
@@ -25,6 +27,7 @@ BEGIN
             NEW.uuid, 
             NEW.style, 
             NEW.color, 
+            NEW.color_ref,
             NEW.size, 
             NEW.quantity, 
             NEW.company_price, 

@@ -30,25 +30,6 @@ const findOrCreateArray = (array, key, value, createFn) => {
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	// const {
-	// 	uuid,
-	// 	order_description_uuid,
-	// 	style,
-	// 	color,
-	// 	size,
-	// 	quantity,
-	// 	company_price,
-	// 	party_price,
-	// 	status,
-	// 	swatch_status,
-	// 	swap_approval_date,
-	// 	bleaching,
-	// 	created_by,
-	// 	created_at,
-	// 	remarks,
-	// 	index,
-	// } = req.body;
-
 	const order_entryPromise = db
 		.insert(order_entry)
 		.values(req.body)
@@ -89,6 +70,8 @@ export async function update(req, res, next) {
 		updated_at,
 		remarks,
 		index,
+		color_ref,
+		color_ref_update_date,
 	} = req.body;
 
 	const order_entryPromise = db
@@ -110,6 +93,8 @@ export async function update(req, res, next) {
 			updated_at,
 			remarks,
 			index,
+			color_ref,
+			color_ref_update_date,
 		})
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_entry.uuid });

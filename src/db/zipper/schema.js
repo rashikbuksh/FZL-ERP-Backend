@@ -810,6 +810,7 @@ export const order_entry_log = zipper.table('order_entry_log', {
 	),
 	style: text('style').notNull(null),
 	color: text('color').default(null),
+	color_ref: text('color_ref').default(null),
 	size: text('size').default(null),
 	quantity: PG_DECIMAL('quantity').default(0.0),
 	company_price: PG_DECIMAL('company_price').default(0.0),
