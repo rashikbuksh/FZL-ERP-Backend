@@ -67,7 +67,7 @@ export async function remove(req, res, next) {
 	const orderEntryLogPromise = db
 		.delete(order_entry_log)
 		.where(eq(order_entry_log.thread_order_entry_uuid, req.params.uuid))
-		.returning({ deletedUuid: order_entry_log.uuid });
+		.returning({ deletedIdOrderEntryLog: order_entry_log.id });
 
 	const resultPromise = db
 		.delete(order_entry)
