@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION order_entry_log_after_zipper_order_entry_update_funct() 
+CREATE OR REPLACE FUNCTION zipper.order_entry_log_after_zipper_order_entry_update_funct() 
 RETURNS TRIGGER AS $$
 BEGIN 
     IF (OLD.style IS DISTINCT FROM NEW.style OR
@@ -42,4 +42,4 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER order_entry_log_after_zipper_order_entry_update
 AFTER UPDATE ON zipper.order_entry
 FOR EACH ROW
-EXECUTE FUNCTION order_entry_log_after_zipper_order_entry_update_funct();
+EXECUTE FUNCTION zipper.order_entry_log_after_zipper_order_entry_update_funct();

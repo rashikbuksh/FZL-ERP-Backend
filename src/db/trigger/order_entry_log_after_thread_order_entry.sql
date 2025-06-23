@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION order_entry_log_after_thread_order_entry_update_funct() 
+CREATE OR REPLACE FUNCTION thread.order_entry_log_after_thread_order_entry_update_funct() 
 RETURNS TRIGGER AS $$
 BEGIN 
     IF (OLD.style IS DISTINCT FROM NEW.style OR
@@ -39,4 +39,4 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER order_entry_log_after_thread_order_entry_update
 AFTER UPDATE ON thread.order_entry
 FOR EACH ROW
-EXECUTE FUNCTION order_entry_log_after_thread_order_entry_update_funct();
+EXECUTE FUNCTION thread.order_entry_log_after_thread_order_entry_update_funct();

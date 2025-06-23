@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION material_stock_after_booking_insert_function() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_booking_insert_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock 
     SET 
@@ -9,8 +9,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-CREATE OR REPLACE FUNCTION material_stock_after_booking_update_function() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_booking_update_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock 
     SET 
@@ -22,9 +21,7 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-
-
-CREATE OR REPLACE FUNCTION material_stock_after_booking_delete_function() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION material.material_stock_after_booking_delete_function() RETURNS TRIGGER AS $$
 BEGIN
     UPDATE material.stock 
     SET 
@@ -38,16 +35,14 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER material_stock_after_booking_insert_trigger
 AFTER INSERT ON material.booking
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_booking_insert_function();
+EXECUTE FUNCTION material.material_stock_after_booking_insert_function();
 
 CREATE OR REPLACE TRIGGER material_stock_after_booking_update_trigger
 AFTER UPDATE ON material.booking
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_booking_update_function();
+EXECUTE FUNCTION material.material_stock_after_booking_update_function();
 
 CREATE OR REPLACE TRIGGER material_stock_after_booking_delete_trigger
 AFTER DELETE ON material.booking
 FOR EACH ROW
-EXECUTE FUNCTION material_stock_after_booking_delete_function();
-
-
+EXECUTE FUNCTION material.material_stock_after_booking_delete_function();

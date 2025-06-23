@@ -1,5 +1,5 @@
 -- Step 1: Create the function
-CREATE OR REPLACE FUNCTION factory_insert_after_party_insert_funct()
+CREATE OR REPLACE FUNCTION public.factory_insert_after_party_insert_funct()
 RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO public.factory (uuid, party_uuid, name, address, created_at, created_by, remarks)
@@ -12,13 +12,10 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER factory_insert_after_party_insert
 AFTER INSERT ON public.party
 FOR EACH ROW
-EXECUTE FUNCTION factory_insert_after_party_insert_funct();
-
-
-
+EXECUTE FUNCTION public.factory_insert_after_party_insert_funct();
 
 -- Step 1: Create the function
-CREATE OR REPLACE FUNCTION factory_delete_after_party_delete_funct()
+CREATE OR REPLACE FUNCTION public.factory_delete_after_party_delete_funct()
 RETURNS TRIGGER AS $$
 BEGIN
     DELETE FROM public.factory WHERE party_uuid = OLD.uuid;
@@ -30,4 +27,4 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER factory_delete_after_party_delete
 AFTER DELETE ON public.party
 FOR EACH ROW
-EXECUTE FUNCTION factory_delete_after_party_delete_funct();
+EXECUTE FUNCTION public.factory_delete_after_party_delete_funct();

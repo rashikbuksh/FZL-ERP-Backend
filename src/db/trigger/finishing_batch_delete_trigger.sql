@@ -1,5 +1,5 @@
 -- Create the trigger function
-CREATE OR REPLACE FUNCTION trg_before_delete_finishing_batch()
+CREATE OR REPLACE FUNCTION zipper.trg_before_delete_finishing_batch()
 RETURNS TRIGGER AS $$
 BEGIN
     -- Delete from finishing_batch_transaction
@@ -31,4 +31,4 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_before_delete_finishing_batch
 BEFORE DELETE ON zipper.finishing_batch
 FOR EACH ROW
-EXECUTE FUNCTION trg_before_delete_finishing_batch();
+EXECUTE FUNCTION zipper.trg_before_delete_finishing_batch();
