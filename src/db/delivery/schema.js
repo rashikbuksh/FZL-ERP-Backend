@@ -122,6 +122,14 @@ export const challan = delivery.table('challan', {
 	delivery_date: DateTime('delivery_date').default(null),
 	delivery_type: text('delivery_type').default(null),
 	is_delivered: integer('is_delivered').default(0),
+	receive_status_by: defaultUUID('receive_status_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
+	receive_status_date: DateTime('receive_status_date').default(null),
+	is_delivered_by: defaultUUID('is_delivered_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
+	is_delivered_date: DateTime('is_delivered_date').default(null),
 });
 
 export const vehicle = delivery.table('vehicle', {

@@ -516,13 +516,20 @@ export async function dailyChallanReport(req, res, next) {
                         END )AS count_length_name,
                         packing_list_grouped.total_quantity::float8,
                         challan.receive_status,
+                        challan.receive_status_by,
+                        challan.receive_status_date,
+                        receive_status_by.name AS receive_status_by_name,
                         packing_list_grouped.total_short_quantity::float8,
                         packing_list_grouped.total_reject_quantity::float8,
                         CASE 
                             WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN 'thread' 
                             ELSE 'zipper' 
-                        END AS product
+                        END AS product,
+                        challan.is_delivered,
+                        challan.is_delivered_date,
+                        challan.is_delivered_by,
+                        is_delivered_by.name AS is_delivered_by_name
                     FROM
                         delivery.challan
                     LEFT JOIN 
@@ -567,6 +574,8 @@ export async function dailyChallanReport(req, res, next) {
                     LEFT JOIN public.party tpp ON toi.party_uuid = tpp.uuid
                     LEFT JOIN public.factory tpf ON toi.factory_uuid = tpf.uuid
                     LEFT JOIN pi_cash_grouped_thread ON toi.uuid = pi_cash_grouped_thread.order_info_uuid
+                    LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
+                    LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
                     WHERE
                         ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for IN ('thread', 'sample_thread') THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
                         AND ${
@@ -607,7 +616,14 @@ export async function dailyChallanReport(req, res, next) {
                         pi_cash_grouped_thread.pi_numbers,
 						pi_cash_grouped_thread.lc_numbers,
 						pi_cash_grouped.pi_numbers,
-						pi_cash_grouped.lc_numbers
+						pi_cash_grouped.lc_numbers,
+                        is_delivered_by.name,
+                        receive_status_by.name,
+                        challan.receive_status,
+                        challan.receive_status_by,
+                        challan.receive_status_date,
+                        challan.is_delivered,
+                        challan.is_delivered_date
                     ORDER BY
                         challan.created_at DESC; 
         `;

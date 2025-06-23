@@ -38,6 +38,12 @@ export async function selectDeliveryReportZipper(req, res, next) {
 				CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text) AS challan_number,
                 challan.delivery_date,
                 challan.receive_status,
+                challan.is_delivered,
+                challan.is_delivered_date,
+                challan.is_delivered_by,
+                is_delivered_by.name AS is_delivered_by_name,
+                receive_status_by.name AS receive_status_by_name,
+                challan.receive_status_date,
                 vpld.item_for,
                 vpl.marketing_name,
                 vpl.party_name,
@@ -99,6 +105,8 @@ export async function selectDeliveryReportZipper(req, res, next) {
             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
             LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN pi_cash_grouped pcg ON vpld.order_info_uuid = pcg.order_info_uuid
+            LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
+            LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
             WHERE 
                 vpld.item_for IN ('zipper', 'slider', 'tape', 'sample_zipper')
                 AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
@@ -157,6 +165,12 @@ export async function selectDeliveryReportThread(req, res, next) {
 				CONCAT('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text) AS challan_number,
                 challan.delivery_date,
                 challan.receive_status,
+                challan.is_delivered,
+                challan.is_delivered_date,
+                challan.is_delivered_by,
+                is_delivered_by.name AS is_delivered_by_name,
+                receive_status_by.name AS receive_status_by_name,
+                challan.receive_status_date,
                 vpld.item_for,
                 vpl.marketing_name,
                 vpl.party_name,
@@ -194,6 +208,8 @@ export async function selectDeliveryReportThread(req, res, next) {
             LEFT JOIN thread.order_entry oe ON vpld.order_entry_uuid = oe.uuid
             LEFT JOIN thread.order_info toi ON oe.order_info_uuid = toi.uuid
             LEFT JOIN pi_cash_grouped_thread pcg ON vpld.order_info_uuid = pcg.order_info_uuid
+            LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
+            LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
             WHERE 
                 vpld.item_for IN ('thread', 'sample_thread')
                 AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}

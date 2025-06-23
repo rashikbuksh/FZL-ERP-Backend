@@ -5,6 +5,7 @@ import db from '../../index.js';
 import * as labDipSchema from '../../lab_dip/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { count_length, order_entry, order_info } from '../schema.js';
+import { order_entry_log } from '../../zipper/schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -63,12 +64,18 @@ export async function update(req, res, next) {
 }
 
 export async function remove(req, res, next) {
+	const orderEntryLogPromise = db
+		.delete(order_entry_log)
+		.where(eq(order_entry_log.order_entry_uuid, req.params.uuid))
+		.returning({ deletedUuid: order_entry_log.uuid });
+
 	const resultPromise = db
 		.delete(order_entry)
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ deletedId: order_entry.uuid });
 
 	try {
+		await orderEntryLogPromise;
 		const data = await resultPromise;
 
 		const toast = {

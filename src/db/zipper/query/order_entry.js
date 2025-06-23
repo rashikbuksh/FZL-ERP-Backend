@@ -8,6 +8,7 @@ import {
 	finishing_batch_production,
 	order_description,
 	order_entry,
+	order_entry_log,
 	sfg,
 } from '../schema.js';
 
@@ -117,6 +118,11 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const orderEntryLogPromise = db
+		.delete(order_entry_log)
+		.where(eq(order_entry_log.order_entry_uuid, req.params.uuid))
+		.returning({ deletedUuid: order_entry_log.uuid });
+
 	const sfgPromise = db
 		.delete(sfg)
 		.where(eq(sfg.order_entry_uuid, req.params.uuid))
@@ -128,6 +134,7 @@ export async function remove(req, res, next) {
 		.returning({ deletedUuid: order_entry.uuid });
 
 	try {
+		await orderEntryLogPromise;
 		await sfgPromise;
 		const data = await orderEntryPromise;
 

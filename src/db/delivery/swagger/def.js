@@ -100,6 +100,11 @@ export const defChallan = SED({
 		remarks: SE.string('remarks'),
 		delivery_date: SE.date_time(),
 		delivery_type: SE.string('delivery_type'),
+		thread_order_info_uuid: SE.uuid(),
+		receive_status_by: SE.uuid(),
+		receive_status_date: SE.date_time(),
+		is_delivered_by: SE.uuid(),
+		is_delivered_date: SE.date_time(),
 	},
 	xml: 'Delivery/Challan',
 });

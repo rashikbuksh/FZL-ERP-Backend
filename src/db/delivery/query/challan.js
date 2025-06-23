@@ -253,7 +253,13 @@ export async function selectAll(req, res, next) {
 				challan.delivery_type,
 				challan.is_delivered,
 				colors.color,
-				colors.color_ref
+				colors.color_ref,
+				challan.receive_status_by,
+				receive_status_by.name AS receive_status_by_name,
+				challan.receive_status_date,
+				challan.is_delivered_by,
+				is_delivered_by.name AS is_delivered_by_name,
+				challan.is_delivered_date
 			FROM
 				delivery.challan
 			LEFT JOIN
@@ -308,6 +314,8 @@ export async function selectAll(req, res, next) {
 					LEFT JOIN thread.order_entry toe ON packing_list_entry.thread_order_entry_uuid = toe.uuid
 					GROUP BY delivery.challan.uuid
 			) AS colors ON challan.uuid = colors.uuid
+			LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
+			LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
 			WHERE
 			  	${delivery_date ? sql`DATE(challan.delivery_date) = ${delivery_date}` : sql`TRUE`}
 				${vehicle && vehicle !== 'null' && vehicle !== 'undefined' && vehicle !== 'all' ? sql`AND challan.vehicle_uuid = ${vehicle}` : sql``}
@@ -446,7 +454,13 @@ export async function select(req, res, next) {
 									challan.is_own,
 									pi_cash.pi_cash_numbers,
 									challan.delivery_type,
-									challan.is_delivered
+									challan.is_delivered,
+									challan.is_delivered_date,
+									challan.is_delivered_by,
+									is_delivered_by.name AS is_delivered_by_name,
+									challan.receive_status_by,
+									receive_status_by.name AS receive_status_by_name,
+									challan.receive_status_date
 								FROM
 									delivery.challan
 								LEFT JOIN
@@ -514,6 +528,8 @@ export async function select(req, res, next) {
 									GROUP BY
 										packing_list.challan_uuid
 								) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
+								LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
+								LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
 							) AS main_query
 						LEFT JOIN (
 							SELECT
