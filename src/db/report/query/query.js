@@ -185,7 +185,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                 SELECT
                     vod.order_description_uuid,
                     COALESCE(
-                        jsonb_agg(DISTINCT jsonb_build_object('finishing_batch_uuid', finishing_batch.uuid, 'finishing_batch_number', concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', lpad((finishing_batch.id)::text, 4, '0'::text)), 'finishing_batch_date', finishing_batch.created_at::date, 'finishing_batch_quantity', finishing_batch_total.total_quantity::float8, 'balance_quantity', finishing_batch_total.total_quantity::float8 - finishing_batch_total.total_finishing_prod::float8))
+                        jsonb_agg(DISTINCT jsonb_build_object('finishing_batch_uuid', finishing_batch.uuid, 'finishing_batch_number', concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', (finishing_batch.id::text)), 'finishing_batch_date', finishing_batch.created_at::date, 'finishing_batch_quantity', finishing_batch_total.total_quantity::float8, 'balance_quantity', finishing_batch_total.total_quantity::float8 - finishing_batch_total.total_finishing_prod::float8))
                         FILTER (WHERE finishing_batch.uuid IS NOT NULL), '[]'
                     ) AS finishing_batch,
                     COALESCE(
@@ -222,7 +222,7 @@ export async function zipperProductionStatusReport(req, res, next) {
                     (
 						SELECT
 							dyeing_batch.uuid as dyeing_batch_uuid,
-                            CONCAT('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as dyeing_batch_number,
+                            CONCAT('B', to_char(dyeing_batch.created_at, 'YY'), '-', (dyeing_batch.id::text)) as dyeing_batch_number,
 							dyeing_batch.production_date::date,
                             oe.order_description_uuid,
 							SUM(dyeing_batch_entry.quantity) as total_quantity,
@@ -435,8 +435,8 @@ export async function dailyChallanReport(req, res, next) {
                         challan.created_at AS challan_date,
                         CASE 
                             WHEN pl.item_for IN ('thread', 'sample_thread') 
-                            THEN CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) 
-                            ELSE CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) 
+                            THEN CONCAT('TC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) 
+                            ELSE CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) 
                         END AS challan_id,
                         packing_list_grouped.gate_pass,
                         challan.created_by,
@@ -450,7 +450,7 @@ export async function dailyChallanReport(req, res, next) {
                             WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN CONCAT('ST', 
                                 CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END,
-                                to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')
+                                to_char(toi.created_at, 'YY'), '-', (toi.id::text)
                             ) 
                             ELSE vodf.order_number 
                         END AS order_number,
@@ -662,7 +662,7 @@ export async function PiRegister(req, res, next) {
 		const query = sql`
             SELECT 
                 pi_cash.uuid,
-                CASE WHEN is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END AS pi_cash_number,
+                CASE WHEN is_pi = 1 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)) ELSE concat('CI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)) END AS pi_cash_number,
                 pi_cash.created_at AS pi_cash_created_date,
                 pi_cash_entry_order_numbers.order_numbers,
                 pi_cash_entry_order_numbers.thread_order_numbers,
@@ -680,7 +680,7 @@ export async function PiRegister(req, res, next) {
                 lc.lc_number,
                 lc.lc_date,
                 lc.lc_value::float8,
-                CASE WHEN lc.uuid IS NOT NULL THEN concat('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) ELSE NULL END as file_number,
+                CASE WHEN lc.uuid IS NOT NULL THEN concat('LC', to_char(lc.created_at, 'YY'), '-', (lc.id::text)) ELSE NULL END as file_number,
                 lc.created_at as lc_created_at,
                 pi_cash_entry_order_numbers.order_object,
                 pi_cash_entry_order_numbers.thread_order_object,
@@ -703,8 +703,8 @@ export async function PiRegister(req, res, next) {
 				SELECT 
                     array_agg(DISTINCT vodf.order_number) as order_numbers, 
                     jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', vodf.order_number)) as order_object,
-                    array_agg(DISTINCT CASE WHEN toi.uuid is NOT NULL THEN concat('ST', to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, 
-                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CASE WHEN toi.uuid is NOT NULL THEN concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END)) as thread_order_object,
+                    array_agg(DISTINCT CASE WHEN toi.uuid is NOT NULL THEN concat('ST', to_char(toi.created_at, 'YY'), '-', (toi.id::text)) ELSE NULL END) as thread_order_numbers, 
+                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CASE WHEN toi.uuid is NOT NULL THEN concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) ELSE NULL END)) as thread_order_object,
                     pi_cash_uuid, 
                     SUM(pe.pi_cash_quantity)::float8 as total_pi_quantity,
                     SUM(pe.pi_cash_quantity * coalesce(CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE oe.party_price/12 END, 0))::float8 as total_zipper_pi_price, 
@@ -845,7 +845,7 @@ export async function PiToBeRegister(req, res, next) {
                 public.party party
             LEFT JOIN (
                 SELECT 
-                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')))) as order_object,
+                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)))) as order_object,
                     SUM(toe.quantity) AS total_quantity,
                     SUM(toe.delivered) AS total_delivered,
                     SUM(toe.pi) AS total_pi,
@@ -991,7 +991,7 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                 public.marketing marketing
             LEFT JOIN (
                 SELECT 
-                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')))) as order_object,
+                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)))) as order_object,
                     SUM(toe.quantity) AS total_quantity,
                     SUM(toe.delivered) AS total_delivered,
                     SUM(toe.pi) AS total_pi,
@@ -1061,7 +1061,7 @@ export async function LCReport(req, res, next) {
 
 		const query = sql`
             SELECT 
-                CONCAT('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) AS file_number,
+                CONCAT('LC', to_char(lc.created_at, 'YY'), '-', (lc.id::text)) AS file_number,
                 lc.uuid,
                 lc.lc_number,
                 lc.lc_date,
@@ -1169,13 +1169,13 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 		const query = sql`
             SELECT
                 batch.uuid,
-                CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) AS batch_number,
+                CONCAT('TB', to_char(batch.created_at, 'YY'), '-', (batch.id::text)) AS batch_number,
                 batch.created_at AS batch_created_at,
                 batch.machine_uuid,
                 machine.name as machine_name,
                 order_entry.uuid as order_entry_uuid,
                 order_info.uuid as order_info_uuid,
-                CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+                CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)) as order_number,
                 order_info.created_at as order_created_at,
                 order_info.updated_at as order_updated_at,
                 order_info.is_sample,
@@ -1423,7 +1423,7 @@ export async function ProductionReportThreadDirector(req, res, next) {
                 'Sewing Thread' as item_name,
                 order_info.party_uuid,
                 party.name as party_name,
-                CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+                CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)) as order_number,
                 CONCAT(count_length.count, ' - ', count_length.length) as count_length_name,
                 coalesce(prod_quantity.total_quantity,0)::float8 as total_quantity,
                 coalesce(prod_quantity.total_coning_carton_quantity,0)::float8 as total_coning_carton_quantity
@@ -1495,10 +1495,10 @@ export async function ProductionReportSnm(req, res, next) {
                             DISTINCT jsonb_build_object(
                                 'pi_number', CASE
                                     WHEN pi_cash.is_pi = 1 THEN concat(
-                                        'PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
+                                        'PI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)
                                     )
                                     ELSE concat(
-                                        'CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
+                                        'CI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)
                                     )
                                 END, 'pi_cash_uuid', pi_cash.uuid
                             )
@@ -1592,7 +1592,7 @@ export async function ProductionReportSnm(req, res, next) {
                             'B',
                             to_char(dyeing_batch.created_at, 'YY'),
                             '-',
-                            LPAD(dyeing_batch.id::text, 4, '0')
+                            (dyeing_batch.id::text)
                         ) as dyeing_batch_number,
                         dyeing_batch.production_date as production_date,
                         dbes.total_quantity as total_quantity,
@@ -1884,13 +1884,13 @@ export async function ProductionReportThreadSnm(req, res, next) {
                             'PI',
                             to_char(pi_cash.created_at, 'YY'),
                             '-',
-                            LPAD(pi_cash.id::text, 4, '0')
+                            (pi_cash.id::text)
                         )
                         ELSE concat(
                             'CI',
                             to_char(pi_cash.created_at, 'YY'),
                             '-',
-                            LPAD(pi_cash.id::text, 4, '0')
+                            (pi_cash.id::text)
                         )
                     END,
                     'pi_cash_uuid',
@@ -1936,7 +1936,7 @@ SELECT
         END,
         to_char(order_info.created_at, 'YY'),
         '-',
-        LPAD(order_info.id::text, 4, '0')
+        (order_info.id::text)
     ) as order_number,
     order_entry.uuid as order_entry_uuid,
     order_entry.style,
@@ -2048,7 +2048,7 @@ SELECT
                 'B',
                 to_char(batch.created_at, 'YY'),
                 '-',
-                LPAD(batch.id::text, 4, '0')
+                (batch.id::text)
             ) as batch_number,
             batch.production_date as production_date,
             batch_entry_quantity_length.total_quantity as total_quantity,
@@ -2283,7 +2283,7 @@ export async function dailyProductionReport(req, res, next) {
                     toi.marketing_uuid,
                     marketing.name as marketing_name,
                     toi.uuid as order_info_uuid,
-                    CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+                    CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) as order_number,
                     'Sewing Thread' as item_name,
                     'Thread' as type,
                     toi.party_uuid,
