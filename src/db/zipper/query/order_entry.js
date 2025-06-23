@@ -134,7 +134,7 @@ export async function remove(req, res, next) {
 		.returning({ deletedUuid: order_entry.uuid });
 
 	try {
-		orderEntryLogPromise.length > 0 && (await orderEntryLogPromise);
+		await orderEntryLogPromise;
 		await sfgPromise;
 		const data = await orderEntryPromise;
 
