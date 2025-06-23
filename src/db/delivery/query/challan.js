@@ -615,13 +615,15 @@ export async function selectChallanDetailsByChallanUuid(req, res, next) {
 export async function updateReceivedStatus(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { receive_status } = req.body;
+	const { receive_status, receive_status_by, receive_status_date } = req.body;
 
 	const query = sql`
 		UPDATE
 			delivery.challan
 		SET
-			receive_status = ${receive_status}
+			receive_status = ${receive_status},
+			receive_status_by = ${receive_status_by},
+			receive_status_date = ${receive_status_date}
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
@@ -648,20 +650,21 @@ export async function updateReceivedStatus(req, res, next) {
 export async function updateDelivered(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { is_delivered, updated_at } = req.body;
+	const { is_delivered, is_delivered_by, is_delivered_date } = req.body;
 	// console.log('is_delivered', is_delivered);
 	// console.log('updated_at', updated_at);
 	const query = sql`
 		UPDATE
 			delivery.challan
 		SET
-			updated_at = ${updated_at},
-			is_delivered = ${is_delivered}
+			is_delivered = ${is_delivered},
+			is_delivered_by = ${is_delivered_by},
+			is_delivered_date = ${is_delivered_date}
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
 			concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
-			receive_status
+			is_delivered
 	`;
 
 	const resultPromise = db.execute(query);
