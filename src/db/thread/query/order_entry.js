@@ -66,7 +66,7 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	const orderEntryLogPromise = db
 		.delete(order_entry_log)
-		.where(eq(order_entry_log.order_entry_uuid, req.params.uuid))
+		.where(eq(order_entry_log.thread_order_entry_uuid, req.params.uuid))
 		.returning({ deletedUuid: order_entry_log.uuid });
 
 	const resultPromise = db
