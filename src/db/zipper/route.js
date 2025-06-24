@@ -37,7 +37,12 @@ zipperRouter.post('/order-info', orderInfoOperations.insert);
 zipperRouter.put('/order-info/:uuid', orderInfoOperations.update);
 zipperRouter.delete('/order-info/:uuid', orderInfoOperations.remove);
 zipperRouter.get('/order/details', (req, res, next) => {
-	const cacheKey = `orderDetails`;
+	// get all query params from the request and add them to the cache key
+	const queryParams = req.query;
+	const queryString = Object.keys(queryParams)
+		.map((key) => `${key}=${queryParams[key]}`)
+		.join('&');
+	const cacheKey = `orderDetails?${queryString}`;
 	const cachedData = Cache.get(cacheKey);
 	if (cachedData) {
 		return res.status(200).json(cachedData);
