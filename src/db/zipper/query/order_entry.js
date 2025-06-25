@@ -370,7 +370,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			oe.style,
 			oe.color_ref_entry_date,
 			oe.color_ref_update_date,
-			CONCAT(oe.color, CASE WHEN oe.color_ref IS NOT NULL AND oe.color_ref != '' THEN ' - ' ELSE '' END, oe.color_ref) as color,
+			CONCAT(oe.color, CASE WHEN oe.color_ref IS NOT NULL AND oe.color_ref != '' THEN ' (REF: ' ELSE '' END, oe.color_ref, CASE WHEN oe.color_ref IS NOT NULL AND oe.color_ref != '' THEN ')' ELSE '' END) as color,
 			oe.size::float8,
 			vodf.is_inch,
 			oe.quantity::float8 as quantity,
