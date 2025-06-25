@@ -93,7 +93,8 @@ zipperRouter.post('/order-description', (req, res, next) => {
 	console.log(
 		Object.keys(Cache.keys()).filter((key) =>
 			key.startsWith('orderDetails')
-		)
+		),
+		'name of caches before insert'
 	);
 
 	Object.keys(Cache.keys()).forEach((key) => {
@@ -104,6 +105,14 @@ zipperRouter.post('/order-description', (req, res, next) => {
 	orderDescriptionOperations.insert(req, res, next);
 });
 zipperRouter.put('/order-description/:uuid', (req, res, next) => {
+	// log the cache that starts with 'orderDetails'
+	console.log(
+		Object.keys(Cache.keys()).filter((key) =>
+			key.startsWith('orderDetails')
+		),
+		'name of caches before update'
+	);
+
 	Object.keys(Cache.keys()).forEach((key) => {
 		if (key.startsWith('orderDetails')) {
 			Cache.del(key);
