@@ -352,7 +352,7 @@ export async function zipperProductionStatusReport(req, res, next) {
 }
 
 export async function dailyChallanReport(req, res, next) {
-	const { own_uuid, status } = req?.query;
+	const { own_uuid, from_date, to_date } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -579,11 +579,9 @@ export async function dailyChallanReport(req, res, next) {
                     WHERE
                         ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for IN ('thread', 'sample_thread') THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
                         AND ${
-							status == 'pending'
-								? sql`challan.receive_status = 0`
-								: status == 'completed'
-									? sql`challan.receive_status = 1`
-									: sql`TRUE`
+							from_date && to_date
+								? sql`challan.created_at BETWEEN ${from_date}::timestamp AND ${to_date}::timestamp + interval '23 hours 59 minutes 59 seconds'`
+								: sql`TRUE`
 						}
                     GROUP BY
                         challan.uuid,
@@ -1674,10 +1672,13 @@ export async function ProductionReportSnm(req, res, next) {
                 oe.style,
                 oe.color,
                 oe.color_ref,
+                oe.color_ref_entry_date,
+                oe.color_ref_update_date,
                 oe.size::float8,
                 oe.quantity::float8,
                 oe.party_price::float8,
                 oe.company_price::float8,
+                oe.swatch_approval_date,
                 CASE
                     WHEN sfg.recipe_uuid IS NOT NULL THEN oe.swatch_approval_date
                     ELSE null
@@ -1942,6 +1943,8 @@ SELECT
     order_entry.style,
     order_entry.color,
     order_entry.color_ref,
+    order_entry.color_ref_entry_date,
+    order_entry.color_ref_update_date,
     order_entry.recipe_uuid,
     order_entry.quantity::float8,
     order_entry.party_price::float8,
@@ -1949,6 +1952,7 @@ SELECT
     order_entry.swatch_approval_date,
     order_entry.recipe_uuid,
     recipe.name as recipe_name,
+    order_entry.swatch_approval_date,
     CASE
         WHEN order_entry.recipe_uuid IS NULL THEN order_entry.quantity::float8
         ELSE 0

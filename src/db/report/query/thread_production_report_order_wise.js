@@ -31,6 +31,8 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 party.name as party_name,
                 order_info.marketing_uuid,
                 marketing.name as marketing_name,
+                order_info.buyer_uuid,
+                buyer.name as buyer_name,
                 order_entry.style as style,
                 order_entry.color as color,
                 order_entry.color_ref as color_ref,
@@ -57,6 +59,8 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 public.party ON order_info.party_uuid = party.uuid
             LEFT JOIN
                 public.marketing ON order_info.marketing_uuid = marketing.uuid
+            LEFT JOIN 
+                public.buyer ON order_info.buyer_uuid = buyer.uuid
             LEFT JOIN (
                 SELECT 
                     SUM(batch_entry.yarn_quantity) as yarn_quantity,
