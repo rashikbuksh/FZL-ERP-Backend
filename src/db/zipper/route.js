@@ -58,8 +58,6 @@ zipperRouter.get('/order/details', (req, res, next) => {
 			next(error); // Pass error to error-handling middleware
 		});
 });
-
-// orderInfoOperations.getOrderDetails;
 zipperRouter.get(
 	'/order/details/by/:own_uuid',
 	orderInfoOperations.getOrderDetailsByOwnUuid
@@ -91,21 +89,34 @@ zipperRouter.get('/tape-assigned', orderInfoOperations.getTapeAssigned);
 zipperRouter.get('/order-description', orderDescriptionOperations.selectAll);
 zipperRouter.get('/order-description/:uuid', orderDescriptionOperations.select);
 zipperRouter.post('/order-description', (req, res, next) => {
-	const cacheKey = `orderDetails`;
-	const cachedData = Cache.get(cacheKey);
-	if (cachedData) {
-		return res.status(200).json(cachedData);
-	}
+	// log the cache that starts with 'orderDetails'
+	console.log(
+		Object.keys(Cache.keys()).filter((key) =>
+			key.startsWith('orderDetails')
+		)
+	);
+
+	Object.keys(Cache.keys()).forEach((key) => {
+		if (key.startsWith('orderDetails')) {
+			Cache.del(key);
+		}
+	});
 	orderDescriptionOperations.insert(req, res, next);
 });
 zipperRouter.put('/order-description/:uuid', (req, res, next) => {
-	const cacheKey = `orderDetails`;
-	Cache.del(cacheKey);
+	Object.keys(Cache.keys()).forEach((key) => {
+		if (key.startsWith('orderDetails')) {
+			Cache.del(key);
+		}
+	});
 	orderDescriptionOperations.update(req, res, next);
 });
 zipperRouter.delete('/order-description/:uuid', (req, res, next) => {
-	const cacheKey = `orderDetails`;
-	Cache.del(cacheKey);
+	Object.keys(Cache.keys()).forEach((key) => {
+		if (key.startsWith('orderDetails')) {
+			Cache.del(key);
+		}
+	});
 	orderDescriptionOperations.remove(req, res, next);
 });
 zipperRouter.get(
