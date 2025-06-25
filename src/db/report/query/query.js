@@ -1941,6 +1941,7 @@ SELECT
     order_entry.uuid as order_entry_uuid,
     order_entry.style,
     order_entry.color,
+    order_entry.color_ref,
     order_entry.recipe_uuid,
     order_entry.quantity::float8,
     order_entry.party_price::float8,
