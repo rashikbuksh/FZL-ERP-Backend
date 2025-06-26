@@ -402,26 +402,25 @@ export async function selectOrderEntryFullByOrderInfoUuid(req, res, next) {
 			eq(zipperSchema.order_entry.uuid, zipperSchema.sfg.order_entry_uuid)
 		)
 		.leftJoin(
-			zipperSchema.finishing_batch_entry,
+			packing_list_entry,
 			eq(
-				zipperSchema.sfg.uuid,
-				zipperSchema.finishing_batch_entry.sfg_uuid
+				zipperSchema.order_entry.uuid,
+				packing_list_entry.order_entry_uuid
 			)
 		)
 		.leftJoin(
-			zipperSchema.finishing_batch_production,
-			eq(
-				zipperSchema.finishing_batch_entry.uuid,
-				zipperSchema.finishing_batch_production
-					.finishing_batch_entry_uuid
-			)
+			packing_list,
+			eq(packing_list_entry.packing_list_uuid, packing_list.uuid)
 		)
-		.leftJoin(
-			zipperSchema.dyeing_batch_entry,
-			eq(zipperSchema.sfg.uuid, zipperSchema.dyeing_batch_entry.sfg_uuid)
-		)
+		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
 		.where(
-			eq(zipperSchema.order_description.order_info_uuid, order_info_uuid)
+			and(
+				eq(
+					zipperSchema.order_description.order_info_uuid,
+					order_info_uuid
+				),
+				challan_uuid ? eq(challan.uuid, challan_uuid) : sql`1=1`
+			)
 		)
 		.orderBy(asc(zipperSchema.order_entry.index));
 
@@ -521,7 +520,24 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 				threadSchema.count_length.uuid
 			)
 		)
-		.where(eq(threadSchema.order_entry.order_info_uuid, order_info_uuid))
+		.leftJoin(
+			packing_list_entry,
+			eq(
+				threadSchema.order_entry.uuid,
+				packing_list_entry.thread_order_entry_uuid
+			)
+		)
+		.leftJoin(
+			packing_list,
+			eq(packing_list_entry.packing_list_uuid, packing_list.uuid)
+		)
+		.leftJoin(challan, eq(packing_list.challan_uuid, challan.uuid))
+		.where(
+			and(
+				eq(threadSchema.order_entry.order_info_uuid, order_info_uuid),
+				challan_uuid ? eq(challan.uuid, challan_uuid) : sql`1=1`
+			)
+		)
 		.orderBy(asc(threadSchema.order_entry.index));
 
 	try {

@@ -36,6 +36,8 @@ export async function threadProductionStatusOrderWise(req, res, next) {
                 order_entry.style as style,
                 order_entry.color as color,
                 order_entry.color_ref as color_ref,
+                order_entry.color_ref_entry_date as color_ref_entry_date,
+                order_entry.color_ref_update_date as color_ref_update_date,
                 order_entry.swatch_approval_date as swatch_approval_date,
                 CONCAT('"', count_length.count, ' - ', count_length.length) as count_length_name,
                 ROUND(coalesce(order_entry.quantity::float8, 0)::numeric,3)::float8 as total_quantity,

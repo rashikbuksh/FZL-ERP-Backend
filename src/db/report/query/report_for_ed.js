@@ -24,12 +24,14 @@ export async function selectEDReport(req, res, next) {
                 vplf.order_info_uuid as order_info_uuid,
                 vplf.order_number,
                 vplf.item_description,
-                vpl.marketing_name,
-                vpl.party_name,
+                vplf.marketing_name,
+                vplf.party_name,
                 CASE WHEN oe.uuid IS NOT NULL THEN oe.uuid ELSE toe.uuid END as order_entry_uuid,
                 vplf.style,
                 vplf.color,
                 vplf.color_ref,
+                vplf.color_ref_entry_date,
+                vplf.color_ref_update_date,
                 vplf.size,
                 vplf.style_color_size,
                 CASE WHEN sfg.uuid IS NOT NULL THEN oe.party_price::float8 ELSE toe.party_price::float8 END as party_price,
@@ -88,8 +90,6 @@ export async function selectEDReport(req, res, next) {
                 CASE WHEN sfg.uuid IS NOT NULL THEN vodf.updated_at ELSE toi.updated_at END as order_updated_at
             FROM 
                 delivery.v_packing_list_details vplf
-            LEFT JOIN
-                delivery.v_packing_list vpl ON vplf.packing_list_uuid = vpl.uuid
             LEFT JOIN
                 delivery.challan ON vplf.challan_uuid = challan.uuid
             LEFT JOIN 

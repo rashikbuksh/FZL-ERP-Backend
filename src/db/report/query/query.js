@@ -1184,6 +1184,8 @@ export async function threadProductionStatusBatchWise(req, res, next) {
                 order_entry.style,
                 order_entry.color,
                 order_entry.color_ref,
+                order_entry.color_ref_entry_date,
+                order_entry.color_ref_update_date,
                 recipe.name as recipe_name,
                 order_entry.swatch_approval_date,
                 order_entry.count_length_uuid,

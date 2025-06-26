@@ -323,6 +323,10 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.style ELSE toe.style END as style,
         CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color ELSE toe.color END as color,
         CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref ELSE toe.color_ref END as color_ref,
+        CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref_entry_date ELSE toe.color_ref_entry_date END as color_ref_entry_date,
+        CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN oe.color_ref_update_date ELSE toe.color_ref_update_date END as color_ref_update_date,
+        CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN vodf.party_name ELSE toi_party.name END as party_name,
+        CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN vodf.marketing_name ELSE toi_marketing.name END as marketing_name,
         oe.size,
         vodf.is_inch,
         vodf.is_meter,
@@ -381,7 +385,9 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         LEFT JOIN thread.count_length tc ON tc.uuid = toe.count_length_uuid
         LEFT JOIN thread.order_info toi ON toi.uuid = toe.order_info_uuid
         LEFT JOIN delivery.challan ch ON ch.uuid = pl.challan_uuid
-        LEFT JOIN hr.users deleted_by ON deleted_by.uuid = pl.deleted_by;
+        LEFT JOIN hr.users deleted_by ON deleted_by.uuid = pl.deleted_by
+        LEFT JOIN public.party toi_party ON toi.party_uuid = toi_party.uuid
+        LEFT JOIN public.marketing toi_marketing ON toi.marketing_uuid = toi_marketing.uuid
 `;
 
 export const PackingListView = `

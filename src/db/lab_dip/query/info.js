@@ -211,27 +211,22 @@ export async function selectAll(req, res, next) {
 				)
 				ELSE NULL
 			END AS order_number,
-			-- buyer_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.buyer_uuid ELSE thread.buyer_uuid END,
 			CASE
 				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.buyer_name
 				ELSE thread_buyer.name
 			END AS buyer_name,
-			-- party_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.party_uuid ELSE thread.party_uuid END,
 			CASE
 				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.party_name
 				ELSE thread_party.name
 			END AS party_name,
-			-- marketing_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.marketing_uuid ELSE thread.marketing_uuid END,
 			CASE
 				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.marketing_name
 				ELSE thread_marketing.name
 			END AS marketing_name,
-			-- merchandiser_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.merchandiser_uuid ELSE thread.merchandiser_uuid END,
 			CASE
 				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.merchandiser_name
 				ELSE thread_merchandiser.name
 			END AS merchandiser_name,
-			-- factory_uuid: CASE WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.factory_uuid ELSE thread.factory_uuid END,
 			CASE
 				WHEN info.order_info_uuid IS NOT NULL THEN v_order_details.factory_name
 				ELSE thread_factory.name

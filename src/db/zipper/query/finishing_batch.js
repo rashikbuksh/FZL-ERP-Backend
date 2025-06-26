@@ -918,6 +918,8 @@ export async function getOrderOverviewForFinishingBatch(req, res, next) {
 					oe.style,
 					oe.color,
 					oe.color_ref,
+					oe.color_ref_entry_date,
+					oe.color_ref_update_date,
 					oe.size,
 					oe.quantity::float8 as order_quantity,
 					fbe_given.balance_quantity,

@@ -139,6 +139,8 @@ export async function selectSampleReportByDate(req, res, next) {
                             oe.style,
                             oe.color,
                             oe.color_ref,
+                            oe.color_ref_entry_date,
+                            oe.color_ref_update_date,
                             oe.company_price::float8,
                             oe.party_price::float8,
                             sfg.pi::float8,

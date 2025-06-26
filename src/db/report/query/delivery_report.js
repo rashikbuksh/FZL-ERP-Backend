@@ -45,8 +45,8 @@ export async function selectDeliveryReportZipper(req, res, next) {
                 receive_status_by.name AS receive_status_by_name,
                 challan.receive_status_date,
                 vpld.item_for,
-                vpl.marketing_name,
-                vpl.party_name,
+                vpld.marketing_name,
+                vpld.party_name,
                 vpld.order_info_uuid,
                 vpld.order_number,
                 vpld.order_description_uuid,
@@ -54,6 +54,8 @@ export async function selectDeliveryReportZipper(req, res, next) {
                 vpld.style,
                 vpld.color,
                 vpld.color_ref,
+                vpld.color_ref_entry_date,
+                vpld.color_ref_update_date,
                 vpld.size,
                 vpld.packing_number,
                 vpld.order_quantity,
@@ -100,7 +102,6 @@ export async function selectDeliveryReportZipper(req, res, next) {
 				END as unit
             FROM delivery.v_packing_list_details vpld 
             LEFT JOIN delivery.challan challan ON vpld.challan_uuid = challan.uuid
-            LEFT JOIN delivery.v_packing_list vpl ON vpld.packing_list_uuid = vpl.uuid
             LEFT JOIN zipper.sfg sfg ON vpld.sfg_uuid = sfg.uuid
             LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
             LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
@@ -172,14 +173,16 @@ export async function selectDeliveryReportThread(req, res, next) {
                 receive_status_by.name AS receive_status_by_name,
                 challan.receive_status_date,
                 vpld.item_for,
-                vpl.marketing_name,
-                vpl.party_name,
+                vpld.marketing_name,
+                vpld.party_name,
                 vpld.order_info_uuid,
                 vpld.order_number,
                 vpld.item_description,
                 vpld.style,
                 vpld.color,
                 vpld.color_ref,
+                vpld.color_ref_entry_date,
+                vpld.color_ref_update_date,
                 vpld.packing_number,
                 vpld.order_quantity,
                 vpld.quantity as delivered_quantity,
@@ -204,7 +207,6 @@ export async function selectDeliveryReportThread(req, res, next) {
                 'Cone' as unit
             FROM delivery.v_packing_list_details vpld 
             LEFT JOIN delivery.challan challan ON vpld.challan_uuid = challan.uuid
-            LEFT JOIN delivery.v_packing_list vpl ON vpld.packing_list_uuid = vpl.uuid
             LEFT JOIN thread.order_entry oe ON vpld.order_entry_uuid = oe.uuid
             LEFT JOIN thread.order_info toi ON oe.order_info_uuid = toi.uuid
             LEFT JOIN pi_cash_grouped_thread pcg ON vpld.order_info_uuid = pcg.order_info_uuid
