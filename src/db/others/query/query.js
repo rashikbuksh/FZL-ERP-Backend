@@ -675,6 +675,7 @@ export async function selectOrderInfo(req, res, next) {
 		to_date,
 		challan_uuid,
 		own_uuid,
+		total_qty,
 	} = req.query;
 	let { party_name } = req.query;
 
@@ -759,70 +760,62 @@ export async function selectOrderInfo(req, res, next) {
 			marketingUuid = marketingUuidData?.rows[0]?.uuid;
 		}
 
-		let orderInfoPromise = db
-			.select({
-				value: zipperSchema.order_info.uuid,
-				label: sql`
-					CASE WHEN ${party_name} = 'true' 
-						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name) 
-						ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
-					END`,
-				...(page === 'order_sheet' && {
-					party_uuid: zipperSchema.order_info.party_uuid,
-					party_name: publicSchema.party.name,
-					merchandiser_uuid:
-						zipperSchema.order_info.merchandiser_uuid,
-					merchandiser_name: publicSchema.merchandiser.name,
-					buyer_uuid: zipperSchema.order_info.buyer_uuid,
-					buyer_name: publicSchema.buyer.name,
-					marketing_uuid: zipperSchema.order_info.marketing_uuid,
-					marketing_name: publicSchema.marketing.name,
-					factory_uuid: zipperSchema.order_info.factory_uuid,
-					factory_name: publicSchema.factory.name,
-					is_cash: zipperSchema.order_info.is_cash,
-					is_sample: zipperSchema.order_info.is_sample,
-					is_bill: zipperSchema.order_info.is_bill,
-					is_cancelled: zipperSchema.order_info.is_cancelled,
-				}),
-			})
-			.from(zipperSchema.order_info)
-			.leftJoin(
-				publicSchema.party,
-				eq(zipperSchema.order_info.party_uuid, publicSchema.party.uuid)
-			)
-			.leftJoin(
-				publicSchema.marketing,
-				eq(
-					zipperSchema.order_info.marketing_uuid,
-					publicSchema.marketing.uuid
-				)
-			)
-			.leftJoin(
-				publicSchema.merchandiser,
-				eq(
-					zipperSchema.order_info.merchandiser_uuid,
-					publicSchema.merchandiser.uuid
-				)
-			)
-			.leftJoin(
-				publicSchema.buyer,
-				eq(zipperSchema.order_info.buyer_uuid, publicSchema.buyer.uuid)
-			)
-			.leftJoin(
-				publicSchema.factory,
-				eq(
-					zipperSchema.order_info.factory_uuid,
-					publicSchema.factory.uuid
-				)
-			);
+		let orderInfoQuery = sql`
+			SELECT 
+				order_info.uuid AS value,
+				CASE WHEN (${party_name} = 'true' AND ${total_qty} = 'true')
+					THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', tq.total_quantity, ' - ', party.name) 
+					WHEN ${party_name} = 'true'
+					THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name)
+					WHEN ${total_qty} = 'true'
+					THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', tq.total_quantity)
+					ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
+				END AS label
+				${
+					page === 'order_sheet'
+						? sql`,
+				order_info.party_uuid,
+				party.name AS party_name,
+				order_info.merchandiser_uuid,
+				merchandiser.name AS merchandiser_name,
+				order_info.buyer_uuid,
+				buyer.name AS buyer_name,
+				order_info.marketing_uuid,
+				marketing.name AS marketing_name,
+				order_info.factory_uuid,
+				factory.name AS factory_name,
+				order_info.is_cash,
+				order_info.is_sample,
+				order_info.is_bill,
+				order_info.is_cancelled`
+						: sql``
+				}
+			FROM zipper.order_info
+			LEFT JOIN public.party ON order_info.party_uuid = party.uuid
+			LEFT JOIN public.marketing ON order_info.marketing_uuid = marketing.uuid
+			LEFT JOIN public.merchandiser ON order_info.merchandiser_uuid = merchandiser.uuid
+			LEFT JOIN public.buyer ON order_info.buyer_uuid = buyer.uuid
+			LEFT JOIN public.factory ON order_info.factory_uuid = factory.uuid
+			${
+				total_qty === 'true'
+					? sql`
+					LEFT JOIN (
+						SELECT
+							vodf.order_info_uuid,
+							COALESCE(SUM(oe.quantity), 0) AS total_quantity
+						FROM
+							zipper.order_entry oe
+						LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+						GROUP BY
+							vodf.order_info_uuid
+					) tq ON order_info.uuid = tq.order_info_uuid`
+					: sql``
+			}
+			WHERE ${filterCondition}
+			${own_uuid ? sql`AND order_info.marketing_uuid = ${marketingUuid}` : sql``}
+		`;
 
-		orderInfoPromise = orderInfoPromise.where(filterCondition);
-
-		if (own_uuid) {
-			orderInfoPromise = orderInfoPromise.where(
-				sql` order_info.marketing_uuid = ${marketingUuid}`
-			);
-		}
+		const orderInfoPromise = db.execute(orderInfoQuery);
 
 		const data = await orderInfoPromise;
 		const toast = {
@@ -830,7 +823,7 @@ export async function selectOrderInfo(req, res, next) {
 			type: 'select_all',
 			message: 'Order Info list',
 		};
-		return await res.status(200).json({ toast, data: data });
+		return await res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}

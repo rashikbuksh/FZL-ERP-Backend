@@ -450,6 +450,7 @@ const pathPublic = {
 				SE.parameter_query('from_date', 'from_date', '2021-01-01'),
 				SE.parameter_query('to_date', 'to_date', '2021-01-01'),
 				SE.parameter_query('own_uuid', 'own_uuid', '2ggcphnwHGzEUGy'),
+				SE.parameter_query('total_qty', 'total_qty', ['true', 'false']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
