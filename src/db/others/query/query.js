@@ -320,7 +320,7 @@ export async function selectParty(req, res, next) {
 			}
 
 			if (has_factory === 'true') {
-				query.append(
+				query = query.append(
 					hasWhere
 						? sql`
 				AND pub_fac.fac_count > 0
@@ -409,7 +409,7 @@ export async function selectParty(req, res, next) {
 				}
 
 				if (has_factory === 'true') {
-					query.append(
+					query = query.append(
 						hasWhere
 							? sql` AND pub_fac.fac_count > 0`
 							: sql` WHERE pub_fac.fac_count > 0`
