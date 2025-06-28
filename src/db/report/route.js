@@ -48,6 +48,7 @@ import {
 	selectOrderSheetSendReceiveReport,
 	selectOrderSheetSendReceiveReportThread,
 } from './query/order_sheet_send_receive_report.js';
+import { selectIndividualMaterialReport } from './query/individual_material_report.js';
 
 const reportRouter = Router();
 
@@ -133,6 +134,12 @@ reportRouter.get(
 
 //* Material Stock Report
 reportRouter.get('/material-stock-report', MaterialStockReport);
+
+// * Individual Material Report
+reportRouter.get(
+	'/individual-material-report/:material_uuid',
+	selectIndividualMaterialReport
+);
 
 // * Sample Report
 reportRouter.get('/sample-report', selectSampleReport);
@@ -688,6 +695,38 @@ export const pathReport = {
 					purchase_quantity: SE.number(610),
 					consumption_quantity: SE.number(610),
 					closing_quantity: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/individual-material-report/:material_uuid': {
+		get: {
+			summary: 'Individual Material Report',
+			description: 'Individual Material Report',
+			tags: ['report'],
+			operationId: 'selectIndividualMaterialReport',
+			parameters: [
+				SE.parameter_path('material_uuid', 'material_uuid', SE.uuid()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					material_uuid: SE.uuid(),
+					material_name: SE.string('Material Name'),
+					store_type: SE.string('rm/accessories'),
+					quantity: SE.number(610),
+					price: SE.number(610),
+					unit: SE.string('Unit'),
+					purchase_description_uuid: SE.uuid(),
+					is_local: SE.integer('1/0'),
+					lc_number: SE.string('LC Number'),
+					challan_number: SE.string('Challan Number'),
+					purchase_created_at: SE.date_time(),
+					purchase_id: SE.string('SR25-0001 / SRA25-0002'),
+					vendor_uuid: SE.uuid(),
+					vendor_name: SE.string('Vendor Name'),
+					purchase_description_remarks: SE.string(
+						'purchase_description_remarks'
+					),
 				}),
 			},
 		},
