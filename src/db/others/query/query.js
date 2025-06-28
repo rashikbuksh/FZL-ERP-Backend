@@ -675,6 +675,7 @@ export async function selectOrderInfo(req, res, next) {
 		to_date,
 		challan_uuid,
 		own_uuid,
+		total_qty,
 	} = req.query;
 	let { party_name } = req.query;
 
@@ -763,8 +764,13 @@ export async function selectOrderInfo(req, res, next) {
 			.select({
 				value: zipperSchema.order_info.uuid,
 				label: sql`
-					CASE WHEN ${party_name} = 'true' 
-						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name) 
+					CASE 
+						WHEN (${party_name} = 'true' AND ${total_qty} = 'true')
+							THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'),' - TQ:', order_entry.total_quantity, ' - ', party.name) 
+						WHEN (${party_name} = 'true')
+							THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'),' - ', party.name)
+						WHEN (${total_qty} = 'true')
+							THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'),' - TQ:', order_entry.total_quantity)
 						ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
 					END`,
 				...(page === 'order_sheet' && {
@@ -813,6 +819,23 @@ export async function selectOrderInfo(req, res, next) {
 				eq(
 					zipperSchema.order_info.factory_uuid,
 					publicSchema.factory.uuid
+				)
+			)
+			.leftJoin(
+				sql`
+				(
+					SELECT 
+						SUM(CASE WHEN vodf.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END) as total_quantity, 
+						vodf.order_info_uuid 
+					FROM zipper.order_entry oe
+					LEFT JOIN zipper.v_order_details_full vodf 
+						ON oe.order_description_uuid = vodf.order_description_uuid
+					GROUP BY vodf.order_info_uuid
+				) as order_entry
+				`,
+				eq(
+					zipperSchema.order_info.uuid,
+					sql`order_entry.order_info_uuid`
 				)
 			);
 
