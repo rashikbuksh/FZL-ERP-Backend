@@ -763,11 +763,11 @@ export async function selectOrderInfo(req, res, next) {
 		let orderInfoQuery = sql`
 			SELECT 
 				order_info.uuid AS value,
-				CASE WHEN (${party_name} = 'true' AND ${total_qty} = 'true')
+				CASE WHEN (${party_name === 'true'} AND ${total_qty === 'true'})
 					THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - TQ: ', tq.total_quantity, ' - ', party.name) 
-					WHEN ${party_name} = 'true'
+					WHEN ${party_name === 'true'}
 					THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name)
-					WHEN ${total_qty} = 'true'
+					WHEN ${total_qty === 'true'}
 					THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - TQ: ', tq.total_quantity)
 					ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
 				END AS label
