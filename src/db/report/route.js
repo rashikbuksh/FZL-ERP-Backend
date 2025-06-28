@@ -706,7 +706,11 @@ export const pathReport = {
 			tags: ['report'],
 			operationId: 'selectIndividualMaterialReport',
 			parameters: [
-				SE.parameter_path('material_uuid', 'material_uuid', SE.uuid()),
+				SE.parameter_params(
+					'material_uuid',
+					'material_uuid',
+					SE.uuid()
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {
