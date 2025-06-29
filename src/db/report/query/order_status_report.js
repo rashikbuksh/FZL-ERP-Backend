@@ -323,51 +323,57 @@ export async function ProductionReportSnm(req, res, next) {
 		const data = await resultPromise;
 
 		const filteredData = data?.rows?.reduce((acc, curr) => {
-			acc.some((item) =>
-				item.order_entry_uuid === curr.order_entry_uuid &&
-				item.order_description_uuid === curr.order_description_uuid
-					? acc.push({
-							...curr,
-							quantity: '-',
-							approved_quantity: '-',
-							not_approved_quantity: '-',
-							total_quantity: '-',
-							total_slider_required: '-',
-							balance_quantity: '-',
-							total_finishing_quantity: '-',
-							expected_kg: '-',
-							received: '-',
-							total_dyeing_quantity: '-',
-							total_coloring_quantity: '-',
-							total_coloring_quantity_weight: '-',
-						})
-					: item.order_entry_uuid === curr.order_entry_uuid &&
-						  item.order_description_uuid !==
-								curr.order_description_uuid
-						? acc.push({
-								...curr,
-								quantity: '-',
-								approved_quantity: '-',
-								not_approved_quantity: '-',
-								total_quantity: '-',
-								total_slider_required: '-',
-								balance_quantity: '-',
-								total_finishing_quantity: '-',
-								expected_kg: '-',
-								received: '-',
-							})
-						: item.order_entry_uuid !== curr.order_entry_uuid &&
-							  item.order_description_uuid ===
-									curr.order_description_uuid
-							? acc.push({
-									...curr,
-									total_dyeing_quantity: '-',
-									total_coloring_quantity: '-',
-									total_coloring_quantity_weight: '-',
-								})
-							: acc.push(curr)
+			const orderEntryExists = acc.some(
+				(item) => item.order_entry_uuid === curr.order_entry_uuid
+			);
+			const orderDescriptionExists = acc.some(
+				(item) =>
+					item.order_description_uuid === curr.order_description_uuid
 			);
 
+			if (orderEntryExists && orderDescriptionExists) {
+				// Both duplicate: dashes for all relevant fields
+				acc.push({
+					...curr,
+					quantity: '-',
+					approved_quantity: '-',
+					not_approved_quantity: '-',
+					total_quantity: '-',
+					total_slider_required: '-',
+					balance_quantity: '-',
+					total_finishing_quantity: '-',
+					expected_kg: '-',
+					received: '-',
+					total_dyeing_quantity: '-',
+					total_coloring_quantity: '-',
+					total_coloring_quantity_weight: '-',
+				});
+			} else if (orderEntryExists) {
+				// Duplicate order_entry_uuid: dashes for entry-level fields
+				acc.push({
+					...curr,
+					quantity: '-',
+					approved_quantity: '-',
+					not_approved_quantity: '-',
+					total_quantity: '-',
+					total_slider_required: '-',
+					balance_quantity: '-',
+					total_finishing_quantity: '-',
+					expected_kg: '-',
+					received: '-',
+				});
+			} else if (orderDescriptionExists) {
+				// Duplicate order_description_uuid: dashes for description-level fields
+				acc.push({
+					...curr,
+					total_dyeing_quantity: '-',
+					total_coloring_quantity: '-',
+					total_coloring_quantity_weight: '-',
+				});
+			} else {
+				// First occurrence: real values
+				acc.push(curr);
+			}
 			return acc;
 		}, []);
 
