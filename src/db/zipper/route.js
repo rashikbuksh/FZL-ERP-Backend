@@ -173,6 +173,14 @@ zipperRouter.put(
 	'/bulk-approval/:uuid',
 	orderEntryOperations.updateBulkApprovalBySfgUuid
 );
+zipperRouter.get(
+	'/swatch-approval-received',
+	orderEntryOperations.selectSwatchApprovalReceived
+);
+zipperRouter.put(
+	'/swatch-approval-received/:uuid',
+	orderEntryOperations.updateSwatchApprovalReceivedByUuid
+);
 
 // --------------------- SFG ROUTES ---------------------
 

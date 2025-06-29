@@ -332,3 +332,131 @@ export async function selectOrderEntryByOrderInfoUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectThreadSwatchApprovalReceived(req, res, next) {
+	const { type, order_type } = req.query;
+
+	const query = sql`
+	SELECT 
+		order_info.uuid,
+		CONCAT('ST', 
+			CASE 
+				WHEN order_info.is_sample = 1 THEN 'S' 
+				ELSE '' 
+			END, 
+			TO_CHAR(order_info.created_at, 'YY'), '-', 
+			LPAD(order_info.id::text, 4, '0')
+		) AS order_number,
+		order_entry.uuid AS order_entry_uuid,
+		order_entry.style,
+		order_entry.color,
+		order_entry.color_ref,
+		order_entry.recipe_uuid,
+		lab_dip_recipe.name AS recipe_name,
+		order_entry.bleaching,
+		order_entry.count_length_uuid,
+		count_length.count,
+		count_length.length,
+		CONCAT(count_length.count, ' - ', count_length.length) AS count_length_name,
+		order_entry.quantity::float8 AS order_quantity,
+		order_info.created_at,
+		order_info.updated_at,
+		order_info.remarks,
+		order_entry.swatch_approval_date,
+		COALESCE(batch_status.is_batch_created, FALSE) AS is_batch_created,
+		order_info.is_cancelled,
+		order_info.sno_from_head_office,
+		order_info.sno_from_head_office_time,
+		order_info.receive_by_factory,
+		order_info.receive_by_factory_time,
+		order_info.receive_by_factory_by,
+		receive_by_factory_by.name AS receive_by_factory_by_name,
+		order_info.production_pause,
+		order_info.is_swatch_attached
+	FROM 
+		thread.order_info
+	LEFT JOIN 
+		thread.order_entry ON order_info.uuid = order_entry.order_info_uuid
+	LEFT JOIN 
+		thread.count_length ON order_entry.count_length_uuid = count_length.uuid
+	LEFT JOIN 
+		lab_dip.recipe AS lab_dip_recipe ON order_entry.recipe_uuid = lab_dip_recipe.uuid
+	LEFT JOIN (
+		SELECT 
+			batch_entry.order_entry_uuid,
+			CASE 
+				WHEN SUM(batch_entry.quantity) > 0 THEN TRUE 
+				ELSE FALSE 
+			END AS is_batch_created
+		FROM 
+			thread.batch_entry
+		GROUP BY 
+			batch_entry.order_entry_uuid
+	) AS batch_status ON order_entry.uuid = batch_status.order_entry_uuid
+	LEFT JOIN hr.users receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
+	WHERE 
+		order_info.is_cancelled = FALSE
+		AND order_info.production_pause = FALSE
+		AND order_info.receive_by_factory = TRUE
+		${
+			type === 'pending'
+				? sql`AND order_entry.swatch_approval_received = FALSE`
+				: type === 'completed'
+					? sql`AND order_entry.swatch_approval_received = TRUE`
+					: sql``
+		}
+		${
+			order_type === 'complete_order'
+				? sql`AND order_entry.quantity <= order_entry.delivered AND order_entry.swatch_approval_received = TRUE`
+				: order_type === 'incomplete_order'
+					? sql`AND order_entry.quantity > order_entry.delivered`
+					: sql``
+		}
+	ORDER BY 
+		order_entry.created_at DESC, 
+		order_info.created_at DESC, 
+		order_entry.uuid ASC;
+	`;
+
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Order Swatch',
+		};
+
+		return await res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateSwatchApprovalReceivedByUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const orderEntryPromise = db
+		.update(order_entry)
+		.set({
+			swatch_approval_received: req.body.swatch_approval_received,
+			swatch_approval_received_date:
+				req.body.swatch_approval_received_date,
+			swatch_approval_received_by: req.body.swatch_approval_received_by,
+		})
+		.where(eq(order_entry.uuid, req.params.uuid))
+		.returning({ updatedId: order_entry.uuid });
+
+	try {
+		const data = await orderEntryPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

@@ -135,6 +135,9 @@ export const defThreadOrderEntry = {
 		color_ref: SE.string('color_ref'),
 		color_ref_entry_date: SE.date_time(),
 		color_ref_update_date: SE.date_time(),
+		swatch_approval_received: SE.boolean(false),
+		swatch_approval_received_date: SE.date_time(),
+		swatch_approval_received_by: SE.uuid(),
 	},
 	xml: {
 		name: 'Thread/OrderEntry',

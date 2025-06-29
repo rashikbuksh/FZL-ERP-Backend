@@ -152,6 +152,15 @@ export const order_entry = thread.table('order_entry', {
 	color_ref: text('color_ref').default(null),
 	color_ref_entry_date: DateTime('color_ref_entry_date').default(null),
 	color_ref_update_date: DateTime('color_ref_update_date').default(null),
+	swatch_approval_received: boolean('swatch_approval_received').default(
+		false
+	),
+	swatch_approval_received_date: DateTime(
+		'swatch_approval_received_date'
+	).default(null),
+	swatch_approval_received_by: defaultUUID('swatch_approval_received_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 });
 
 export const thread_batch_sequence = thread.sequence('thread_batch_sequence', {

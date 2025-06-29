@@ -405,6 +405,58 @@ export const pathThreadOrderEntry = {
 			},
 		},
 	},
+	'/thread/swatch-approval-received': {
+		get: {
+			tags: ['thread.order_entry'],
+			summary: 'Get Thread Swatch Approval Received',
+			description: 'Get Thread Swatch Approval Received',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+				SE.parameter_query('order_type', 'order_type', [
+					'complete_order',
+					'incomplete_order',
+				]),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					sfg_uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					style: SE.string('style 1'),
+					color: SE.string('black'),
+					size: SE.number(10),
+					quantity: SE.number(100),
+					recipe_uuid: SE.uuid(),
+					recipe_name: SE.string('recipe 1'),
+					remarks: SE.string('Remarks'),
+					order_number: SE.string('ST24-0010'),
+				}),
+			},
+		},
+	},
+	'/thread/swatch-approval-received/{uuid}': {
+		put: {
+			tags: ['thread.order_entry'],
+			summary: 'Update Thread Swatch Approval Received',
+			description: 'Update Thread Swatch Approval Received',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody({
+				swatch_approval_received: SE.boolean(),
+				swatch_approval_received_date: SE.date_time(),
+				swatch_approval_received_by: SE.uuid(),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'thread/order_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 // * Thread Batch Entry * //

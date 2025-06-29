@@ -238,6 +238,15 @@ export const order_entry = zipper.table('order_entry', {
 	color_ref_update_date: DateTime('color_ref_update_date').default(null),
 	bulk_approval: boolean('bulk_approval').default(false),
 	bulk_approval_date: DateTime('bulk_approval_date').default(null),
+	swatch_approval_received: boolean('swatch_approval_received').default(
+		false
+	),
+	swatch_approval_received_date: DateTime(
+		'swatch_approval_received_date'
+	).default(null),
+	swatch_approval_received_by: defaultUUID('swatch_approval_received_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 });
 
 export const sfg = zipper.table('sfg', {

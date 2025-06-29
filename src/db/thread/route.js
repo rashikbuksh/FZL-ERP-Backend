@@ -56,6 +56,14 @@ threadRouter.get(
 	'/order-entry/by/:order_info_uuid',
 	order_entryOperations.selectOrderEntryByOrderInfoUuid
 );
+threadRouter.get(
+	'/swatch-approval-received',
+	order_entryOperations.selectThreadSwatchApprovalReceived
+);
+threadRouter.put(
+	'/swatch-approval-received/:uuid',
+	order_entryOperations.updateSwatchApprovalReceivedByUuid
+);
 
 // batch_entry routes
 threadRouter.get('/batch-entry', batch_entryOperations.selectAll);
