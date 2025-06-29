@@ -846,21 +846,21 @@ export async function selectSwatchApprovalReceived(req, res, next) {
 					AND vod.receive_by_factory = TRUE
 					${
 						type === 'pending'
-							? sql`AND oe.swatch_approval_received = FALSE`
+							? sql` AND oe.swatch_approval_received = FALSE`
 							: type === 'completed'
-								? sql`AND oe.swatch_approval_received = TRUE`
+								? sql` AND oe.swatch_approval_received = TRUE`
 								: sql``
 					}
 					${
 						order_type === 'complete_order'
-							? sql`AND oe.quantity <= sfg.delivered AND oe.swatch_approval_received = TRUE`
+							? sql` AND oe.quantity <= sfg.delivered AND oe.swatch_approval_received = TRUE`
 							: order_type === 'incomplete_order'
-								? sql`AND oe.quantity > sfg.delivered`
+								? sql` AND oe.quantity > sfg.delivered`
 								: sql``
 					}
 				ORDER BY 
 					vod.order_description_created_at DESC,
-					sfg.swatch_approval_received ASC`;
+					oe.swatch_approval_received ASC`;
 
 	const swatchPromise = db.execute(query);
 

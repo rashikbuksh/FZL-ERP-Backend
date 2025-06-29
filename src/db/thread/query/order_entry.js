@@ -400,16 +400,16 @@ export async function selectThreadSwatchApprovalReceived(req, res, next) {
 		AND order_info.receive_by_factory = TRUE
 		${
 			type === 'pending'
-				? sql`AND order_entry.swatch_approval_received = FALSE`
+				? sql` AND order_entry.swatch_approval_received = FALSE`
 				: type === 'completed'
-					? sql`AND order_entry.swatch_approval_received = TRUE`
+					? sql` AND order_entry.swatch_approval_received = TRUE`
 					: sql``
 		}
 		${
 			order_type === 'complete_order'
-				? sql`AND order_entry.quantity <= order_entry.delivered AND order_entry.swatch_approval_received = TRUE`
+				? sql` AND order_entry.quantity <= order_entry.delivered AND order_entry.swatch_approval_received = TRUE`
 				: order_type === 'incomplete_order'
-					? sql`AND order_entry.quantity > order_entry.delivered`
+					? sql` AND order_entry.quantity > order_entry.delivered`
 					: sql``
 		}
 	ORDER BY 
