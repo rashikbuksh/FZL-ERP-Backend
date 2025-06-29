@@ -4,6 +4,7 @@ import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import { sql } from 'drizzle-orm';
 import * as hrSchema from '../hr/schema.js';
 import * as materialSchema from '../material/schema.js';
+import { PG_DECIMAL } from '../variables.js';
 
 const purchase = pgSchema('purchase');
 
@@ -58,17 +59,12 @@ export const entry = purchase.table('entry', {
 	material_uuid: defaultUUID('material_uuid').references(
 		() => materialSchema.info.uuid
 	),
-	quantity: decimal('quantity', {
-		precision: 20,
-		scale: 4,
-	}).notNull(),
-	price: decimal('price', {
-		precision: 20,
-		scale: 4,
-	}).default(null),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	price: PG_DECIMAL('price').default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	provided_quantity: PG_DECIMAL('provided_quantity').default(0),
 });
 
 export default purchase;
