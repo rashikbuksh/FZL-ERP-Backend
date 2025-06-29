@@ -338,7 +338,7 @@ export async function selectThreadSwatchApprovalReceived(req, res, next) {
 
 	const query = sql`
 	SELECT 
-		order_info.uuid,
+		order_info.uuid as order_info_uuid,
 		CONCAT('ST', 
 			CASE 
 				WHEN order_info.is_sample = 1 THEN 'S' 
@@ -347,7 +347,7 @@ export async function selectThreadSwatchApprovalReceived(req, res, next) {
 			TO_CHAR(order_info.created_at, 'YY'), '-', 
 			LPAD(order_info.id::text, 4, '0')
 		) AS order_number,
-		order_entry.uuid AS order_entry_uuid,
+		order_entry.uuid,
 		order_entry.style,
 		order_entry.color,
 		order_entry.color_ref,

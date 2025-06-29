@@ -795,8 +795,8 @@ export async function selectSwatchApprovalReceived(req, res, next) {
 
 	const query = sql`
 				SELECT
-					sfg.uuid AS uuid,
-					sfg.order_entry_uuid AS order_entry_uuid,
+					sfg.uuid AS sfg_uuid,
+					oe.uuid AS uuid,
 					oe.order_description_uuid AS order_description_uuid,
 					vod.order_info_uuid,
 					oe.style AS style,
