@@ -49,6 +49,10 @@ import {
 	selectOrderSheetSendReceiveReportThread,
 } from './query/order_sheet_send_receive_report.js';
 import { selectIndividualMaterialReport } from './query/individual_material_report.js';
+import {
+	ProductionReportSnm,
+	ProductionReportThreadSnm,
+} from './query/order_status_report.js';
 
 const reportRouter = Router();
 
@@ -106,15 +110,12 @@ reportRouter.get(
 );
 
 // * Production Report Sales & Marketing
-reportRouter.get(
-	'/production-report-sales-marketing',
-	reportOperations.ProductionReportSnm
-);
+reportRouter.get('/production-report-sales-marketing', ProductionReportSnm);
 
 // * Production Report Thread Sales & Marketing
 reportRouter.get(
 	'/production-report-thread-sales-marketing',
-	reportOperations.ProductionReportThreadSnm
+	ProductionReportThreadSnm
 );
 
 //* Daily Production Report
