@@ -307,31 +307,13 @@ export async function ProductionReportSnm(req, res, next) {
 		const resultPromise = db.execute(query);
 		const data = await resultPromise;
 
-		// Convert NULL values to dashes for display
-		const processedData = data?.rows?.map((row) => ({
-			...row,
-			quantity: row.quantity ?? '-',
-			approved_quantity: row.approved_quantity ?? '-',
-			not_approved_quantity: row.not_approved_quantity ?? '-',
-			total_quantity: row.total_quantity ?? '-',
-			total_slider_required: row.total_slider_required ?? '-',
-			balance_quantity: row.balance_quantity ?? '-',
-			total_finishing_quantity: row.total_finishing_quantity ?? '-',
-			expected_kg: row.expected_kg ?? '-',
-			received: row.received ?? '-',
-			total_dyeing_quantity: row.total_dyeing_quantity ?? '-',
-			total_coloring_quantity: row.total_coloring_quantity ?? '-',
-			total_coloring_quantity_weight:
-				row.total_coloring_quantity_weight ?? '-',
-		}));
-
 		const toast = {
 			status: 200,
 			type: 'select_all',
 			message: 'Production Report S&M',
 		};
 
-		res.status(200).json({ toast, data: processedData });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
