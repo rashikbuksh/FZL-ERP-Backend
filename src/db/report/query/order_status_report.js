@@ -211,37 +211,37 @@ export async function ProductionReportSnm(req, res, next) {
                 oe.color_ref_entry_date,
                 oe.color_ref_update_date,
                 oe.size::float8,
-                oe.quantity::float8,
-                oe.party_price::float8,
-                oe.company_price::float8,
+                -- Conditional fields based on row numbers
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN oe.quantity::float8 ELSE NULL END as quantity,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN oe.party_price::float8 ELSE NULL END as party_price,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN oe.company_price::float8 ELSE NULL END as company_price,
                 oe.swatch_approval_date,
                 CASE
                     WHEN sfg.recipe_uuid IS NOT NULL THEN oe.swatch_approval_date
                     ELSE null
                 END as swatch_approval_date,
                 CASE
-                    WHEN sfg.recipe_uuid IS NULL THEN oe.quantity::float8
-                    ELSE 0
+                    WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 AND sfg.recipe_uuid IS NULL THEN oe.quantity::float8
+                    ELSE NULL
                 END as not_approved_quantity,
                 CASE
-                    WHEN sfg.recipe_uuid IS NOT NULL THEN oe.quantity::float8
-                    ELSE 0
+                    WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 AND sfg.recipe_uuid IS NOT NULL THEN oe.quantity::float8
+                    ELSE NULL
                 END as approved_quantity,
                 sfg.recipe_uuid,
                 recipe.name as recipe_name,
-                coalesce(oe.quantity, 0)::float8 as total_quantity,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN coalesce(oe.quantity, 0)::float8 ELSE NULL END as total_quantity,
                 CASE
-                    WHEN (
+                    WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 AND (
                         vodf.end_type_name = '2 Way - Close End'
                         OR vodf.end_type_name = '2 Way - Open End'
                     ) THEN oe.quantity::float8 * 2
-                    ELSE oe.quantity::float8
+                    WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN oe.quantity::float8
+                    ELSE NULL
                 END as total_slider_required,
-                sfg.delivered::float8,
-                sfg.warehouse::float8,
-                (
-                    oe.quantity::float8 - sfg.delivered::float8
-                ) as balance_quantity,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN sfg.delivered::float8 ELSE NULL END as delivered,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN sfg.warehouse::float8 ELSE NULL END as warehouse,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN (oe.quantity::float8 - sfg.delivered::float8) ELSE NULL END as balance_quantity,
                 vodf.order_type,
                 vodf.is_inch,
                 CASE
@@ -250,24 +250,10 @@ export async function ProductionReportSnm(req, res, next) {
                     WHEN vodf.is_inch = 1 THEN 'Inch'
                     ELSE 'Cm'
                 END as unit,
-                coalesce(
-                    sfg_production_sum.finishing_quantity,
-                    0
-                )::float8 as total_finishing_quantity,
-                (
-                    COALESCE(
-                        dyed_tape_transaction_sum.total_trx_quantity,
-                        0
-                    )
-                )::float8 AS total_dyeing_quantity,
-                coalesce(
-                    slider_production_sum.coloring_production_quantity,
-                    0
-                )::float8 as total_coloring_quantity,
-                coalesce(
-                    slider_production_sum.coloring_production_quantity_weight,
-                    0
-                )::float8 as total_coloring_quantity_weight,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN coalesce(sfg_production_sum.finishing_quantity, 0)::float8 ELSE NULL END as total_finishing_quantity,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY vodf.order_description_uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0)::float8 ELSE NULL END AS total_dyeing_quantity,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY vodf.order_description_uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN coalesce(slider_production_sum.coloring_production_quantity, 0)::float8 ELSE NULL END as total_coloring_quantity,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY vodf.order_description_uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN coalesce(slider_production_sum.coloring_production_quantity_weight, 0)::float8 ELSE NULL END as total_coloring_quantity_weight,
                 coalesce(
                     pi_cash_grouped.pi_numbers,
                     '[]'
@@ -276,13 +262,13 @@ export async function ProductionReportSnm(req, res, next) {
                     pi_cash_grouped.lc_numbers,
                     '[]'
                 ) as lc_numbers,
-                dyeing_batch_main.expected_kg,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN dyeing_batch_main.expected_kg ELSE NULL END as expected_kg,
                 dyeing_batch_main.dyeing_batch_uuid,
                 dyeing_batch_main.dyeing_batch_number,
                 dyeing_batch_main.production_date,
                 dyeing_batch_main.total_quantity::float8,
                 dyeing_batch_main.total_production_quantity::float8,
-                dyeing_batch_main.received,
+                CASE WHEN ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY dyeing_batch_main.batch_created_at) = 1 THEN dyeing_batch_main.received ELSE NULL END as received,
                 dyeing_batch_main.dyeing_machine,
                 dyeing_batch_main.batch_created_at,
                 dyeing_batch_main.expected_kg as batch_expected_kg,
@@ -319,63 +305,25 @@ export async function ProductionReportSnm(req, res, next) {
 		// AND (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8) > 0
 
 		const resultPromise = db.execute(query);
-
 		const data = await resultPromise;
 
-		const filteredData = data?.rows?.reduce((acc, curr) => {
-			const orderEntryExists = acc.some(
-				(item) => item.order_entry_uuid === curr.order_entry_uuid
-			);
-			const orderDescriptionExists = acc.some(
-				(item) =>
-					item.order_description_uuid === curr.order_description_uuid
-			);
-
-			if (orderEntryExists && orderDescriptionExists) {
-				// Both duplicate: dashes for all relevant fields
-				acc.push({
-					...curr,
-					quantity: '-',
-					approved_quantity: '-',
-					not_approved_quantity: '-',
-					total_quantity: '-',
-					total_slider_required: '-',
-					balance_quantity: '-',
-					total_finishing_quantity: '-',
-					expected_kg: '-',
-					received: '-',
-					total_dyeing_quantity: '-',
-					total_coloring_quantity: '-',
-					total_coloring_quantity_weight: '-',
-				});
-			} else if (orderEntryExists) {
-				// Duplicate order_entry_uuid: dashes for entry-level fields
-				acc.push({
-					...curr,
-					quantity: '-',
-					approved_quantity: '-',
-					not_approved_quantity: '-',
-					total_quantity: '-',
-					total_slider_required: '-',
-					balance_quantity: '-',
-					total_finishing_quantity: '-',
-					expected_kg: '-',
-					received: '-',
-				});
-			} else if (orderDescriptionExists) {
-				// Duplicate order_description_uuid: dashes for description-level fields
-				acc.push({
-					...curr,
-					total_dyeing_quantity: '-',
-					total_coloring_quantity: '-',
-					total_coloring_quantity_weight: '-',
-				});
-			} else {
-				// First occurrence: real values
-				acc.push(curr);
-			}
-			return acc;
-		}, []);
+		// Convert NULL values to dashes for display
+		const processedData = data?.rows?.map((row) => ({
+			...row,
+			quantity: row.quantity ?? '-',
+			approved_quantity: row.approved_quantity ?? '-',
+			not_approved_quantity: row.not_approved_quantity ?? '-',
+			total_quantity: row.total_quantity ?? '-',
+			total_slider_required: row.total_slider_required ?? '-',
+			balance_quantity: row.balance_quantity ?? '-',
+			total_finishing_quantity: row.total_finishing_quantity ?? '-',
+			expected_kg: row.expected_kg ?? '-',
+			received: row.received ?? '-',
+			total_dyeing_quantity: row.total_dyeing_quantity ?? '-',
+			total_coloring_quantity: row.total_coloring_quantity ?? '-',
+			total_coloring_quantity_weight:
+				row.total_coloring_quantity_weight ?? '-',
+		}));
 
 		const toast = {
 			status: 200,
@@ -383,7 +331,7 @@ export async function ProductionReportSnm(req, res, next) {
 			message: 'Production Report S&M',
 		};
 
-		res.status(200).json({ toast, data: filteredData });
+		res.status(200).json({ toast, data: processedData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -478,20 +426,26 @@ SELECT
     order_entry.color_ref_entry_date,
     order_entry.color_ref_update_date,
     order_entry.recipe_uuid,
-    order_entry.quantity::float8,
-    order_entry.party_price::float8,
-    order_entry.company_price::float8,
+    -- Conditional fields based on row number
+    CASE WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+         THEN order_entry.quantity::float8 ELSE NULL END as quantity,
+    CASE WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+         THEN order_entry.party_price::float8 ELSE NULL END as party_price,
+    CASE WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+         THEN order_entry.company_price::float8 ELSE NULL END as company_price,
     order_entry.swatch_approval_date,
     order_entry.recipe_uuid,
     recipe.name as recipe_name,
     order_entry.swatch_approval_date,
     CASE
-        WHEN order_entry.recipe_uuid IS NULL THEN order_entry.quantity::float8
-        ELSE 0
+        WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+             AND order_entry.recipe_uuid IS NULL THEN order_entry.quantity::float8
+        ELSE NULL
     END as not_approved_quantity,
     CASE
-        WHEN order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8
-        ELSE 0
+        WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+             AND order_entry.recipe_uuid IS NOT NULL THEN order_entry.quantity::float8
+        ELSE NULL
     END as approved_quantity,
     CONCAT('"', count_length.count) as count,
     count_length.length,
@@ -502,11 +456,12 @@ SELECT
         count_length.length
     ) as count_length_name,
     order_info.uuid as order_info_uuid,
-    order_entry.delivered::float8,
-    order_entry.warehouse::float8,
-    (
-        order_entry.quantity::float8 - order_entry.delivered::float8
-    ) as balance_quantity,
+    CASE WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+         THEN order_entry.delivered::float8 ELSE NULL END as delivered,
+    CASE WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+         THEN order_entry.warehouse::float8 ELSE NULL END as warehouse,
+    CASE WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+         THEN (order_entry.quantity::float8 - order_entry.delivered::float8) ELSE NULL END as balance_quantity,
     coalesce(
         pi_cash_grouped_thread.pi_numbers,
         '[]'
@@ -515,17 +470,12 @@ SELECT
         pi_cash_grouped_thread.lc_numbers,
         '[]'
     ) as lc_numbers,
-    coalesce(
-        batch_production_sum.coning_production_quantity,
-        0
-    )::float8 as total_coning_production_quantity,
-    coalesce(
-        batch_production_sum.yarn_quantity,
-        0
-    )::float8 as total_yarn_quantity,
-    (
-        order_entry.quantity * count_length.max_weight
-    )::float8 as total_expected_weight,
+    CASE WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+         THEN coalesce(batch_production_sum.coning_production_quantity, 0)::float8 ELSE NULL END as total_coning_production_quantity,
+    CASE WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+         THEN coalesce(batch_production_sum.yarn_quantity, 0)::float8 ELSE NULL END as total_yarn_quantity,
+    CASE WHEN ROW_NUMBER() OVER (PARTITION BY order_entry.uuid, order_info.uuid ORDER BY batch.batch_created_at) = 1 
+         THEN (order_entry.quantity * count_length.max_weight)::float8 ELSE NULL END as total_expected_weight,
     batch.batch_uuid,
     batch.batch_number,
     batch.production_date,
@@ -625,38 +575,24 @@ SELECT
     `;
 
 		const resultPromise = db.execute(query);
-
 		const data = await resultPromise;
 
-		const filteredData = data?.rows?.reduce((acc, curr) => {
-			const exists = acc.some(
-				(item) =>
-					item.order_entry_uuid === curr.order_entry_uuid &&
-					item.order_info_uuid === curr.order_info_uuid
-			);
-			if (exists) {
-				// Push a duplicate with dashes
-				acc.push({
-					...curr,
-					quantity: '-',
-					not_approved_quantity: '-',
-					approved_quantity: '-',
-					total_yarn_quantity: '-',
-					total_coning_production_quantity: '-',
-					warehouse: '-',
-					delivered: '-',
-					balance_quantity: '-',
-					party_price: '-',
-					company_price: '-',
-					total_expected_weight: '-',
-					total_coning_carton_quantity: '-',
-				});
-			} else {
-				// Push the original with real values
-				acc.push(curr);
-			}
-			return acc;
-		}, []);
+		// Convert NULL values to dashes for display
+		const processedData = data?.rows?.map((row) => ({
+			...row,
+			quantity: row.quantity ?? '-',
+			not_approved_quantity: row.not_approved_quantity ?? '-',
+			approved_quantity: row.approved_quantity ?? '-',
+			total_yarn_quantity: row.total_yarn_quantity ?? '-',
+			total_coning_production_quantity:
+				row.total_coning_production_quantity ?? '-',
+			warehouse: row.warehouse ?? '-',
+			delivered: row.delivered ?? '-',
+			balance_quantity: row.balance_quantity ?? '-',
+			party_price: row.party_price ?? '-',
+			company_price: row.company_price ?? '-',
+			total_expected_weight: row.total_expected_weight ?? '-',
+		}));
 
 		const toast = {
 			status: 200,
@@ -664,7 +600,7 @@ SELECT
 			message: 'Production Report Director Thread',
 		};
 
-		res.status(200).json({ toast, data: filteredData });
+		res.status(200).json({ toast, data: processedData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
