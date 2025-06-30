@@ -108,11 +108,12 @@ export async function selectAll(req, res, next) {
 			created_by: info.created_by,
 			created_by_name: hrSchema.users.name,
 			remarks: info.remarks,
-			avg_price: decimalToNumber(sql`CASE 
+			avg_price: decimalToNumber(sql`
+							CASE 
 								WHEN purchase_entry.total_price IS NULL OR purchase_entry.total_price = 0 
 								THEN 0 
 								ELSE purchase_entry.total_price / purchase_entry.total_quantity 
-								END`),
+							END`),
 			store_type: info.store_type,
 		})
 		.from(info)
@@ -123,10 +124,14 @@ export async function selectAll(req, res, next) {
 		.leftJoin(booking, eq(info.uuid, booking.material_uuid))
 		.leftJoin(
 			sql`(
-			SELECT material_uuid, SUM(quantity) as total_quantity, SUM(price) as total_price
-			FROM purchase.entry
-			GROUP BY material_uuid
-		) as purchase_entry`,
+				SELECT 
+					material_uuid, 
+					SUM(quantity - provided_quantity) as total_quantity, 
+					SUM((price / quantity) * (quantity - provided_quantity)) as total_price
+				FROM purchase.entry
+				WHERE quantity - provided_quantity > 0
+				GROUP BY material_uuid
+			) as purchase_entry`,
 			eq(info.uuid, sql`purchase_entry.material_uuid`)
 		)
 		.orderBy(asc(info.name));
