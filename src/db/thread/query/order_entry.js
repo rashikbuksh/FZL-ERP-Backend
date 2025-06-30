@@ -370,7 +370,6 @@ export async function selectThreadSwatchApprovalReceived(req, res, next) {
 		order_info.receive_by_factory,
 		order_info.receive_by_factory_time,
 		order_info.receive_by_factory_by,
-		receive_by_factory_by.name AS receive_by_factory_by_name,
 		order_info.production_pause,
 		order_info.is_swatch_attached,
 		order_entry.swatch_approval_received,
