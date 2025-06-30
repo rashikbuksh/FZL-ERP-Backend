@@ -353,7 +353,7 @@ export async function zipperProductionStatusReport(req, res, next) {
 }
 
 export async function dailyChallanReport(req, res, next) {
-	const { own_uuid, from_date, to_date } = req?.query;
+	const { own_uuid, from_date, to_date, type } = req?.query;
 
 	// get marketing_uuid from own_uuid
 	let marketingUuid = null;
@@ -579,10 +579,16 @@ export async function dailyChallanReport(req, res, next) {
                     LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
                     WHERE
                         ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for IN ('thread', 'sample_thread') THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
-                        AND ${
-							from_date && to_date
-								? sql`challan.created_at BETWEEN ${from_date}::timestamp AND ${to_date}::timestamp + interval '23 hours 59 minutes 59 seconds'`
-								: sql`TRUE`
+                        ${
+							type === 'pending'
+								? sql` AND challan.gate_pass = 0`
+								: type === 'gate_pass'
+									? sql` AND challan.gate_pass = 1 AND challan.is_delivered = 0`
+									: type === 'delivered'
+										? sql` AND challan.is_delivered = 1 AND challan.receive_status = 0`
+										: type === 'received'
+											? sql` AND challan.receive_status = 1`
+											: sql``
 						}
                     GROUP BY
                         challan.uuid,
@@ -626,6 +632,13 @@ export async function dailyChallanReport(req, res, next) {
                     ORDER BY
                         challan.created_at DESC; 
         `;
+
+		// * Uncomment the following lines if you want to filter by date range
+		// ${
+		// 	from_date && to_date
+		// 		? sql` AND challan.created_at BETWEEN ${from_date}::timestamp AND ${to_date}::timestamp + interval '23 hours 59 minutes 59 seconds'`
+		// 		: sql``
+		// }
 
 		const resultPromise = db.execute(query);
 

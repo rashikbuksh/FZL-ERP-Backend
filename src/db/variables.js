@@ -81,3 +81,16 @@ export function constructSelectAllQuery(
 }
 
 export const GetDateTime = () => format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
+
+export const GetMarketingOwnUUID = async (own_uuid) => {
+	let marketingUuid = null;
+	const marketingUuidQuery = sql`
+		SELECT uuid
+		FROM public.marketing
+		WHERE user_uuid = ${own_uuid};`;
+
+	const marketingUuidData = await db.execute(marketingUuidQuery);
+	marketingUuid = marketingUuidData?.rows[0]?.uuid;
+
+	return marketingUuid || null;
+};

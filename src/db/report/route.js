@@ -278,7 +278,18 @@ export const pathReport = {
 			description: 'Daily Challan Report',
 			tags: ['report'],
 			operationId: 'dailyChallanReport',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'gate_pass',
+					'delivered',
+					'received',
+					'all',
+				]),
+			],
 			responses: {
 				200: {
 					description: 'Daily Challan Report',
