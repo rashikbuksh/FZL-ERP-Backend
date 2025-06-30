@@ -802,6 +802,8 @@ export async function selectSwatchApprovalReceived(req, res, next) {
 					oe.style AS style,
 					oe.color AS color,
 					oe.color_ref,
+					oe.color_ref_entry_date,
+					oe.color_ref_update_date,
 					vod.is_inch,
 					oe.size,
 					CASE 
@@ -824,7 +826,11 @@ export async function selectSwatchApprovalReceived(req, res, next) {
 					vod.receive_by_factory,
 					vod.receive_by_factory_time,
 					vod.receive_by_factory_by,
-					vod.receive_by_factory_by_name
+					vod.receive_by_factory_by_name,
+					oe.swatch_approval_received,
+					oe.swatch_approval_received_date,
+					oe.swatch_approval_received_by,
+					swatch_approval_received_by.name as swatch_approval_received_by_name
 				FROM
 					zipper.sfg sfg
 				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
@@ -839,6 +845,7 @@ export async function selectSwatchApprovalReceived(req, res, next) {
 					GROUP BY 
 						dyeing_batch_entry.sfg_uuid
 				) dyeing_batch ON dyeing_batch.sfg_uuid = sfg.uuid
+				LEFT JOIN zipper.user swatch_approval_received_by ON oe.swatch_approval_received_by = swatch_approval_received_by.uuid
 				WHERE 
 					vod.order_type != 'slider' 
 					AND vod.is_cancelled = FALSE
