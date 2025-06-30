@@ -845,7 +845,7 @@ export async function selectSwatchApprovalReceived(req, res, next) {
 					GROUP BY 
 						dyeing_batch_entry.sfg_uuid
 				) dyeing_batch ON dyeing_batch.sfg_uuid = sfg.uuid
-				LEFT JOIN zipper.user swatch_approval_received_by ON oe.swatch_approval_received_by = swatch_approval_received_by.uuid
+				LEFT JOIN hr.users swatch_approval_received_by ON oe.swatch_approval_received_by = swatch_approval_received_by.uuid
 				WHERE 
 					vod.order_type != 'slider' 
 					AND vod.is_cancelled = FALSE

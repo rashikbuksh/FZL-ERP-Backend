@@ -397,7 +397,7 @@ export async function selectThreadSwatchApprovalReceived(req, res, next) {
 		GROUP BY 
 			batch_entry.order_entry_uuid
 	) AS batch_status ON order_entry.uuid = batch_status.order_entry_uuid
-	LEFT JOIN hr.users swatch_approval_received_by ON order_info.swatch_approval_received_by = swatch_approval_received_by.uuid
+	LEFT JOIN hr.users swatch_approval_received_by ON order_entry.swatch_approval_received_by = swatch_approval_received_by.uuid
 	WHERE 
 		order_info.is_cancelled = FALSE
 		AND order_info.production_pause = FALSE
