@@ -7,7 +7,9 @@ const pathPurchaseVendor = {
 			summary: 'Get all vendors',
 			tags: ['purchase.vendor'],
 			operationId: 'getVendors',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+			],
 			responses: {
 				200: {
 					description: 'OK',

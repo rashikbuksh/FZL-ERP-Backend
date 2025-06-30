@@ -67,6 +67,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { s_type } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: vendor.uuid,
@@ -84,6 +86,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(vendor)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, vendor.created_by))
+		.where(s_type ? eq(vendor.store_type, s_type) : sql`TRUE`)
 		.orderBy(asc(vendor.name));
 
 	try {
