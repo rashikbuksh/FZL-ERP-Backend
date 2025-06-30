@@ -439,7 +439,7 @@ export async function dailyChallanReport(req, res, next) {
                             THEN CONCAT('TC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) 
                             ELSE CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) 
                         END AS challan_id,
-                        packing_list_grouped.gate_pass,
+                        challan.gate_pass,
                         challan.created_by,
                         users.name AS created_by_name,
                         CASE 
@@ -539,7 +539,6 @@ export async function dailyChallanReport(req, res, next) {
                     LEFT JOIN (
                         SELECT 
                             packing_list.challan_uuid,
-                            packing_list.gate_pass,
                             SUM(packing_list_entry.quantity)::float8 AS total_quantity,
                             SUM(packing_list_entry.short_quantity)::float8 AS total_short_quantity,
                             SUM(packing_list_entry.reject_quantity)::float8 AS total_reject_quantity,
@@ -594,7 +593,6 @@ export async function dailyChallanReport(req, res, next) {
                         challan.uuid,
                         challan.created_at,
                         pl.item_for,
-                        packing_list_grouped.gate_pass,
                         challan.created_by,
                         users.name,
                         challan.thread_order_info_uuid,
