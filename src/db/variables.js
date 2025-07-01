@@ -82,7 +82,7 @@ export function constructSelectAllQuery(
 
 export const GetDateTime = () => format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
 
-export const GetMarketingOwnUUID = async (own_uuid) => {
+export const GetMarketingOwnUUID = async (db, own_uuid) => {
 	let marketingUuid = null;
 	const marketingUuidQuery = sql`
 		SELECT uuid

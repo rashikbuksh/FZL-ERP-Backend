@@ -324,7 +324,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
 	const { own_uuid, from, to } = req?.query;
 
 	try {
-		const marketingUuid = await GetMarketingOwnUUID(own_uuid);
+		const marketingUuid = await GetMarketingOwnUUID(db, own_uuid);
 
 		const query = sql`
     WITH
