@@ -849,4 +849,32 @@ export const tape_transfer_to_dyeing = zipper.table('tape_transfer_to_dyeing', {
 	remarks: text('remarks').default(null),
 });
 
+export const order_info_log_sequence = zipper.sequence(
+	'order_info_log_sequence',
+	{
+		startWith: 1,
+		increment: 1,
+	}
+);
+
+export const order_info_log = zipper.table('order_info_log', {
+	id: integer('id')
+		.default(sql`nextval('zipper.order_info_log_sequence')`)
+		.notNull()
+		.primaryKey(),
+	order_info_uuid: defaultUUID('order_info_uuid')
+		.references(() => order_info.uuid)
+		.default(null),
+	thread_order_info_uuid: defaultUUID('thread_order_info_uuid')
+		.references(() => threadSchema.order_info.uuid)
+		.default(null),
+	field_name: text('field_name').notNull(),
+	old_value: text('old_value'),
+	new_value: text('new_value'),
+	operation: text('operation').notNull(), // 'INSERT', 'UPDATE', 'DELETE'
+	changed_by: defaultUUID('changed_by').references(() => hrSchema.users.uuid),
+	changed_at: DateTime('changed_at').notNull(),
+	remarks: text('remarks').default(null),
+});
+
 export default zipper;

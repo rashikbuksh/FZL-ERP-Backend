@@ -6,7 +6,9 @@ BEGIN
     FOR seq IN
         SELECT sequence_schema, sequence_name
         FROM information_schema.sequences
-        WHERE sequence_schema != 'drizzle'
+        WHERE
+            sequence_schema != 'drizzle'
+            AND sequence_name NOT LIKE '%log%'
     LOOP
         EXECUTE 'ALTER SEQUENCE ' || quote_ident(seq.sequence_schema) || '.' || quote_ident(seq.sequence_name) || ' RESTART WITH 1;';
     END LOOP;

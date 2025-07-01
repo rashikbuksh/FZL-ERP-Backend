@@ -84,6 +84,16 @@ zipperRouter.put(
 );
 zipperRouter.get('/tape-assigned', orderInfoOperations.getTapeAssigned);
 
+// --------------------- ORDER INFO LOG ROUTES ---------------------
+zipperRouter.get(
+	'/order-info-logs',
+	orderInfoOperations.selectAllOrderInfoLogs
+);
+zipperRouter.get(
+	'/order-info-logs/:order_info_uuid',
+	orderInfoOperations.selectOrderInfoLogs
+);
+
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------
 
 zipperRouter.get('/order-description', orderDescriptionOperations.selectAll);

@@ -821,3 +821,88 @@ export async function updateSwatchAttachment(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectOrderInfoLogs(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const { order_info_uuid } = req.params;
+
+	const query = sql`
+		SELECT 
+			oil.id,
+			oil.order_info_uuid,
+			oil.field_name,
+			oil.old_value,
+			oil.new_value,
+			oil.operation,
+			oil.changed_by,
+			users.name AS changed_by_name,
+			oil.changed_at,
+			oil.remarks
+		FROM 
+			zipper.order_info_log oil
+		LEFT JOIN 
+			hr.users ON oil.changed_by = users.uuid
+		WHERE 
+			oil.order_info_uuid = ${order_info_uuid}
+		ORDER BY 
+			oil.changed_at DESC, oil.id DESC
+	`;
+
+	try {
+		const data = await db.execute(query);
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Info Change Logs',
+		};
+
+		return res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectAllOrderInfoLogs(req, res, next) {
+	if (!validateRequest(req, next)) return;
+
+	const { limit = 100, offset = 0 } = req.query;
+
+	const query = sql`
+		SELECT 
+			oil.id,
+			oil.order_info_uuid,
+			CONCAT('Z', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi.created_at, 'YY'), '-', oi.id::text) AS order_number,
+			oil.field_name,
+			oil.old_value,
+			oil.new_value,
+			oil.operation,
+			oil.changed_by,
+			users.name AS changed_by_name,
+			oil.changed_at,
+			oil.remarks
+		FROM 
+			zipper.order_info_log oil
+		LEFT JOIN 
+			hr.users ON oil.changed_by = users.uuid
+		LEFT JOIN
+			zipper.order_info oi ON oil.order_info_uuid = oi.uuid
+		ORDER BY 
+			oil.changed_at DESC, oil.id DESC
+		LIMIT ${limit}
+		OFFSET ${offset}
+	`;
+
+	try {
+		const data = await db.execute(query);
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'All Order Info Change Logs',
+		};
+
+		return res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
