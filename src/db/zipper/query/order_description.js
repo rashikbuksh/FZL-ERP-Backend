@@ -931,8 +931,8 @@ export async function selectOrderNumberToGetOrderDescriptionAndOrderEntryOfMarke
 	try {
 		const api = await createApi(req);
 
-		const marketingUuid = own_uuid
-			? await GetMarketingOwnUUID(db, own_uuid)
+		const marketingUuid = marketing_uuid
+			? await GetMarketingOwnUUID(db, marketing_uuid)
 			: null;
 
 		const { data: get_order_description_uuid } = await api.get(
