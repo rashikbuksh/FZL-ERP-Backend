@@ -5,7 +5,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import { decimalToNumber } from '../../variables.js';
+import { decimalToNumber, GetMarketingOwnUUID } from '../../variables.js';
 import { order_description, order_info, tape_coil } from '../schema.js';
 
 // public.properties
@@ -931,16 +931,9 @@ export async function selectOrderNumberToGetOrderDescriptionAndOrderEntryOfMarke
 	try {
 		const api = await createApi(req);
 
-		let marketingUuid = null;
-		const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${marketing_uuid};`;
-
-		if (marketing_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const { data: get_order_description_uuid } = await api.get(
 			`/other/order/order_description_uuid/by/${order_number}?marketing_uuid=${marketingUuid}`

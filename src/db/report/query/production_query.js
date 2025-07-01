@@ -1,22 +1,15 @@
 import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 export async function selectItemWiseProduction(req, res, next) {
 	const { own_uuid, from, to } = req?.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-        SELECT uuid
-        FROM public.marketing
-        WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
         SELECT 
@@ -111,18 +104,10 @@ export async function selectItemZipperEndWiseProduction(req, res, next) {
 
 	const { own_uuid, from, to } = req.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
                     SELECT 

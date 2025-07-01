@@ -1,24 +1,18 @@
 import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 export async function selectOrderSheetPdf(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { from_date, to_date, type, marketing, party, own_uuid } = req.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const zipper_query = sql`
                         SELECT 
                             v_order_details_full.*, 

@@ -4,7 +4,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
-import { decimalToNumber } from '../../variables.js';
+import { decimalToNumber, GetMarketingOwnUUID } from '../../variables.js';
 import { bank, manual_pi } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -75,18 +75,11 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { own_uuid } = req.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const query = sql`
 						SELECT
 							cmp.uuid,

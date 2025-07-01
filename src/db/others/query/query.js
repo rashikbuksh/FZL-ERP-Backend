@@ -2,7 +2,7 @@ import { and, asc, desc, eq, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
+import { decimalToNumber, GetMarketingOwnUUID } from '../../variables.js';
 
 import * as commercialSchema from '../../commercial/schema.js';
 import * as deliverySchema from '../../delivery/schema.js';
@@ -842,18 +842,10 @@ export async function selectOrderZipperThread(req, res, next) {
 	const { from_date, to_date, page, own_uuid, is_description_needed } =
 		req.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
 						WITH running_all_sum AS (

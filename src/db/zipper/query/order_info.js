@@ -6,6 +6,7 @@ import * as hrSchema from '../../hr/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { order_info } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 const snoFromHeadOfficeBy = alias(hrSchema.users, 'sno_from_head_office_by');
 const receiveByFactoryBy = alias(hrSchema.users, 'receive_by_factory_by');
@@ -408,25 +409,10 @@ export async function select(req, res, next) {
 export async function getOrderDetails(req, res, next) {
 	const { all, approved, type, own_uuid } = req.query;
 
-	// console.log(all, '- all', approved, '- approved');
-
-	let marketingUuid = null;
-
-	// get marketing_uuid from own_uuid
-
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid}
-		`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			if (marketingUuidData.rows.length > 0) {
-				marketingUuid = marketingUuidData.rows[0].uuid;
-			}
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
         SELECT 
@@ -597,18 +583,10 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 	const { own_uuid } = req.params;
 	const { approved, type } = req.query;
 
-	let marketingUuid = null;
-
-	// get marketing_uuid from own_uuid
-
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		const marketingUuidData = await db.execute(marketingUuidQuery);
-		marketingUuid = marketingUuidData?.rows[0]?.uuid;
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
 					SELECT 

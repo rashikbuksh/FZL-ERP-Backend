@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 const findOrCreateArray = (array, key, value, createFn) => {
 	let index = array.findIndex((item) =>
@@ -28,18 +29,11 @@ export async function deliveryStatementReport(req, res, next) {
 		price_for,
 	} = req.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const query = sql`
             WITH opening_all_sum AS (
                 SELECT 

@@ -1,26 +1,18 @@
 import { sql } from 'drizzle-orm';
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 // * Zipper Production Status Report
 
 // multiple rows shows for stock.uuid, coloring_production_quantity, teeth_molding_quantity,teeth_coloring_quantity,finishing_quantity columns
 export async function zipperProductionStatusReport(req, res, next) {
-	const { status } = req.query;
-	const { own_uuid } = req?.query;
-
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
+	const { own_uuid, status } = req?.query;
 
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
             SELECT 
@@ -355,17 +347,10 @@ export async function zipperProductionStatusReport(req, res, next) {
 export async function dailyChallanReport(req, res, next) {
 	const { own_uuid, from_date, to_date, type } = req?.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
                     WITH pi_cash_grouped AS (
@@ -495,6 +480,16 @@ export async function dailyChallanReport(req, res, next) {
                             THEN tpf.name 
                             ELSE vodf.factory_name 
                         END AS factory_name,
+                        CASE 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
+                            THEN tpb.uuid 
+                            ELSE vodf.buyer_uuid 
+                        END AS buyer_uuid,
+                        CASE 
+                            WHEN pl.item_for IN ('thread', 'sample_thread') 
+                            THEN tpb.name 
+                            ELSE vodf.buyer_name 
+                        END AS buyer_name,
                         ARRAY_AGG(CASE 
                             WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN toe.uuid 
@@ -573,6 +568,7 @@ export async function dailyChallanReport(req, res, next) {
                     LEFT JOIN public.marketing tpm ON toi.marketing_uuid = tpm.uuid
                     LEFT JOIN public.party tpp ON toi.party_uuid = tpp.uuid
                     LEFT JOIN public.factory tpf ON toi.factory_uuid = tpf.uuid
+                    LEFT JOIN public.buyer tpb ON toi.buyer_uuid = tpb.uuid
                     LEFT JOIN pi_cash_grouped_thread ON toi.uuid = pi_cash_grouped_thread.order_info_uuid
                     LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
                     LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
@@ -657,18 +653,11 @@ export async function dailyChallanReport(req, res, next) {
 export async function PiRegister(req, res, next) {
 	const { own_uuid, from, to } = req?.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const query = sql`
             SELECT 
                 pi_cash.uuid,
@@ -762,28 +751,12 @@ export async function PiRegister(req, res, next) {
 
 export async function PiToBeRegister(req, res, next) {
 	const { own_uuid } = req?.query;
-	//console.log(own_uuid);
-
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
 
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			if (
-				marketingUuidData &&
-				marketingUuidData.rows &&
-				marketingUuidData.rows.length > 0
-			) {
-				marketingUuid = marketingUuidData.rows[0].uuid;
-			} else {
-				marketingUuid = null;
-			}
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const query = sql`
             SELECT 
                 party.uuid,
@@ -908,28 +881,12 @@ export async function PiToBeRegister(req, res, next) {
 
 export async function PiToBeRegisterMarketingWise(req, res, next) {
 	const { own_uuid } = req?.query;
-	//console.log(own_uuid);
-
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
 
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			if (
-				marketingUuidData &&
-				marketingUuidData.rows &&
-				marketingUuidData.rows.length > 0
-			) {
-				marketingUuid = marketingUuidData.rows[0].uuid;
-			} else {
-				marketingUuid = null;
-			}
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const query = sql`
             SELECT 
                 marketing.uuid,
@@ -1052,22 +1009,13 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
 }
 
 export async function LCReport(req, res, next) {
-	const { document_receiving, acceptance, maturity, payment } = req.query;
-
-	const { own_uuid } = req?.query;
-
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
+	const { own_uuid, document_receiving, acceptance, maturity, payment } =
+		req?.query;
 
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
             SELECT 
@@ -1164,18 +1112,11 @@ export async function LCReport(req, res, next) {
 export async function threadProductionStatusBatchWise(req, res, next) {
 	const { status, own_uuid, time_from, time_to } = req.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const query = sql`
             SELECT
                 batch.uuid,
@@ -1335,20 +1276,11 @@ export async function threadProductionStatusBatchWise(req, res, next) {
 export async function ProductionReportDirector(req, res, next) {
 	const { own_uuid } = req?.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
-		// OKAY
 		const query = sql`
             SELECT 
                 vodf.order_info_uuid,
@@ -1417,18 +1349,11 @@ export async function ProductionReportDirector(req, res, next) {
 export async function ProductionReportThreadDirector(req, res, next) {
 	const { own_uuid } = req?.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const query = sql`
             SELECT 
                 order_info.uuid,
@@ -1487,20 +1412,13 @@ export async function dailyProductionReport(req, res, next) {
 	const { from_date, to_date, type } = req.query;
 	const { own_uuid } = req?.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	const sort_of_type = ['Nylon', 'Vislon', 'Metal', 'Thread'];
 
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const query = sql`
             WITH running_all_sum AS (
                 SELECT 

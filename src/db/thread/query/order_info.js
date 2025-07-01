@@ -3,6 +3,7 @@ import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { order_info } from '../schema.js';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -83,31 +84,10 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { own_uuid, type } = req.query;
 
-	let marketing_uuid = null;
-
-	// get marketing uuid from own_uuid
-	const marketingUuidQuery = sql`
-		SELECT 
-			uuid
-		FROM 
-			public.marketing
-		WHERE 
-			user_uuid = ${own_uuid};
-	`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			if (
-				marketingUuidData &&
-				marketingUuidData.rows &&
-				marketingUuidData.rows.length > 0
-			) {
-				marketing_uuid = marketingUuidData.rows[0].uuid;
-			} else {
-				marketing_uuid = null;
-			}
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
 		SELECT 
@@ -196,7 +176,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN hr.users receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
 		LEFT JOIN hr.users production_pause_by ON order_info.production_pause_by = production_pause_by.uuid
 		 WHERE 
-        	${own_uuid ? sql`order_info.marketing_uuid = ${marketing_uuid}` : sql`1 = 1`}
+        	${own_uuid ? sql`order_info.marketing_uuid = ${marketingUuid}` : sql`1 = 1`}
 			${
 				type === 'bulk'
 					? sql`AND order_info.is_sample = 0`

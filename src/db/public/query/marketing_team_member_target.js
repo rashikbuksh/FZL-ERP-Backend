@@ -2,7 +2,7 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
+import { decimalToNumber, GetMarketingOwnUUID } from '../../variables.js';
 import { marketing, marketing_team_member_target } from '../schema.js';
 
 export async function insert(req, res, next) {
@@ -125,18 +125,10 @@ export async function select(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { own_uuid } = req.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const marketing_team_member_targetPromise = db
 			.select({

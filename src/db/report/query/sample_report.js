@@ -1,24 +1,17 @@
 import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 export async function selectSampleReport(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { own_uuid } = req?.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
                         WITH zipper_results AS (
@@ -92,17 +85,10 @@ export async function selectSampleReport(req, res, next) {
 export async function selectSampleReportByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { date, to_date, is_sample, show_zero_balance } = req.query;
-	const { own_uuid } = req?.query;
+	const { own_uuid, date, to_date, is_sample, show_zero_balance } =
+		req?.query;
 
 	let toDate = to_date === null || to_date === undefined ? null : to_date;
-
-	// get marketing_uuid from own_uuid
-	let marketing_uuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
 
 	if (toDate) {
 	} else {
@@ -110,14 +96,9 @@ export async function selectSampleReportByDate(req, res, next) {
 	}
 
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			if (marketingUuidData.rows.length > 0) {
-				marketing_uuid = marketingUuidData.rows[0].uuid;
-			} else {
-				marketing_uuid = null;
-			}
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
                         SELECT 
@@ -226,7 +207,7 @@ export async function selectSampleReportByDate(req, res, next) {
 									? sql` AND od.created_at BETWEEN ${date}::TIMESTAMP AND ${toDate}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'`
 									: sql``
 							}
-                            ${own_uuid ? sql` AND oi.marketing_uuid = ${marketing_uuid}` : sql``}
+                            ${own_uuid ? sql` AND oi.marketing_uuid = ${marketingUuid}` : sql``}
                             ${
 								show_zero_balance == 1
 									? sql``
@@ -259,31 +240,15 @@ export async function selectSampleReportByDateCombined(req, res, next) {
 
 	let toDate = to_date;
 
-	// get marketing_uuid from own_uuid
-	let marketing_uuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	if (toDate) {
 	} else {
 		toDate = date;
 	}
 
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			if (
-				marketingUuidData &&
-				marketingUuidData.rows &&
-				marketingUuidData.rows.length > 0
-			) {
-				marketing_uuid = marketingUuidData.rows[0].uuid;
-			} else {
-				marketing_uuid = null;
-			}
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
                         SELECT 
@@ -391,7 +356,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         WHERE
                             oi.is_sample = ${is_sample} 
                             AND od.created_at BETWEEN ${date}::TIMESTAMP and ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
-                            AND ${own_uuid ? sql`oi.marketing_uuid = ${marketing_uuid}` : sql`TRUE`}
+                            AND ${own_uuid ? sql`oi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
                         UNION
                         SELECT 
                             CONCAT('ST', 
@@ -443,7 +408,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         WHERE
                             toi.is_sample = ${is_sample} 
                             AND toi.created_at BETWEEN ${date}::TIMESTAMP and ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
-                            AND ${own_uuid ? sql`toi.marketing_uuid = ${marketing_uuid}` : sql`TRUE`}
+                            AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
                         ORDER BY
                             order_number ASC, item_description ASC;
                     `;
@@ -467,21 +432,12 @@ export async function selectSampleReportByDateCombined(req, res, next) {
 export async function selectThreadSampleReportByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { date, is_sample } = req.query;
-	const { own_uuid } = req?.query;
-
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
+	const { own_uuid, date, is_sample } = req?.query;
 
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
                      SELECT 

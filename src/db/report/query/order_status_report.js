@@ -6,18 +6,11 @@ import { GetMarketingOwnUUID } from '../../variables.js';
 export async function ProductionReportSnm(req, res, next) {
 	const { own_uuid, from, to } = req?.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
 		const query = sql`
             WITH
                 pi_cash_grouped AS (
@@ -324,7 +317,9 @@ export async function ProductionReportThreadSnm(req, res, next) {
 	const { own_uuid, from, to } = req?.query;
 
 	try {
-		const marketingUuid = await GetMarketingOwnUUID(db, own_uuid);
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
     WITH

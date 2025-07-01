@@ -1,7 +1,7 @@
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
-
 import { sql } from 'drizzle-orm';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 export async function getOrderDetailsPagination(req, res, next) {
 	const {
@@ -17,29 +17,10 @@ export async function getOrderDetailsPagination(req, res, next) {
 		order_info_uuid,
 	} = req.query;
 
-	let marketingUuid = null;
-
-	// get marketing_uuid from own_uuid
-
-	const marketingUuidQuery = sql`
-        SELECT uuid
-        FROM public.marketing
-        WHERE user_uuid = ${own_uuid}
-        `;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			if (
-				marketingUuidData &&
-				marketingUuidData.rows &&
-				marketingUuidData.rows.length > 0
-			) {
-				marketingUuid = marketingUuidData.rows[0].uuid;
-			} else {
-				marketingUuid = null;
-			}
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const count_query = sql`
         SELECT COUNT(*) AS total_count
