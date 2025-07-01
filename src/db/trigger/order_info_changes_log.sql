@@ -193,26 +193,6 @@ BEGIN
             VALUES (NEW.uuid, 'is_cash', OLD.is_cash::text, NEW.is_cash::text, 'UPDATE', NEW.created_by, NOW());
         END IF;
 
-        IF OLD.conversion_rate IS DISTINCT FROM NEW.conversion_rate THEN
-            INSERT INTO zipper.order_info_log (thread_order_info_uuid, field_name, old_value, new_value, operation, changed_by, changed_at)
-            VALUES (NEW.uuid, 'conversion_rate', OLD.conversion_rate::text, NEW.conversion_rate::text, 'UPDATE', NEW.created_by, NOW());
-        END IF;
-
-        IF OLD.marketing_priority IS DISTINCT FROM NEW.marketing_priority THEN
-            INSERT INTO zipper.order_info_log (thread_order_info_uuid, field_name, old_value, new_value, operation, changed_by, changed_at)
-            VALUES (NEW.uuid, 'marketing_priority', OLD.marketing_priority, NEW.marketing_priority, 'UPDATE', NEW.created_by, NOW());
-        END IF;
-
-        IF OLD.factory_priority IS DISTINCT FROM NEW.factory_priority THEN
-            INSERT INTO zipper.order_info_log (thread_order_info_uuid, field_name, old_value, new_value, operation, changed_by, changed_at)
-            VALUES (NEW.uuid, 'factory_priority', OLD.factory_priority, NEW.factory_priority, 'UPDATE', NEW.created_by, NOW());
-        END IF;
-
-        IF OLD.status IS DISTINCT FROM NEW.status THEN
-            INSERT INTO zipper.order_info_log (thread_order_info_uuid, field_name, old_value, new_value, operation, changed_by, changed_at)
-            VALUES (NEW.uuid, 'status', OLD.status::text, NEW.status::text, 'UPDATE', NEW.created_by, NOW());
-        END IF;
-
         IF OLD.is_cancelled IS DISTINCT FROM NEW.is_cancelled THEN
             INSERT INTO zipper.order_info_log (thread_order_info_uuid, field_name, old_value, new_value, operation, changed_by, changed_at)
             VALUES (NEW.uuid, 'is_cancelled', OLD.is_cancelled::text, NEW.is_cancelled::text, 'UPDATE', NEW.created_by, NOW());
