@@ -585,6 +585,11 @@ export async function dailyChallanReport(req, res, next) {
 											? sql` AND challan.receive_status = 1`
 											: sql``
 						}
+                        ${
+							from_date && to_date
+								? sql` AND challan.created_at BETWEEN ${from_date}::timestamp AND ${to_date}::timestamp + interval '23 hours 59 minutes 59 seconds'`
+								: sql``
+						}
                     GROUP BY
                         challan.uuid,
                         challan.created_at,
