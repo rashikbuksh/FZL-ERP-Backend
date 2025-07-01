@@ -115,7 +115,8 @@ export async function selectAll(req, res, next) {
 							cmp.date,
 							cmp.pi_number,
 							cmp.created_at,
-							cmp.updated_at
+							cmp.updated_at,
+							cmp.is_inch
 						FROM
 							commercial.manual_pi cmp
 						LEFT JOIN
@@ -186,7 +187,8 @@ export async function selectAll(req, res, next) {
 							cmp.updated_at,
 							cmpe_total_value.total_value,
 							cmpe_total_value.order_number,
-							pf.address
+							pf.address,
+							cmp.is_inch
 						ORDER BY
 							cmp.created_at ASC`;
 
@@ -241,6 +243,7 @@ export async function select(req, res, next) {
 			pi_number: manual_pi.pi_number,
 			created_at: manual_pi.created_at,
 			updated_at: manual_pi.updated_at,
+			is_inch: manual_pi.is_inch,
 		})
 		.from(manual_pi)
 		.leftJoin(hrSchema.users, eq(manual_pi.created_by, hrSchema.users.uuid))

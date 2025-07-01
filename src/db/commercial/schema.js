@@ -140,6 +140,7 @@ export const manual_pi = commercial.table('manual_pi', {
 	pi_number: text('pi_number').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	is_inch: boolean('is_inch').default(false),
 });
 
 export const manual_pi_entry = commercial.table('manual_pi_entry', {

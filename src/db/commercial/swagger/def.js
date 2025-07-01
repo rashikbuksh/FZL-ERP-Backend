@@ -157,6 +157,7 @@ export const defCommercialManualPi = SED({
 		weight: SE.number(1000.0),
 		date: SE.date_time(),
 		pi_number: SE.string('1234/2024'),
+		is_inch: SE.boolean(false),
 	},
 	xml: 'Commercial/ManualPi',
 });
