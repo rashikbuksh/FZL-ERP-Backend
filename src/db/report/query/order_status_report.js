@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 export async function ProductionReportSnm(req, res, next) {
 	const { own_uuid, from, to } = req?.query;
@@ -322,18 +323,9 @@ export async function ProductionReportSnm(req, res, next) {
 export async function ProductionReportThreadSnm(req, res, next) {
 	const { own_uuid, from, to } = req?.query;
 
-	// get marketing_uuid from own_uuid
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = await GetMarketingOwnUUID(own_uuid);
+
 		const query = sql`
     WITH
     pi_cash_grouped_thread AS (
@@ -559,22 +551,22 @@ SELECT
 		const resultPromise = db.execute(query);
 		const data = await resultPromise;
 
-		// Convert NULL values to dashes for display
-		const processedData = data?.rows?.map((row) => ({
-			...row,
-			quantity: row.quantity ?? '-',
-			not_approved_quantity: row.not_approved_quantity ?? '-',
-			approved_quantity: row.approved_quantity ?? '-',
-			total_yarn_quantity: row.total_yarn_quantity ?? '-',
-			total_coning_production_quantity:
-				row.total_coning_production_quantity ?? '-',
-			warehouse: row.warehouse ?? '-',
-			delivered: row.delivered ?? '-',
-			balance_quantity: row.balance_quantity ?? '-',
-			party_price: row.party_price ?? '-',
-			company_price: row.company_price ?? '-',
-			total_expected_weight: row.total_expected_weight ?? '-',
-		}));
+		// // Convert NULL values to dashes for display
+		// const processedData = data?.rows?.map((row) => ({
+		// 	...row,
+		// 	quantity: row.quantity ?? '-',
+		// 	not_approved_quantity: row.not_approved_quantity ?? '-',
+		// 	approved_quantity: row.approved_quantity ?? '-',
+		// 	total_yarn_quantity: row.total_yarn_quantity ?? '-',
+		// 	total_coning_production_quantity:
+		// 		row.total_coning_production_quantity ?? '-',
+		// 	warehouse: row.warehouse ?? '-',
+		// 	delivered: row.delivered ?? '-',
+		// 	balance_quantity: row.balance_quantity ?? '-',
+		// 	party_price: row.party_price ?? '-',
+		// 	company_price: row.company_price ?? '-',
+		// 	total_expected_weight: row.total_expected_weight ?? '-',
+		// }));
 
 		const toast = {
 			status: 200,
@@ -582,7 +574,7 @@ SELECT
 			message: 'Production Report Director Thread',
 		};
 
-		res.status(200).json({ toast, data: processedData });
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
