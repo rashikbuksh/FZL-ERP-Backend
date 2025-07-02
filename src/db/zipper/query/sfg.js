@@ -175,6 +175,8 @@ export async function selectSwatchInfo(req, res, next) {
 					oe.style AS style,
 					oe.color AS color,
 					oe.color_ref,
+					oe.color_ref_entry_date,
+					oe.color_ref_update_date,
 					vod.is_inch,
 					oe.size,
 					CASE 
