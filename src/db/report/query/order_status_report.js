@@ -371,6 +371,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                         b.production_date,
                         beql.total_quantity,
                         beql.damaged_quantity,
+                        beql.coning_production_quantity,
                         beql.total_weight as yarn_issued,
                         b.is_drying_complete,
                         machine.name as machine,
@@ -384,6 +385,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                         SELECT
                             SUM(be.quantity) as total_quantity,
                             SUM(be.damaged_quantity) as damaged_quantity,
+                            SUM(be.coning_production_quantity) as coning_production_quantity,
                             SUM(be.yarn_quantity) as total_weight,
                             be.batch_uuid,
                             be.order_entry_uuid
@@ -432,7 +434,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 CASE WHEN tbm.batch_rank = 1 THEN (toe.quantity::float8 - toe.delivered::float8) ELSE 0 END as balance_quantity,
                 COALESCE(pcgt.pi_numbers, '[]') as pi_numbers,
                 COALESCE(pcgt.lc_numbers, '[]') as lc_numbers,
-                CASE WHEN tbm.batch_rank = 1 THEN COALESCE(bps.coning_production_quantity, 0)::float8 ELSE 0 END as total_coning_production_quantity,
+                -- CASE WHEN tbm.batch_rank = 1 THEN COALESCE(bps.coning_production_quantity, 0)::float8 ELSE 0 END as total_coning_production_quantity,
                 CASE WHEN tbm.batch_rank = 1 THEN COALESCE(bps.yarn_quantity, 0)::float8 ELSE 0 END as total_yarn_quantity,
                 CASE WHEN tbm.batch_rank = 1 THEN (toe.quantity * count_length.max_weight)::float8 ELSE 0 END as total_expected_weight,
                 tbm.batch_uuid,
@@ -446,6 +448,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 COALESCE(tbm.expected_kg, 0)::float8 as batch_expected_kg,
                 tbm.batch_type,
                 COALESCE(tbm.damaged_quantity, 0)::float8 as damaged_quantity,
+                COALESCE(tbm.coning_production_quantity, 0)::float8 as total_coning_production_quantity,
                 fto.sno_from_head_office,
                 fto.sno_from_head_office_time,
                 fto.sno_from_head_office_by,
