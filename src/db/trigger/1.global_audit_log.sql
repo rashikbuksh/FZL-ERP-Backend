@@ -10,13 +10,31 @@ DECLARE
     new_value JSONB;
     record_id TEXT;
 BEGIN
-    -- Determine the record ID (assumes 'uuid' or 'id' column exists)
+    -- Determine the record ID - try different common primary key column names
     IF TG_OP = 'DELETE' THEN
         old_record := OLD;
-        record_id := COALESCE(OLD.uuid::TEXT, OLD.id::TEXT);
+        -- Try to extract record ID from various possible primary key columns
+        BEGIN
+            record_id := (to_jsonb(OLD) ->> 'uuid');
+            IF record_id IS NULL THEN
+                record_id := (to_jsonb(OLD) ->> 'id');
+            END IF;
+        EXCEPTION
+            WHEN OTHERS THEN
+                record_id := NULL;
+        END;
     ELSE
         new_record := NEW;
-        record_id := COALESCE(NEW.uuid::TEXT, NEW.id::TEXT);
+        -- Try to extract record ID from various possible primary key columns
+        BEGIN
+            record_id := (to_jsonb(NEW) ->> 'uuid');
+            IF record_id IS NULL THEN
+                record_id := (to_jsonb(NEW) ->> 'id');
+            END IF;
+        EXCEPTION
+            WHEN OTHERS THEN
+                record_id := NULL;
+        END;
     END IF;
     
     -- Skip if we can't determine record ID
@@ -42,9 +60,9 @@ BEGIN
             AND NOT attisdropped
             AND attname != ALL(excluded_columns)
         LOOP
-            -- Get old and new values for this column
-            EXECUTE format('SELECT ($1).%I', column_name) USING OLD INTO old_value;
-            EXECUTE format('SELECT ($1).%I', column_name) USING NEW INTO new_value;
+            -- Get old and new values for this column using JSONB extraction
+            old_value := to_jsonb(OLD) -> column_name;
+            new_value := to_jsonb(NEW) -> column_name;
             
             -- Only log if the value actually changed
             IF old_value IS DISTINCT FROM new_value THEN

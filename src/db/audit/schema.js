@@ -34,7 +34,6 @@ export const global_audit_log = audit.table('global_audit_log', {
 		.defaultNow(),
 
 	// Audit metadata
-	created_at: DateTime('created_at').notNull(),
 	remarks: text('remarks'),
 });
 
