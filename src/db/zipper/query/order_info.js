@@ -434,20 +434,12 @@ export async function getOrderDetails(req, res, next) {
 			vod.created_by_name,
 			vod.order_description_created_at,
 			vod.order_description_updated_at,
-            order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
-            all_approval_counts.swatch_approval_count,
-            all_approval_counts.order_entry_count,
-            CASE WHEN all_approval_counts.price_approval_count IS NULL THEN 0 ELSE all_approval_counts.price_approval_count END AS price_approval_count,
-            CASE WHEN all_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
+            COUNT(*) OVER (PARTITION BY vod.order_number) AS order_number_wise_count,
+            COALESCE(oe_stats.swatch_approval_count, 0) AS swatch_approval_count,
+            COALESCE(oe_stats.order_entry_count, 0) AS order_entry_count,
+            COALESCE(oe_stats.price_approval_count, 0) AS price_approval_count,
+            CASE WHEN COALESCE(oe_stats.swatch_approval_count, 0) > 0 THEN 1 ELSE 0 END AS is_swatch_approved
         FROM zipper.v_order_details vod
-        LEFT JOIN (
-            SELECT 
-                order_number, 
-                COUNT(*) AS order_number_wise_count
-            FROM zipper.v_order_details
-            GROUP BY order_number
-        ) order_number_wise_counts
-        ON vod.order_number = order_number_wise_counts.order_number
         LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
         LEFT JOIN (
             SELECT 
@@ -457,11 +449,11 @@ export async function getOrderDetails(req, res, next) {
 				oe.order_description_uuid
 			FROM zipper.order_entry oe
 			GROUP BY oe.order_description_uuid
-        ) all_approval_counts ON vod.order_description_uuid = all_approval_counts.order_description_uuid
+        ) oe_stats ON vod.order_description_uuid = oe_stats.order_description_uuid
         WHERE vod.order_description_uuid IS NOT NULL 
             ${
 				approved === 'true'
-					? sql` AND swatch_approval_counts.swatch_approval_count > 0`
+					? sql` AND oe_stats.swatch_approval_count > 0`
 					: sql``
 			}
             ${
@@ -472,7 +464,7 @@ export async function getOrderDetails(req, res, next) {
 						: sql``
 			}
             ${own_uuid ? sql` AND vod.marketing_uuid = ${marketingUuid}` : sql``}
-        ORDER BY vod.order_description_created_at DESC, order_number_wise_rank ASC`;
+        ORDER BY vod.order_description_created_at DESC, vod.order_number_wise_rank ASC`;
 
 		const orderInfoPromise = db.execute(query);
 
