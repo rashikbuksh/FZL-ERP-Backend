@@ -197,12 +197,17 @@ export async function selectSwatchInfo(req, res, next) {
 					vod.receive_by_factory,
 					vod.receive_by_factory_time,
 					vod.receive_by_factory_by,
-					vod.receive_by_factory_by_name
+					vod.receive_by_factory_by_name,
+					oe.swatch_approval_received,
+					oe.swatch_approval_received_date,
+					oe.swatch_approval_received_by,
+					swatch_approval_received_by.name as swatch_approval_received_by_name
 				FROM
 					zipper.sfg sfg
 				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 				LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
 				LEFT JOIN zipper.v_order_details vod ON oe.order_description_uuid = vod.order_description_uuid
+				LEFT JOIN hr.users swatch_approval_received_by ON oe.swatch_approval_received_by = swatch_approval_received_by.uuid
 				LEFT JOIN (
 					SELECT 
 						dyeing_batch_entry.sfg_uuid,

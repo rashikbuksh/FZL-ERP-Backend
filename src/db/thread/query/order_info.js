@@ -383,7 +383,11 @@ export async function selectThreadSwatch(req, res, next) {
 		order_info.receive_by_factory_by,
 		receive_by_factory_by.name AS receive_by_factory_by_name,
 		order_info.production_pause,
-		order_info.is_swatch_attached
+		order_info.is_swatch_attached,
+		order_entry.swatch_approval_received,
+		order_entry.swatch_approval_received_date,
+		order_entry.swatch_approval_received_by,
+		swatch_approval_received_by.name AS swatch_approval_received_by_name
 	FROM 
 		thread.order_info
 	LEFT JOIN 
@@ -405,6 +409,7 @@ export async function selectThreadSwatch(req, res, next) {
 			batch_entry.order_entry_uuid
 	) AS batch_status ON order_entry.uuid = batch_status.order_entry_uuid
 	LEFT JOIN hr.users receive_by_factory_by ON order_info.receive_by_factory_by = receive_by_factory_by.uuid
+	LEFT JOIN hr.users swatch_approval_received_by ON order_entry.swatch_approval_received_by = swatch_approval_received_by.uuid
 	WHERE 
 		order_info.is_cancelled = FALSE
 		AND order_info.production_pause = FALSE
