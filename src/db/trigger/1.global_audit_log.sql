@@ -42,16 +42,16 @@ BEGIN
         RETURN COALESCE(NEW, OLD);
     END IF;
     
-    -- Handle different operations
-    IF TG_OP = 'INSERT' THEN
-        -- Log the entire new record as a single entry
-        INSERT INTO audit.global_audit_log (
-            schema_name, table_name, record_id, operation, new_value
-        ) VALUES (
-            TG_TABLE_SCHEMA, TG_TABLE_NAME, record_id, 'INSERT', to_jsonb(NEW)
-        );
+    -- -- Handle different operations
+    -- IF TG_OP = 'INSERT' THEN
+    --     -- Log the entire new record as a single entry
+    --     INSERT INTO audit.global_audit_log (
+    --         schema_name, table_name, record_id, operation, new_value
+    --     ) VALUES (
+    --         TG_TABLE_SCHEMA, TG_TABLE_NAME, record_id, 'INSERT', to_jsonb(NEW)
+    --     );
         
-    ELSIF TG_OP = 'UPDATE' THEN
+    IF TG_OP = 'UPDATE' THEN
         -- Log each changed column separately
         FOR column_name IN 
             SELECT attname FROM pg_attribute 
