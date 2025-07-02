@@ -144,6 +144,7 @@ export async function ProductionReportSnm(req, res, next) {
                         dbea.total_quantity,
                         dbea.total_production_quantity,
                         (db.received = 1) as received,
+                        db.batch_type,
                         machine.name as dyeing_machine,
                         db.created_at as batch_created_at,
                         ROUND(
@@ -247,6 +248,7 @@ export async function ProductionReportSnm(req, res, next) {
                 dbm.dyeing_machine,
                 dbm.batch_created_at,
                 dbm.expected_kg as batch_expected_kg,
+                dbm.batch_type,
                 fo.sno_from_head_office,
                 fo.sno_from_head_office_time,
                 fo.sno_from_head_office_by,
@@ -371,6 +373,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                         b.is_drying_complete,
                         machine.name as machine,
                         b.created_at as batch_created_at,
+                        b.batch_type,
                         ROUND(beql.total_quantity::numeric * tcl.max_weight::numeric, 3) as expected_kg,
                         ROW_NUMBER() OVER (PARTITION BY toe.uuid ORDER BY b.created_at) as batch_rank
                     FROM thread.batch b
@@ -438,6 +441,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 tbm.machine,
                 tbm.batch_created_at,
                 tbm.expected_kg as batch_expected_kg,
+                tbm.batch_type,
                 fto.sno_from_head_office,
                 fto.sno_from_head_office_time,
                 fto.sno_from_head_office_by,
