@@ -28,6 +28,7 @@ FROM (
             ) AS delivered_quantity
         FROM delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+        WHERE pl.is_deleted = false
         GROUP BY
             ple.sfg_uuid
     ) AS subquery
@@ -55,6 +56,7 @@ FROM (
             ) AS delivered_quantity
         FROM delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+        WHERE pl.is_deleted = false
         GROUP BY
             ple.thread_order_entry_uuid
     ) AS subquery

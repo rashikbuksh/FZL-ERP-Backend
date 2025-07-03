@@ -924,6 +924,7 @@ export async function syncPackingListAndChallanForAllOrder(req, res, next) {
 			SUM(CASE WHEN pl.gate_pass = 1 THEN ple.quantity ELSE 0 END) AS delivered_quantity
 		FROM delivery.packing_list_entry ple
 		LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+		WHERE pl.is_deleted = false
 		GROUP BY ple.sfg_uuid
 	) AS subquery
 	WHERE zipper.sfg.uuid = subquery.sfg_uuid;`;
@@ -949,6 +950,7 @@ export async function syncPackingListAndChallanForAllOrder(req, res, next) {
 				) AS delivered_quantity
 			FROM delivery.packing_list_entry ple
 				LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+			WHERE pl.is_deleted = false
 			GROUP BY
 				ple.thread_order_entry_uuid
 		) AS subquery
