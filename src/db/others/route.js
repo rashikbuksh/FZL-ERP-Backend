@@ -1376,6 +1376,7 @@ const pathThread = {
 					'true',
 					'false',
 				]),
+				SE.parameter_query('total_qty', 'total_qty', ['true', 'false']),
 			],
 			responses: {
 				200: {
