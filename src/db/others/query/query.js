@@ -697,9 +697,9 @@ export async function selectOrderInfo(req, res, next) {
 				AND order_info.uuid IN (
 					SELECT pl.order_info_uuid
 					FROM delivery.packing_list pl
-					WHERE ${challan_uuid ? sql`pl.challan_uuid IS NULL OR pl.challan_uuid = ${challan_uuid}` : sql`pl.challan_uuid IS NULL`}
+					WHERE ${challan_uuid ? sql` pl.challan_uuid IS NULL OR pl.challan_uuid = ${challan_uuid}` : sql`pl.challan_uuid IS NULL`}
 					  AND pl.is_warehouse_received = true
-					  ${item_for != undefined ? sql`AND pl.item_for = ${item_for}` : sql`AND 1=1`}
+					  ${item_for != undefined ? sql` AND pl.item_for = ${item_for}` : sql` AND 1=1`}
 				)
 			`;
 			break;
@@ -714,8 +714,8 @@ export async function selectOrderInfo(req, res, next) {
 					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 					WHERE vodf.item_description != '---' 
 					  AND vodf.item_description != '' 
-					  AND ${is_sample === 'true' ? sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0` : sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0 AND sfg.finishing_prod > 0`} 
-					  ${item_for != undefined ? sql`AND vodf.order_type = ${item_for}` : sql`AND 1=1`}
+					  AND ${is_sample === 'true' ? sql` oe.quantity - (sfg.warehouse + sfg.delivered) > 0` : sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0 AND sfg.finishing_prod > 0`} 
+					  ${item_for != undefined ? sql` AND vodf.order_type = ${item_for}` : sql` AND 1=1`}
 				)
 			`;
 			break;
@@ -2370,7 +2370,7 @@ export async function selectThreadOrder(req, res, next) {
 		)
 	`;
 	} else {
-		sample_condition = sql`1=1`;
+		sample_condition = sql` 1=1`;
 	}
 
 	if (page === 'challan') {
@@ -2400,7 +2400,7 @@ export async function selectThreadOrder(req, res, next) {
 	`;
 		// ! removed the condition (oe.quantity - oe.warehouse - oe.delivered) > 0 for the packing list
 	} else {
-		condition = sql`1=1`;
+		condition = sql` 1=1`;
 	}
 
 	if (recipe_required === 'true') {
@@ -2418,7 +2418,7 @@ export async function selectThreadOrder(req, res, next) {
 				oi.uuid
 		)`;
 	} else {
-		recipe_condition = sql`1=1`;
+		recipe_condition = sql` 1=1`;
 	}
 
 	const query = sql`
