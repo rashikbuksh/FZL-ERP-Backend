@@ -675,7 +675,6 @@ export async function selectOrderInfo(req, res, next) {
 		to_date,
 		challan_uuid,
 		own_uuid,
-		total_qty,
 	} = req.query;
 	let { party_name } = req.query;
 
@@ -697,9 +696,9 @@ export async function selectOrderInfo(req, res, next) {
 				AND order_info.uuid IN (
 					SELECT pl.order_info_uuid
 					FROM delivery.packing_list pl
-					WHERE ${challan_uuid ? sql` pl.challan_uuid IS NULL OR pl.challan_uuid = ${challan_uuid}` : sql`pl.challan_uuid IS NULL`}
+					WHERE ${challan_uuid ? sql`pl.challan_uuid IS NULL OR pl.challan_uuid = ${challan_uuid}` : sql`pl.challan_uuid IS NULL`}
 					  AND pl.is_warehouse_received = true
-					  ${item_for != undefined ? sql` AND pl.item_for = ${item_for}` : sql` AND 1=1`}
+					  ${item_for != undefined ? sql`AND pl.item_for = ${item_for}` : sql`AND 1=1`}
 				)
 			`;
 			break;
@@ -714,8 +713,8 @@ export async function selectOrderInfo(req, res, next) {
 					LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 					WHERE vodf.item_description != '---' 
 					  AND vodf.item_description != '' 
-					  AND ${is_sample === 'true' ? sql` oe.quantity - (sfg.warehouse + sfg.delivered) > 0` : sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0 AND sfg.finishing_prod > 0`} 
-					  ${item_for != undefined ? sql` AND vodf.order_type = ${item_for}` : sql` AND 1=1`}
+					  AND ${is_sample === 'true' ? sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0` : sql`oe.quantity - (sfg.warehouse + sfg.delivered) > 0 AND sfg.finishing_prod > 0`} 
+					  ${item_for != undefined ? sql`AND vodf.order_type = ${item_for}` : sql`AND 1=1`}
 				)
 			`;
 			break;
@@ -764,12 +763,8 @@ export async function selectOrderInfo(req, res, next) {
 			.select({
 				value: zipperSchema.order_info.uuid,
 				label: sql`
-					CASE WHEN ${party_name} = 'true' AND ${total_qty} = 'true'
-						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', total_qty.total_quantity - total_qty.delivered, ' - ', party.name) 
-						WHEN ${party_name} = 'true'
-						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name)
-						WHEN ${total_qty} = 'true'
-						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', total_qty.total_quantity - total_qty.delivered)
+					CASE WHEN ${party_name} = 'true' 
+						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), ' - ', party.name) 
 						ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
 					END`,
 				...(page === 'order_sheet' && {
@@ -820,20 +815,6 @@ export async function selectOrderInfo(req, res, next) {
 					publicSchema.factory.uuid
 				)
 			);
-
-		if (total_qty) {
-			orderInfoPromise.leftJoin(
-				sql`(
-						SELECT SUM(sfg.delivered)::float8 AS delivered, SUM(oe.quantity)::float8 AS total_quantity, vodf.order_info_uuid
-						FROM zipper.sfg sfg
-						LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-						LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-						GROUP BY vodf.order_info_uuid
-					) AS total_qty
-				`,
-				eq(zipperSchema.order_info.uuid, sql`total_qty.order_info_uuid`)
-			);
-		}
 
 		orderInfoPromise = orderInfoPromise.where(filterCondition);
 
@@ -2330,8 +2311,7 @@ export async function selectDieCastingUsingType(req, res, next) {
 export async function selectThreadOrder(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { page, is_sample, recipe_required, challan_uuid, total_qty } =
-		req.query;
+	const { page, is_sample, recipe_required, challan_uuid } = req.query;
 
 	let { party_name } = req.query;
 
@@ -2370,7 +2350,7 @@ export async function selectThreadOrder(req, res, next) {
 		)
 	`;
 	} else {
-		sample_condition = sql` 1=1`;
+		sample_condition = sql`1=1`;
 	}
 
 	if (page === 'challan') {
@@ -2400,7 +2380,7 @@ export async function selectThreadOrder(req, res, next) {
 	`;
 		// ! removed the condition (oe.quantity - oe.warehouse - oe.delivered) > 0 for the packing list
 	} else {
-		condition = sql` 1=1`;
+		condition = sql`1=1`;
 	}
 
 	if (recipe_required === 'true') {
@@ -2418,34 +2398,17 @@ export async function selectThreadOrder(req, res, next) {
 				oi.uuid
 		)`;
 	} else {
-		recipe_condition = sql` 1=1`;
+		recipe_condition = sql`1=1`;
 	}
 
 	const query = sql`
 				SELECT
 					ot.uuid AS value,
-					CASE WHEN ${party_name} = 'true' AND ${total_qty} = 'true'
-						THEN CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0'), ' - ', total_qty.total_quantity - total_qty.delivered, ' - ', tp.name)
-						WHEN ${party_name} = 'true'
-						THEN CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) || ' - ' || tp.name
-						WHEN ${total_qty} = 'true'
-						THEN CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0'), ' - ', total_qty.total_quantity - total_qty.delivered)
-						ELSE CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) 
-					END as label
+					CASE WHEN ${party_name} = 'true' THEN CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0'), ' - ', tp.name) ELSE CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) END as label
 				FROM
 					thread.order_info ot
 				LEFT JOIN
 					public.party tp ON ot.party_uuid = tp.uuid
-				${
-					total_qty
-						? sql`LEFT JOIN (
-						SELECT order_info_uuid, SUM(quantity)::float8 AS total_quantity, SUM(delivered)::float8 AS delivered 
-						FROM thread.order_entry 
-						GROUP BY order_info_uuid
-						) total_qty ON ot.uuid = total_qty.order_info_uuid
-					`
-						: sql``
-				}
 				WHERE
 					${condition} AND ${sample_condition} AND ${recipe_condition}
 				`;
