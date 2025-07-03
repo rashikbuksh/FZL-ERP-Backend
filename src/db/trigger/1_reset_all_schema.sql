@@ -7,7 +7,7 @@ BEGIN
         SELECT sequence_schema, sequence_name
         FROM information_schema.sequences
         WHERE
-            sequence_schema != 'drizzle'
+            sequence_schema NOT IN ('drizzle', 'audit')
             AND sequence_name NOT LIKE '%log%'
     LOOP
         EXECUTE 'ALTER SEQUENCE ' || quote_ident(seq.sequence_schema) || '.' || quote_ident(seq.sequence_name) || ' RESTART WITH 1;';
