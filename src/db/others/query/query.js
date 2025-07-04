@@ -766,7 +766,7 @@ export async function selectOrderInfo(req, res, next) {
 				label: sql`
 					CASE WHEN ${party_name} = 'true' 
 						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), 
-						${total_qty === 'true' ? sql`' - B: ' || (oe_sum.quantity - oe_sum.delivered)` : sql`''`},
+						${total_qty === 'true' ? sql`' - B: ' || (oe_sum.quantity - oe_sum.delivered)::float8` : sql`''`},
 						' - ', party.name) 
 						ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
 					END`,
@@ -2425,7 +2425,7 @@ export async function selectThreadOrder(req, res, next) {
 					ot.uuid AS value,
 					CASE WHEN ${party_name} = 'true' 
 						THEN CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0'),
-						${total_qty === 'true' ? sql`' - B: ' || toe.quantity - toe.delivered` : sql`''`},
+						${total_qty === 'true' ? sql`' - B: ' || (toe.quantity - toe.delivered)::float8` : sql`''`},
 						 ' - ', tp.name) 
 						ELSE CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) 
 					END as label
