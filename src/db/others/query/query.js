@@ -834,8 +834,6 @@ export async function selectOrderInfo(req, res, next) {
 			`
 			);
 
-		console.log(orderInfoPromise.toSQL());
-
 		orderInfoPromise = orderInfoPromise.where(filterCondition);
 
 		if (own_uuid) {
