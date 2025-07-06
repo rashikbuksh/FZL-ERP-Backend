@@ -679,6 +679,7 @@ export async function selectBulkApprovalInfo(req, res, next) {
 					sfg.uuid AS sfg_uuid,
 					oe.order_description_uuid AS order_description_uuid,
 					vod.order_info_uuid,
+					vod.party_name,
 					oe.style AS style,
 					oe.color AS color,
 					oe.color_ref,
