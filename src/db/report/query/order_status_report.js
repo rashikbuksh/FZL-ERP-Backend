@@ -85,6 +85,7 @@ export async function ProductionReportSnm(req, res, next) {
                 sfg_production_sum AS (
                     SELECT
                         oe.uuid as order_entry_uuid,
+                        ROW_NUMBER() OVER (PARTITION BY oe.uuid ORDER BY oe.created_at) as batch_rank,
                         SUM(sfg_prod.production_quantity) FILTER (WHERE sfg_prod.section = 'finishing') AS finishing_quantity
                     FROM filtered_orders fo
                     INNER JOIN zipper.order_entry oe ON fo.order_description_uuid = oe.order_description_uuid
@@ -205,27 +206,27 @@ export async function ProductionReportSnm(req, res, next) {
                 oe.color_ref_entry_date,
                 oe.color_ref_update_date,
                 oe.size::float8,
-                -- Simplified conditional fields using batch_rank instead of window functions
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as quantity,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(oe.party_price::float8 AS TEXT) ELSE '--' END as party_price,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(oe.company_price::float8 AS TEXT) ELSE '--' END as company_price,
+                -- Fixed conditional fields to show quantities even when no dyeing batch
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as quantity,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(oe.party_price::float8 AS TEXT) ELSE '--' END as party_price,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(oe.company_price::float8 AS TEXT) ELSE '--' END as company_price,
                 CASE WHEN sfg.recipe_uuid IS NOT NULL THEN oe.swatch_approval_received_date END as swatch_approval_date,
                 CASE WHEN sfg.recipe_uuid IS NOT NULL THEN oe.swatch_approval_received END as swatch_approval_received,
-                CASE WHEN dbm.batch_rank = 1 AND sfg.recipe_uuid IS NULL THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as not_approved_quantity,
-                CASE WHEN dbm.batch_rank = 1 AND sfg.recipe_uuid IS NOT NULL THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as approved_quantity,
+                CASE WHEN (dbm.batch_rank = 1 OR dbm.batch_rank IS NULL) AND sfg.recipe_uuid IS NULL THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as not_approved_quantity,
+                CASE WHEN (dbm.batch_rank = 1 OR dbm.batch_rank IS NULL) AND sfg.recipe_uuid IS NOT NULL THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as approved_quantity,
                 sfg.recipe_uuid,
                 recipe.name as recipe_name,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(COALESCE(oe.quantity, 0)::float8 AS TEXT) ELSE '--' END as total_quantity,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(oe.quantity, 0)::float8 AS TEXT) ELSE '--' END as total_quantity,
                 CASE 
-                    WHEN dbm.batch_rank = 1 AND fo.end_type_name IN ('2 Way - Close End', '2 Way - Open End') 
+                    WHEN (dbm.batch_rank = 1 OR dbm.batch_rank IS NULL) AND fo.end_type_name IN ('2 Way - Close End', '2 Way - Open End') 
                     THEN CAST(oe.quantity::float8 * 2 AS TEXT)
-                    WHEN dbm.batch_rank = 1 
+                    WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL 
                     THEN CAST(oe.quantity::float8 AS TEXT)
                     ELSE '--'
                 END as total_slider_required,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(sfg.delivered::float8 AS TEXT) ELSE '--' END as delivered,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(sfg.warehouse::float8 AS TEXT) ELSE '--' END as warehouse,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST((oe.quantity::float8 - sfg.delivered::float8) AS TEXT) ELSE '--' END as balance_quantity,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(sfg.delivered::float8 AS TEXT) ELSE '--' END as delivered,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(sfg.warehouse::float8 AS TEXT) ELSE '--' END as warehouse,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST((oe.quantity::float8 - sfg.delivered::float8) AS TEXT) ELSE '--' END as balance_quantity,
                 fo.order_type,
                 fo.is_inch,
                 CASE
@@ -234,19 +235,19 @@ export async function ProductionReportSnm(req, res, next) {
                     WHEN fo.is_inch = 1 THEN 'Inch'
                     ELSE 'Cm'
                 END as unit,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(COALESCE(sps.finishing_quantity, 0)::float8 AS TEXT) ELSE '--' END as total_finishing_quantity,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(COALESCE(dtts.total_trx_quantity, 0)::float8 AS TEXT) ELSE '--' END AS total_dyeing_quantity,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(COALESCE(slps.coloring_production_quantity, 0)::float8 AS TEXT) ELSE '--' END as total_coloring_quantity,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(COALESCE(slps.coloring_production_quantity_weight, 0)::float8 AS TEXT) ELSE '--' END as total_coloring_quantity_weight,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(sps.finishing_quantity, 0)::float8 AS TEXT) ELSE '--' END as total_finishing_quantity,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(dtts.total_trx_quantity, 0)::float8 AS TEXT) ELSE '--' END AS total_dyeing_quantity,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(slps.coloring_production_quantity, 0)::float8 AS TEXT) ELSE '--' END as total_coloring_quantity,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(slps.coloring_production_quantity_weight, 0)::float8 AS TEXT) ELSE '--' END as total_coloring_quantity_weight,
                 COALESCE(pcg.pi_numbers, '[]') as pi_numbers,
                 COALESCE(pcg.lc_numbers, '[]') as lc_numbers,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(dbm.expected_kg AS TEXT) ELSE '--' END as expected_kg,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(dbm.expected_kg, 0) AS TEXT) ELSE '--' END as expected_kg,
                 dbm.dyeing_batch_uuid,
                 dbm.dyeing_batch_number,
                 dbm.production_date,
                 COALESCE(dbm.total_quantity, 0)::float8 as total_quantity,
                 COALESCE(dbm.total_production_quantity, 0)::float8 as total_production_quantity,
-                CASE WHEN dbm.batch_rank = 1 THEN CAST(dbm.received AS TEXT) ELSE '--' END as received,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(dbm.received, false) AS TEXT) ELSE '--' END as received,
                 dbm.dyeing_machine,
                 dbm.batch_created_at,
                 COALESCE(dbm.expected_kg, 0)::float8 as batch_expected_kg,
@@ -419,26 +420,26 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 toe.color_ref_update_date,
                 toe.recipe_uuid,
                 -- Simplified conditional fields using batch_rank
-                CASE WHEN tbm.batch_rank = 1 THEN CAST(toe.quantity::float8 AS TEXT) ELSE '--' END as quantity,
-                CASE WHEN tbm.batch_rank = 1 THEN CAST(toe.party_price::float8 AS TEXT) ELSE '--' END as party_price,
-                CASE WHEN tbm.batch_rank = 1 THEN CAST(toe.company_price::float8 AS TEXT) ELSE '--' END as company_price,
+                CASE WHEN tbm.batch_rank = 1 OR tbm.batch_rank IS NULL THEN CAST(toe.quantity::float8 AS TEXT) ELSE '--' END as quantity,
+                CASE WHEN tbm.batch_rank = 1 OR tbm.batch_rank IS NULL THEN CAST(toe.party_price::float8 AS TEXT) ELSE '--' END as party_price,
+                CASE WHEN tbm.batch_rank = 1 OR tbm.batch_rank IS NULL THEN CAST(toe.company_price::float8 AS TEXT) ELSE '--' END as company_price,
                 toe.swatch_approval_received_date as swatch_approval_date,
                 toe.swatch_approval_received as swatch_approval_received,
                 recipe.name as recipe_name,
-                CASE WHEN tbm.batch_rank = 1 AND toe.recipe_uuid IS NULL THEN CAST(toe.quantity::float8 AS TEXT) ELSE '--' END as not_approved_quantity,
-                CASE WHEN tbm.batch_rank = 1 AND toe.recipe_uuid IS NOT NULL THEN CAST(toe.quantity::float8 AS TEXT) ELSE '--' END as approved_quantity,
+                CASE WHEN (tbm.batch_rank = 1 OR tbm.batch_rank IS NULL) AND toe.recipe_uuid IS NULL THEN CAST(toe.quantity::float8 AS TEXT) ELSE '--' END as not_approved_quantity,
+                CASE WHEN (tbm.batch_rank = 1 OR tbm.batch_rank IS NULL) AND toe.recipe_uuid IS NOT NULL THEN CAST(toe.quantity::float8 AS TEXT) ELSE '--' END as approved_quantity,
                 '"' || count_length.count as count,
                 count_length.length,
                 '"' || count_length.count || ' - ' || count_length.length as count_length_name,
                 fto.uuid as order_info_uuid,
-                CASE WHEN tbm.batch_rank = 1 THEN CAST(toe.delivered::float8 AS TEXT) ELSE '--' END as delivered,
-                CASE WHEN tbm.batch_rank = 1 THEN CAST(toe.warehouse::float8 AS TEXT) ELSE '--' END as warehouse,
-                CASE WHEN tbm.batch_rank = 1 THEN (CAST(toe.quantity::float8 - toe.delivered::float8 AS TEXT)) ELSE '--' END as balance_quantity,
+                CASE WHEN tbm.batch_rank = 1 OR tbm.batch_rank IS NULL THEN CAST(toe.delivered::float8 AS TEXT) ELSE '--' END as delivered,
+                CASE WHEN tbm.batch_rank = 1 OR tbm.batch_rank IS NULL THEN CAST(toe.warehouse::float8 AS TEXT) ELSE '--' END as warehouse,
+                CASE WHEN tbm.batch_rank = 1 OR tbm.batch_rank IS NULL THEN (CAST(toe.quantity::float8 - toe.delivered::float8 AS TEXT)) ELSE '--' END as balance_quantity,
                 COALESCE(pcgt.pi_numbers, '[]') as pi_numbers,
                 COALESCE(pcgt.lc_numbers, '[]') as lc_numbers,
                 -- CASE WHEN tbm.batch_rank = 1 THEN COALESCE(bps.coning_production_quantity, 0)::float8 ELSE '--' END as total_coning_production_quantity,
-                CASE WHEN tbm.batch_rank = 1 THEN CAST(COALESCE(bps.yarn_quantity, 0)::float8 AS TEXT) ELSE '--' END as total_yarn_quantity,
-                CASE WHEN tbm.batch_rank = 1 THEN CAST((toe.quantity * count_length.max_weight)::float8 AS TEXT) ELSE '--' END as total_expected_weight,
+                CASE WHEN tbm.batch_rank = 1 OR tbm.batch_rank IS NULL THEN CAST(COALESCE(bps.yarn_quantity, 0)::float8 AS TEXT) ELSE '--' END as total_yarn_quantity,
+                CASE WHEN tbm.batch_rank = 1 OR tbm.batch_rank IS NULL THEN CAST((toe.quantity * count_length.max_weight)::float8 AS TEXT) ELSE '--' END as total_expected_weight,
                 tbm.batch_uuid,
                 tbm.batch_number,
                 tbm.production_date,
