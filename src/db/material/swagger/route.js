@@ -123,7 +123,9 @@ export const pathMaterialSection = {
 			description: 'Create a new material section',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
+			parameters: [
+				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+			],
 			requestBody: SE.requestBody_schema_ref('material/section'),
 			responses: {
 				200: SE.response_schema_ref(200, 'material/section'),

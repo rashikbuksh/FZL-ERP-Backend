@@ -1,4 +1,4 @@
-import { asc, eq } from 'drizzle-orm';
+import { asc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
@@ -72,6 +72,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { s_type } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: section.uuid,
@@ -87,6 +89,9 @@ export async function selectAll(req, res, next) {
 		})
 		.from(section)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, section.created_by))
+		.where(
+			s_type ? eq(section.store_type, s_type) : sql`true` // If no type is specified, select all sections
+		)
 		.orderBy(asc(section.name));
 	try {
 		const data = await resultPromise;
