@@ -11,8 +11,8 @@ export async function selectGoodsInWarehouse(req, res, next) {
                 sum(ple.quantity)::float8 as amount,
                 pl_count.count as number_of_carton,
                 TRIM(BOTH ' ' FROM LOWER(CASE 
-                    WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
-                    WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                    WHEN (LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%') THEN vodf.item_name
+                    WHEN (LOWER(vodf.nylon_stopper_name) LIKE 'plastic%') THEN vodf.item_name || ' Plastic'
                     ELSE vodf.item_name
                 END)) as item_name
             FROM
@@ -30,8 +30,8 @@ export async function selectGoodsInWarehouse(req, res, next) {
             WHERE pl.challan_uuid IS NULL AND pl.is_warehouse_received = true
             GROUP BY
                 TRIM(BOTH ' ' FROM LOWER(CASE 
-                    WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
-                    WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                    WHEN LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%' THEN vodf.item_name
+                    WHEN LOWER(vodf.nylon_stopper_name) LIKE 'plastic%' THEN vodf.item_name || ' Plastic'
                     ELSE vodf.item_name
                 END)),
                 item_name,

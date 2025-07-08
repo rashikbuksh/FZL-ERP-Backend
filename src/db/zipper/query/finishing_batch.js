@@ -658,9 +658,9 @@ export async function getDailyProductionPlan(req, res, next) {
 									item == 'all' || item == ''
 										? sql`1=1`
 										: item == 'nylon_plastic'
-											? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) = 'plastic'`
+											? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'`
 											: item == 'nylon'
-												? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic'`
+												? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`
 												: sql`lower(vodf.item_name) = ${item}`
 								})
 							ORDER BY

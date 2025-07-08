@@ -111,11 +111,11 @@ export async function selectAll(req, res, next) {
         SUM(ple.quantity)::float8 as total_quantity,
         SUM(ple.poli_quantity)::float8 as total_poly_quantity,
 		CASE 
-            WHEN (vod.item_name = 'Nylon' AND vod.nylon_stopper_name = 'Plastic')
+            WHEN (vod.item_name = 'Nylon' AND LOWER(vod.nylon_stopper_name) LIKE 'plastic%')
             THEN vod.item_name || ' ' || 'Plastic'
-            WHEN (vod.item_name = 'Nylon' AND vod.nylon_stopper_name = 'Invisible')
+            WHEN (vod.item_name = 'Nylon' AND LOWER(vod.nylon_stopper_name) = 'invisible')
             THEN vod.item_name || ' ' || 'Invisible'
-            WHEN (vod.item_name = 'Nylon' AND vod.nylon_stopper_name != 'Plastic') 
+            WHEN (vod.item_name = 'Nylon' AND LOWER(vod.nylon_stopper_name) NOT LIKE 'plastic%') 
 			THEN vod.item_name
 			WHEN item_for IN ('thread', 'sample_thread')
 			THEN 'Thread'
@@ -613,9 +613,9 @@ export async function selectPackingListReceivedLog(req, res, next) {
 							THEN 'Thread' 
 							ELSE 
 								CASE 
-									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+									WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) LIKE 'plastic%')
 									THEN vodf.item_name || ' ' || 'Plastic'
-									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+									WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%')
 									THEN vodf.item_name
 								ELSE vodf.item_name 
                         	END 
@@ -717,9 +717,9 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 							THEN 'Thread' 
 							ELSE 
 								CASE 
-									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+									WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) LIKE 'plastic%')
 									THEN vodf.item_name || ' ' || 'Plastic'
-									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+									WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%')
 									THEN vodf.item_name
 								ELSE vodf.item_name 
                         	END 
@@ -820,9 +820,9 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 							THEN 'Thread' 
 							ELSE 
 								CASE 
-									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+									WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) LIKE 'plastic%')
 									THEN vodf.item_name || ' ' || 'Plastic'
-									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+									WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%')
 									THEN vodf.item_name
 								ELSE vodf.item_name 
                         	END 
@@ -992,9 +992,9 @@ export async function selectDeletedPackingList(req, res, next) {
 							THEN 'Thread' 
 							ELSE 
 								CASE 
-									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+									WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) LIKE 'plastic%')
 									THEN vodf.item_name || ' ' || 'Plastic'
-									WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+									WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%')
 									THEN vodf.item_name
 								ELSE vodf.item_name 
                         	END 

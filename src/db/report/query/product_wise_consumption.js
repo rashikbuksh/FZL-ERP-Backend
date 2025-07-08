@@ -143,9 +143,9 @@ export async function selectProductWiseConsumption(req, res, next) {
 						)
 						AND ${
 							type == 'nylon_plastic'
-								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) = 'plastic'`
+								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'`
 								: type == 'nylon'
-									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic'`
+									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`
 									: type == 'all'
 										? sql`TRUE`
 										: sql`lower(vodf.item_name) = ${type}`
@@ -317,9 +317,9 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 						)
 						AND ${
 							type == 'nylon_plastic'
-								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) = 'plastic'`
+								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'`
 								: type == 'nylon'
-									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic'`
+									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`
 									: type == 'all'
 										? sql`TRUE`
 										: sql`lower(vodf.item_name) = ${type}`

@@ -8,9 +8,9 @@ export async function selectWorkInHand(req, res, next) {
 	const query = sql`
                     SELECT 
                         CASE 
-                            WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+                            WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) LIKE 'plastic%')
                             THEN vodf.item_name || ' ' || 'Plastic'
-                            WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+                            WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%')
                             THEN vodf.item_name
                             ELSE vodf.item_name 
                         END as item_name,
@@ -38,9 +38,9 @@ export async function selectWorkInHand(req, res, next) {
                         vodf.is_cancelled = FALSE
                     GROUP BY 
                         CASE 
-                            WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name = 'Plastic')
+                            WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) LIKE 'plastic%')
                             THEN vodf.item_name || ' ' || 'Plastic'
-                            WHEN (vodf.item_name = 'Nylon' AND vodf.nylon_stopper_name != 'Plastic')
+                            WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%')
                             THEN vodf.item_name
                             ELSE vodf.item_name 
                         END

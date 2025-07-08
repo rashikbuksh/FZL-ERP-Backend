@@ -419,7 +419,7 @@ export async function selectSfgBySection(req, res, next) {
 			WHERE
 				od.tape_coil_uuid IS NOT NULL
 				${item_name ? sql`AND lower(op_item.name) = lower(${item_name})` : sql``}
-				${nylon_stopper == 'plastic' ? sql`AND lower(vod.nylon_stopper_name) = 'plastic` : sql`AND lower(vod.nylon_stopper_name) != 'plastic`}
+				${nylon_stopper == 'plastic' ? sql`AND lower(vod.nylon_stopper_name) LIKE 'plastic%'` : sql`AND lower(vod.nylon_stopper_name) NOT LIKE 'plastic%'`}
 			ORDER BY oe.created_at DESC
 		`;
 

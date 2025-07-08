@@ -288,7 +288,7 @@ export async function selectBySection(req, res, next) {
 		WHERE
 			finishing_batch_production.section = ${req.params.section} 
 			${item_name ? sql` AND lower(vodf.item_name) = lower(${item_name})` : sql``}
-			${nylon_stopper == null || nylon_stopper == undefined ? sql` AND 1=1` : nylon_stopper == 'plastic' ? sql` AND lower(vodf.nylon_stopper_name) = 'plastic'` : sql` AND lower(vodf.nylon_stopper_name) != 'plastic'`}
+			${nylon_stopper == null || nylon_stopper == undefined ? sql` AND 1=1` : nylon_stopper == 'plastic' ? sql` AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'` : sql` AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`}
 		ORDER BY 
 			finishing_batch_production.created_at DESC
 	`;
