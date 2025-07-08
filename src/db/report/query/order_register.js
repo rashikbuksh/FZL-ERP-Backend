@@ -272,8 +272,8 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 					) AS pl_array
 				FROM
 					zipper.order_entry oe
-				LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-				LEFT JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
+				INNER JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+				INNER JOIN zipper.sfg sfg ON sfg.order_entry_uuid = oe.uuid
 				LEFT JOIN delivery.packing_list pl ON vodf.order_info_uuid = pl.order_info_uuid
 				LEFT JOIN (
 					SELECT 
@@ -282,12 +282,13 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						SUM(ple.quantity) as quantity
 					FROM 
 						delivery.packing_list_entry ple
-					LEFT JOIN 
+					INNER JOIN 
 						delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
 					WHERE 
 						pl.item_for NOT IN ('thread', 'sample_thread')
 					GROUP BY pl.uuid, ple.sfg_uuid
 				) ple_sum ON pl.uuid = ple_sum.packing_list_uuid AND sfg.uuid = ple_sum.sfg_uuid
+				WHERE vodf.order_info_uuid = ${order_info_uuid}
 				GROUP BY sfg.order_entry_uuid, sfg.uuid, oe.order_description_uuid, oe.style, oe.color, oe.color_ref, oe.size, oe.quantity, vodf.order_info_uuid, vodf.order_description_uuid, vodf.item_description, vodf.order_type, vodf.is_inch
 			),
 			pi_cash_grouped AS (
@@ -297,12 +298,13 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 					vodf.order_info_uuid
 				FROM
 					zipper.v_order_details_full vodf
-				LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
-				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
-				LEFT JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
-				LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+				INNER JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+				INNER JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+				INNER JOIN commercial.pi_cash_entry pe ON pe.sfg_uuid = sfg.uuid
+				INNER JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
 				LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
-				WHERE pi_cash.id IS NOT NULL
+				WHERE pi_cash.id IS NOT NULL 
+				AND vodf.order_info_uuid = ${order_info_uuid}
 			),
 			packing_list_agg_thread AS (
 				SELECT 
@@ -330,8 +332,8 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 					) AS pl_array
 				FROM
 					thread.order_entry toe 
-				LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
-				LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+				INNER JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
+				INNER JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 				LEFT JOIN delivery.packing_list pl ON toi.uuid = pl.thread_order_info_uuid
 				LEFT JOIN (
 					SELECT 
@@ -340,12 +342,13 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						SUM(ple.quantity) as quantity
 					FROM 
 						delivery.packing_list_entry ple
-					LEFT JOIN 
+					INNER JOIN 
 						delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
 					WHERE 
 						pl.item_for IN ('thread', 'sample_thread')
 					GROUP BY pl.uuid, ple.thread_order_entry_uuid
 				) ple_sum ON (pl.uuid = ple_sum.packing_list_uuid AND toe.uuid = ple_sum.thread_order_entry_uuid)
+				WHERE toi.uuid = ${order_info_uuid}
 				GROUP BY toe.order_info_uuid, toe.uuid, cl.count, cl.length, toe.style, toe.color, toe.color_ref, toe.quantity
 			),
 			pi_cash_grouped_thread AS (
@@ -355,10 +358,11 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 					toe.order_info_uuid as order_info_uuid
 				FROM
 					thread.order_entry toe
-				LEFT JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
-				LEFT JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
+				INNER JOIN commercial.pi_cash_entry pe ON pe.thread_order_entry_uuid = toe.uuid
+				INNER JOIN commercial.pi_cash ON pe.pi_cash_uuid = pi_cash.uuid
 				LEFT JOIN commercial.lc ON pi_cash.lc_uuid = lc.uuid
-				WHERE pi_cash.id IS NOT NULL
+				WHERE pi_cash.id IS NOT NULL 
+				AND toe.order_info_uuid = ${order_info_uuid}
 			)
 			SELECT 
 				vodf.order_info_uuid,
@@ -371,7 +375,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 				pi_cash_grouped.pi_numbers,
 				pi_cash_grouped.pi_cash_uuid,
 				jsonb_agg(
-					jsonb_build_object(
+					DISTINCT jsonb_build_object(
 						'order_description_uuid', vodf.order_description_uuid,
 						'item_description', vodf.item_description,
 						'order_entry_uuid', packing_list_agg.order_entry_uuid,
@@ -384,7 +388,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						'order_quantity', packing_list_agg.order_quantity,
 						'pl_array', COALESCE(packing_list_agg.pl_array, '[]'::jsonb)
 					)
-				) AS order_entry
+				) FILTER (WHERE packing_list_agg.order_entry_uuid IS NOT NULL) AS order_entry
 			FROM
 				zipper.v_order_details_full vodf
 			LEFT JOIN pi_cash_grouped ON vodf.order_info_uuid = pi_cash_grouped.order_info_uuid
@@ -406,7 +410,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 				pi_cash_grouped_thread.pi_numbers,
 				pi_cash_grouped_thread.pi_cash_uuid,
 				jsonb_agg(
-					jsonb_build_object(
+					DISTINCT jsonb_build_object(
 						'order_entry_uuid', packing_list_agg_thread.order_entry_uuid,
 						'unit', packing_list_agg_thread.unit,
 						'item_description', packing_list_agg_thread.count_length_name,
@@ -416,7 +420,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 						'order_quantity', packing_list_agg_thread.order_quantity,
 						'pl_array', COALESCE(packing_list_agg_thread.pl_array, '[]'::jsonb)
 					)
-				) AS order_entry
+				) FILTER (WHERE packing_list_agg_thread.order_entry_uuid IS NOT NULL) AS order_entry
 			FROM
 				thread.order_info toi
 			LEFT JOIN public.party p ON toi.party_uuid = p.uuid
