@@ -178,7 +178,36 @@ export async function ProductionReportSnm(req, res, next) {
                         END
                         AND (lower(fo.item_name) != 'nylon' OR fo.nylon_stopper = tcr.nylon_stopper_uuid)
                     )
-                )
+                ),
+                order_entry_expected_kg AS (
+					SELECT
+						oe.uuid as order_entry_uuid,
+						ROUND(
+							CASE
+								WHEN fo.order_type = 'tape' THEN 
+									(tcr.top + tcr.bottom) / 100.0 / tcr.dyed_mtr_per_kg
+								ELSE 
+									(tcr.top + tcr.bottom +	
+										CASE WHEN fo.is_inch = 1
+											THEN oe.size::numeric * 2.54
+											ELSE oe.size::numeric
+										END
+									) / 100.0 / tcr.dyed_mtr_per_kg
+							END, 3
+						) as expected_kg
+					FROM zipper.order_entry oe
+					INNER JOIN filtered_orders fo ON oe.order_description_uuid = fo.order_description_uuid
+					INNER JOIN zipper.tape_coil_required tcr ON (
+						fo.item = tcr.item_uuid
+						AND fo.zipper_number = tcr.zipper_number_uuid
+						AND CASE 
+							WHEN fo.order_type = 'tape' 
+							THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT'
+							ELSE fo.end_type = tcr.end_type_uuid
+						END
+						AND (lower(fo.item_name) != 'nylon' OR fo.nylon_stopper = tcr.nylon_stopper_uuid)
+					)
+				)
             -- Main query with reduced window functions
             SELECT
                 fo.order_info_uuid,
@@ -241,7 +270,7 @@ export async function ProductionReportSnm(req, res, next) {
                 CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(slps.coloring_production_quantity_weight, 0)::float8 AS TEXT) ELSE '--' END as total_coloring_quantity_weight,
                 COALESCE(pcg.pi_numbers, '[]') as pi_numbers,
                 COALESCE(pcg.lc_numbers, '[]') as lc_numbers,
-                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(dbm.expected_kg, 0) AS TEXT) ELSE '--' END as expected_kg,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(oeek.expected_kg, 0) AS TEXT) ELSE '--' END as expected_kg,
                 dbm.dyeing_batch_uuid,
                 dbm.dyeing_batch_number,
                 dbm.production_date,
@@ -267,6 +296,7 @@ export async function ProductionReportSnm(req, res, next) {
             FROM filtered_orders fo
             INNER JOIN zipper.order_entry oe ON fo.order_description_uuid = oe.order_description_uuid
             INNER JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+            LEFT JOIN order_entry_expected_kg oeek ON oe.uuid = oeek.order_entry_uuid
             LEFT JOIN lab_dip.recipe ON sfg.recipe_uuid = recipe.uuid
             LEFT JOIN sfg_production_sum sps ON sps.order_entry_uuid = oe.uuid
             LEFT JOIN dyed_tape_transaction_sum dtts ON dtts.order_description_uuid = fo.order_description_uuid
