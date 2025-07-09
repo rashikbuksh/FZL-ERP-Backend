@@ -25,8 +25,8 @@ export async function selectOrderEntryTotalOrdersAndItemWiseQuantity(
 						SELECT 
 							DATE(vodf.order_description_created_at) AS date, 
 							SUM(zoe.quantity) AS total_quantity,
-							SUM(CASE WHEN (LOWER(vodf.item_name) = 'nylon' AND LOWER(vodf.nylon_stopper_name) = 'plastic') THEN zoe.quantity ELSE 0 END)::float8 AS nylon_plastic_quantity,
-							SUM(CASE WHEN (LOWER(vodf.item_name) = 'nylon' AND LOWER(vodf.nylon_stopper_name) != 'plastic') THEN zoe.quantity ELSE 0 END)::float8 AS nylon_quantity,
+							SUM(CASE WHEN (LOWER(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) LIKE 'plastic%') THEN zoe.quantity ELSE 0 END)::float8 AS nylon_plastic_quantity,
+							SUM(CASE WHEN (LOWER(vodf.item_name) = 'nylon' AND LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%') THEN zoe.quantity ELSE 0 END)::float8 AS nylon_quantity,
 							SUM(CASE WHEN (LOWER(vodf.item_name) = 'metal') THEN zoe.quantity ELSE 0 END)::float8 AS metal_quantity,
 							SUM(CASE WHEN (LOWER(vodf.item_name) = 'vislon') THEN zoe.quantity ELSE 0 END)::float8 AS vislon_quantity
 						FROM zipper.order_entry zoe

@@ -10,8 +10,8 @@ export async function selectProductionStatus(req, res, next) {
 	const query = sql`
                 SELECT 
                     TRIM(BOTH ' ' FROM LOWER(CASE 
-                        WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
-                        WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                        WHEN LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%' THEN vodf.item_name
+                        WHEN LOWER(vodf.nylon_stopper_name) LIKE 'plastic%' THEN vodf.item_name || ' Plastic'
                         ELSE vodf.item_name
                     END)) as item_name,
                     COALESCE(sfg_production_sum.finishing_quantity::float8, 0) AS total_quantity
@@ -22,8 +22,8 @@ export async function selectProductionStatus(req, res, next) {
                 LEFT JOIN (
                     SELECT 
                         TRIM(BOTH ' ' FROM LOWER(CASE 
-                            WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
-                            WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                            WHEN LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%' THEN vodf.item_name
+                            WHEN LOWER(vodf.nylon_stopper_name) LIKE 'plastic%' THEN vodf.item_name || ' Plastic'
                             ELSE vodf.item_name
                         END)) as item_name,
                         SUM(CASE 
@@ -44,21 +44,21 @@ export async function selectProductionStatus(req, res, next) {
                         fb_prod.created_at BETWEEN '2025-04-19'::TIMESTAMP AND '2025-04-19'::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
                     GROUP BY 
                         TRIM(BOTH ' ' FROM LOWER(CASE 
-                            WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
-                            WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                            WHEN LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%' THEN vodf.item_name
+                            WHEN LOWER(vodf.nylon_stopper_name) LIKE 'plastic%' THEN vodf.item_name || ' Plastic'
                             ELSE vodf.item_name
                         END))
                     ) sfg_production_sum ON sfg_production_sum.item_name = TRIM(BOTH ' ' FROM LOWER(CASE 
-                            WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
-                            WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                            WHEN LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%' THEN vodf.item_name
+                            WHEN LOWER(vodf.nylon_stopper_name) LIKE 'plastic%' THEN vodf.item_name || ' Plastic'
                             ELSE vodf.item_name
                         END))
                 WHERE vodf.order_description_uuid IS NOT NULL
                     AND vodf.is_cancelled = FALSE
                 GROUP BY 
                     TRIM(BOTH ' ' FROM LOWER(CASE 
-                        WHEN vodf.nylon_stopper_name != 'Plastic' THEN vodf.item_name
-                        WHEN vodf.nylon_stopper_name = 'Plastic' THEN vodf.item_name || ' Plastic'
+                        WHEN LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%' THEN vodf.item_name
+                        WHEN LOWER(vodf.nylon_stopper_name) LIKE 'plastic%' THEN vodf.item_name || ' Plastic'
                         ELSE vodf.item_name
                     END)),
                     sfg_production_sum.finishing_quantity

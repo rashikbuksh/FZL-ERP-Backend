@@ -141,14 +141,11 @@ export async function selectProductWiseConsumption(req, res, next) {
 							lower(vodf.item_name) != 'nylon' 
 							OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 						)
-						AND (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + 
-							COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)) > 0
-						AND COALESCE(production_sum.coloring_production_quantity, 0) > 0
 						AND ${
 							type == 'nylon_plastic'
-								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) = 'plastic'`
+								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'`
 								: type == 'nylon'
-									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic'`
+									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`
 									: type == 'all'
 										? sql`TRUE`
 										: sql`lower(vodf.item_name) = ${type}`
@@ -173,6 +170,11 @@ export async function selectProductWiseConsumption(req, res, next) {
 					ORDER BY
                         vodf.item_name
 						`;
+
+		// The following commented lines are the original conditions that were used to filter the results.
+		// AND (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) +
+		// 	COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)) > 0
+		// AND COALESCE(production_sum.coloring_production_quantity, 0) > 0
 
 		const resultPromise = db.execute(query);
 
@@ -313,14 +315,11 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 							lower(vodf.item_name) != 'nylon' 
 							OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
 						)
-						AND (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) + 
-							COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)) > 0
-						AND COALESCE(production_sum.coloring_production_quantity, 0) > 0
 						AND ${
 							type == 'nylon_plastic'
-								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) = 'plastic'`
+								? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'`
 								: type == 'nylon'
-									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) != 'plastic'`
+									? sql`lower(vodf.item_name) = 'nylon' AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`
 									: type == 'all'
 										? sql`TRUE`
 										: sql`lower(vodf.item_name) = ${type}`
@@ -359,6 +358,11 @@ export async function selectProductWiseConsumptionForOrder(req, res, next) {
 					ORDER BY
                         vodf.marketing_name
 						`;
+
+		// The following commented lines are the original conditions that were used to filter the results.
+		// AND (COALESCE(dyed_tape_transaction_sum.total_trx_quantity, 0) +
+		// 	COALESCE(dyed_tape_transaction_from_stock_sum.total_trx_quantity, 0)) > 0
+		// AND COALESCE(production_sum.coloring_production_quantity, 0) > 0
 
 		const resultPromise = db.execute(query);
 

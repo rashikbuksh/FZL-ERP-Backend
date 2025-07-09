@@ -643,7 +643,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			AND vodf.production_pause = FALSE
 			AND vodf.is_sample = 0
 			${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
-			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vodf.nylon_stopper_name) = 'plastic'` : sql`AND lower(vodf.nylon_stopper_name) != 'plastic'`) : sql``}
+			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'` : sql`AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`) : sql``}
 			AND CASE WHEN ${section} = 'finishing_prod' 
 				THEN zfbe.finishing_prod IS NOT NULL
 				ELSE 
