@@ -2634,7 +2634,7 @@ export async function selectPackingListByOrderInfoUuid(req, res, next) {
 		challan_uuid != 'null'
 	) {
 		query.append(
-			sql` OR pl.challan_uuid = ${challan_uuid}) AND pl.is_warehouse_received = true`
+			sql` OR pl.challan_uuid = ${challan_uuid}) AND pl.is_warehouse_received = true AND pl.is_deleted = false`
 		);
 	}
 
