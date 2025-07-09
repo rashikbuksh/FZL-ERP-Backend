@@ -54,7 +54,7 @@ export async function zipperProductionStatusReport(req, res, next) {
 				    ELSE 'Cm'
 			    END as unit,
                 COUNT(DISTINCT oe.size) AS size_count,
-                SUM(oe.quantity)::float8 AS total_quantity,
+                SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity END)::float8 AS total_quantity,
                 COALESCE(production_sum.coloring_production_quantity, 0)::float8 AS coloring_production_quantity,
                 COALESCE(tape_coil_to_dyeing_sum.total_tape_coil_to_dyeing_quantity, 0)::float8 AS total_tape_coil_to_dyeing_quantity,
                 COALESCE(dyed_tape_transaction_combined.total_trx_quantity, 0)::float8 AS total_dyeing_transaction_quantity,
@@ -538,9 +538,11 @@ export async function dailyChallanReport(req, res, next) {
                             SUM(packing_list_entry.short_quantity)::float8 AS total_short_quantity,
                             SUM(packing_list_entry.reject_quantity)::float8 AS total_reject_quantity,
                             SUM(CASE 
-                                WHEN packing_list_entry.sfg_uuid IS NOT NULL 
-                                THEN oe.quantity::float8 
-                                ELSE toe.quantity::float8 
+                                WHEN packing_list_entry.sfg_uuid IS NULL 
+                                THEN toe.quantity::float8 
+                                WHEN vodf.order_type = 'tape'
+                                THEN CAST(CAST(oe.size AS NUMERIC) AS NUMERIC)
+                                ELSE oe.quantity::float8 
                             END) AS order_quantity
                         FROM
                             delivery.packing_list
@@ -550,6 +552,7 @@ export async function dailyChallanReport(req, res, next) {
                             zipper.sfg ON packing_list_entry.sfg_uuid = sfg.uuid
                         LEFT JOIN
                             zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+                        LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                         LEFT JOIN thread.order_entry toe ON packing_list_entry.thread_order_entry_uuid = toe.uuid
                         GROUP BY
                             packing_list.challan_uuid, packing_list.gate_pass
