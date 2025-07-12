@@ -130,6 +130,11 @@ export const challan = delivery.table('challan', {
 		.references(() => hrSchema.users.uuid)
 		.default(null),
 	is_delivered_date: DateTime('is_delivered_date').default(null),
+	is_out_for_delivery: boolean('is_out_for_delivery').default(false),
+	is_out_for_delivery_by: defaultUUID('is_out_for_delivery_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
+	is_out_for_delivery_date: DateTime('is_out_for_delivery_date').default(null),
 });
 
 export const vehicle = delivery.table('vehicle', {

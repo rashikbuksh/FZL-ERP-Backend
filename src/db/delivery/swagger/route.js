@@ -1077,6 +1077,31 @@ export const pathDeliveryChallan = {
 				},
 			},
 		},
+	'/delivery/challan/is-out-for-delivery/{uuid}': {
+		put: {
+			tags: ['delivery.challan'],
+			summary: 'Update out for delivery for challan',
+			description: 'Update out for delivery for challan',
+			// operationId: "updateOutForDeliveryForChallan",
+			consumes: 'application/json',
+			produces: 'application/json',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody({
+				is_out_for_delivery: SE.number(10),
+				is_out_for_delivery_by: SE.uuid(),
+				is_out_for_delivery_date: SE.date_time(),
+			}),
+			responses: {
+				400: {
+					description: 'Invalid UUID supplied',
+				},
+				404: {
+					description: 'Challan not found',
+				},
+				405: { description: 'Validation exception' },
+			},
+		},
+	},
 };
 
 export const pathDeliveryVehicle = {

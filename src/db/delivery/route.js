@@ -116,6 +116,11 @@ deliveryRouter.delete(
 	'/challan/delete-challan-packing-list-ref/:challan_number/:uuid',
 	challanOperations.removeChallanAndPLRef
 );
+deliveryRouter.put(
+	'/challan/is-out-for-delivery/:uuid',
+	challanOperations.updateIsOutForDelivery
+);
+// updateIsOutForDelivery;
 
 // * vehicle routes
 

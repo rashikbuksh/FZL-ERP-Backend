@@ -105,6 +105,9 @@ export const defChallan = SED({
 		receive_status_date: SE.date_time(),
 		is_delivered_by: SE.uuid(),
 		is_delivered_date: SE.date_time(),
+		is_out_for_delivery: SE.boolean(false),
+		is_out_for_delivery_by: SE.uuid(),
+		is_out_for_delivery_date: SE.date_time(),
 	},
 	xml: 'Delivery/Challan',
 });

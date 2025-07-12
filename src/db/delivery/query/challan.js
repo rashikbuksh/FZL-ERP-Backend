@@ -252,6 +252,10 @@ export async function selectAll(req, res, next) {
 				challan.is_own,
 				challan.delivery_type,
 				challan.is_delivered,
+				challan.is_out_for_delivery,
+				challan.is_out_for_delivery_by,
+				is_out_for_delivery_by.name as is_out_for_delivery_by_name,
+				challan.is_out_for_delivery_date,
 				colors.color,
 				colors.color_ref,
 				challan.receive_status_by,
@@ -316,6 +320,7 @@ export async function selectAll(req, res, next) {
 			) AS colors ON challan.uuid = colors.uuid
 			LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
 			LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
+			LEFT JOIN hr.users is_out_for_delivery_by ON challan.is_out_for_delivery_by = is_out_for_delivery_by.uuid
 			WHERE
 			  	${delivery_date ? sql`DATE(challan.delivery_date) = ${delivery_date}` : sql`TRUE`}
 				${vehicle && vehicle !== 'null' && vehicle !== 'undefined' && vehicle !== 'all' ? sql`AND challan.vehicle_uuid = ${vehicle}` : sql``}
@@ -458,6 +463,10 @@ export async function select(req, res, next) {
 									challan.is_delivered_date,
 									challan.is_delivered_by,
 									is_delivered_by.name AS is_delivered_by_name,
+									challan.is_out_for_delivery,
+									challan.is_out_for_delivery_by,
+									is_out_for_delivery_by.name as is_out_for_delivery_by_name,
+									challan.is_out_for_delivery_date,
 									challan.receive_status_by,
 									receive_status_by.name AS receive_status_by_name,
 									challan.receive_status_date
@@ -530,6 +539,7 @@ export async function select(req, res, next) {
 								) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
 								LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
 								LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
+								LEFT JOIN hr.users is_out_for_delivery_by ON challan.is_out_for_delivery_by = is_out_for_delivery_by.uuid
 							) AS main_query
 						LEFT JOIN (
 							SELECT
@@ -627,7 +637,7 @@ export async function updateReceivedStatus(req, res, next) {
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
-			concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
+			concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
 			receive_status
 	`;
 
@@ -663,7 +673,7 @@ export async function updateDelivered(req, res, next) {
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
-			concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
+			concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
 			is_delivered
 	`;
 
@@ -675,6 +685,44 @@ export async function updateDelivered(req, res, next) {
 			status: 200,
 			type: 'update',
 			message: `${data.rows[0].challan_number} Delivered Status Updated`,
+		};
+
+		return await res.status(200).json({ toast, data: data.rows[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateIsOutForDelivery(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const {
+		is_out_for_delivery,
+		is_out_for_delivery_by,
+		is_out_for_delivery_date,
+	} = req.body;
+
+	const query = sql`
+		UPDATE
+			delivery.challan
+		SET
+			is_out_for_delivery = ${is_out_for_delivery},
+			is_out_for_delivery_by = ${is_out_for_delivery_by},
+			is_out_for_delivery_date = ${is_out_for_delivery_date}
+		WHERE
+			uuid = ${req.params.uuid}
+		RETURNING
+			concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
+			is_out_for_delivery
+	`;
+	const resultPromise = db.execute(query);
+
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'update',
+			message: `${data.rows[0].challan_number} Out For Delivery Status Updated`,
 		};
 
 		return await res.status(200).json({ toast, data: data.rows[0] });
