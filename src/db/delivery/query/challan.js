@@ -322,7 +322,7 @@ export async function selectAll(req, res, next) {
 			LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
 			LEFT JOIN hr.users is_out_for_delivery_by ON challan.is_out_for_delivery_by = is_out_for_delivery_by.uuid
 			WHERE
-			  	${delivery_date ? sql`DATE(challan.is_out_for_delivery) = ${delivery_date}` : sql`TRUE`}
+			  	${delivery_date ? sql`DATE(challan.is_out_for_delivery_date) = ${delivery_date}` : sql`TRUE`}
 				${vehicle && vehicle !== 'null' && vehicle !== 'undefined' && vehicle !== 'all' ? sql`AND challan.vehicle_uuid = ${vehicle}` : sql``}
 				${
 					type === 'pending'
