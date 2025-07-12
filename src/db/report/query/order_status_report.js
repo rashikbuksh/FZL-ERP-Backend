@@ -185,14 +185,14 @@ export async function ProductionReportSnm(req, res, next) {
 						ROUND(
 							CASE
 								WHEN fo.order_type = 'tape' THEN 
-									(tcr.top + tcr.bottom) / 100.0 / tcr.dyed_mtr_per_kg
+									(tcr.top + tcr.bottom + oe.quantity) / 100.0 / tcr.dyed_mtr_per_kg
 								ELSE 
 									(tcr.top + tcr.bottom +	
 										CASE WHEN fo.is_inch = 1
 											THEN oe.size::numeric * 2.54
 											ELSE oe.size::numeric
 										END
-									) / 100.0 / tcr.dyed_mtr_per_kg
+									) * oe.quantity / 100.0 / tcr.dyed_mtr_per_kg
 							END, 3
 						) as expected_kg
 					FROM zipper.order_entry oe
