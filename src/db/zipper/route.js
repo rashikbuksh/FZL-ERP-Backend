@@ -201,6 +201,10 @@ zipperRouter.put('/sfg/:uuid', sfgOperations.update);
 zipperRouter.delete('/sfg/:uuid', sfgOperations.remove);
 zipperRouter.get('/sfg-swatch', sfgOperations.selectSwatchInfo);
 zipperRouter.put('/sfg-swatch/:uuid', sfgOperations.updateSwatchBySfgUuid);
+zipperRouter.put(
+	'/sfg-swatch-bulk-update/:order_description_uuid/:style/:color',
+	sfgOperations.updateSwatchByOrderDescriptionUuidStyleColor
+);
 zipperRouter.get('/sfg/by/:section', sfgOperations.selectSfgBySection);
 
 // --------------------- Finishing Batch Production ---------------------

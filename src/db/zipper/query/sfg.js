@@ -293,6 +293,62 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 	}
 }
 
+export async function updateSwatchByOrderDescriptionUuidStyleColor(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { order_description_uuid, style, color } = req.params;
+
+	const { recipe_uuid, swatch_approval_date } = req.body;
+
+	const sfgQuery = sql`
+		UPDATE zipper.sfg
+		SET recipe_uuid = ${recipe_uuid}
+		WHERE order_entry_uuid IN (
+			SELECT oe.uuid
+			FROM zipper.order_entry oe
+			JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
+			WHERE od.uuid = ${order_description_uuid}
+			AND oe.style = ${style}
+			AND oe.color = ${color}
+		)
+		RETURNING uuid AS updatedId;
+		`;
+
+	const query = sql`
+			UPDATE zipper.order_entry
+			SET swatch_approval_date = ${req.body.swatch_approval_date}
+			WHERE order_entry.uuid IN (
+				SELECT oe.uuid
+				FROM zipper.order_entry oe
+				JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
+				WHERE od.uuid = ${order_description_uuid}
+				AND oe.style = ${style}
+				AND oe.color = ${color}
+			)
+			RETURNING order_entry.uuid AS updatedId;
+		`;
+
+	const orderEntryPromise = db.execute(query);
+	const sfgPromise = db.execute(sfgQuery);
+
+	try {
+		const data = await sfgPromise;
+		const data2 = await orderEntryPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} - ${data2.rows[0].updatedId} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function selectSfgBySection(req, res, next) {
 	const { section } = req.params;
 
