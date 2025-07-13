@@ -17,6 +17,10 @@ import { pathHr } from './db/hr/swagger/route.js';
 import { defLabDip, tagLabDip } from './db/lab_dip/swagger/def.js';
 import { pathLabDip } from './db/lab_dip/swagger/route.js';
 
+// Maintain
+import { defMaintain, tagMaintain } from './db/maintain/swagger/def.js';
+import { pathMaintain } from './db/maintain/swagger/route.js';
+
 // Material
 import { defMaterial, tagMaterial } from './db/material/swagger/def.js';
 import { pathMaterial } from './db/material/swagger/route.js';
@@ -64,6 +68,7 @@ const tags = [
 	...tagThread,
 	...tagReport,
 	...tagDashboards,
+	...tagMaintain,
 ];
 
 const definitions = {
@@ -77,6 +82,7 @@ const definitions = {
 	material: defMaterial,
 	public: defPublic,
 	thread: defThread,
+	maintain: defMaintain,
 };
 
 const paths = {
@@ -93,6 +99,7 @@ const paths = {
 	...pathThread,
 	...pathReport,
 	...pathDashboards,
+	...pathMaintain,
 };
 
 const swaggerSpec = swaggerJSDoc({

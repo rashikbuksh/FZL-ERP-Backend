@@ -14,6 +14,7 @@ import { threadRouter } from '../db/thread/route.js';
 import { threadRouterV2 } from '../db/thread/routev2.js';
 import { zipperRouter } from '../db/zipper/route.js';
 import { zipperRouterV2 } from '../db/zipper/routev2.js';
+import { maintainRouter } from '../db/maintain/route.js';
 
 const route = express.Router();
 
@@ -42,6 +43,9 @@ route.use('/lab-dip', labDipRouter);
 
 // material routes
 route.use('/material', materialRouter);
+
+// maintain routes
+route.use('/maintain', maintainRouter);
 
 // public routes
 route.use('/public', publicRouter);
