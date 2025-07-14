@@ -93,6 +93,7 @@ export async function selectAll(req, res, next) {
 			s_type ? eq(section.store_type, s_type) : sql`true` // If no type is specified, select all sections
 		)
 		.orderBy(asc(section.name));
+
 	try {
 		const data = await resultPromise;
 		const toast = {

@@ -86,7 +86,9 @@ export async function selectAll(req, res, next) {
 		})
 		.from(type)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, type.created_by))
-		.where(s_type ? eq(type.store_type, s_type) : sql`TRUE`)
+		.where(
+			s_type ? eq(type.store_type, s_type) : sql`true` // If no type is specified, select all sections
+		)
 		.orderBy(desc(type.created_at));
 
 	try {
