@@ -99,41 +99,41 @@ export const pathMaintainSectionMachine = {
 
 // * Maintain Machine Problem * //
 
-export const pathMaintainMachineProblem = {
-	'/maintain/machine-problem': {
+export const pathMaintainIssue = {
+	'/maintain/issue': {
 		get: {
-			tags: ['maintain.machine_problem'],
+			tags: ['maintain.issue'],
 			summary: 'Get all machine problem info',
 			description: 'Get all machine problem info',
 			parameters: [],
 			responses: {
 				200: SE.response_schema_ref(
-					'maintain/machine-problem',
+					'maintain/issue',
 					'Returns all machine problem info'
 				),
 			},
 		},
 		post: {
-			tags: ['maintain.machine_problem'],
+			tags: ['maintain.issue'],
 			summary: 'Create a machine problem info entry',
 			description: 'Create a machine problem info entry',
-			operationId: 'createMaintainMachineProblemEntry',
+			operationId: 'createMaintainIssueEntry',
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [],
-			requestBody: SE.requestBody_schema_ref('maintain/machine-problem'),
+			requestBody: SE.requestBody_schema_ref('maintain/issue'),
 			responses: {
 				200: SE.response_schema_ref(
-					'maintain/machine-problem',
+					'maintain/issue',
 					'Machine problem info entry created successfully'
 				),
 				405: SE.response(405, 'Invalid input'),
 			},
 		},
 	},
-	'/maintain/machine-problem/{uuid}': {
+	'/maintain/issue/{uuid}': {
 		get: {
-			tags: ['maintain.machine_problem'],
+			tags: ['maintain.issue'],
 			summary: 'Get lab dip info entry by uuid',
 			description: 'Get lab dip info entry by uuid',
 			produces: ['application/json'],
@@ -147,7 +147,7 @@ export const pathMaintainMachineProblem = {
 			],
 			responses: {
 				200: SE.response_schema_ref(
-					'maintain/machine-problem',
+					'maintain/issue',
 					'Machine problem info entry found'
 				),
 				400: SE.response(400, 'Invalid UUID supplied'),
@@ -155,7 +155,7 @@ export const pathMaintainMachineProblem = {
 			},
 		},
 		put: {
-			tags: ['maintain.machine_problem'],
+			tags: ['maintain.issue'],
 			summary: 'Update an existing lab dip info entry',
 			description: 'Update an existing lab dip info entry',
 			consumes: ['application/json'],
@@ -168,7 +168,7 @@ export const pathMaintainMachineProblem = {
 					true
 				),
 			],
-			requestBody: SE.requestBody_schema_ref('maintain/machine-problem'),
+			requestBody: SE.requestBody_schema_ref('maintain/issue'),
 			responses: {
 				400: SE.response(400, 'Invalid UUID supplied'),
 				404: SE.response(404, 'Machine problem info entry not found'),
@@ -176,7 +176,7 @@ export const pathMaintainMachineProblem = {
 			},
 		},
 		delete: {
-			tags: ['maintain.machine_problem'],
+			tags: ['maintain.issue'],
 			summary: 'Delete a lab dip info entry',
 			description: 'Delete a lab dip info entry',
 			produces: ['application/json'],
@@ -198,43 +198,43 @@ export const pathMaintainMachineProblem = {
 
 // * Maintain Machine Problem Procurement * //
 
-export const pathMaintainMachineProblemProcurement = {
-	'/maintain/machine-problem-procurement': {
+export const pathMaintainIssueProcurement = {
+	'/maintain/issue-procurement': {
 		get: {
-			tags: ['maintain.machine_problem_procurement'],
+			tags: ['maintain.issue_procurement'],
 			summary: 'Get all machine problem procurement',
 			description: 'Get all machine problem procurement',
 			responses: {
 				200: SE.response_schema_ref(
-					'maintain/machine-problem-procurement',
+					'maintain/issue-procurement',
 					'Returns all machine problem procurement'
 				),
 			},
 		},
 		post: {
-			tags: ['maintain.machine_problem_procurement'],
+			tags: ['maintain.issue_procurement'],
 			summary: 'Create a machine problem procurement',
 			description: 'Create a machine problem procurement',
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [],
 			requestBody: SE.requestBody_schema_ref(
-				'maintain/machine-problem-procurement'
+				'maintain/issue-procurement'
 			),
 			responses: {
 				200: SE.response_schema_ref(
-					'maintain/machine-problem-procurement',
+					'maintain/issue-procurement',
 					'Machine problem procurement created successfully'
 				),
 				405: SE.response(405, 'Invalid input'),
 			},
 		},
 	},
-	'/maintain/machine-problem-procurement/{uuid}': {
+	'/maintain/issue-procurement/{uuid}': {
 		get: {
-			tags: ['maintain.machine_problem_procurement'],
-			summary: 'Get lab dip machine_problem_procurement by uuid',
-			description: 'Get lab dip machine_problem_procurement by uuid',
+			tags: ['maintain.issue_procurement'],
+			summary: 'Get lab dip issue_procurement by uuid',
+			description: 'Get lab dip issue_procurement by uuid',
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params(
@@ -246,7 +246,7 @@ export const pathMaintainMachineProblemProcurement = {
 			],
 			responses: {
 				200: SE.response_schema_ref(
-					'maintain/machine-problem-procurement',
+					'maintain/issue-procurement',
 					'Machine problem procurement found'
 				),
 				400: SE.response(400, 'Invalid UUID supplied'),
@@ -254,11 +254,11 @@ export const pathMaintainMachineProblemProcurement = {
 			},
 		},
 		put: {
-			tags: ['maintain.machine_problem_procurement'],
-			summary: 'Update an existing Maintain machine_problem_procurement',
+			tags: ['maintain.issue_procurement'],
+			summary: 'Update an existing Maintain issue_procurement',
 			description:
-				'Update an existing Maintain machine_problem_procurement',
-			operationId: 'updateMaintainMachineProblemProcurement',
+				'Update an existing Maintain issue_procurement',
+			operationId: 'updateMaintainIssueProcurement',
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
@@ -270,7 +270,7 @@ export const pathMaintainMachineProblemProcurement = {
 				),
 			],
 			requestBody: SE.requestBody_schema_ref(
-				'maintain/machine-problem-procurement'
+				'maintain/issue-procurement'
 			),
 			responses: {
 				400: SE.response(400, 'Invalid UUID supplied'),
@@ -279,10 +279,10 @@ export const pathMaintainMachineProblemProcurement = {
 			},
 		},
 		delete: {
-			tags: ['maintain.machine_problem_procurement'],
-			summary: 'Delete a Maintain machine_problem_procurement',
-			description: 'Delete a Maintain machine_problem_procurement',
-			operationId: 'deleteMaintainMachineProblemProcurement',
+			tags: ['maintain.issue_procurement'],
+			summary: 'Delete a Maintain issue_procurement',
+			description: 'Delete a Maintain issue_procurement',
+			operationId: 'deleteMaintainIssueProcurement',
 			produces: ['application/json'],
 			parameters: [
 				SE.parameter_params(
@@ -302,6 +302,6 @@ export const pathMaintainMachineProblemProcurement = {
 
 export const pathMaintain = {
 	...pathMaintainSectionMachine,
-	...pathMaintainMachineProblem,
-	...pathMaintainMachineProblemProcurement,
+	...pathMaintainIssue,
+	...pathMaintainIssueProcurement,
 };

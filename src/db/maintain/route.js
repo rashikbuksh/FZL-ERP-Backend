@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import * as machineProblemOperations from './query/machine_problem.js';
-import * as machineProblemProcurementOperations from './query/machine_problem_procurement.js';
+import * as issueOperations from './query/issue.js';
+import * as issueProcurementOperations from './query/issue_procurement.js';
 import * as sectionMachineOperations from './query/section_machine.js';
 const maintainRouter = Router();
 
@@ -15,38 +15,38 @@ maintainRouter.delete(
 	sectionMachineOperations.remove
 );
 
-// machine_problem routes
+// issue routes
 
-maintainRouter.get('/machine-problem', machineProblemOperations.selectAll);
-maintainRouter.get('/machine-problem/:uuid', machineProblemOperations.select);
-maintainRouter.post('/machine-problem', machineProblemOperations.insert);
-maintainRouter.put('/machine-problem/:uuid', machineProblemOperations.update);
+maintainRouter.get('/issue', issueOperations.selectAll);
+maintainRouter.get('/issue/:uuid', issueOperations.select);
+maintainRouter.post('/issue', issueOperations.insert);
+maintainRouter.put('/issue/:uuid', issueOperations.update);
 maintainRouter.delete(
-	'/machine-problem/:uuid',
-	machineProblemOperations.remove
+	'/issue/:uuid',
+	issueOperations.remove
 );
 
-// machine_problem_procurement routes
+// issue_procurement routes
 
 maintainRouter.get(
-	'/machine-problem-procurement',
-	machineProblemProcurementOperations.selectAll
+	'/issue-procurement',
+	issueProcurementOperations.selectAll
 );
 maintainRouter.get(
-	'/machine-problem-procurement/:uuid',
-	machineProblemProcurementOperations.select
+	'/issue-procurement/:uuid',
+	issueProcurementOperations.select
 );
 maintainRouter.post(
-	'/machine-problem-procurement',
-	machineProblemProcurementOperations.insert
+	'/issue-procurement',
+	issueProcurementOperations.insert
 );
 maintainRouter.put(
-	'/machine-problem-procurement/:uuid',
-	machineProblemProcurementOperations.update
+	'/issue-procurement/:uuid',
+	issueProcurementOperations.update
 );
 maintainRouter.delete(
-	'/machine-problem-procurement/:uuid',
-	machineProblemProcurementOperations.remove
+	'/issue-procurement/:uuid',
+	issueProcurementOperations.remove
 );
 
 export { maintainRouter };

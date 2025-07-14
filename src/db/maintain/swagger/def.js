@@ -23,7 +23,7 @@ export const defSectionMachine = SED({
 	xml: 'Maintain/SectionMachine',
 });
 
-export const defMachineProblem = SED({
+export const defIssue = SED({
 	required: [
 		'uuid',
 		'section_machine_uuid',
@@ -55,27 +55,27 @@ export const defMachineProblem = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Maintain/MachineProblem',
+	xml: 'Maintain/Issue',
 });
 
-export const defMachineProblemProcurement = SED({
-	required: ['uuid', 'machine_problem_uuid', 'quantity', 'created_at'],
+export const defIssueProcurement = SED({
+	required: ['uuid', 'issue_uuid', 'quantity', 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
-		machine_problem_uuid: SE.uuid(),
+		issue_uuid: SE.uuid(),
 		quantity: SE.number(10),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
 	},
-	xml: 'Maintain/MachineProblemProcurement',
+	xml: 'Maintain/IssueProcurement',
 });
 
 // * Marge All
 export const defMaintain = {
 	section_machine: defSectionMachine,
-	machine_problem: defMachineProblem,
-	machine_problem_procurement: defMachineProblemProcurement,
+	issue: defIssue,
+	issue_procurement: defIssueProcurement,
 };
 
 // * Tag
@@ -90,11 +90,11 @@ export const tagMaintain = [
 		},
 	},
 	{
-		name: 'maintain.machine_problem',
-		description: 'Operations about machine problems',
+		name: 'maintain.issue',
+		description: 'Operations about issues',
 	},
 	{
-		name: 'maintain.machine_problem_procurement',
-		description: 'Operations about machine problem procurement',
+		name: 'maintain.issue_procurement',
+		description: 'Operations about issue procurement',
 	},
 ];
