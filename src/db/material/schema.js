@@ -15,6 +15,7 @@ const material = pgSchema('material');
 export const store_type_enum = material.enum('store_type_enum', [
 	'rm',
 	'accessories',
+	'maintenance',
 ]);
 
 export const section = material.table('section', {

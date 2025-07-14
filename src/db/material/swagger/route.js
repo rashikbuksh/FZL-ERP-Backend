@@ -8,7 +8,11 @@ export const pathMaterialInfo = {
 			summary: 'Get all material info',
 			description: 'Get all material info',
 			parameters: [
-				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('s_type', 's_type', [
+					'rm',
+					'accessories',
+					'maintenance',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -124,7 +128,11 @@ export const pathMaterialSection = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [
-				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('s_type', 's_type', [
+					'rm',
+					'accessories',
+					'maintenance',
+				]),
 			],
 			requestBody: SE.requestBody_schema_ref('material/section'),
 			responses: {
@@ -381,7 +389,11 @@ export const pathMaterialTrx = {
 			summary: 'Get all material trx',
 			description: 'Get all material trx',
 			parameters: [
-				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('s_type', 's_type', [
+					'rm',
+					'accessories',
+					'maintenance',
+				]),
 				SE.parameter_query('from_date', 'from_date', 'string'),
 				SE.parameter_query('to_date', 'to_date', 'string'),
 			],
@@ -967,7 +979,11 @@ export const pathMaterialBooking = {
 			summary: 'Get all material booking',
 			description: 'Get all material booking',
 			parameters: [
-				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('s_type', 's_type', [
+					'rm',
+					'accessories',
+					'maintenance',
+				]),
 				SE.parameter_query('from_date', 'from_date', 'date'),
 				SE.parameter_query('to_date', 'to_date', 'date'),
 			],

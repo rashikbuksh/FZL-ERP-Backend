@@ -6,9 +6,9 @@ import {
 	PG_DECIMAL,
 	uuid_primary,
 } from '../variables.js';
-import { material } from '../schema.js';
+import * as materialSchema from '../material/schema.js';
 
-const maintain = pgSchema('maintain');
+export const maintain = pgSchema('maintain');
 
 export const section_machine = maintain.table('section_machine', {
 	id: serial('id'),
@@ -74,7 +74,7 @@ export const machine_problem_procurement = maintain.table(
 			() => machine_problem.uuid
 		),
 		material_uuid: defaultUUID('material_uuid').references(
-			() => material.uuid
+			() => materialSchema.info.uuid
 		),
 		quantity: PG_DECIMAL('quantity').notNull(),
 		description: text('description').default(null),

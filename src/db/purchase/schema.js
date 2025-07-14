@@ -11,6 +11,7 @@ const purchase = pgSchema('purchase');
 export const store_type_enum = purchase.enum('store_type_enum', [
 	'rm',
 	'accessories',
+	'maintenance',
 ]);
 
 export const vendor = purchase.table('vendor', {

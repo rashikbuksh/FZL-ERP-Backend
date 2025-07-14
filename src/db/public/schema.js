@@ -1,5 +1,6 @@
 import {
 	boolean,
+	date,
 	index,
 	integer,
 	pgEnum,
@@ -183,5 +184,36 @@ export const production_capacity = pgTable('production_capacity', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
+
+export const from_head_office_to_factory = pgTable(
+	'from_head_office_to_factory',
+	{
+		uuid: uuid_primary,
+		date: date('date').notNull(),
+		document_type: text('document_type').notNull(),
+		sending_from: text('sending_from').notNull(),
+		sending_to: text('sending_to').notNull(),
+		sno_from_head_office: boolean('sno_from_head_office').default(false),
+		sno_from_head_office_time: DateTime(
+			'sno_from_head_office_time'
+		).default(null),
+		sno_from_head_office_by: defaultUUID(
+			'sno_from_head_office_by'
+		).references(() => hrSchema.users.uuid),
+		receive_by_factory: boolean('receive_by_factory').default(false),
+		receive_by_factory_time: DateTime('receive_by_factory_time').default(
+			null
+		),
+		receive_by_factory_by: defaultUUID('receive_by_factory_by').references(
+			() => hrSchema.users.uuid
+		),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		remarks: text('remarks').default(null),
+	}
+);
 
 export default buyer;

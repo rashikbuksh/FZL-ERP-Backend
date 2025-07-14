@@ -8,7 +8,11 @@ const pathPurchaseVendor = {
 			tags: ['purchase.vendor'],
 			operationId: 'getVendors',
 			parameters: [
-				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('s_type', 's_type', [
+					'rm',
+					'accessories',
+					'maintenance',
+				]),
 			],
 			responses: {
 				200: {
@@ -130,7 +134,11 @@ const pathPurchaseDescription = {
 			tags: ['purchase.description'],
 			operationId: 'getDescriptions',
 			parameters: [
-				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('s_type', 's_type', [
+					'rm',
+					'accessories',
+					'maintenance',
+				]),
 			],
 			responses: {
 				200: {
@@ -549,7 +557,11 @@ const pathPurchaseDescription = {
 			tags: ['purchase.description'],
 			operationId: 'getPurchaseLog',
 			parameters: [
-				SE.parameter_query('s_type', 's_type', ['rm', 'accessories']),
+				SE.parameter_query('s_type', 's_type', [
+					'rm',
+					'accessories',
+					'maintenance',
+				]),
 				SE.parameter_query('from_date', 'from_date', '2024-01-01'),
 				SE.parameter_query('to_date', 'to_date', '2024-01-01'),
 			],
