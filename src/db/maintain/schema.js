@@ -34,7 +34,7 @@ export const maintain_condition_type = maintain.enum(
 	['okay', 'waiting', 'pending']
 );
 
-export const machine_problem = maintain.table('machine_problem', {
+export const issue = maintain.table('issue', {
 	id: serial('id'),
 	uuid: uuid_primary,
 	// ---------------- Machine Problem Info ----------------
@@ -66,25 +66,18 @@ export const machine_problem = maintain.table('machine_problem', {
 	remarks: text().default(null),
 });
 
-export const machine_problem_procurement = maintain.table(
-	'machine_problem_procurement',
-	{
-		uuid: uuid_primary,
-		machine_problem_uuid: defaultUUID('machine_problem_uuid').references(
-			() => machine_problem.uuid
-		),
-		material_uuid: defaultUUID('material_uuid').references(
-			() => materialSchema.info.uuid
-		),
-		quantity: PG_DECIMAL('quantity').notNull(),
-		description: text('description').default(null),
-		created_at: DateTime('created_at').notNull(),
-		updated_at: DateTime('updated_at').default(null),
-		created_by: defaultUUID('created_by').references(
-			() => hrSchema.users.uuid
-		),
-		remarks: text().default(null),
-	}
-);
+export const issue_procurement = maintain.table('issue_procurement', {
+	uuid: uuid_primary,
+	issue_uuid: defaultUUID('issue_uuid').references(() => issue.uuid),
+	material_uuid: defaultUUID('material_uuid').references(
+		() => materialSchema.info.uuid
+	),
+	quantity: PG_DECIMAL('quantity').notNull(),
+	description: text('description').default(null),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	remarks: text().default(null),
+});
 
 export default maintain;
