@@ -168,6 +168,13 @@ otherRouter.get(
 	otherOperations.selectPackingList
 );
 
+// ! Maintain
+// ? Section Machine
+otherRouter.get(
+	'/maintain/section-machine/value/label',
+	otherOperations.selectMaintainMachineSection
+);
+
 const pathPublic = {
 	'/other/machine/value/label': {
 		get: {
@@ -1712,12 +1719,30 @@ const pathDelivery = {
 	},
 };
 
+const pathMaintain = {
+	'/other/maintain/section-machine/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all maintain',
+			description: 'All maintain',
+			operationId: 'getAllMaintain',
+			responses: {
+				200: SE.response_schema(200, {
+					value: SE.uuid('2ggcphnw'),
+					label: SE.string('maintain 1'),
+				}),
+			},
+		},
+	},
+};
+
 export const pathOthers = {
 	...pathPublic,
 	...pathPurchase,
 	...pathMaterial,
 	...pathCommercial,
 	...pathZipper,
+	...pathMaintain,
 	...pathHr,
 	...pathLabDip,
 	...pathSlider,

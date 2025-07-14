@@ -2798,3 +2798,31 @@ export async function selectPackingList(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+
+// ! Maintain
+// ? Section Machine
+export async function selectMaintainMachineSection(req, res, next) {
+	const query = sql`
+	SELECT
+		section_machine.uuid AS value,
+		section_machine.name AS label
+	FROM
+		maintain.section_machine;`;
+
+	const machineSectionPromise = db.execute(query);
+
+	try {
+		const data = await machineSectionPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Section Machine list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
