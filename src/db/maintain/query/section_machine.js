@@ -10,7 +10,7 @@ export async function insert(req, res, next) {
 	const section_machineEntryPromise = db
 		.insert(section_machine)
 		.values(req.body)
-		.returning({ insertedUuid: section_machine.id });
+		.returning({ insertedUuid: section_machine.name });
 
 	try {
 		const data = await section_machineEntryPromise;
@@ -34,7 +34,7 @@ export async function update(req, res, next) {
 		.update(section_machine)
 		.set(req.body)
 		.where(eq(section_machine.uuid, req.params.uuid))
-		.returning({ updatedUuid: section_machine.id });
+		.returning({ updatedUuid: section_machine.name });
 
 	try {
 		const data = await section_machineEntryPromise;
@@ -55,7 +55,7 @@ export async function remove(req, res, next) {
 	const section_machineEntryPromise = db
 		.delete(section_machine)
 		.where(eq(section_machine.uuid, req.params.uuid))
-		.returning({ deletedUuid: section_machine.id });
+		.returning({ deletedUuid: section_machine.name });
 
 	try {
 		const data = await section_machineEntryPromise;
