@@ -683,6 +683,7 @@ export async function selectPackingListReceivedLog(req, res, next) {
 						dvl.deleted_time,
 						dvl.deleted_by,
 						dvl.deleted_by_name
+					HAVING SUM(ple.quantity) IS NOT NULL
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -787,6 +788,7 @@ export async function selectPackingListWarehouseOutLog(req, res, next) {
 						dvl.deleted_time,
 						dvl.deleted_by,
 						dvl.deleted_by_name
+					HAVING SUM(ple.quantity) IS NOT NULL
 					ORDER BY
 						dvl.created_at DESC
 	`;
@@ -891,6 +893,7 @@ export async function selectPackingListReceivedWarehouseLog(req, res, next) {
 						dvl.deleted_time,
 						dvl.deleted_by,
 						dvl.deleted_by_name
+					HAVING SUM(ple.quantity) IS NOT NULL
 					ORDER BY
 						dvl.created_at DESC
 	`;
