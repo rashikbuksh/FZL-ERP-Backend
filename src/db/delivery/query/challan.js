@@ -263,7 +263,8 @@ export async function selectAll(req, res, next) {
 				challan.receive_status_date,
 				challan.is_delivered_by,
 				is_delivered_by.name AS is_delivered_by_name,
-				challan.is_delivered_date
+				challan.is_delivered_date,
+				${vehicle === 'all' ? sql` true ` : sql` false `} AS is_all
 			FROM
 				delivery.challan
 			LEFT JOIN
