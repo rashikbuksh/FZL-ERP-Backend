@@ -902,7 +902,7 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
 		const query = sql`
             SELECT 
                 marketing.uuid,
-                marketing.name,
+                marketing.name as marketing_name,
                 vodf_grouped.order_object,
                 vodf_grouped.total_quantity::float8,
                 vodf_grouped.total_delivered::float8,
