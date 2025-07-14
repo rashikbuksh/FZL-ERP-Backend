@@ -70,6 +70,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { s_type } = req.query;
+
 	const resultPromise = db
 		.select({
 			uuid: type.uuid,
@@ -84,6 +86,7 @@ export async function selectAll(req, res, next) {
 		})
 		.from(type)
 		.leftJoin(hrSchema.users, eq(hrSchema.users.uuid, type.created_by))
+		.where(s_type ? eq(type.store_type, s_type) : sql`TRUE`)
 		.orderBy(desc(type.created_at));
 
 	try {

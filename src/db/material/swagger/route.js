@@ -524,6 +524,13 @@ export const pathMaterialType = {
 			tags: ['material.type'],
 			summary: 'Get all material type',
 			description: 'Get all material type',
+			parameters: [
+				SE.parameter_query('s_type', 's_type', [
+					'rm',
+					'accessories',
+					'maintenance',
+				]),
+			],
 			responses: {
 				200: SE.response_schema_ref(200, 'material/type'),
 			},
