@@ -4,6 +4,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { issue_procurement, issue } from '../schema.js';
 import * as materialSchema from '../../material/schema.js';
+import { decimalToNumber } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -123,7 +124,7 @@ export async function selectAll(req, res, next) {
 			issue_id: sql`concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text)`,
 			material_uuid: issue_procurement.material_uuid,
 			material_name: materialSchema.info.name,
-			quantity: issue_procurement.quantity,
+			quantity: decimalToNumber(issue_procurement.quantity),
 			description: issue_procurement.description,
 			created_by: issue_procurement.created_by,
 			created_by_name: hrSchema.users.name,
@@ -165,7 +166,7 @@ export async function selectByIssueUuid(req, res, next) {
 			issue_id: sql`concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text)`,
 			material_uuid: issue_procurement.material_uuid,
 			material_name: materialSchema.info.name,
-			quantity: issue_procurement.quantity,
+			quantity: decimalToNumber(issue_procurement.quantity),
 			description: issue_procurement.description,
 			created_by: issue_procurement.created_by,
 			created_by_name: hrSchema.users.name,
