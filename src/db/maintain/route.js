@@ -39,6 +39,9 @@ maintainRouter.delete(
 	'/issue-procurement/:uuid',
 	issueProcurementOperations.remove
 );
-
+maintainRouter.get(
+	'/issue-procurement/by/:issue_uuid',
+	issueProcurementOperations.selectByIssueUuid
+);
 
 export { maintainRouter };

@@ -8,7 +8,10 @@ import {
 	selectDeliveryReportThread,
 	selectDeliveryReportZipper,
 } from './query/delivery_report.js';
-import { deliveryStatementReport } from './query/delivery_statement.js';
+import {
+	deliveryStatementReport,
+	deliveryStatementReportPDF,
+} from './query/delivery_statement.js';
 import {
 	selectItemZipperEndApprovedQuantity,
 	selectPartyWiseApprovedQuantity,
@@ -126,6 +129,7 @@ reportRouter.get(
 
 //* Delivery Statement Report
 reportRouter.get('/delivery-statement-report', deliveryStatementReport);
+reportRouter.get('/delivery-statement-report/pdf', deliveryStatementReportPDF);
 
 //* Party Wise Production Report Thread
 reportRouter.get(
@@ -657,6 +661,51 @@ export const pathReport = {
 					running_total_open_end_value: SE.number(610),
 					running_total_value: SE.number(610),
 				}),
+			},
+		},
+	},
+	'/report/delivery-statement-report/pdf': {
+		get: {
+			summary: 'Delivery Statement Report PDF',
+			description:
+				'Generate and download Delivery Statement Report as PDF',
+			tags: ['report'],
+			operationId: 'deliveryStatementReportPDF',
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+				SE.parameter_query('marketing', 'marketing', SE.uuid()),
+				SE.parameter_query('party', 'party', SE.uuid()),
+				SE.parameter_query('type', 'type', ['zipper', 'thread']),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query(
+					'order_info_uuid',
+					'order_info_uuid',
+					SE.uuid()
+				),
+				SE.parameter_query('report_for', 'report_for', [
+					'packing',
+					'accounts',
+				]),
+				SE.parameter_query(
+					'price_for',
+					'price_for',
+					['company', 'party'],
+					true
+				),
+			],
+			responses: {
+				200: {
+					description: 'PDF file download',
+					content: {
+						'application/pdf': {
+							schema: {
+								type: 'string',
+								format: 'binary',
+							},
+						},
+					},
+				},
 			},
 		},
 	},
