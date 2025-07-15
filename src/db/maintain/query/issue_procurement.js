@@ -156,3 +156,45 @@ export async function selectAll(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectByIssueUuid(req, res, next) {
+	const issue_procurementEntryPromise = db
+		.select({
+			uuid: issue_procurement.uuid,
+			issue_uuid: issue_procurement.issue_uuid,
+			issue_id: sql`concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text)`,
+			material_uuid: issue_procurement.material_uuid,
+			material_name: materialSchema.info.name,
+			quantity: issue_procurement.quantity,
+			description: issue_procurement.description,
+			created_by: issue_procurement.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: issue_procurement.created_at,
+			updated_at: issue_procurement.updated_at,
+			remarks: issue_procurement.remarks,
+		})
+		.from(issue_procurement)
+		.leftJoin(
+			materialSchema.info,
+			eq(issue_procurement.material_uuid, materialSchema.info.uuid)
+		)
+		.leftJoin(issue, eq(issue_procurement.issue_uuid, issue.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(issue_procurement.created_by, hrSchema.users.uuid)
+		)
+		.where(eq(issue_procurement.issue_uuid, req.params.issue_uuid));
+
+	try {
+		const data = await issue_procurementEntryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'issue_procurement selected',
+		};
+
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

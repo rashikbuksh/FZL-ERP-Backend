@@ -89,6 +89,7 @@ export async function select(req, res, next) {
 			problem_type: issue.problem_type,
 			description: issue.description,
 			emergence: issue.emergence,
+			parts_problem: issue.parts_problem,
 			maintain_condition: issue.maintain_condition,
 			maintain_description: issue.maintain_description,
 			maintain_date: issue.maintain_date,
@@ -111,10 +112,7 @@ export async function select(req, res, next) {
 			section_machine,
 			eq(issue.section_machine_uuid, section_machine.uuid)
 		)
-		.leftJoin(
-			hrSchema.users,
-			eq(issue.created_by, hrSchema.users.uuid)
-		)
+		.leftJoin(hrSchema.users, eq(issue.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			maintain_by_user,
 			eq(issue.maintain_by, maintain_by_user.uuid)
@@ -151,6 +149,7 @@ export async function selectAll(req, res, next) {
 			problem_type: issue.problem_type,
 			description: issue.description,
 			emergence: issue.emergence,
+			parts_problem: issue.parts_problem,
 			maintain_condition: issue.maintain_condition,
 			maintain_description: issue.maintain_description,
 			maintain_date: issue.maintain_date,
@@ -173,10 +172,7 @@ export async function selectAll(req, res, next) {
 			section_machine,
 			eq(issue.section_machine_uuid, section_machine.uuid)
 		)
-		.leftJoin(
-			hrSchema.users,
-			eq(issue.created_by, hrSchema.users.uuid)
-		)
+		.leftJoin(hrSchema.users, eq(issue.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			maintain_by_user,
 			eq(issue.maintain_by, maintain_by_user.uuid)

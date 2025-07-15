@@ -41,6 +41,7 @@ export const defIssue = SED({
 		problem_type: SE.string('machine'),
 		description: SE.string('description'),
 		emergence: SE.string('emergence'),
+		parts_problem: SE.string('die_casting'),
 		maintain_condition: SE.string('pending'),
 		maintain_description: SE.string('maintain_description'),
 		maintain_date: SE.date_time(),

@@ -33,7 +33,7 @@ BEGIN
             NEW.company_price, 
             NEW.party_price, 
             NEW.created_by, 
-            NEW.updated_at
+            COALESCE(NEW.updated_at, NEW.created_at)
         );
     END IF;
 

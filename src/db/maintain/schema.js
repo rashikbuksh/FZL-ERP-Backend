@@ -34,6 +34,20 @@ export const maintain_condition_type = maintain.enum(
 	['okay', 'waiting', 'pending']
 );
 
+export const parts_enum = maintain.enum('parts_enum', [
+	'die_casting',
+	'assembly',
+	'electro_plating',
+	'painting',
+	'thread',
+	'zipper',
+	'teeth_molding',
+	'box_pin',
+	'iron',
+	'finishing',
+	'teeth_coloring',
+]);
+
 export const issue = maintain.table('issue', {
 	id: serial('id'),
 	uuid: uuid_primary,
@@ -45,6 +59,7 @@ export const issue = maintain.table('issue', {
 	problem_type: machine_problem_type().default('machine'),
 	description: text('description').notNull(),
 	emergence: text('emergence').notNull(),
+	parts_problem: parts_enum('parts_enum').default(null),
 	// ---------------- Machine Maintain Info ----------------
 	maintain_condition: maintain_condition_type().default('pending'),
 	maintain_description: text('maintain_description').default(null),
