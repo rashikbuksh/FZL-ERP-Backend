@@ -193,7 +193,7 @@ export async function selectByIssueUuid(req, res, next) {
 			message: 'issue_procurement selected',
 		};
 
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
