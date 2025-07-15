@@ -256,8 +256,7 @@ export const pathMaintainIssueProcurement = {
 		put: {
 			tags: ['maintain.issue_procurement'],
 			summary: 'Update an existing Maintain issue_procurement',
-			description:
-				'Update an existing Maintain issue_procurement',
+			description: 'Update an existing Maintain issue_procurement',
 			operationId: 'updateMaintainIssueProcurement',
 			consumes: ['application/json'],
 			produces: ['application/json'],
@@ -295,6 +294,33 @@ export const pathMaintainIssueProcurement = {
 			responses: {
 				400: SE.response(400, 'Invalid UUID supplied'),
 				404: SE.response(404, 'Machine problem procurement not found'),
+			},
+		},
+	},
+	'/maintain/issue-procurement/by/{issue_uuid}': {
+		get: {
+			tags: ['maintain.issue_procurement'],
+			summary: 'Get all issue procurement by issue UUID',
+			description: 'Get all issue procurement by issue UUID',
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'issue_uuid',
+					'uuid',
+					'Issue UUID to get procurement for',
+					true
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(
+					'maintain/issue-procurement',
+					'Returns all issue procurement for the specified issue UUID'
+				),
+				400: SE.response(400, 'Invalid UUID supplied'),
+				404: SE.response(
+					404,
+					'No issue procurement found for the specified issue UUID'
+				),
 			},
 		},
 	},
