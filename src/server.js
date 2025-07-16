@@ -59,7 +59,7 @@ server.get(
 );
 
 // listen
-server.listen(SERVER_PORT, () => {
+httpServer.listen(SERVER_PORT, () => {
 	console.log('Server listening on port: ' + SERVER_PORT, '🚀 - FZL Backend');
 });
 
