@@ -3,6 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { issue, section_machine } from '../schema.js';
+import { getIO } from '../../../server.js';
 
 import { alias } from 'drizzle-orm/pg-core';
 
@@ -19,6 +20,17 @@ export async function insert(req, res, next) {
 
 	try {
 		const data = await issueEntryPromise;
+
+		// Get the Socket.IO instance and broadcast the new issue event
+		const io = getIO();
+		// io.emit('new-issue', {
+		// 	message: 'A new issue has been created',
+		// 	issueData: {
+		// 		uuid: data[0].insertedUuid,
+		// 		...newIssue,
+		// 	},
+		// });
+		io.emit('new-issue', 'A new issue has been arrived');
 
 		const toast = {
 			status: 201,

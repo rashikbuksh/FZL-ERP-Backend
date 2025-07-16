@@ -1,4 +1,6 @@
 import express, { json, urlencoded } from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import swaggerUi from 'swagger-ui-express';
 import { SERVER_PORT } from './lib/secret.js';
 import { VerifyToken } from './middleware/auth.js';
@@ -8,6 +10,27 @@ import cors from './util/cors.js';
 import { apiLogger } from './middleware/logger.js';
 
 const server = express();
+const httpServer = createServer(server);
+
+// Initialize Socket.IO
+const io = new Server(httpServer, {
+	cors: {
+		origin: '*', // configure properly for production
+		methods: ['GET', 'POST'],
+	},
+});
+
+// When a client connects
+io.on('connection', (socket) => {
+	console.log('A user connected:', socket.id);
+
+	socket.on('disconnect', () => {
+		console.log('A user disconnected:', socket.id);
+	});
+});
+
+// Export function to get Socket.IO instance
+export const getIO = () => io;
 
 server.use(cors);
 server.use(urlencoded({ extended: true }));
