@@ -37,6 +37,38 @@ export async function insert(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+export async function insertIssue(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const materialTrxAgainstOrderPromise = db
+		.insert(material_trx_against_order_description)
+		.values(req.body)
+		.returning({
+			insertedUuid: material_trx_against_order_description.material_uuid,
+		});
+	try {
+		const data = await materialTrxAgainstOrderPromise;
+
+		const materialName = db
+			.select({
+				insertedUuid: materialSchema.info.name,
+			})
+			.from(materialSchema.info)
+			.where(eq(materialSchema.info.uuid, data[0].insertedUuid));
+
+		const materialNameData = await materialName;
+
+		const toast = {
+			status: 201,
+			type: 'insert',
+			message: `${materialNameData[0].insertedUuid} inserted`,
+		};
+
+		res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
 
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

@@ -3214,6 +3214,27 @@ export const pathZipperMaterialTrxAgainstOrderDescription = {
 			},
 		},
 	},
+	'/zipper/material-trx-against-issue': {
+		post: {
+			tags: ['zipper.material_trx_against_order_description'],
+			summary: 'create a material trx against issue',
+			description: '',
+			// operationId: "addPet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref(
+				'zipper/material_trx_against_order_description'
+			),
+			responses: {
+				200: SE.response_schema_ref(
+					200,
+					'zipper/material_trx_against_order_description'
+				),
+				405: SE.response(405),
+			},
+		},
+	},
 };
 
 // * Zipper Tape Coil To Dyeing * //

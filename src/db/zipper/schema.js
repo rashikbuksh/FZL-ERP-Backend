@@ -13,6 +13,7 @@ import * as materialSchema from '../material/schema.js';
 import * as publicSchema from '../public/schema.js';
 import * as sliderSchema from '../slider/schema.js';
 import * as threadSchema from '../thread/schema.js';
+import * as maintainSchema from '../maintain/schema.js';
 import {
 	DateTime,
 	defaultUUID,
@@ -652,9 +653,9 @@ export const material_trx_against_order_description = zipper.table(
 	'material_trx_against_order_description',
 	{
 		uuid: uuid_primary,
-		order_description_uuid: defaultUUID(
-			'order_description_uuid'
-		).references(() => order_description.uuid),
+		order_description_uuid: defaultUUID('order_description_uuid')
+			.references(() => order_description.uuid)
+			.default(null),
 		material_uuid: defaultUUID('material_uuid').references(
 			() => materialSchema.info.uuid
 		),
@@ -674,6 +675,9 @@ export const material_trx_against_order_description = zipper.table(
 			.references(() => materialSchema.booking.uuid)
 			.default(null),
 		purpose: purposeEnum('purpose').default('general'),
+		issue_uuid: defaultUUID('issue_uid')
+			.references(() => maintainSchema.issue.uuid)
+			.default(null),
 	}
 );
 

@@ -478,6 +478,10 @@ zipperRouter.post(
 	'/material-trx-against-order',
 	materialTrxAgainstOrderOperations.insert
 );
+zipperRouter.post(
+	'/material-trx-against-issue',
+	materialTrxAgainstOrderOperations.insertIssue
+);
 zipperRouter.put(
 	'/material-trx-against-order/:uuid',
 	materialTrxAgainstOrderOperations.update

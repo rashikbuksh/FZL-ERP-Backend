@@ -579,7 +579,6 @@ export const def_zipper_planning_entry = SED({
 export const def_zipper_material_trx_against_order_description = SED({
 	required: [
 		'uuid',
-		'order_description_uuid',
 		'material_uuid',
 		'trx_to',
 		'trx_quantity',
