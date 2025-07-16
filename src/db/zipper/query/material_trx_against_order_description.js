@@ -164,7 +164,8 @@ export async function selectAll(req, res, next) {
 		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number,
 		mtaod.purpose,
 		info.store_type,
-		mtaod.issue_uuid
+		mtaod.issue_uuid,
+		concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text) as issue_id
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
@@ -177,6 +178,8 @@ export async function selectAll(req, res, next) {
 		material.stock stock ON mtaod.material_uuid = stock.material_uuid
 	LEFT JOIN
 		material.booking booking ON mtaod.booking_uuid = booking.uuid
+	LEFT JOIN 
+		maintain.issue issue ON mtaod.issue_uuid = issue.uuid
 	WHERE
 		${purpose ? sql`mtaod.purpose = ${purpose}` : sql`TRUE`}
 		${trx_to ? sql`OR mtaod.trx_to = ${trx_to}` : sql``}
@@ -229,7 +232,8 @@ export async function select(req, res, next) {
 		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number,
 		mtaod.purpose,
 		info.store_type,
-		mtaod.issue_uuid
+		mtaod.issue_uuid,
+		concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text) as issue_id
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
@@ -242,6 +246,8 @@ export async function select(req, res, next) {
 		material.stock stock ON mtaod.material_uuid = stock.material_uuid
 	LEFT JOIN
 		material.booking booking ON mtaod.booking_uuid = booking.uuid
+	LEFT JOIN
+		maintain.issue issue ON mtaod.issue_uuid = issue.uuid
     WHERE
         mtaod.uuid = ${req.params.uuid}
     `;
@@ -286,7 +292,8 @@ export async function selectMaterialTrxLogAgainstOrderByTrxTo(req, res, next) {
 		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number,
 		mtaod.purpose,
 		info.store_type,
-		mtaod.issue_uuid
+		mtaod.issue_uuid,
+		concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text) as issue_id
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
@@ -299,6 +306,8 @@ export async function selectMaterialTrxLogAgainstOrderByTrxTo(req, res, next) {
 		material.stock stock ON mtaod.material_uuid = stock.material_uuid
 	LEFT JOIN
 		material.booking booking ON mtaod.booking_uuid = booking.uuid
+	LEFT JOIN
+		maintain.issue issue ON mtaod.issue_uuid = issue.uuid
     WHERE
         mtaod.trx_to = ${req.params.trx_to}
     `;
