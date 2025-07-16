@@ -2799,7 +2799,6 @@ export async function selectPackingList(req, res, next) {
 	}
 }
 
-
 // ! Maintain
 // ? Section Machine
 export async function selectMaintainMachineSection(req, res, next) {
@@ -2814,6 +2813,33 @@ export async function selectMaintainMachineSection(req, res, next) {
 
 	try {
 		const data = await machineSectionPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Section Machine list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+// ! Maintain
+// ? Issue
+export async function selectMaintainIssue(req, res, next) {
+	const query = sql`
+	SELECT
+		issue.uuid AS value,
+		concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text) AS label
+	FROM
+		maintain.issue;`;
+
+	const issuePromise = db.execute(query);
+
+	try {
+		const data = await issuePromise;
 
 		const toast = {
 			status: 200,

@@ -174,6 +174,11 @@ otherRouter.get(
 	'/maintain/section-machine/value/label',
 	otherOperations.selectMaintainMachineSection
 );
+// ? Issue
+otherRouter.get(
+	'/maintain/issue/value/label',
+	otherOperations.selectMaintainIssue
+);
 
 const pathPublic = {
 	'/other/machine/value/label': {
@@ -1730,6 +1735,20 @@ const pathMaintain = {
 				200: SE.response_schema(200, {
 					value: SE.uuid('2ggcphnw'),
 					label: SE.string('maintain 1'),
+				}),
+			},
+		},
+	},
+	'/other/maintain/issue/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all maintain issues',
+			description: 'All maintain issues',
+			operationId: 'getAllMaintainIssues',
+			responses: {
+				200: SE.response_schema(200, {
+					value: SE.uuid('2ggcphnw'),
+					label: SE.string('MT23-0001'),
 				}),
 			},
 		},
