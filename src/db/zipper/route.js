@@ -84,58 +84,26 @@ zipperRouter.put(
 );
 zipperRouter.get('/tape-assigned', orderInfoOperations.getTapeAssigned);
 
-// --------------------- ORDER INFO LOG ROUTES ---------------------
-zipperRouter.get(
-	'/order-info-logs',
-	orderInfoOperations.selectAllOrderInfoLogs
-);
-zipperRouter.get(
-	'/order-info-logs/:order_info_uuid',
-	orderInfoOperations.selectOrderInfoLogs
-);
-
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------
 
 zipperRouter.get('/order-description', orderDescriptionOperations.selectAll);
 zipperRouter.get('/order-description/:uuid', orderDescriptionOperations.select);
 zipperRouter.post('/order-description', (req, res, next) => {
-	// log the cache that starts with 'orderDetails'
-	console.log(
-		Object.keys(Cache.keys()).filter((key) =>
-			key.startsWith('orderDetails')
-		),
-		'name of caches before insert'
-	);
-
-	Object.keys(Cache.keys()).forEach((key) => {
-		if (key.startsWith('orderDetails')) {
-			Cache.del(key);
-		}
-	});
+	const cacheKey = `orderDetails`;
+	const cachedData = Cache.get(cacheKey);
+	if (cachedData) {
+		return res.status(200).json(cachedData);
+	}
 	orderDescriptionOperations.insert(req, res, next);
 });
 zipperRouter.put('/order-description/:uuid', (req, res, next) => {
-	// log the cache that starts with 'orderDetails'
-	console.log(
-		Object.keys(Cache.keys()).filter((key) =>
-			key.startsWith('orderDetails')
-		),
-		'name of caches before update'
-	);
-
-	Object.keys(Cache.keys()).forEach((key) => {
-		if (key.startsWith('orderDetails')) {
-			Cache.del(key);
-		}
-	});
+	const cacheKey = `orderDetails`;
+	Cache.del(cacheKey);
 	orderDescriptionOperations.update(req, res, next);
 });
 zipperRouter.delete('/order-description/:uuid', (req, res, next) => {
-	Object.keys(Cache.keys()).forEach((key) => {
-		if (key.startsWith('orderDetails')) {
-			Cache.del(key);
-		}
-	});
+	const cacheKey = `orderDetails`;
+	Cache.del(cacheKey);
 	orderDescriptionOperations.remove(req, res, next);
 });
 zipperRouter.get(
@@ -202,8 +170,8 @@ zipperRouter.delete('/sfg/:uuid', sfgOperations.remove);
 zipperRouter.get('/sfg-swatch', sfgOperations.selectSwatchInfo);
 zipperRouter.put('/sfg-swatch/:uuid', sfgOperations.updateSwatchBySfgUuid);
 zipperRouter.put(
-	'/sfg-swatch-bulk-update/:order_description_uuid/:style/:color',
-	sfgOperations.updateSwatchByOrderDescriptionUuidStyleColor
+	'/sfg-swatch-bulk-update/:order_description_uuid/:style/:color/:bleaching',
+	sfgOperations.updateSwatchByOrderDescriptionUuidStyleColorBleach
 );
 zipperRouter.get('/sfg/by/:section', sfgOperations.selectSfgBySection);
 
@@ -477,10 +445,6 @@ zipperRouter.get(
 zipperRouter.post(
 	'/material-trx-against-order',
 	materialTrxAgainstOrderOperations.insert
-);
-zipperRouter.post(
-	'/material-trx-against-issue',
-	materialTrxAgainstOrderOperations.insertIssue
 );
 zipperRouter.put(
 	'/material-trx-against-order/:uuid',

@@ -1424,47 +1424,53 @@ export const pathZipperSfg = {
 			},
 		},
 	},
-	'/zipper/sfg-swatch-bulk-update/{order_description_uuid}/{style}/{color}': {
-		put: {
-			tags: ['zipper.sfg'],
-			summary:
-				'Bulk Update SFG Swatch by Order Description UUID, Style and Color',
-			description: '',
-			// operationId: "updatePet",
-			consumes: ['application/json'],
-			produces: ['application/json'],
-			parameters: [
-				SE.parameter_params(
-					'order description to update',
-					'order_description_uuid',
-					'string',
-					SE.uuid()
-				),
-				SE.parameter_params(
-					'style to update',
-					'style',
-					'string',
-					SE.string('style 1')
-				),
-				SE.parameter_params(
-					'color to update',
-					'color',
-					'string',
-					SE.string('black')
-				),
-			],
-			requestBody: SE.requestBody({
-				recipe_uuid: SE.uuid(),
-				swatch_approval_date: SE.date_time(),
-			}),
-			responses: {
-				200: SE.response_schema_ref(200, 'zipper/sfg'),
-				400: SE.response(400),
-				404: SE.response(404),
-				405: SE.response(405),
+	'/zipper/sfg-swatch-bulk-update/{order_description_uuid}/{style}/{color}/{bleaching}':
+		{
+			put: {
+				tags: ['zipper.sfg'],
+				summary:
+					'Bulk Update SFG Swatch by Order Description UUID, Style and Color and Bleaching',
+				description: '',
+				consumes: ['application/json'],
+				produces: ['application/json'],
+				parameters: [
+					SE.parameter_params(
+						'order description to update',
+						'order_description_uuid',
+						'string',
+						SE.uuid()
+					),
+					SE.parameter_params(
+						'style to update',
+						'style',
+						'string',
+						SE.string('style 1')
+					),
+					SE.parameter_params(
+						'color to update',
+						'color',
+						'string',
+						SE.string('black')
+					),
+					SE.parameter_params(
+						'bleaching to update',
+						'bleaching',
+						'string',
+						SE.string('bleaching 1')
+					),
+				],
+				requestBody: SE.requestBody({
+					recipe_uuid: SE.uuid(),
+					swatch_approval_date: SE.date_time(),
+				}),
+				responses: {
+					200: SE.response_schema_ref(200, 'zipper/sfg'),
+					400: SE.response(400),
+					404: SE.response(404),
+					405: SE.response(405),
+				},
 			},
 		},
-	},
 	'/zipper/sfg/by/{section}': {
 		get: {
 			tags: ['zipper.sfg'],

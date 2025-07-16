@@ -293,14 +293,14 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 	}
 }
 
-export async function updateSwatchByOrderDescriptionUuidStyleColor(
+export async function updateSwatchByOrderDescriptionUuidStyleColorBleach(
 	req,
 	res,
 	next
 ) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_description_uuid, style, color } = req.params;
+	const { order_description_uuid, style, color, bleaching } = req.params;
 
 	const { recipe_uuid, swatch_approval_date } = req.body;
 
@@ -314,13 +314,14 @@ export async function updateSwatchByOrderDescriptionUuidStyleColor(
 			WHERE od.uuid = ${order_description_uuid}
 			AND oe.style = ${style}
 			AND oe.color = ${color}
+			AND oe.bleaching = ${bleaching}
 		)
 		RETURNING uuid AS updatedId;
 		`;
 
 	const query = sql`
 			UPDATE zipper.order_entry
-			SET swatch_approval_date = ${req.body.swatch_approval_date}
+			SET swatch_approval_date = ${swatch_approval_date}
 			WHERE order_entry.uuid IN (
 				SELECT oe.uuid
 				FROM zipper.order_entry oe
@@ -328,6 +329,7 @@ export async function updateSwatchByOrderDescriptionUuidStyleColor(
 				WHERE od.uuid = ${order_description_uuid}
 				AND oe.style = ${style}
 				AND oe.color = ${color}
+				AND oe.bleaching = ${bleaching}
 			)
 			RETURNING order_entry.uuid AS updatedId;
 		`;
@@ -341,7 +343,7 @@ export async function updateSwatchByOrderDescriptionUuidStyleColor(
 		const toast = {
 			status: 201,
 			type: 'update',
-			message: `${data[0].updatedId} - ${data2.rows[0].updatedId} updated`,
+			message: `${data.rows.length} - ${data2.rows.length} updated`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
