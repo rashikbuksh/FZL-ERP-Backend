@@ -325,17 +325,6 @@ export async function selectAll(req, res, next) {
 			WHERE
 			  	${delivery_date ? sql`DATE(challan.is_out_for_delivery_date) = ${delivery_date}` : sql`TRUE`}
 				${vehicle && vehicle !== 'null' && vehicle !== 'undefined' && vehicle !== 'all' ? sql`AND challan.vehicle_uuid = ${vehicle}` : sql``}
-				${
-					type === 'pending'
-						? sql`AND challan.gate_pass = 0`
-						: type === 'gate_pass'
-							? sql`AND challan.gate_pass = 1 AND challan.is_delivered = 0`
-							: type === 'delivered'
-								? sql`AND challan.is_delivered = 1 AND challan.receive_status = 0`
-								: type === 'received'
-									? sql`AND challan.receive_status = 1`
-									: sql``
-				}
 				${own_uuid == null || own_uuid == 'null' || own_uuid == undefined ? sql`` : sql`AND (order_info.marketing_uuid = ${marketingUuid} OR toi.marketing_uuid = ${marketingUuid})`}
 		) AS main_query
 	LEFT JOIN (
@@ -364,6 +353,18 @@ export async function selectAll(req, res, next) {
 		GROUP BY
 			packing_list.challan_uuid
 	) AS sub_query ON main_query.uuid = sub_query.challan_uuid
+	WHERE
+		${
+			type === 'pending'
+				? sql`AND sub_query.gate_pass = 0`
+				: type === 'gate_pass'
+					? sql`AND sub_query.gate_pass = 1 AND main_query.is_delivered = 0`
+					: type === 'delivered'
+						? sql`AND main_query.is_delivered = 1 AND main_query.receive_status = 0`
+						: type === 'received'
+							? sql`AND main_query.receive_status = 1`
+							: sql``
+		}
 	ORDER BY
 		main_query.created_at DESC;
 	`;

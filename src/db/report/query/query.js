@@ -424,7 +424,6 @@ export async function dailyChallanReport(req, res, next) {
                             THEN CONCAT('TC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) 
                             ELSE CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) 
                         END AS challan_id,
-                        challan.gate_pass,
                         challan.created_by,
                         users.name AS created_by_name,
                         CASE 
@@ -517,6 +516,7 @@ export async function dailyChallanReport(req, res, next) {
                         receive_status_by.name AS receive_status_by_name,
                         packing_list_grouped.total_short_quantity::float8,
                         packing_list_grouped.total_reject_quantity::float8,
+                        packing_list_grouped.gate_pass,
                         CASE 
                             WHEN pl.item_for IN ('thread', 'sample_thread') 
                             THEN 'thread' 
@@ -543,7 +543,12 @@ export async function dailyChallanReport(req, res, next) {
                                 WHEN vodf.order_type = 'tape'
                                 THEN CAST(CAST(oe.size AS NUMERIC) AS NUMERIC)
                                 ELSE oe.quantity::float8 
-                            END) AS order_quantity
+                            END) AS order_quantity,
+                            CASE
+                                WHEN COUNT(packing_list.uuid) = SUM(CASE WHEN packing_list.gate_pass = 1 THEN 1 ELSE 0 END) 
+                                THEN 1
+                                ELSE 0
+                            END AS gate_pass
                         FROM
                             delivery.packing_list
                         LEFT JOIN
@@ -579,9 +584,9 @@ export async function dailyChallanReport(req, res, next) {
                         ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for IN ('thread', 'sample_thread') THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
                         ${
 							type === 'pending'
-								? sql` AND challan.gate_pass = 0`
+								? sql` AND packing_list_grouped.gate_pass = 0`
 								: type === 'gate_pass'
-									? sql` AND challan.gate_pass = 1 AND challan.is_delivered = 0`
+									? sql` AND packing_list_grouped.gate_pass = 1 AND challan.is_delivered = 0`
 									: type === 'delivered'
 										? sql` AND challan.is_delivered = 1 AND challan.receive_status = 0`
 										: type === 'received'
@@ -624,6 +629,7 @@ export async function dailyChallanReport(req, res, next) {
                         packing_list_grouped.total_quantity,
                         packing_list_grouped.total_short_quantity,
                         packing_list_grouped.total_reject_quantity,
+                        packing_list_grouped.gate_pass,
                         pi_cash_grouped_thread.pi_numbers,
 						pi_cash_grouped_thread.lc_numbers,
 						pi_cash_grouped.pi_numbers,
