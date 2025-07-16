@@ -354,6 +354,7 @@ export async function selectAll(req, res, next) {
 			packing_list.challan_uuid
 	) AS sub_query ON main_query.uuid = sub_query.challan_uuid
 	WHERE
+		TRUE 
 		${
 			type === 'pending'
 				? sql`AND sub_query.gate_pass = 0`
