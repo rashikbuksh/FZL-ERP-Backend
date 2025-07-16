@@ -675,7 +675,7 @@ export const material_trx_against_order_description = zipper.table(
 			.references(() => materialSchema.booking.uuid)
 			.default(null),
 		purpose: purposeEnum('purpose').default('general'),
-		issue_uuid: defaultUUID('issue_uid')
+		issue_uuid: defaultUUID('issue_uuid')
 			.references(() => maintainSchema.issue.uuid)
 			.default(null),
 	}
