@@ -525,7 +525,11 @@ export async function dailyChallanReport(req, res, next) {
                         challan.is_delivered,
                         challan.is_delivered_date,
                         challan.is_delivered_by,
-                        is_delivered_by.name AS is_delivered_by_name
+                        is_delivered_by.name AS is_delivered_by_name,
+                        challan.is_out_for_delivery,
+                        challan.is_out_for_delivery_date,
+                        challan.is_out_for_delivery_by,
+                        is_out_for_delivery_by.name AS is_out_for_delivery_by_name
                     FROM
                         delivery.challan
                     LEFT JOIN 
@@ -580,6 +584,7 @@ export async function dailyChallanReport(req, res, next) {
                     LEFT JOIN pi_cash_grouped_thread ON toi.uuid = pi_cash_grouped_thread.order_info_uuid
                     LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
                     LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
+                    LEFT JOIN hr.users is_out_for_delivery_by ON challan.is_out_for_delivery_by = is_out_for_delivery_by.uuid
                     WHERE
                         ${own_uuid == null ? sql`TRUE` : sql`CASE WHEN pl.item_for IN ('thread', 'sample_thread') THEN toi.marketing_uuid = ${marketingUuid} ELSE vodf.marketing_uuid = ${marketingUuid} END`}
                         ${
@@ -634,13 +639,18 @@ export async function dailyChallanReport(req, res, next) {
 						pi_cash_grouped_thread.lc_numbers,
 						pi_cash_grouped.pi_numbers,
 						pi_cash_grouped.lc_numbers,
-                        is_delivered_by.name,
                         receive_status_by.name,
                         challan.receive_status,
                         challan.receive_status_by,
                         challan.receive_status_date,
                         challan.is_delivered,
-                        challan.is_delivered_date
+                        challan.is_delivered_date,
+                        challan.is_delivered_by,
+                        is_delivered_by.name,
+                        challan.is_out_for_delivery,
+                        challan.is_out_for_delivery_date,
+                        challan.is_out_for_delivery_by,
+                        is_out_for_delivery_by.name
                     ORDER BY
                         challan.created_at DESC; 
         `;
