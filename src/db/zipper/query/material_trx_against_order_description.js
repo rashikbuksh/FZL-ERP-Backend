@@ -163,7 +163,8 @@ export async function selectAll(req, res, next) {
 		mtaod.booking_uuid,
 		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number,
 		mtaod.purpose,
-		info.store_type
+		info.store_type,
+		mtaod.issue_uuid
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
@@ -226,7 +227,9 @@ export async function select(req, res, next) {
 		mtaod.remarks,
 		mtaod.booking_uuid,
 		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number,
-		mtaod.purpose
+		mtaod.purpose,
+		info.store_type,
+		mtaod.issue_uuid
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
@@ -281,7 +284,9 @@ export async function selectMaterialTrxLogAgainstOrderByTrxTo(req, res, next) {
 		mtaod.remarks,
 		mtaod.booking_uuid,
 		concat('MB', to_char(booking.created_at, 'YY'::text), '-', lpad((booking.id)::text, 4, '0'::text)) as booking_number,
-		mtaod.purpose
+		mtaod.purpose,
+		info.store_type,
+		mtaod.issue_uuid
     FROM 
         zipper.material_trx_against_order_description mtaod
     LEFT JOIN
