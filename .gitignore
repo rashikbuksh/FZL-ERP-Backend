@@ -4,3 +4,5 @@ node_modules
 combined.log
 error.log
 api.log
+pdf_storage
+uploads

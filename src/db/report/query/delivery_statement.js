@@ -5,6 +5,7 @@ import path from 'path';
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 import { GetMarketingOwnUUID } from '../../variables.js';
+import Pdf from '../pdf/delivery_statement_pdf/index.js';
 
 const findOrCreateArray = (array, key, value, createFn) => {
 	let index = array.findIndex((item) =>
@@ -1317,6 +1318,8 @@ export async function deliveryStatementReportPDF(req, res, next) {
 			filterData = data.rows;
 		}
 
+		console.log('Filtered Data Length:', filterData.length);
+
 		// Group data (same as original function)
 		const groupedData = filterData.reduce((acc, row) => {
 			const {
@@ -1484,271 +1487,90 @@ export async function deliveryStatementReportPDF(req, res, next) {
 			return acc;
 		}, []);
 
-		// Generate PDF using pdfmake
-		const fontsPath = path.join(
-			process.cwd(),
-			'node_modules',
-			'pdfmake',
-			'build'
-		);
+		// Generate PDF
+		console.log('Grouped Data Length:', groupedData.length);
 
-		let fonts;
+		if (!groupedData || groupedData.length === 0) {
+			return res.status(404).json({
+				toast: {
+					status: 404,
+					type: 'error',
+					message: 'No data found for PDF generation',
+				},
+			});
+		}
+
+		const pdfDocGenerator = Pdf(groupedData, from_date, to_date);
+
+		// Create PDF storage directory if it doesn't exist
+		const pdfStorageDir = path.join(process.cwd(), 'pdf_storage');
+		if (!fs.existsSync(pdfStorageDir)) {
+			fs.mkdirSync(pdfStorageDir, { recursive: true });
+		}
+
+		// Generate filename with timestamp
+		const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+		const filename = `delivery-statement-report-${timestamp}.pdf`;
+		const filePath = path.join(pdfStorageDir, filename);
+
+		// Create PDF document and save to local storage
 		try {
-			// Try to use built-in fonts from pdfmake
-			fonts = {
-				Roboto: {
-					normal: path.join(fontsPath, 'Roboto-Regular.ttf'),
-					bold: path.join(fontsPath, 'Roboto-Medium.ttf'),
-					italics: path.join(fontsPath, 'Roboto-Italic.ttf'),
-					bolditalics: path.join(
-						fontsPath,
-						'Roboto-MediumItalic.ttf'
-					),
-				},
-			};
-		} catch (error) {
-			// Fallback to empty fonts if files don't exist
-			fonts = {
-				Helvetica: {
-					normal: 'Helvetica',
-					bold: 'Helvetica-Bold',
-					italics: 'Helvetica-Oblique',
-					bolditalics: 'Helvetica-BoldOblique',
-				},
-			};
-		}
+			pdfDocGenerator.getBuffer((buffer) => {
+				// Save to local storage
+				fs.writeFileSync(filePath, buffer);
+				console.log(`PDF saved successfully to: ${filePath}`);
 
-		const printer = new PdfPrinter(fonts);
+				// Generate file URL for frontend access
+				const fileUrl = `/pdf_storage/${filename}`;
 
-		// Helper function to format numbers
-		const formatNumber = (num) => {
-			return num ? Number(num).toFixed(2) : '0.00';
-		};
+				// Schedule file deletion after 5 minutes (300,000 milliseconds)
+				setTimeout(
+					() => {
+						try {
+							if (fs.existsSync(filePath)) {
+								fs.unlinkSync(filePath);
+								console.log(
+									`PDF file deleted after 5 minutes: ${filePath}`
+								);
+							}
+						} catch (deleteError) {
+							console.error(
+								`Error deleting PDF file: ${filePath}`,
+								deleteError
+							);
+						}
+					},
+					5 * 60 * 1000
+				); // 5 minutes in milliseconds
 
-		// Generate table rows for each type/party/marketing group
-		const content = [];
-
-		content.push({
-			text: 'Delivery Statement Report',
-			style: 'header',
-			alignment: 'center',
-			margin: [0, 0, 0, 20],
-		});
-
-		if (from_date && to_date) {
-			content.push({
-				text: `Period: ${new Date(from_date).toLocaleDateString()} - ${new Date(to_date).toLocaleDateString()}`,
-				style: 'subheader',
-				alignment: 'center',
-				margin: [0, 0, 0, 15],
-			});
-		}
-
-		groupedData.forEach((typeGroup) => {
-			// Add type/party/marketing header
-			content.push({
-				text: `${typeGroup.type} - ${typeGroup.party_name} - ${typeGroup.marketing_name}`,
-				style: 'groupHeader',
-				margin: [0, 10, 0, 5],
-			});
-
-			// Create table for this group
-			const tableBody = [];
-
-			// Table headers
-			tableBody.push([
-				{ text: 'Order No.', style: 'tableHeader' },
-				{ text: 'Item Description', style: 'tableHeader' },
-				{ text: 'Packing No.', style: 'tableHeader' },
-				{ text: 'Size', style: 'tableHeader' },
-				{ text: 'Unit', style: 'tableHeader' },
-				{ text: 'Opening Qty', style: 'tableHeader' },
-				{ text: 'Running Qty', style: 'tableHeader' },
-				{ text: 'Closing Qty', style: 'tableHeader' },
-				{ text: 'Unit Price', style: 'tableHeader' },
-				{ text: 'Total Value', style: 'tableHeader' },
-			]);
-
-			let groupTotalOpeningQty = 0;
-			let groupTotalRunningQty = 0;
-			let groupTotalClosingQty = 0;
-			let groupTotalValue = 0;
-
-			typeGroup.orders.forEach((order) => {
-				order.items.forEach((item) => {
-					item.packing_lists.forEach((packingList) => {
-						packingList.other.forEach((detail) => {
-							groupTotalOpeningQty +=
-								Number(detail.opening_total_quantity) || 0;
-							groupTotalRunningQty +=
-								Number(detail.running_total_quantity) || 0;
-							groupTotalClosingQty +=
-								Number(detail.closing_total_quantity) || 0;
-							groupTotalValue +=
-								Number(detail.closing_total_value) || 0;
-
-							tableBody.push([
-								{
-									text: order.order_number_with_cash,
-									style: 'tableCell',
-								},
-								{
-									text: item.item_description,
-									style: 'tableCell',
-								},
-								{
-									text: packingList.packing_number,
-									style: 'tableCell',
-								},
-								{ text: detail.size, style: 'tableCell' },
-								{ text: detail.unit, style: 'tableCell' },
-								{
-									text: formatNumber(
-										detail.opening_total_quantity
-									),
-									style: 'tableCell',
-									alignment: 'right',
-								},
-								{
-									text: formatNumber(
-										detail.running_total_quantity
-									),
-									style: 'tableCell',
-									alignment: 'right',
-								},
-								{
-									text: formatNumber(
-										detail.closing_total_quantity
-									),
-									style: 'tableCell',
-									alignment: 'right',
-								},
-								{
-									text: formatNumber(
-										detail.company_price_pcs
-									),
-									style: 'tableCell',
-									alignment: 'right',
-								},
-								{
-									text: formatNumber(
-										detail.closing_total_value
-									),
-									style: 'tableCell',
-									alignment: 'right',
-								},
-							]);
-						});
-					});
+				// Return success response with file URL
+				res.status(200).json({
+					toast: {
+						status: 200,
+						type: 'success',
+						message: 'PDF generated successfully',
+					},
+					data: {
+						filename: filename,
+						filePath: filePath,
+						fileUrl: fileUrl,
+						downloadUrl: `${req.protocol}://${req.get('host')}${fileUrl}`,
+						timestamp: timestamp,
+						size: buffer.length,
+						expiresIn: '5 minutes',
+					},
 				});
 			});
-
-			// Add group totals
-			tableBody.push([
-				{ text: 'Group Total:', style: 'tableCellBold', colSpan: 5 },
-				{},
-				{},
-				{},
-				{},
-				{
-					text: formatNumber(groupTotalOpeningQty),
-					style: 'tableCellBold',
-					alignment: 'right',
+		} catch (pdfError) {
+			console.error('PDF Generation Error:', pdfError);
+			res.status(500).json({
+				toast: {
+					status: 500,
+					type: 'error',
+					message: 'Error generating PDF: ' + pdfError.message,
 				},
-				{
-					text: formatNumber(groupTotalRunningQty),
-					style: 'tableCellBold',
-					alignment: 'right',
-				},
-				{
-					text: formatNumber(groupTotalClosingQty),
-					style: 'tableCellBold',
-					alignment: 'right',
-				},
-				{ text: '', style: 'tableCellBold' },
-				{
-					text: formatNumber(groupTotalValue),
-					style: 'tableCellBold',
-					alignment: 'right',
-				},
-			]);
-
-			content.push({
-				table: {
-					headerRows: 1,
-					widths: [
-						'10%',
-						'20%',
-						'10%',
-						'8%',
-						'8%',
-						'10%',
-						'10%',
-						'10%',
-						'8%',
-						'10%',
-					],
-					body: tableBody,
-				},
-				layout: {
-					fillColor: function (rowIndex, node, columnIndex) {
-						return rowIndex === 0 ? '#CCCCCC' : null;
-					},
-				},
-				margin: [0, 5, 0, 15],
 			});
-		});
-
-		const docDefinition = {
-			content: content,
-			defaultStyle: {
-				font: 'Helvetica',
-			},
-			styles: {
-				header: {
-					fontSize: 18,
-					bold: true,
-				},
-				subheader: {
-					fontSize: 14,
-					bold: true,
-				},
-				groupHeader: {
-					fontSize: 12,
-					bold: true,
-					color: '#2E86AB',
-				},
-				tableHeader: {
-					bold: true,
-					fontSize: 10,
-					color: 'black',
-					fillColor: '#CCCCCC',
-				},
-				tableCell: {
-					fontSize: 9,
-				},
-				tableCellBold: {
-					fontSize: 9,
-					bold: true,
-				},
-			},
-			pageSize: 'A4',
-			pageOrientation: 'landscape',
-			pageMargins: [20, 20, 20, 20],
-		};
-
-		const pdfDoc = printer.createPdfKitDocument(docDefinition);
-
-		// Set response headers for PDF
-		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader(
-			'Content-Disposition',
-			'attachment; filename="delivery-statement-report.pdf"'
-		);
-
-		// Stream the PDF to response
-		pdfDoc.pipe(res);
-		pdfDoc.end();
+		}
 	} catch (error) {
 		await handleError({ error, res });
 	}

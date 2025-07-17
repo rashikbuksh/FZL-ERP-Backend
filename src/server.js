@@ -2,6 +2,7 @@ import express, { json, urlencoded } from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
 import { SERVER_PORT } from './lib/secret.js';
 import { VerifyToken } from './middleware/auth.js';
 import route from './routes/index.js';
@@ -260,8 +261,17 @@ server.use(cors);
 server.use(urlencoded({ extended: true }));
 server.use(json({ limit: '100mb' }));
 
+// Serve static files before authentication middleware
+const pdfStoragePath = path.join(process.cwd(), 'pdf_storage');
+const uploadsPath = path.join(process.cwd(), 'uploads');
+
+console.log('PDF Storage Path:', pdfStoragePath);
+console.log('Uploads Path:', uploadsPath);
+
+server.use('/uploads', express.static(uploadsPath));
+server.use('/pdf_storage', express.static(pdfStoragePath));
+
 server.use(VerifyToken);
-server.use('/uploads', express.static('uploads'));
 
 // api logger for tracking API requests
 server.use(apiLogger);
