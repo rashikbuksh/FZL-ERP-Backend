@@ -170,7 +170,7 @@ export async function removeChallanAndPLRef(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { delivery_date, vehicle, type, own_uuid } = req.query;
+	const { delivery_date, vehicle, type, own_uuid, order_type } = req.query;
 
 	let marketingUuid = null;
 	const marketingUuidQuery = sql`
@@ -234,6 +234,9 @@ export async function selectAll(req, res, next) {
 				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					public.factory.address ELSE
 					pf.address END AS factory_address,
+				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+					zipper.order_info.is_sample ELSE
+					toi.is_sample END AS is_sample,
 				challan.vehicle_uuid AS vehicle_uuid,
 				vehicle.name AS vehicle_name,
 				vehicle.driver_name AS vehicle_driver_name,
@@ -366,6 +369,7 @@ export async function selectAll(req, res, next) {
 							? sql`AND main_query.receive_status = 1`
 							: sql``
 		}
+		${order_type === 'bulk' ? sql` AND main_query.is_sample = 0` : order_type === 'sample' ? sql` AND main_query.is_sample = 1` : sql``}
 	ORDER BY
 		main_query.created_at DESC;
 	`;

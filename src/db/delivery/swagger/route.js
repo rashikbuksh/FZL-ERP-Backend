@@ -782,6 +782,12 @@ export const pathDeliveryChallan = {
 					'received',
 					'all',
 				]),
+				SE.parameter_query('own_uuid', 'own_uuid'),
+				SE.parameter_query('order_type', 'order_type', [
+					'bulk',
+					'sample',
+					'all',
+				]),
 			],
 			responses: {
 				200: {
