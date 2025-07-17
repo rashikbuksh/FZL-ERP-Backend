@@ -112,13 +112,21 @@ publicRouter.get(
 
 	propertiesOperations.select
 );
-publicRouter.post('/properties', propertiesOperations.insert);
-publicRouter.put('/properties/:uuid', propertiesOperations.update);
-publicRouter.delete(
-	'/properties/:uuid',
-
-	propertiesOperations.remove
-);
+publicRouter.post('/properties', (req, res, next) => {
+	const cacheKey = 'propertiesData';
+	Cache.del(cacheKey);
+	propertiesOperations.insert(req, res, next);
+});
+publicRouter.put('/properties/:uuid', (req, res, next) => {
+	const cacheKey = 'propertiesData';
+	Cache.del(cacheKey);
+	propertiesOperations.update(req, res, next);
+});
+publicRouter.delete('/properties/:uuid', (req, res, next) => {
+	const cacheKey = 'propertiesData';
+	Cache.del(cacheKey);
+	propertiesOperations.remove(req, res, next);
+});
 
 // section routes
 publicRouter.get('/section', sectionOperations.selectAll);

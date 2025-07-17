@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import SE from '../../util/swagger_example.js';
 import * as otherOperations from './query/query.js';
-
+import Cache from 'memory-cache';
 const otherRouter = Router();
 
 // * public * //
@@ -21,16 +21,56 @@ otherRouter.get(
 	otherOperations.selectSpecificFactory
 );
 otherRouter.get('/marketing/value/label', otherOperations.selectMarketing);
-otherRouter.get(
-	'/order-properties/by/:type_name',
-	otherOperations.selectOrderProperties
-);
+
+otherRouter.get('/order-properties/by/:type_name', (req, res, next) => {
+	// get all query params from the request and add them to the cache key
+	const queryParams = req.query;
+	const queryString = Object.keys(queryParams)
+		.map((key) => `${key}=${queryParams[key]}`)
+		.join('&');
+	const cacheKey = `otherOrderProperties?type_name=${req.params.type_name}${queryString ? `&${queryString}` : ''}`;
+	const cachedData = Cache.get(cacheKey);
+	if (cachedData) {
+		return res.status(200).json(cachedData);
+	}
+	otherOperations
+		.selectOrderProperties(req, res)
+		.then((data) => {
+			Cache.put(cacheKey, data, 2 * 60 * 1000);
+			return res.status(200).json(data);
+		})
+		.catch((error) => {
+			console.error('Error fetching order properties:', error);
+			next(error); // Pass error to error-handling middleware
+		});
+});
 
 // thread
 
 // * zipper * //
 otherRouter.get('/tape-coil/value/label', otherOperations.selectTapeCoil);
-otherRouter.get('/order/info/value/label', otherOperations.selectOrderInfo);
+otherRouter.get('/order/info/value/label', (req, res, next) => {
+	// get all query params from the request and add them to the cache key
+	const queryParams = req.query;
+	const queryString = Object.keys(queryParams)
+		.map((key) => `${key}=${queryParams[key]}`)
+		.join('&');
+	const cacheKey = `otherOrderInfo?${queryString}`;
+	const cachedData = Cache.get(cacheKey);
+	if (cachedData) {
+		return res.status(200).json(cachedData);
+	}
+	otherOperations
+		.selectOrderInfo(req, res)
+		.then((data) => {
+			Cache.put(cacheKey, data, 2 * 60 * 1000);
+			return res.status(200).json(data);
+		})
+		.catch((error) => {
+			console.error('Error fetching order details:', error);
+			next(error); // Pass error to error-handling middleware
+		});
+});
 otherRouter.get(
 	'/order/zipper-thread/value/label',
 	otherOperations.selectOrderZipperThread

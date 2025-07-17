@@ -33,9 +33,22 @@ import Cache from 'memory-cache';
 
 zipperRouter.get('/order-info', orderInfoOperations.selectAll);
 zipperRouter.get('/order-info/:uuid', orderInfoOperations.select);
-zipperRouter.post('/order-info', orderInfoOperations.insert);
-zipperRouter.put('/order-info/:uuid', orderInfoOperations.update);
-zipperRouter.delete('/order-info/:uuid', orderInfoOperations.remove);
+zipperRouter.post('/order-info', (req, res, next) => {
+	const cacheKey = 'orderInfoData';
+	Cache.del(cacheKey);
+	orderInfoOperations.insert(req, res, next);
+});
+zipperRouter.put('/order-info/:uuid', (req, res, next) => {
+	const cacheKey = 'orderInfoData';
+	Cache.del(cacheKey);
+	orderInfoOperations.update(req, res, next);
+});
+zipperRouter.delete('/order-info/:uuid', (req, res, next) => {
+	const cacheKey = 'orderInfoData';
+	Cache.del(cacheKey);
+	orderInfoOperations.remove(req, res, next);
+});
+
 zipperRouter.get('/order/details', (req, res, next) => {
 	// get all query params from the request and add them to the cache key
 	const queryParams = req.query;

@@ -615,7 +615,12 @@ export async function selectOrderProperties(req, res, next) {
 		// add a null value and label
 		data.unshift({ value: null, label: '---' });
 
-		res.status(200).json({ toast, data: data });
+		const combinedData = {
+			toast,
+			data,
+		};
+
+		return combinedData;
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -848,7 +853,11 @@ export async function selectOrderInfo(req, res, next) {
 			type: 'select_all',
 			message: 'Order Info list',
 		};
-		return await res.status(200).json({ toast, data });
+		const combinedData = {
+			toast,
+			data,
+		};
+		return combinedData;
 	} catch (error) {
 		await handleError({ error, res });
 	}
