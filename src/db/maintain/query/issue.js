@@ -22,7 +22,7 @@ export async function insert(req, res, next) {
 		const data = await issueEntryPromise;
 
 		// Get the Socket.IO instance and broadcast the new issue event
-		const io = getIO();
+		//const io = getIO();
 		// io.emit('new-issue', {
 		// 	message: 'A new issue has been created',
 		// 	issueData: {
@@ -30,7 +30,25 @@ export async function insert(req, res, next) {
 		// 		...newIssue,
 		// 	},
 		// });
+		//io.emit('new-issue', 'A new issue has been arrived');
+
+		// Debug getIO function
+		console.log('🔴 Calling getIO()...');
+		const io = getIO();
+		console.log('🔴 getIO() returned:', typeof io);
+
+		if (!io) {
+			console.log('🔴 ERROR: io is null or undefined');
+			return;
+		}
+
+		console.log('🔴 IO engine exists:', !!io.engine);
+		console.log('🔴 Connected clients:', io.engine?.clientsCount || 0);
+		console.log('🔴 About to emit new-issue event...');
+
 		io.emit('new-issue', 'A new issue has been arrived');
+
+		console.log('🔴 ✅ Socket.IO emit completed successfully');
 
 		const toast = {
 			status: 201,
