@@ -1,5 +1,9 @@
 -- * INSERTED problem FIXED
 
+-- trigger causing production_quantity negative
+
+-- be.coning_production_quantity != 0 negative production_quantity issue Handled
+
 CREATE OR REPLACE FUNCTION thread.order_entry_after_batch_is_dyeing_update() RETURNS TRIGGER AS $$
 BEGIN
     RAISE NOTICE 'Trigger executing for batch UUID: %', NEW.uuid;
@@ -8,8 +12,8 @@ BEGIN
     UPDATE thread.order_entry oe
     SET 
         production_quantity = production_quantity 
-        + CASE WHEN (NEW.is_drying_complete = 'true' AND OLD.is_drying_complete = 'false') THEN be.quantity ELSE 0 END 
-        - CASE WHEN (NEW.is_drying_complete = 'false' AND OLD.is_drying_complete = 'true') THEN be.quantity ELSE 0 END
+        + CASE WHEN (NEW.is_drying_complete = 'true' AND OLD.is_drying_complete = 'false' AND be.coning_production_quantity != 0) THEN be.quantity ELSE 0 END 
+        - CASE WHEN (NEW.is_drying_complete = 'false' AND OLD.is_drying_complete = 'true' AND be.coning_production_quantity != 0) THEN be.quantity ELSE 0 END
     FROM thread.batch_entry be
     LEFT JOIN thread.batch b ON be.batch_uuid = b.uuid
     WHERE b.uuid = NEW.uuid AND oe.uuid = be.order_entry_uuid;
