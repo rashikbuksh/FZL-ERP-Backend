@@ -13,20 +13,131 @@ const server = express();
 const httpServer = createServer(server);
 
 // Initialize Socket.IO
+// const io = new Server(httpServer, {
+// 	cors: {
+// 		origin: '*', // configure properly for production
+// 		methods: ['GET', 'POST'],
+// 	},
+// });
+
+// When a client connects
+// io.on('connection', (socket) => {
+// 	console.log('A user connected:', socket.id);
+
+// 	socket.on('disconnect', () => {
+// 		console.log('A user disconnected:', socket.id);
+// 	});
+// });
+
+// Initialize Socket.IO with enhanced configuration
 const io = new Server(httpServer, {
 	cors: {
 		origin: '*', // configure properly for production
 		methods: ['GET', 'POST'],
 	},
+	// Enhanced stability configurations
+	pingTimeout: 60000, // Time to wait for pong before disconnecting (60s)
+	pingInterval: 25000, // Interval between ping packets (25s)
+	transports: ['websocket', 'polling'], // Allow fallback to polling
+	allowEIO3: true, // Support older clients
+	connectTimeout: 45000, // Connection timeout (45s)
+	upgradeTimeout: 10000, // Timeout for transport upgrades
+	maxHttpBufferSize: 1e6, // 1MB buffer size
 });
+
+// Connection tracking statistics
+const connectionStats = {
+	total: 0,
+	active: 0,
+	disconnections: {},
+	connections: {},
+};
 
 // When a client connects
 io.on('connection', (socket) => {
-	console.log('A user connected:', socket.id);
+	connectionStats.total++;
+	connectionStats.active++;
 
-	socket.on('disconnect', () => {
-		console.log('A user disconnected:', socket.id);
+	const transportType = socket.conn.transport.name;
+	connectionStats.connections[transportType] =
+		(connectionStats.connections[transportType] || 0) + 1;
+
+	console.log(
+		`A user connected: ${socket.id} | Transport: ${transportType} | Active: ${connectionStats.active} | Total: ${connectionStats.total}`
+	);
+
+	// Log transport upgrades
+	socket.conn.on('upgrade', () => {
+		const newTransport = socket.conn.transport.name;
+		console.log(`Transport upgraded to: ${newTransport} for: ${socket.id}`);
 	});
+
+	// Handle connection errors
+	socket.on('connect_error', (error) => {
+		console.log(
+			`Connection error for: ${socket.id} | Error: ${error.message}`
+		);
+	});
+
+	// Handle reconnection attempts
+	socket.on('reconnect', (attemptNumber) => {
+		console.log(
+			`User reconnected: ${socket.id} after ${attemptNumber} attempts`
+		);
+	});
+
+	// Enhanced disconnect logging
+	socket.on('disconnect', (reason) => {
+		connectionStats.active--;
+		connectionStats.disconnections[reason] =
+			(connectionStats.disconnections[reason] || 0) + 1;
+
+		const transportType = socket.conn.transport.name;
+		console.log(
+			`A user disconnected: ${socket.id} | Reason: ${reason} | Transport: ${transportType} | Active: ${connectionStats.active}`
+		);
+
+		// Log disconnect reasons summary every 20 disconnections
+		if (connectionStats.total % 20 === 0) {
+			console.log('=== Connection Statistics Summary ===');
+			console.log('Active connections:', connectionStats.active);
+			console.log('Total connections:', connectionStats.total);
+			console.log('Disconnect reasons:', connectionStats.disconnections);
+			console.log('Connection types:', connectionStats.connections);
+			console.log('=====================================');
+		}
+	});
+
+	// Handle ping/pong for connection health monitoring
+	socket.on('ping', () => {
+		console.log(`Ping received from: ${socket.id}`);
+	});
+
+	socket.on('pong', (latency) => {
+		console.log(`Pong received from: ${socket.id} | Latency: ${latency}ms`);
+	});
+
+	// Custom event handlers can be added here
+	socket.on('custom-event', (data) => {
+		console.log(`Custom event from: ${socket.id}`, data);
+		// Handle custom events
+	});
+
+	// Handle client-side errors
+	socket.on('error', (error) => {
+		console.log(`Socket error for: ${socket.id} | Error: ${error.message}`);
+	});
+});
+
+// Monitor server-side Socket.IO events
+io.engine.on('connection_error', (err) => {
+	console.log(
+		'Engine connection error:',
+		err.req,
+		err.code,
+		err.message,
+		err.context
+	);
 });
 
 // Export function to get Socket.IO instance
@@ -57,6 +168,29 @@ server.get(
 		},
 	})
 );
+
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+	console.log('SIGTERM received, shutting down gracefully...');
+	io.close(() => {
+		console.log('Socket.IO server closed');
+		httpServer.close(() => {
+			console.log('HTTP server closed');
+			process.exit(0);
+		});
+	});
+});
+
+process.on('SIGINT', () => {
+	console.log('SIGINT received, shutting down gracefully...');
+	io.close(() => {
+		console.log('Socket.IO server closed');
+		httpServer.close(() => {
+			console.log('HTTP server closed');
+			process.exit(0);
+		});
+	});
+});
 
 // listen
 httpServer.listen(SERVER_PORT, () => {
