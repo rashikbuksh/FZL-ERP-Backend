@@ -56,6 +56,10 @@ otherRouter.get('/order/info/value/label', (req, res, next) => {
 		.map((key) => `${key}=${queryParams[key]}`)
 		.join('&');
 	const cacheKey = `otherOrderInfo?${queryString}`;
+
+	console.log(
+		`Cache key: ${Cache.keys().find((key) => key.startsWith(cacheKey))}`
+	);
 	const cachedData = Cache.get(cacheKey);
 	if (cachedData) {
 		return res.status(200).json(cachedData);

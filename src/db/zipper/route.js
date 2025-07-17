@@ -34,18 +34,21 @@ import Cache from 'memory-cache';
 zipperRouter.get('/order-info', orderInfoOperations.selectAll);
 zipperRouter.get('/order-info/:uuid', orderInfoOperations.select);
 zipperRouter.post('/order-info', (req, res, next) => {
-	const cacheKey = 'orderInfoData';
-	Cache.del(cacheKey);
+	const cacheKey = 'otherOrderInfo';
+	const cachedKeys = Cache.keys().find((key) => key.startsWith(cacheKey));
+	Cache.del(cachedKeys);
 	orderInfoOperations.insert(req, res, next);
 });
 zipperRouter.put('/order-info/:uuid', (req, res, next) => {
-	const cacheKey = 'orderInfoData';
-	Cache.del(cacheKey);
+	const cacheKey = 'otherOrderInfo';
+	const cachedKeys = Cache.keys().find((key) => key.startsWith(cacheKey));
+	Cache.del(cachedKeys);
 	orderInfoOperations.update(req, res, next);
 });
 zipperRouter.delete('/order-info/:uuid', (req, res, next) => {
-	const cacheKey = 'orderInfoData';
-	Cache.del(cacheKey);
+	const cacheKey = 'otherOrderInfo';
+	const cachedKeys = Cache.keys().find((key) => key.startsWith(cacheKey));
+	Cache.del(cachedKeys);
 	orderInfoOperations.remove(req, res, next);
 });
 
@@ -111,12 +114,15 @@ zipperRouter.post('/order-description', (req, res, next) => {
 });
 zipperRouter.put('/order-description/:uuid', (req, res, next) => {
 	const cacheKey = `orderDetails`;
-	Cache.del(cacheKey);
+	// find out the cache key with queryParams and delete it
+	const cachedKeys = Cache.keys().find((key) => key.startsWith(cacheKey));
+	Cache.del(cachedKeys);
 	orderDescriptionOperations.update(req, res, next);
 });
 zipperRouter.delete('/order-description/:uuid', (req, res, next) => {
 	const cacheKey = `orderDetails`;
-	Cache.del(cacheKey);
+	const cachedKeys = Cache.keys().find((key) => key.startsWith(cacheKey));
+	Cache.del(cachedKeys);
 	orderDescriptionOperations.remove(req, res, next);
 });
 zipperRouter.get(
