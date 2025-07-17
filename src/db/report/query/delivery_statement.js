@@ -773,6 +773,7 @@ export async function deliveryStatementReportPDF(req, res, next) {
 		order_info_uuid,
 		report_for,
 		price_for,
+		file_type,
 	} = req.query;
 
 	try {
@@ -1487,9 +1488,6 @@ export async function deliveryStatementReportPDF(req, res, next) {
 			return acc;
 		}, []);
 
-		// Generate PDF
-		console.log('Grouped Data Length:', groupedData.length);
-
 		if (!groupedData || groupedData.length === 0) {
 			return res.status(404).json({
 				toast: {
@@ -1500,6 +1498,19 @@ export async function deliveryStatementReportPDF(req, res, next) {
 			});
 		}
 
+		// it file_type = excel then return the groupedData as JSON
+		if (file_type === 'excel') {
+			return res.status(200).json({
+				toast: {
+					status: 200,
+					type: 'success',
+					message: 'Data retrieved successfully',
+				},
+				data: groupedData,
+			});
+		}
+
+		// Generate PDF using the grouped data
 		const pdfDocGenerator = Pdf(groupedData, from_date, to_date);
 
 		// Create PDF storage directory if it doesn't exist
