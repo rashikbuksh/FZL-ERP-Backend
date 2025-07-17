@@ -265,9 +265,6 @@ server.use(json({ limit: '100mb' }));
 const pdfStoragePath = path.join(process.cwd(), 'pdf_storage');
 const uploadsPath = path.join(process.cwd(), 'uploads');
 
-console.log('PDF Storage Path:', pdfStoragePath);
-console.log('Uploads Path:', uploadsPath);
-
 server.use('/uploads', express.static(uploadsPath));
 server.use('/pdf_storage', express.static(pdfStoragePath));
 

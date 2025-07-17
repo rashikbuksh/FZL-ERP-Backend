@@ -693,6 +693,12 @@ export const pathReport = {
 					['company', 'party'],
 					true
 				),
+				SE.parameter_query(
+					'file_type',
+					'file_type',
+					['pdf', 'excel'],
+					true
+				),
 			],
 			responses: {
 				200: {
