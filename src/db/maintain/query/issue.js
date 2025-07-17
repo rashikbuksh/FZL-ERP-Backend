@@ -34,7 +34,7 @@ export async function insert(req, res, next) {
 
 		// Debug getIO function
 		console.log('🔴 Calling getIO()...');
-		const io = getIO();
+		const { io, broadcastToAll } = getIO();
 		console.log('🔴 getIO() returned:', typeof io);
 
 		if (!io) {
@@ -46,7 +46,23 @@ export async function insert(req, res, next) {
 		console.log('🔴 Connected clients:', io.engine?.clientsCount || 0);
 		console.log('🔴 About to emit new-issue event...');
 
-		io.emit('new-issue', 'A new issue has been arrived');
+		// Use the destructured io instance
+		io.emit('new-issue', {
+			message: 'A new issue has been created',
+			issueData: {
+				uuid: data[0].insertedUuid,
+				timestamp: new Date().toISOString(),
+			},
+		});
+
+		// Or use the helper function
+		// broadcastToAll('new-issue', {
+		// 	message: 'A new issue has been created',
+		// 	issueData: {
+		// 		uuid: data[0].insertedUuid,
+		// 		timestamp: new Date().toISOString()
+		// 	}
+		// });
 
 		console.log('🔴 ✅ Socket.IO emit completed successfully');
 
