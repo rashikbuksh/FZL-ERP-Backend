@@ -709,7 +709,12 @@ export async function selectBulkApprovalInfo(req, res, next) {
 					vod.receive_by_factory_by,
 					vod.receive_by_factory_by_name,
 					oe.bulk_approval_date,
-					oe.bulk_approval
+					oe.bulk_approval,
+					CASE
+						WHEN vod.order_type = 'tape'
+						THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+						ELSE (oe.quantity::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
+					END as balance_quantity
 				FROM
 					zipper.sfg sfg
 				LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
