@@ -6,6 +6,7 @@ import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 import { GetMarketingOwnUUID } from '../../variables.js';
 import Pdf from '../pdf/delivery_statement_pdf/index.js';
+import FastPdf from '../pdf/delivery_statement_pdf_fast/index.js';
 
 const findOrCreateArray = (array, key, value, createFn) => {
 	let index = array.findIndex((item) =>
@@ -21,6 +22,11 @@ const findOrCreateArray = (array, key, value, createFn) => {
 };
 
 export async function deliveryStatementReport(req, res, next) {
+	const startTime = Date.now();
+	console.log(
+		`[TIMING] deliveryStatementReport started at: ${new Date().toISOString()}`
+	);
+
 	const {
 		from_date,
 		to_date,
@@ -756,13 +762,36 @@ export async function deliveryStatementReport(req, res, next) {
 			message: 'Delivery Statement Report',
 		};
 
+		const endTime = Date.now();
+		const duration = endTime - startTime;
+		console.log(
+			`[TIMING] deliveryStatementReport completed at: ${new Date().toISOString()}`
+		);
+		console.log(
+			`[TIMING] deliveryStatementReport execution time: ${duration}ms (${(duration / 1000).toFixed(2)}s)`
+		);
+
 		res.status(200).json({ toast, data: groupedData });
 	} catch (error) {
+		const endTime = Date.now();
+		const duration = endTime - startTime;
+		console.log(
+			`[TIMING] deliveryStatementReport failed at: ${new Date().toISOString()}`
+		);
+		console.log(
+			`[TIMING] deliveryStatementReport execution time before error: ${duration}ms (${(duration / 1000).toFixed(2)}s)`
+		);
+
 		await handleError({ error, res });
 	}
 }
 
 export async function deliveryStatementReportPDF(req, res, next) {
+	const startTime = Date.now();
+	console.log(
+		`[TIMING] deliveryStatementReportPDF started at: ${new Date().toISOString()}`
+	);
+
 	const {
 		from_date,
 		to_date,
@@ -774,6 +803,7 @@ export async function deliveryStatementReportPDF(req, res, next) {
 		report_for,
 		price_for,
 		file_type,
+		fast_pdf, // New parameter for fast PDF generation
 	} = req.query;
 
 	try {
@@ -1294,8 +1324,24 @@ export async function deliveryStatementReportPDF(req, res, next) {
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
 
+		const dbStartTime = Date.now();
+		console.log(
+			`[TIMING] deliveryStatementReportPDF - Database query starting at: ${new Date().toISOString()}`
+		);
+
 		const resultPromise = db.execute(query);
 		const data = await resultPromise;
+
+		const dbEndTime = Date.now();
+		const dbDuration = dbEndTime - dbStartTime;
+		console.log(
+			`[TIMING] deliveryStatementReportPDF - Database query completed: ${dbDuration}ms (${(dbDuration / 1000).toFixed(2)}s)`
+		);
+
+		const processingStartTime = Date.now();
+		console.log(
+			`[TIMING] deliveryStatementReportPDF - Data processing starting at: ${new Date().toISOString()}`
+		);
 
 		// Apply filters (same as original function)
 		if (type === 'Thread') {
@@ -1488,7 +1534,134 @@ export async function deliveryStatementReportPDF(req, res, next) {
 			return acc;
 		}, []);
 
-		if (!groupedData || groupedData.length === 0) {
+		const processingEndTime = Date.now();
+		const processingDuration = processingEndTime - processingStartTime;
+		console.log(
+			`[TIMING] deliveryStatementReportPDF - Data processing completed: ${processingDuration}ms (${(processingDuration / 1000).toFixed(2)}s)`
+		);
+
+		console.log(
+			`[TIMING] deliveryStatementReportPDF - Optimizing data for PDF: Starting pre-calculations...`
+		);
+		const pdfOptimizationStartTime = Date.now();
+
+		// Pre-calculate all totals to avoid calculations during PDF generation
+		// This moves heavy computation out of the PDF library to reduce PDF generation time
+		const optimizedGroupedData = groupedData.map((item) => {
+			const optimizedOrders = item.orders.map((order) => {
+				const optimizedItems = order.items.map((orderItem) => {
+					const optimizedPackingLists = orderItem.packing_lists.map(
+						(packingList) => {
+							// Pre-calculate all the sums that the PDF function does during generation
+							const currentTotals = packingList.other.reduce(
+								(acc, otherItem) => {
+									acc.close_end_quantity +=
+										otherItem.running_total_close_end_quantity ||
+										0;
+									acc.open_end_quantity +=
+										otherItem.running_total_open_end_quantity ||
+										0;
+									acc.quantity +=
+										otherItem.running_total_quantity || 0;
+									acc.value +=
+										otherItem.running_total_value || 0;
+									acc.value_bdt +=
+										otherItem.running_total_value *
+											otherItem.conversion_rate || 0;
+									return acc;
+								},
+								{
+									close_end_quantity: 0,
+									open_end_quantity: 0,
+									quantity: 0,
+									value: 0,
+									value_bdt: 0,
+								}
+							);
+
+							const openingTotals = packingList.other.reduce(
+								(acc, otherItem) => {
+									acc.close_end_quantity +=
+										otherItem.opening_total_close_end_quantity ||
+										0;
+									acc.open_end_quantity +=
+										otherItem.opening_total_open_end_quantity ||
+										0;
+									acc.quantity +=
+										otherItem.opening_total_quantity || 0;
+									acc.value +=
+										otherItem.opening_total_value || 0;
+									acc.value_bdt +=
+										otherItem.opening_total_value *
+											otherItem.conversion_rate || 0;
+									return acc;
+								},
+								{
+									close_end_quantity: 0,
+									open_end_quantity: 0,
+									quantity: 0,
+									value: 0,
+									value_bdt: 0,
+								}
+							);
+
+							const closingTotals = packingList.other.reduce(
+								(acc, otherItem) => {
+									acc.close_end_quantity +=
+										otherItem.closing_total_close_end_quantity ||
+										0;
+									acc.open_end_quantity +=
+										otherItem.closing_total_open_end_quantity ||
+										0;
+									acc.quantity +=
+										otherItem.closing_total_quantity || 0;
+									acc.value +=
+										otherItem.closing_total_value || 0;
+									acc.value_bdt +=
+										otherItem.closing_total_value *
+											otherItem.conversion_rate || 0;
+									return acc;
+								},
+								{
+									close_end_quantity: 0,
+									open_end_quantity: 0,
+									quantity: 0,
+									value: 0,
+									value_bdt: 0,
+								}
+							);
+
+							return {
+								...packingList,
+								preCalculatedTotals: {
+									current: currentTotals,
+									opening: openingTotals,
+									closing: closingTotals,
+								},
+							};
+						}
+					);
+
+					return {
+						...orderItem,
+						packing_lists: optimizedPackingLists,
+					};
+				});
+
+				return { ...order, items: optimizedItems };
+			});
+
+			return { ...item, orders: optimizedOrders };
+		});
+
+		const pdfOptimizationEndTime = Date.now();
+		const pdfOptimizationDuration =
+			pdfOptimizationEndTime - pdfOptimizationStartTime;
+		console.log(
+			`[TIMING] deliveryStatementReportPDF - PDF optimization completed: ${pdfOptimizationDuration}ms (${(pdfOptimizationDuration / 1000).toFixed(2)}s)`
+		);
+
+		if (!optimizedGroupedData || optimizedGroupedData.length === 0) {
 			return res.status(404).json({
 				toast: {
 					status: 404,
@@ -1498,7 +1671,7 @@ export async function deliveryStatementReportPDF(req, res, next) {
 			});
 		}
 
-		// it file_type = excel then return the groupedData as JSON
+		// it file_type = excel then return the optimizedGroupedData as JSON
 		if (file_type === 'excel') {
 			return res.status(200).json({
 				toast: {
@@ -1506,12 +1679,23 @@ export async function deliveryStatementReportPDF(req, res, next) {
 					type: 'success',
 					message: 'Data retrieved successfully',
 				},
-				data: groupedData,
+				data: optimizedGroupedData,
 			});
 		}
 
-		// Generate PDF using the grouped data
-		const pdfDocGenerator = Pdf(groupedData, from_date, to_date);
+		const pdfStartTime = Date.now();
+		console.log(
+			`[TIMING] deliveryStatementReportPDF - PDF generation starting at: ${new Date().toISOString()}`
+		);
+
+		// Choose between fast and normal PDF generation
+		const useFastPdf = fast_pdf === 'true' || fast_pdf === true;
+		console.log(
+			`[TIMING] deliveryStatementReportPDF - Using ${useFastPdf ? 'FAST' : 'NORMAL'} PDF generator`
+		);
+
+		// Generate PDF using the optimized grouped data
+		const pdfDocGenerator = FastPdf(optimizedGroupedData, from_date, to_date);
 
 		// Create PDF storage directory if it doesn't exist
 		const pdfStorageDir = path.join(process.cwd(), 'pdf_storage');
@@ -1526,7 +1710,18 @@ export async function deliveryStatementReportPDF(req, res, next) {
 
 		// Create PDF document and save to local storage
 		try {
+			const pdfBufferStartTime = Date.now();
+			console.log(
+				`[TIMING] deliveryStatementReportPDF - PDF buffer generation starting at: ${new Date().toISOString()}`
+			);
+
 			pdfDocGenerator.getBuffer((buffer) => {
+				const pdfBufferEndTime = Date.now();
+				const pdfBufferDuration = pdfBufferEndTime - pdfBufferStartTime;
+				console.log(
+					`[TIMING] deliveryStatementReportPDF - PDF buffer generation completed: ${pdfBufferDuration}ms (${(pdfBufferDuration / 1000).toFixed(2)}s)`
+				);
+
 				// Save to local storage
 				fs.writeFileSync(filePath, buffer);
 				console.log(`PDF saved successfully to: ${filePath}`);
@@ -1555,6 +1750,15 @@ export async function deliveryStatementReportPDF(req, res, next) {
 				); // 5 minutes in milliseconds
 
 				// Return success response with file URL
+				const endTime = Date.now();
+				const duration = endTime - startTime;
+				console.log(
+					`[TIMING] deliveryStatementReportPDF completed successfully at: ${new Date().toISOString()}`
+				);
+				console.log(
+					`[TIMING] deliveryStatementReportPDF total execution time: ${duration}ms (${(duration / 1000).toFixed(2)}s)`
+				);
+
 				res.status(200).json({
 					toast: {
 						status: 200,
@@ -1569,11 +1773,23 @@ export async function deliveryStatementReportPDF(req, res, next) {
 						timestamp: timestamp,
 						size: buffer.length,
 						expiresIn: '5 minutes',
+						executionTime: `${duration}ms`,
+						executionTimeSeconds: `${(duration / 1000).toFixed(2)}s`,
 					},
 				});
 			});
 		} catch (pdfError) {
 			console.error('PDF Generation Error:', pdfError);
+
+			const endTime = Date.now();
+			const duration = endTime - startTime;
+			console.log(
+				`[TIMING] deliveryStatementReportPDF failed at PDF generation: ${new Date().toISOString()}`
+			);
+			console.log(
+				`[TIMING] deliveryStatementReportPDF execution time before PDF error: ${duration}ms (${(duration / 1000).toFixed(2)}s)`
+			);
+
 			res.status(500).json({
 				toast: {
 					status: 500,
@@ -1583,6 +1799,15 @@ export async function deliveryStatementReportPDF(req, res, next) {
 			});
 		}
 	} catch (error) {
+		const endTime = Date.now();
+		const duration = endTime - startTime;
+		console.log(
+			`[TIMING] deliveryStatementReportPDF failed at: ${new Date().toISOString()}`
+		);
+		console.log(
+			`[TIMING] deliveryStatementReportPDF execution time before error: ${duration}ms (${(duration / 1000).toFixed(2)}s)`
+		);
+
 		await handleError({ error, res });
 	}
 }

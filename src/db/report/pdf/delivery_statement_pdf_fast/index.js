@@ -1,14 +1,13 @@
 import { format } from 'date-fns';
-
 import { DEFAULT_FONT_SIZE, xMargin } from '../../../../util/pdf/ui.js';
 import {
 	DEFAULT_A4_PAGE,
 	getTable,
 	TableHeader,
+	company,
 } from '../../../../util/pdf/utils.js';
-
+import { FZL_LOGO } from '../../../../asset/img/base64.js';
 import pdfMake from '../index.js';
-import { getPageFooter, getPageHeader } from './utils.js';
 
 const getDateFormate = (date) => {
 	if (date) {
@@ -17,6 +16,156 @@ const getDateFormate = (date) => {
 		return '--/--/--';
 	}
 };
+
+// Simple fast header without logo for performance
+// const getFastPageHeader = (from, to) => {
+// 	return {
+// 		heights: ['auto', 2],
+// 		widths: ['*', '*', '*'],
+// 		body: [
+// 			[
+// 				{
+// 					text: [
+// 						{
+// 							text: `Fortune Zipper Ltd.\n`,
+// 							fontSize: DEFAULT_FONT_SIZE,
+// 						},
+// 					],
+// 					alignment: 'left',
+// 				},
+// 				{
+// 					text: [
+// 						{
+// 							text: `${company.address} | ${company.phone}\n`,
+// 							fontSize: DEFAULT_FONT_SIZE,
+// 						},
+// 					],
+// 					alignment: 'left',
+// 				},
+// 				{
+// 					text: [
+// 						{
+// 							text: `Production Statement Report\n`,
+// 							fontSize: DEFAULT_FONT_SIZE + 4,
+// 							bold: true,
+// 						},
+// 						{
+// 							text: `From ${getDateFormate(from)} to ${getDateFormate(to)}`,
+// 							fontSize: DEFAULT_FONT_SIZE + 1,
+// 							bold: true,
+// 						},
+// 					],
+// 					alignment: 'right',
+// 				},
+// 			],
+// 			[{ text: '' }, { text: '' }, { text: '' }],
+// 		],
+// 	};
+// };
+
+export const getFastPageHeader = (from, to) => {
+	return {
+		heights: ['auto', 2],
+		widths: [70, '*', 70, '*'],
+		body: [
+			[
+				{
+					text: `Fortune Zipper Ltd.\n`,
+					width: 70,
+					height: 40,
+					alignment: 'left',
+				},
+				{
+					text: [`${company.address}\n`, `${company.phone}\n`],
+					alignment: 'left',
+				},
+				{
+					colSpan: 2,
+					text: [
+						{
+							text: `Production Statement Report\n`,
+							fontSize: DEFAULT_FONT_SIZE + 4,
+							bold: true,
+						},
+						{
+							text: `From  ${getDateFormate(from)} to ${getDateFormate(to)} \n`,
+							fontSize: DEFAULT_FONT_SIZE + 2,
+							bold: true,
+						},
+					],
+					alignment: 'right',
+				},
+				{ text: '' },
+			],
+			[{ text: '' }, { text: '' }, { text: '' }, { text: '' }],
+		],
+	};
+};
+
+// Full header with logo for normal mode (if needed)
+const getDeliveryPageHeader = (from, to) => {
+	const PAGE_HEADER_EMPTY_ROW = [
+		{ text: '' },
+		{ text: '' },
+		{ text: '' },
+		{ text: '' },
+	];
+
+	return {
+		heights: ['auto', 2, 'auto', 'auto'],
+		widths: [70, '*', 70, '*'],
+		body: [
+			[
+				{
+					image: FZL_LOGO.src,
+					width: 70,
+					height: 40,
+					alignment: 'left',
+				},
+				{
+					text: [`${company.address}\n`, `${company.phone}\n`],
+					alignment: 'left',
+				},
+				{
+					colSpan: 2,
+					text: [
+						{
+							text: `Delivery Statement Report\n`,
+							fontSize: DEFAULT_FONT_SIZE + 4,
+							bold: true,
+						},
+						{
+							text: `From  ${getDateFormate(from)} to ${getDateFormate(to)} \n`,
+							fontSize: DEFAULT_FONT_SIZE + 2,
+							bold: true,
+						},
+					],
+					alignment: 'right',
+				},
+				{ text: '' },
+			],
+			PAGE_HEADER_EMPTY_ROW,
+		],
+	};
+};
+
+const getDeliveryPageFooter = ({ currentPage, pageCount }) => ({
+	body: [
+		[
+			{
+				colSpan: 4,
+				text: `Page ${currentPage} / ${pageCount}`,
+				alignment: 'center',
+				border: [false, false, false, false],
+			},
+			{ text: '' },
+			{ text: '' },
+			{ text: '' },
+		],
+	],
+});
+
+// Original table structure maintained for consistent format
 const node = [
 	getTable('party_name', 'Party'),
 	getTable('type', 'Type'),
@@ -32,7 +181,8 @@ const node = [
 	getTable('value', 'Value', 'right'),
 	getTable('value_bdt', 'Value (BDT)', 'right'),
 ];
-export default function Index(data, from, to) {
+
+export default function FastPdfGenerator(data, from, to) {
 	const headerHeight = 80;
 	let footerHeight = 50;
 	const PdfData = data || [];
@@ -44,6 +194,8 @@ export default function Index(data, from, to) {
 		'P.Opening Bal.',
 		'P.Closing Bal.',
 	];
+
+	// Pre-calculate grand totals to avoid calculations during PDF generation
 	const grandTotal = {
 		current: {
 			close_end_quantity: 0,
@@ -68,6 +220,7 @@ export default function Index(data, from, to) {
 		},
 	};
 
+	// Use pre-calculated totals from the optimized data structure and add totals rows
 	PdfData?.forEach((item) => {
 		const partyTotal = {
 			current: {
@@ -117,178 +270,92 @@ export default function Index(data, from, to) {
 					value_bdt: 0,
 				},
 			};
+
 			orderItem.items?.forEach((itemItem, itemIndex) => {
 				itemItem.packing_lists?.forEach((packingList, packingIndex) => {
-					const totalCloseEnd = packingList.other?.reduce(
-						(total, item) => {
-							return (
-								total +
-								(item.running_total_close_end_quantity || 0)
-							);
-						},
-						0
-					);
-					orderTotal.current.close_end_quantity += totalCloseEnd;
-					partyTotal.current.close_end_quantity += totalCloseEnd;
-					grandTotal.current.close_end_quantity += totalCloseEnd;
+					if (packingList.preCalculatedTotals) {
+						// Use pre-calculated totals for performance
+						const current = packingList.preCalculatedTotals.current;
+						const opening = packingList.preCalculatedTotals.opening;
+						const closing = packingList.preCalculatedTotals.closing;
 
-					const totalOpenEnd = packingList.other?.reduce(
-						(total, item) => {
-							return (
-								total +
-								(item.running_total_open_end_quantity || 0)
-							);
-						},
-						0
-					);
+						// Add to order totals
+						orderTotal.current.close_end_quantity +=
+							current.close_end_quantity;
+						orderTotal.current.open_end_quantity +=
+							current.open_end_quantity;
+						orderTotal.current.quantity += current.quantity;
+						orderTotal.current.value += current.value;
+						orderTotal.current.value_bdt += current.value_bdt;
 
-					orderTotal.current.open_end_quantity += totalOpenEnd;
-					partyTotal.current.open_end_quantity += totalOpenEnd;
-					grandTotal.current.open_end_quantity += totalOpenEnd;
-					const totalQuantity = packingList.other?.reduce(
-						(total, item) => {
-							return total + (item.running_total_quantity || 0);
-						},
-						0
-					);
-					orderTotal.current.quantity += totalQuantity;
-					partyTotal.current.quantity += totalQuantity;
-					grandTotal.current.quantity += totalQuantity;
-					const totalOpeningCloseEnd = packingList.other?.reduce(
-						(total, item) => {
-							return (
-								total +
-								(item.opening_total_close_end_quantity || 0)
-							);
-						},
-						0
-					);
-					orderTotal.opening.close_end_quantity +=
-						totalOpeningCloseEnd;
-					partyTotal.opening.close_end_quantity +=
-						totalOpeningCloseEnd;
-					grandTotal.opening.close_end_quantity +=
-						totalOpeningCloseEnd;
-					const totalOpeningOpenEnd = packingList.other?.reduce(
-						(total, item) => {
-							return (
-								total +
-								(item.opening_total_open_end_quantity || 0)
-							);
-						},
-						0
-					);
-					orderTotal.opening.open_end_quantity += totalOpeningOpenEnd;
-					partyTotal.opening.open_end_quantity += totalOpeningOpenEnd;
-					grandTotal.opening.open_end_quantity += totalOpeningOpenEnd;
-					const OpeningTotalQuantity = packingList.other?.reduce(
-						(total, item) => {
-							return total + (item.opening_total_quantity || 0);
-						},
-						0
-					);
-					orderTotal.opening.quantity += OpeningTotalQuantity;
-					partyTotal.opening.quantity += OpeningTotalQuantity;
-					grandTotal.opening.quantity += OpeningTotalQuantity;
-					const totalClosingCloseEnd = packingList.other?.reduce(
-						(total, item) => {
-							return (
-								total +
-								(item.closing_total_close_end_quantity || 0)
-							);
-						},
-						0
-					);
-					orderTotal.closing.close_end_quantity +=
-						totalClosingCloseEnd;
-					partyTotal.closing.close_end_quantity +=
-						totalClosingCloseEnd;
-					grandTotal.closing.close_end_quantity +=
-						totalClosingCloseEnd;
-					const totalClosingOpenEnd = packingList.other?.reduce(
-						(total, item) => {
-							return (
-								total +
-								(item.closing_total_open_end_quantity || 0)
-							);
-						},
-						0
-					);
-					orderTotal.closing.open_end_quantity += totalClosingOpenEnd;
-					partyTotal.closing.open_end_quantity += totalClosingOpenEnd;
-					grandTotal.closing.open_end_quantity += totalClosingOpenEnd;
-					const CloseTotalQuantity = packingList.other?.reduce(
-						(total, item) => {
-							return total + (item.closing_total_quantity || 0);
-						},
-						0
-					);
-					orderTotal.closing.quantity += CloseTotalQuantity;
-					partyTotal.closing.quantity += CloseTotalQuantity;
-					grandTotal.closing.quantity += CloseTotalQuantity;
-					const totalValue = packingList.other?.reduce(
-						(total, item) => {
-							return total + (item.running_total_value || 0);
-						},
-						0
-					);
-					orderTotal.current.value += totalValue;
-					partyTotal.current.value += totalValue;
-					grandTotal.current.value += totalValue;
-					const OpeningTotalValue =
-						packingList.other.reduce((total, item) => {
-							return total + (item.opening_total_value || 0);
-						}, 0) || 0;
-					orderTotal.opening.value += OpeningTotalValue;
-					partyTotal.opening.value += OpeningTotalValue;
-					grandTotal.opening.value += OpeningTotalValue;
-					const ClosingTotalValue =
-						packingList.other?.reduce((total, item) => {
-							return total + (item.closing_total_value || 0);
-						}, 0) || 0;
+						orderTotal.opening.close_end_quantity +=
+							opening.close_end_quantity;
+						orderTotal.opening.open_end_quantity +=
+							opening.open_end_quantity;
+						orderTotal.opening.quantity += opening.quantity;
+						orderTotal.opening.value += opening.value;
+						orderTotal.opening.value_bdt += opening.value_bdt;
 
-					orderTotal.closing.value += ClosingTotalValue;
-					partyTotal.closing.value += ClosingTotalValue;
-					grandTotal.closing.value += ClosingTotalValue;
-					const totalValueBDT = packingList.other?.reduce(
-						(total = 0, item) => {
-							return (
-								total +
-								(item.running_total_value *
-									item.conversion_rate || 0)
-							);
-						},
-						0
-					);
-					orderTotal.current.value_bdt += totalValueBDT;
-					partyTotal.current.value_bdt += totalValueBDT;
-					grandTotal.current.value_bdt += totalValueBDT;
-					const OpeningTotalValueBDT = packingList.other?.reduce(
-						(total = 0, item) => {
-							return (
-								total +
-								(item.opening_total_value *
-									item.conversion_rate || 0)
-							);
-						},
-						0
-					);
-					orderTotal.opening.value_bdt += OpeningTotalValueBDT;
-					partyTotal.opening.value_bdt += OpeningTotalValueBDT;
-					grandTotal.opening.value_bdt += OpeningTotalValueBDT;
-					const ClosingTotalValueBDT = packingList.other?.reduce(
-						(total = 0, item) => {
-							return (
-								total +
-								(item.closing_total_value *
-									item.conversion_rate || 0)
-							);
-						},
-						0
-					);
-					orderTotal.closing.value_bdt += ClosingTotalValueBDT;
-					partyTotal.closing.value_bdt += ClosingTotalValueBDT;
-					grandTotal.closing.value_bdt += ClosingTotalValueBDT;
+						orderTotal.closing.close_end_quantity +=
+							closing.close_end_quantity;
+						orderTotal.closing.open_end_quantity +=
+							closing.open_end_quantity;
+						orderTotal.closing.quantity += closing.quantity;
+						orderTotal.closing.value += closing.value;
+						orderTotal.closing.value_bdt += closing.value_bdt;
+
+						// Add to party totals
+						partyTotal.current.close_end_quantity +=
+							current.close_end_quantity;
+						partyTotal.current.open_end_quantity +=
+							current.open_end_quantity;
+						partyTotal.current.quantity += current.quantity;
+						partyTotal.current.value += current.value;
+						partyTotal.current.value_bdt += current.value_bdt;
+
+						partyTotal.opening.close_end_quantity +=
+							opening.close_end_quantity;
+						partyTotal.opening.open_end_quantity +=
+							opening.open_end_quantity;
+						partyTotal.opening.quantity += opening.quantity;
+						partyTotal.opening.value += opening.value;
+						partyTotal.opening.value_bdt += opening.value_bdt;
+
+						partyTotal.closing.close_end_quantity +=
+							closing.close_end_quantity;
+						partyTotal.closing.open_end_quantity +=
+							closing.open_end_quantity;
+						partyTotal.closing.quantity += closing.quantity;
+						partyTotal.closing.value += closing.value;
+						partyTotal.closing.value_bdt += closing.value_bdt;
+
+						// Add to grand totals
+						grandTotal.current.close_end_quantity +=
+							current.close_end_quantity;
+						grandTotal.current.open_end_quantity +=
+							current.open_end_quantity;
+						grandTotal.current.quantity += current.quantity;
+						grandTotal.current.value += current.value;
+						grandTotal.current.value_bdt += current.value_bdt;
+
+						grandTotal.opening.close_end_quantity +=
+							opening.close_end_quantity;
+						grandTotal.opening.open_end_quantity +=
+							opening.open_end_quantity;
+						grandTotal.opening.quantity += opening.quantity;
+						grandTotal.opening.value += opening.value;
+						grandTotal.opening.value_bdt += opening.value_bdt;
+
+						grandTotal.closing.close_end_quantity +=
+							closing.close_end_quantity;
+						grandTotal.closing.open_end_quantity +=
+							closing.open_end_quantity;
+						grandTotal.closing.quantity += closing.quantity;
+						grandTotal.closing.value += closing.value;
+						grandTotal.closing.value_bdt += closing.value_bdt;
+					}
+
+					// Add order totals at the end of each order (like the original)
 					if (
 						itemIndex + 1 === orderItem.items.length &&
 						itemItem.packing_lists.length === packingIndex + 1
@@ -330,6 +397,8 @@ export default function Index(data, from, to) {
 								orderTotal.closing.value_bdt,
 						});
 					}
+
+					// Add party totals at the end of each party (like the original)
 					if (
 						item.orders.length === orderIndex + 1 &&
 						itemIndex + 1 === orderItem.items.length &&
@@ -347,7 +416,6 @@ export default function Index(data, from, to) {
 							running_total_value_bdt:
 								partyTotal.current.value_bdt,
 						});
-
 						packingList.other.push({
 							size: 'P.Opening Bal.',
 							running_total_close_end_quantity:
@@ -378,6 +446,7 @@ export default function Index(data, from, to) {
 		});
 	});
 
+	// Generate table data using the same approach as the original PDF generator
 	const tableData = PdfData.flatMap((item) => {
 		const typeRowSpan =
 			item?.orders?.reduce((total, orders) => {
@@ -464,8 +533,7 @@ export default function Index(data, from, to) {
 								? otherItem.size
 									? otherItem.size
 									: '---'
-								: `${otherItem.size.includes('-') ? `(${otherItem.size})` : otherItem.size} ${otherItem.unit}`,
-
+								: `${otherItem.size?.includes('-') ? `(${otherItem.size})` : otherItem.size} ${otherItem.unit}`,
 							bold: title.includes(otherItem.size) ? true : false,
 						},
 						running_total_close_end_quantity: {
@@ -498,11 +566,11 @@ export default function Index(data, from, to) {
 							text: title.includes(otherItem.size)
 								? Number(
 										otherItem.running_total_value_bdt
-									).toFixed(3)
+									).toFixed(2)
 								: Number(
 										otherItem.running_total_value *
-											Number(otherItem.conversion_rate)
-									).toFixed(3),
+											otherItem.conversion_rate
+									).toFixed(2),
 							bold: title.includes(otherItem.size) ? true : false,
 						},
 					}));
@@ -519,12 +587,12 @@ export default function Index(data, from, to) {
 		}),
 		pageOrientation: 'landscape',
 		header: {
-			table: getPageHeader(from, to),
+			table: getFastPageHeader(from, to),
 			layout: 'noBorders',
-			margin: [xMargin, 30, xMargin, 0],
+			margin: [xMargin, 20, xMargin, 0],
 		},
 		footer: (currentPage, pageCount) => ({
-			table: getPageFooter({
+			table: getDeliveryPageFooter({
 				currentPage,
 				pageCount,
 			}),
@@ -535,13 +603,14 @@ export default function Index(data, from, to) {
 			{
 				table: {
 					headerRows: 1,
+					// Original column widths for proper formatting
 					widths: [
 						65, 40, 80, 50, 70, 55, 60, 40, 40, 45, 45, 45, 45,
 					],
 					body: [
 						TableHeader(node),
 
-						// Body
+						// Generate data rows using the same approach as original
 						...tableData?.map((item) =>
 							node?.map((nodeItem) => {
 								const cellData = nodeItem.field
@@ -557,11 +626,14 @@ export default function Index(data, from, to) {
 								};
 							})
 						),
+
+						// Grand totals section
 						[
 							{
 								text: 'Grand Current Total',
 								bold: true,
 								colSpan: 7,
+								fontSize: 9,
 							},
 							{},
 							{},
@@ -569,25 +641,26 @@ export default function Index(data, from, to) {
 							{},
 							{},
 							{},
-
 							{
 								text: Number(
 									grandTotal.current.close_end_quantity
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
 							{
 								text: Number(
 									grandTotal.current.open_end_quantity
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
-
 							{
 								text: Number(
 									grandTotal.current.quantity
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
 							{},
 							{
@@ -595,12 +668,14 @@ export default function Index(data, from, to) {
 									2
 								),
 								bold: true,
+								fontSize: 9,
 							},
 							{
 								text: Number(
 									grandTotal.current.value_bdt
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
 						],
 						[
@@ -608,6 +683,7 @@ export default function Index(data, from, to) {
 								text: 'Grand Opening Total',
 								bold: true,
 								colSpan: 7,
+								fontSize: 9,
 							},
 							{},
 							{},
@@ -615,25 +691,26 @@ export default function Index(data, from, to) {
 							{},
 							{},
 							{},
-
 							{
 								text: Number(
 									grandTotal.opening.close_end_quantity
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
 							{
 								text: Number(
 									grandTotal.opening.open_end_quantity
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
-
 							{
 								text: Number(
 									grandTotal.opening.quantity
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
 							{},
 							{
@@ -641,12 +718,14 @@ export default function Index(data, from, to) {
 									2
 								),
 								bold: true,
+								fontSize: 9,
 							},
 							{
 								text: Number(
 									grandTotal.opening.value_bdt
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
 						],
 						[
@@ -654,6 +733,7 @@ export default function Index(data, from, to) {
 								text: 'Grand Closing Total',
 								bold: true,
 								colSpan: 7,
+								fontSize: 9,
 							},
 							{},
 							{},
@@ -661,25 +741,26 @@ export default function Index(data, from, to) {
 							{},
 							{},
 							{},
-
 							{
 								text: Number(
 									grandTotal.closing.close_end_quantity
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
 							{
 								text: Number(
 									grandTotal.closing.open_end_quantity
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
-
 							{
 								text: Number(
 									grandTotal.closing.quantity
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
 							{},
 							{
@@ -687,18 +768,52 @@ export default function Index(data, from, to) {
 									2
 								),
 								bold: true,
+								fontSize: 9,
 							},
 							{
 								text: Number(
 									grandTotal.closing.value_bdt
 								).toFixed(2),
 								bold: true,
+								fontSize: 9,
 							},
 						],
 					],
 				},
+				layout: {
+					fillColor: function (rowIndex, node, columnIndex) {
+						return rowIndex === 0 ? '#CCCCCC' : null;
+					},
+					hLineWidth: function (i, node) {
+						return i === 0 ||
+							i === 1 ||
+							i === node.table.body.length
+							? 1
+							: 0.5;
+					},
+					vLineWidth: function (i, node) {
+						return i === 0 || i === node.table.widths.length
+							? 1
+							: 0.5;
+					},
+				},
 			},
 		],
+		styles: {
+			header: {
+				fontSize: 14,
+				bold: true,
+				alignment: 'center',
+			},
+			tableHeader: {
+				fontSize: 9,
+				bold: true,
+				fillColor: '#CCCCCC',
+			},
+		},
+		defaultStyle: {
+			fontSize: 8,
+		},
 	});
 
 	return pdfDocGenerator;
