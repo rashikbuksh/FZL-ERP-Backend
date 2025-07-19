@@ -235,6 +235,7 @@ export async function ProductionReportSnm(req, res, next) {
                 oe.color_ref_entry_date,
                 oe.color_ref_update_date,
                 oe.size::float8,
+                oe.bulk_approval,
                 oe.bulk_approval_date,
                 -- Fixed conditional fields to show quantities even when no dyeing batch
                 CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as quantity,
