@@ -1,4 +1,11 @@
-import { decimal, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
+import {
+	boolean,
+	decimal,
+	integer,
+	pgSchema,
+	serial,
+	text,
+} from 'drizzle-orm/pg-core';
 import {
 	DateTime,
 	defaultUUID,
@@ -63,6 +70,7 @@ export const info = material.table('info', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 	store_type: store_type_enum('store_type').notNull().default('rm'),
+	is_hidden: boolean('is_hidden').default(false),
 });
 
 export const stock = material.table('stock', {

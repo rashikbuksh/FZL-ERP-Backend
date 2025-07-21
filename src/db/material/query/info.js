@@ -72,18 +72,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	// const subQuery = db
-	// 	.select({
-	// 		material_uuid: purchaseSchema.entry.material_uuid,
-	// 		total_quantity: sql`SUM(quantity)`,
-	// 		total_price: sql`SUM(price)`,
-	// 	})
-	// 	.from(purchaseSchema.entry)
-	// 	.groupBy(purchaseSchema.entry.material_uuid);
-
-	// const subqueryData = await subQuery;
-	// console.log(subqueryData);
-	const { s_type } = req.query;
+	const { s_type, is_hidden } = req.query;
 
 	const resultPromise = db
 		.select({
@@ -115,6 +104,7 @@ export async function selectAll(req, res, next) {
 								ELSE purchase_entry.total_price / purchase_entry.total_quantity 
 							END`),
 			store_type: info.store_type,
+			is_hidden: info.is_hidden,
 		})
 		.from(info)
 		.leftJoin(section, eq(info.section_uuid, section.uuid))
@@ -136,8 +126,14 @@ export async function selectAll(req, res, next) {
 		)
 		.orderBy(asc(info.name));
 
-	if (s_type) {
+	if (s_type && is_hidden) {
+		resultPromise.where(
+			and(eq(info.store_type, s_type), eq(info.is_hidden, is_hidden))
+		);
+	} else if (s_type) {
 		resultPromise.where(eq(info.store_type, s_type));
+	} else if (is_hidden) {
+		resultPromise.where(eq(info.is_hidden, is_hidden));
 	}
 
 	try {
@@ -180,6 +176,7 @@ export async function select(req, res, next) {
 			created_by_name: hrSchema.users.name,
 			remarks: info.remarks,
 			store_type: info.store_type,
+			is_hidden: info.is_hidden,
 		})
 		.from(info)
 		.leftJoin(section, eq(info.section_uuid, section.uuid))

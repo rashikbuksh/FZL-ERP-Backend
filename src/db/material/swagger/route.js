@@ -13,6 +13,7 @@ export const pathMaterialInfo = {
 					'accessories',
 					'maintenance',
 				]),
+				SE.parameter_query('is_hidden', 'is_hidden', ['true', 'false']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
