@@ -126,13 +126,13 @@ export async function selectAll(req, res, next) {
 		)
 		.orderBy(asc(info.name));
 
-	if (s_type && is_hidden) {
+	if (s_type && is_hidden != undefined && is_hidden !== null) {
 		resultPromise.where(
 			and(eq(info.store_type, s_type), eq(info.is_hidden, is_hidden))
 		);
 	} else if (s_type) {
 		resultPromise.where(eq(info.store_type, s_type));
-	} else if (is_hidden) {
+	} else if (is_hidden != undefined && is_hidden !== null) {
 		resultPromise.where(eq(info.is_hidden, is_hidden));
 	}
 
