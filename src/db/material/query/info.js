@@ -128,17 +128,12 @@ export async function selectAll(req, res, next) {
 
 	if (s_type && is_hidden) {
 		resultPromise.where(
-			and(
-				eq(info.store_type, s_type),
-				eq(info.is_hidden, is_hidden === 'hidden' ? true : false)
-			)
+			and(eq(info.store_type, s_type), eq(info.is_hidden, is_hidden))
 		);
 	} else if (s_type) {
 		resultPromise.where(eq(info.store_type, s_type));
 	} else if (is_hidden) {
-		resultPromise.where(
-			eq(info.is_hidden, is_hidden === 'hidden' ? true : false)
-		);
+		resultPromise.where(eq(info.is_hidden, is_hidden));
 	}
 
 	try {
