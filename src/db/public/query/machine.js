@@ -152,6 +152,8 @@ export async function select(req, res, next) {
 export async function selectByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { order_type } = req.query;
+
 	const machineQuery = sql`SELECT 
 		uuid AS machine_uuid,
 		CONCAT(name, '(', min_capacity::float8, '-', max_capacity::float8, ')') AS machine_name
@@ -255,6 +257,13 @@ export async function selectByDate(req, res, next) {
 	try {
 		const { rows: machines } = await db.execute(machineQuery);
 		const { rows: results } = await db.execute(dataQuery);
+
+		// if order_type = zipper, then filter only zipper orders
+		if (order_type && order_type.toLowerCase() === 'zipper') {
+			results = results.filter((item) => item.is_zipper === 1);
+		} else if (order_type && order_type.toLowerCase() === 'thread') {
+			results = results.filter((item) => item.is_zipper === 0);
+		}
 
 		if (!Array.isArray(machines) || !Array.isArray(results)) {
 			throw new TypeError('Expected results to be an array');

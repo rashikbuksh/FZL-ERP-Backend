@@ -170,7 +170,9 @@ export async function selectSampleReportByDate(req, res, next) {
                                 CASE WHEN vodf.light_preference_name IS NOT NULL THEN ' ,' ELSE '' END,
                                 COALESCE(vodf.light_preference_name, '')
                             ) AS other_details,
-                            ch_details.challan_info
+                            ch_details.challan_info,
+                            oe.bulk_approval,
+                            oe.bulk_approval_date
                         FROM
                             zipper.order_info oi
                         LEFT JOIN zipper.order_description od ON od.order_info_uuid = oi.uuid
