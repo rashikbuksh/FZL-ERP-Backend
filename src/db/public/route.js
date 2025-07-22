@@ -11,6 +11,7 @@ import * as partyOperations from './query/party.js';
 import * as productionCapacityOperations from './query/production_capacity.js';
 import * as propertiesOperations from './query/properties.js';
 import * as sectionOperations from './query/section.js';
+import * as subscriptionOperations from './query/subscription.js';
 
 import Cache from 'memory-cache';
 
@@ -226,5 +227,11 @@ publicRouter.delete(
 	'/production-capacity/:uuid',
 	productionCapacityOperations.remove
 );
+
+publicRouter.get('/subscribe', subscriptionOperations.selectAll);
+publicRouter.get('/subscribe/:uuid', subscriptionOperations.select);
+publicRouter.post('/subscribe', subscriptionOperations.insert);
+publicRouter.put('/subscribe/:uuid', subscriptionOperations.update);
+publicRouter.delete('/subscribe/:uuid', subscriptionOperations.remove);
 
 export { publicRouter };

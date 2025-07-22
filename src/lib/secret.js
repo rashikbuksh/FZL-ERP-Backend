@@ -13,6 +13,8 @@ const {
 	SALT,
 	SERVER_URL,
 	PRODUCTION_URL,
+	VAPID_PUBLIC_KEY,
+	VAPID_PRIVATE_KEY,
 } = process.env;
 
 export {
@@ -26,4 +28,6 @@ export {
 	SERVER_PORT,
 	SERVER_URL,
 	PRODUCTION_URL,
+	VAPID_PUBLIC_KEY,
+	VAPID_PRIVATE_KEY,
 };

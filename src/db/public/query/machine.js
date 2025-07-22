@@ -152,7 +152,7 @@ export async function select(req, res, next) {
 export async function selectByDate(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_type } = req.query;
+	const { order_type, is_sample } = req.query;
 
 	const machineQuery = sql`SELECT 
 		uuid AS machine_uuid,
@@ -217,6 +217,7 @@ export async function selectByDate(req, res, next) {
 			GROUP BY be.dyeing_batch_uuid
 		) AS expected ON zdb.uuid = expected.dyeing_batch_uuid
         WHERE DATE(zdb.production_date) = ${req.params.date}
+		AND ${is_sample == '1' || is_sample == '0' ? sql`vodf.is_sample = ${is_sample}` : sql`TRUE`}
 	UNION 
 		SELECT 
 			DATE(tb.production_date) as date,
@@ -252,11 +253,12 @@ export async function selectByDate(req, res, next) {
 		) AS expected ON tb.uuid = expected.batch_uuid
 
 		WHERE DATE(tb.production_date) = ${req.params.date}
-    `;
+		AND ${is_sample == '1' || is_sample == '0' ? sql`toi.is_sample = ${is_sample}` : sql`TRUE`}
+	`;
 
 	try {
 		const { rows: machines } = await db.execute(machineQuery);
-		const { rows: results } = await db.execute(dataQuery);
+		let { rows: results } = await db.execute(dataQuery);
 
 		// if order_type = zipper, then filter only zipper orders
 		if (order_type && order_type.toLowerCase() === 'zipper') {

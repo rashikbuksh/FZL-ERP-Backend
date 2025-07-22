@@ -13,13 +13,11 @@ export async function selectMarketReport(req, res, next) {
 			: null;
 
 		const query = sql`
-                    SELECT 
-                        marketing.uuid as marketing_uuid,
+                    SELECT
                         marketing.name as marketing_name,
-                        party.uuid as party_uuid,
                         party.name as party_name,
                         ARRAY_AGG(DISTINCT vodf.order_number) as zipper_order_number,
-                        ARRAY_AGG(DISTINCT toi.id) as thread_order_number
+                        ARRAY_AGG(DISTINCT concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', toi.id)) as thread_order_number
                     FROM 
                         public.party
                     LEFT JOIN
@@ -30,8 +28,8 @@ export async function selectMarketReport(req, res, next) {
                         public.marketing ON marketing.uuid = vodf.marketing_uuid OR marketing.uuid = toi.marketing_uuid
                     WHERE
                         ${own_uuid == null ? sql`TRUE` : sql`marketing.uuid = ${marketingUuid}`}
-                    GROUP BY 
-                        marketing.uuid, marketing.name, party.uuid, party.name
+                    GROUP BY
+                        marketing.name, party.name
                     `;
 
 		const resultPromise = db.execute(query);

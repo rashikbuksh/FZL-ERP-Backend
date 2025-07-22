@@ -3,12 +3,30 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import swaggerUi from 'swagger-ui-express';
 import path from 'path';
-import { SERVER_PORT } from './lib/secret.js';
+import {
+	SERVER_PORT,
+	VAPID_PUBLIC_KEY,
+	VAPID_PRIVATE_KEY,
+} from './lib/secret.js';
 import { VerifyToken } from './middleware/auth.js';
 import route from './routes/index.js';
 import swaggerSpec from './swagger.js';
 import cors from './util/cors.js';
 import { apiLogger } from './middleware/logger.js';
+import webPush from 'web-push';
+
+// ! ONE TIME GENERATE VAPID KEYS
+// generate public key and private key for web push notifications
+// const vapidKeys = webPush.generateVAPIDKeys();
+// console.log('Public Key:', vapidKeys.publicKey);
+// console.log('Private Key:', vapidKeys.privateKey);
+
+// Set VAPID keys for web push notifications
+webPush.setVapidDetails(
+	'mailto:rafsan@fortunezip.com',
+	VAPID_PUBLIC_KEY,
+	VAPID_PRIVATE_KEY
+);
 
 const server = express();
 const httpServer = createServer(server);
@@ -289,28 +307,28 @@ server.get(
 	})
 );
 
-// Graceful shutdown handling
-process.on('SIGTERM', () => {
-	console.log('SIGTERM received, shutting down gracefully...');
-	io.close(() => {
-		console.log('Socket.IO server closed');
-		httpServer.close(() => {
-			console.log('HTTP server closed');
-			process.exit(0);
-		});
-	});
-});
+// // Graceful shutdown handling
+// process.on('SIGTERM', () => {
+// 	console.log('SIGTERM received, shutting down gracefully...');
+// 	io.close(() => {
+// 		console.log('Socket.IO server closed');
+// 		httpServer.close(() => {
+// 			console.log('HTTP server closed');
+// 			process.exit(0);
+// 		});
+// 	});
+// });
 
-process.on('SIGINT', () => {
-	console.log('SIGINT received, shutting down gracefully...');
-	io.close(() => {
-		console.log('Socket.IO server closed');
-		httpServer.close(() => {
-			console.log('HTTP server closed');
-			process.exit(0);
-		});
-	});
-});
+// process.on('SIGINT', () => {
+// 	console.log('SIGINT received, shutting down gracefully...');
+// 	io.close(() => {
+// 		console.log('Socket.IO server closed');
+// 		httpServer.close(() => {
+// 			console.log('HTTP server closed');
+// 			process.exit(0);
+// 		});
+// 	});
+// });
 
 // listen
 httpServer.listen(SERVER_PORT, () => {

@@ -255,6 +255,17 @@ export const defProductionCapacity = {
 	xml: 'Public/ProductionCapacity',
 };
 
+export const defSubscribe = SED({
+	required: ['endpoint', 'expiration_time'],
+	properties: {
+		id: SE.integer(),
+		endpoint: SE.string('https://example.com/endpoint'),
+		expiration_time: SE.date_time(),
+		options: SE.array({}),
+	},
+	xml: 'Public/Subscribe',
+});
+
 // * Marge All
 export const defPublic = {
 	buyer: defPublicBuyer,
@@ -269,6 +280,7 @@ export const defPublic = {
 	marketing_team_entry: defMarketingTeamEntry,
 	marketing_team_member_target: defMarketingTeamMemberTarget,
 	production_capacity: defProductionCapacity,
+	subscribe: defSubscribe,
 };
 
 // * Tag
@@ -321,5 +333,9 @@ export const tagPublic = [
 	{
 		name: 'public.production_capacity',
 		description: 'production_capacity',
+	},
+	{
+		name: 'public.subscribe',
+		description: 'subscribe',
 	},
 ];

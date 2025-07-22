@@ -1237,15 +1237,13 @@ export const publicMachine = {
 			tags: ['public.machine'],
 			operationId: 'getSections',
 			parameters: [
-				{
-					name: 'date',
-					in: 'path',
-					description: ' Date',
-					required: true,
-					type: 'string',
-					format: 'date',
-					example: '2024-01-01',
-				},
+				SE.parameter_params('date', 'date', SE.date_time()),
+				SE.parameter_query('is_sample', 'is_sample', ['1', '0', 'all']),
+				SE.parameter_query('order_type', 'order_type', [
+					'thread',
+					'zipper',
+					'all',
+				]),
 			],
 			responses: {
 				200: {
@@ -2176,6 +2174,140 @@ export const publicProductionCapacity = {
 	},
 };
 
+export const pathSubscribe = {
+	'/public/subscribe': {
+		get: {
+			summary: 'Get all subscribe',
+			tags: ['public.subscribe'],
+			operationId: 'getSubscribe',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: {
+									$ref: '#/definitions/public/subscribe',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		post: {
+			summary: 'Create a subscribe',
+			tags: ['public.subscribe'],
+			operationId: 'createSubscribe',
+			parameters: [],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							type: 'object',
+							properties: {
+								email: {
+									type: 'string',
+									example: 'john.doe@example.com',
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	'/public/subscribe/{uuid}': {
+		get: {
+			summary: 'Get a subscribe',
+			tags: ['public.subscribe'],
+			operationId: 'getSubscribe',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								$ref: '#/definitions/public/subscribe',
+							},
+						},
+					},
+				},
+			},
+		},
+		put: {
+			summary: 'Update a subscribe',
+			tags: ['public.subscribe'],
+			operationId: 'updateSubscribe',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			requestBody: {
+				content: {
+					'application/json': {
+						schema: {
+							type: 'object',
+							properties: {
+								email: {
+									type: 'string',
+									example: 'john.doe@example.com',
+								},
+							},
+						},
+					},
+				},
+			},
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+		delete: {
+			summary: 'Delete a subscribe',
+			tags: ['public.subscribe'],
+			operationId: 'deleteSubscribe',
+			parameters: [
+				{
+					name: 'uuid',
+					in: 'path',
+					description: ' UUID',
+					required: true,
+					type: 'string',
+					format: 'uuid',
+					example: 'igD0v9DIJQhJeet',
+				},
+			],
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
+};
+
 export const pathPublic = {
 	...pathPublicBuyer,
 	...pathPublicFactory,
@@ -2189,4 +2321,5 @@ export const pathPublic = {
 	...publicMarketingTeamEntry,
 	...publicMarketingTeamMemberTarget,
 	...publicProductionCapacity,
+	...pathSubscribe,
 };
