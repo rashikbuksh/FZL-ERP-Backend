@@ -56,6 +56,7 @@ import {
 	ProductionReportSnm,
 	ProductionReportThreadSnm,
 } from './query/order_status_report.js';
+import { selectItemMarketingOrderQuantity } from './query/item_wise_order.js';
 
 const reportRouter = Router();
 
@@ -251,6 +252,10 @@ reportRouter.get(
 reportRouter.get(
 	'/order-sheet-send-receive-report-thread',
 	selectOrderSheetSendReceiveReportThread
+);
+reportRouter.get(
+	'/item-marketing-wise-order-quantity',
+	selectItemMarketingOrderQuantity
 );
 
 export const pathReport = {
@@ -1541,6 +1546,27 @@ export const pathReport = {
 					weight: SE.number(610),
 					created_at: SE.date_time(),
 					updated_at: SE.date_time(),
+				}),
+			},
+		},
+	},
+	'/report/item-marketing-wise-order-quantity': {
+		get: {
+			summary: 'Item Marketing Wise Order Quantity',
+			description: 'Item Marketing Wise Order Quantity',
+			tags: ['report'],
+			operationId: 'selectItemMarketingWiseOrderQuantity',
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2024-10-31'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					marketing_uuid: SE.uuid(),
+					marketing_name: SE.string('Marketing Name'),
+					item_uuid: SE.uuid(),
+					item_name: SE.string('Item Name'),
+					order_quantity: SE.number(610),
 				}),
 			},
 		},

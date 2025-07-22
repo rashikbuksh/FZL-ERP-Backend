@@ -69,18 +69,18 @@ export const getFastPageHeader = (from, to) => {
 		widths: [70, '*', 70, '*'],
 		body: [
 			[
-				// {
-				// 	text: `Fortune Zipper Ltd.\n`,
-				// 	width: 70,
-				// 	height: 40,
-				// 	alignment: 'left',
-				// },
 				{
-					image: FZL_LOGO.src,
+					text: `Fortune Zipper Ltd.\n`,
 					width: 70,
 					height: 40,
 					alignment: 'left',
 				},
+				// {
+				// 	image: FZL_LOGO.src,
+				// 	width: 70,
+				// 	height: 40,
+				// 	alignment: 'left',
+				// },
 				{
 					text: [`${company.address}\n`, `${company.phone}\n`],
 					alignment: 'left',
