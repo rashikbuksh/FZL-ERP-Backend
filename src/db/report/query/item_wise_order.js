@@ -12,12 +12,12 @@ export async function selectItemMarketingOrderQuantity(req, res, next) {
                     SELECT 
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) LIKE 'plastic%')
-                            THEN vodf.item_name || ' ' || 'Plastic'
+                            THEN vodf.item_name || ' ' || 'Plastic' || ' - ' || vodf.zipper_number_name
                             WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) = 'invisible')
-                            THEN vodf.item_name || ' ' || 'Invisible'
+                            THEN vodf.item_name || ' ' || 'Invisible' || ' - ' || vodf.zipper_number_name
                             WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%')
-                            THEN vodf.item_name
-                            ELSE vodf.item_name 
+                            THEN vodf.item_name || ' - ' || vodf.zipper_number_name
+                            ELSE vodf.item_name || ' - ' || vodf.zipper_number_name
                         END as item_name,
                         vodf.marketing_name,
                         SUM(oe.quantity::float8)::float8 as marketing_quantity
@@ -31,12 +31,12 @@ export async function selectItemMarketingOrderQuantity(req, res, next) {
                     GROUP BY 
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) LIKE 'plastic%')
-                            THEN vodf.item_name || ' ' || 'Plastic'
+                            THEN vodf.item_name || ' ' || 'Plastic' || ' - ' || vodf.zipper_number_name
                             WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) = 'invisible')
-                            THEN vodf.item_name || ' ' || 'Invisible'
+                            THEN vodf.item_name || ' ' || 'Invisible' || ' - ' || vodf.zipper_number_name
                             WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) NOT LIKE 'plastic%')
-                            THEN vodf.item_name
-                            ELSE vodf.item_name
+                            THEN vodf.item_name || ' - ' || vodf.zipper_number_name
+                            ELSE vodf.item_name || ' - ' || vodf.zipper_number_name
                         END,
                         vodf.marketing_name
                     UNION 
