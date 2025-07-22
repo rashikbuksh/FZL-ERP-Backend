@@ -4,6 +4,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { issue, section_machine } from '../schema.js';
 import webPush from 'web-push';
+import * as publicSchema from '../../public/schema.js';
 
 import { alias } from 'drizzle-orm/pg-core';
 
@@ -73,11 +74,9 @@ export async function insert(req, res, next) {
 			body: `A new issue has been created with ID: ${data[0].insertedUuid}`,
 		});
 
-		const sendNotifications = async () => {
-			const subscriptions = await db
-				.select()
-				.from(hrSchema.subscriptions);
-			for (const subscription of subscriptions) {
+		const sendPushNotifications = async () => {
+			const data = await db.select().from(publicSchema.subscription);
+			for (const subscription of data) {
 				try {
 					await webPush.sendNotification(subscription, payload);
 				} catch (error) {
@@ -89,7 +88,7 @@ export async function insert(req, res, next) {
 			}
 		};
 
-		await sendNotifications();
+		await sendPushNotifications();
 
 		const toast = {
 			status: 201,
