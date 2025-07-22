@@ -84,7 +84,6 @@ export async function selectItemMarketingOrderQuantity(req, res, next) {
 			if (!acc[item.item_name]) {
 				acc[item.item_name] = {
 					item_name: item.item_name,
-                    total_quantity: 0,
 					marketing: [],
 				};
 			}
