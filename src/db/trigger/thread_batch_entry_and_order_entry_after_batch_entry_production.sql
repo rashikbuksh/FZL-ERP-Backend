@@ -21,6 +21,17 @@ BEGIN
             damaged_quantity = damaged_quantity + NEW.production_quantity
         WHERE uuid = NEW.batch_entry_uuid;
 
+        UPDATE thread.order_entry
+        SET
+            damage_quantity = damage_quantity + NEW.production_quantity
+        WHERE
+            uuid = (
+                SELECT order_entry_uuid
+                FROM thread.batch_entry
+                WHERE
+                    uuid = NEW.batch_entry_uuid
+            );
+
     END IF;
 
     RETURN NEW;
@@ -42,11 +53,23 @@ BEGIN
             carton_of_production_quantity = carton_of_production_quantity - OLD.coning_carton_quantity
 
         WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE uuid = OLD.batch_entry_uuid);
+    
     ELSIF OLD.type = 'damage' THEN
         UPDATE thread.batch_entry
         SET
             damaged_quantity = damaged_quantity - OLD.production_quantity
         WHERE uuid = OLD.batch_entry_uuid;
+
+        UPDATE thread.order_entry
+        SET
+            damage_quantity = damage_quantity - OLD.production_quantity
+        WHERE
+            uuid = (
+                SELECT order_entry_uuid
+                FROM thread.batch_entry
+                WHERE
+                    uuid = OLD.batch_entry_uuid
+            );
     END IF;
 
     RETURN OLD;
@@ -68,11 +91,23 @@ BEGIN
             carton_of_production_quantity = carton_of_production_quantity - OLD.coning_carton_quantity + NEW.coning_carton_quantity
 
         WHERE uuid = (SELECT order_entry_uuid FROM thread.batch_entry WHERE uuid = NEW.batch_entry_uuid);
+    
     ELSIF NEW.type = 'damage' THEN
         UPDATE thread.batch_entry
         SET
             damaged_quantity = damaged_quantity - OLD.production_quantity + NEW.production_quantity
         WHERE uuid = NEW.batch_entry_uuid;
+
+        UPDATE thread.order_entry
+        SET
+            damage_quantity = damage_quantity - OLD.production_quantity + NEW.production_quantity
+        WHERE
+            uuid = (
+                SELECT order_entry_uuid
+                FROM thread.batch_entry
+                WHERE
+                    uuid = NEW.batch_entry_uuid
+            );
     END IF;
 
     RETURN NEW;
