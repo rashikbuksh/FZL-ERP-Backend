@@ -256,7 +256,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         SELECT 
                             CONCAT('Z', 
                                     CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
-                                    to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')
+                                    to_char(oi.created_at, 'YY'), '-', oi.id::text
                                 ) AS order_number,
                             oi.uuid as order_info_uuid,
                             pm.name AS marketing_name,

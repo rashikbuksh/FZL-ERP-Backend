@@ -58,7 +58,7 @@ export async function insert(req, res, next) {
 			is_lc_input_manual,
 		})
 		.returning({
-			insertedId: sql`concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))`,
+			insertedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END`,
 		});
 
 	// const piViewPromise = sql`
@@ -88,7 +88,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(pi_cash.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
+			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END`,
 		});
 
 	// const piViewPromise = sql`
@@ -133,7 +133,7 @@ export async function remove(req, res, next) {
 			.delete(pi_cash)
 			.where(eq(pi_cash.uuid, req.params.uuid))
 			.returning({
-				deletedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
+				deletedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END`,
 			});
 
 		const data = await piPromise;
@@ -186,8 +186,8 @@ export async function selectAll(req, res, next) {
 		SELECT 
 			pi_cash.uuid,
 			CASE 
-				WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-				ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+				WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
+				ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
 			END AS id,
 			pi_cash.lc_uuid,
 			lc.lc_number,
@@ -280,8 +280,8 @@ export async function select(req, res, next) {
 			SELECT 
 				pi_cash.uuid,
 				CASE 
-					WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-					ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+					WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
+					ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
 				END AS id,
 				pi_cash.lc_uuid,
 				lc.lc_number,
@@ -344,7 +344,7 @@ export async function select(req, res, next) {
 						jsonb_agg(DISTINCT vodf.order_info_uuid) as order_info_uuids, 
 						jsonb_agg(DISTINCT vodf.order_number) AS order_numbers, 
 						jsonb_agg(DISTINCT toi.uuid) as thread_order_info_uuids, 
-						jsonb_agg(DISTINCT CASE WHEN toi.id IS NOT NULL THEN CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) ELSE NULL END) as thread_order_numbers, 
+						jsonb_agg(DISTINCT CASE WHEN toi.id IS NOT NULL THEN CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', toi.id::text) ELSE NULL END) as thread_order_numbers, 
 						pi_cash_uuid
 				FROM
 					commercial.pi_cash_entry pe 
@@ -520,7 +520,7 @@ export async function updatePiPutLcByPiUuid(req, res, next) {
 		.set({ lc_uuid })
 		.where(eq(pi_cash.uuid, pi_cash_uuid))
 		.returning({
-			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
+			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END`,
 		});
 
 	try {
@@ -556,7 +556,7 @@ export async function updatePiToNullByPiUuid(req, res, next) {
 		.set({ lc_uuid: null })
 		.where(eq(pi_cash.uuid, pi_cash_uuid))
 		.returning({
-			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
+			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END`,
 		});
 
 	try {
@@ -590,8 +590,8 @@ export async function selectPiByLcUuid(req, res, next) {
 			SELECT 
 				pi_cash.uuid,
 				CASE 
-					WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-					ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+					WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
+					ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
 				END AS id,
 				pi_cash.lc_uuid,
 				lc.lc_number,
@@ -665,7 +665,7 @@ export async function selectPiByLcUuid(req, res, next) {
 				SELECT
 					JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT(
 						'thread_order_info_uuid', oi.uuid, 
-						'thread_order_number', CONCAT('ST', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0'))
+						'thread_order_number', CONCAT('ST', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(oi.created_at, 'YY'), '-', oi.id::text)
 					)) FILTER (WHERE oi.uuid IS NOT NULL) AS thread_order_numbers
 				FROM thread.order_info oi
 				WHERE oi.uuid = ANY (
@@ -739,7 +739,7 @@ export async function updatePiPutIsCompletedByPiUuid(req, res, next) {
 		.set({ is_completed, updated_at })
 		.where(eq(pi_cash.uuid, pi_cash_uuid))
 		.returning({
-			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END`,
+			updatedId: sql`CASE WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END`,
 		});
 
 	try {

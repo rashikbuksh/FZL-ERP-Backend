@@ -97,7 +97,7 @@ export async function selectAll(req, res, next) {
 					'PI',
 					to_char(pi_cash.created_at, 'YY'),
 					'-',
-					LPAD(pi_cash.id::text, 4, '0')
+					pi_cash.id::text
 				)
 			) as pi_ids,
 			party.name AS party_name,
@@ -127,7 +127,7 @@ export async function selectAll(req, res, next) {
 				'LC',
 				to_char(lc.created_at, 'YY'),
 				'-',
-				LPAD(lc.id::text, 4, '0')
+				lc.id::text
 			) as file_number,
 			lc.lc_number,
 			lc.lc_date,
@@ -190,7 +190,7 @@ export async function select(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-				CASE WHEN pi_cash.uuid IS NOT NULL THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) END
+				CASE WHEN pi_cash.uuid IS NOT NULL THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END
 			) as pi_ids,
 			party.name AS party_name,
 			CASE WHEN is_old_pi = 0 THEN (
@@ -210,7 +210,7 @@ export async function select(req, res, next) {
 				WHERE pi_cash.lc_uuid = lc.uuid
 			) ELSE lc.lc_value::float8 END AS total_value,
 			concat(
-			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
+			'LC', to_char(lc.created_at, 'YY'), '-', lc.id::text
 			) as file_number,
 			lc.lc_number,
 			lc.lc_date,
@@ -310,7 +310,7 @@ export async function selectLcByLcNumber(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-			CASE WHEN is_old_pi = 0 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) ELSE lc.pi_number END
+			CASE WHEN is_old_pi = 0 THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE lc.pi_number END
 			) as pi_cash_ids,
 			party.name AS party_name,
 			CASE WHEN is_old_pi = 0 THEN(	
@@ -330,7 +330,7 @@ export async function selectLcByLcNumber(req, res, next) {
 				WHERE pi_cash.lc_uuid = lc.uuid
 			) ELSE lc.lc_value::float8 END AS total_value,
 			concat(
-			'LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')
+			'LC', to_char(lc.created_at, 'YY'), '-', lc.id::text
 			) as file_number,
 			lc.lc_number,
 			lc.lc_date,
