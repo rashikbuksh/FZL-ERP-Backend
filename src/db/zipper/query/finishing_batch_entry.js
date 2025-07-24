@@ -647,7 +647,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			AND CASE WHEN ${section} = 'finishing_prod' 
 				THEN zfbe.finishing_prod IS NOT NULL
 				WHEN ${section} = 'teeth_coloring_prod' 
-				THEN zfbe.quantity - (zfbe.quantity - (COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8 > 0
+				THEN (zfbe.quantity - (COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8 > 0
 				ELSE 
 					zfbe.quantity - coalesce(fbt.total_trx_quantity, 0) > 0
 				END
