@@ -176,7 +176,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 					WHEN pe.thread_order_entry_uuid IS NULL THEN vodf.order_number
 					ELSE CONCAT('ST', 
 						CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, 
-						TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')
+						TO_CHAR(toi.created_at, 'YY'), '-', toi.id::text
 					)
 				END AS order_number,
 				CASE 
@@ -434,7 +434,7 @@ export async function selectPiEntryByThreadOrderInfoUuid(req, res, next) {
             toe.uuid as uuid,
             toe.uuid as thread_order_entry_uuid,
             toi.uuid as order_info_uuid,
-            CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+            CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', toi.id::text) as order_number,
             toe.style as style,
             toe.color as color,
 			CONCAT(count_length.count,' ', count_length.length) as count_length_name,

@@ -7,7 +7,7 @@ export async function selectLcFeed(req, res, next) {
 
 	const query = sql`
      		SELECT
-                CONCAT('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) AS file_number,
+                CONCAT('LC', to_char(lc.created_at, 'YY'), '-', lc.id::text) AS file_number,
                 party.name as party_name,
                 marketing.name as marketing_name,
                 lc.commercial_executive as commercial,

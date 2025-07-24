@@ -101,7 +101,7 @@ export async function selectAll(req, res, next) {
 							ELSE '' 
 						END, 
 						TO_CHAR(order_info.created_at, 'YY'), '-', 
-						LPAD(order_info.id::text, 4, '0')
+						order_info.id::text
 					)
 			END`,
 			order_info_uuid: sql`
@@ -155,8 +155,8 @@ export async function selectAll(req, res, next) {
 				WHEN quantity_return.challan_uuid IS NULL
 				THEN null
 				WHEN quantity_return.order_entry_uuid IS NOT NULL
-				THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))
-				ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))
+				THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text)
+				ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text)
 			END`,
 		})
 		.from(quantity_return)
@@ -227,7 +227,7 @@ export async function select(req, res, next) {
 							ELSE '' 
 						END, 
 						TO_CHAR(order_info.created_at, 'YY'), '-', 
-						LPAD(order_info.id::text, 4, '0')
+						order_info.id::text
 					)
 			END`,
 			order_info_uuid: sql`
@@ -281,8 +281,8 @@ export async function select(req, res, next) {
 				WHEN quantity_return.challan_uuid IS NULL
 				THEN null
 				WHEN quantity_return.order_entry_uuid IS NOT NULL
-				THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))
-				ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))
+				THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text)
+				ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text)
 			END`,
 		})
 		.from(quantity_return)

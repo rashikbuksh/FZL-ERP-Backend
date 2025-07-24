@@ -10,7 +10,7 @@ export async function selectDocumentRcvLog(req, res, next) {
 	const query = sql`
         SELECT 
                 count(*) as total_count,
-                CONCAT('LC', to_char(lc.created_at, 'YY'), '-', LPAD(lc.id::text, 4, '0')) AS file_number,
+                CONCAT('LC', to_char(lc.created_at, 'YY'), '-', lc.id::text) AS file_number,
                 party.name as party_name,
                 marketing.name as marketing_name,
                 CASE WHEN is_old_pi = 0 THEN(	
