@@ -110,7 +110,7 @@ export async function selectDeliveryReportZipper(req, res, next) {
             LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
             WHERE 
                 vpld.item_for IN ('zipper', 'slider', 'tape', 'sample_zipper')
-                AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
+                AND ${from && to ? sql`challan.delivery_date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
                 AND ${order_type == 'sample' ? sql` vodf.is_sample = 1` : order_type == 'bulk' ? sql` vodf.is_sample = 0` : sql`TRUE`}
                 
@@ -214,7 +214,7 @@ export async function selectDeliveryReportThread(req, res, next) {
             LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
             WHERE 
                 vpld.item_for IN ('thread', 'sample_thread')
-                AND ${from && to ? sql`challan.delivery_date::date BETWEEN ${from} AND ${to}` : sql`TRUE`}
+                AND ${from && to ? sql`challan.delivery_date BETWEEN ${from} AND ${to}` : sql`TRUE`}
                 AND ${own_uuid == null ? sql`TRUE` : sql`vpld.marketing_uuid = ${marketingUuid}`}
                 AND ${order_type == 'sample' ? sql` toi.is_sample = 1` : order_type == 'bulk' ? sql` toi.is_sample = 0` : sql`TRUE`}
         `;
