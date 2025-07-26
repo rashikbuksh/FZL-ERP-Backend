@@ -427,7 +427,7 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 							finishing_batch_entry.finishing_batch_uuid
 					) fbp ON fbp.finishing_batch_uuid = finishing_batch.uuid
 				WHERE
-					${from_date && to_date ? sql`DATE(finishing_batch.production_date) BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+					${from_date && to_date ? sql`finishing_batch.production_date BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
 					AND fb_sum.batch_quantity::float8 - coalesce(fbp.production_quantity, 0)::float8 > 0
 				GROUP BY
 					vodf.item,
