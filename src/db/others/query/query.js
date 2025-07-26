@@ -770,10 +770,10 @@ export async function selectOrderInfo(req, res, next) {
 				value: zipperSchema.order_info.uuid,
 				label: sql`
 					CASE WHEN ${party_name} = 'true' 
-						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'), 
+						THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', order_info.id::text, 
 						${total_qty === 'true' ? sql`' - B: ' || (oe_sum.quantity - oe_sum.delivered)::float8` : sql`''`},
 						' - ', party.name) 
-						ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
+						ELSE CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', order_info.id::text) 
 					END`,
 				...(page === 'order_sheet' && {
 					party_uuid: zipperSchema.order_info.party_uuid,
@@ -951,7 +951,7 @@ export async function selectOrderZipperThread(req, res, next) {
 						)
 						SELECT
 							${is_description_needed == 'true' ? sql`vodf.order_description_uuid ` : sql`oz.uuid`} AS value,
-							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', LPAD(oz.id::text, 4, '0') ${is_description_needed == 'true' ? sql`,' - ', vodf.item_description` : sql``}) as label,
+							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', oz.id::text ${is_description_needed == 'true' ? sql`,' - ', vodf.item_description` : sql``}) as label,
 							ARRAY_AGG(DISTINCT oe.color) as colors,
 							true as is_zipper
 						FROM
@@ -997,7 +997,7 @@ export async function selectOrderZipperThread(req, res, next) {
 						UNION 
 						SELECT
 							ot.uuid AS value,
-							CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) as label,
+							CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', ot.id::text) as label,
 							ARRAY_AGG(DISTINCT toe.color) as colors,
 							false as is_zipper
 						FROM
@@ -1623,7 +1623,7 @@ export async function selectFinishingBatch(req, res, next) {
 		SELECT
 			finishing_batch.uuid AS value,
 			concat('FB', to_char(finishing_batch.created_at, 'YY'::text),
-				'-', lpad((finishing_batch.id)::text, 4, '0'::text), ' -> ', MAX(vodf.order_number), ' -> ', MAX(vodf.item_description)) as label
+				'-', finishing_batch.id::text, ' -> ', MAX(vodf.order_number), ' -> ', MAX(vodf.item_description)) as label
 		FROM
 			zipper.finishing_batch
 		LEFT JOIN 
@@ -1849,7 +1849,7 @@ export async function selectPi(req, res, next) {
 	const query = sql`
 	SELECT
 		pi_cash.uuid AS value,
-		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) AS label,
+		CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) AS label,
 		bank.name AS pi_bank,
 		ROUND(SUM(
 			CASE 
@@ -1870,7 +1870,7 @@ export async function selectPi(req, res, next) {
 										WHEN toi.is_sample = 1 
 										THEN 'S' 
 										ELSE '' 
-									END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+									END, to_char(toi.created_at, 'YY'), '-', toi.id::text) 
 				END) AS order_number,
 		marketing.name AS marketing_name
 	FROM
@@ -2066,7 +2066,7 @@ export async function selectLabDipRecipe(req, res, next) {
 	const recipePromise = db
 		.select({
 			value: labDipSchema.recipe.uuid,
-			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name, ' - ', recipe.bleaching::text)`,
+			label: sql`concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text, ' - ', recipe.name, ' - ', recipe.bleaching::text)`,
 			approved: labDipSchema.info_entry.approved,
 			status: labDipSchema.recipe.status,
 			info: labDipSchema.info_entry.lab_dip_info_uuid,
@@ -2118,7 +2118,7 @@ export async function selectLabDipShadeRecipe(req, res, next) {
 	const query = sql`
 	SELECT
 		recipe.uuid AS value,
-		concat('LDR', to_char(recipe.created_at, 'YY'), '-', LPAD(recipe.id::text, 4, '0'), ' - ', recipe.name, ' - ', recipe.bleaching::text) AS label,
+		concat('LDR', to_char(recipe.created_at, 'YY'), '-', recipe.id::text, ' - ', recipe.name, ' - ', recipe.bleaching::text) AS label,
 		lab_dip.info.thread_order_info_uuid,
 		recipe.bleaching
 	FROM
@@ -2163,7 +2163,7 @@ export async function selectLabDipInfo(req, res, next) {
 	const InfoPromise = db
 		.select({
 			value: labDipSchema.info.uuid,
-			label: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', LPAD(info.id::text, 4, '0'))`,
+			label: sql`concat('LDI', to_char(info.created_at, 'YY'), '-', info.id::text)`,
 		})
 		.from(labDipSchema.info);
 
@@ -2248,7 +2248,7 @@ export async function selectSliderStockWithOrderDescription(req, res, next) {
 	SELECT
 		stock.uuid AS value,
 		concat(
-			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) , ' ⇾ ',
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', zfb.id::text) , ' ⇾ ',
 			vodf.order_number, ' ⇾ ',
 			vodf.item_description, ' ⇾ ',
 			STRING_AGG(DISTINCT rwn.short_name, ', ') , CASE WHEN rwn.short_name IS NOT NULL THEN ' ⇾ ' ELSE '' END,
@@ -2433,10 +2433,10 @@ export async function selectThreadOrder(req, res, next) {
 				SELECT
 					ot.uuid AS value,
 					CASE WHEN ${party_name} = 'true' 
-						THEN CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0'),
+						THEN CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', ot.id::text,
 						${total_qty === 'true' ? sql`' - B: ' || (toe.quantity - toe.delivered)::float8` : sql`''`},
 						 ' - ', tp.name) 
-						ELSE CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', LPAD(ot.id::text, 4, '0')) 
+						ELSE CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', ot.id::text) 
 					END as label
 				FROM
 					thread.order_info ot

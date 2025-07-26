@@ -42,8 +42,8 @@ export async function insert(req, res, next) {
 			insertedId:
 				req.body.item_for !== 'sample_thread' ||
 				req.body.item_for !== 'thread'
-					? sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`
-					: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`,
+					? sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text)`
+					: sql`concat('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text)`,
 			updatedUuid: challan.uuid,
 		});
 	try {
@@ -93,7 +93,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(challan.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`,
+			updatedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text)`,
 			updatedUuid: challan.uuid,
 		});
 
@@ -117,7 +117,7 @@ export async function remove(req, res, next) {
 		.delete(challan)
 		.where(eq(challan.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0'))`,
+			deletedId: sql`concat('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text)`,
 		});
 
 	try {
@@ -198,14 +198,14 @@ export async function selectAll(req, res, next) {
 			SELECT
 				DISTINCT challan.uuid AS uuid,
 				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-					CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) ELSE
-					CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) END AS challan_number,
+					CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text) ELSE
+					CONCAT('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text) END AS challan_number,
 				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					challan.order_info_uuid ELSE
 					challan.thread_order_info_uuid END AS order_info_uuid,
 				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.order_number ELSE
-					CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
+					CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', toi.id::text) END AS order_number,
 				packing_list_count.packing_list_count AS total_carton_quantity,
 				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.buyer_uuid ELSE
@@ -405,14 +405,14 @@ export async function select(req, res, next) {
 								SELECT
 										challan.uuid as uuid,
 									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) ELSE
-										CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) END AS challan_number,
+										CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text) ELSE
+										CONCAT('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text) END AS challan_number,
 									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 										challan.order_info_uuid ELSE
 										challan.thread_order_info_uuid END AS order_info_uuid,
 									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE
-										CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
+										CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', order_info.id::text) ELSE
+										CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', toi.id::text) END AS order_number,
 									packing_list_count.packing_list_count AS total_carton_quantity,
 									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 										zipper.order_info.buyer_uuid ELSE
@@ -512,8 +512,8 @@ export async function select(req, res, next) {
 								LEFT JOIN (
 											SELECT 
 												array_agg(DISTINCT CASE 
-													WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-													ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+													WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
+													ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
 												END ) AS pi_cash_numbers,
 												vodf.order_info_uuid,
 												toi.uuid AS thread_order_info_uuid
@@ -644,7 +644,7 @@ export async function updateReceivedStatus(req, res, next) {
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
-			concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
+			concat('C', to_char(challan.created_at, 'YY'), '-', challan.id::text) as challan_number,
 			receive_status
 	`;
 
@@ -680,7 +680,7 @@ export async function updateDelivered(req, res, next) {
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
-			concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
+			concat('C', to_char(challan.created_at, 'YY'), '-', challan.id::text) as challan_number,
 			is_delivered
 	`;
 
@@ -719,7 +719,7 @@ export async function updateIsOutForDelivery(req, res, next) {
 		WHERE
 			uuid = ${req.params.uuid}
 		RETURNING
-			concat('C', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) as challan_number,
+			concat('C', to_char(challan.created_at, 'YY'), '-', challan.id::text) as challan_number,
 			is_out_for_delivery
 	`;
 	const resultPromise = db.execute(query);

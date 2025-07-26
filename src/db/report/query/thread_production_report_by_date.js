@@ -16,11 +16,11 @@ export async function threadProductionReportByDate(req, res, next) {
 		const query = sql`
              SELECT 
                 batch.uuid,
-                CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) AS batch_number,
+                CONCAT('TB', to_char(batch.created_at, 'YY'), '-', batch.id::text) AS batch_number,
                 batch.created_at AS batch_created_at,
                 order_entry.uuid as order_entry_uuid,
                 order_info.uuid as order_info_uuid,
-                CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+                CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', order_info.id::text) as order_number,
                 order_info.created_at as order_created_at,
                 order_info.updated_at as order_updated_at,
                 order_info.is_sample,

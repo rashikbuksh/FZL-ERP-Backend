@@ -84,7 +84,7 @@ export async function selectAll(req, res, next) {
 						SELECT
 							cmp.uuid,
 							cmp.pi_uuids,
-							jsonb_agg(DISTINCT concat('PI', to_char(pi_cash_id.created_at, 'YY'), '-', LPAD(pi_cash_id.id::text, 4, '0'))) AS pi_ids,
+							jsonb_agg(DISTINCT concat('PI', to_char(pi_cash_id.created_at, 'YY'), '-', pi_cash_id.id::text)) AS pi_ids,
 							cmpe_total_value.total_value AS total_value,
 							cmpe_total_value.order_number AS order_number,
 							cmp.marketing_uuid,
