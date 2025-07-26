@@ -478,11 +478,12 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 						const filteredRows = dateWiseData[date].filter(
 							(dataRow) => {
 								const itemName =
-									dataRow.item_name.toLowerCase();
+									dataRow?.item_name?.toLowerCase() || '';
 								const endTypeName =
-									dataRow.end_type_name.toLowerCase();
+									dataRow?.end_type_name?.toLowerCase() || '';
 								const zipperNumberName =
-									dataRow.zipper_number_name.toLowerCase();
+									dataRow?.zipper_number_name?.toLowerCase() ||
+									'';
 
 								if (
 									itemName === 'metal' &&
