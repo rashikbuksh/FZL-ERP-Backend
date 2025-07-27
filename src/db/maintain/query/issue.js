@@ -81,13 +81,13 @@ export async function insert(req, res, next) {
 					// convert to object
 					const pushSubscription = JSON.parse(subscription.endpoint);
 					console.log(
-						`Sending notification to:   ${pushSubscription.endpoint}`
+						`Sending notification to: --->>> ${pushSubscription}`
 					);
 
 					await webPush.sendNotification(pushSubscription, payload);
 				} catch (error) {
 					console.error(
-						`Failed to send notification to ${subscription.endpoint}:`,
+						`Failed to send notification to --->>> ${subscription.endpoint}`,
 						error
 					);
 				}
