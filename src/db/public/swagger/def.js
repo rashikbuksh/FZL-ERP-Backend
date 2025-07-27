@@ -260,8 +260,7 @@ export const defSubscribe = SED({
 	properties: {
 		id: SE.integer(),
 		endpoint: SE.string('https://example.com/endpoint'),
-		expiration_time: SE.date_time(),
-		options: SE.array({}),
+		created_at: SE.date_time(),
 	},
 	xml: 'Public/Subscribe',
 });

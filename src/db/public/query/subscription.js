@@ -83,9 +83,9 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const subscriptionPromise = db
 		.select({
-			uuid: subscription.uuid,
 			id: subscription.id,
 			endpoint: subscription.endpoint,
+			created_at: subscription.created_at,
 		})
 		.from(subscription);
 
@@ -113,9 +113,9 @@ export async function select(req, res, next) {
 
 	const subscriptionPromise = db
 		.select({
-			uuid: subscription.uuid,
 			id: subscription.id,
 			endpoint: subscription.endpoint,
+			created_at: subscription.created_at,
 		})
 		.from(subscription)
 		.leftJoin(

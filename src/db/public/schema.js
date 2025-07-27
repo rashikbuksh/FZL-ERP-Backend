@@ -186,9 +186,9 @@ export const production_capacity = pgTable('production_capacity', {
 });
 
 export const subscription = pgTable('subscription', {
-	uuid: uuid_primary,
 	id: serial('id'),
 	endpoint: text('endpoint').notNull(),
+	created_at: DateTime('created_at').notNull(),
 });
 
 export default buyer;
