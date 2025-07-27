@@ -119,7 +119,13 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
 		LEFT JOIN (
 			SELECT 
-				ARRAY_AGG(DISTINCT vodf.item_description) as item_descriptions,
+				jsonb_agg(
+					json_build_object(
+						'item_description', vodf.item_description,
+						'order_description_uuid', vodf.order_description_uuid,
+						'order_number', vodf.order_number
+					)
+				) as item_descriptions,
 				ARRAY_AGG(DISTINCT order_entry.style) as styles,
 				ARRAY_AGG(DISTINCT order_entry.color) as colors,
 				ARRAY_AGG(DISTINCT order_entry.color_ref) as color_refs,
