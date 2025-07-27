@@ -44,8 +44,8 @@ export async function selectItemMarketingOrderQuantity(req, res, next) {
                     UNION 
                     SELECT 
                         CONCAT('ST', ' - ', count_length.count, ' - ', count_length.length) as item_name,
-                        public.marketing.name as marketing_name,
                         'Thread' as type,
+                        public.marketing.name as marketing_name,
                         SUM(oe.quantity::float8)::float8 as marketing_quantity
                     FROM
                         thread.order_entry oe
