@@ -106,6 +106,7 @@ export async function selectAll(req, res, next) {
 			oe_colors.colors as color,
 			oe_colors.color_refs as color_refs,
 			oe_colors.styles as style,
+			oe_colors.bulk_approval_date as bulk_approval_date,
 			dyeing_batch.batch_type as batch_type,
 			dyeing_batch.order_info_uuid,
 			machine.water_capacity::float8 as water_capacity
