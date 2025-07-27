@@ -28,7 +28,7 @@ export async function selectItemMarketingOrderQuantity(req, res, next) {
                         LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                     WHERE 
                         vodf.is_cancelled = FALSE
-                        ${from_date && to_date ? sql`AND vodf.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
+                        ${from_date && to_date ? sql`AND vodf.order_description_created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
                     GROUP BY 
                         CASE 
                             WHEN (vodf.item_name = 'Nylon' AND LOWER(vodf.nylon_stopper_name) LIKE 'plastic%')
