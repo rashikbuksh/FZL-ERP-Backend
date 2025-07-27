@@ -118,25 +118,42 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN zipper.sfg ON dyeing_batch_entry.sfg_uuid = zipper.sfg.uuid
 		LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
 		LEFT JOIN (
-			SELECT 
+			SELECT
 				jsonb_agg(
 					json_build_object(
-						'item_description', vodf.item_description,
-						'order_description_uuid', vodf.order_description_uuid,
-						'order_number', vodf.order_number
+						'order_description_uuid',
+						order_description_uuid,
+						'item_description',
+						item_description,
+						'order_number',
+						order_number
 					)
 				) as item_descriptions,
-				ARRAY_AGG(DISTINCT order_entry.style) as styles,
-				ARRAY_AGG(DISTINCT order_entry.color) as colors,
-				ARRAY_AGG(DISTINCT order_entry.color_ref) as color_refs,
-				MAX(order_entry.bulk_approval_date) as bulk_approval_date,
-				dyeing_batch.uuid
-			FROM zipper.order_entry
-			LEFT JOIN zipper.sfg ON order_entry.uuid = sfg.order_entry_uuid
-			LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-			LEFT JOIN zipper.dyeing_batch_entry on dyeing_batch_entry.sfg_uuid = sfg.uuid
-			LEFT JOIN zipper.dyeing_batch on dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
-			GROUP BY dyeing_batch.uuid
+				ARRAY_AGG(DISTINCT style) as styles,
+				ARRAY_AGG(DISTINCT color) as colors,
+				ARRAY_AGG(
+					DISTINCT color_ref
+				) as color_refs,
+				MAX(bulk_approval_date) as bulk_approval_date,
+				dyeing_batch_uuid as uuid
+			FROM (
+				SELECT DISTINCT
+					vodf.order_description_uuid,
+					vodf.item_description,
+					vodf.order_number,
+					order_entry.style,
+					order_entry.color,
+					order_entry.color_ref,
+					order_entry.bulk_approval_date,
+					dyeing_batch.uuid as dyeing_batch_uuid
+				FROM zipper.order_entry
+					LEFT JOIN zipper.sfg ON order_entry.uuid = sfg.order_entry_uuid
+					LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+					LEFT JOIN zipper.dyeing_batch_entry on dyeing_batch_entry.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.dyeing_batch on dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
+			) distinct_data
+			GROUP BY
+				dyeing_batch_uuid
 		) AS oe_colors ON dyeing_batch.uuid = oe_colors.uuid
 		LEFT JOIN (
 			SELECT 
