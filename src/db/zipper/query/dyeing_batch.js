@@ -175,7 +175,6 @@ export async function selectAll(req, res, next) {
 					: sql`1 = 1`
 		}
 		AND expected.order_numbers IS NOT NULL
-		GROUP BY dyeing_batch.uuid, public.machine.name, public.machine.min_capacity, public.machine.max_capacity, users.name, expected.total_quantity, expected.expected_kg, expected.order_numbers, expected.total_actual_production_quantity, expected.party_name, oe_colors.colors, oe_colors.styles, machine.water_capacity, oe_colors.color_refs
 		ORDER BY expected.order_numbers DESC, dyeing_batch.id DESC
 	`;
 	const resultPromise = db.execute(query);
