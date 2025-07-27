@@ -19,6 +19,7 @@ export async function selectItemMarketingOrderQuantity(req, res, next) {
                             THEN vodf.item_name || ' - ' || vodf.zipper_number_name
                             ELSE vodf.item_name || ' - ' || vodf.zipper_number_name
                         END as item_name,
+                        vodf.item_name as type,
                         vodf.marketing_name,
                         SUM(oe.quantity::float8)::float8 as marketing_quantity
                     FROM
@@ -38,11 +39,13 @@ export async function selectItemMarketingOrderQuantity(req, res, next) {
                             THEN vodf.item_name || ' - ' || vodf.zipper_number_name
                             ELSE vodf.item_name || ' - ' || vodf.zipper_number_name
                         END,
+                        vodf.item_name,
                         vodf.marketing_name
                     UNION 
                     SELECT 
                         CONCAT('ST', ' - ', count_length.count, ' - ', count_length.length) as item_name,
                         public.marketing.name as marketing_name,
+                        'Thread' as type,
                         SUM(oe.quantity::float8)::float8 as marketing_quantity
                     FROM
                         thread.order_entry oe
@@ -53,7 +56,7 @@ export async function selectItemMarketingOrderQuantity(req, res, next) {
                         oi.is_cancelled = FALSE
                         ${from_date && to_date ? sql`AND oi.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
                     GROUP BY 
-                        count_length.count, count_length.length, public.marketing.name
+                        count_length.count, count_length.length, public.marketing.name, type
                     ORDER BY 
                         item_name;
     `;
@@ -84,6 +87,7 @@ export async function selectItemMarketingOrderQuantity(req, res, next) {
 			if (!acc[item.item_name]) {
 				acc[item.item_name] = {
 					item_name: item.item_name,
+					type: item.type,
 					marketing: [],
 				};
 			}

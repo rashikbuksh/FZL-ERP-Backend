@@ -1563,6 +1563,7 @@ export const pathReport = {
 			responses: {
 				200: SE.response_schema(200, {
 					item_name: SE.string('Item Name'),
+					type: SE.string('type'),
 					marketing: SE.sub_response_schema({
 						marketing_uuid: SE.uuid(),
 						marketing_name: SE.string('Marketing Name'),
