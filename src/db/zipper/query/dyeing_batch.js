@@ -99,10 +99,10 @@ export async function selectAll(req, res, next) {
 			expected.total_quantity::float8,
 			expected.expected_kg::float8,
 			expected.order_numbers,
+			item_descriptions.item_descriptions,
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
 			dyeing_batch.production_date::date as production_date,
 			expected.party_name,
-			oe_colors.item_descriptions as item_descriptions,
 			oe_colors.colors as color,
 			oe_colors.color_refs as color_refs,
 			oe_colors.styles as style,
@@ -119,16 +119,6 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
 		LEFT JOIN (
 			SELECT
-				jsonb_agg(
-					json_build_object(
-						'order_description_uuid',
-						order_description_uuid,
-						'item_description',
-						item_description,
-						'order_number',
-						order_number
-					)
-				) as item_descriptions,
 				ARRAY_AGG(DISTINCT style) as styles,
 				ARRAY_AGG(DISTINCT color) as colors,
 				ARRAY_AGG(
@@ -137,10 +127,7 @@ export async function selectAll(req, res, next) {
 				MAX(bulk_approval_date) as bulk_approval_date,
 				dyeing_batch_uuid as uuid
 			FROM (
-				SELECT DISTINCT
-					vodf.order_description_uuid,
-					vodf.item_description,
-					vodf.order_number,
+				SELECT
 					order_entry.style,
 					order_entry.color,
 					order_entry.color_ref,
@@ -148,7 +135,6 @@ export async function selectAll(req, res, next) {
 					dyeing_batch.uuid as dyeing_batch_uuid
 				FROM zipper.order_entry
 					LEFT JOIN zipper.sfg ON order_entry.uuid = sfg.order_entry_uuid
-					LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
 					LEFT JOIN zipper.dyeing_batch_entry on dyeing_batch_entry.sfg_uuid = sfg.uuid
 					LEFT JOIN zipper.dyeing_batch on dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
 			) distinct_data
@@ -190,6 +176,30 @@ export async function selectAll(req, res, next) {
 
 			GROUP BY be.dyeing_batch_uuid
 		) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
+		LEFT JOIN (
+			SELECT
+				jsonb_agg(
+					json_build_object(
+						'order_description_uuid', order_description_uuid,
+						'item_description', item_description,
+						'order_number', order_number
+					)
+				) as item_descriptions,
+				dyeing_batch_uuid
+			FROM (
+				SELECT DISTINCT
+					vodf.order_description_uuid,
+					vodf.item_description,
+					vodf.order_number,
+					dyeing_batch.uuid as dyeing_batch_uuid
+				FROM zipper.dyeing_batch_entry be
+					LEFT JOIN zipper.dyeing_batch dyeing_batch ON be.dyeing_batch_uuid = dyeing_batch.uuid
+					LEFT JOIN zipper.sfg ON be.sfg_uuid = zipper.sfg.uuid
+					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+					LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+			) distinct_items
+			GROUP BY dyeing_batch_uuid
+		) AS item_descriptions ON dyeing_batch.uuid = item_descriptions.dyeing_batch_uuid
 		WHERE ${
 			type === 'pending'
 				? sql`dyeing_batch.received = 0`
