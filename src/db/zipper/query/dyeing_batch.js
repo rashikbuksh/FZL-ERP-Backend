@@ -82,7 +82,7 @@ export async function selectAll(req, res, next) {
 	const { type } = req.query;
 	const query = sql`
 		SELECT 
-			dyeing_batch.uuid,
+			DISTINCT dyeing_batch.uuid,
 			dyeing_batch.id,
 			concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as batch_id,
 			dyeing_batch.batch_status,
