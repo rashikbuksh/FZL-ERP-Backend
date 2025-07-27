@@ -3,6 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { subscription } from '../schema.js';
+import { uuid } from 'drizzle-orm/gel-core/index.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -83,10 +84,9 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const subscriptionPromise = db
 		.select({
+			uuid: subscription.uuid,
 			id: subscription.id,
 			endpoint: subscription.endpoint,
-			expiration_time: subscription.expiration_time,
-			options: subscription.options,
 		})
 		.from(subscription);
 
@@ -114,10 +114,9 @@ export async function select(req, res, next) {
 
 	const subscriptionPromise = db
 		.select({
+			uuid: subscription.uuid,
 			id: subscription.id,
 			endpoint: subscription.endpoint,
-			expiration_time: subscription.expiration_time,
-			options: subscription.options,
 		})
 		.from(subscription)
 		.leftJoin(

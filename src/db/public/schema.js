@@ -1,9 +1,7 @@
 import {
 	boolean,
-	date,
 	index,
 	integer,
-	json,
 	pgEnum,
 	pgTable,
 	serial,
@@ -188,10 +186,9 @@ export const production_capacity = pgTable('production_capacity', {
 });
 
 export const subscription = pgTable('subscription', {
+	uuid: uuid_primary,
 	id: serial('id'),
 	endpoint: text('endpoint').notNull(),
-	expiration_time: date('expiration_time').default(null),
-	options: json('options').default(null),
 });
 
 export default buyer;
