@@ -102,6 +102,7 @@ export async function selectAll(req, res, next) {
 			ROUND(expected.total_actual_production_quantity::numeric, 3)::float8 AS total_actual_production_quantity,
 			dyeing_batch.production_date::date as production_date,
 			expected.party_name,
+			oe_colors.item_descriptions as item_descriptions,
 			oe_colors.colors as color,
 			oe_colors.color_refs as color_refs,
 			oe_colors.styles as style,
@@ -117,12 +118,15 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
 		LEFT JOIN (
 			SELECT 
+				ARRAY_AGG(DISTINCT vodf.item_description) as item_descriptions,
 				ARRAY_AGG(DISTINCT order_entry.style) as styles,
 				ARRAY_AGG(DISTINCT order_entry.color) as colors,
 				ARRAY_AGG(DISTINCT order_entry.color_ref) as color_refs,
+				MAX(order_entry.bulk_approval_date) as bulk_approval_date,
 				dyeing_batch.uuid
 			FROM zipper.order_entry
 			LEFT JOIN zipper.sfg ON order_entry.uuid = sfg.order_entry_uuid
+			LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
 			LEFT JOIN zipper.dyeing_batch_entry on dyeing_batch_entry.sfg_uuid = sfg.uuid
 			LEFT JOIN zipper.dyeing_batch on dyeing_batch.uuid = dyeing_batch_entry.dyeing_batch_uuid
 			GROUP BY dyeing_batch.uuid
