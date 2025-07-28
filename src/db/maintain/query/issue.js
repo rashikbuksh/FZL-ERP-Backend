@@ -78,10 +78,10 @@ export async function insert(req, res, next) {
 			const data = await db.select().from(publicSchema.subscription);
 			for (const subscription of data) {
 				try {
-					// convert to object
+					// Parse the subscription object from the endpoint field
 					const pushSubscription = JSON.parse(subscription.endpoint);
 					console.log(
-						`Sending notification to: --->>> ${pushSubscription}`
+						`Sending notification to: --->>> ${pushSubscription.endpoint}`
 					);
 
 					await webPush.sendNotification(pushSubscription, payload);
