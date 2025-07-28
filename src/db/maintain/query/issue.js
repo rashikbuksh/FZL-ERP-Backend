@@ -30,53 +30,6 @@ export async function insert(req, res, next) {
 	try {
 		const data = await issueEntryPromise;
 
-		// // Get the Socket.IO instance and broadcast the new issue event
-		// //const io = getIO();
-		// // io.emit('new-issue', {
-		// // 	message: 'A new issue has been created',
-		// // 	issueData: {
-		// // 		uuid: data[0].insertedUuid,
-		// // 		...newIssue,
-		// // 	},
-		// // });
-		// //io.emit('new-issue', 'A new issue has been arrived');
-
-		// // Debug getIO function
-		// console.log('🔴 Calling getIO()...');
-		// const { io, broadcastToAll } = getIO();
-		// console.log('🔴 getIO() returned:', typeof io);
-
-		// if (!io) {
-		// 	console.log('🔴 ERROR: io is null or undefined');
-		// 	return;
-		// }
-
-		// console.log('🔴 IO engine exists:', !!io.engine);
-		// console.log('🔴 Connected clients:', io.engine?.clientsCount || 0);
-		// console.log('🔴 About to emit new-issue event...');
-
-		// // Use the destructured io instance
-		// io.emit('new-issue', {
-		// 	message: 'A new issue has been created',
-		// 	issueData: {
-		// 		uuid: data[0].insertedUuid,
-		// 		timestamp: new Date().toISOString(),
-		// 	},
-		// });
-
-		// // Or use the helper function
-		// // broadcastToAll('new-issue', {
-		// // 	message: 'A new issue has been created',
-		// // 	issueData: {
-		// // 		uuid: data[0].insertedUuid,
-		// // 		timestamp: new Date().toISOString()
-		// // 	}
-		// // });
-
-		// console.log('🔴 ✅ Socket.IO emit completed successfully');
-
-		// send push notification to every subscribe user using web-push
-
 		const payload = JSON.stringify({
 			title: 'New Issue Created',
 			body: `A new issue has been created with ID: ${data[0].insertedUuid}`,
@@ -103,59 +56,17 @@ export async function insert(req, res, next) {
 						`🔍 Validating subscription: ${JSON.stringify(pushSubscription)}`
 					);
 
-					// Fix the endpoint URL format for FCM (this is required!)
-					if (pushSubscription.endpoint.includes('/fcm/send/')) {
-						pushSubscription.endpoint =
-							pushSubscription.endpoint.replace(
-								'/fcm/send/',
-								'/wp/'
-							);
-						console.log(
-							`🔄 Converted endpoint to new format: ${JSON.stringify(pushSubscription)}`
-						);
-					}
-
-					console.log(
-						`📨 Sending notification to: ${JSON.stringify(pushSubscription)}`
-					);
-
 					await webPush.sendNotification(pushSubscription, payload);
 					successCount++;
 				} catch (error) {
 					errorCount++;
-					const endpointPreview =
-						subscription.endpoint.substring(0, 100) + '...';
+					const endpointPreview = subscription.endpoint;
 					console.error(
 						`❌ Failed to send notification to: ${endpointPreview}`
 					);
 					console.error(
 						`❌ Error details: Status ${error.statusCode}, Message: ${error.message}`
 					);
-
-					// If it's a 404/410/400 error, the subscription is invalid and should be removed
-					// if ([400, 404, 410].includes(error.statusCode)) {
-					// 	console.log(
-					// 		`🗑️ Removing invalid subscription (status ${error.statusCode})`
-					// 	);
-					// 	try {
-					// 		await db
-					// 			.delete(publicSchema.subscription)
-					// 			.where(
-					// 				eq(
-					// 					publicSchema.subscription.endpoint,
-					// 					subscription.endpoint
-					// 				)
-					// 			);
-					// 		console.log(
-					// 			`✅ Invalid subscription removed successfully`
-					// 		);
-					// 	} catch (deleteError) {
-					// 		console.error(
-					// 			'❌ Failed to delete invalid subscription:',
-					// 			deleteError.message
-					// 		);
-					// 	}
-					// }
 				}
 			}
 
