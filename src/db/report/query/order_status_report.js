@@ -146,7 +146,7 @@ export async function ProductionReportSnm(req, res, next) {
                         dbea.total_production_quantity,
                         (db.received = 1) as received,
                         db.batch_type,
-                        machine.name as dyeing_machine,
+                        (machine.name || ' (' || machine.min_capacity::float8::text || ' - ' || machine.max_capacity::float8::text || ')') as dyeing_machine,
                         db.created_at as batch_created_at,
                         ROUND(
                             CASE
@@ -408,7 +408,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                         beql.coning_production_quantity,
                         beql.total_weight as yarn_issued,
                         b.is_drying_complete,
-                        machine.name as machine,
+                        (machine.name || ' (' || machine.min_capacity::float8::text || ' - ' || machine.max_capacity::float8::text || ')') as machine,
                         b.created_at as batch_created_at,
                         b.batch_type,
                         ROUND(beql.total_quantity::numeric * tcl.max_weight::numeric, 3) as expected_kg,
