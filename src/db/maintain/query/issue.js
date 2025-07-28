@@ -11,6 +11,8 @@ import { alias } from 'drizzle-orm/pg-core';
 const maintain_by_user = alias(hrSchema.users, 'maintain_by_user');
 const verification_by_user = alias(hrSchema.users, 'verification_by_user');
 
+import { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } from './lib/secret.js';
+
 webPush.setVapidDetails(
 	'mailto:rafsan@fortunezip.com',
 	VAPID_PUBLIC_KEY,
