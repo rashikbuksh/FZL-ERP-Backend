@@ -3,7 +3,6 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { issue, section_machine } from '../schema.js';
-import webPush from 'web-push';
 import * as publicSchema from '../../public/schema.js';
 
 import { alias } from 'drizzle-orm/pg-core';
@@ -83,25 +82,11 @@ export async function insert(req, res, next) {
 		});
 
 		const sendPushNotifications = async () => {
-			const subscriptionData = await db
-				.select()
-				.from(publicSchema.subscription);
-			let successCount = 0;
-			let errorCount = 0;
-
-			for (const subscription of subscriptionData) {
+			const data = await db.select().from(publicSchema.subscription);
+			for (const subscription of data) {
 				try {
 					// Parse the subscription object from the endpoint field
 					const pushSubscription = JSON.parse(subscription.endpoint);
-
-					// Validate subscription object
-					if (!pushSubscription.endpoint || !pushSubscription.keys) {
-						console.warn(
-							`Invalid subscription format: ${subscription.endpoint}`
-						);
-						errorCount++;
-						continue;
-					}
 
 					// Fix the endpoint URL format for FCM
 					// if (pushSubscription.endpoint.includes('/fcm/send/')) {
@@ -113,24 +98,17 @@ export async function insert(req, res, next) {
 					// }
 
 					console.log(
-						`Sending notification to: --->>> ${pushSubscription}`
+						`Sending notification to: --->>> ${pushSubscription.endpoint}`
 					);
 
 					await webPush.sendNotification(pushSubscription, payload);
-					successCount++;
-					console.log(`✅ Notification sent successfully`);
 				} catch (error) {
-					errorCount++;
 					console.error(
 						`Failed to send notification to --->>> ${subscription.endpoint}`,
-						error.message || error
+						error
 					);
 				}
 			}
-
-			console.log(
-				`📊 Push notification summary: ${successCount} sent, ${errorCount} failed`
-			);
 		};
 
 		await sendPushNotifications();
