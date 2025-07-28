@@ -83,33 +83,86 @@ export async function insert(req, res, next) {
 		});
 
 		const sendPushNotifications = async () => {
-			const data = await db.select().from(publicSchema.subscription);
-			for (const subscription of data) {
+			const subscriptionData = await db
+				.select()
+				.from(publicSchema.subscription);
+			let successCount = 0;
+			let errorCount = 0;
+
+			console.log(
+				`📤 Attempting to send notifications to ${subscriptionData.length} subscribers`
+			);
+
+			for (const subscription of subscriptionData) {
 				try {
 					// Parse the subscription object from the endpoint field
 					const pushSubscription = JSON.parse(subscription.endpoint);
 
-					// Fix the endpoint URL format for FCM
-					// if (pushSubscription.endpoint.includes('/fcm/send/')) {
-					// 	pushSubscription.endpoint =
-					// 		pushSubscription.endpoint.replace(
-					// 			'/fcm/send/',
-					// 			'/wp/'
-					// 		);
-					// }
+					// Validate subscription object
+					if (!pushSubscription.endpoint || !pushSubscription.keys) {
+						console.warn(
+							`❌ Invalid subscription format: ${subscription.endpoint}`
+						);
+						errorCount++;
+						continue;
+					}
+
+					// Fix the endpoint URL format for FCM (this is required!)
+					if (pushSubscription.endpoint.includes('/fcm/send/')) {
+						pushSubscription.endpoint =
+							pushSubscription.endpoint.replace(
+								'/fcm/send/',
+								'/wp/'
+							);
+						console.log(
+							`🔄 Converted endpoint to new format: ${pushSubscription.endpoint}`
+						);
+					}
 
 					console.log(
-						`Sending notification to: --->>> ${pushSubscription.endpoint}`
+						`📨 Sending notification to: ${pushSubscription.endpoint}`
 					);
 
 					await webPush.sendNotification(pushSubscription, payload);
+					successCount++;
+					console.log(`✅ Notification sent successfully`);
 				} catch (error) {
+					errorCount++;
 					console.error(
-						`Failed to send notification to --->>> ${subscription.endpoint}`,
-						error
+						`❌ Failed to send notification:`,
+						error.message || error
 					);
+
+					// If it's a 404/410 error, the subscription is invalid and should be removed
+					// if (error.statusCode === 404 || error.statusCode === 410) {
+					// 	console.log(
+					// 		`🗑️ Removing invalid subscription from database`
+					// 	);
+					// 	try {
+					// 		await db
+					// 			.delete(publicSchema.subscription)
+					// 			.where(
+					// 				eq(
+					// 					publicSchema.subscription.endpoint,
+					// 					subscription.endpoint
+					// 				)
+					// 			);
+					// 		console.log(
+					// 			`✅ Invalid subscription removed successfully`
+					// 		);
+					// 	} catch (deleteError) {
+					// 		console.error(
+					// 			'❌ Failed to delete invalid subscription:',
+					// 			deleteError
+					// 		);
+					// 	}
+					// }
 				}
 			}
+
+			console.log(
+				`📊 Push notification summary: ${successCount} sent, ${errorCount} failed`
+			);
 		};
 
 		await sendPushNotifications();
