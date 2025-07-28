@@ -22,7 +22,7 @@ import webPush from 'web-push';
 // console.log('Private Key:', vapidKeys.privateKey);
 
 // Set VAPID keys for web push notifications
-webPush.setVapidDetails(
+export const webPushKey = webPush.setVapidDetails(
 	'mailto:rafsan@fortunezip.com',
 	VAPID_PUBLIC_KEY,
 	VAPID_PRIVATE_KEY
