@@ -64,9 +64,7 @@ export async function insert(req, res, next) {
 					console.error(
 						`❌ Failed to send notification to: ${endpointPreview}`
 					);
-					console.error(
-						`❌ Error details: Status ${error.statusCode}, Message: ${error.message}`
-					);
+					console.error(`❌ Error details: ${error}`);
 				}
 			}
 
