@@ -80,6 +80,16 @@ export async function insert(req, res, next) {
 				try {
 					// Parse the subscription object from the endpoint field
 					const pushSubscription = JSON.parse(subscription.endpoint);
+
+					// Fix the endpoint URL format for FCM
+					if (pushSubscription.endpoint.includes('/fcm/send/')) {
+						pushSubscription.endpoint =
+							pushSubscription.endpoint.replace(
+								'/fcm/send/',
+								'/wp/'
+							);
+					}
+
 					console.log(
 						`Sending notification to: --->>> ${pushSubscription.endpoint}`
 					);
