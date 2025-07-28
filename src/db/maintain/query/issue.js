@@ -125,44 +125,56 @@ export async function insert(req, res, next) {
 
 					await webPush.sendNotification(pushSubscription, payload);
 					successCount++;
-					console.log(`✅ Notification sent successfully`);
+					console.log(
+						`✅ Notification sent successfully to ${pushSubscription.endpoint.substring(0, 50)}...`
+					);
 				} catch (error) {
 					errorCount++;
+					const endpointPreview =
+						subscription.endpoint.substring(0, 100) + '...';
 					console.error(
-						`❌ Failed to send notification:`,
-						error.message || error
+						`❌ Failed to send notification to: ${endpointPreview}`
+					);
+					console.error(
+						`❌ Error details: Status ${error.statusCode}, Message: ${error.message}`
 					);
 
-					// If it's a 404/410 error, the subscription is invalid and should be removed
-					// if (error.statusCode === 404 || error.statusCode === 410) {
-					// 	console.log(
-					// 		`🗑️ Removing invalid subscription from database`
-					// 	);
-					// 	try {
-					// 		await db
-					// 			.delete(publicSchema.subscription)
-					// 			.where(
-					// 				eq(
-					// 					publicSchema.subscription.endpoint,
-					// 					subscription.endpoint
-					// 				)
-					// 			);
-					// 		console.log(
-					// 			`✅ Invalid subscription removed successfully`
-					// 		);
-					// 	} catch (deleteError) {
-					// 		console.error(
-					// 			'❌ Failed to delete invalid subscription:',
-					// 			deleteError
-					// 		);
-					// 	}
-					// }
+					// If it's a 404/410/400 error, the subscription is invalid and should be removed
+					if ([400, 404, 410].includes(error.statusCode)) {
+						console.log(
+							`🗑️ Removing invalid subscription (status ${error.statusCode})`
+						);
+						try {
+							await db
+								.delete(publicSchema.subscription)
+								.where(
+									eq(
+										publicSchema.subscription.endpoint,
+										subscription.endpoint
+									)
+								);
+							console.log(
+								`✅ Invalid subscription removed successfully`
+							);
+						} catch (deleteError) {
+							console.error(
+								'❌ Failed to delete invalid subscription:',
+								deleteError.message
+							);
+						}
+					}
 				}
 			}
 
 			console.log(
-				`📊 Push notification summary: ${successCount} sent, ${errorCount} failed`
+				`📊 Push notification summary: ${successCount} sent successfully, ${errorCount} failed`
 			);
+
+			if (errorCount > 0) {
+				console.log(
+					`💡 Note: Failed notifications are typically due to expired/invalid subscription tokens`
+				);
+			}
 		};
 
 		await sendPushNotifications();
