@@ -99,13 +99,9 @@ export async function insert(req, res, next) {
 					const pushSubscription = JSON.parse(subscription.endpoint);
 
 					// Validate subscription object
-					if (!pushSubscription.endpoint || !pushSubscription.keys) {
-						console.warn(
-							`❌ Invalid subscription format: ${subscription.endpoint}`
-						);
-						errorCount++;
-						continue;
-					}
+					console.log(
+						`🔍 Validating subscription: ${JSON.stringify(pushSubscription)}`
+					);
 
 					// Fix the endpoint URL format for FCM (this is required!)
 					if (pushSubscription.endpoint.includes('/fcm/send/')) {
@@ -115,19 +111,16 @@ export async function insert(req, res, next) {
 								'/wp/'
 							);
 						console.log(
-							`🔄 Converted endpoint to new format: ${pushSubscription.endpoint}`
+							`🔄 Converted endpoint to new format: ${JSON.stringify(pushSubscription)}`
 						);
 					}
 
 					console.log(
-						`📨 Sending notification to: ${pushSubscription.endpoint}`
+						`📨 Sending notification to: ${JSON.stringify(pushSubscription)}`
 					);
 
 					await webPush.sendNotification(pushSubscription, payload);
 					successCount++;
-					console.log(
-						`✅ Notification sent successfully to ${pushSubscription.endpoint.substring(0, 50)}...`
-					);
 				} catch (error) {
 					errorCount++;
 					const endpointPreview =
@@ -140,29 +133,29 @@ export async function insert(req, res, next) {
 					);
 
 					// If it's a 404/410/400 error, the subscription is invalid and should be removed
-					if ([400, 404, 410].includes(error.statusCode)) {
-						console.log(
-							`🗑️ Removing invalid subscription (status ${error.statusCode})`
-						);
-						try {
-							await db
-								.delete(publicSchema.subscription)
-								.where(
-									eq(
-										publicSchema.subscription.endpoint,
-										subscription.endpoint
-									)
-								);
-							console.log(
-								`✅ Invalid subscription removed successfully`
-							);
-						} catch (deleteError) {
-							console.error(
-								'❌ Failed to delete invalid subscription:',
-								deleteError.message
-							);
-						}
-					}
+					// if ([400, 404, 410].includes(error.statusCode)) {
+					// 	console.log(
+					// 		`🗑️ Removing invalid subscription (status ${error.statusCode})`
+					// 	);
+					// 	try {
+					// 		await db
+					// 			.delete(publicSchema.subscription)
+					// 			.where(
+					// 				eq(
+					// 					publicSchema.subscription.endpoint,
+					// 					subscription.endpoint
+					// 				)
+					// 			);
+					// 		console.log(
+					// 			`✅ Invalid subscription removed successfully`
+					// 		);
+					// 	} catch (deleteError) {
+					// 		console.error(
+					// 			'❌ Failed to delete invalid subscription:',
+					// 			deleteError.message
+					// 		);
+					// 	}
+					// }
 				}
 			}
 
