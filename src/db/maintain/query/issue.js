@@ -104,16 +104,16 @@ export async function insert(req, res, next) {
 					}
 
 					// Fix the endpoint URL format for FCM
-					if (pushSubscription.endpoint.includes('/fcm/send/')) {
-						pushSubscription.endpoint =
-							pushSubscription.endpoint.replace(
-								'/fcm/send/',
-								'/wp/'
-							);
-					}
+					// if (pushSubscription.endpoint.includes('/fcm/send/')) {
+					// 	pushSubscription.endpoint =
+					// 		pushSubscription.endpoint.replace(
+					// 			'/fcm/send/',
+					// 			'/wp/'
+					// 		);
+					// }
 
 					console.log(
-						`Sending notification to: --->>> ${pushSubscription.endpoint}`
+						`Sending notification to: --->>> ${pushSubscription}`
 					);
 
 					await webPush.sendNotification(pushSubscription, payload);
