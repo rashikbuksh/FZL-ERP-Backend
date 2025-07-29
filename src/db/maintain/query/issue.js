@@ -25,7 +25,9 @@ export async function insert(req, res, next) {
 	const issueEntryPromise = db
 		.insert(issue)
 		.values(req.body)
-		.returning({ insertedUuid: issue.uuid });
+		.returning({
+			insertedUuid: sql`concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text)`,
+		});
 
 	try {
 		const data = await issueEntryPromise;
@@ -105,7 +107,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data.length} inserted`,
+			message: `${data[0].insertedUuid} inserted`,
 		};
 
 		return await res.status(201).json({ toast, data });
@@ -121,7 +123,9 @@ export async function update(req, res, next) {
 		.update(issue)
 		.set(req.body)
 		.where(eq(issue.uuid, req.params.uuid))
-		.returning({ updatedUuid: issue.uuid });
+		.returning({
+			updatedUuid: sql`concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text)`,
+		});
 
 	try {
 		const data = await issueEntryPromise;
@@ -142,7 +146,9 @@ export async function remove(req, res, next) {
 	const issueEntryPromise = db
 		.delete(issue)
 		.where(eq(issue.uuid, req.params.uuid))
-		.returning({ deletedUuid: issue.uuid });
+		.returning({
+			deletedUuid: sql`concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text)`,
+		});
 
 	try {
 		const data = await issueEntryPromise;
