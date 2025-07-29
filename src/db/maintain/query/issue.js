@@ -76,7 +76,7 @@ export async function insert(req, res, next) {
 							.where(
 								eq(
 									publicSchema.subscription.endpoint,
-									subscription.endpoint
+									endpointPreview
 								)
 							);
 
