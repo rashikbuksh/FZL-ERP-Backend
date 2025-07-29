@@ -710,6 +710,8 @@ export async function selectBulkApprovalInfo(req, res, next) {
 					vod.receive_by_factory_by_name,
 					oe.bulk_approval_date,
 					oe.bulk_approval,
+					oe.bulk_approval_by,
+					bulk_approval_by.name as bulk_approval_by_name,
 					CASE
 						WHEN vod.order_type = 'tape'
 						THEN (oe.size::float8 - sfg.warehouse::float8 - sfg.delivered::float8)::float8
@@ -729,6 +731,7 @@ export async function selectBulkApprovalInfo(req, res, next) {
 					GROUP BY 
 						dyeing_batch_entry.sfg_uuid
 				) dyeing_batch ON dyeing_batch.sfg_uuid = sfg.uuid
+				LEFT JOIN hr.users bulk_approval_by ON oe.bulk_approval_by = bulk_approval_by.uuid
 				WHERE 
 					vod.order_type != 'slider' 
 					AND vod.is_cancelled = FALSE
@@ -778,6 +781,7 @@ export async function updateBulkApprovalBySfgUuid(req, res, next) {
 		.set({
 			bulk_approval_date: req.body.bulk_approval_date,
 			bulk_approval: req.body.bulk_approval,
+			bulk_approval_by: req.body.bulk_approval_by,
 		})
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ updatedId: order_entry.uuid });
