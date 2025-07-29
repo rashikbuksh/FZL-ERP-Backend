@@ -2306,6 +2306,23 @@ export const pathSubscribe = {
 			},
 		},
 	},
+	'/public/unsubscribe': {
+		delete: {
+			summary: 'Unsubscribe from the mailing list',
+			tags: ['public.subscribe'],
+			operationId: 'unSubscribe',
+			parameters: [],
+			requestBody: SE.requestBody({
+				endpoint: SE.string(),
+			}),
+			responses: {
+				200: SE.response(200),
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
 };
 
 export const pathPublic = {

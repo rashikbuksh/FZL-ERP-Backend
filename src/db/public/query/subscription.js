@@ -137,3 +137,28 @@ export async function select(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function unSubscribe(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const subscriptionPromise = db
+		.delete(subscription)
+		.where(eq(subscription.endpoint, req.body.endpoint))
+		.returning({ deletedName: subscription.id });
+
+	try {
+		const data = await subscriptionPromise;
+		const toast = {
+			status: 200,
+			type: 'delete',
+			message: `${data[0].deletedName} deleted`,
+		};
+
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({
+			error,
+			res,
+		});
+	}
+}

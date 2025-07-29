@@ -64,7 +64,28 @@ export async function insert(req, res, next) {
 					console.error(
 						`❌ Failed to send notification to: ${endpointPreview}`
 					);
+
 					console.error(`❌ Error details: ${error}`);
+
+					// Delete the failed subscription from database
+					try {
+						await db
+							.delete(publicSchema.subscription)
+							.where(
+								eq(
+									publicSchema.subscription.endpoint,
+									subscription.endpoint
+								)
+							);
+
+						console.log(
+							`🗑️ Deleted invalid subscription: ${subscription.uuid}`
+						);
+					} catch (deleteError) {
+						console.error(
+							`❌ Failed to delete subscription: ${deleteError}`
+						);
+					}
 				}
 			}
 

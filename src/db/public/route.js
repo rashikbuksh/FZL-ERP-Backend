@@ -233,5 +233,6 @@ publicRouter.get('/subscribe/:uuid', subscriptionOperations.select);
 publicRouter.post('/subscribe', subscriptionOperations.insert);
 publicRouter.put('/subscribe/:uuid', subscriptionOperations.update);
 publicRouter.delete('/subscribe/:uuid', subscriptionOperations.remove);
+publicRouter.post('/unsubscribe', subscriptionOperations.unSubscribe);
 
 export { publicRouter };
