@@ -17,7 +17,7 @@ export async function insert(req, res, next) {
 		const toast = {
 			status: 201,
 			type: 'insert',
-			message: `${data[0].insertedName} inserted`,
+			message: `You have successfully subscribed. ID: ${data[0].insertedName}`,
 		};
 
 		return await res.status(201).json({ toast, data });
@@ -151,7 +151,7 @@ export async function unSubscribe(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'delete',
-			message: `${data[0].deletedName} deleted`,
+			message: `You have successfully unsubscribed. ID: ${data[0].deletedName}`,
 		};
 
 		return await res.status(200).json({ toast, data });
