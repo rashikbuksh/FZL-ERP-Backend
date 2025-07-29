@@ -31,6 +31,9 @@ export const section = material.table('section', {
 	short_name: text('short_name').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 	index: integer('index').default(0),
@@ -43,6 +46,9 @@ export const type = material.table('type', {
 	short_name: text('short_name').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 	store_type: store_type_enum('store_type').default('rm'),
@@ -67,6 +73,9 @@ export const info = material.table('info', {
 	description: text('description').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 	store_type: store_type_enum('store_type').notNull().default('rm'),
@@ -152,6 +161,9 @@ export const trx = material.table('trx', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	booking_uuid: defaultUUID('booking_uuid')
 		.references(() => booking.uuid)
@@ -175,6 +187,9 @@ export const used = material.table('used', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -193,6 +208,9 @@ export const stock_to_sfg = material.table('stock_to_sfg', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -211,6 +229,9 @@ export const booking = material.table('booking', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 

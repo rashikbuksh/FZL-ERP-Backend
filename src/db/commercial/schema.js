@@ -22,6 +22,9 @@ export const bank = commercial.table('bank', {
 	policy: text('policy').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	routing_no: text('routing_no').default(null),
 	remarks: text('remarks').default(null),
@@ -66,6 +69,9 @@ export const lc = commercial.table('lc', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -87,6 +93,9 @@ export const lc_entry = commercial.table('lc_entry', {
 	amount: PG_DECIMAL('amount').default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -99,6 +108,9 @@ export const lc_entry_others = commercial.table('lc_entry_others', {
 	up_number_updated_at: DateTime('up_number_updated_at').default(null), // will update in trigger
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -140,6 +152,9 @@ export const manual_pi = commercial.table('manual_pi', {
 	pi_number: text('pi_number').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	is_inch: boolean('is_inch').default(false),
 });
 
@@ -159,6 +174,9 @@ export const manual_pi_entry = commercial.table('manual_pi_entry', {
 	is_zipper: boolean('is_zipper').default(false),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -207,6 +225,9 @@ export const pi_cash = commercial.table('pi_cash', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	is_completed: boolean('is_completed').default(false),
 	pi_date: DateTime('pi_date').default(null),
@@ -223,6 +244,9 @@ export const pi_cash_entry = commercial.table('pi_cash_entry', {
 	}).notNull(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	thread_order_entry_uuid: defaultUUID('thread_order_entry_uuid').references(
 		() => threadSchema.order_entry.uuid
@@ -238,6 +262,9 @@ export const cash_receive = commercial.table('cash_receive', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 

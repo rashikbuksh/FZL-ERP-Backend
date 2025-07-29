@@ -84,6 +84,9 @@ export const order_info = zipper.table('order_info', {
 	created_by: defaultUUID('created_by'),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	print_in: print_in_enum('print_in').default('portrait'),
 	is_cancelled: boolean('is_cancelled').default(false),
@@ -210,6 +213,9 @@ export const order_description = zipper.table('order_description', {
 	revision_no: integer('revision_no').default(0),
 	is_marketing_checked: boolean('is_marketing_checked').default(false),
 	marketing_checked_at: DateTime('marketing_checked_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 });
 
 export const order_entry = zipper.table('order_entry', {
@@ -239,6 +245,9 @@ export const order_entry = zipper.table('order_entry', {
 	color_ref_update_date: DateTime('color_ref_update_date').default(null),
 	bulk_approval: boolean('bulk_approval').default(false),
 	bulk_approval_date: DateTime('bulk_approval_date').default(null),
+	bulk_approval_by: defaultUUID('bulk_approval_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	swatch_approval_received: boolean('swatch_approval_received').default(
 		false
 	),
@@ -246,6 +255,9 @@ export const order_entry = zipper.table('order_entry', {
 		'swatch_approval_received_date'
 	).default(null),
 	swatch_approval_received_by: defaultUUID('swatch_approval_received_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
+	updated_by: defaultUUID('updated_by')
 		.references(() => hrSchema.users.uuid)
 		.default(null),
 });
@@ -318,6 +330,9 @@ export const sfg = zipper.table('sfg', {
 	reject_quantity: integer('reject_quantity').default(0),
 	batch_quantity: PG_DECIMAL('batch_quantity').default(0),
 	remarks: text('remarks').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 });
 
 export const finishing_batch_production = zipper.table(
@@ -346,6 +361,9 @@ export const finishing_batch_production = zipper.table(
 		),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
 		remarks: text('remarks').default(null),
 	}
 );
@@ -371,6 +389,9 @@ export const finishing_batch_transaction = zipper.table(
 		),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
 		remarks: text('remarks').default(null),
 	}
 );
@@ -385,6 +406,9 @@ export const dyed_tape_transaction = zipper.table('dyed_tape_transaction', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	sfg_uuid: defaultUUID('sfg_uuid')
 		.references(() => sfg.uuid)
@@ -409,6 +433,9 @@ export const dyed_tape_transaction_from_stock = zipper.table(
 		),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
 		remarks: text('remarks').default(null),
 		sfg_uuid: defaultUUID('sfg_uuid')
 			.references(() => sfg.uuid)
@@ -444,6 +471,9 @@ export const dyeing_batch = zipper.table('dyeing_batch', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	production_date: DateTime('production_date')
 		.notNull()
@@ -526,6 +556,9 @@ export const tape_coil = zipper.table('tape_coil', {
 	monofilament_consumption_per_kg: PG_DECIMAL(
 		'monofilament_consumption_per_kg'
 	).default(0.0),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 });
 
 export const tape_trx = zipper.table('tape_trx', {
@@ -541,6 +574,9 @@ export const tape_trx = zipper.table('tape_trx', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -563,6 +599,9 @@ export const tape_coil_production = zipper.table('tape_coil_production', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -581,6 +620,9 @@ export const tape_coil_to_dyeing = zipper.table('tape_coil_to_dyeing', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	is_received_in_sewing: integer('is_received_in_sewing').default(0),
 });
@@ -606,6 +648,9 @@ export const tape_coil_required = zipper.table('tape_coil_required', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -614,6 +659,9 @@ export const planning = zipper.table('planning', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -639,6 +687,9 @@ export const planning_entry = zipper.table('planning_entry', {
 	}).default(0.0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	sno_remarks: text('sno_remarks').default(null),
 	factory_remarks: text('factory_remarks').default(null),
 });
@@ -654,9 +705,9 @@ export const material_trx_against_order_description = zipper.table(
 	'material_trx_against_order_description',
 	{
 		uuid: uuid_primary,
-		order_description_uuid: defaultUUID('order_description_uuid')
-			.references(() => order_description.uuid)
-			.default(null),
+		order_description_uuid: defaultUUID(
+			'order_description_uuid'
+		).references(() => order_description.uuid),
 		material_uuid: defaultUUID('material_uuid').references(
 			() => materialSchema.info.uuid
 		),
@@ -671,6 +722,9 @@ export const material_trx_against_order_description = zipper.table(
 		),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
 		remarks: text('remarks').default(null),
 		booking_uuid: defaultUUID('booking_uuid')
 			.references(() => materialSchema.booking.uuid)
@@ -698,6 +752,9 @@ export const dyeing_batch_production = zipper.table('dyeing_batch_production', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -732,6 +789,9 @@ export const multi_color_dashboard = zipper.table('multi_color_dashboard', {
 	is_coil_received_sewing: integer('is_coil_received_sewing').default(0),
 	is_thread_received_sewing: integer('is_thread_received_sewing').default(0),
 	remarks: text('remarks').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 });
 
 export const multi_color_tape_receive = zipper.table(
@@ -751,6 +811,9 @@ export const multi_color_tape_receive = zipper.table(
 		),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
 		remarks: text('remarks').default(null),
 	}
 );
@@ -778,6 +841,9 @@ export const finishing_batch = zipper.table('finishing_batch', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	production_date: DateTime('production_date')
 		.notNull()
@@ -801,6 +867,9 @@ export const finishing_batch_entry = zipper.table('finishing_batch_entry', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 

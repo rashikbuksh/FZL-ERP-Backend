@@ -8,6 +8,9 @@ export const department = hr.table('department', {
 	department: text('department').notNull().unique(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -16,6 +19,9 @@ export const designation = hr.table('designation', {
 	designation: text('designation').notNull().unique(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -35,6 +41,9 @@ export const users = hr.table('users', {
 	phone: text('phone').default(null),
 	created_at: text('created_at').notNull(),
 	updated_at: text('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => users.uuid)
+		.default(null),
 	status: text('status').default(0),
 	remarks: text('remarks').default(null),
 });
@@ -48,6 +57,9 @@ export const policy_and_notice = hr.table('policy_and_notice', {
 	created_by: defaultUUID('created_by').references(() => users.uuid),
 	created_at: text('created_at').notNull(),
 	updated_at: text('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => users.uuid)
+		.default(null),
 	status: integer('status').notNull(),
 	remarks: text('remarks').default(null),
 });

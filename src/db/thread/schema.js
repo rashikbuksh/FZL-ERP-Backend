@@ -36,6 +36,9 @@ export const count_length = thread.table(
 			.references(() => hrSchema.users.uuid),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
 		remarks: text('remarks').default(null),
 	},
 	(table) => {
@@ -82,6 +85,9 @@ export const order_info = thread.table('order_info', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	revision_no: integer('revision_no').default(0),
 	is_cancelled: boolean('is_cancelled').default(false),
@@ -135,6 +141,9 @@ export const order_entry = thread.table('order_entry', {
 		.default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	pi: PG_DECIMAL('pi').default(0),
 	delivered: PG_DECIMAL('delivered').default(0),
@@ -222,6 +231,9 @@ export const batch = thread.table('batch', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	production_date: DateTime('production_date')
 		.notNull()
@@ -250,6 +262,9 @@ export const batch_entry = thread.table('batch_entry', {
 	transfer_carton_quantity: integer('transfer_carton_quantity').default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	yarn_quantity: PG_DECIMAL('yarn_quantity').default(0),
 	damaged_quantity: PG_DECIMAL('damaged_quantity').default(0),
@@ -264,6 +279,9 @@ export const dyes_category = thread.table('dyes_category', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -279,6 +297,9 @@ export const programs = thread.table('programs', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -297,6 +318,9 @@ export const batch_entry_production = thread.table('batch_entry_production', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	type: batch_entry_production_type('type').default('normal'),
 });
@@ -311,6 +335,9 @@ export const batch_entry_trx = thread.table('batch_entry_trx', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 

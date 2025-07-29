@@ -18,6 +18,9 @@ export const section_machine = maintain.table('section_machine', {
 	status: boolean().default(false),
 	created_at: DateTime().notNull(),
 	updated_at: DateTime().default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by')
 		.references(() => hrSchema.users.uuid)
 		.notNull(),
@@ -77,6 +80,9 @@ export const issue = maintain.table('issue', {
 	verification_remarks: text('verification_remarks').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text().default(null),
 });
@@ -91,6 +97,9 @@ export const issue_procurement = maintain.table('issue_procurement', {
 	description: text('description').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text().default(null),
 });

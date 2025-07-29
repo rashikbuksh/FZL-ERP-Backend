@@ -47,6 +47,9 @@ export const packing_list = delivery.table('packing_list', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	item_for: item_for_enum('item_for').notNull().default('zipper'),
 	thread_order_info_uuid: defaultUUID('thread_order_info_uuid')
@@ -84,6 +87,9 @@ export const packing_list_entry = delivery.table('packing_list_entry', {
 	reject_quantity: integer('reject_quantity').default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	thread_order_entry_uuid: defaultUUID('thread_order_entry_uuid')
 		.references(() => threadSchema.order_entry.uuid)
@@ -115,6 +121,9 @@ export const challan = delivery.table('challan', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	thread_order_info_uuid: defaultUUID('thread_order_info_uuid').references(
 		() => threadSchema.order_info.uuid
 	),
@@ -134,7 +143,9 @@ export const challan = delivery.table('challan', {
 	is_out_for_delivery_by: defaultUUID('is_out_for_delivery_by')
 		.references(() => hrSchema.users.uuid)
 		.default(null),
-	is_out_for_delivery_date: DateTime('is_out_for_delivery_date').default(null),
+	is_out_for_delivery_date: DateTime('is_out_for_delivery_date').default(
+		null
+	),
 });
 
 export const vehicle = delivery.table('vehicle', {
@@ -147,6 +158,9 @@ export const vehicle = delivery.table('vehicle', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -159,6 +173,9 @@ export const carton = delivery.table('carton', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -191,6 +208,9 @@ export const quantity_return = delivery.table('quantity_return', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	challan_uuid: defaultUUID('challan_uuid')
 		.references(() => challan.uuid)

@@ -23,6 +23,9 @@ export const vendor = purchase.table('vendor', {
 	contact_number: text('contact_number').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 	store_type: store_type_enum('store_type').default('rm'),
@@ -48,6 +51,9 @@ export const description = purchase.table('description', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	store_type: store_type_enum('store_type').notNull().default('rm'),
 });
@@ -64,6 +70,9 @@ export const entry = purchase.table('entry', {
 	price: PG_DECIMAL('price').default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	provided_quantity: PG_DECIMAL('provided_quantity').default(0),
 });

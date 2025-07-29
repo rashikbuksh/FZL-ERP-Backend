@@ -22,6 +22,9 @@ export const buyer = pgTable('buyer', {
 	short_name: text('short_name').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
@@ -33,6 +36,9 @@ export const party = pgTable('party', {
 	address: text('address').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
@@ -44,6 +50,9 @@ export const marketing = pgTable('marketing', {
 	user_uuid: defaultUUID('user_uuid').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
@@ -57,6 +66,9 @@ export const merchandiser = pgTable('merchandiser', {
 	address: text('address').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
@@ -69,6 +81,9 @@ export const factory = pgTable('factory', {
 	address: text('address').default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
@@ -92,6 +107,9 @@ export const properties = pgTable(
 		created_by: defaultUUID('created_by'),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
 		remarks: text('remarks').default(null),
 	},
 	(table) => [
@@ -117,6 +135,9 @@ export const machine = pgTable('machine', {
 		.references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -125,6 +146,9 @@ export const marketing_team = pgTable('marketing_team', {
 	name: text('name').notNull().unique(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
@@ -140,6 +164,9 @@ export const marketing_team_entry = pgTable('marketing_team_entry', {
 	is_team_leader: boolean('is_team_leader').default(false),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });
@@ -157,6 +184,9 @@ export const marketing_team_member_target = pgTable(
 		thread_amount: PG_DECIMAL('thread_amount').default(0),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
 		created_by: defaultUUID('created_by').references(
 			() => hrSchema.users.uuid
 		),
@@ -181,6 +211,9 @@ export const production_capacity = pgTable('production_capacity', {
 	quantity: PG_DECIMAL('quantity').notNull(),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
 });

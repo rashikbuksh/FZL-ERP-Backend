@@ -7,7 +7,8 @@ import {
 	timestamp,
 	pgMaterializedView,
 } from 'drizzle-orm/pg-core';
-import { DateTime } from '../variables.js';
+import { DateTime, defaultUUID } from '../variables.js';
+import { users } from '../hr/schema.js';
 
 // Create audit schema
 export const audit = pgSchema('audit');
@@ -33,6 +34,9 @@ export const global_audit_log = audit.table('global_audit_log', {
 	changed_at: timestamp('changed_at', { withTimezone: true })
 		.notNull()
 		.defaultNow(),
+	changed_by: defaultUUID('changed_by')
+		.references(() => users.uuid)
+		.default(null),
 
 	// Audit metadata
 	remarks: text('remarks'),

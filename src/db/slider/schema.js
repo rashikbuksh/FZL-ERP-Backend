@@ -98,6 +98,9 @@ export const stock = slider.table('stock', {
 	}).default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -144,6 +147,9 @@ export const die_casting = slider.table('die_casting', {
 		.default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	type: text('type').default(null),
 	quantity_in_sa: decimal('quantity_in_sa', {
@@ -172,6 +178,9 @@ export const assembly_stock = slider.table('assembly_stock', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	material_uuid: defaultUUID('material_uuid')
 		.references(() => materialSchema.info.uuid)
@@ -195,6 +204,9 @@ export const die_casting_to_assembly_stock = slider.table(
 		),
 		created_at: DateTime('created_at').notNull(),
 		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
 		remarks: text('remarks').default(null),
 	}
 );
@@ -215,6 +227,9 @@ export const die_casting_production = slider.table('die_casting_production', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -234,6 +249,9 @@ export const die_casting_transaction = slider.table('die_casting_transaction', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -253,6 +271,9 @@ export const transaction = slider.table('transaction', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	finishing_batch_entry_uuid: defaultUUID('finishing_batch_entry_uuid')
 		.references(() => zipperSchema.finishing_batch_entry.uuid)
@@ -273,6 +294,9 @@ export const coloring_transaction = slider.table('coloring_transaction', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -286,6 +310,9 @@ export const trx_against_stock = slider.table('trx_against_stock', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 
@@ -300,6 +327,9 @@ export const production = slider.table('production', {
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 });
 

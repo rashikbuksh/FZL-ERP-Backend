@@ -9,6 +9,7 @@ DECLARE
     old_value JSONB;
     new_value JSONB;
     record_id TEXT;
+    changed_by TEXT;
 BEGIN
     -- Determine the record ID - try different common primary key column names
     IF TG_OP = 'DELETE' THEN
@@ -23,6 +24,17 @@ BEGIN
             WHEN OTHERS THEN
                 record_id := NULL;
         END;
+        
+        -- Extract changed_by from the old record (for DELETE operations)
+        BEGIN
+            changed_by := (to_jsonb(OLD) ->> 'updated_by');
+            IF changed_by IS NULL THEN
+                changed_by := (to_jsonb(OLD) ->> 'created_by');
+            END IF;
+        EXCEPTION
+            WHEN OTHERS THEN
+                changed_by := NULL;
+        END;
     ELSE
         new_record := NEW;
         -- Try to extract record ID from various possible primary key columns
@@ -34,6 +46,17 @@ BEGIN
         EXCEPTION
             WHEN OTHERS THEN
                 record_id := NULL;
+        END;
+        
+        -- Extract changed_by from the record
+        BEGIN
+            changed_by := (to_jsonb(NEW) ->> 'updated_by');
+            IF changed_by IS NULL THEN
+                changed_by := (to_jsonb(NEW) ->> 'created_by');
+            END IF;
+        EXCEPTION
+            WHEN OTHERS THEN
+                changed_by := NULL;
         END;
     END IF;
     
@@ -68,10 +91,10 @@ BEGIN
             IF old_value IS DISTINCT FROM new_value THEN
                 INSERT INTO audit.global_audit_log (
                     schema_name, table_name, record_id, operation, column_name,
-                    old_value, new_value
+                    old_value, new_value, changed_by
                 ) VALUES (
                     TG_TABLE_SCHEMA, TG_TABLE_NAME, record_id, 'UPDATE', column_name,
-                    old_value, new_value
+                    old_value, new_value, changed_by
                 );
             END IF;
         END LOOP;
@@ -79,9 +102,9 @@ BEGIN
     ELSIF TG_OP = 'DELETE' THEN
         -- Log the entire old record as a single entry
         INSERT INTO audit.global_audit_log (
-            schema_name, table_name, record_id, operation, old_value
+            schema_name, table_name, record_id, operation, old_value, changed_by
         ) VALUES (
-            TG_TABLE_SCHEMA, TG_TABLE_NAME, record_id, 'DELETE', to_jsonb(OLD)
+            TG_TABLE_SCHEMA, TG_TABLE_NAME, record_id, 'DELETE', to_jsonb(OLD), changed_by
         );
     END IF;
     
@@ -102,7 +125,7 @@ BEGIN
         FROM pg_tables 
         WHERE schemaname IN (
             'hr', 'public', 'zipper', 'slider', 'thread', 'material', 
-            'lab_dip', 'delivery', 'commercial', 'purchase'
+            'lab_dip', 'delivery', 'commercial', 'purchase', 'maintain'
         )
         AND tablename NOT LIKE 'v_%'  -- Skip views
         AND tablename NOT LIKE '%_sequence'  -- Skip sequences
