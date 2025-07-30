@@ -788,6 +788,11 @@ export const pathDeliveryChallan = {
 					'sample',
 					'all',
 				]),
+				SE.parameter_query('product_type', 'product_type', [
+					'zipper',
+					'thread',
+					'all',
+				]),
 			],
 			responses: {
 				200: {

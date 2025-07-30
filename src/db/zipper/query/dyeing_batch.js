@@ -79,7 +79,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { type } = req.query;
+	const { type, order_type } = req.query;
 	const query = sql`
 		SELECT 
 			DISTINCT dyeing_batch.uuid,
@@ -205,6 +205,13 @@ export async function selectAll(req, res, next) {
 				? sql`dyeing_batch.received = 0`
 				: type === 'completed'
 					? sql`dyeing_batch.received = 1`
+					: sql`1 = 1`
+		}
+		AND ${
+			order_type === 'bulk'
+				? sql`vodf.is_sample = 0`
+				: order_type === 'sample'
+					? sql`vodf.is_sample = 1`
 					: sql`1 = 1`
 		}
 		AND expected.order_numbers IS NOT NULL
