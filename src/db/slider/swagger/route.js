@@ -988,6 +988,10 @@ export const pathSliderDieCastingProduction = {
 		get: {
 			tags: ['slider.die_casting_production'],
 			summary: 'Get all die casting production',
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', SE.date_time()),
+				SE.parameter_query('to_date', 'to_date', SE.date_time()),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					uuid: SE.uuid(),

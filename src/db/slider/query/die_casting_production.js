@@ -70,6 +70,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { from_date, to_date } = req.query;
 	const query = sql`
 		SELECT
 			dcp.uuid,
@@ -139,6 +140,9 @@ export async function selectAll(req, res, next) {
 			zipper.order_description od ON od.uuid = dcp.order_description_uuid
 		LEFT JOIN
 			zipper.v_order_details_full vodf ON vodf.order_description_uuid = od.uuid
+		WHERE 1=1
+		${from_date ? sql`AND dcp.created_at::date >= ${from_date}` : sql``}
+		${to_date ? sql`AND dcp.created_at::date <= ${to_date}` : sql``}
 		ORDER BY
 			dcp.created_at DESC`;
 
