@@ -324,7 +324,7 @@ export async function getAllSchemaNames(req, res, next) {
 
 		res.status(200).json({
 			toast,
-			data: result.rows.map((row) => row.schema_name),
+			data: result,
 		});
 	} catch (error) {
 		await handleError({ error, res });
@@ -353,7 +353,7 @@ export async function getAllTableNames(req, res, next) {
 
 		res.status(200).json({
 			toast,
-			data: result.rows.map((row) => row.schema_name),
+			data: result,
 		});
 	} catch (error) {
 		await handleError({ error, res });
