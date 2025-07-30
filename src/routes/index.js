@@ -15,6 +15,7 @@ import { threadRouterV2 } from '../db/thread/routev2.js';
 import { zipperRouter } from '../db/zipper/route.js';
 import { zipperRouterV2 } from '../db/zipper/routev2.js';
 import { maintainRouter } from '../db/maintain/route.js';
+import { auditRouter } from '../db/audit/route.js';
 
 const route = express.Router();
 
@@ -68,6 +69,7 @@ route.use('/other', otherRouter);
 // thread routes
 route.use('/thread', threadRouter);
 
+// * thread routes v2
 route.use('/v2/thread', threadRouterV2);
 
 //* report routes
@@ -75,5 +77,8 @@ route.use('/report', reportRouter);
 
 // dashboard routes
 route.use('/dashboard', dashBoardRouter);
+
+// audit routes
+route.use('/audit', auditRouter);
 
 export default route;
