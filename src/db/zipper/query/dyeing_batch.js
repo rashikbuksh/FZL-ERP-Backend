@@ -171,9 +171,15 @@ export async function selectAll(req, res, next) {
 				LEFT JOIN
 					zipper.tape_coil tc ON  vodf.tape_coil_uuid = tc.uuid
 			WHERE 
-						lower(vodf.item_name) != 'nylon' 
-						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
-
+				(lower(vodf.item_name) != 'nylon' 
+				OR vodf.nylon_stopper = tcr.nylon_stopper_uuid)
+				AND ${
+					order_type === 'bulk'
+						? sql` vodf.is_sample = 0`
+						: order_type === 'sample'
+							? sql` vodf.is_sample = 1`
+							: sql` 1=1`
+				}
 			GROUP BY be.dyeing_batch_uuid
 		) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
 		LEFT JOIN (
@@ -197,14 +203,6 @@ export async function selectAll(req, res, next) {
 					LEFT JOIN zipper.sfg ON be.sfg_uuid = zipper.sfg.uuid
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-				WHERE 
-					${
-						order_type === 'bulk'
-							? sql` vodf.is_sample = 0`
-							: order_type === 'sample'
-								? sql` vodf.is_sample = 1`
-								: sql` 1=1`
-					}
 			) distinct_items
 			GROUP BY dyeing_batch_uuid
 		) AS item_descriptions ON dyeing_batch.uuid = item_descriptions.dyeing_batch_uuid
