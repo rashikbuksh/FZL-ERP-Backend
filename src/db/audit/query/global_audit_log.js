@@ -17,27 +17,20 @@ export async function selectAll(req, res, next) {
 	try {
 		const whereConditions = [];
 
-		if (schema_name) {
+		if (schema_name && schema_name !== '') {
 			whereConditions.push(eq(global_audit_log.schema_name, schema_name));
 		}
-		if (table_name) {
+		if (table_name && table_name !== '') {
 			whereConditions.push(eq(global_audit_log.table_name, table_name));
 		}
-		if (record_id) {
-			whereConditions.push(eq(global_audit_log.record_id, record_id));
-		}
-		if (operation) {
+		if (operation && operation !== '') {
 			whereConditions.push(eq(global_audit_log.operation, operation));
 		}
-		if (from_date) {
-			whereConditions.push(
-				gte(global_audit_log.changed_at, new Date(from_date))
-			);
+		if (from_date && from_date !== '') {
+			whereConditions.push(gte(global_audit_log.changed_at, from_date));
 		}
-		if (to_date) {
-			whereConditions.push(
-				lte(global_audit_log.changed_at, new Date(to_date))
-			);
+		if (to_date && to_date !== '') {
+			whereConditions.push(lte(global_audit_log.changed_at, to_date));
 		}
 
 		const query = db
