@@ -16,7 +16,7 @@ export async function insert(req, res, next) {
 		const data = await subscriptionPromise;
 		const toast = {
 			status: 201,
-			type: 'insert',
+			type: 'unseen',
 			message: `You have successfully subscribed. ID: ${data[0].insertedName}`,
 		};
 
