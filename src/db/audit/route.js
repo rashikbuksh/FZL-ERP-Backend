@@ -13,6 +13,8 @@ auditRouter.get(
 auditRouter.get('/audit-stats', globalAuditLogOperations.getAuditStats);
 auditRouter.get('/recent-activity', globalAuditLogOperations.getRecentActivity);
 auditRouter.get('/search', globalAuditLogOperations.searchAuditLogs);
+auditRouter.get('/schema-names', globalAuditLogOperations.getAllSchemaNames);
+auditRouter.get('/table-names', globalAuditLogOperations.getAllTableNames);
 
 // Admin operations
 auditRouter.post(

@@ -12,8 +12,6 @@ export async function selectAll(req, res, next) {
 		operation,
 		from_date,
 		to_date,
-		limit = 100,
-		offset = 0,
 	} = req.query;
 
 	try {
@@ -53,16 +51,13 @@ export async function selectAll(req, res, next) {
 				old_value: global_audit_log.old_value,
 				new_value: global_audit_log.new_value,
 				changed_at: global_audit_log.changed_at,
-				created_at: global_audit_log.created_at,
 				remarks: global_audit_log.remarks,
 			})
 			.from(global_audit_log)
 			.where(
 				whereConditions.length > 0 ? and(...whereConditions) : undefined
 			)
-			.orderBy(desc(global_audit_log.changed_at))
-			.limit(parseInt(limit))
-			.offset(parseInt(offset));
+			.orderBy(desc(global_audit_log.changed_at));
 
 		const data = await query;
 
@@ -304,6 +299,62 @@ export async function toggleAuditLogging(req, res, next) {
 		};
 
 		res.status(200).json({ toast });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+// Get all schema names
+export async function getAllSchemaNames(req, res, next) {
+	try {
+		const result = await db.execute(sql`
+			SELECT 
+				nspname AS schema_name,
+				nspname AS label,
+				nspname AS value
+			FROM pg_catalog.pg_namespace 
+			WHERE nspname NOT IN ('pg_toast', 'pg_catalog', 'information_schema');
+		`);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'All schema names retrieved successfully',
+		};
+
+		res.status(200).json({
+			toast,
+			data: result.rows.map((row) => row.schema_name),
+		});
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+// Get All Table Names in a Schema
+export async function getAllTableNames(req, res, next) {
+	const { schema_name } = req.query;
+	try {
+		const result = await db.execute(sql`
+			SELECT 
+				table_name as value, 
+				table_name as label, 
+				table_schema as schema_name
+			FROM information_schema.tables
+			WHERE ${schema_name ? sql`table_schema = ${schema_name}` : sql` 1=1 `}
+			AND table_type = 'BASE TABLE' AND table_name NOT LIKE 'pg%';
+		`);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'All schema names retrieved successfully',
+		};
+
+		res.status(200).json({
+			toast,
+			data: result.rows.map((row) => row.schema_name),
+		});
 	} catch (error) {
 		await handleError({ error, res });
 	}
