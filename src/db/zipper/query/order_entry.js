@@ -374,20 +374,43 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			oe.size::float8,
 			vodf.is_inch,
 			oe.quantity::float8 as quantity,
+			CASE 
+				WHEN vodf.is_inch = 1 THEN ROUND((oe.size::float8 * 0.0254 * oe.quantity::float8)::numeric, 4)::float8 -- Convert inch to meter
+				WHEN vodf.order_type = 'tape' THEN ROUND((oe.size::float8)::numeric, 4)::float8 -- Keep tape size in meter
+				ELSE ROUND((oe.size::float8 * 0.01 * oe.quantity::float8)::numeric, 4)::float8 -- Convert cm to meter
+			END as quantity_meter,
+			ROUND(
+                CASE
+                    WHEN vodf.order_type = 'tape' THEN 
+                        (tcr.top + tcr.bottom + oe.quantity) / 100.0 / tcr.dyed_mtr_per_kg
+                    ELSE 
+                        (tcr.top + tcr.bottom + 
+                            CASE WHEN vodf.is_inch = 1 
+                                THEN oe.size::numeric * 2.54 
+                                ELSE oe.size::numeric 
+                            END
+                        ) * oe.quantity / 100.0 / tcr.dyed_mtr_per_kg
+                END, 3
+            )::float8 as quantity_kg,
 			oe.bleaching,
 			CASE 
 				WHEN vodf.is_inch = 1 THEN 'Inch' 
-				ELSE 
-					CASE 
-						WHEN vodf.order_type = 'tape' THEN 'Meter'
-						ELSE 'CM'
-					END 
+				WHEN vodf.order_type = 'tape' THEN 'Meter'
+				ELSE 'CM'
 			END as unit,
 			vodf.order_description_created_at,
 			vodf.order_description_updated_at
 		FROM 
 			zipper.v_order_details_full vodf
 		LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+		LEFT JOIN zipper.tape_coil_required tcr ON
+					vodf.item = tcr.item_uuid  
+					AND vodf.zipper_number = tcr.zipper_number_uuid 
+					AND vodf.end_type = tcr.end_type_uuid 
+					AND (
+						lower(vodf.item_name) != 'nylon' 
+						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
+					)
 		WHERE
 			vodf.order_number = ${order_number} AND ${order_description_uuid ? sql`vodf.order_description_uuid = ${order_description_uuid}` : sql`true`}
 		ORDER BY
@@ -469,6 +492,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				is_inch,
 				unit,
 				quantity,
+				quantity_meter,
+				quantity_kg,
 				company_price,
 				party_price,
 				order_entry_status,
@@ -526,6 +551,8 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 				is_inch,
 				unit,
 				quantity,
+				quantity_meter,
+				quantity_kg,
 				company_price,
 				party_price,
 				order_entry_status,
