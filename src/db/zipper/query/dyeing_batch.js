@@ -197,6 +197,14 @@ export async function selectAll(req, res, next) {
 					LEFT JOIN zipper.sfg ON be.sfg_uuid = zipper.sfg.uuid
 					LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
 					LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+				WHERE 
+					${
+						order_type === 'bulk'
+							? sql` vodf.is_sample = 0`
+							: order_type === 'sample'
+								? sql` vodf.is_sample = 1`
+								: sql` 1=1`
+					}
 			) distinct_items
 			GROUP BY dyeing_batch_uuid
 		) AS item_descriptions ON dyeing_batch.uuid = item_descriptions.dyeing_batch_uuid
@@ -205,13 +213,6 @@ export async function selectAll(req, res, next) {
 				? sql`dyeing_batch.received = 0`
 				: type === 'completed'
 					? sql`dyeing_batch.received = 1`
-					: sql`1 = 1`
-		}
-		AND ${
-			order_type === 'bulk'
-				? sql`vodf.is_sample = 0`
-				: order_type === 'sample'
-					? sql`vodf.is_sample = 1`
 					: sql`1 = 1`
 		}
 		AND expected.order_numbers IS NOT NULL
