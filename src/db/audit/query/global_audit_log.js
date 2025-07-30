@@ -15,44 +15,30 @@ export async function selectAll(req, res, next) {
 	} = req.query;
 
 	try {
-		const whereConditions = [];
+		const query = sql`
+			SELECT 
+				id,
+				schema_name,
+				table_name,
+				record_id,
+				operation,
+				column_name,
+				old_value,
+				new_value,
+				changed_at,
+				remarks
+			FROM audit.global_audit_log
+			WHERE 
+				${schema_name ? sql`schema_name = ${schema_name}` : sql` 1=1`}
+				${table_name ? sql`AND table_name = ${table_name}` : sql``}
+				${record_id ? sql`AND record_id = ${record_id}` : sql``}
+				${operation ? sql`AND operation = ${operation}` : sql``}
+				${from_date && to_date ? sql`AND changed_at BETWEEN ${from_date}::timestamp AND ${to_date}::timestamp + INTERVAL '1 day'` : sql``}
+			ORDER BY changed_at DESC;
+		`;
 
-		if (schema_name && schema_name !== '') {
-			whereConditions.push(eq(global_audit_log.schema_name, schema_name));
-		}
-		if (table_name && table_name !== '') {
-			whereConditions.push(eq(global_audit_log.table_name, table_name));
-		}
-		if (operation && operation !== '') {
-			whereConditions.push(eq(global_audit_log.operation, operation));
-		}
-		if (from_date && from_date !== '') {
-			whereConditions.push(gte(global_audit_log.changed_at, from_date));
-		}
-		if (to_date && to_date !== '') {
-			whereConditions.push(lte(global_audit_log.changed_at, to_date));
-		}
-
-		const query = db
-			.select({
-				id: global_audit_log.id,
-				schema_name: global_audit_log.schema_name,
-				table_name: global_audit_log.table_name,
-				record_id: global_audit_log.record_id,
-				operation: global_audit_log.operation,
-				column_name: global_audit_log.column_name,
-				old_value: global_audit_log.old_value,
-				new_value: global_audit_log.new_value,
-				changed_at: global_audit_log.changed_at,
-				remarks: global_audit_log.remarks,
-			})
-			.from(global_audit_log)
-			.where(
-				whereConditions.length > 0 ? and(...whereConditions) : undefined
-			)
-			.orderBy(desc(global_audit_log.changed_at));
-
-		const data = await query;
+		const result = await db.execute(query);
+		const data = result.rows;
 
 		const toast = {
 			status: 200,
