@@ -40,7 +40,7 @@ export async function insert(req, res, next) {
 		const payload = JSON.stringify({
 			title: 'New Issue Created',
 			body: `A new issue has been created with ID: ${data[0].insertedId}`,
-			url: `${origin}/maintenance/issue/${data[0].insertedUuid}`,
+			url: `${origin}/maintenance/issue`,
 		});
 
 		const sendPushNotifications = async () => {
