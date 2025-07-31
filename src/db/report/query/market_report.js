@@ -5,7 +5,7 @@ import { GetMarketingOwnUUID } from '../../variables.js';
 
 export async function selectMarketReport(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	const { own_uuid, from_datel, to_date, report_for } = req?.query;
+	const { own_uuid, from_date, to_date, report_for } = req?.query;
 
 	try {
 		const marketingUuid = own_uuid
@@ -96,9 +96,9 @@ export async function selectMarketReport(req, res, next) {
                                     'order_number',
                                     vodf.order_number,
                                     'total_quantity',
-                                    oe_sum.total_quantity_cm,
+                                    oe_sum.total_quantity,
                                     'total_quantity_party_price',
-                                    oe_sum.total_quantity_cm_party_price,
+                                    oe_sum.total_quantity_party_price,
                                     'total_prod_quantity',
                                     production_quantity.total_prod_quantity,
                                     'total_prod_value_party',
@@ -106,7 +106,7 @@ export async function selectMarketReport(req, res, next) {
                                     'total_prod_value_company',
                                     production_quantity.total_prod_value_company
                                 )
-                            ) FILTER ( WHERE oe_sum.total_quantity_cm != 0 ) AS order_details
+                            ) FILTER ( WHERE oe_sum.total_quantity != 0 ) AS order_details
                         FROM zipper.v_order_details_full vodf
                         LEFT JOIN (
                             SELECT 
@@ -129,26 +129,11 @@ export async function selectMarketReport(req, res, next) {
                             SELECT
                                 vodf.order_info_uuid,
                                 SUM(
-                                    CASE
-                                        WHEN vodf.is_inch = 1 THEN oe.quantity * CAST(
-                                            CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC
-                                        )
-                                        WHEN vodf.order_type = 'tape' THEN CAST(
-                                            CAST(oe.size AS NUMERIC) * 100 AS NUMERIC
-                                        )
-                                        ELSE oe.quantity * CAST(oe.size AS NUMERIC)
-                                    END
-                                )::float8 as total_quantity_cm, SUM(
-                                    CASE
-                                        WHEN vodf.is_inch = 1 THEN oe.quantity * CAST(
-                                            CAST(oe.size AS NUMERIC) * 2.54 AS NUMERIC
-                                        ) * oe.party_price
-                                        WHEN vodf.order_type = 'tape' THEN CAST(
-                                            CAST(oe.size AS NUMERIC) * 100 AS NUMERIC
-                                        ) * oe.party_price
-                                        ELSE oe.quantity * CAST(oe.size AS NUMERIC) * oe.party_price
-                                    END
-                                )::float8 as total_quantity_cm_party_price
+									oe.quantity
+								) as total_quantity,
+								SUM(
+									oe.quantity * oe.party_price
+								) as total_quantity_party_price
                             FROM
                                 zipper.order_entry oe
                             LEFT JOIN

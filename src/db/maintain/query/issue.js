@@ -22,6 +22,10 @@ webPush.setVapidDetails(
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const origin = req.headers['origin'] || req.headers['referer'] || 'unknown';
+
+	console.log(`   Origin: ${origin}`);
+
 	const issueEntryPromise = db
 		.insert(issue)
 		.values(req.body)
@@ -35,6 +39,7 @@ export async function insert(req, res, next) {
 		const payload = JSON.stringify({
 			title: 'New Issue Created',
 			body: `A new issue has been created with ID: ${data[0].insertedUuid}`,
+			url: `${origin}/maintenance/issue/${data[0].insertedUuid}`,
 		});
 
 		const sendPushNotifications = async () => {
