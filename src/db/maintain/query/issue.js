@@ -30,7 +30,8 @@ export async function insert(req, res, next) {
 		.insert(issue)
 		.values(req.body)
 		.returning({
-			insertedUuid: sql`concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text)`,
+			insertedId: sql`concat('MT', to_char(issue.created_at, 'YY'), '-', issue.id::text)`,
+			insertedUuid: issue.uuid,
 		});
 
 	try {
@@ -38,7 +39,7 @@ export async function insert(req, res, next) {
 
 		const payload = JSON.stringify({
 			title: 'New Issue Created',
-			body: `A new issue has been created with ID: ${data[0].insertedUuid}`,
+			body: `A new issue has been created with ID: ${data[0].insertedId}`,
 			url: `${origin}/maintenance/issue/${data[0].insertedUuid}`,
 		});
 
