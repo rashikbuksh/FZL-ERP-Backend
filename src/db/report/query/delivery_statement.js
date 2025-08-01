@@ -431,16 +431,10 @@ export async function deliveryStatementReport(req, res, next) {
                 ) order_info_total_quantity ON vodf.order_info_uuid = order_info_total_quantity.order_info_uuid
                 WHERE 
                     vodf.item_description IS NOT NULL AND vodf.item_description != '---' 
-                    AND (COALESCE(
-                        COALESCE(
-                            running_all_sum.total_prod_quantity,
+                    AND COALESCE(
+                            COALESCE(running_all_sum.total_prod_quantity, 0)::float8,
                             0
-                        )::float8,
-                        0
-                    )::float8 > 0 OR (COALESCE(
-                        COALESCE(opening_all_sum.total_prod_quantity, 0)::float8,
-                        0
-                    )::float8 > 0))
+                        )::float8 > 0
                     AND ${marketing ? sql`vodf.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
@@ -551,16 +545,10 @@ export async function deliveryStatementReport(req, res, next) {
                             toi.uuid
                     ) order_info_total_quantity ON toi.uuid = order_info_total_quantity.order_info_uuid
                 WHERE
-                    (COALESCE(
-                        COALESCE(
-                            running_all_sum_thread.total_prod_quantity,
+                    COALESCE(
+                            COALESCE(running_all_sum_thread.total_prod_quantity, 0)::float8, 
                             0
-                        )::float8,
-                        0
-                    )::float8 > 0 OR (COALESCE(
-                        COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8,
-                        0
-                    )::float8 > 0))
+                        )::float8 > 0 
                     AND ${marketing ? sql`toi.marketing_uuid = ${marketing}` : sql`1=1`}
                     AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
@@ -571,18 +559,6 @@ export async function deliveryStatementReport(req, res, next) {
 		// ! is_bill removed from where clause in main query of zipper and thread
 		// ! warehouse_received removed from where clause in opening_all_sum, running_all_sum, opening_all_sum_thread, running_all_sum_thread
 		const resultPromise = db.execute(query);
-
-		// Added for opening quantity
-		//  (COALESCE(
-		//     COALESCE(
-		//         running_all_sum_thread.total_prod_quantity,
-		//         0
-		//     )::float8,
-		//     0
-		// )::float8 > 0 OR (COALESCE(
-		//     COALESCE(opening_all_sum_thread.total_prod_quantity, 0)::float8,
-		//     0
-		// )::float8 > 0))
 
 		const data = await resultPromise;
 
