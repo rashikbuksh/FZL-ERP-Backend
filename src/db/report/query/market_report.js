@@ -13,46 +13,31 @@ export async function selectMarketReport(req, res, next) {
 			: null;
 
 		const query = sql`
-                    WITH running_all_sum AS (
+                    WITH opening_all_sum AS (
+                        SELECT 
+                            vpl.packing_list_entry_uuid,
+                            coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
+                            coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 0)::float8 as total_prod_value_party,
+                            coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value_company
+                        FROM 
+                            delivery.v_packing_list_details vpl 
+                            LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
+                            LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
+                            AND oe.order_description_uuid = vodf.order_description_uuid 
+                        WHERE 
+                            ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
+                            AND vpl.item_for NOT IN ('thread', 'sample_thread')
+                            AND vpl.is_deleted = false
+                            AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
+                        GROUP BY 
+                            vpl.packing_list_entry_uuid,
+                            vodf.order_type,
+                            oe.party_price,
+                            oe.company_price
+                        ),
+                    running_all_sum AS (
                         SELECT 
                             vpl.packing_list_entry_uuid, 
-                            coalesce(
-                                SUM(
-                                    CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                                ), 
-                                0
-                            )::float8 AS total_close_end_quantity, 
-                            coalesce(
-                                SUM(
-                                    CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                                ), 
-                                0
-                            )::float8 AS total_open_end_quantity, 
-                            coalesce(
-                                SUM(
-                                    CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                                ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
-                                0
-                            )::float8 as total_close_end_value_party,
-                            coalesce(
-                                SUM(
-                                    CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
-                                ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
-                                0
-                            )::float8 as total_close_end_value_company,
-
-                            coalesce(
-                                SUM(
-                                    CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                                ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
-                                0
-                            )::float8 as total_open_end_value_party,
-                            coalesce(
-                                SUM(
-                                    CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
-                                ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
-                                0
-                            )::float8 as total_open_end_value_company,
                             coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
                             coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 0)::float8 as total_prod_value_party,
                             coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value_company
@@ -99,6 +84,8 @@ export async function selectMarketReport(req, res, next) {
                                     oe_sum.total_quantity,
                                     'total_quantity_party_price',
                                     oe_sum.total_quantity_party_price,
+                                    'total_quantity_company_price',
+                                    oe_sum.total_quantity_company_price,
                                     'total_prod_quantity',
                                     production_quantity.total_prod_quantity,
                                     'total_prod_value_party',
@@ -133,7 +120,10 @@ export async function selectMarketReport(req, res, next) {
 								) as total_quantity,
 								SUM(
 									oe.quantity * oe.party_price
-								) as total_quantity_party_price
+								) as total_quantity_party_price,
+                                SUM(
+                                    oe.quantity * oe.company_price
+                                ) as total_quantity_company_price
                             FROM
                                 zipper.order_entry oe
                             LEFT JOIN
