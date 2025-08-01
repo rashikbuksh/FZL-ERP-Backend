@@ -119,10 +119,16 @@ export async function selectMarketReport(req, res, next) {
 									oe.quantity
 								) as total_quantity,
 								SUM(
-									oe.quantity * oe.party_price
+									oe.quantity * CASE
+                                        WHEN vodf.order_type = 'tape' THEN oe.party_price
+                                        ELSE (oe.party_price / 12)
+                                    END
 								) as total_quantity_party_price,
                                 SUM(
-                                    oe.quantity * oe.company_price
+                                    oe.quantity * CASE
+                                        WHEN vodf.order_type = 'tape' THEN oe.company_price
+                                        ELSE (oe.company_price / 12)
+                                    END
                                 ) as total_quantity_company_price
                             FROM
                                 zipper.order_entry oe
@@ -137,6 +143,7 @@ export async function selectMarketReport(req, res, next) {
                     ) AS zipper_object ON
                         zipper_object.marketing_uuid = vodf.marketing_uuid AND
                         zipper_object.party_uuid = vodf.party_uuid
+                        WHERE order_details IS NOT NULL
                     `;
 
 		const resultPromise = db.execute(query);
