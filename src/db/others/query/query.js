@@ -2391,6 +2391,7 @@ export async function selectThreadOrder(req, res, next) {
 			WHERE
 				${challan_uuid ? sql`pl.challan_uuid IS NULL OR pl.challan_uuid = ${challan_uuid}` : sql`pl.challan_uuid IS NULL`}
 				AND pl.is_warehouse_received = true
+				AND pl.is_cancelled = false
 		)
 	`;
 	} else if (page === 'packing_list') {
