@@ -5,6 +5,8 @@ import db from '../../index.js';
 export async function selectPackingList(req, res, next) {
 	const { type, from_date, to_date, order_type } = req.query;
 
+	console.log(from_date, to_date, order_type, type);
+
 	let query = sql`
 					WITH pi_cash_grouped AS (
 						SELECT 
@@ -146,7 +148,7 @@ export async function selectPackingList(req, res, next) {
 										? sql` AND dvl.gate_pass = 1`
 										: sql``
 						}
-						${from_date && to_date ? sql` AND dvl.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql``}
+						${from_date && to_date ? sql` AND dvl.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP` : sql``}
 						${order_type == 'sample' ? sql` AND (vodf.is_sample = 1 OR toi.is_sample = 1)` : order_type == 'bulk' ? sql` AND (vodf.is_sample = 0 AND toi.is_sample = 0)` : sql``}
 						AND dvl.is_deleted = false
 						GROUP BY 
