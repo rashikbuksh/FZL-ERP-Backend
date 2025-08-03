@@ -5,7 +5,7 @@ import db from '../../index.js';
 export async function selectPackingList(req, res, next) {
 	const { type, from_date, to_date, order_type } = req.query;
 
-	console.log(from_date, to_date, order_type, type);
+	//console.log(from_date, to_date, order_type, type);
 
 	let query = sql`
 					WITH pi_cash_grouped AS (
