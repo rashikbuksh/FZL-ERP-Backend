@@ -1352,6 +1352,16 @@ export const pathReport = {
 					'sample',
 					'bulk',
 				]),
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'challan',
+					'gate_pass',
+				]),
+				SE.parameter_query('item_type', 'item_type', [
+					'zipper_sample',
+					'zipper_bulk',
+					'all',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {
