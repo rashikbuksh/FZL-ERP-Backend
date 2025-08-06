@@ -1575,6 +1575,7 @@ export async function selectOrderNumberForPi(req, res, next) {
 				LEFT JOIN zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 			WHERE
+				vod.is_cancelled = false AND
 				vod.is_cash = 1 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
 				vod.party_uuid = ${req.params.party_uuid} AND 
@@ -1593,6 +1594,7 @@ export async function selectOrderNumberForPi(req, res, next) {
 				LEFT JOIN zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 			WHERE
+				vod.is_cancelled = false AND
 				vod.is_cash = 0 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
 				vod.party_uuid = ${req.params.party_uuid} AND 
@@ -2502,6 +2504,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		LEFT JOIN
 			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
 		WHERE
+			toi.is_cancelled = false AND
 			toi.is_cash = 1 AND
 			toi.marketing_uuid = ${marketing_uuid} AND
 			toi.party_uuid = ${party_uuid} AND 
@@ -2520,6 +2523,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		LEFT JOIN
 			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
 		WHERE
+			toi.is_cancelled = false AND
 			toi.is_cash = 0 AND
 			toi.marketing_uuid = ${marketing_uuid} AND
 			toi.party_uuid = ${party_uuid} AND 
