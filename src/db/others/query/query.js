@@ -703,6 +703,7 @@ export async function selectOrderInfo(req, res, next) {
 					SELECT pl.order_info_uuid
 					FROM delivery.packing_list pl
 					WHERE ${challan_uuid ? sql`pl.challan_uuid IS NULL OR pl.challan_uuid = ${challan_uuid}` : sql`pl.challan_uuid IS NULL`}
+					  AND pl.is_deleted = false
 					  AND pl.is_warehouse_received = true
 					  ${item_for != undefined ? sql`AND pl.item_for = ${item_for}` : sql`AND 1=1`}
 				)
@@ -2789,8 +2790,9 @@ export async function selectPackingList(req, res, next) {
         CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text) as label
 	FROM
 		delivery.packing_list pl 
-		WHERE
-		${is_received === 'false' ? sql`pl.is_warehouse_received = false` : sql`1=1`}`;
+	WHERE
+		pl.is_deleted = false
+		${is_received === 'false' ? sql` AND pl.is_warehouse_received = false` : sql``}`;
 
 	const packingListPromise = db.execute(query);
 

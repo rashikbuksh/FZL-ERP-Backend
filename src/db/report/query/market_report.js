@@ -93,7 +93,7 @@ export async function selectMarketReport(req, res, next) {
                                     'total_prod_value_company',
                                     production_quantity.total_prod_value_company
                                 )
-                            ) FILTER ( WHERE oe_sum.total_quantity != 0 ) AS order_details
+                            ) FILTER ( WHERE oe_sum.total_quantity != 0 OR oe_sum.total_quantity IS NOT NULL ) AS order_details
                         FROM zipper.v_order_details_full vodf
                         LEFT JOIN (
                             SELECT 
@@ -143,7 +143,7 @@ export async function selectMarketReport(req, res, next) {
                     ) AS zipper_object ON
                         zipper_object.marketing_uuid = vodf.marketing_uuid AND
                         zipper_object.party_uuid = vodf.party_uuid
-                        WHERE order_details IS NOT NULL
+                    WHERE order_details IS NOT NULL
                     `;
 
 		const resultPromise = db.execute(query);
@@ -153,7 +153,7 @@ export async function selectMarketReport(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			message: 'All cash invoices fetched',
+			message: 'Market Report fetched',
 		};
 
 		res.status(200).json({ toast, data: data.rows });
