@@ -356,6 +356,7 @@ export const def_zipper_dyeing_batch = SED({
 		remarks: SE.string(),
 		batch_type: SE.string('normal'),
 		order_info_uuid: SE.uuid(),
+		batch_status_date: SE.date_time(),
 	},
 	xml: 'Zipper/Dyeing-Batch',
 });

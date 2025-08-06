@@ -174,7 +174,6 @@ export const defThreadBatch = {
 		'created_by',
 		'created_at',
 	],
-
 	properties: {
 		uuid: SE.uuid(),
 		id: SE.integer(1),
@@ -210,6 +209,7 @@ export const defThreadBatch = {
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		status_date: SE.date_time(),
 	},
 	xml: {
 		name: 'Thread/Batch',

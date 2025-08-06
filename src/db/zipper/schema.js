@@ -462,6 +462,7 @@ export const dyeing_batch = zipper.table('dyeing_batch', {
 	uuid: uuid_primary,
 	id: serial('id').notNull(),
 	batch_status: batchStatusEnum('batch_status').default('pending'),
+	batch_status_date: DateTime('batch_status_date').default(null),
 	machine_uuid: defaultUUID('machine_uuid').references(
 		() => publicSchema.machine.uuid
 	),

@@ -470,6 +470,8 @@ export async function getBatchEntryDetails(req, res, next) {
 		be.remarks as batch_remarks,
 		be.yarn_quantity::float8 as yarn_quantity,
 		batch.is_drying_complete,
+		batch.status_date,
+		batch.drying_created_at,
 		batch.batch_type,
 		re.name as recipe_name
 	FROM
