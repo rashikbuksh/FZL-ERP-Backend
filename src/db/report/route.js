@@ -1594,6 +1594,11 @@ export const pathReport = {
 			parameters: [
 				SE.parameter_query('from', 'from', '2024-10-01'),
 				SE.parameter_query('to', 'to', '2024-10-31'),
+				SE.parameter_query('order_type', 'order_type', [
+					'bulk',
+					'sample',
+					'all',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {

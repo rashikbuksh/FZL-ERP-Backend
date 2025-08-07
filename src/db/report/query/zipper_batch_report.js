@@ -3,7 +3,7 @@ import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function zipperBatchReportOnReceivedDate(req, res, next) {
-	const { from, to } = req.query;
+	const { from, to, order_type } = req.query;
 	const query = sql`
 		SELECT 
 			DISTINCT dyeing_batch.uuid,
