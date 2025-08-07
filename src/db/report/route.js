@@ -57,6 +57,7 @@ import {
 	ProductionReportThreadSnm,
 } from './query/order_status_report.js';
 import { selectItemMarketingOrderQuantity } from './query/item_wise_order.js';
+import { zipperBatchReportOnReceivedDate } from './query/zipper_batch_report.js';
 
 const reportRouter = Router();
 
@@ -257,6 +258,8 @@ reportRouter.get(
 	'/item-marketing-wise-order-quantity',
 	selectItemMarketingOrderQuantity
 );
+// * Zipper Batch Report
+reportRouter.get('/zipper-batch-report', zipperBatchReportOnReceivedDate);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -1578,6 +1581,24 @@ export const pathReport = {
 						marketing_uuid: SE.uuid(),
 						marketing_name: SE.string('Marketing Name'),
 					}),
+				}),
+			},
+		},
+	},
+	'/report/zipper-batch-report': {
+		get: {
+			summary: 'Zipper Batch Report',
+			description: 'Zipper Batch Report',
+			tags: ['report'],
+			operationId: 'selectZipperProductionReport',
+			parameters: [
+				SE.parameter_query('from', 'from', '2024-10-01'),
+				SE.parameter_query('to', 'to', '2024-10-31'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					item_name: SE.string('Item Name'),
+					total_production: SE.number(610),
 				}),
 			},
 		},
