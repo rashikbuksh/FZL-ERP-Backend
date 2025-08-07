@@ -98,6 +98,13 @@ export async function zipperBatchReportOnReceivedDate(req, res, next) {
 			WHERE 
 				(lower(vodf.item_name) != 'nylon' 
 				OR vodf.nylon_stopper = tcr.nylon_stopper_uuid)
+                AND ${
+					order_type === 'bulk'
+						? sql` vodf.is_sample = 0`
+						: order_type === 'sample'
+							? sql` vodf.is_sample = 1`
+							: sql` 1=1`
+				}
 			GROUP BY be.dyeing_batch_uuid
 		) AS expected ON dyeing_batch.uuid = expected.dyeing_batch_uuid
 		LEFT JOIN (
