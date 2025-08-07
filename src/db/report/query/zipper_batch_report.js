@@ -132,7 +132,7 @@ export async function zipperBatchReportOnReceivedDate(req, res, next) {
 			GROUP BY dyeing_batch_uuid
 		) AS item_descriptions ON dyeing_batch.uuid = item_descriptions.dyeing_batch_uuid
 		WHERE expected.order_numbers IS NOT NULL
-        AND ${from && to ? sql` dyeing_batch.received_date BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '1 day'` : sql`TRUE`}
+        AND ${from && to ? sql` dyeing_batch.received_date BETWEEN ${from} AND ${to}` : sql`TRUE`}
 		ORDER BY expected.order_numbers DESC, dyeing_batch.id DESC
 	`;
 	const resultPromise = db.execute(query);
