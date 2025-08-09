@@ -1,6 +1,10 @@
 import cors from 'cors';
 
 const whitelist = [
+	// * Huawei Cloud
+	'http://124.243.182.136:4010',
+	'http://124.243.182.136:4015',
+
 	// * VPS
 	'https://www.fortunezip.com',
 	'https://fortunezip.com',
