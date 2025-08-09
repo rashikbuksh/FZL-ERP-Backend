@@ -5,6 +5,7 @@ const whitelist = [
 	'http://124.243.182.136:4010',
 	'http://124.243.182.136:4015',
 	'http://124.243.182.136:80',
+	'http://124.243.182.136',
 
 	// * VPS
 	'https://www.fortunezip.com',
