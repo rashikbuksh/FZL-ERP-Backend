@@ -1580,10 +1580,9 @@ export async function selectOrderNumberForPi(req, res, next) {
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
 				vod.party_uuid = ${req.params.party_uuid} AND 
 				(vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))
-				${pi_uuid ? sql`AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql`AND oe.quantity - sfg.pi > 0`}
+				${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND oe.quantity - sfg.pi > 0`}
 			ORDER BY
-				vod.order_number ASC
-`;
+				vod.order_number ASC;`;
 	} else {
 		query = sql`
 			SELECT
@@ -1599,9 +1598,9 @@ export async function selectOrderNumberForPi(req, res, next) {
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
 				vod.party_uuid = ${req.params.party_uuid} AND 
 				(vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))
-				${pi_uuid ? sql`AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql`AND oe.quantity - sfg.pi > 0`}
+				${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND oe.quantity - sfg.pi > 0`}
 			ORDER BY
-				vod.order_number ASC`;
+				vod.order_number ASC;`;
 	}
 
 	const orderNumberPromise = db.execute(query);
@@ -2509,8 +2508,8 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 			toi.marketing_uuid = ${marketing_uuid} AND
 			toi.party_uuid = ${party_uuid} AND 
 			(toi.is_sample = 0 OR (toi.is_sample = 1 AND toi.is_bill = 1))
-			${pi_uuid ? sql`AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql`AND toe.quantity - toe.pi > 0`}
-		ORDER BY toi.id ASC
+			${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND toe.quantity - toe.pi > 0`}
+		ORDER BY toi.id ASC;
 	`;
 	} else {
 		query = sql`
@@ -2528,8 +2527,8 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 			toi.marketing_uuid = ${marketing_uuid} AND
 			toi.party_uuid = ${party_uuid} AND 
 			(toi.is_sample = 0 OR (toi.is_sample = 1 AND toi.is_bill = 1))
-		${pi_uuid ? sql`AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql`AND toe.quantity - toe.pi > 0`}
-		ORDER BY toi.id ASC
+		${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND toe.quantity - toe.pi > 0`}
+		ORDER BY toi.id ASC;
 	`;
 	}
 
