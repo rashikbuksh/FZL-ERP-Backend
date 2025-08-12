@@ -93,12 +93,14 @@ export async function selectAll(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-				concat(
-					'PI',
-					to_char(pi_cash.created_at, 'YY'),
-					'-',
-					pi_cash.id::text
-				)
+				CASE WHEN pi_cash.uuid IS NOT NULL 
+					THEN concat(
+						'PI',
+						to_char(pi_cash.created_at, 'YY'),
+						'-',
+						pi_cash.id::text
+					) ELSE lc.pi_number 
+				END
 			) as pi_ids,
 			party.name AS party_name,
 			array_agg(
@@ -198,7 +200,7 @@ export async function select(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-				CASE WHEN pi_cash.uuid IS NOT NULL THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) END
+				CASE WHEN pi_cash.uuid IS NOT NULL THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE lc.pi_number END
 			) as pi_ids,
 			party.name AS party_name,
 			CASE WHEN is_old_pi = 0 THEN (
