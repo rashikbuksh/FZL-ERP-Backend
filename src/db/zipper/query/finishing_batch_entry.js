@@ -477,7 +477,7 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 export async function selectFinishingBatchEntryBySection(req, res, next) {
 	const { section } = req.params;
 
-	const { item_name, nylon_stopper, status } = req.query;
+	const { item_name, nylon_stopper, status, from, to } = req.query;
 
 	// item_description -> CONCAT(vodf.item_description, ' - teeth: ', vodf.teeth_color_name)
 
@@ -505,6 +505,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 					WHEN ${section} = 'teeth_molding_prod' THEN zfbp.section = 'teeth_molding'
 					ELSE zfbp.section = ${section}
 				END
+				${from && to ? sql` AND zfbp.created_at BETWEEN ${from} AND ${to}` : sql``}
 			GROUP BY zfbp.finishing_batch_entry_uuid
 		)
 		SELECT

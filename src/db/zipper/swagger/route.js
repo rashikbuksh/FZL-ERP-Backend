@@ -4310,6 +4310,8 @@ export const pathZipperFinishingBatchEntry = {
 					'completed',
 					'over_production',
 				]),
+				SE.parameter_query('from', 'from', ['2024-01-01 10:00:00']),
+				SE.parameter_query('to', 'to', ['2024-12-31 14:00:00']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
