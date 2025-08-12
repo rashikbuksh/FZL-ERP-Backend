@@ -475,9 +475,9 @@ export async function getFinishingBatchEntryByFinishingBatchUuid(
 }
 
 export async function selectFinishingBatchEntryBySection(req, res, next) {
-	const { section } = req.params;
+	const { section } = req?.params;
 
-	const { item_name, nylon_stopper, status, from, to } = req.query;
+	const { item_name, nylon_stopper, status, from, to } = req?.query;
 
 	// item_description -> CONCAT(vodf.item_description, ' - teeth: ', vodf.teeth_color_name)
 

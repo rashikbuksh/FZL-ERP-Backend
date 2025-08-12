@@ -211,87 +211,89 @@ export async function select(req, res, next) {
 export async function selectBySection(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { item_name, nylon_stopper } = req.query;
+	const { section } = req.params;
+	const { item_name, nylon_stopper, from, to } = req.query;
 
 	const query = sql`
-		SELECT
-			finishing_batch_production.uuid,
-			finishing_batch_production.finishing_batch_entry_uuid,
-			sfg.order_entry_uuid,
-			zfb.uuid as finishing_batch_uuid,
-			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
-			vodf.order_description_uuid,
-			vodf.order_number,
-			vodf.item_description,
-			oe.style,
-			oe.color,
-			oe.color_ref,
-			oe.size,
-			CASE 
-				WHEN vodf.order_type = 'tape' THEN 'Meter' 
-				WHEN vodf.order_type = 'slider' THEN 'Pcs'
-				WHEN vodf.is_inch = 1 THEN 'Inch'
-				ELSE 'CM' 
-			END as unit,
-			concat(oe.style, '-', oe.color, '-', oe.size) AS style_color_size,
-			CASE 
-				WHEN vodf.order_type = 'tape' 
-				THEN CAST(CAST(oe.size AS NUMERIC) * 100 AS NUMERIC)::float8 
-				ELSE oe.quantity::float8 
-			END as order_quantity,
-			fbe.quantity::float8 as batch_quantity,
-			finishing_batch_production.section,
-			COALESCE(finishing_batch_production.dyed_tape_used_in_kg,0)::float8 as dyed_tape_used_in_kg,
-			COALESCE(finishing_batch_production.production_quantity_in_kg,0)::float8 as production_quantity_in_kg,
-			COALESCE(finishing_batch_production.production_quantity,0)::float8 as production_quantity,
-			COALESCE(finishing_batch_production.wastage,0)::float8 as wastage,
-			finishing_batch_production.created_by,
-			users.name AS created_by_name,
-			finishing_batch_production.created_at,
-			finishing_batch_production.updated_at,
-			finishing_batch_production.remarks,
-			CASE WHEN fbe.finishing_prod != 0 
-			THEN (fbe.quantity - COALESCE(fbe.finishing_prod, 0) - COALESCE(sfg.warehouse, 0)) 
-			ELSE (fbe.quantity - COALESCE(sfg.warehouse, 0))::float8 END as balance_quantity,
-			COALESCE(sfg.dying_and_iron_prod,0)::float8 as dying_and_iron_prod,
-			COALESCE(sfg.teeth_molding_stock,0)::float8 as teeth_molding_stock,
-			COALESCE(sfg.teeth_molding_prod,0)::float8 as teeth_molding_prod,
-			COALESCE(sfg.teeth_coloring_stock,0)::float8 as teeth_coloring_stock,
-			COALESCE(sfg.teeth_coloring_prod,0)::float8 as teeth_coloring_prod,
-			COALESCE(sfg.finishing_stock,0)::float8 as finishing_stock,
-			COALESCE(sfg.finishing_prod,0)::float8 as finishing_prod,
-			COALESCE(sfg.coloring_prod,0)::float8 as coloring_prod,
-			COALESCE(sfg.warehouse,0)::float8 as warehouse,
-			COALESCE(sfg.delivered,0)::float8 as delivered,
-			COALESCE(sfg.pi,0)::float8 as pi,
-			COALESCE(sfg.short_quantity,0)::float8 as short_quantity,
-			COALESCE(sfg.reject_quantity,0)::float8 as reject_quantity,
-			COALESCE(vodf.tape_received,0)::float8 as tape_received,
-			COALESCE(vodf.tape_transferred,0)::float8 as tape_transferred,
-			COALESCE(sfg.dyed_tape_used_in_kg,0)::float8 as sfg_dyed_tape_used_in_kg,
-			(COALESCE(tape_transferred,0)::float8 - COALESCE(sfg.dyed_tape_used_in_kg,0)::float8)::float8 as tape_stock,
-			COALESCE(vodf.slider_finishing_stock,0)::float8 as slider_finishing_stock
-		FROM
-			zipper.finishing_batch_production
-		LEFT JOIN
-			hr.users ON finishing_batch_production.created_by = users.uuid
-		LEFT JOIN 
-			zipper.finishing_batch_entry fbe ON finishing_batch_production.finishing_batch_entry_uuid = fbe.uuid
-		LEFT JOIN 
-			zipper.finishing_batch zfb ON fbe.finishing_batch_uuid = zfb.uuid
-		LEFT JOIN
-			zipper.sfg ON fbe.sfg_uuid = sfg.uuid
-		LEFT JOIN
-			zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
-		LEFT JOIN
-			zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid AND zfb.order_description_uuid = vodf.order_description_uuid
-		WHERE
-			finishing_batch_production.section = ${req.params.section} 
-			${item_name ? sql` AND lower(vodf.item_name) = lower(${item_name})` : sql``}
-			${nylon_stopper == null || nylon_stopper == undefined ? sql` AND 1=1` : nylon_stopper == 'plastic' ? sql` AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'` : sql` AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`}
-		ORDER BY 
-			finishing_batch_production.created_at DESC
-	`;
+    SELECT
+        fbp.uuid,
+        fbp.finishing_batch_entry_uuid,
+        sfg.order_entry_uuid,
+        zfb.uuid as finishing_batch_uuid,
+        concat('FB', to_char(zfb.created_at, 'YY'), '-', (zfb.id::text)) as batch_number,
+        vodf.order_description_uuid,
+        vodf.order_number,
+        vodf.item_description,
+        oe.style,
+        oe.color,
+        oe.color_ref,
+        oe.size,
+        CASE 
+            WHEN vodf.order_type = 'tape' THEN 'Meter' 
+            WHEN vodf.order_type = 'slider' THEN 'Pcs'
+            WHEN vodf.is_inch = 1 THEN 'Inch'
+            ELSE 'CM' 
+        END as unit,
+        concat(oe.style, '-', oe.color, '-', oe.size) AS style_color_size,
+        CASE 
+            WHEN vodf.order_type = 'tape' THEN (oe.size::numeric * 100)::float8
+            ELSE oe.quantity::float8 
+        END as order_quantity,
+        fbe.quantity::float8 as batch_quantity,
+        fbp.section,
+        COALESCE(fbp.dyed_tape_used_in_kg,0)::float8 as dyed_tape_used_in_kg,
+        COALESCE(fbp.production_quantity_in_kg,0)::float8 as production_quantity_in_kg,
+        COALESCE(fbp.production_quantity,0)::float8 as production_quantity,
+        COALESCE(fbp.wastage,0)::float8 as wastage,
+        fbp.created_by,
+        u.name AS created_by_name,
+        fbp.created_at,
+        fbp.updated_at,
+        fbp.remarks,
+        CASE 
+            WHEN fbe.finishing_prod != 0 
+                THEN (fbe.quantity - COALESCE(fbe.finishing_prod, 0) - COALESCE(sfg.warehouse, 0))::float8
+                ELSE (fbe.quantity - COALESCE(sfg.warehouse, 0))::float8 
+        END as balance_quantity,
+        COALESCE(sfg.dying_and_iron_prod,0)::float8 as dying_and_iron_prod,
+        COALESCE(sfg.teeth_molding_stock,0)::float8 as teeth_molding_stock,
+        COALESCE(sfg.teeth_molding_prod,0)::float8 as teeth_molding_prod,
+        COALESCE(sfg.teeth_coloring_stock,0)::float8 as teeth_coloring_stock,
+        COALESCE(sfg.teeth_coloring_prod,0)::float8 as teeth_coloring_prod,
+        COALESCE(sfg.finishing_stock,0)::float8 as finishing_stock,
+        COALESCE(sfg.finishing_prod,0)::float8 as finishing_prod,
+        COALESCE(sfg.coloring_prod,0)::float8 as coloring_prod,
+        COALESCE(sfg.warehouse,0)::float8 as warehouse,
+        COALESCE(sfg.delivered,0)::float8 as delivered,
+        COALESCE(sfg.pi,0)::float8 as pi,
+        COALESCE(sfg.short_quantity,0)::float8 as short_quantity,
+        COALESCE(sfg.reject_quantity,0)::float8 as reject_quantity,
+        COALESCE(vodf.tape_received,0)::float8 as tape_received,
+        COALESCE(vodf.tape_transferred,0)::float8 as tape_transferred,
+        COALESCE(sfg.dyed_tape_used_in_kg,0)::float8 as sfg_dyed_tape_used_in_kg,
+        (COALESCE(vodf.tape_transferred,0)::float8 - COALESCE(sfg.dyed_tape_used_in_kg,0)::float8)::float8 as tape_stock,
+        COALESCE(vodf.slider_finishing_stock,0)::float8 as slider_finishing_stock
+    FROM
+        zipper.finishing_batch_production fbp
+    LEFT JOIN hr.users u ON fbp.created_by = u.uuid
+    LEFT JOIN zipper.finishing_batch_entry fbe ON fbp.finishing_batch_entry_uuid = fbe.uuid
+    LEFT JOIN zipper.finishing_batch zfb ON fbe.finishing_batch_uuid = zfb.uuid
+    LEFT JOIN zipper.sfg ON fbe.sfg_uuid = sfg.uuid
+    LEFT JOIN zipper.order_entry oe ON sfg.order_entry_uuid = oe.uuid
+    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid 
+    WHERE
+        fbp.section = ${section}
+        ${item_name ? sql` AND lower(vodf.item_name) = lower(${item_name})` : sql``}
+        ${from && to ? sql` AND fbp.created_at BETWEEN ${from} AND ${to}` : sql``}
+        ${
+			nylon_stopper == null || nylon_stopper == undefined
+				? sql``
+				: nylon_stopper == 'plastic'
+					? sql` AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'`
+					: sql` AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`
+		}
+    ORDER BY fbp.created_at DESC;
+`;
 
 	const finishingBatchProductionPromise = db.execute(query);
 

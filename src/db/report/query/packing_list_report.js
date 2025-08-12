@@ -100,8 +100,24 @@ export async function selectPackingList(req, res, next) {
                                 WHEN dvl.item_for IN ('thread', 'sample_thread') THEN 'Cone' 
                                 ELSE 'Cm' 
                             END as unit,
+							CASE
+                                WHEN CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN vodf.item_name
+                                ELSE 'thread'
+                            END as item_type,
 							ARRAY_AGG(
-								CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
+								DISTINCT CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
+								THEN vodf.zipper_number_name 
+								ELSE null 
+								END
+							) as zipper_number_name,
+							ARRAY_AGG(
+								DISTINCT CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
+								THEN vodf.end_type_name 
+								ELSE null 
+								END
+							) as end_type_name,
+							ARRAY_AGG(
+								DISTINCT CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
 								THEN vodf.item_description ELSE CONCAT('"', cl.count, ' - ', cl.length) 
 								END
 							) as item_description,
