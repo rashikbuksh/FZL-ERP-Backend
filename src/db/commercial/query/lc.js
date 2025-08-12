@@ -101,6 +101,9 @@ export async function selectAll(req, res, next) {
 				)
 			) as pi_ids,
 			party.name AS party_name,
+			array_agg(
+				marketing.name
+			) as marketing_name,
 			CASE
 				WHEN is_old_pi = 0 THEN (
 					SELECT SUM(
@@ -162,6 +165,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN hr.users ON lc.created_by = users.uuid
 		LEFT JOIN public.party ON lc.party_uuid = party.uuid
 		LEFT JOIN commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
+		LEFT JOIN public.marketing ON pi_cash.marketing_uuid = marketing.uuid
 		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
 		GROUP BY lc.uuid, party.name, users.name, lc_entry_agg.lc_entry
 		ORDER BY lc.created_at DESC
