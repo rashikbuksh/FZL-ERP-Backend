@@ -34,7 +34,7 @@ export const machine_problem_type = maintain.enum('machine_problem_type', [
 
 export const maintain_condition_type = maintain.enum(
 	'maintain_condition_type',
-	['okay', 'waiting', 'pending']
+	['okay', 'rejected', 'waiting', 'ongoing']
 );
 
 export const parts_enum = maintain.enum('parts_enum', [
@@ -64,7 +64,7 @@ export const issue = maintain.table('issue', {
 	emergence: text('emergence').notNull(),
 	parts_problem: parts_enum('parts_enum').default(null),
 	// ---------------- Machine Maintain Info ----------------
-	maintain_condition: maintain_condition_type().default('pending'),
+	maintain_condition: maintain_condition_type().default('waiting'),
 	maintain_description: text('maintain_description').default(null),
 	maintain_date: DateTime('maintain_date').default(null),
 	maintain_by: defaultUUID('maintain_by')
