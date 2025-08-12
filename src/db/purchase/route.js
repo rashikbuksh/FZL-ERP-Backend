@@ -5,7 +5,7 @@ import * as vendorOperations from './query/vendor.js';
 import multer from 'multer';
 
 const purchaseRouter = Router();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Vendor routes
 purchaseRouter.get('/vendor', vendorOperations.selectAll);
