@@ -38,6 +38,7 @@ export const defIssue = SED({
 		uuid: SE.uuid(),
 		section_machine_uuid: SE.uuid(),
 		section: SE.string('Section 1'),
+		extra_section: SE.string('extra_section'),
 		problem_type: SE.string('machine'),
 		description: SE.string('description'),
 		emergence: SE.string('emergence'),

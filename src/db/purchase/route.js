@@ -2,8 +2,10 @@ import { Router } from 'express';
 import * as descriptionOperations from './query/description.js';
 import * as entryOperations from './query/entry.js';
 import * as vendorOperations from './query/vendor.js';
+import multer from 'multer';
 
 const purchaseRouter = Router();
+const upload = multer({ dest: 'uploads/' });
 
 // Vendor routes
 purchaseRouter.get('/vendor', vendorOperations.selectAll);
@@ -14,13 +16,17 @@ purchaseRouter.delete('/vendor/:uuid', vendorOperations.remove);
 
 // Description routes
 purchaseRouter.get('/description', descriptionOperations.selectAll);
-purchaseRouter.get(
-	'/description/:uuid',
-
-	descriptionOperations.select
+purchaseRouter.get('/description/:uuid', descriptionOperations.select);
+purchaseRouter.post(
+	'/description',
+	upload.single('file'),
+	descriptionOperations.insert
 );
-purchaseRouter.post('/description', descriptionOperations.insert);
-purchaseRouter.put('/description/:uuid', descriptionOperations.update);
+purchaseRouter.put(
+	'/description/:uuid',
+	upload.single('file'),
+	descriptionOperations.update
+);
 purchaseRouter.delete(
 	'/description/:uuid',
 

@@ -61,6 +61,12 @@ const SE = {
 		items,
 	}),
 
+	file: (example = 'file.pdf') => ({
+		type: 'string',
+		format: 'binary',
+		example,
+	}),
+
 	// * Others
 	xml: (name = '') => ({ name }),
 

@@ -141,68 +141,7 @@ const pathPurchaseDescription = {
 				]),
 			],
 			responses: {
-				200: {
-					description: 'OK',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									purchase_id: {
-										type: 'string',
-										example: 'SR24-0001',
-									},
-									vendor_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									vendor_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									is_local: {
-										type: 'integer',
-										example: 1,
-									},
-									lc_number: {
-										type: 'string',
-										example: '123456789',
-									},
-									challan_number: {
-										type: 'string',
-										example: '123456789',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'This is a description',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'purchase/description'),
 			},
 		},
 		post: {
@@ -212,7 +151,7 @@ const pathPurchaseDescription = {
 			parameters: [],
 			requestBody: {
 				content: {
-					'application/json': {
+					'multipart/form-data': {
 						schema: {
 							$ref: '#/definitions/purchase/description',
 						},

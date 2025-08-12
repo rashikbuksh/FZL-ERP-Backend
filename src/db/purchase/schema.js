@@ -56,6 +56,9 @@ export const description = purchase.table('description', {
 		.default(null),
 	remarks: text('remarks').default(null),
 	store_type: store_type_enum('store_type').notNull().default('rm'),
+	transport_cost: PG_DECIMAL('transport_cost').default(0),
+	misc_cost: PG_DECIMAL('misc_cost').default(0),
+	file: text('file').default(null),
 });
 
 export const entry = purchase.table('entry', {

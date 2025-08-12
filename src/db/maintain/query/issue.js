@@ -200,6 +200,7 @@ export async function select(req, res, next) {
 			created_at: issue.created_at,
 			updated_at: issue.updated_at,
 			remarks: issue.remarks,
+			extra_section: issue.extra_section,
 		})
 		.from(issue)
 		.leftJoin(
@@ -260,6 +261,7 @@ export async function selectAll(req, res, next) {
 			created_at: issue.created_at,
 			updated_at: issue.updated_at,
 			remarks: issue.remarks,
+			extra_section: issue.extra_section,
 		})
 		.from(issue)
 		.leftJoin(

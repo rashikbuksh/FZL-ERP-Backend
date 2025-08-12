@@ -59,6 +59,7 @@ export const issue = maintain.table('issue', {
 		.references(() => section_machine.uuid)
 		.notNull(),
 	section: text('section').notNull(),
+	extra_section: text('extra_section').default('normal'),
 	problem_type: machine_problem_type().default('machine'),
 	description: text('description').notNull(),
 	emergence: text('emergence').notNull(),

@@ -6,18 +6,34 @@ import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { description, entry, vendor } from '../schema.js';
+import {
+	insertFile,
+	updateFile,
+	deleteFile,
+} from '../../../util/upload_files.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const formData = req.body;
+	const file = req.file;
+
+	const filePath = file
+		? await insertFile(file, 'purchase/description')
+		: null;
+
 	const descriptionPromise = db
 		.insert(description)
-		.values(req.body)
+		.values({
+			...formData,
+			file: filePath,
+		})
 		.returning({
-			insertedId: sql`CASE WHEN description.store_type = 'rm' 
-								THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
-								ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
-							END`,
+			insertedId: sql`
+			CASE WHEN description.store_type = 'rm' 
+				THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+				ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+			END`,
 		});
 
 	try {
@@ -36,15 +52,43 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const formData = req.body;
+	const file = req.file;
+
+	if (file) {
+		// If a new file is uploaded, we need to handle the file update
+		const oldFilePath = db
+			.select()
+			.from(description)
+			.where(eq(description.uuid, req.params.uuid))
+			.returning(description.file);
+		const oldFile = await oldFilePath;
+
+		if (oldFile && oldFile[0].file) {
+			// If there is an old file, delete it
+			const filePath = updateFile(
+				file,
+				oldFile[0].file,
+				'purchase/description'
+			);
+			formData.file = filePath;
+		} else {
+			// If no new file is uploaded, keep the old file path
+			const filePath = insertFile(file, 'purchase/description');
+			formData.file = filePath;
+		}
+	}
+
 	const descriptionPromise = db
 		.update(description)
 		.set(req.body)
 		.where(eq(description.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CASE WHEN description.store_type = 'rm' 
-								THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
-								ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
-							END`,
+			updatedId: sql`
+			CASE WHEN description.store_type = 'rm' 
+				THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+				ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+			END`,
 		});
 
 	try {
@@ -63,6 +107,23 @@ export async function update(req, res, next) {
 
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	// First, we need to check if the document exists and get its file path
+	const oldFilePath = db
+		.select()
+		.from(description)
+		.where(eq(description.uuid, req.params.uuid));
+
+	const oldFile = await oldFilePath;
+
+	if (oldFile && oldFile[0].file) {
+		// If there is an old file, delete it
+		try {
+			await deleteFile(oldFile[0].file);
+		} catch (error) {
+			console.error('Error deleting file:', error);
+		}
+	}
 
 	const descriptionPromise = db
 		.delete(description)
@@ -109,6 +170,9 @@ export async function selectAll(req, res, next) {
 			updated_at: description.updated_at,
 			remarks: description.remarks,
 			store_type: description.store_type,
+			transport_cost: description.transport_cost,
+			misc_cost: description.misc_cost,
+			file: description.file,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
@@ -157,6 +221,9 @@ export async function select(req, res, next) {
 			updated_at: description.updated_at,
 			remarks: description.remarks,
 			store_type: description.store_type,
+			transport_cost: description.transport_cost,
+			misc_cost: description.misc_cost,
+			file: description.file,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
@@ -246,6 +313,9 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			remarks: description.remarks,
 			entry_remarks: entry.remarks,
 			store_type: description.store_type,
+			transport_cost: description.transport_cost,
+			misc_cost: description.misc_cost,
+			file: description.file,
 		})
 		.from(entry)
 		.leftJoin(

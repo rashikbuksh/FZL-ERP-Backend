@@ -39,6 +39,9 @@ export const defPurchaseDescription = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string('This is a description'),
 		store_type: SE.string('rm'),
+		transport_cost: SE.number(1000.0),
+		misc_cost: SE.number(500.0),
+		file: SE.file('file.pdf'),
 	},
 	xml: 'Purchase/Description',
 });
