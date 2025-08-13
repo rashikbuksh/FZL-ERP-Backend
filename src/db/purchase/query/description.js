@@ -22,6 +22,13 @@ export async function insert(req, res, next) {
 		? await insertFile(file, 'purchase/description')
 		: null;
 
+	// check if formdata has 'null' then make it actual null
+	Object.keys(formData).forEach((key) => {
+		if (formData[key] === 'null') {
+			formData[key] = null;
+		}
+	});
+
 	const descriptionPromise = db
 		.insert(description)
 		.values({
@@ -55,8 +62,12 @@ export async function update(req, res, next) {
 	const formData = req.body;
 	const file = req.file;
 
-	console.log(file, 'FILE');
-	console.log(formData, 'FORM DATA');
+	// check if formdata has 'null' then make it actual null
+	Object.keys(formData).forEach((key) => {
+		if (formData[key] === 'null') {
+			formData[key] = null;
+		}
+	});
 
 	if (file) {
 		// If a new file is uploaded, we need to handle the file update
@@ -173,8 +184,8 @@ export async function selectAll(req, res, next) {
 			updated_at: description.updated_at,
 			remarks: description.remarks,
 			store_type: description.store_type,
-			transport_cost: description.transport_cost,
-			misc_cost: description.misc_cost,
+			transport_cost: decimalToNumber(description.transport_cost),
+			misc_cost: decimalToNumber(description.misc_cost),
 			file: description.file,
 		})
 		.from(description)
