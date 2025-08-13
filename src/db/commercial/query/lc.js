@@ -102,12 +102,6 @@ export async function selectAll(req, res, next) {
 					) ELSE lc.pi_number 
 				END
 			) as pi_ids,
-			json_agg(
-				json_build_object(
-					'zipper', vpc.order_numbers,
-					'thread', vpc.thread_order_numbers
-				)
-			) as order_numbers,
 			party.name AS party_name,
 			array_agg(
 				marketing.name
@@ -178,7 +172,6 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
 		LEFT JOIN public.marketing ON pi_cash.marketing_uuid = marketing.uuid
 		LEFT JOIN commercial.bank ON pi_cash.bank_uuid = bank.uuid
-		LEFT JOIN commercial.v_pi_cash vpc ON vpc.pi_cash_uuid = pi_cash.uuid
 		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
 		GROUP BY lc.uuid, party.name, users.name, lc_entry_agg.lc_entry
 		ORDER BY lc.created_at DESC
@@ -186,57 +179,6 @@ export async function selectAll(req, res, next) {
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
-
-		// order_number object under that zipper and thread object
-
-		// zipper: [
-		//     {
-		//       "quantity": 72000,
-		//       "delivered": 52653,
-		//       "order_number": "Z25-3975",
-		//       "packing_list": 52653,
-		//       "order_info_uuid": "t1fi8rpFsGZ0i2A"
-		//     },
-		//     {
-		//       "quantity": 53630,
-		//       "delivered": 53630,
-		//       "order_number": "Z25-1687",
-		//       "packing_list": 53630,
-		//       "order_info_uuid": "Mazyn1gveylyly9"
-		//     }
-		// ],
-		// thread: [
-		// ]
-		// },
-
-		// If data.rows is an array of rows, and each row.order_numbers is a JSON array (from json_agg)
-		const merged = {
-			zipper: [],
-			thread: [],
-		};
-
-		for (const row of data.rows) {
-			// row.order_numbers is likely a JSON string or array, so parse if needed
-			let orderNumbersArr = row.order_numbers;
-			if (typeof orderNumbersArr === 'string') {
-				orderNumbersArr = JSON.parse(orderNumbersArr);
-			}
-			if (Array.isArray(orderNumbersArr)) {
-				for (const obj of orderNumbersArr) {
-					if (obj.zipper) merged.zipper.push(...obj.zipper);
-					if (obj.thread) merged.thread.push(...obj.thread);
-				}
-			}
-		}
-
-		// replace the data.rows order_numbers with merged
-
-		for (const row of data.rows) {
-			row.order_numbers = {
-				zipper: merged.zipper,
-				thread: merged.thread,
-			};
-		}
 
 		const toast = {
 			status: 200,
