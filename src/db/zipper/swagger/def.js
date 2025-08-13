@@ -44,6 +44,7 @@ export const def_zipper_order_info = SED({
 		remarks: SE.string('Remarks'),
 		print_in: SE.string('portrait'),
 		is_swatch_attached: SE.boolean(false),
+		skip_slider_production: SE.boolean(false),
 	},
 	xml: 'Zipper/Order-Info',
 });

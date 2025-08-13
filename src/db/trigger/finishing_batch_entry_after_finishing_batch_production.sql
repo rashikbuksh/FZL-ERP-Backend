@@ -7,9 +7,10 @@ DECLARE
     nylon_stopper_name TEXT;
     order_type TEXT;
     sfg_uuid_val TEXT;
+    skip_slider_production BOOLEAN;
 BEGIN
     -- Fetch item_name and finishing_batch_uuid once
-    SELECT vodf.item_name, vodf.nylon_stopper_name, vodf.order_type, sfg.uuid INTO item_name, nylon_stopper_name, order_type, sfg_uuid_val
+    SELECT vodf.item_name, vodf.nylon_stopper_name, vodf.order_type, sfg.uuid, vodf.skip_slider_production INTO item_name, nylon_stopper_name, order_type, sfg_uuid_val, skip_slider_production
     FROM zipper.finishing_batch_entry finishing_batch_entry
     LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
@@ -73,6 +74,7 @@ BEGIN
         SET 
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
+                    WHEN skip_slider_production THEN 0
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
                     ELSE 0
                 END
@@ -83,6 +85,7 @@ BEGIN
         SET 
             slider_finishing_stock = od.slider_finishing_stock -
                 CASE 
+                    WHEN skip_slider_production THEN 0
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity 
                     ELSE 0
                 END
@@ -162,9 +165,10 @@ DECLARE
     nylon_stopper_name TEXT;
     order_type TEXT;
     sfg_uuid_val TEXT;
+    skip_slider_production BOOLEAN;
 BEGIN
     -- Fetch item_name and finishing_batch_uuid once
-    SELECT vodf.item_name, vodf.nylon_stopper_name, vodf.order_type, sfg.uuid INTO item_name, nylon_stopper_name, order_type, sfg_uuid_val
+    SELECT vodf.item_name, vodf.nylon_stopper_name, vodf.order_type, sfg.uuid, vodf.skip_slider_production INTO item_name, nylon_stopper_name, order_type, sfg_uuid_val, skip_slider_production
     FROM zipper.finishing_batch_entry finishing_batch_entry
     LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
@@ -228,6 +232,7 @@ BEGIN
         SET 
             slider_finishing_stock = slider_finishing_stock -
                 CASE 
+                    WHEN skip_slider_production THEN 0
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity - OLD.production_quantity
                     ELSE 0
                 END
@@ -238,6 +243,7 @@ BEGIN
         SET 
             slider_finishing_stock = od.slider_finishing_stock -
                 CASE 
+                    WHEN skip_slider_production THEN 0
                     WHEN NEW.section = 'finishing' THEN NEW.production_quantity - OLD.production_quantity
                     ELSE 0
                 END
@@ -315,9 +321,10 @@ DECLARE
     nylon_stopper_name TEXT;
     order_type TEXT;
     sfg_uuid_val TEXT;
+    skip_slider_production BOOLEAN;
 BEGIN
     -- Fetch item_name and finishing_batch_uuid once
-    SELECT vodf.item_name, vodf.nylon_stopper_name, vodf.order_type, sfg.uuid INTO item_name, nylon_stopper_name, order_type, sfg_uuid_val
+    SELECT vodf.item_name, vodf.nylon_stopper_name, vodf.order_type, sfg.uuid, vodf.skip_slider_production INTO item_name, nylon_stopper_name, order_type, sfg_uuid_val, skip_slider_production
     FROM zipper.finishing_batch_entry finishing_batch_entry
     LEFT JOIN zipper.sfg sfg ON sfg.uuid = finishing_batch_entry.sfg_uuid
     LEFT JOIN zipper.order_entry oe ON oe.uuid = sfg.order_entry_uuid
@@ -381,6 +388,7 @@ BEGIN
         SET 
             slider_finishing_stock = slider_finishing_stock + 
                 CASE 
+                    WHEN skip_slider_production THEN 0
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END
@@ -391,6 +399,7 @@ BEGIN
         SET 
             slider_finishing_stock = od.slider_finishing_stock + 
                 CASE 
+                    WHEN skip_slider_production THEN 0
                     WHEN OLD.section = 'finishing' THEN OLD.production_quantity
                     ELSE 0
                 END

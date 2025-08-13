@@ -5,20 +5,20 @@ export const OrderDetailsView = `
         order_info.reference_order_info_uuid,
         concat('Z', 
             CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
-            to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+            to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)
         ) AS order_number,
         order_info.id as id,
         ROW_NUMBER() OVER (
                 PARTITION BY concat('Z', 
                 CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
-                to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+                to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)
             )
                 ORDER BY order_description.created_at
             ) AS order_number_wise_rank,
         concat('#',ROW_NUMBER() OVER (
                 PARTITION BY concat('Z', 
                 CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
-                to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+                to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)
             )
                 ORDER BY order_description.created_at
             ),'-',op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
@@ -79,7 +79,8 @@ export const OrderDetailsView = `
         order_info.production_pause_time,
         order_info.production_pause_by,
         production_pause_by.name AS production_pause_by_name,
-        order_info.is_swatch_attached
+        order_info.is_swatch_attached,
+        order_info.skip_slider_production
     FROM
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
@@ -106,13 +107,13 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_info.uuid AS order_info_uuid,
         concat('Z', 
                 CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
-                to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+                to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)
             ) AS order_number,
         order_info.id as id,
         ROW_NUMBER() OVER (
                 PARTITION BY concat('Z', 
                 CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
-                to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+                to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)
             )
                 ORDER BY order_description.created_at
             ) AS order_number_wise_rank,
@@ -147,7 +148,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         concat('#',ROW_NUMBER() OVER (
                 PARTITION BY concat('Z', 
                 CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END,
-                to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')
+                to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)
             )
                 ORDER BY order_description.created_at
             ),'-',op_item.short_name, op_nylon_stopper.short_name, '-', op_zipper.short_name, '-', op_end.short_name, '-', op_puller.short_name) AS item_description,
@@ -246,7 +247,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
 		order_info.production_pause_time,
 		order_info.production_pause_by,
 		production_pause_by.name AS production_pause_by_name,
-        order_info.is_swatch_attached
+        order_info.is_swatch_attached,
+        order_info.skip_slider_production
   FROM zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
@@ -286,7 +288,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
     SELECT 
         pl.id as packing_list_id,
         pl.uuid as packing_list_uuid,
-        CONCAT('PL', to_char(pl.created_at, 'YY'), '-', LPAD(pl.id::text, 5, '0')) as packing_number_v1,
+        CONCAT('PL', to_char(pl.created_at, 'YY'), '-', (pl.id::text)) as packing_number_v1,
         CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text) as packing_number,
         carton.name as carton_name,
         carton.size as carton_size,
@@ -303,8 +305,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         CASE WHEN pl.challan_uuid IS NOT NULL 
             THEN 
                 CASE WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
-                    THEN CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 5, '0')) 
-                    ELSE CONCAT('TC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 5, '0')) 
+                    THEN CONCAT('ZC', to_char(ch.created_at, 'YY'), '-', (ch.id::text)) 
+                    ELSE CONCAT('TC', to_char(ch.created_at, 'YY'), '-', (ch.id::text)) 
                 END 
             ELSE NULL 
         END as challan_number,
@@ -343,7 +345,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         vodf.order_description_uuid,
         CASE 
             WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
-            THEN vodf.order_number ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+            THEN vodf.order_number ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) 
         END as order_number,
         CASE 
             WHEN pl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
@@ -400,12 +402,12 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
         END as order_info_uuid,
         packing_list_rank.packing_list_wise_rank, 
         packing_list_wise_counts.packing_list_wise_count,
-        CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', LPAD(packing_list.id::text, 5, '0')) as packing_number_v1,
+        CONCAT('PL', to_char(packing_list.created_at, 'YY'), '-', (packing_list.id::text)) as packing_number_v1,
         CONCAT('PL', to_char(packing_list.created_at, 'YY-MM'), '-', packing_list.id::text) as packing_number,
         CASE 
             WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
-                THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) 
-                ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) 
+                THEN CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', (order_info.id::text)) 
+                ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', (toi.id::text)) 
             END AS order_number,
         CASE 
             WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
@@ -417,8 +419,8 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
             WHEN packing_list.challan_uuid IS NOT NULL 
                 THEN 
                     CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')
-                        THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) 
-                        ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) 
+                        THEN CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) 
+                        ELSE CONCAT('TC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) 
                     END 
                 ELSE NULL
         END AS challan_number,
@@ -568,7 +570,7 @@ CREATE MATERIALIZED VIEW commercial.v_pi_cash AS
         CASE
             WHEN oi.is_sample = 1 THEN 'S'::text
             ELSE ''::text
-        END, to_char(oi.created_at, 'YY'::text), '-', lpad(oi.id::text, 4, '0'::text)), 'quantity', toi_sum.quantity, 'packing_list', toi_sum.total_packing_list_quantity, 'delivered', toi_sum.total_delivered_quantity)) FILTER (WHERE oi.uuid IS NOT NULL), '[]'::jsonb) AS thread_order_numbers,
+        END, to_char(oi.created_at, 'YY'::text), '-', (oi.id::text)), 'quantity', toi_sum.quantity, 'packing_list', toi_sum.total_packing_list_quantity, 'delivered', toi_sum.total_delivered_quantity)) FILTER (WHERE oi.uuid IS NOT NULL), '[]'::jsonb) AS thread_order_numbers,
     jsonb_agg(DISTINCT vodf.order_type) AS order_type
     FROM commercial.pi_cash
     LEFT JOIN zipper.v_order_details_full vodf ON vodf.order_info_uuid IN ( 
@@ -682,7 +684,7 @@ thread_aggregated AS (
         CONCAT('ST',
             CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
             TO_CHAR(oi.created_at, 'YY'), '-', 
-            LPAD(oi.id::text, 4, '0')
+            (oi.id::text)
         ) AS thread_order_number,
         SUM(toe.quantity::float8) AS quantity,
         SUM(toe.delivered)::float8 AS total_delivered_quantity

@@ -628,7 +628,8 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
                 CASE WHEN (vodf.bottom_stopper_name IS NOT NULL AND vodf.bottom_stopper_name != '---') THEN vodf.bottom_stopper_name ELSE '' END,
                 ' / ',
                 REPLACE(vodf.slider_provided::text, '_', ' ')
-            ) as slider
+            ) as slider,
+			vodf.skip_slider_production
 		FROM
 			zipper.finishing_batch_entry zfbe
 		LEFT JOIN zipper.sfg sfg ON zfbe.sfg_uuid = sfg.uuid
