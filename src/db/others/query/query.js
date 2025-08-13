@@ -1163,8 +1163,14 @@ export async function selectOrderInfoToGetOrderDescription(req, res, next) {
             vodf.is_inch,
             vodf.order_type,
             vodf.is_multi_color,
-            vodf.is_waterproof
+            vodf.is_waterproof,
+			oe_mixed.bleaching
 		FROM zipper.v_order_details_full vodf
+		LEFT JOIN (
+			SELECT oe.bleaching, oe.order_description_uuid
+			FROM zipper.order_entry oe
+			LIMIT 1
+		) oe_mixed ON vodf.order_description_uuid = oe_mixed.order_description_uuid
 		WHERE 
 			vodf.order_number = ${order_number} 
 			${marketing_uuid ? sql`AND vodf.marketing_uuid = ${marketing_uuid}` : sql``}
