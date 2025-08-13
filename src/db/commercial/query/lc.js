@@ -102,7 +102,7 @@ export async function selectAll(req, res, next) {
 					) ELSE lc.pi_number 
 				END
 			) as pi_ids,
-			array_agg(
+			json_agg(
 				json_build_object(
 					'zipper', vpc.order_numbers,
 					'thread', vpc.thread_order_numbers
