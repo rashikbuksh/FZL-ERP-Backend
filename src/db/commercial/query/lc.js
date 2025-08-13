@@ -187,17 +187,56 @@ export async function selectAll(req, res, next) {
 
 		const data = await resultPromise;
 
-		// here merge vpc.order_numbers into a single zipper and vpc.thread_order_numbers into a single thread
-		data.rows.forEach((row) => {
-			row.order_numbers = row.order_numbers.reduce(
-				(acc, curr) => {
-					acc.zipper.push(curr.zipper);
-					acc.thread.push(curr.thread);
-					return acc;
-				},
-				{ zipper: [], thread: [] }
-			);
-		});
+		// order_number object under that zipper and thread object
+
+		// zipper: [
+		//     {
+		//       "quantity": 72000,
+		//       "delivered": 52653,
+		//       "order_number": "Z25-3975",
+		//       "packing_list": 52653,
+		//       "order_info_uuid": "t1fi8rpFsGZ0i2A"
+		//     },
+		//     {
+		//       "quantity": 53630,
+		//       "delivered": 53630,
+		//       "order_number": "Z25-1687",
+		//       "packing_list": 53630,
+		//       "order_info_uuid": "Mazyn1gveylyly9"
+		//     }
+		// ],
+		// thread: [
+		// ]
+		// },
+
+		// If data.rows is an array of rows, and each row.order_numbers is a JSON array (from json_agg)
+		const merged = {
+			zipper: [],
+			thread: [],
+		};
+
+		for (const row of data.rows) {
+			// row.order_numbers is likely a JSON string or array, so parse if needed
+			let orderNumbersArr = row.order_numbers;
+			if (typeof orderNumbersArr === 'string') {
+				orderNumbersArr = JSON.parse(orderNumbersArr);
+			}
+			if (Array.isArray(orderNumbersArr)) {
+				for (const obj of orderNumbersArr) {
+					if (obj.zipper) merged.zipper.push(...obj.zipper);
+					if (obj.thread) merged.thread.push(...obj.thread);
+				}
+			}
+		}
+
+		// replace the data.rows order_numbers with merged
+
+		for (const row of data.rows) {
+			row.order_numbers = {
+				zipper: merged.zipper,
+				thread: merged.thread,
+			};
+		}
 
 		const toast = {
 			status: 200,
