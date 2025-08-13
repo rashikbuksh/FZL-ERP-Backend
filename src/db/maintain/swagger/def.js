@@ -14,6 +14,7 @@ export const defSectionMachine = SED({
 		uuid: SE.uuid(),
 		section: SE.string('Section 1'),
 		name: SE.string('Machine 1'),
+		model_number: SE.string('Model 1'),
 		status: SE.integer(0),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),

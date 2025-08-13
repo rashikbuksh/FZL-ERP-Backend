@@ -15,6 +15,7 @@ export const section_machine = maintain.table('section_machine', {
 	uuid: uuid_primary,
 	section: text().notNull(),
 	name: text().notNull(),
+	model_number: text().default(null),
 	status: boolean().default(false),
 	created_at: DateTime().notNull(),
 	updated_at: DateTime().default(null),
