@@ -22,7 +22,7 @@ purchaseRouter.post(
 	upload.single('file'),
 	descriptionOperations.insert
 );
-purchaseRouter.put(
+purchaseRouter.patch(
 	'/description/:uuid',
 	upload.single('file'),
 	descriptionOperations.update
