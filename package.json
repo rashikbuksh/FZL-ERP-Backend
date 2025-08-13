@@ -27,6 +27,7 @@
 		"express": "^5.1.0",
 		"express-validator": "^7.2.1",
 		"jsonwebtoken": "^9.0.2",
+		"local-file-upload": "^1.1.0",
 		"memory-cache": "^0.2.0",
 		"minimist": "^1.2.8",
 		"morgan": "^1.10.1",
