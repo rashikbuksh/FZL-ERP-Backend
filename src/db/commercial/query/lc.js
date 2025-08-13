@@ -102,6 +102,12 @@ export async function selectAll(req, res, next) {
 					) ELSE lc.pi_number 
 				END
 			) as pi_ids,
+			array_agg(
+				json_build_object(
+					'zipper', vpc.order_numbers,
+					'thread', vpc.thread_order_numbers
+				)
+			) as order_numbers,
 			party.name AS party_name,
 			array_agg(
 				marketing.name
@@ -172,6 +178,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
 		LEFT JOIN public.marketing ON pi_cash.marketing_uuid = marketing.uuid
 		LEFT JOIN commercial.bank ON pi_cash.bank_uuid = bank.uuid
+		LEFT JOIN commercial.v_pi_cash vpc ON vpc.pi_cash_uuid = pi_cash.uuid
 		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
 		GROUP BY lc.uuid, party.name, users.name, lc_entry_agg.lc_entry
 		ORDER BY lc.created_at DESC

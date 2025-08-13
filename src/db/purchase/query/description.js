@@ -55,6 +55,9 @@ export async function update(req, res, next) {
 	const formData = req.body;
 	const file = req.file;
 
+	console.log(file, 'FILE');
+	console.log(formData, 'FORM DATA');
+
 	if (file) {
 		// If a new file is uploaded, we need to handle the file update
 		const oldFilePath = db
