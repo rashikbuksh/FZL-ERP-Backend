@@ -108,6 +108,8 @@ export const order_info = zipper.table('order_info', {
 		.references(() => hrSchema.users.uuid)
 		.default(null),
 	is_swatch_attached: boolean('is_swatch_attached').default(false),
+	// order sheet settings
+	skip_slider_production: boolean('skip_slider_production').default(false),
 });
 
 export const slider_provided_enum = zipper.enum('slider_provided_enum', [

@@ -187,6 +187,18 @@ export async function selectAll(req, res, next) {
 
 		const data = await resultPromise;
 
+		// here merge vpc.order_numbers into a single zipper and vpc.thread_order_numbers into a single thread
+		data.rows.forEach((row) => {
+			row.order_numbers = row.order_numbers.reduce(
+				(acc, curr) => {
+					acc.zipper.push(curr.zipper);
+					acc.thread.push(curr.thread);
+					return acc;
+				},
+				{ zipper: [], thread: [] }
+			);
+		});
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
