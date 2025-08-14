@@ -185,12 +185,8 @@ export async function selectAll(req, res, next) {
 
 		// put zipper and thread out of array and put it back in data.rows
 		data.rows.forEach((row, index) => {
-			row.order_numbers = {
-				zipper: row.zipper ? row.zipper.flat() : [],
-				thread: row.thread ? row.thread.flat() : [],
-			};
-			delete row.zipper;
-			delete row.thread;
+			row.zipper = row.zipper ? row.zipper.flat() : [];
+			row.thread = row.thread ? row.thread.flat() : [];
 		});
 
 		const toast = {
