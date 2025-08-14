@@ -77,6 +77,8 @@ export async function selectAll(req, res, next) {
 			? await GetMarketingOwnUUID(db, own_uuid)
 			: null;
 
+		const start_time = new Date().getTime();
+
 		const query = sql`
 		WITH
 			lc_entry_agg AS (
@@ -102,6 +104,8 @@ export async function selectAll(req, res, next) {
 					) ELSE lc.pi_number 
 				END
 			) as pi_ids,
+			COALESCE(json_agg(vpc.order_numbers) FILTER (WHERE vpc.order_numbers IS NOT NULL), '[]') as zipper,
+  			COALESCE(json_agg(vpc.thread_order_numbers) FILTER (WHERE vpc.thread_order_numbers IS NOT NULL), '[]') as thread,
 			party.name AS party_name,
 			array_agg(
 				marketing.name
@@ -172,6 +176,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
 		LEFT JOIN public.marketing ON pi_cash.marketing_uuid = marketing.uuid
 		LEFT JOIN commercial.bank ON pi_cash.bank_uuid = bank.uuid
+		LEFT JOIN commercial.v_pi_cash vpc ON vpc.pi_cash_uuid = pi_cash.uuid
 		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
 		GROUP BY lc.uuid, party.name, users.name, lc_entry_agg.lc_entry
 		ORDER BY lc.created_at DESC
@@ -179,6 +184,20 @@ export async function selectAll(req, res, next) {
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
+
+		// put zipper and thread out of array and put it back in data.rows
+		data.rows.forEach((row, index) => {
+			row.order_numbers = {
+				zipper: row.zipper ? row.zipper.flat() : [],
+				thread: row.thread ? row.thread.flat() : [],
+			};
+			delete row.zipper;
+			delete row.thread;
+		});
+
+		const end_time = new Date().getTime();
+
+		console.log(`Query execution time: ${end_time - start_time} ms`);
 
 		const toast = {
 			status: 200,
