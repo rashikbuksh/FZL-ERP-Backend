@@ -450,8 +450,8 @@ export const pathZipperOrderInfo = {
 			parameters: [SE.parameter_params('order info to update', 'uuid')],
 			requestBody: SE.requestBody({
 				skip_slider_production: SE.boolean(true),
-				updated_at: SE.date_time(),
-				updated_by: SE.string('user'),
+				skip_slider_production_time: SE.date_time(),
+				skip_slider_production_by: SE.uuid(),
 			}),
 			responses: {
 				200: SE.response_schema_ref(200, 'zipper/order_info'),
