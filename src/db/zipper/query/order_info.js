@@ -1007,14 +1007,18 @@ export async function getOrderInfoOtherDetails(req, res, next) {
 export async function updateSkipSliderProduction(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { skip_slider_production, updated_at, updated_by } = req.body;
+	const {
+		skip_slider_production,
+		skip_slider_production_time,
+		skip_slider_production_by,
+	} = req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
 		.set({
 			skip_slider_production,
-			updated_at,
-			updated_by,
+			skip_slider_production_time,
+			skip_slider_production_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
