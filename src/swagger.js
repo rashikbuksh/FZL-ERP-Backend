@@ -54,6 +54,10 @@ import { pathReport, tagReport } from './db/report/route.js';
 // Dashboard
 import { pathDashboards, tagDashboards } from './db/dashboard/route.js';
 
+// Accounting
+import { defAcc, tagAcc } from './db/acc/swagger/def.js';
+import { pathAcc } from './db/acc/swagger/route.js';
+
 const tags = [
 	...tagHr,
 	...tagZipper,
@@ -69,6 +73,7 @@ const tags = [
 	...tagReport,
 	...tagDashboards,
 	...tagMaintain,
+	...tagAcc,
 ];
 
 const definitions = {
@@ -83,6 +88,9 @@ const definitions = {
 	public: defPublic,
 	thread: defThread,
 	maintain: defMaintain,
+	others: tagOthers,
+	report: tagReport,
+	acc: defAcc,
 };
 
 const paths = {
@@ -100,6 +108,7 @@ const paths = {
 	...pathReport,
 	...pathDashboards,
 	...pathMaintain,
+	...pathAcc,
 };
 
 const swaggerSpec = swaggerJSDoc({

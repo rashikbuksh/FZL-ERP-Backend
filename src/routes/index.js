@@ -16,6 +16,7 @@ import { zipperRouter } from '../db/zipper/route.js';
 import { zipperRouterV2 } from '../db/zipper/routev2.js';
 import { maintainRouter } from '../db/maintain/route.js';
 import { auditRouter } from '../db/audit/route.js';
+import { accRouter } from '../db/acc/route.js';
 
 const route = express.Router();
 
@@ -80,5 +81,8 @@ route.use('/dashboard', dashBoardRouter);
 
 // audit routes
 route.use('/audit', auditRouter);
+
+// accounting routes
+route.use('/acc', accRouter);
 
 export default route;
