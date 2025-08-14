@@ -108,7 +108,7 @@ zipperRouter.put(
 	orderInfoOperations.updateSkipSliderProduction
 );
 zipperRouter.put(
-	'/order-info/cancellation/update/by/:uuid',
+	'/order-info/is-cancelled/update/by/:uuid',
 	orderInfoOperations.updateCancellation
 );
 

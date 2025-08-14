@@ -461,7 +461,7 @@ export const pathZipperOrderInfo = {
 			},
 		},
 	},
-	'/zipper/order-info/cancellation/update/by/{uuid}': {
+	'/zipper/order-info/is-cancelled/update/by/{uuid}': {
 		put: {
 			tags: ['zipper.order_info'],
 			summary: 'Update an existing order info cancellation',
