@@ -12,6 +12,10 @@ const snoFromHeadOfficeBy = alias(hrSchema.users, 'sno_from_head_office_by');
 const receiveByFactoryBy = alias(hrSchema.users, 'receive_by_factory_by');
 const productionPauseBy = alias(hrSchema.users, 'production_pause_by');
 const updatedBy = alias(hrSchema.users, 'updated_by');
+const skipSliderProductionBy = alias(
+	hrSchema.users,
+	'skip_slider_production_by'
+);
 
 export async function insert(req, res, next) {
 	if (!validateRequest(req, next)) return;
@@ -265,6 +269,9 @@ export async function selectAll(req, res, next) {
 			production_pause_by_name: productionPauseBy.name,
 			is_swatch_attached: order_info.is_swatch_attached,
 			skip_slider_production: order_info.skip_slider_production,
+			skip_slider_production_time: order_info.skip_slider_production_time,
+			skip_slider_production_by: order_info.skip_slider_production_by,
+			skip_slider_production_by_name: skipSliderProductionBy.name,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -302,6 +309,13 @@ export async function selectAll(req, res, next) {
 		.leftJoin(
 			productionPauseBy,
 			eq(order_info.production_pause_by, productionPauseBy.uuid)
+		)
+		.leftJoin(
+			skipSliderProductionBy,
+			eq(
+				order_info.skip_slider_production_by,
+				skipSliderProductionBy.uuid
+			)
 		)
 		.orderBy(desc(order_info.created_at));
 
