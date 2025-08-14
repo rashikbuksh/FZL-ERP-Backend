@@ -982,9 +982,9 @@ export async function getOrderInfoOtherDetails(req, res, next) {
 		.leftJoin(updatedBy, eq(order_info.updated_by, updatedBy.uuid))
 		.where(
 			or(
-				eq(order_info.skip_slider_production, true),
-				eq(order_info.production_pause, true),
-				eq(order_info.is_cancelled, true)
+				eq(order_info.skip_slider_production, sql`true`),
+				eq(order_info.production_pause, sql`true`),
+				eq(order_info.is_cancelled, sql`true`)
 			)
 		)
 		.orderBy(desc(order_info.created_at));
