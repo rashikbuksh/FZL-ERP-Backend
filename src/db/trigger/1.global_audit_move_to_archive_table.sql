@@ -13,5 +13,3 @@ END;
 $$ LANGUAGE plpgsql;
 
 SELECT audit.move_old_audit_logs();
-
-SELECT setval('audit.global_audit_log_id_seq', 1);
