@@ -681,6 +681,7 @@ export async function selectOrderInfo(req, res, next) {
 		challan_uuid,
 		own_uuid,
 		total_qty,
+		is_slider_needed,
 	} = req.query;
 	let { party_name } = req.query;
 
@@ -746,7 +747,9 @@ export async function selectOrderInfo(req, res, next) {
             order_info.uuid IN (
                 SELECT vodf.order_info_uuid 
                 FROM zipper.v_order_details_full vodf 
-                ${item_for != undefined ? sql`WHERE vodf.order_type = ${item_for}` : sql``}
+				WHERE
+                ${item_for != undefined ? sql` vodf.order_type = ${item_for}` : sql` 1=1`}
+				${is_slider_needed === 'false' ? sql` AND vodf.order_type != 'slider'` : sql``}
             )
         `;
 			break;

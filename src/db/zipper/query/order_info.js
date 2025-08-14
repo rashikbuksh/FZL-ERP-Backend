@@ -45,6 +45,7 @@ export async function insert(req, res, next) {
 		production_pause_time,
 		production_pause_by,
 		is_swatch_attached,
+		skip_slider_production,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -79,6 +80,7 @@ export async function insert(req, res, next) {
 			production_pause_time,
 			production_pause_by,
 			is_swatch_attached,
+			skip_slider_production,
 		})
 		.returning({
 			insertedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
@@ -131,6 +133,7 @@ export async function update(req, res, next) {
 		production_pause_time,
 		production_pause_by,
 		is_swatch_attached,
+		skip_slider_production,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -165,6 +168,7 @@ export async function update(req, res, next) {
 			production_pause_time,
 			production_pause_by,
 			is_swatch_attached,
+			skip_slider_production,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -210,6 +214,10 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { own_uuid } = req.query;
+
+	const marketingUuid = await GetMarketingOwnUUID(db, own_uuid);
+
 	const orderInfoPromise = db
 		.select({
 			uuid: order_info.uuid,
@@ -253,6 +261,7 @@ export async function selectAll(req, res, next) {
 			production_pause_by: order_info.production_pause_by,
 			production_pause_by_name: productionPauseBy.name,
 			is_swatch_attached: order_info.is_swatch_attached,
+			skip_slider_production: order_info.skip_slider_production,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -292,6 +301,10 @@ export async function selectAll(req, res, next) {
 			eq(order_info.production_pause_by, productionPauseBy.uuid)
 		)
 		.orderBy(desc(order_info.created_at));
+
+	if (marketingUuid) {
+		orderInfoPromise.where(eq(order_info.marketing_uuid, marketingUuid));
+	}
 
 	try {
 		const data = await orderInfoPromise;
@@ -352,6 +365,7 @@ export async function select(req, res, next) {
 			production_pause_by: order_info.production_pause_by,
 			production_pause_by_name: productionPauseBy.name,
 			is_swatch_attached: order_info.is_swatch_attached,
+			skip_slider_production: order_info.skip_slider_production,
 		})
 		.from(order_info)
 		.leftJoin(
@@ -434,6 +448,7 @@ export async function getOrderDetails(req, res, next) {
 			vod.created_by_name,
 			vod.order_description_created_at,
 			vod.order_description_updated_at,
+			vod.skip_slider_production,
             COUNT(*) OVER (PARTITION BY vod.order_number) AS order_number_wise_count,
             COALESCE(oe_stats.swatch_approval_count, 0) AS swatch_approval_count,
             COALESCE(oe_stats.order_entry_count, 0) AS order_entry_count,
