@@ -77,8 +77,6 @@ export async function selectAll(req, res, next) {
 			? await GetMarketingOwnUUID(db, own_uuid)
 			: null;
 
-		const start_time = new Date().getTime();
-
 		const query = sql`
 		WITH
 			lc_entry_agg AS (
@@ -194,10 +192,6 @@ export async function selectAll(req, res, next) {
 			delete row.zipper;
 			delete row.thread;
 		});
-
-		const end_time = new Date().getTime();
-
-		console.log(`Query execution time: ${end_time - start_time} ms`);
 
 		const toast = {
 			status: 200,

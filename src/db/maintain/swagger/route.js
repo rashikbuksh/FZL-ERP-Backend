@@ -22,7 +22,7 @@ export const pathMaintainSectionMachine = {
 			consumes: ['application/json'],
 			produces: ['application/json'],
 			parameters: [],
-			requestBody: SE.requestBody_schema_ref('maintain/section-machine'),
+			requestBody: SE.requestBody_schema_ref('maintain/section_machine'),
 			responses: {
 				200: SE.response_schema_ref(
 					'maintain/section-machine',
@@ -105,7 +105,7 @@ export const pathMaintainIssue = {
 			tags: ['maintain.issue'],
 			summary: 'Get all machine problem info',
 			description: 'Get all machine problem info',
-			parameters: [],
+			parameters: [SE.parameter_query('own_uuid', 'own_uuid', SE.uuid())],
 			responses: {
 				200: SE.response_schema_ref(
 					'maintain/issue',
@@ -120,7 +120,6 @@ export const pathMaintainIssue = {
 			operationId: 'createMaintainIssueEntry',
 			consumes: ['application/json'],
 			produces: ['application/json'],
-			parameters: [],
 			requestBody: SE.requestBody_schema_ref('maintain/issue'),
 			responses: {
 				200: SE.response_schema_ref(

@@ -233,6 +233,8 @@ export async function select(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { own_uuid } = req.query;
+
 	const issueEntryPromise = db
 		.select({
 			id: issue.id,
@@ -278,6 +280,10 @@ export async function selectAll(req, res, next) {
 			eq(issue.verification_by, verification_by_user.uuid)
 		)
 		.orderBy(desc(issue.created_at));
+
+	if (own_uuid) {
+		issueEntryPromise.where(eq(issue.created_by, own_uuid));
+	}
 
 	try {
 		const data = await issueEntryPromise;
