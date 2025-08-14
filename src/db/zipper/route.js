@@ -107,6 +107,10 @@ zipperRouter.put(
 	'/order-info/skip-slider-production/update/by/:uuid',
 	orderInfoOperations.updateSkipSliderProduction
 );
+zipperRouter.put(
+	'/order-info/cancellation/update/by/:uuid',
+	orderInfoOperations.updateCancellation
+);
 
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------
 

@@ -90,6 +90,10 @@ export const order_info = zipper.table('order_info', {
 	remarks: text('remarks').default(null),
 	print_in: print_in_enum('print_in').default('portrait'),
 	is_cancelled: boolean('is_cancelled').default(false),
+	is_cancelled_time: DateTime('is_cancelled_time').default(null),
+	is_cancelled_by: defaultUUID('is_cancelled_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	sno_from_head_office: boolean('sno_from_head_office').default(false),
 	sno_from_head_office_time: DateTime('sno_from_head_office_time').default(
 		null

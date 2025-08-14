@@ -16,6 +16,7 @@ const skipSliderProductionBy = alias(
 	hrSchema.users,
 	'skip_slider_production_by'
 );
+const isCancelledBy = alias(hrSchema.users, 'is_cancelled_by');
 
 export async function insert(req, res, next) {
 	if (!validateRequest(req, next)) return;
@@ -255,6 +256,9 @@ export async function selectAll(req, res, next) {
 			remarks: order_info.remarks,
 			print_in: order_info.print_in,
 			is_cancelled: order_info.is_cancelled,
+			is_cancelled_time: order_info.is_cancelled_time,
+			is_cancelled_by: order_info.is_cancelled_by,
+			is_cancelled_by_name: isCancelledBy.name,
 			sno_from_head_office: order_info.sno_from_head_office,
 			sno_from_head_office_time: order_info.sno_from_head_office_time,
 			sno_from_head_office_by: order_info.sno_from_head_office_by,
@@ -317,6 +321,10 @@ export async function selectAll(req, res, next) {
 				skipSliderProductionBy.uuid
 			)
 		)
+		.leftJoin(
+			isCancelledBy,
+			eq(order_info.is_cancelled_by, isCancelledBy.uuid)
+		)
 		.orderBy(desc(order_info.created_at));
 
 	if (marketingUuid) {
@@ -369,6 +377,9 @@ export async function select(req, res, next) {
 			remarks: order_info.remarks,
 			print_in: order_info.print_in,
 			is_cancelled: order_info.is_cancelled,
+			is_cancelled_time: order_info.is_cancelled_time,
+			is_cancelled_by: order_info.is_cancelled_by,
+			is_cancelled_by_name: isCancelledBy.name,
 			sno_from_head_office: order_info.sno_from_head_office,
 			sno_from_head_office_time: order_info.sno_from_head_office_time,
 			sno_from_head_office_by: order_info.sno_from_head_office_by,
@@ -420,6 +431,10 @@ export async function select(req, res, next) {
 		.leftJoin(
 			productionPauseBy,
 			eq(order_info.production_pause_by, productionPauseBy.uuid)
+		)
+		.leftJoin(
+			isCancelledBy,
+			eq(order_info.is_cancelled_by, isCancelledBy.uuid)
 		)
 		.where(eq(order_info.uuid, req.params.uuid));
 
@@ -538,12 +553,17 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.is_sample,
 						vodf.order_number_wise_rank,
 						vodf.is_cancelled,
+						oi.is_cancelled_by,
+						oi.is_cancelled_time,
+						is_cancelled_by.name AS is_cancelled_by_name,
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
 						order_entry_counts.order_entry_count,
 						CASE WHEN swatch_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved,
 						vodf.is_swatch_attached
 					FROM zipper.v_order_details_full vodf
+					LEFT JOIN zipper.order_info oi ON vodf.order_info_uuid = oi.uuid
+					LEFT JOIN hrSchema.users is_cancelled_by ON oi.is_cancelled_by = is_cancelled_by.uuid
 					LEFT JOIN (
 						SELECT order_number, COUNT(*) AS order_number_wise_count
 						FROM zipper.v_order_details_full
@@ -955,6 +975,9 @@ export async function getOrderInfoOtherDetails(req, res, next) {
 			updated_at: order_info.updated_at,
 			remarks: order_info.remarks,
 			is_cancelled: order_info.is_cancelled,
+			is_cancelled_time: order_info.is_cancelled_time,
+			is_cancelled_by: order_info.is_cancelled_by,
+			is_cancelled_by_name: isCancelledBy.name,
 			production_pause: order_info.production_pause,
 			production_pause_time: order_info.production_pause_time,
 			production_pause_by: order_info.production_pause_by,
@@ -994,6 +1017,10 @@ export async function getOrderInfoOtherDetails(req, res, next) {
 			eq(order_info.production_pause_by, productionPauseBy.uuid)
 		)
 		.leftJoin(updatedBy, eq(order_info.updated_by, updatedBy.uuid))
+		.leftJoin(
+			isCancelledBy,
+			eq(order_info.is_cancelled_by, isCancelledBy.uuid)
+		)
 		.where(
 			sql`
 				order_info.skip_slider_production = true OR
@@ -1033,6 +1060,37 @@ export async function updateSkipSliderProduction(req, res, next) {
 			skip_slider_production,
 			skip_slider_production_time,
 			skip_slider_production_by,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateCancellation(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { is_cancelled, is_cancelled_time, is_cancelled_by } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			is_cancelled,
+			is_cancelled_time,
+			is_cancelled_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
