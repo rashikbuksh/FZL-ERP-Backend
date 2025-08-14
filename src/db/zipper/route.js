@@ -103,6 +103,10 @@ zipperRouter.get(
 	'/order-info-others',
 	orderInfoOperations.getOrderInfoOtherDetails
 );
+zipperRouter.get(
+	'/order-info/skip-slider-production/update/by/:uuid',
+	orderInfoOperations.updateSkipSliderProduction
+);
 
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------
 

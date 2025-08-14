@@ -1003,3 +1003,34 @@ export async function getOrderInfoOtherDetails(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function updateSkipSliderProduction(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { skip_slider_production, updated_at, updated_by } = req.body;
+
+	const orderInfoPromise = db
+		.update(order_info)
+		.set({
+			skip_slider_production,
+			updated_at,
+			updated_by,
+		})
+		.where(eq(order_info.uuid, req.params.uuid))
+		.returning({
+			updatedId: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+		});
+
+	try {
+		const data = await orderInfoPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
