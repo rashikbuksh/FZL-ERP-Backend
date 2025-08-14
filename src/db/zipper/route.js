@@ -99,6 +99,10 @@ zipperRouter.put(
 	orderInfoOperations.updateSwatchAttachment
 );
 zipperRouter.get('/tape-assigned', orderInfoOperations.getTapeAssigned);
+zipperRouter.get(
+	'/order-info-others',
+	orderInfoOperations.getOrderInfoOtherDetails
+);
 
 // --------------------- ORDER DESCRIPTION ROUTES ---------------------
 

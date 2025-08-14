@@ -1,7 +1,7 @@
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, or, sql } from 'drizzle-orm';
 import * as hrSchema from '../../hr/schema.js';
 import * as publicSchema from '../../public/schema.js';
 import { order_info } from '../schema.js';
@@ -11,6 +11,7 @@ import { GetMarketingOwnUUID } from '../../variables.js';
 const snoFromHeadOfficeBy = alias(hrSchema.users, 'sno_from_head_office_by');
 const receiveByFactoryBy = alias(hrSchema.users, 'receive_by_factory_by');
 const productionPauseBy = alias(hrSchema.users, 'production_pause_by');
+const updatedBy = alias(hrSchema.users, 'updated_by');
 
 export async function insert(req, res, next) {
 	if (!validateRequest(req, next)) return;
@@ -216,7 +217,9 @@ export async function remove(req, res, next) {
 export async function selectAll(req, res, next) {
 	const { own_uuid } = req.query;
 
-	const marketingUuid = await GetMarketingOwnUUID(db, own_uuid);
+	const marketingUuid = own_uuid
+		? await GetMarketingOwnUUID(db, own_uuid)
+		: null;
 
 	const orderInfoPromise = db
 		.select({
@@ -909,6 +912,93 @@ export async function selectAllOrderInfoLogs(req, res, next) {
 		};
 
 		return res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function getOrderInfoOtherDetails(req, res, next) {
+	const orderInfoPromise = db
+		.select({
+			uuid: order_info.uuid,
+			id: order_info.id,
+			order_number: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			reference_order_info_uuid: order_info.reference_order_info_uuid,
+			buyer_name: publicSchema.buyer.name,
+			party_name: publicSchema.party.name,
+			marketing_name: publicSchema.marketing.name,
+			merchandiser_name: publicSchema.merchandiser.name,
+			factory_name: publicSchema.factory.name,
+			is_sample: order_info.is_sample,
+			is_bill: order_info.is_bill,
+			is_cash: order_info.is_cash,
+			conversion_rate: order_info.conversion_rate,
+			marketing_priority: order_info.marketing_priority,
+			factory_priority: order_info.factory_priority,
+			status: order_info.status,
+			created_by_name: hrSchema.users.name,
+			created_at: order_info.created_at,
+			updated_at: order_info.updated_at,
+			remarks: order_info.remarks,
+			is_cancelled: order_info.is_cancelled,
+			production_pause: order_info.production_pause,
+			production_pause_time: order_info.production_pause_time,
+			production_pause_by: order_info.production_pause_by,
+			production_pause_by_name: productionPauseBy.name,
+			is_swatch_attached: order_info.is_swatch_attached,
+			skip_slider_production: order_info.skip_slider_production,
+			updated_by: order_info.updated_by,
+			updated_by_name: updatedBy.name,
+		})
+		.from(order_info)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(order_info.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(order_info.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.marketing,
+			eq(order_info.marketing_uuid, publicSchema.marketing.uuid)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(order_info.merchandiser_uuid, publicSchema.merchandiser.uuid)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(order_info.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(
+			hrSchema.users,
+			eq(order_info.created_by, hrSchema.users.uuid)
+		)
+		.leftJoin(
+			productionPauseBy,
+			eq(order_info.production_pause_by, productionPauseBy.uuid)
+		)
+		.leftJoin(updatedBy, eq(order_info.updated_by, updatedBy.uuid))
+		.where(
+			or(
+				eq(order_info.skip_slider_production, true),
+				eq(order_info.production_pause, true),
+				eq(order_info.is_cancelled, true)
+			)
+		)
+		.orderBy(desc(order_info.created_at));
+
+	try {
+		const data = await orderInfoPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Order Info list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
