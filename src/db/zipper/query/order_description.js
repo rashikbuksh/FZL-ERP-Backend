@@ -218,6 +218,7 @@ export async function update(req, res, next) {
 		revision_no,
 		is_marketing_checked,
 		marketing_checked_at,
+		updated_by,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -266,6 +267,7 @@ export async function update(req, res, next) {
 			revision_no,
 			is_marketing_checked,
 			marketing_checked_at,
+			updated_by,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
@@ -1014,11 +1016,21 @@ export async function updateOrderDescriptionPutIsMarketingCheckedByOrderDescript
 
 	const { uuid } = req.params;
 
-	const { is_marketing_checked, marketing_checked_at } = req.body;
+	const {
+		is_marketing_checked,
+		marketing_checked_at,
+		updated_by,
+		updated_at,
+	} = req.body;
 
 	const orderDescriptionPromise = db
 		.update(order_description)
-		.set({ is_marketing_checked, marketing_checked_at })
+		.set({
+			is_marketing_checked,
+			marketing_checked_at,
+			updated_by,
+			updated_at,
+		})
 		.where(eq(order_description.uuid, uuid))
 		.returning({
 			updatedId: sql`order_description.uuid`,

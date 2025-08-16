@@ -145,6 +145,7 @@ export async function selectAll(req, res, next) {
 			created_by_name: hrSchema.users.name,
 			created_at: finishing_batch_transaction.created_at,
 			updated_at: finishing_batch_transaction.updated_at,
+			updated_by: finishing_batch_transaction.updated_by,
 			remarks: finishing_batch_transaction.remarks,
 		})
 		.from(finishing_batch_transaction)

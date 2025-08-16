@@ -126,6 +126,7 @@ export async function update(req, res, next) {
 		created_by,
 		created_at,
 		updated_at,
+		updated_by,
 		remarks,
 		print_in,
 		is_cancelled,
@@ -161,6 +162,7 @@ export async function update(req, res, next) {
 			created_by,
 			created_at,
 			updated_at,
+			updated_by,
 			remarks,
 			print_in,
 			is_cancelled,
@@ -253,6 +255,7 @@ export async function selectAll(req, res, next) {
 			created_by_name: hrSchema.users.name,
 			created_at: order_info.created_at,
 			updated_at: order_info.updated_at,
+			updated_by: order_info.updated_by,
 			remarks: order_info.remarks,
 			print_in: order_info.print_in,
 			is_cancelled: order_info.is_cancelled,
@@ -374,6 +377,7 @@ export async function select(req, res, next) {
 			created_by_name: hrSchema.users.name,
 			created_at: order_info.created_at,
 			updated_at: order_info.updated_at,
+			updated_by: order_info.updated_by,
 			remarks: order_info.remarks,
 			print_in: order_info.print_in,
 			is_cancelled: order_info.is_cancelled,
@@ -703,12 +707,14 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 export async function updatePrintIn(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { print_in } = req.body;
+	const { print_in, updated_at, updated_by } = req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
 		.set({
 			print_in,
+			updated_at,
+			updated_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -736,6 +742,8 @@ export async function updateSendFromHeadOffice(req, res, next) {
 		sno_from_head_office,
 		sno_from_head_office_time,
 		sno_from_head_office_by,
+		updated_at,
+		updated_by,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -744,6 +752,8 @@ export async function updateSendFromHeadOffice(req, res, next) {
 			sno_from_head_office,
 			sno_from_head_office_time,
 			sno_from_head_office_by,
+			updated_at,
+			updated_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -771,6 +781,8 @@ export async function updateReceiveByFactory(req, res, next) {
 		receive_by_factory,
 		receive_by_factory_time,
 		receive_by_factory_by,
+		updated_at,
+		updated_by,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -779,6 +791,8 @@ export async function updateReceiveByFactory(req, res, next) {
 			receive_by_factory,
 			receive_by_factory_time,
 			receive_by_factory_by,
+			updated_at,
+			updated_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -802,8 +816,13 @@ export async function updateReceiveByFactory(req, res, next) {
 export async function updateProductionPause(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { production_pause, production_pause_time, production_pause_by } =
-		req.body;
+	const {
+		production_pause,
+		production_pause_time,
+		production_pause_by,
+		updated_at,
+		updated_by,
+	} = req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
@@ -811,6 +830,8 @@ export async function updateProductionPause(req, res, next) {
 			production_pause,
 			production_pause_time,
 			production_pause_by,
+			updated_at,
+			updated_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -834,12 +855,14 @@ export async function updateProductionPause(req, res, next) {
 export async function updateSwatchAttachment(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { is_swatch_attached } = req.body;
+	const { is_swatch_attached, updated_at, updated_by } = req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
 		.set({
 			is_swatch_attached,
+			updated_at,
+			updated_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -1046,6 +1069,8 @@ export async function updateSkipSliderProduction(req, res, next) {
 		skip_slider_production,
 		skip_slider_production_time,
 		skip_slider_production_by,
+		updated_at,
+		updated_by,
 	} = req.body;
 
 	const orderInfoPromise = db
@@ -1054,6 +1079,8 @@ export async function updateSkipSliderProduction(req, res, next) {
 			skip_slider_production,
 			skip_slider_production_time,
 			skip_slider_production_by,
+			updated_at,
+			updated_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
@@ -1077,7 +1104,13 @@ export async function updateSkipSliderProduction(req, res, next) {
 export async function updateCancellation(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { is_cancelled, is_cancelled_time, is_cancelled_by } = req.body;
+	const {
+		is_cancelled,
+		is_cancelled_time,
+		is_cancelled_by,
+		updated_at,
+		updated_by,
+	} = req.body;
 
 	const orderInfoPromise = db
 		.update(order_info)
@@ -1085,6 +1118,8 @@ export async function updateCancellation(req, res, next) {
 			is_cancelled,
 			is_cancelled_time,
 			is_cancelled_by,
+			updated_at,
+			updated_by,
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({

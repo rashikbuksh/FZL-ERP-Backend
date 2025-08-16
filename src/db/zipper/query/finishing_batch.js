@@ -836,11 +836,11 @@ export async function updateFinishingBatchPutIsCompletedByFinishingBatchUuid(
 
 	const { uuid } = req.params;
 
-	const { is_completed, updated_at } = req.body;
+	const { is_completed, updated_at, updated_by } = req.body;
 
 	const finishingBatchPromise = db
 		.update(finishing_batch)
-		.set({ is_completed, updated_at })
+		.set({ is_completed, updated_at, updated_by })
 		.where(eq(finishing_batch.uuid, uuid))
 		.returning({
 			updatedId: sql`concat('FB', to_char(finishing_batch.created_at, 'YY'::text), '-', (finishing_batch.id)::text)`,

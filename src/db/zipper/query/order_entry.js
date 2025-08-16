@@ -73,6 +73,7 @@ export async function update(req, res, next) {
 		index,
 		color_ref,
 		color_ref_update_date,
+		updated_by,
 	} = req.body;
 
 	const order_entryPromise = db
@@ -96,6 +97,7 @@ export async function update(req, res, next) {
 			index,
 			color_ref,
 			color_ref_update_date,
+			updated_by,
 		})
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_entry.uuid });
@@ -258,6 +260,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 					WHERE finishing_batch_entry.sfg_uuid = sfg.uuid
 				)
 			`,
+			updated_by: order_entry.updated_by,
 		})
 		.from(order_entry)
 		.leftJoin(
@@ -813,6 +816,8 @@ export async function updateBulkApprovalBySfgUuid(req, res, next) {
 			bulk_approval_date: req.body.bulk_approval_date,
 			bulk_approval: req.body.bulk_approval,
 			bulk_approval_by: req.body.bulk_approval_by,
+			updated_at: req.body.updated_at,
+			updated_by: req.body.updated_by,
 		})
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ updatedId: order_entry.uuid });
@@ -937,6 +942,8 @@ export async function updateSwatchApprovalReceivedByUuid(req, res, next) {
 			swatch_approval_received_date:
 				req.body.swatch_approval_received_date,
 			swatch_approval_received_by: req.body.swatch_approval_received_by,
+			updated_at: req.body.updated_at,
+			updated_by: req.body.updated_by,
 		})
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ updatedId: order_entry.uuid });
