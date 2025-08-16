@@ -41,11 +41,7 @@ export async function ProductionReportSnm(req, res, next) {
                         vodf.receive_by_factory,
                         vodf.receive_by_factory_time,
                         vodf.receive_by_factory_by,
-                        vodf.receive_by_factory_by_name,
-                        vodf.production_pause,
-                        vodf.production_pause_time,
-                        vodf.production_pause_by,
-                        vodf.production_pause_by_name
+                        vodf.receive_by_factory_by_name
                     FROM zipper.v_order_details_full vodf
                     WHERE 
                         vodf.order_description_uuid IS NOT NULL 
@@ -290,11 +286,7 @@ export async function ProductionReportSnm(req, res, next) {
                 fo.receive_by_factory,
                 fo.receive_by_factory_time,
                 fo.receive_by_factory_by,
-                fo.receive_by_factory_by_name,
-                fo.production_pause,
-                fo.production_pause_time,
-                fo.production_pause_by,
-                fo.production_pause_by_name
+                fo.receive_by_factory_by_name
             FROM filtered_orders fo
             INNER JOIN zipper.order_entry oe ON fo.order_description_uuid = oe.order_description_uuid
             INNER JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
@@ -491,11 +483,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 fto.receive_by_factory,
                 fto.receive_by_factory_time,
                 fto.receive_by_factory_by,
-                receive_by_factory_by.name as receive_by_factory_by_name,
-                fto.production_pause,
-                fto.production_pause_time,
-                fto.production_pause_by,
-                production_pause_by.name as production_pause_by_name
+                receive_by_factory_by.name as receive_by_factory_by_name
             FROM filtered_thread_orders fto
             INNER JOIN thread.order_entry toe ON fto.uuid = toe.order_info_uuid
             INNER JOIN thread.count_length ON toe.count_length_uuid = count_length.uuid

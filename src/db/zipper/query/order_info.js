@@ -552,10 +552,6 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.order_description_uuid,
 						vodf.is_sample,
 						vodf.order_number_wise_rank,
-						vodf.is_cancelled,
-						oi.is_cancelled_by,
-						oi.is_cancelled_time,
-						is_cancelled_by.name AS is_cancelled_by_name,
 						order_number_wise_counts.order_number_wise_count AS order_number_wise_count,
 						swatch_approval_counts.swatch_approval_count,
 						order_entry_counts.order_entry_count,
@@ -563,14 +559,12 @@ export async function getTapeAssigned(req, res, next) {
 						vodf.is_swatch_attached
 					FROM zipper.v_order_details_full vodf
 					LEFT JOIN zipper.order_info oi ON vodf.order_info_uuid = oi.uuid
-					LEFT JOIN hrSchema.users is_cancelled_by ON oi.is_cancelled_by = is_cancelled_by.uuid
 					LEFT JOIN (
 						SELECT order_number, COUNT(*) AS order_number_wise_count
 						FROM zipper.v_order_details_full
 						GROUP BY order_number
 					) order_number_wise_counts
 					ON vodf.order_number = order_number_wise_counts.order_number
-					LEFT JOIN zipper.order_info oi ON vodf.order_info_uuid = oi.uuid
 					LEFT JOIN (
 						SELECT COUNT(oe.swatch_approval_date) AS swatch_approval_count, oe.order_description_uuid
 						FROM zipper.order_entry oe
