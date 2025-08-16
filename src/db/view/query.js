@@ -48,6 +48,12 @@ export const OrderDetailsView = `
         order_info.created_by AS created_by_uuid,
         users.name AS created_by_name,
         users.phone AS created_by_phone,
+        order_info.updated_by as updated_by_uuid,
+        updated_by.name as updated_by_name,
+        updated_by.phone as updated_by_phone,
+        order_description.updated_by as order_description_updated_by_uuid,
+        od_updated_by.name as order_description_updated_by_name,
+        od_updated_by.phone as order_description_updated_by_phone,
         order_info.created_at AS created_at,
         order_info.updated_at AS updated_at,
         order_info.remarks,
@@ -85,11 +91,13 @@ export const OrderDetailsView = `
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
-        LEFT JOIN hr.users marketing_user ON marketing_user.uuid = marketing.user_uuid
         LEFT JOIN public.buyer ON buyer.uuid = order_info.buyer_uuid
         LEFT JOIN public.merchandiser ON merchandiser.uuid = order_info.merchandiser_uuid
         LEFT JOIN public.factory ON factory.uuid = order_info.factory_uuid
         LEFT JOIN hr.users ON users.uuid = order_info.created_by
+        LEFT JOIN hr.users marketing_user ON marketing_user.uuid = marketing.user_uuid
+        LEFT JOIN hr.users updated_by ON updated_by.uuid = order_info.updated_by
+        LEFT JOIN hr.users od_updated_by ON od_updated_by.uuid = order_description.updated_by
         LEFT JOIN public.party ON party.uuid = order_info.party_uuid
         LEFT JOIN public.properties op_item ON op_item.uuid = order_description.item
         LEFT JOIN public.properties op_zipper ON op_zipper.uuid = order_description.zipper_number
@@ -137,6 +145,12 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_info.created_by AS created_by_uuid,
         users.name AS created_by_name,
         users.phone AS created_by_phone,
+        order_info.updated_by as updated_by_uuid,
+        updated_by.name as updated_by_name,
+        updated_by.phone as updated_by_phone,
+        order_description.updated_by as order_description_updated_by_uuid,
+        od_updated_by.name as order_description_updated_by_name,
+        od_updated_by.phone as order_description_updated_by_phone,
         order_info.is_cash,
         order_info.is_bill,
         order_info.is_sample,
@@ -257,6 +271,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         LEFT JOIN public.merchandiser ON merchandiser.uuid = order_info.merchandiser_uuid
         LEFT JOIN public.factory ON factory.uuid = order_info.factory_uuid
         LEFT JOIN hr.users users ON users.uuid = order_info.created_by
+        LEFT JOIN hr.users updated_by ON updated_by.uuid = order_info.updated_by
+        LEFT JOIN hr.users od_updated_by ON od_updated_by.uuid = order_description.updated_by
         LEFT JOIN public.party ON party.uuid = order_info.party_uuid
         LEFT JOIN public.properties op_item ON op_item.uuid = order_description.item
         LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = order_description.nylon_stopper
