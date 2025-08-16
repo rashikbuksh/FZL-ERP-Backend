@@ -1105,17 +1105,13 @@ export async function LCReport(req, res, next) {
 
 		if (document_receiving) {
 			query.append(sql`AND lc_entry.document_receive_date IS NULL`);
-		} else if (acceptance) {
-			query.append(
-				sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NULL`
-			);
 		} else if (maturity) {
 			query.append(
-				sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NOT NULL AND lc_entry.maturity_date IS NULL`
+				sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.maturity_date IS NULL`
 			);
 		} else if (payment) {
 			query.append(
-				sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.acceptance_date IS NOT NULL AND lc_entry.maturity_date IS NOT NULL AND lc_entry.payment_date IS NULL`
+				sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.maturity_date IS NOT NULL AND lc_entry.payment_date IS NULL`
 			);
 		}
 
