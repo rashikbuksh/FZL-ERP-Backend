@@ -205,7 +205,20 @@ export async function ProductionReportSnm(req, res, next) {
 						END
 						AND (lower(fo.item_name) != 'nylon' OR fo.nylon_stopper = tcr.nylon_stopper_uuid)
 					)
-				)
+				),
+                -- packing list delivery dates aggregation
+                pl_delivery_dates AS (
+                    SELECT
+                        vpld.order_description_uuid,
+                        MIN(vpld.created_at) AS first_production_date,
+                        MAX(vpld.created_at) AS last_production_date,
+                        MIN(ch.created_at) AS first_delivery_date,
+                        MAX(ch.created_at) AS last_delivery_date
+                    FROM delivery.v_packing_list_details vpld
+                    LEFT JOIN delivery.challan ch ON vpld.challan_uuid = ch.uuid
+                    WHERE vpld.is_deleted = FALSE AND vpld.item_for NOT IN ('thread', 'sample_thread')
+                    GROUP BY vpld.order_description_uuid
+                )
             -- Main query with reduced window functions
             SELECT
                 fo.order_info_uuid,
@@ -290,7 +303,11 @@ export async function ProductionReportSnm(req, res, next) {
                 fo.receive_by_factory_by,
                 fo.receive_by_factory_by_name,
                 fo.created_by_name,
-                fo.updated_by_name
+                fo.updated_by_name,
+                pl_delivery_dates.first_production_date,
+                pl_delivery_dates.last_production_date,
+                pl_delivery_dates.first_delivery_date,
+                pl_delivery_dates.last_delivery_date
             FROM filtered_orders fo
             INNER JOIN zipper.order_entry oe ON fo.order_description_uuid = oe.order_description_uuid
             INNER JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
@@ -301,6 +318,7 @@ export async function ProductionReportSnm(req, res, next) {
             LEFT JOIN slider_production_sum slps ON slps.order_description_uuid = fo.order_description_uuid
             LEFT JOIN pi_cash_grouped pcg ON fo.order_info_uuid = pcg.order_info_uuid
             LEFT JOIN dyeing_batch_main dbm ON oe.uuid = dbm.order_entry_uuid
+            LEFT JOIN pl_delivery_dates ON pl_delivery_dates.order_description_uuid = fo.order_description_uuid
             ORDER BY fo.item_name DESC;
         `;
 
@@ -427,6 +445,19 @@ export async function ProductionReportThreadSnm(req, res, next) {
                     INNER JOIN thread.count_length tcl ON toe.count_length_uuid = tcl.uuid
                     WHERE toe.quantity > 0 AND toe.quantity IS NOT NULL
                 )
+                -- packing list delivery dates aggregation
+                pl_delivery_dates AS (
+                    SELECT
+                        vpld.thread_order_entry_uuid,
+                        MIN(vpld.created_at) AS first_production_date,
+                        MAX(vpld.created_at) AS last_production_date,
+                        MIN(ch.created_at) AS first_delivery_date,
+                        MAX(ch.created_at) AS last_delivery_date
+                    FROM delivery.v_packing_list_details vpld
+                    LEFT JOIN delivery.challan ch ON vpld.challan_uuid = ch.uuid
+                    WHERE vpld.is_deleted = FALSE AND vpld.item_for IN ('thread', 'sample_thread')
+                    GROUP BY vpld.thread_order_entry_uuid
+                )
             -- Main optimized query
             SELECT
                 fto.uuid,
@@ -487,7 +518,11 @@ export async function ProductionReportThreadSnm(req, res, next) {
                 fto.receive_by_factory,
                 fto.receive_by_factory_time,
                 fto.receive_by_factory_by,
-                receive_by_factory_by.name as receive_by_factory_by_name
+                receive_by_factory_by.name as receive_by_factory_by_name,
+                pl_delivery_dates.first_production_date,
+                pl_delivery_dates.last_production_date,
+                pl_delivery_dates.first_delivery_date,
+                pl_delivery_dates.last_delivery_date
             FROM filtered_thread_orders fto
             INNER JOIN thread.order_entry toe ON fto.uuid = toe.order_info_uuid
             INNER JOIN thread.count_length ON toe.count_length_uuid = count_length.uuid
@@ -500,6 +535,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
             LEFT JOIN hr.users sno_from_head_office_by ON fto.sno_from_head_office_by = sno_from_head_office_by.uuid
             LEFT JOIN hr.users receive_by_factory_by ON fto.receive_by_factory_by = receive_by_factory_by.uuid
             LEFT JOIN hr.users production_pause_by ON fto.production_pause_by = production_pause_by.uuid
+            LEFT JOIN pl_delivery_dates ON pl_delivery_dates.thread_order_entry_uuid = toe.uuid
             WHERE toe.quantity > 0 AND toe.quantity IS NOT NULL
             ORDER BY fto.created_at DESC;
         `;
