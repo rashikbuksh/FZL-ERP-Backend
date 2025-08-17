@@ -67,6 +67,29 @@ export async function remove(req, res, next) {
 
 		return res.status(200).json({ toast, data });
 	} catch (error) {
+		//console.error('Delete error:', error); // Debug log
+
+		// Check for foreign key constraint violation in error.cause
+		const cause = error?.cause;
+		const msg =
+			cause?.detail ||
+			cause?.message ||
+			error?.message ||
+			error?.toString() ||
+			'';
+		if (
+			cause?.code === '23503' ||
+			msg.includes('foreign key') ||
+			msg.includes('violates foreign key constraint') ||
+			msg.includes('violates constraint')
+		) {
+			const toast = {
+				status: 400,
+				type: 'delete',
+				message: 'Cannot delete: connected with other tables',
+			};
+			return res.status(400).json({ toast });
+		}
 		await handleError({ error, res });
 	}
 }
