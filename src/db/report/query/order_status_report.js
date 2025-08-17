@@ -209,7 +209,7 @@ export async function ProductionReportSnm(req, res, next) {
                 -- packing list delivery dates aggregation
                 pl_delivery_dates AS (
                     SELECT
-                        vpld.order_description_uuid,
+                        vpld.sfg_uuid,
                         MIN(vpld.created_at) AS first_production_date,
                         MAX(vpld.created_at) AS last_production_date,
                         MIN(ch.created_at) AS first_delivery_date,
@@ -217,7 +217,7 @@ export async function ProductionReportSnm(req, res, next) {
                     FROM delivery.v_packing_list_details vpld
                     LEFT JOIN delivery.challan ch ON vpld.challan_uuid = ch.uuid
                     WHERE vpld.is_deleted = FALSE AND vpld.item_for NOT IN ('thread', 'sample_thread')
-                    GROUP BY vpld.order_description_uuid
+                    GROUP BY vpld.sfg_uuid
                 )
             -- Main query with reduced window functions
             SELECT
@@ -318,7 +318,7 @@ export async function ProductionReportSnm(req, res, next) {
             LEFT JOIN slider_production_sum slps ON slps.order_description_uuid = fo.order_description_uuid
             LEFT JOIN pi_cash_grouped pcg ON fo.order_info_uuid = pcg.order_info_uuid
             LEFT JOIN dyeing_batch_main dbm ON oe.uuid = dbm.order_entry_uuid
-            LEFT JOIN pl_delivery_dates ON pl_delivery_dates.order_description_uuid = fo.order_description_uuid
+            LEFT JOIN pl_delivery_dates ON pl_delivery_dates.sfg_uuid = sfg.uuid
             ORDER BY fo.item_name DESC;
         `;
 
