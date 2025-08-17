@@ -17,27 +17,27 @@ export async function selectAll(req, res, next) {
 	try {
 		const query = sql`
 			SELECT 
-				id,
-				schema_name,
-				table_name,
-				record_id,
-				operation,
-				column_name,
-				old_value,
-				new_value,
-				changed_at,
-				changed_by,
+				gal.id,
+				gal.schema_name,
+				gal.table_name,
+				gal.record_id,
+				gal.operation,
+				gal.column_name,
+				gal.old_value,
+				gal.new_value,
+				gal.changed_at,
+				gal.changed_by,
 				users.name as changed_by_name,
-				remarks
-			FROM audit.global_audit_log
-			LEFT JOIN hr.users ON global_audit_log.changed_by = users.uuid
+				gal.remarks
+			FROM audit.global_audit_log gal
+			LEFT JOIN hr.users ON gal.changed_by = users.uuid
 			WHERE 
-				${schema_name ? sql`schema_name = ${schema_name}` : sql` 1=1`}
-				${table_name ? sql`AND table_name = ${table_name}` : sql``}
-				${record_id ? sql`AND record_id = ${record_id}` : sql``}
-				${operation ? sql`AND operation = ${operation}` : sql``}
-				${from_date && to_date ? sql`AND changed_at BETWEEN ${from_date}::timestamp AND ${to_date}::timestamp + INTERVAL '1 day'` : sql``}
-			ORDER BY changed_at DESC;
+				${schema_name ? sql`gal.schema_name = ${schema_name}` : sql` 1=1`}
+				${table_name ? sql`AND gal.table_name = ${table_name}` : sql``}
+				${record_id ? sql`AND gal.record_id = ${record_id}` : sql``}
+				${operation ? sql`AND gal.operation = ${operation}` : sql``}
+				${from_date && to_date ? sql`AND gal.changed_at BETWEEN ${from_date}::timestamp AND ${to_date}::timestamp + INTERVAL '1 day'` : sql``}
+			ORDER BY gal.changed_at DESC;
 		`;
 
 		const result = await db.execute(query);
