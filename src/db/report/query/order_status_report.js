@@ -444,7 +444,7 @@ export async function ProductionReportThreadSnm(req, res, next) {
                     INNER JOIN filtered_thread_orders fto ON toe.order_info_uuid = fto.uuid
                     INNER JOIN thread.count_length tcl ON toe.count_length_uuid = tcl.uuid
                     WHERE toe.quantity > 0 AND toe.quantity IS NOT NULL
-                )
+                ),
                 -- packing list delivery dates aggregation
                 pl_delivery_dates AS (
                     SELECT
