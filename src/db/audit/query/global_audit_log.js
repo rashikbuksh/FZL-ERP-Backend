@@ -26,8 +26,11 @@ export async function selectAll(req, res, next) {
 				old_value,
 				new_value,
 				changed_at,
+				changed_by,
+				users.name as changed_by_name,
 				remarks
 			FROM audit.global_audit_log
+			LEFT JOIN hr.users ON global_audit_log.changed_by = users.uuid
 			WHERE 
 				${schema_name ? sql`schema_name = ${schema_name}` : sql` 1=1`}
 				${table_name ? sql`AND table_name = ${table_name}` : sql``}
