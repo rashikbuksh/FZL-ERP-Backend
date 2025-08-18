@@ -84,15 +84,18 @@ export async function selectAll(req, res, next) {
 			code: group.code,
 			is_fixed: group.is_fixed,
 			created_by: group.created_by,
-			created_by_name: hrSchema.users.name,
+			created_by_name: createdByUser.name,
 			created_at: group.created_at,
 			updated_by: group.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: group.updated_at,
 			remarks: group.remarks,
 		})
 		.from(group)
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
 		.leftJoin(hrSchema.users, eq(group.created_by, hrSchema.users.uuid))
+		.leftJoin(createdByUser, eq(group.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(group.updated_by, updatedByUser.uuid))
 		.orderBy(desc(group.created_at));
 
 	try {
@@ -120,15 +123,18 @@ export async function select(req, res, next) {
 			code: group.code,
 			is_fixed: group.is_fixed,
 			created_by: group.created_by,
-			created_by_name: hrSchema.users.name,
+			created_by_name: createdByUser.name,
 			created_at: group.created_at,
 			updated_by: group.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: group.updated_at,
 			remarks: group.remarks,
 		})
 		.from(group)
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
 		.leftJoin(hrSchema.users, eq(group.created_by, hrSchema.users.uuid))
+		.leftJoin(createdByUser, eq(group.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(group.updated_by, updatedByUser.uuid))
 		.where(eq(group.uuid, req.params.uuid));
 
 	try {
