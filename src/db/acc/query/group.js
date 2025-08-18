@@ -115,7 +115,7 @@ export async function select(req, res, next) {
 			code: group.code,
 			is_fixed: group.is_fixed,
 			created_by: group.created_by,
-			created_by_name: users.name,
+			created_by_name: hrSchema.users.name,
 			created_at: group.created_at,
 			updated_by: group.updated_by,
 			updated_at: group.updated_at,
@@ -123,7 +123,7 @@ export async function select(req, res, next) {
 		})
 		.from(group)
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
-		.leftJoin(users, eq(group.created_by, users.uuid))
+		.leftJoin(hrSchema.users, eq(group.created_by, hrSchema.users.uuid))
 		.where(eq(group.uuid, req.params.uuid));
 
 	try {
