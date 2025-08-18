@@ -3,7 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { fiscal_year } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core';
-
+import { decimalToNumber } from '../../variables.js';
 import * as hrSchema from '../../hr/schema.js';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
@@ -75,8 +75,36 @@ export async function remove(req, res, next) {
 
 export async function selectAll(req, res, next) {
 	const resultPromise = db
-		.select()
+		.select({
+			uuid: fiscal_year.uuid,
+			year_no: fiscal_year.year_no,
+			start_date: fiscal_year.start_date,
+			end_date: fiscal_year.end_date,
+			active: fiscal_year.active,
+			locked: fiscal_year.locked,
+			jan_budget: decimalToNumber(fiscal_year.jan_budget),
+			feb_budget: decimalToNumber(fiscal_year.feb_budget),
+			mar_budget: decimalToNumber(fiscal_year.mar_budget),
+			apr_budget: decimalToNumber(fiscal_year.apr_budget),
+			may_budget: decimalToNumber(fiscal_year.may_budget),
+			jun_budget: decimalToNumber(fiscal_year.jun_budget),
+			jul_budget: decimalToNumber(fiscal_year.jul_budget),
+			aug_budget: decimalToNumber(fiscal_year.aug_budget),
+			sep_budget: decimalToNumber(fiscal_year.sep_budget),
+			oct_budget: decimalToNumber(fiscal_year.oct_budget),
+			nov_budget: decimalToNumber(fiscal_year.nov_budget),
+			dec_budget: decimalToNumber(fiscal_year.dec_budget),
+			created_by: fiscal_year.created_by,
+			created_by_name: createdByUser.name,
+			created_at: fiscal_year.created_at,
+			updated_by: fiscal_year.updated_by,
+			updated_by_name: updatedByUser.name,
+			updated_at: fiscal_year.updated_at,
+			remarks: fiscal_year.remarks,
+		})
 		.from(fiscal_year)
+		.leftJoin(createdByUser, eq(fiscal_year.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(fiscal_year.updated_by, updatedByUser.uuid))
 		.orderBy(desc(fiscal_year.created_at));
 
 	try {
@@ -96,8 +124,36 @@ export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const fyPromise = db
-		.select()
+		.select({
+			uuid: fiscal_year.uuid,
+			year_no: fiscal_year.year_no,
+			start_date: fiscal_year.start_date,
+			end_date: fiscal_year.end_date,
+			active: fiscal_year.active,
+			locked: fiscal_year.locked,
+			jan_budget: decimalToNumber(fiscal_year.jan_budget),
+			feb_budget: decimalToNumber(fiscal_year.feb_budget),
+			mar_budget: decimalToNumber(fiscal_year.mar_budget),
+			apr_budget: decimalToNumber(fiscal_year.apr_budget),
+			may_budget: decimalToNumber(fiscal_year.may_budget),
+			jun_budget: decimalToNumber(fiscal_year.jun_budget),
+			jul_budget: decimalToNumber(fiscal_year.jul_budget),
+			aug_budget: decimalToNumber(fiscal_year.aug_budget),
+			sep_budget: decimalToNumber(fiscal_year.sep_budget),
+			oct_budget: decimalToNumber(fiscal_year.oct_budget),
+			nov_budget: decimalToNumber(fiscal_year.nov_budget),
+			dec_budget: decimalToNumber(fiscal_year.dec_budget),
+			created_by: fiscal_year.created_by,
+			created_by_name: createdByUser.name,
+			created_at: fiscal_year.created_at,
+			updated_by: fiscal_year.updated_by,
+			updated_by_name: updatedByUser.name,
+			updated_at: fiscal_year.updated_at,
+			remarks: fiscal_year.remarks,
+		})
 		.from(fiscal_year)
+		.leftJoin(createdByUser, eq(fiscal_year.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(fiscal_year.updated_by, updatedByUser.uuid))
 		.where(eq(fiscal_year.uuid, req.params.uuid));
 
 	try {
