@@ -2,8 +2,12 @@ import { desc, eq } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { cost_center, ledger } from '../schema.js';
+import { alias } from 'drizzle-orm/pg-core';
 
 import * as hrSchema from '../../hr/schema.js';
+
+const createdByUser = alias(hrSchema.users, 'createdByUser');
+const updatedByUser = alias(hrSchema.users, 'updatedByUser');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -80,15 +84,17 @@ export async function selectAll(req, res, next) {
 			table_uuid: cost_center.table_uuid,
 			invoice_no: cost_center.invoice_no,
 			created_by: cost_center.created_by,
-			created_by_name: hrSchema.users.name,
+			created_by_name: createdByUser.name,
 			created_at: cost_center.created_at,
 			updated_by: cost_center.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: cost_center.updated_at,
 			remarks: cost_center.remarks,
 		})
 		.from(cost_center)
 		.leftJoin(ledger, eq(cost_center.ledger_uuid, ledger.uuid))
-		.leftJoin(hrSchema.users, eq(cost_center.created_by, hrSchema.users.uuid))
+		.leftJoin(createdByUser, eq(cost_center.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(cost_center.updated_by, updatedByUser.uuid))
 		.orderBy(desc(cost_center.created_at));
 
 	try {
@@ -117,15 +123,17 @@ export async function select(req, res, next) {
 			table_uuid: cost_center.table_uuid,
 			invoice_no: cost_center.invoice_no,
 			created_by: cost_center.created_by,
-			created_by_name: users.name,
+			created_by_name: createdByUser.name,
 			created_at: cost_center.created_at,
 			updated_by: cost_center.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: cost_center.updated_at,
 			remarks: cost_center.remarks,
 		})
 		.from(cost_center)
 		.leftJoin(ledger, eq(cost_center.ledger_uuid, ledger.uuid))
-		.leftJoin(users, eq(cost_center.created_by, users.uuid))
+		.leftJoin(createdByUser, eq(cost_center.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(cost_center.updated_by, updatedByUser.uuid))
 		.where(eq(cost_center.uuid, req.params.uuid));
 
 	try {

@@ -3,7 +3,12 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { voucher } from '../schema.js';
 
-import hr, * as hrSchema from '../../hr/schema.js';
+import { alias } from 'drizzle-orm/pg-core';
+
+import * as hrSchema from '../../hr/schema.js';
+
+const createdByUser = alias(hrSchema.users, 'createdByUser');
+const updatedByUser = alias(hrSchema.users, 'updatedByUser');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;

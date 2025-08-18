@@ -2,6 +2,12 @@ import { desc, eq } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { currency } from '../schema.js';
+import { alias } from 'drizzle-orm/pg-core';
+
+import * as hrSchema from '../../hr/schema.js';
+
+const createdByUser = alias(hrSchema.users, 'createdByUser');
+const updatedByUser = alias(hrSchema.users, 'updatedByUser');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -81,12 +87,16 @@ export async function selectAll(req, res, next) {
 			currency_name: currency.currency_name,
 			symbol: currency.symbol,
 			created_by: currency.created_by,
+			created_by_name: createdByUser.name,
 			created_at: currency.created_at,
 			updated_by: currency.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: currency.updated_at,
 			remarks: currency.remarks,
 		})
 		.from(currency)
+		.leftJoin(createdByUser, eq(currency.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(currency.updated_by, updatedByUser.uuid))
 		.orderBy(desc(currency.created_at));
 
 	try {
@@ -112,12 +122,16 @@ export async function select(req, res, next) {
 			currency_name: currency.currency_name,
 			symbol: currency.symbol,
 			created_by: currency.created_by,
+			created_by_name: createdByUser.name,
 			created_at: currency.created_at,
 			updated_by: currency.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: currency.updated_at,
 			remarks: currency.remarks,
 		})
 		.from(currency)
+		.leftJoin(createdByUser, eq(currency.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(currency.updated_by, updatedByUser.uuid))
 		.where(eq(currency.uuid, req.params.uuid));
 
 	try {
