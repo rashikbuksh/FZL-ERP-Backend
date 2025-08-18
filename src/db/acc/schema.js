@@ -15,6 +15,7 @@ export const currency = acc.table('currency', {
 	uuid: uuid_primary,
 	currency: text('currency').notNull().unique(),
 	currency_name: text('currency_name').notNull(),
+	symbol: text('symbol').default(sql`null`),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_by: defaultUUID('updated_by')

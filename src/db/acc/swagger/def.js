@@ -7,6 +7,7 @@ export const defCurrency = SED({
 		uuid: SE.uuid(),
 		currency: SE.string('USD'),
 		currency_name: SE.string('US Dollar'),
+		symbol: SE.string('$'),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_by: SE.uuid(),
