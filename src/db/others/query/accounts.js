@@ -24,3 +24,24 @@ export async function selectHead(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectCurrency(req, res, next) {
+	const currencyPromise = db
+		.select({
+			value: accountSchema.currency.uuid,
+			label: sql`${accountSchema.currency.currency} || ' (' || ${accountSchema.currency.symbol} || ')'`,
+		})
+		.from(accountSchema.currency)
+		.orderBy(asc(accountSchema.currency.currency_name));
+	try {
+		const data = await currencyPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'currency list',
+		};
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

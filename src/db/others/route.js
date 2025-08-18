@@ -239,9 +239,11 @@ otherRouter.get(
 	otherOperations.selectMaintainIssue
 );
 
-// * Accounts 
+// * Accounts
 
 otherRouter.get('/accounts/head/value/label', accOperations.selectHead);
+
+otherRouter.get('/accounts/currency/value/label', accOperations.selectCurrency);
 
 export const pathOthers = {
 	...pathPublic,
