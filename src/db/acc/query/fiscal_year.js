@@ -1,7 +1,7 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { fiscal_year } from '../schema.js';
+import { currency, fiscal_year } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core';
 import { decimalToNumber } from '../../variables.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -101,10 +101,16 @@ export async function selectAll(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			updated_at: fiscal_year.updated_at,
 			remarks: fiscal_year.remarks,
+			currency_uuid: fiscal_year.currency_uuid,
+			currency_name: sql`${currency.currency} || ' (' || ${
+				currency.symbol
+			} || ')'`,
+			rate: fiscal_year.rate,
 		})
 		.from(fiscal_year)
 		.leftJoin(createdByUser, eq(fiscal_year.created_by, createdByUser.uuid))
 		.leftJoin(updatedByUser, eq(fiscal_year.updated_by, updatedByUser.uuid))
+		.leftJoin(currency, eq(fiscal_year.currency_uuid, currency.uuid))
 		.orderBy(desc(fiscal_year.created_at));
 
 	try {
@@ -150,10 +156,16 @@ export async function select(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			updated_at: fiscal_year.updated_at,
 			remarks: fiscal_year.remarks,
+			currency_uuid: fiscal_year.currency_uuid,
+			currency_name: sql`${currency.currency} || ' (' || ${
+				currency.symbol
+			} || ')'`,
+			rate: fiscal_year.rate,
 		})
 		.from(fiscal_year)
 		.leftJoin(createdByUser, eq(fiscal_year.created_by, createdByUser.uuid))
 		.leftJoin(updatedByUser, eq(fiscal_year.updated_by, updatedByUser.uuid))
+		.leftJoin(currency, eq(fiscal_year.currency_uuid, currency.uuid))
 		.where(eq(fiscal_year.uuid, req.params.uuid));
 
 	try {

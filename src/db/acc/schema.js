@@ -51,6 +51,8 @@ export const fiscal_year = acc.table('fiscal_year', {
 		.default(null),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	currency_uuid: defaultUUID('currency_uuid').references(() => currency.uuid),
+	rate: PG_DECIMAL('rate').default(0),
 });
 
 export const head = acc.table('head', {
