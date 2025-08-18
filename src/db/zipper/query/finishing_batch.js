@@ -164,8 +164,6 @@ export async function selectAll(req, res, next) {
 		)
 		.orderBy(desc(finishing_batch.created_at));
 
-	console.log('resultPromise:', resultPromise.toSQL());
-
 	try {
 		const data = await resultPromise;
 
