@@ -63,3 +63,23 @@ export async function selectGroup(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectLedger(req, res, next) {
+	const ledgerPromise = db
+		.select({
+			value: accountSchema.ledger.uuid,
+			label: accountSchema.ledger.name,
+		})
+		.from(accountSchema.ledger);
+	try {
+		const data = await ledgerPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'ledger list',
+		};
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

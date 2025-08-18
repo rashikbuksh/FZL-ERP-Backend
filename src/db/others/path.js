@@ -1622,6 +1622,20 @@ const pathAccounts = {
 			},
 		},
 	},
+	'/other/accounts/ledger/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all accounts ledger',
+			description: 'All accounts ledger',
+			operationId: 'getAllAccountsLedger',
+			responses: {
+				200: SE.response_schema(200, {
+					value: SE.uuid('2ggcphnw'),
+					label: SE.string('ledger 1'),
+				}),
+			},
+		},
+	},
 };
 
 export {
