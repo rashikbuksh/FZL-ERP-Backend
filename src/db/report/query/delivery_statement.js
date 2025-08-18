@@ -50,49 +50,49 @@ export async function deliveryStatementReport(req, res, next) {
                     vpl.packing_list_entry_uuid,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_close_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_open_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_close_end_value,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
                         0
                     )::float8 as total_close_end_value_party,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
                         0
                     )::float8 as total_close_end_value_company,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_open_end_value,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
                         0
                     )::float8 as total_open_end_value_party,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
                         0
                     )::float8 as total_open_end_value_company,
@@ -121,49 +121,49 @@ export async function deliveryStatementReport(req, res, next) {
                     vpl.packing_list_entry_uuid, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_close_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_open_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_close_end_value, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
                         0
                     )::float8 as total_close_end_value_party,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
                         0
                     )::float8 as total_close_end_value_company,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_open_end_value,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
                         0
                     )::float8 as total_open_end_value_party,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
                         0
                     )::float8 as total_open_end_value_company,
@@ -817,49 +817,49 @@ export async function deliveryStatementReportPDF(req, res, next) {
                     vpl.packing_list_entry_uuid,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_close_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_open_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_close_end_value,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
                         0
                     )::float8 as total_close_end_value_party,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
                         0
                     )::float8 as total_close_end_value_company,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_open_end_value,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
                         0
                     )::float8 as total_open_end_value_party,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
                         0
                     )::float8 as total_open_end_value_company,
@@ -888,49 +888,49 @@ export async function deliveryStatementReportPDF(req, res, next) {
                     vpl.packing_list_entry_uuid, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_close_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_open_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_close_end_value, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
                         0
                     )::float8 as total_close_end_value_party,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
                         0
                     )::float8 as total_close_end_value_company,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN ${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} ELSE (${price_for === 'party' ? sql`oe.party_price` : sql`oe.company_price`} / 12) END, 
                         0
                     )::float8 as total_open_end_value,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 
                         0
                     )::float8 as total_open_end_value_party,
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
                         ) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
                         0
                     )::float8 as total_open_end_value_company,

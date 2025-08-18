@@ -40,8 +40,8 @@ BEGIN
             SET
                 coloring_stock = coloring_stock - NEW.production_quantity,
                 coloring_stock_weight = coloring_stock_weight - NEW.weight,
-                box_pin_quantity = box_pin_quantity - CASE WHEN lower(vodf.end_type_name) = 'open end' THEN NEW.production_quantity ELSE 0 END,
-                h_bottom_quantity = h_bottom_quantity - CASE WHEN lower(vodf.end_type_name) = 'close end' THEN NEW.production_quantity ELSE 0 END,
+                box_pin_quantity = box_pin_quantity - CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN NEW.production_quantity ELSE 0 END,
+                h_bottom_quantity = h_bottom_quantity - CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN NEW.production_quantity ELSE 0 END,
                 u_top_quantity = u_top_quantity - (2 * NEW.production_quantity),
                 coloring_prod = coloring_prod + NEW.production_quantity,
                 coloring_prod_weight = coloring_prod_weight + NEW.weight
@@ -96,8 +96,8 @@ BEGIN
             SET
                 coloring_stock = coloring_stock - NEW.production_quantity + OLD.production_quantity,
                 coloring_stock_weight = coloring_stock_weight - NEW.weight + OLD.weight,
-                box_pin_quantity = box_pin_quantity - CASE WHEN lower(vodf.end_type_name) = 'open end' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END,
-                h_bottom_quantity = h_bottom_quantity - CASE WHEN lower(vodf.end_type_name) = 'close end' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END,
+                box_pin_quantity = box_pin_quantity - CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END,
+                h_bottom_quantity = h_bottom_quantity - CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN NEW.production_quantity - OLD.production_quantity ELSE 0 END,
                 u_top_quantity = u_top_quantity - (2 * (NEW.production_quantity - OLD.production_quantity)),
                 coloring_prod = coloring_prod + NEW.production_quantity - OLD.production_quantity,
                 coloring_prod_weight = coloring_prod_weight + NEW.weight - OLD.weight
@@ -153,8 +153,8 @@ BEGIN
             SET
                 coloring_stock = coloring_stock + OLD.production_quantity,
                 coloring_stock_weight = coloring_stock_weight + OLD.weight,
-                box_pin_quantity = box_pin_quantity + CASE WHEN lower(vodf.end_type_name) = 'open end' THEN OLD.production_quantity ELSE 0 END,
-                h_bottom_quantity = h_bottom_quantity + CASE WHEN lower(vodf.end_type_name) = 'close end' THEN OLD.production_quantity ELSE 0 END,
+                box_pin_quantity = box_pin_quantity + CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN OLD.production_quantity ELSE 0 END,
+                h_bottom_quantity = h_bottom_quantity + CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN OLD.production_quantity ELSE 0 END,
                 u_top_quantity = u_top_quantity + (2 * OLD.production_quantity),
                 coloring_prod = coloring_prod - OLD.production_quantity,
                 coloring_prod_weight = coloring_prod_weight - OLD.weight

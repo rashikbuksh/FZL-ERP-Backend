@@ -51,8 +51,8 @@ export async function selectEDReport(req, res, next) {
                 END as swatch_approval_date,
                 CASE WHEN pi_cash.uuid IS NOT NULL THEN 
                     CASE 
-                        WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
-                        ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')) 
+                        WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', TO_CHAR(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)) 
+                        ELSE CONCAT('CI', TO_CHAR(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)) 
 			        END
                 ELSE NULL END as pi_number,
                 CASE WHEN sfg.uuid IS NOT NULL THEN sfg.pi::float8 ELSE toe.pi::float8 END as pi,
@@ -129,7 +129,7 @@ export async function selectEDReport(req, res, next) {
                         jsonb_agg(
                             jsonb_build_object(
                                 'finishing_batch_uuid', fb.uuid,
-                                'finishing_batch_number', CONCAT('FB', TO_CHAR(fb.created_at, 'YY'), '-', LPAD(fb.id::text, 4, '0')),
+                                'finishing_batch_number', CONCAT('FB', TO_CHAR(fb.created_at, 'YY'), '-', (fb.id::text)),
                                 'finishing_batch_date', fb.created_at,
                                 'finishing_batch_quantity', fbe.quantity,
                                 'finishing_batch_balance_quantity', fbe.quantity - fbe.finishing_prod
@@ -169,7 +169,7 @@ export async function selectEDReport(req, res, next) {
                     (
 						SELECT
 							dyeing_batch.uuid as dyeing_batch_uuid,
-                            CONCAT('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as dyeing_batch_number,
+                            CONCAT('B', to_char(dyeing_batch.created_at, 'YY'), '-', (dyeing_batch.id::text)) as dyeing_batch_number,
 							dyeing_batch.production_date::date,
                             sfg.uuid as sfg_uuid,
 							SUM(dyeing_batch_entry.quantity) as total_quantity,
@@ -204,7 +204,7 @@ export async function selectEDReport(req, res, next) {
                 LEFT JOIN (
                     SELECT 
                         batch.uuid,
-                        CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
+                        CONCAT('TB', to_char(batch.created_at, 'YY'), '-', (batch.id::text)) as batch_number,
                         batch.production_date::date as production_date,
                         SUM(batch_entry.quantity) as total_quantity,
                         SUM(batch_entry.transfer_quantity) as transfer_quantity,

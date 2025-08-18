@@ -14,7 +14,7 @@ export async function insert(req, res, next) {
 		.insert(dyeing_batch)
 		.values(req.body)
 		.returning({
-			insertedUuid: sql`concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0'))`,
+			insertedUuid: sql`concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', (dyeing_batch.id::text))`,
 		});
 	try {
 		const data = await batchPromise;
@@ -61,7 +61,7 @@ export async function remove(req, res, next) {
 		.delete(dyeing_batch)
 		.where(eq(dyeing_batch.uuid, req.params.uuid))
 		.returning({
-			deletedUuid: sql`concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0'))`,
+			deletedUuid: sql`concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', (dyeing_batch.id::text))`,
 		});
 
 	try {
@@ -84,7 +84,7 @@ export async function selectAll(req, res, next) {
 		SELECT 
 			DISTINCT dyeing_batch.uuid,
 			dyeing_batch.id,
-			concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as batch_id,
+			concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', (dyeing_batch.id::text)) as batch_id,
 			dyeing_batch.batch_status,
 			dyeing_batch.batch_status_date,
 			dyeing_batch.machine_uuid,
@@ -239,7 +239,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: dyeing_batch.uuid,
 			id: dyeing_batch.id,
-			batch_id: sql`concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0'))`,
+			batch_id: sql`concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', (dyeing_batch.id::text))`,
 			batch_status: dyeing_batch.batch_status,
 			batch_status_date: dyeing_batch.batch_status_date,
 			machine_uuid: dyeing_batch.machine_uuid,
@@ -255,7 +255,7 @@ export async function select(req, res, next) {
 			production_date: sql`dyeing_batch.production_date::date`,
 			batch_type: dyeing_batch.batch_type,
 			order_info_uuid: dyeing_batch.order_info_uuid,
-			order_number: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			order_number: sql`CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text))`,
 			water_capacity: decimalToNumber(
 				publicSchema.machine.water_capacity
 			),

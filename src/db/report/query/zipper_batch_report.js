@@ -8,7 +8,7 @@ export async function zipperBatchReportOnReceivedDate(req, res, next) {
 		SELECT 
 			DISTINCT dyeing_batch.uuid,
 			dyeing_batch.id,
-			concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', LPAD(dyeing_batch.id::text, 4, '0')) as batch_id,
+			concat('B', to_char(dyeing_batch.created_at, 'YY'), '-', (dyeing_batch.id::text)) as batch_id,
 			dyeing_batch.batch_status,
 			dyeing_batch.batch_status_date,
 			dyeing_batch.machine_uuid,

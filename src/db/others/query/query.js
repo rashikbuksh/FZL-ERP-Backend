@@ -884,25 +884,25 @@ export async function selectOrderZipperThread(req, res, next) {
 							vodf.order_info_uuid, 
 							coalesce(
 								SUM(
-									CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+									CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
 								), 
 								0
 							)::float8 AS total_close_end_quantity, 
 							coalesce(
 								SUM(
-									CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+									CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
 								), 
 								0
 							)::float8 AS total_open_end_quantity, 
 							coalesce(
 								SUM(
-									CASE WHEN lower(vodf.end_type_name) = 'close end' THEN vpl.quantity ::float8 ELSE 0 END
+									CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN vpl.quantity ::float8 ELSE 0 END
 								) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
 								0
 							)::float8 as total_close_end_value, 
 							coalesce(
 								SUM(
-									CASE WHEN lower(vodf.end_type_name) = 'open end' THEN vpl.quantity ::float8 ELSE 0 END
+									CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN vpl.quantity ::float8 ELSE 0 END
 								) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 
 								0
 							)::float8 as total_open_end_value,
@@ -2505,7 +2505,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		query = sql`
 		SELECT
 			DISTINCT toi.uuid AS value,
-			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label,
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) AS label,
 			toi.id
 		FROM
 			thread.order_info toi
@@ -2524,7 +2524,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		query = sql`
 		SELECT
 			DISTINCT toi.uuid AS value,
-			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS label,
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) AS label,
 			toi.id
 		FROM
 			thread.order_info toi
@@ -2591,7 +2591,7 @@ export async function selectBatchId(req, res, next) {
 	const batchIdPromise = db
 		.select({
 			value: threadSchema.batch.uuid,
-			label: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+			label: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', (batch.id::text))`,
 		})
 		.from(threadSchema.batch);
 
@@ -2746,8 +2746,8 @@ export async function selectChallan(req, res, next) {
 				SELECT
 					ch.uuid AS value,
 					CASE WHEN ch.thread_order_info_uuid IS NULL 
-						THEN concat('ZC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 5, '0')) 
-						ELSE concat('TC', to_char(ch.created_at, 'YY'), '-', LPAD(ch.id::text, 5, '0')) 
+						THEN concat('ZC', to_char(ch.created_at, 'YY'), '-', (ch.id::text)) 
+						ELSE concat('TC', to_char(ch.created_at, 'YY'), '-', (ch.id::text)) 
 					END AS label
 				FROM
 					delivery.challan ch 

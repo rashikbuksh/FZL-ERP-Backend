@@ -1324,7 +1324,7 @@ export async function ProductionReportDirector(req, res, next) {
                 zipper.v_order_details_full vodf
             LEFT JOIN (
                 SELECT 
-                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'close end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_close_end_quantity,
                     oe.order_description_uuid
                 FROM
                     zipper.finishing_batch_production sfg_production
@@ -1337,7 +1337,7 @@ export async function ProductionReportDirector(req, res, next) {
             ) close_end_sum ON vodf.order_description_uuid = close_end_sum.order_description_uuid
             LEFT JOIN (
                 SELECT 
-                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = 'open end' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
+                    coalesce(SUM(CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN sfg_production.production_quantity::float8 ELSE 0 END), 0)::float8 AS total_open_end_quantity,
                     oe.order_description_uuid
                 FROM
                     zipper.finishing_batch_production sfg_production
@@ -1449,13 +1449,13 @@ export async function dailyProductionReport(req, res, next) {
                     oe.uuid as order_entry_uuid, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'close end' THEN ple.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%close end%' THEN ple.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_close_end_quantity, 
                     coalesce(
                         SUM(
-                            CASE WHEN lower(vodf.end_type_name) = 'open end' THEN ple.quantity ::float8 ELSE 0 END
+                            CASE WHEN lower(vodf.end_type_name) = '%open end%' THEN ple.quantity ::float8 ELSE 0 END
                         ), 
                         0
                     )::float8 AS total_open_end_quantity, 

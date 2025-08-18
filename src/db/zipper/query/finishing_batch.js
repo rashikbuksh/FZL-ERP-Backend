@@ -487,7 +487,10 @@ export async function getFinishingBatchCapacityDetails(req, res, next) {
 
 								if (
 									itemName === 'metal' &&
-									endTypeName === 'close end' &&
+									endTypeName.includes([
+										'close end',
+										'2 way - close end',
+									]) &&
 									zipperNumberName === '4.5'
 								) {
 									return (
