@@ -249,6 +249,13 @@ otherRouter.get('/accounts/group/value/label', accOperations.selectGroup);
 
 otherRouter.get('/accounts/ledger/value/label', accOperations.selectLedger);
 
+otherRouter.get('/accounts/table-name', accOperations.getAccountsTableNames);
+
+otherRouter.get(
+	'/accounts/table-data/:table_name',
+	accOperations.getSelectedTableData
+);
+
 export const pathOthers = {
 	...pathPublic,
 	...pathPurchase,

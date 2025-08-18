@@ -83,3 +83,60 @@ export async function selectLedger(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+// Get All Table Names in a Schema
+export async function getAccountsTableNames(req, res, next) {
+	const { schema_name } = req.query;
+	try {
+		const result = await db.execute(sql`
+			SELECT 
+				CONCAT(table_schema, '.', table_name) as value, 
+				CONCAT(table_schema, '.', table_name) as label, 
+				table_schema as schema_name
+			FROM information_schema.tables
+			WHERE ${schema_name ? sql`table_schema = ${schema_name}` : sql` 1=1 `}
+			AND table_type = 'BASE TABLE' 
+			AND table_name NOT LIKE 'pg%'
+			AND table_name IN ('lc', 'description', 'vendor', 'party');
+		`);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'All schema names retrieved successfully',
+		};
+
+		res.status(200).json({
+			toast,
+			data: result?.rows,
+		});
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+// Get Selected Tables uuid, id or name
+export async function getSelectedTableData(req, res, next) {
+	const { table_name } = req.query;
+	try {
+		const result = await db.execute(sql`
+			SELECT 
+				uuid as value,
+				COALESCE(id::text, name) AS label
+			FROM ${sql.raw(table_name)}
+		`);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Selected table data retrieved successfully',
+		};
+
+		res.status(200).json({
+			toast,
+			data: result?.rows,
+		});
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

@@ -1636,6 +1636,50 @@ const pathAccounts = {
 			},
 		},
 	},
+	'/other/accounts/table-name': {
+		get: {
+			tags: ['others'],
+			summary: 'get all accounts table names',
+			description: 'All accounts table names',
+			operationId: 'getAllAccountsTableNames',
+			parameters: [
+				SE.parameter_query('schema_name', 'schema_name', SE.string()),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					value: SE.uuid('2ggcphnw'),
+					label: SE.string('table name 1'),
+				}),
+			},
+		},
+	},
+	'/other/accounts/table-data/by/:table_name': {
+		get: {
+			tags: ['others'],
+			summary: 'get selected table data',
+			description: 'Selected table data',
+			operationId: 'getSelectedTableData',
+			parameters: [
+				SE.parameter_params('table_name', 'table_name', SE.string()),
+			],
+			responses: {
+				200: {
+					description: 'Returns the selected table data.',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									value: SE.uuid(),
+									label: SE.string('table data 1'),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 export {
