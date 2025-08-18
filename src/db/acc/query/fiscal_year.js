@@ -26,7 +26,28 @@ export async function insert(req, res, next) {
 		};
 		return res.status(201).json({ toast, data });
 	} catch (error) {
-		await handleError({ error, res });
+		const pgError = error.cause || error;
+
+		let message;
+
+		if (pgError.detail) {
+			message = pgError.detail;
+		} else if (pgError.code === '23505') {
+			message = 'Duplicate value violates unique constraint.';
+		} else if (pgError.code === '23503') {
+			message = 'Invalid reference (foreign key constraint).';
+		} else if (pgError.code === '23502') {
+			message = 'Missing required field (NOT NULL violation).';
+		} else {
+			message = pgError.message || 'Unexpected database error.';
+		}
+		const toast = {
+			status: 400,
+			type: 'error',
+			message,
+		};
+
+		return res.status(400).json({ toast });
 	}
 }
 
