@@ -245,6 +245,8 @@ otherRouter.get('/accounts/head/value/label', accOperations.selectHead);
 
 otherRouter.get('/accounts/currency/value/label', accOperations.selectCurrency);
 
+otherRouter.get('/accounts/group/value/label', accOperations.selectGroup);
+
 export const pathOthers = {
 	...pathPublic,
 	...pathPurchase,

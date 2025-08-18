@@ -1608,6 +1608,20 @@ const pathAccounts = {
 			},
 		},
 	},
+	'/other/accounts/group/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all accounts group',
+			description: 'All accounts group',
+			operationId: 'getAllAccountsGroup',
+			responses: {
+				200: SE.response_schema(200, {
+					value: SE.uuid('2ggcphnw'),
+					label: SE.string('group 1'),
+				}),
+			},
+		},
+	},
 };
 
 export {
