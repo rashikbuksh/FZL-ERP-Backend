@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -153,13 +153,18 @@ export async function selectAll(req, res, next) {
 			sql`${finishing_batch.uuid} = finishing_batch_entry_total.finishing_batch_uuid`
 		)
 		.where(
-			type === 'pending'
-				? sql`finishing_batch.is_completed = false`
-				: type === 'completed'
-					? sql`finishing_batch.is_completed = true`
-					: sql`1=1`
+			and(
+				sql`finishing_batch_entry_total.total_batch_quantity IS NOT NULL`,
+				type === 'pending'
+					? sql`finishing_batch.is_completed = false`
+					: type === 'completed'
+						? sql`finishing_batch.is_completed = true`
+						: sql`1=1`
+			)
 		)
 		.orderBy(desc(finishing_batch.created_at));
+
+	console.log('resultPromise:', resultPromise.toSQL());
 
 	try {
 		const data = await resultPromise;
