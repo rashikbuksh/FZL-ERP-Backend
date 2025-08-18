@@ -193,6 +193,9 @@ export const voucher_entry = acc.table('voucher_entry', {
 		.default(null),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	voucher_uuid: defaultUUID('voucher_uuid')
+		.references(() => voucher.uuid)
+		.notNull(),
 });
 
 export const voucher_entry_cost_center = acc.table(
