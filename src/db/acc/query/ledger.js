@@ -124,7 +124,7 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const groupPromise = db
+	const resultPromise = db
 		.select({
 			uuid: ledger.uuid,
 			id: ledger.id,
@@ -157,7 +157,7 @@ export async function select(req, res, next) {
 		.where(eq(group.uuid, req.params.uuid));
 
 	try {
-		const data = await groupPromise;
+		const data = await resultPromise;
 		const toast = {
 			status: 200,
 			type: 'select',
