@@ -154,7 +154,7 @@ export async function select(req, res, next) {
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
 		.leftJoin(hrSchema.users, eq(ledger.created_by, hrSchema.users.uuid))
-		.where(eq(group.uuid, req.params.uuid));
+		.where(eq(ledger.uuid, req.params.uuid));
 
 	try {
 		const data = await resultPromise;
@@ -163,7 +163,7 @@ export async function select(req, res, next) {
 			type: 'select',
 			message: 'Ledger',
 		};
-		return res.status(200).json({ toast, data });
+		return res.status(200).json({ toast, data: data[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
