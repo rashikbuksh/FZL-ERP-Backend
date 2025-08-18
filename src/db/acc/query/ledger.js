@@ -112,8 +112,8 @@ export async function selectAll(req, res, next) {
 		const data = await resultPromise;
 		const toast = {
 			status: 200,
-			type: 'select',
-			message: 'Groups',
+			type: 'select_all',
+			message: 'Ledger',
 		};
 		return res.status(200).json({ toast, data });
 	} catch (error) {
@@ -161,9 +161,9 @@ export async function select(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'Group',
+			message: 'Ledger',
 		};
-		return res.status(200).json({ toast, data: data[0] });
+		return res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
