@@ -6,6 +6,7 @@ import { group, head, ledger } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core';
 
 import * as hrSchema from '../../hr/schema.js';
+import { decimalToNumber } from '../../variables.js';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
 const updatedByUser = alias(hrSchema.users, 'updatedByUser');
@@ -91,8 +92,8 @@ export async function selectAll(req, res, next) {
 			group_name: group.name,
 			head_uuid: group.head_uuid,
 			head_name: head.name,
-			vat_deduction: ledger.vat_deduction,
-			tax_deduction: ledger.tax_deduction,
+			vat_deduction: decimalToNumber(ledger.vat_deduction),
+			tax_deduction: decimalToNumber(ledger.tax_deduction),
 			old_ledger_id: ledger.old_ledger_id,
 			created_by: ledger.created_by,
 			created_by_name: hrSchema.users.name,
@@ -139,8 +140,8 @@ export async function select(req, res, next) {
 			group_name: group.name,
 			head_uuid: group.head_uuid,
 			head_name: head.name,
-			vat_deduction: ledger.vat_deduction,
-			tax_deduction: ledger.tax_deduction,
+			vat_deduction: decimalToNumber(ledger.vat_deduction),
+			tax_deduction: decimalToNumber(ledger.tax_deduction),
 			old_ledger_id: ledger.old_ledger_id,
 			created_by: ledger.created_by,
 			created_by_name: hrSchema.users.name,

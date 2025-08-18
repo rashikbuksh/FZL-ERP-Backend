@@ -18,14 +18,12 @@ const accRouter = Router();
 accRouter.get('/currency', currencyOperations.selectAll);
 accRouter.get(
 	'/currency/:uuid',
-	validateUuidParam(),
 	currencyOperations.select
 );
 accRouter.post('/currency', currencyOperations.insert);
 accRouter.put('/currency/:uuid', currencyOperations.update);
 accRouter.delete(
 	'/currency/:uuid',
-	validateUuidParam(),
 	currencyOperations.remove
 );
 
@@ -33,61 +31,56 @@ accRouter.delete(
 accRouter.get('/fiscal-year', fiscalYearOperations.selectAll);
 accRouter.get(
 	'/fiscal-year/:uuid',
-	validateUuidParam(),
 	fiscalYearOperations.select
 );
 accRouter.post('/fiscal-year', fiscalYearOperations.insert);
 accRouter.put('/fiscal-year/:uuid', fiscalYearOperations.update);
 accRouter.delete(
 	'/fiscal-year/:uuid',
-	validateUuidParam(),
 	fiscalYearOperations.remove
 );
 
 // Head routes
 accRouter.get('/head', headOperations.selectAll);
-accRouter.get('/head/:uuid', validateUuidParam(), headOperations.select);
+accRouter.get('/head/:uuid', headOperations.select);
 accRouter.post('/head', headOperations.insert);
 accRouter.put('/head/:uuid', headOperations.update);
-accRouter.delete('/head/:uuid', validateUuidParam(), headOperations.remove);
+accRouter.delete('/head/:uuid', headOperations.remove);
 
 // Group routes
 accRouter.get('/group', groupOperations.selectAll);
-accRouter.get('/group/:uuid', validateUuidParam(), groupOperations.select);
+accRouter.get('/group/:uuid', groupOperations.select);
 accRouter.post('/group', groupOperations.insert);
 accRouter.put('/group/:uuid', groupOperations.update);
-accRouter.delete('/group/:uuid', validateUuidParam(), groupOperations.remove);
+accRouter.delete('/group/:uuid', groupOperations.remove);
 
 // Ledger routes
 accRouter.get('/ledger', ledgerOperations.selectAll);
-accRouter.get('/ledger/:uuid', validateUuidParam(), ledgerOperations.select);
+accRouter.get('/ledger/:uuid', ledgerOperations.select);
 accRouter.post('/ledger', ledgerOperations.insert);
 accRouter.put('/ledger/:uuid', ledgerOperations.update);
-accRouter.delete('/ledger/:uuid', validateUuidParam(), ledgerOperations.remove);
+accRouter.delete('/ledger/:uuid', ledgerOperations.remove);
 
 // Cost Center routes
 accRouter.get('/cost-center', costCenterOperations.selectAll);
 accRouter.get(
 	'/cost-center/:uuid',
-	validateUuidParam(),
 	costCenterOperations.select
 );
 accRouter.post('/cost-center', costCenterOperations.insert);
 accRouter.put('/cost-center/:uuid', costCenterOperations.update);
 accRouter.delete(
 	'/cost-center/:uuid',
-	validateUuidParam(),
 	costCenterOperations.remove
 );
 
 // Voucher routes
 accRouter.get('/voucher', voucherOperations.selectAll);
-accRouter.get('/voucher/:uuid', validateUuidParam(), voucherOperations.select);
+accRouter.get('/voucher/:uuid', voucherOperations.select);
 accRouter.post('/voucher', voucherOperations.insert);
 accRouter.put('/voucher/:uuid', voucherOperations.update);
 accRouter.delete(
 	'/voucher/:uuid',
-	validateUuidParam(),
 	voucherOperations.remove
 );
 
@@ -95,14 +88,12 @@ accRouter.delete(
 accRouter.get('/voucher-entry', voucherEntryOperations.selectAll);
 accRouter.get(
 	'/voucher-entry/:uuid',
-	validateUuidParam(),
 	voucherEntryOperations.select
 );
 accRouter.post('/voucher-entry', voucherEntryOperations.insert);
 accRouter.put('/voucher-entry/:uuid', voucherEntryOperations.update);
 accRouter.delete(
 	'/voucher-entry/:uuid',
-	validateUuidParam(),
 	voucherEntryOperations.remove
 );
 
@@ -113,7 +104,6 @@ accRouter.get(
 );
 accRouter.get(
 	'/voucher-entry-cost-center/:uuid',
-	validateUuidParam(),
 	voucherEntryCostCenterOperations.select
 );
 accRouter.post(
@@ -126,7 +116,6 @@ accRouter.put(
 );
 accRouter.delete(
 	'/voucher-entry-cost-center/:uuid',
-	validateUuidParam(),
 	voucherEntryCostCenterOperations.remove
 );
 
@@ -137,7 +126,6 @@ accRouter.get(
 );
 accRouter.get(
 	'/voucher-entry-payment/:uuid',
-	validateUuidParam(),
 	voucherEntryPaymentOperations.select
 );
 accRouter.post('/voucher-entry-payment', voucherEntryPaymentOperations.insert);
@@ -147,7 +135,6 @@ accRouter.put(
 );
 accRouter.delete(
 	'/voucher-entry-payment/:uuid',
-	validateUuidParam(),
 	voucherEntryPaymentOperations.remove
 );
 
