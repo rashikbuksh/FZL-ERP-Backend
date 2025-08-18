@@ -105,7 +105,7 @@ export async function selectAll(req, res, next) {
 			currency_name: sql`${currency.currency} || ' (' || ${
 				currency.symbol
 			} || ')'`,
-			rate: fiscal_year.rate,
+			rate: decimalToNumber(fiscal_year.rate),
 		})
 		.from(fiscal_year)
 		.leftJoin(createdByUser, eq(fiscal_year.created_by, createdByUser.uuid))
@@ -160,7 +160,7 @@ export async function select(req, res, next) {
 			currency_name: sql`${currency.currency} || ' (' || ${
 				currency.symbol
 			} || ')'`,
-			rate: fiscal_year.rate,
+			rate: decimalToNumber(fiscal_year.rate),
 		})
 		.from(fiscal_year)
 		.leftJoin(createdByUser, eq(fiscal_year.created_by, createdByUser.uuid))
