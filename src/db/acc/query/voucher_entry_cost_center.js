@@ -83,9 +83,10 @@ export async function selectAll(req, res, next) {
 			cost_center_uuid: voucher_entry_cost_center.cost_center_uuid,
 			cost_center_name: cost_center.name,
 			created_by: voucher_entry_cost_center.created_by,
-			created_by_name: hrSchema.users.name,
+			created_by_name: createdByUser.name,
 			created_at: voucher_entry_cost_center.created_at,
 			updated_by: voucher_entry_cost_center.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: voucher_entry_cost_center.updated_at,
 			remarks: voucher_entry_cost_center.remarks,
 		})
@@ -95,8 +96,12 @@ export async function selectAll(req, res, next) {
 			eq(voucher_entry_cost_center.cost_center_uuid, cost_center.uuid)
 		)
 		.leftJoin(
-			hrSchema.users,
-			eq(voucher_entry_cost_center.created_by, hrSchema.users.uuid)
+			createdByUser,
+			eq(voucher_entry_cost_center.created_by, createdByUser.uuid)
+		)
+		.leftJoin(
+			updatedByUser,
+			eq(voucher_entry_cost_center.updated_by, updatedByUser.uuid)
 		)
 		.orderBy(desc(voucher_entry_cost_center.created_at));
 
@@ -124,7 +129,7 @@ export async function select(req, res, next) {
 			cost_center_uuid: voucher_entry_cost_center.cost_center_uuid,
 			cost_center_name: cost_center.name,
 			created_by: voucher_entry_cost_center.created_by,
-			created_by_name: hrSchema.users.name,
+			created_by_name: createdByUser.name,
 			created_at: voucher_entry_cost_center.created_at,
 			updated_by: voucher_entry_cost_center.updated_by,
 			updated_at: voucher_entry_cost_center.updated_at,
@@ -136,8 +141,12 @@ export async function select(req, res, next) {
 			eq(voucher_entry_cost_center.cost_center_uuid, cost_center.uuid)
 		)
 		.leftJoin(
-			hrSchema.users,
-			eq(voucher_entry_cost_center.created_by, hrSchema.users.uuid)
+			createdByUser,
+			eq(voucher_entry_cost_center.created_by, createdByUser.uuid)
+		)
+		.leftJoin(
+			updatedByUser,
+			eq(voucher_entry_cost_center.updated_by, updatedByUser.uuid)
 		)
 		.where(eq(voucher_entry_cost_center.uuid, req.params.uuid));
 

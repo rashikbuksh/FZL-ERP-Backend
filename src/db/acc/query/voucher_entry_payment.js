@@ -84,16 +84,21 @@ export async function selectAll(req, res, next) {
 			trx_no: voucher_entry_payment.trx_no,
 			date: voucher_entry_payment.date,
 			created_by: voucher_entry_payment.created_by,
-			created_by_name: hrSchema.users.name,
+			created_by_name: createdByUser.name,
 			created_at: voucher_entry_payment.created_at,
 			updated_by: voucher_entry_payment.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: voucher_entry_payment.updated_at,
 			remarks: voucher_entry_payment.remarks,
 		})
 		.from(voucher_entry_payment)
 		.leftJoin(
-			hrSchema.users,
-			eq(voucher_entry_payment.created_by, hrSchema.users.uuid)
+			createdByUser,
+			eq(voucher_entry_payment.created_by, createdByUser.uuid)
+		)
+		.leftJoin(
+			updatedByUser,
+			eq(voucher_entry_payment.updated_by, updatedByUser.uuid)
 		)
 		.orderBy(desc(voucher_entry_payment.created_at));
 

@@ -83,14 +83,16 @@ export async function selectAll(req, res, next) {
 			vat_deduction: voucher.vat_deduction,
 			tax_deduction: voucher.tax_deduction,
 			created_by: voucher.created_by,
-			created_by_name: hrSchema.users.name,
+			created_by_name: createdByUser.name,
 			created_at: voucher.created_at,
 			updated_by: voucher.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: voucher.updated_at,
 			remarks: voucher.remarks,
 		})
 		.from(voucher)
-		.leftJoin(hrSchema.users, eq(voucher.created_by, hrSchema.users.uuid))
+		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(voucher.updated_by, updatedByUser.uuid))
 		.orderBy(desc(voucher.created_at));
 
 	try {
@@ -117,14 +119,16 @@ export async function select(req, res, next) {
 			vat_deduction: voucher.vat_deduction,
 			tax_deduction: voucher.tax_deduction,
 			created_by: voucher.created_by,
-			created_by_name: hrSchema.users.name,
+			created_by_name: createdByUser.name,
 			created_at: voucher.created_at,
 			updated_by: voucher.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: voucher.updated_at,
 			remarks: voucher.remarks,
 		})
 		.from(voucher)
-		.leftJoin(hrSchema.users, eq(voucher.created_by, hrSchema.users.uuid))
+		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))
+		.leftJoin(updatedByUser, eq(voucher.updated_by, updatedByUser.uuid))
 		.where(eq(voucher.uuid, req.params.uuid));
 
 	try {

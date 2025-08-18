@@ -87,17 +87,22 @@ export async function selectAll(req, res, next) {
 			is_payment: voucher_entry.is_payment,
 			description: voucher_entry.description,
 			created_by: voucher_entry.created_by,
-			created_by_name: hrSchema.users.name,
+			created_by_name: createdByUser.name,
 			created_at: voucher_entry.created_at,
 			updated_by: voucher_entry.updated_by,
+			updated_by_name: updatedByUser.name,
 			updated_at: voucher_entry.updated_at,
 			remarks: voucher_entry.remarks,
 		})
 		.from(voucher_entry)
 		.leftJoin(ledger, eq(voucher_entry.ledger_uuid, ledger.uuid))
 		.leftJoin(
-			hrSchema.users,
-			eq(voucher_entry.created_by, hrSchema.users.uuid)
+			createdByUser,
+			eq(voucher_entry.created_by, createdByUser.uuid)
+		)
+		.leftJoin(
+			updatedByUser,
+			eq(voucher_entry.updated_by, updatedByUser.uuid)
 		)
 		.orderBy(desc(voucher_entry.created_at));
 
