@@ -138,13 +138,25 @@ export async function getAccountsTableNames(req, res, next) {
 // Get Selected Tables uuid, id or name
 export async function getSelectedTableData(req, res, next) {
 	const { table_name } = req.query;
+
+	let result;
+
 	try {
-		const result = await db.execute(sql`
-			SELECT 
-				uuid as value,
-				COALESCE(id::text, name) AS label
-			FROM ${sql.raw(table_name)}
+		if (table_name.includes(['lc', 'description'])) {
+			result = await db.execute(sql`
+				SELECT 
+					uuid as value,
+					id::text as label
+			FROM ${sql.raw(table_name)};
 		`);
+		} else if (table_name.includes(['vendor', 'party'])) {
+			result = await db.execute(sql`
+				SELECT 
+					uuid as value,
+					name as label
+			FROM ${sql.raw(table_name)};
+		`);
+		}
 
 		const toast = {
 			status: 200,
