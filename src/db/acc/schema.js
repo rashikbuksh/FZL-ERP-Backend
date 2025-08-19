@@ -242,6 +242,7 @@ export const voucher_entry_payment = acc.table('voucher_entry_payment', {
 	payment_type: payment_type_enum('payment_type').default('cash'),
 	trx_no: text('trx_no').default(null),
 	date: DateTime('date').default(null),
+	amount: PG_DECIMAL('amount').default(0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_by: defaultUUID('updated_by')

@@ -210,6 +210,7 @@ export const defVoucherEntryPayment = SED({
 		payment_type: SE.string('cash'),
 		trx_no: SE.string('TRX123'),
 		date: SE.date_time(),
+		amount: SE.number(500),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_by: SE.uuid(),
