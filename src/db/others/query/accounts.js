@@ -141,15 +141,18 @@ export async function getSelectedTableData(req, res, next) {
 
 	let result;
 
+	console.log(`Fetching data for table: ${table_name}`);
+
 	try {
-		if (table_name.includes(['commercial.lc', 'purchase.description'])) {
+		if (['commercial.lc', 'purchase.description'].includes(table_name)) {
+			console.log(`Fetching data for tables: ${table_name.join(', ')}`);
 			result = await db.execute(sql`
 				SELECT 
 					uuid as value,
 					id::text as label
 			FROM ${sql.raw(table_name)};
 		`);
-		} else if (table_name.includes(['purchase.vendor', 'public.party'])) {
+		} else if (['purchase.vendor', 'public.party'].includes(table_name)) {
 			result = await db.execute(sql`
 				SELECT 
 					uuid as value,
@@ -166,7 +169,7 @@ export async function getSelectedTableData(req, res, next) {
 
 		res.status(200).json({
 			toast,
-			data: result?.rows,
+			data: result?.rows || {},
 		});
 	} catch (error) {
 		await handleError({ error, res });
