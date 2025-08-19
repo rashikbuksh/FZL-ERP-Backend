@@ -137,7 +137,7 @@ export async function getAccountsTableNames(req, res, next) {
 
 // Get Selected Tables uuid, id or name
 export async function getSelectedTableData(req, res, next) {
-	const { table_name } = req.query;
+	const { table_name } = req.params;
 
 	let result;
 

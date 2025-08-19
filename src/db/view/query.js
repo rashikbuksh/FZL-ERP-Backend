@@ -577,6 +577,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
     ;
 `;
 
+// ! not using anymore
 export const pi_cash_view = `
 CREATE MATERIALIZED VIEW commercial.v_pi_cash AS
  SELECT 
@@ -646,120 +647,190 @@ CREATE MATERIALIZED VIEW commercial.v_pi_cash AS
 export const pi_cash_view_alt = `
 
 CREATE MATERIALIZED VIEW commercial.v_pi_cash AS
-WITH zipper_orders AS (
-    SELECT DISTINCT
-        elem.value::text AS order_info_uuid,
-        pi_cash.uuid AS pi_cash_uuid
-    FROM commercial.pi_cash
-    CROSS JOIN jsonb_array_elements_text(pi_cash.order_info_uuids::jsonb) elem(value)
-    WHERE elem.value IS NOT NULL 
-        AND elem.value <> 'null'
-        AND pi_cash.order_info_uuids <> '[]'::text 
-        AND pi_cash.order_info_uuids IS NOT NULL
-),
-thread_orders AS (
-    SELECT DISTINCT
-        elem.value::text AS order_info_uuid,
-        pi_cash.uuid AS pi_cash_uuid
-    FROM commercial.pi_cash
-    CROSS JOIN jsonb_array_elements_text(pi_cash.thread_order_info_uuids::jsonb) elem(value)
-    WHERE elem.value IS NOT NULL 
-        AND elem.value <> 'null'
-        AND pi_cash.thread_order_info_uuids <> '[]'::text 
-        AND pi_cash.thread_order_info_uuids IS NOT NULL
-),
-zipper_aggregated AS (
-    SELECT 
-        zo.pi_cash_uuid,
-        vodf.order_info_uuid,
-        vodf.order_number,
-        vodf.order_type,
-        SUM(CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END) AS quantity,
-        SUM(sfg.delivered)::float8 AS total_delivered_quantity
-    FROM zipper_orders zo
-    JOIN zipper.v_order_details_full vodf ON vodf.order_info_uuid = zo.order_info_uuid
-    JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
-    LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = oe.uuid
-    WHERE vodf.is_cancelled = false
-    GROUP BY zo.pi_cash_uuid, vodf.order_info_uuid, vodf.order_number, vodf.order_type
-),
-zipper_packing AS (
-    SELECT 
-        pl.order_info_uuid,
-        SUM(ple.quantity)::float8 AS total_packing_list_quantity
-    FROM delivery.packing_list_entry ple
-    JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
-    WHERE pl.item_for NOT IN ('thread', 'sample_thread')
-        AND pl.is_deleted = false
-    GROUP BY pl.order_info_uuid
-),
-thread_aggregated AS (
-    SELECT 
-        tho.pi_cash_uuid,
-        oi.uuid AS order_info_uuid,
-        CONCAT('ST',
-            CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END,
-            TO_CHAR(oi.created_at, 'YY'), '-', 
-            (oi.id::text)
-        ) AS thread_order_number,
-        SUM(toe.quantity::float8) AS quantity,
-        SUM(toe.delivered)::float8 AS total_delivered_quantity
-    FROM thread_orders tho
-    JOIN thread.order_info oi ON oi.uuid = tho.order_info_uuid
-    JOIN thread.order_entry toe ON toe.order_info_uuid = oi.uuid
-    WHERE oi.is_cancelled = false
-    GROUP BY tho.pi_cash_uuid, oi.uuid, oi.is_sample, oi.created_at, oi.id
-),
-thread_packing AS (
-    SELECT 
-        pl.thread_order_info_uuid,
-        SUM(ple.quantity)::float8 AS total_packing_list_quantity
-    FROM delivery.packing_list_entry ple
-    JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
-    WHERE pl.item_for IN ('thread', 'sample_thread')
-        AND pl.is_deleted = false
-    GROUP BY pl.thread_order_info_uuid
-)
-SELECT 
+WITH
+    zipper_orders AS (
+        SELECT DISTINCT
+            elem.value::text AS order_info_uuid,
+            pi_cash.uuid AS pi_cash_uuid
+        FROM commercial.pi_cash
+            CROSS JOIN jsonb_array_elements_text(
+                pi_cash.order_info_uuids::jsonb
+            ) elem (value)
+        WHERE
+            elem.value IS NOT NULL
+            AND elem.value <> 'null'
+            AND pi_cash.order_info_uuids <> '[]'::text
+            AND pi_cash.order_info_uuids IS NOT NULL
+    ),
+    thread_orders AS (
+        SELECT DISTINCT
+            elem.value::text AS order_info_uuid,
+            pi_cash.uuid AS pi_cash_uuid
+        FROM commercial.pi_cash
+            CROSS JOIN jsonb_array_elements_text(
+                pi_cash.thread_order_info_uuids::jsonb
+            ) elem (value)
+        WHERE
+            elem.value IS NOT NULL
+            AND elem.value <> 'null'
+            AND pi_cash.thread_order_info_uuids <> '[]'::text
+            AND pi_cash.thread_order_info_uuids IS NOT NULL
+    ),
+    zipper_aggregated AS (
+        SELECT
+            zo.pi_cash_uuid,
+            vodf.order_info_uuid,
+            vodf.order_number,
+            vodf.order_type,
+            SUM(
+                CASE
+                    WHEN vodf.order_type = 'tape' THEN oe.size::float8
+                    ELSE oe.quantity::float8
+                END
+            ) AS quantity,
+            SUM(sfg.delivered)::float8 AS total_delivered_quantity
+        FROM
+            zipper_orders zo
+            JOIN zipper.v_order_details_full vodf ON vodf.order_info_uuid = zo.order_info_uuid
+            JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = oe.uuid
+        WHERE
+            vodf.is_cancelled = false
+        GROUP BY
+            zo.pi_cash_uuid,
+            vodf.order_info_uuid,
+            vodf.order_number,
+            vodf.order_type
+    ),
+    zipper_packing AS (
+        SELECT
+            pl.order_info_uuid,
+            SUM(ple.quantity)::float8 AS total_packing_list_quantity
+        FROM delivery.packing_list_entry ple
+            JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+        WHERE
+            pl.item_for NOT IN ('thread', 'sample_thread')
+            AND pl.is_deleted = false
+        GROUP BY
+            pl.order_info_uuid
+    ),
+    thread_aggregated AS (
+        SELECT
+            tho.pi_cash_uuid,
+            oi.uuid AS order_info_uuid,
+            CONCAT(
+                'ST',
+                CASE
+                    WHEN oi.is_sample = 1 THEN 'S'
+                    ELSE ''
+                END,
+                TO_CHAR(oi.created_at, 'YY'),
+                '-',
+                (oi.id::text)
+            ) AS thread_order_number,
+            SUM(toe.quantity::float8) AS quantity,
+            SUM(toe.delivered)::float8 AS total_delivered_quantity
+        FROM
+            thread_orders tho
+            JOIN thread.order_info oi ON oi.uuid = tho.order_info_uuid
+            JOIN thread.order_entry toe ON toe.order_info_uuid = oi.uuid
+        WHERE
+            oi.is_cancelled = false
+        GROUP BY
+            tho.pi_cash_uuid,
+            oi.uuid,
+            oi.is_sample,
+            oi.created_at,
+            oi.id
+    ),
+    thread_packing AS (
+        SELECT
+            pl.thread_order_info_uuid,
+            SUM(ple.quantity)::float8 AS total_packing_list_quantity
+        FROM delivery.packing_list_entry ple
+            JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+        WHERE
+            pl.item_for IN ('thread', 'sample_thread')
+            AND pl.is_deleted = false
+        GROUP BY
+            pl.thread_order_info_uuid
+    )
+SELECT
     pc.uuid AS pi_cash_uuid,
     COALESCE(
-        jsonb_agg(DISTINCT 
-            jsonb_build_object(
-                'order_info_uuid', za.order_info_uuid,
-                'order_number', za.order_number,
-                'quantity', za.quantity,
-                'packing_list', COALESCE(zp.total_packing_list_quantity, 0),
-                'delivered', za.total_delivered_quantity
+        jsonb_agg(
+            DISTINCT jsonb_build_object(
+                'order_info_uuid',
+                za.order_info_uuid,
+                'order_number',
+                za.order_number,
+                'quantity',
+                za.quantity,
+                'packing_list',
+                COALESCE(
+                    zp.total_packing_list_quantity,
+                    0
+                ),
+                'delivered',
+                za.total_delivered_quantity
             )
-        ) FILTER (WHERE za.order_info_uuid IS NOT NULL), 
+        ) FILTER (
+            WHERE
+                za.order_info_uuid IS NOT NULL
+        ),
         '[]'::jsonb
     ) AS order_numbers,
     COALESCE(
-        jsonb_agg(DISTINCT 
-            jsonb_build_object(
-                'thread_order_info_uuid', ta.order_info_uuid,
-                'thread_order_number', ta.thread_order_number,
-                'quantity', ta.quantity,
-                'packing_list', COALESCE(tp.total_packing_list_quantity, 0),
-                'delivered', ta.total_delivered_quantity
+        jsonb_agg(
+            DISTINCT jsonb_build_object(
+                'thread_order_info_uuid',
+                ta.order_info_uuid,
+                'thread_order_number',
+                ta.thread_order_number,
+                'quantity',
+                ta.quantity,
+                'packing_list',
+                COALESCE(
+                    tp.total_packing_list_quantity,
+                    0
+                ),
+                'delivered',
+                ta.total_delivered_quantity
             )
-        ) FILTER (WHERE ta.order_info_uuid IS NOT NULL), 
+        ) FILTER (
+            WHERE
+                ta.order_info_uuid IS NOT NULL
+        ),
         '[]'::jsonb
     ) AS thread_order_numbers,
-    jsonb_agg(DISTINCT za.order_type) FILTER (WHERE za.order_type IS NOT NULL) AS order_type
-FROM commercial.pi_cash pc
-LEFT JOIN zipper_aggregated za ON za.pi_cash_uuid = pc.uuid
-LEFT JOIN zipper_packing zp ON zp.order_info_uuid = za.order_info_uuid
-LEFT JOIN thread_aggregated ta ON ta.pi_cash_uuid = pc.uuid
-LEFT JOIN thread_packing tp ON tp.thread_order_info_uuid = ta.order_info_uuid
-GROUP BY pc.uuid;
+    jsonb_agg(DISTINCT za.order_type) FILTER (
+        WHERE
+            za.order_type IS NOT NULL
+    ) AS order_type
+FROM
+    commercial.pi_cash pc
+    LEFT JOIN zipper_aggregated za ON za.pi_cash_uuid = pc.uuid
+    LEFT JOIN zipper_packing zp ON zp.order_info_uuid = za.order_info_uuid
+    LEFT JOIN thread_aggregated ta ON ta.pi_cash_uuid = pc.uuid
+    LEFT JOIN thread_packing tp ON tp.thread_order_info_uuid = ta.order_info_uuid
+GROUP BY
+    pc.uuid;
 
--- Create unique index for CONCURRENTLY refresh
-CREATE UNIQUE INDEX CONCURRENTLY idx_v_pi_cash_uuid ON commercial.v_pi_cash (pi_cash_uuid);
+-- -- Create unique index for CONCURRENTLY refresh
+-- CREATE UNIQUE INDEX CONCURRENTLY idx_v_pi_cash_uuid ON commercial.v_pi_cash (pi_cash_uuid);
 
--- Create additional indexes for better performance
-CREATE INDEX CONCURRENTLY idx_pi_cash_order_info_uuids ON commercial.pi_cash USING GIN(order_info_uuids);
-CREATE INDEX CONCURRENTLY idx_pi_cash_thread_order_info_uuids ON commercial.pi_cash USING GIN(thread_order_info_uuids);
-CREATE INDEX CONCURRENTLY idx_packing_list_order_info ON delivery.packing_list (order_info_uuid) WHERE item_for NOT IN ('thread', 'sample_thread') AND is_deleted = false;
-CREATE INDEX CONCURRENTLY idx_packing_list_thread_order_info ON delivery.packing_list (thread_order_info_uuid) WHERE item_for IN ('thread', 'sample_thread') AND is_deleted = false;
+-- -- Create additional indexes for better performance
+-- CREATE INDEX CONCURRENTLY idx_pi_cash_order_info_uuids ON commercial.pi_cash USING GIN (order_info_uuids);
+
+-- CREATE INDEX CONCURRENTLY idx_pi_cash_thread_order_info_uuids ON commercial.pi_cash USING GIN (thread_order_info_uuids);
+
+-- CREATE INDEX CONCURRENTLY idx_packing_list_order_info ON delivery.packing_list (order_info_uuid)
+-- WHERE
+--     item_for NOT IN ('thread', 'sample_thread')
+--     AND is_deleted = false;
+
+-- CREATE INDEX CONCURRENTLY idx_packing_list_thread_order_info ON delivery.packing_list (thread_order_info_uuid)
+-- WHERE
+--     item_for IN ('thread', 'sample_thread')
+--     AND is_deleted = false;
 `;
