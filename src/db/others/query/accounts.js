@@ -69,7 +69,7 @@ export async function selectLedger(req, res, next) {
 		.select({
 			value: accountSchema.ledger.uuid,
 			label: accountSchema.ledger.name,
-			has_cost_center: sql`cost_center_count > 0`,
+			has_cost_center: sql`CASE WHEN cost_center.cost_center_count > 0 THEN TRUE ELSE FALSE END`,
 		})
 		.from(accountSchema.ledger)
 		.leftJoin(
