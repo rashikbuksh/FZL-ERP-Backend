@@ -1,4 +1,4 @@
-import { asc, sql } from 'drizzle-orm';
+import { asc, eq, sql } from 'drizzle-orm';
 import { handleError } from '../../../util/index.js';
 import * as accountSchema from '../../acc/schema.js';
 import db from '../../index.js';
@@ -69,8 +69,21 @@ export async function selectLedger(req, res, next) {
 		.select({
 			value: accountSchema.ledger.uuid,
 			label: accountSchema.ledger.name,
+			has_cost_center: sql`cost_center_count > 0`,
 		})
-		.from(accountSchema.ledger);
+		.from(accountSchema.ledger)
+		.leftJoin(
+			sql`
+				(
+				SELECT 
+					COUNT(cost_center.uuid) as cost_center_count,
+					cost_center.ledger_uuid
+				FROM acc.cost_center
+				GROUP BY cost_center.ledger_uuid
+				) as cost_center
+			`,
+			eq(accountSchema.ledger.uuid, sql`cost_center.ledger_uuid`)
+		);
 	try {
 		const data = await ledgerPromise;
 		const toast = {
