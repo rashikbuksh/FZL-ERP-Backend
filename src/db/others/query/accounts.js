@@ -142,19 +142,19 @@ export async function getSelectedTableData(req, res, next) {
 	let result;
 
 	try {
-		if (table_name.includes(['lc', 'description'])) {
+		if (table_name.includes(['commercial_lc', 'purchase_description'])) {
 			result = await db.execute(sql`
 				SELECT 
 					uuid as value,
 					id::text as label
-			FROM ${sql.raw(table_name)};
+			FROM ${sql.raw(table_name).replace('_', '.')};
 		`);
-		} else if (table_name.includes(['vendor', 'party'])) {
+		} else if (table_name.includes(['purchase_vendor', 'public_party'])) {
 			result = await db.execute(sql`
 				SELECT 
 					uuid as value,
 					name as label
-			FROM ${sql.raw(table_name)};
+			FROM ${sql.raw(table_name).replace('_', '.')};
 		`);
 		}
 
