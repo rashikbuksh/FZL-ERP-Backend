@@ -132,7 +132,7 @@ export async function selectAll(req, res, next) {
 		.leftJoin(createdByUser, eq(fiscal_year.created_by, createdByUser.uuid))
 		.leftJoin(updatedByUser, eq(fiscal_year.updated_by, updatedByUser.uuid))
 		.leftJoin(currency, eq(fiscal_year.currency_uuid, currency.uuid))
-		.orderBy(desc(fiscal_year.created_at));
+		.orderBy(desc(fiscal_year.year_no));
 
 	try {
 		const data = await resultPromise;
