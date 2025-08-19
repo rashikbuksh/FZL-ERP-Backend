@@ -22,7 +22,7 @@ export const pathAccCurrency = {
 		get: {
 			tags: ['acc.currency'],
 			summary: 'Get a currency',
-			parameters: [SE.parameter_params('Currency to get')],
+			parameters: [SE.parameter_params('Currency to get', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/currency'),
 				400: SE.response(400),
@@ -32,7 +32,7 @@ export const pathAccCurrency = {
 		put: {
 			tags: ['acc.currency'],
 			summary: 'Update a currency',
-			parameters: [SE.parameter_params('Currency to update')],
+			parameters: [SE.parameter_params('Currency to update', 'uuid')],
 			requestBody: SE.requestBody_schema_ref('acc/currency'),
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/currency'),
@@ -44,7 +44,7 @@ export const pathAccCurrency = {
 		delete: {
 			tags: ['acc.currency'],
 			summary: 'Delete a currency',
-			parameters: [SE.parameter_params('Currency to delete')],
+			parameters: [SE.parameter_params('Currency to delete', 'uuid')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -76,7 +76,7 @@ export const pathAccFiscalYear = {
 		get: {
 			tags: ['acc.fiscal_year'],
 			summary: 'Get a fiscal year',
-			parameters: [SE.parameter_params('Fiscal year to get')],
+			parameters: [SE.parameter_params('Fiscal year to get', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/fiscal_year'),
 				400: SE.response(400),
@@ -86,7 +86,7 @@ export const pathAccFiscalYear = {
 		put: {
 			tags: ['acc.fiscal_year'],
 			summary: 'Update a fiscal year',
-			parameters: [SE.parameter_params('Fiscal year to update')],
+			parameters: [SE.parameter_params('Fiscal year to update', 'uuid')],
 			requestBody: SE.requestBody_schema_ref('acc/fiscal_year'),
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/fiscal_year'),
@@ -98,7 +98,7 @@ export const pathAccFiscalYear = {
 		delete: {
 			tags: ['acc.fiscal_year'],
 			summary: 'Delete a fiscal year',
-			parameters: [SE.parameter_params('Fiscal year to delete')],
+			parameters: [SE.parameter_params('Fiscal year to delete', 'uuid')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -130,7 +130,7 @@ export const pathAccHead = {
 		get: {
 			tags: ['acc.head'],
 			summary: 'Get a head',
-			parameters: [SE.parameter_params('Head to get')],
+			parameters: [SE.parameter_params('Head to get', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/head'),
 				400: SE.response(400),
@@ -140,7 +140,7 @@ export const pathAccHead = {
 		put: {
 			tags: ['acc.head'],
 			summary: 'Update a head',
-			parameters: [SE.parameter_params('Head to update')],
+			parameters: [SE.parameter_params('Head to update', 'uuid')],
 			requestBody: SE.requestBody_schema_ref('acc/head'),
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/head'),
@@ -152,7 +152,7 @@ export const pathAccHead = {
 		delete: {
 			tags: ['acc.head'],
 			summary: 'Delete a head',
-			parameters: [SE.parameter_params('Head to delete')],
+			parameters: [SE.parameter_params('Head to delete', 'uuid')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -184,7 +184,7 @@ export const pathAccGroup = {
 		get: {
 			tags: ['acc.group'],
 			summary: 'Get a group',
-			parameters: [SE.parameter_params('Group to get')],
+			parameters: [SE.parameter_params('Group to get', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/group'),
 				400: SE.response(400),
@@ -194,7 +194,7 @@ export const pathAccGroup = {
 		put: {
 			tags: ['acc.group'],
 			summary: 'Update a group',
-			parameters: [SE.parameter_params('Group to update')],
+			parameters: [SE.parameter_params('Group to update', 'uuid')],
 			requestBody: SE.requestBody_schema_ref('acc/group'),
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/group'),
@@ -206,7 +206,7 @@ export const pathAccGroup = {
 		delete: {
 			tags: ['acc.group'],
 			summary: 'Delete a group',
-			parameters: [SE.parameter_params('Group to delete')],
+			parameters: [SE.parameter_params('Group to delete', 'uuid')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -238,7 +238,7 @@ export const pathAccLedger = {
 		get: {
 			tags: ['acc.ledger'],
 			summary: 'Get a ledger',
-			parameters: [SE.parameter_params('Ledger to get')],
+			parameters: [SE.parameter_params('Ledger to get', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/ledger'),
 				400: SE.response(400),
@@ -248,7 +248,7 @@ export const pathAccLedger = {
 		put: {
 			tags: ['acc.ledger'],
 			summary: 'Update a ledger',
-			parameters: [SE.parameter_params('Ledger to update')],
+			parameters: [SE.parameter_params('Ledger to update', 'uuid')],
 			requestBody: SE.requestBody_schema_ref('acc/ledger'),
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/ledger'),
@@ -260,7 +260,7 @@ export const pathAccLedger = {
 		delete: {
 			tags: ['acc.ledger'],
 			summary: 'Delete a ledger',
-			parameters: [SE.parameter_params('Ledger to delete')],
+			parameters: [SE.parameter_params('Ledger to delete', 'uuid')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -292,7 +292,7 @@ export const pathAccCostCenter = {
 		get: {
 			tags: ['acc.cost_center'],
 			summary: 'Get a cost center',
-			parameters: [SE.parameter_params('Cost center to get')],
+			parameters: [SE.parameter_params('Cost center to get', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/cost_center'),
 				400: SE.response(400),
@@ -302,7 +302,7 @@ export const pathAccCostCenter = {
 		put: {
 			tags: ['acc.cost_center'],
 			summary: 'Update a cost center',
-			parameters: [SE.parameter_params('Cost center to update')],
+			parameters: [SE.parameter_params('Cost center to update', 'uuid')],
 			requestBody: SE.requestBody_schema_ref('acc/cost_center'),
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/cost_center'),
@@ -314,7 +314,7 @@ export const pathAccCostCenter = {
 		delete: {
 			tags: ['acc.cost_center'],
 			summary: 'Delete a cost center',
-			parameters: [SE.parameter_params('Cost center to delete')],
+			parameters: [SE.parameter_params('Cost center to delete', 'uuid')],
 			responses: {
 				200: SE.response(200),
 				400: SE.response(400),
@@ -346,7 +346,7 @@ export const pathAccVoucher = {
 		get: {
 			tags: ['acc.voucher'],
 			summary: 'Get a voucher',
-			parameters: [SE.parameter_params('Voucher to get')],
+			parameters: [SE.parameter_params('Voucher to get', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/voucher'),
 				400: SE.response(400),
@@ -356,7 +356,7 @@ export const pathAccVoucher = {
 		put: {
 			tags: ['acc.voucher'],
 			summary: 'Update a voucher',
-			parameters: [SE.parameter_params('Voucher to update')],
+			parameters: [SE.parameter_params('Voucher to update', 'uuid')],
 			requestBody: SE.requestBody_schema_ref('acc/voucher'),
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/voucher'),
@@ -368,9 +368,26 @@ export const pathAccVoucher = {
 		delete: {
 			tags: ['acc.voucher'],
 			summary: 'Delete a voucher',
-			parameters: [SE.parameter_params('Voucher to delete')],
+			parameters: [SE.parameter_params('Voucher to delete', 'uuid')],
 			responses: {
 				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+	'/acc/voucher-details/{voucher_uuid}': {
+		get: {
+			tags: ['acc.voucher'],
+			summary: 'Get voucher details',
+			parameters: [
+				SE.parameter_params(
+					'Voucher to get details for',
+					'voucher_uuid'
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'acc/voucher'),
 				400: SE.response(400),
 				404: SE.response(404),
 			},
@@ -402,7 +419,7 @@ export const pathAccVoucherEntry = {
 		get: {
 			tags: ['acc.voucher_entry'],
 			summary: 'Get a voucher entry',
-			parameters: [SE.parameter_params('Voucher entry to get')],
+			parameters: [SE.parameter_params('Voucher entry to get', 'uuid')],
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/voucher_entry'),
 				400: SE.response(400),
@@ -412,7 +429,9 @@ export const pathAccVoucherEntry = {
 		put: {
 			tags: ['acc.voucher_entry'],
 			summary: 'Update a voucher entry',
-			parameters: [SE.parameter_params('Voucher entry to update')],
+			parameters: [
+				SE.parameter_params('Voucher entry to update', 'uuid'),
+			],
 			requestBody: SE.requestBody_schema_ref('acc/voucher_entry'),
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/voucher_entry'),
@@ -424,9 +443,28 @@ export const pathAccVoucherEntry = {
 		delete: {
 			tags: ['acc.voucher_entry'],
 			summary: 'Delete a voucher entry',
-			parameters: [SE.parameter_params('Voucher entry to delete')],
+			parameters: [
+				SE.parameter_params('Voucher entry to delete', 'uuid'),
+			],
 			responses: {
 				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+	'/acc/voucher-entry/by-voucher/{voucher_uuid}': {
+		get: {
+			tags: ['acc.voucher_entry'],
+			summary: 'Get all voucher entries by voucher UUID',
+			parameters: [
+				SE.parameter_params(
+					'Voucher UUID to get entries for',
+					'voucher_uuid'
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'acc/voucher_entry'),
 				400: SE.response(400),
 				404: SE.response(404),
 			},
@@ -467,7 +505,7 @@ export const pathAccVoucherEntryCostCenter = {
 			tags: ['acc.voucher_entry_cost_center'],
 			summary: 'Get a voucher entry cost center',
 			parameters: [
-				SE.parameter_params('Voucher entry cost center to get'),
+				SE.parameter_params('Voucher entry cost center to get', 'uuid'),
 			],
 			responses: {
 				200: SE.response_schema_ref(
@@ -482,7 +520,10 @@ export const pathAccVoucherEntryCostCenter = {
 			tags: ['acc.voucher_entry_cost_center'],
 			summary: 'Update a voucher entry cost center',
 			parameters: [
-				SE.parameter_params('Voucher entry cost center to update'),
+				SE.parameter_params(
+					'Voucher entry cost center to update',
+					'uuid'
+				),
 			],
 			requestBody: SE.requestBody_schema_ref(
 				'acc/voucher_entry_cost_center'
@@ -501,7 +542,10 @@ export const pathAccVoucherEntryCostCenter = {
 			tags: ['acc.voucher_entry_cost_center'],
 			summary: 'Delete a voucher entry cost center',
 			parameters: [
-				SE.parameter_params('Voucher entry cost center to delete'),
+				SE.parameter_params(
+					'Voucher entry cost center to delete',
+					'uuid'
+				),
 			],
 			responses: {
 				200: SE.response(200),
@@ -525,7 +569,10 @@ export const pathAccVoucherEntryPayment = {
 		post: {
 			tags: ['acc.voucher_entry_payment'],
 			summary: 'Create a voucher entry payment',
-			requestBody: SE.requestBody_schema_ref('acc/voucher_entry_payment'),
+			requestBody: SE.requestBody_schema_ref(
+				'acc/voucher_entry_payment',
+				'uuid'
+			),
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/voucher_entry_payment'),
 				405: SE.response(405),
@@ -536,7 +583,9 @@ export const pathAccVoucherEntryPayment = {
 		get: {
 			tags: ['acc.voucher_entry_payment'],
 			summary: 'Get a voucher entry payment',
-			parameters: [SE.parameter_params('Voucher entry payment to get')],
+			parameters: [
+				SE.parameter_params('Voucher entry payment to get', 'uuid'),
+			],
 			responses: {
 				200: SE.response_schema_ref(200, 'acc/voucher_entry_payment'),
 				400: SE.response(400),
@@ -547,7 +596,7 @@ export const pathAccVoucherEntryPayment = {
 			tags: ['acc.voucher_entry_payment'],
 			summary: 'Update a voucher entry payment',
 			parameters: [
-				SE.parameter_params('Voucher entry payment to update'),
+				SE.parameter_params('Voucher entry payment to update', 'uuid'),
 			],
 			requestBody: SE.requestBody_schema_ref('acc/voucher_entry_payment'),
 			responses: {
@@ -561,7 +610,7 @@ export const pathAccVoucherEntryPayment = {
 			tags: ['acc.voucher_entry_payment'],
 			summary: 'Delete a voucher entry payment',
 			parameters: [
-				SE.parameter_params('Voucher entry payment to delete'),
+				SE.parameter_params('Voucher entry payment to delete', 'uuid'),
 			],
 			responses: {
 				200: SE.response(200),

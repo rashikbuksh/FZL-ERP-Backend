@@ -1,5 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
+import { createApi } from '../../../util/api.js';
 import db from '../../index.js';
 import { voucher } from '../schema.js';
 
@@ -139,6 +140,39 @@ export async function select(req, res, next) {
 			message: 'Voucher',
 		};
 		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectByVoucherUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	try {
+		const api = await createApi(req);
+
+		const { voucher_uuid } = req.params;
+
+		const fetchData = async (endpoint) =>
+			await api.get(`/acc/${endpoint}/${voucher_uuid}`);
+
+		const [voucher, voucher_entry] = await Promise.all([
+			fetchData('voucher'),
+			fetchData('voucher-entry/by-voucher'),
+		]);
+
+		const response = {
+			...voucher?.data?.data,
+			voucher_entry: voucher_entry?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Voucher',
+		};
+
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}

@@ -16,29 +16,17 @@ const accRouter = Router();
 
 // Currency routes
 accRouter.get('/currency', currencyOperations.selectAll);
-accRouter.get(
-	'/currency/:uuid',
-	currencyOperations.select
-);
+accRouter.get('/currency/:uuid', currencyOperations.select);
 accRouter.post('/currency', currencyOperations.insert);
 accRouter.put('/currency/:uuid', currencyOperations.update);
-accRouter.delete(
-	'/currency/:uuid',
-	currencyOperations.remove
-);
+accRouter.delete('/currency/:uuid', currencyOperations.remove);
 
 // Fiscal Year routes
 accRouter.get('/fiscal-year', fiscalYearOperations.selectAll);
-accRouter.get(
-	'/fiscal-year/:uuid',
-	fiscalYearOperations.select
-);
+accRouter.get('/fiscal-year/:uuid', fiscalYearOperations.select);
 accRouter.post('/fiscal-year', fiscalYearOperations.insert);
 accRouter.put('/fiscal-year/:uuid', fiscalYearOperations.update);
-accRouter.delete(
-	'/fiscal-year/:uuid',
-	fiscalYearOperations.remove
-);
+accRouter.delete('/fiscal-year/:uuid', fiscalYearOperations.remove);
 
 // Head routes
 accRouter.get('/head', headOperations.selectAll);
@@ -63,38 +51,31 @@ accRouter.delete('/ledger/:uuid', ledgerOperations.remove);
 
 // Cost Center routes
 accRouter.get('/cost-center', costCenterOperations.selectAll);
-accRouter.get(
-	'/cost-center/:uuid',
-	costCenterOperations.select
-);
+accRouter.get('/cost-center/:uuid', costCenterOperations.select);
 accRouter.post('/cost-center', costCenterOperations.insert);
 accRouter.put('/cost-center/:uuid', costCenterOperations.update);
-accRouter.delete(
-	'/cost-center/:uuid',
-	costCenterOperations.remove
-);
+accRouter.delete('/cost-center/:uuid', costCenterOperations.remove);
 
 // Voucher routes
 accRouter.get('/voucher', voucherOperations.selectAll);
 accRouter.get('/voucher/:uuid', voucherOperations.select);
 accRouter.post('/voucher', voucherOperations.insert);
 accRouter.put('/voucher/:uuid', voucherOperations.update);
-accRouter.delete(
-	'/voucher/:uuid',
-	voucherOperations.remove
+accRouter.delete('/voucher/:uuid', voucherOperations.remove);
+accRouter.get(
+	'/voucher-details/:voucher_uuid',
+	voucherOperations.selectByVoucherUuid
 );
 
 // Voucher Entry routes
 accRouter.get('/voucher-entry', voucherEntryOperations.selectAll);
-accRouter.get(
-	'/voucher-entry/:uuid',
-	voucherEntryOperations.select
-);
+accRouter.get('/voucher-entry/:uuid', voucherEntryOperations.select);
 accRouter.post('/voucher-entry', voucherEntryOperations.insert);
 accRouter.put('/voucher-entry/:uuid', voucherEntryOperations.update);
-accRouter.delete(
-	'/voucher-entry/:uuid',
-	voucherEntryOperations.remove
+accRouter.delete('/voucher-entry/:uuid', voucherEntryOperations.remove);
+accRouter.get(
+	'/voucher-entry/by-voucher/:voucher_uuid',
+	voucherEntryOperations.selectByVoucherUuid
 );
 
 // Voucher Entry Cost Center routes

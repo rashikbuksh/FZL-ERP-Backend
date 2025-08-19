@@ -185,7 +185,7 @@ export const voucher_entry = acc.table('voucher_entry', {
 		.references(() => ledger.uuid)
 		.notNull(),
 	type: voucher_entry_type_enum('type').notNull(),
-	amount: PG_DECIMAL('amount').notNull(),
+	amount: PG_DECIMAL('amount').default(0),
 	is_need_cost_center: boolean('is_need_cost_center').default(false),
 	is_payment: boolean('is_payment').default(false),
 	description: text('description').default(null),
@@ -212,6 +212,7 @@ export const voucher_entry_cost_center = acc.table(
 		cost_center_uuid: defaultUUID('cost_center_uuid')
 			.references(() => cost_center.uuid)
 			.notNull(),
+		amount: PG_DECIMAL('amount').default(0),
 		created_by: defaultUUID('created_by').references(
 			() => hrSchema.users.uuid
 		),

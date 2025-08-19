@@ -157,7 +157,7 @@ export const defVoucher = SED({
 
 //* ./schema.js#voucher_entry
 export const defVoucherEntry = SED({
-	required: ['uuid', 'index', 'ledger_uuid', 'type', 'amount', 'created_at'],
+	required: ['uuid', 'index', 'ledger_uuid', 'type', 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
 		index: SE.integer(1),
@@ -184,6 +184,7 @@ export const defVoucherEntryCostCenter = SED({
 		index: SE.integer(1),
 		voucher_entry_uuid: SE.uuid(),
 		cost_center_uuid: SE.uuid(),
+		amount: SE.number(100),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_by: SE.uuid(),

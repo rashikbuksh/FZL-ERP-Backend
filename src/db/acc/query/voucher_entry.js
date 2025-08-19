@@ -160,3 +160,47 @@ export async function select(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectByVoucherUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { voucher_uuid } = req.params;
+
+	const entryPromise = db
+		.select({
+			uuid: voucher_entry.uuid,
+			index: voucher_entry.index,
+			ledger_uuid: voucher_entry.ledger_uuid,
+			ledger_name: ledger.name,
+			type: voucher_entry.type,
+			amount: voucher_entry.amount,
+			is_need_cost_center: voucher_entry.is_need_cost_center,
+			is_payment: voucher_entry.is_payment,
+			description: voucher_entry.description,
+			created_by: voucher_entry.created_by,
+			created_by_name: hrSchema.users.name,
+			created_at: voucher_entry.created_at,
+			updated_by: voucher_entry.updated_by,
+			updated_at: voucher_entry.updated_at,
+			remarks: voucher_entry.remarks,
+		})
+		.from(voucher_entry)
+		.leftJoin(ledger, eq(voucher_entry.ledger_uuid, ledger.uuid))
+		.leftJoin(
+			hrSchema.users,
+			eq(voucher_entry.created_by, hrSchema.users.uuid)
+		)
+		.where(eq(voucher_entry.voucher_uuid, voucher_uuid));
+
+	try {
+		const data = await entryPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Voucher Entry',
+		};
+		return res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
