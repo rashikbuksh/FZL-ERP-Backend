@@ -257,7 +257,7 @@ otherRouter.get(
 otherRouter.get('/accounts/table-name', accOperations.getAccountsTableNames);
 
 otherRouter.get(
-	'/accounts/table-data/:table_name',
+	'/accounts/table-data/by/:table_name',
 	accOperations.getSelectedTableData
 );
 
