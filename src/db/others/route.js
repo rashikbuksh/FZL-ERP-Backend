@@ -249,6 +249,11 @@ otherRouter.get('/accounts/group/value/label', accOperations.selectGroup);
 
 otherRouter.get('/accounts/ledger/value/label', accOperations.selectLedger);
 
+otherRouter.get(
+	'/accounts/cost-center/value/label',
+	accOperations.selectCostCenter
+);
+
 otherRouter.get('/accounts/table-name', accOperations.getAccountsTableNames);
 
 otherRouter.get(

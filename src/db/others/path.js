@@ -1636,6 +1636,21 @@ const pathAccounts = {
 			},
 		},
 	},
+	'/other/accounts/cost-center/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all accounts cost centers',
+			description: 'All accounts cost centers',
+			operationId: 'getAllAccountsCostCenters',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					value: SE.uuid('2ggcphnw'),
+					label: SE.string('table name 1'),
+				}),
+			},
+		},
+	},
 	'/other/accounts/table-name': {
 		get: {
 			tags: ['others'],

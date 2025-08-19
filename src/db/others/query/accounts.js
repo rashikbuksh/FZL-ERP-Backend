@@ -84,6 +84,26 @@ export async function selectLedger(req, res, next) {
 	}
 }
 
+export async function selectCostCenter(req, res, next) {
+	const costCenterPromise = db
+		.select({
+			value: accountSchema.cost_center.uuid,
+			label: accountSchema.cost_center.name,
+		})
+		.from(accountSchema.cost_center);
+	try {
+		const data = await costCenterPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'cost center list',
+		};
+		return await res.status(200).json({ toast, data: data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 // Get All Table Names in a Schema
 export async function getAccountsTableNames(req, res, next) {
 	const { schema_name } = req.query;
