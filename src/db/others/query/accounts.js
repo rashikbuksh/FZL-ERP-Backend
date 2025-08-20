@@ -98,12 +98,21 @@ export async function selectLedger(req, res, next) {
 }
 
 export async function selectCostCenter(req, res, next) {
+	const { ledger_uuid } = req.query;
+
 	const costCenterPromise = db
 		.select({
 			value: accountSchema.cost_center.uuid,
 			label: accountSchema.cost_center.name,
 		})
 		.from(accountSchema.cost_center);
+
+	if (ledger_uuid) {
+		costCenterPromise.where(
+			eq(accountSchema.cost_center.ledger_uuid, ledger_uuid)
+		);
+	}
+
 	try {
 		const data = await costCenterPromise;
 		const toast = {

@@ -1642,7 +1642,9 @@ const pathAccounts = {
 			summary: 'get all accounts cost centers',
 			description: 'All accounts cost centers',
 			operationId: 'getAllAccountsCostCenters',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('ledger_uuid', 'ledger_uuid', SE.string()),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					value: SE.uuid('2ggcphnw'),
