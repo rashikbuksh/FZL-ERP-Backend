@@ -80,6 +80,8 @@ export async function selectAll(req, res, next) {
 	const resultPromise = db
 		.select({
 			uuid: voucher.uuid,
+			id: voucher.id,
+			voucher_id: sql`CONCAT('VO', to_char(voucher.created_at, 'YY'), '-', voucher.id::text)`,
 			date: voucher.date,
 			category: voucher.category,
 			vat_deduction: decimalToNumber(voucher.vat_deduction),
@@ -116,6 +118,8 @@ export async function select(req, res, next) {
 	const voucherPromise = db
 		.select({
 			uuid: voucher.uuid,
+			id: voucher.id,
+			voucher_id: sql`CONCAT('VO', to_char(voucher.created_at, 'YY'), '-', voucher.id::text)`,
 			date: voucher.date,
 			category: voucher.category,
 			vat_deduction: decimalToNumber(voucher.vat_deduction),

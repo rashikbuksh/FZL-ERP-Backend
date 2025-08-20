@@ -158,7 +158,13 @@ export const category_enum = acc.enum('category_enum', [
 	'others',
 ]);
 
+export const voucher_sequence = acc.sequence('voucher_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
 export const voucher = acc.table('voucher', {
+	id: integer('id').default(sql`nextval('acc.voucher_sequence')`),
 	uuid: uuid_primary,
 	date: DateTime('date').notNull(),
 	category: category_enum('category').notNull(),

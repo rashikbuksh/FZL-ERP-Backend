@@ -80,6 +80,7 @@ export async function selectAll(req, res, next) {
 		.select({
 			uuid: ledger.uuid,
 			id: ledger.id,
+			ledger_id: sql`CONCAT('LE', to_char(ledger.created_at, 'YY'), '-', ledger.id::text)`,
 			table_name: ledger.table_name,
 			table_uuid: ledger.table_uuid,
 			name: ledger.name,
@@ -128,6 +129,7 @@ export async function select(req, res, next) {
 		.select({
 			uuid: ledger.uuid,
 			id: ledger.id,
+			ledger_id: sql`CONCAT('LE', to_char(ledger.created_at, 'YY'), '-', ledger.id::text)`,
 			table_name: ledger.table_name,
 			table_uuid: ledger.table_uuid,
 			name: ledger.name,
