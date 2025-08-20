@@ -2,7 +2,7 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { voucher_entry, ledger } from '../schema.js';
-
+import { decimalToNumber } from '../../../variables.js';
 import { alias } from 'drizzle-orm/pg-core';
 
 import * as hrSchema from '../../hr/schema.js';
@@ -82,7 +82,7 @@ export async function selectAll(req, res, next) {
 			ledger_uuid: voucher_entry.ledger_uuid,
 			ledger_name: ledger.name,
 			type: voucher_entry.type,
-			amount: voucher_entry.amount,
+			amount: decimalToNumber(voucher_entry.amount),
 			is_need_cost_center: voucher_entry.is_need_cost_center,
 			is_payment: voucher_entry.is_payment,
 			description: voucher_entry.description,
@@ -129,7 +129,7 @@ export async function select(req, res, next) {
 			ledger_uuid: voucher_entry.ledger_uuid,
 			ledger_name: ledger.name,
 			type: voucher_entry.type,
-			amount: voucher_entry.amount,
+			amount: decimalToNumber(voucher_entry.amount),
 			is_need_cost_center: voucher_entry.is_need_cost_center,
 			is_payment: voucher_entry.is_payment,
 			description: voucher_entry.description,
@@ -173,7 +173,7 @@ export async function selectByVoucherUuid(req, res, next) {
 			ledger_uuid: voucher_entry.ledger_uuid,
 			ledger_name: ledger.name,
 			type: voucher_entry.type,
-			amount: voucher_entry.amount,
+			amount: decimalToNumber(voucher_entry.amount),
 			is_need_cost_center: voucher_entry.is_need_cost_center,
 			is_payment: voucher_entry.is_payment,
 			description: voucher_entry.description,
@@ -193,7 +193,7 @@ export async function selectByVoucherUuid(req, res, next) {
 					       'voucher_entry_uuid', voucher_entry_cost_center.voucher_entry_uuid,
 					       'cost_center_uuid', voucher_entry_cost_center.cost_center_uuid,
 					       'cost_center_name', cost_center.name,
-					       'amount', voucher_entry_cost_center.amount,
+					       'amount', voucher_entry_cost_center.amount::float8,
 					       'created_by', voucher_entry_cost_center.created_by,
 					       'created_by_name', users.name,
 					       'created_at', voucher_entry_cost_center.created_at,
@@ -219,7 +219,7 @@ export async function selectByVoucherUuid(req, res, next) {
 					       'payment_type', voucher_entry_payment.payment_type,
 					       'trx_no', voucher_entry_payment.trx_no,
 					       'date', voucher_entry_payment.date,
-					       'amount', voucher_entry_payment.amount,
+					       'amount', voucher_entry_payment.amount::float8,
 					       'created_by', voucher_entry_payment.created_by,
 					       'created_by_name', users.name,
 					       'created_at', voucher_entry_payment.created_at,

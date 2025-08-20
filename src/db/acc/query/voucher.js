@@ -3,6 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import { createApi } from '../../../util/api.js';
 import db from '../../index.js';
 import { voucher } from '../schema.js';
+import { decimalToNumber } from '../../../variables.js';
 
 import { alias } from 'drizzle-orm/pg-core';
 
@@ -81,8 +82,8 @@ export async function selectAll(req, res, next) {
 			uuid: voucher.uuid,
 			date: voucher.date,
 			category: voucher.category,
-			vat_deduction: voucher.vat_deduction,
-			tax_deduction: voucher.tax_deduction,
+			vat_deduction: decimalToNumber(voucher.vat_deduction),
+			tax_deduction: decimalToNumber(voucher.tax_deduction),
 			created_by: voucher.created_by,
 			created_by_name: createdByUser.name,
 			created_at: voucher.created_at,
@@ -117,8 +118,8 @@ export async function select(req, res, next) {
 			uuid: voucher.uuid,
 			date: voucher.date,
 			category: voucher.category,
-			vat_deduction: voucher.vat_deduction,
-			tax_deduction: voucher.tax_deduction,
+			vat_deduction: decimalToNumber(voucher.vat_deduction),
+			tax_deduction: decimalToNumber(voucher.tax_deduction),
 			created_by: voucher.created_by,
 			created_by_name: createdByUser.name,
 			created_at: voucher.created_at,
