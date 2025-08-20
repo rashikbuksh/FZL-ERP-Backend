@@ -1,7 +1,12 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { voucher_entry, ledger } from '../schema.js';
+import {
+	voucher_entry,
+	ledger,
+	voucher_entry_cost_center,
+	voucher_entry_payment,
+} from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { alias } from 'drizzle-orm/pg-core';
 
@@ -56,12 +61,26 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const cost_centerPromise = db
+		.delete(voucher_entry_cost_center)
+		.where(
+			eq(voucher_entry_cost_center.voucher_entry_uuid, req.params.uuid)
+		)
+		.returning({ deletedIndex: voucher_entry_cost_center.uuid });
+
+	const paymentPromise = db
+		.delete(voucher_entry_payment)
+		.where(eq(voucher_entry_payment.voucher_entry_uuid, req.params.uuid))
+		.returning({ deletedIndex: voucher_entry_payment.uuid });
+
 	const entryPromise = db
 		.delete(voucher_entry)
 		.where(eq(voucher_entry.uuid, req.params.uuid))
 		.returning({ deletedIndex: voucher_entry.index });
 
 	try {
+		const costCenterData = (await costCenterData) || [];
+		const paymentData = (await paymentPromise) || [];
 		const data = await entryPromise;
 		const toast = {
 			status: 200,
