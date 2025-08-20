@@ -3,7 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import { createApi } from '../../../util/api.js';
 import db from '../../index.js';
 import { voucher } from '../schema.js';
-import { decimalToNumber } from '../../../variables.js';
+import { decimalToNumber } from '../../variables.js';
 
 import { alias } from 'drizzle-orm/pg-core';
 

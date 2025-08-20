@@ -2,7 +2,7 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { voucher_entry, ledger } from '../schema.js';
-import { decimalToNumber } from '../../../variables.js';
+import { decimalToNumber } from '../../variables.js';
 import { alias } from 'drizzle-orm/pg-core';
 
 import * as hrSchema from '../../hr/schema.js';
