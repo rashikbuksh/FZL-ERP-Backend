@@ -79,7 +79,7 @@ export async function remove(req, res, next) {
 		.returning({ deletedIndex: voucher_entry.index });
 
 	try {
-		const costCenterData = (await costCenterData) || [];
+		const costCenterData = (await cost_centerPromise) || [];
 		const paymentData = (await paymentPromise) || [];
 		const data = await entryPromise;
 		const toast = {
