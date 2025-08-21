@@ -292,7 +292,7 @@ export async function ProductionReportSnm(req, res, next) {
                 dbm.production_date,
                 COALESCE(dbm.total_quantity, 0)::float8 as total_quantity,
                 COALESCE(dbm.total_production_quantity, 0)::float8 as total_production_quantity,
-                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(dbm.received, false) AS TEXT) ELSE '--' END as received,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN COALESCE(dbm.received, false) ELSE false END as received,
                 dbm.received_date,
                 dbm.batch_status,
                 dbm.batch_status_date,
