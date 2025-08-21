@@ -142,7 +142,7 @@ export async function ProductionReportSnm(req, res, next) {
                         db.production_date,
                         dbea.total_quantity,
                         dbea.total_production_quantity,
-                        (db.received = 1)::boolean as received,
+                        CASE WHEN db.received = 1 THEN true ELSE false END as received,
                         db.received_date,
                         db.batch_status,
                         db.batch_status_date,
