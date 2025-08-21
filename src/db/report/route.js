@@ -1599,6 +1599,10 @@ export const pathReport = {
 					'sample',
 					'all',
 				]),
+				SE.parameter_query('filter_type', 'filter_type', [
+					'dyeing_status_date',
+					'received_date',
+				]),
 			],
 			responses: {
 				200: SE.response_schema(200, {

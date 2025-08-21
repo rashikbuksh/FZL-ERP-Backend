@@ -133,7 +133,7 @@ export async function zipperBatchReportOnReceivedDate(req, res, next) {
 		) AS item_descriptions ON dyeing_batch.uuid = item_descriptions.dyeing_batch_uuid
 		WHERE expected.order_numbers IS NOT NULL
         AND ${from && to && filter_type == 'received_date' ? sql` dyeing_batch.received_date BETWEEN ${from} AND ${to}` : sql` TRUE`}
-		AND ${from && to && filter_type == 'batch_status_date' ? sql` dyeing_batch.batch_status_date BETWEEN ${from} AND ${to}` : sql` TRUE`}
+		AND ${from && to && filter_type == 'dyeing_status_date' ? sql` dyeing_batch.batch_status_date BETWEEN ${from} AND ${to}` : sql` TRUE`}
 		ORDER BY expected.order_numbers DESC, dyeing_batch.id DESC
 	`;
 	const resultPromise = db.execute(query);
