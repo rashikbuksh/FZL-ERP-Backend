@@ -1628,6 +1628,9 @@ const pathAccounts = {
 			summary: 'get all accounts ledger',
 			description: 'All accounts ledger',
 			operationId: 'getAllAccountsLedger',
+			parameters: [
+				SE.parameter_query('ledger_uuid', 'ledger_uuid', SE.string()),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					value: SE.uuid('2ggcphnw'),

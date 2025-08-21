@@ -93,6 +93,7 @@ export async function selectAll(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			updated_at: voucher.updated_at,
 			remarks: voucher.remarks,
+			narration: voucher.narration,
 		})
 		.from(voucher)
 		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))
@@ -131,6 +132,7 @@ export async function select(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			updated_at: voucher.updated_at,
 			remarks: voucher.remarks,
+			narration: voucher.narration,
 		})
 		.from(voucher)
 		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))

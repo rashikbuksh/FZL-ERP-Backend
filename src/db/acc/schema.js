@@ -130,6 +130,7 @@ export const ledger = acc.table('ledger', {
 		.default(null),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	narration: text('narration').default(null),
 });
 
 export const cost_center = acc.table('cost_center', {

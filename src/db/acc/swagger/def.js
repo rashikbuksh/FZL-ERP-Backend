@@ -114,6 +114,7 @@ export const defLedger = SED({
 		updated_by: SE.uuid(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		narration: SE.string('narration'),
 	},
 	xml: 'Acc/Ledger',
 });
