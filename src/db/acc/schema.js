@@ -178,6 +178,7 @@ export const voucher = acc.table('voucher', {
 		.default(null),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	narration: text('narration').default(null),
 });
 
 export const voucher_entry_type_enum = acc.enum('voucher_entry_type_enum', [
