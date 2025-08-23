@@ -23,7 +23,7 @@ export async function selectOrderEntryFeed(req, res, next) {
             order_no, vodf.party_name, vodf.item_description, vodf.marketing_name
         UNION 
         SELECT 
-            CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', TO_CHAR(toi.id, 'FM000000')) as order_no,
+            CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', toi.id) as order_no,
             pp.name as party_name,
             pm.name as marketing_name,
             'Sewing Thread' as item,
