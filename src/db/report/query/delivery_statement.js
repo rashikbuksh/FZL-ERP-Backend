@@ -110,7 +110,6 @@ export async function deliveryStatementReport(req, res, next) {
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
                     AND vpl.is_deleted = false
                     AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
-                    AND ${order_info_uuid ? sql`vodf.order_info_uuid = ${order_info_uuid}` : sql`1=1`}
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
@@ -182,7 +181,6 @@ export async function deliveryStatementReport(req, res, next) {
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
                     AND vpl.is_deleted = false
                     AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
-                    AND ${order_info_uuid ? sql`vodf.order_info_uuid = ${order_info_uuid}` : sql`1=1`}
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
@@ -234,7 +232,6 @@ export async function deliveryStatementReport(req, res, next) {
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND vpl.is_deleted = false
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
-                        AND ${order_info_uuid ? sql`toi.uuid = ${order_info_uuid}` : sql`1=1`}
                     GROUP BY
                         vpl.packing_list_entry_uuid, toe.party_price, toe.company_price
                 ),
@@ -283,7 +280,6 @@ export async function deliveryStatementReport(req, res, next) {
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND vpl.is_deleted = false
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
-                        AND ${order_info_uuid ? sql`toi.uuid = ${order_info_uuid}` : sql`1=1`}
                     GROUP BY
                         vpl.packing_list_entry_uuid, toe.party_price, toe.company_price
                 )
@@ -443,6 +439,7 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
+                    AND ${order_info_uuid ? sql`vodf.order_info_uuid = ${order_info_uuid}` : sql`1=1`}
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
@@ -557,6 +554,7 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`1=1`}
+                    AND ${order_info_uuid ? sql`toi.uuid = ${order_info_uuid}` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
