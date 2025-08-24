@@ -439,7 +439,6 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
-                    AND ${order_info_uuid ? sql`vodf.order_info_uuid = ${order_info_uuid}` : sql`1=1`}
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
@@ -554,7 +553,6 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`1=1`}
-                    AND ${order_info_uuid ? sql`toi.uuid = ${order_info_uuid}` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
@@ -580,14 +578,14 @@ export async function deliveryStatementReport(req, res, next) {
 
 		let filterData = [];
 
-		// // filter by order_info_uuid
-		// if (order_info_uuid) {
-		// 	filterData = data?.rows?.filter(
-		// 		(row) => row.order_info_uuid === order_info_uuid
-		// 	);
-		// } else {
-		// 	filterData = data.rows;
-		// }
+		// filter by order_info_uuid
+		if (order_info_uuid) {
+			filterData = data?.rows?.filter(
+				(row) => row.order_info_uuid === order_info_uuid
+			);
+		} else {
+			filterData = data.rows;
+		}
 
 		// first group by type, then party_name, then order_number, then item_description, then size
 		const groupedData = filterData.reduce((acc, row) => {
