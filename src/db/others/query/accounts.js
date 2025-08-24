@@ -32,6 +32,7 @@ export async function selectCurrency(req, res, next) {
 			conversion_rate: decimalToNumber(
 				accountSchema.currency.conversion_rate
 			),
+			default: accountSchema.currency.default,
 		})
 		.from(accountSchema.currency)
 		.orderBy(asc(accountSchema.currency.currency_name));

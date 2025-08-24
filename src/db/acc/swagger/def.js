@@ -14,6 +14,7 @@ export const defCurrency = SED({
 		updated_by: SE.uuid(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		default: SE.boolean(false),
 	},
 	xml: 'Acc/Currency',
 });

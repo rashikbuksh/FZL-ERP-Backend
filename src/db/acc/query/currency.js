@@ -95,6 +95,7 @@ export async function selectAll(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			updated_at: currency.updated_at,
 			remarks: currency.remarks,
+			default: currency.default,
 		})
 		.from(currency)
 		.leftJoin(createdByUser, eq(currency.created_by, createdByUser.uuid))
@@ -131,6 +132,7 @@ export async function select(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			updated_at: currency.updated_at,
 			remarks: currency.remarks,
+			default: currency.default,
 		})
 		.from(currency)
 		.leftJoin(createdByUser, eq(currency.created_by, createdByUser.uuid))

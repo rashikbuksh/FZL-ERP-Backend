@@ -24,6 +24,7 @@ export const currency = acc.table('currency', {
 		.default(null),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	default: boolean('default').default(false),
 });
 
 export const fiscal_year = acc.table('fiscal_year', {
