@@ -167,20 +167,19 @@ export async function getSelectedTableData(req, res, next) {
 
 	try {
 		if (['commercial.lc', 'purchase.description'].includes(table_name)) {
-			console.log(`Fetching data for tables: ${table_name.join(', ')}`);
 			result = await db.execute(sql`
 				SELECT 
 					uuid as value,
 					id::text as label
-			FROM ${sql.raw(table_name)};
-		`);
+				FROM ${sql.raw(table_name)};
+			`);
 		} else if (['purchase.vendor', 'public.party'].includes(table_name)) {
 			result = await db.execute(sql`
 				SELECT 
 					uuid as value,
 					name as label
-			FROM ${sql.raw(table_name)};
-		`);
+				FROM ${sql.raw(table_name)};
+			`);
 		}
 
 		const toast = {

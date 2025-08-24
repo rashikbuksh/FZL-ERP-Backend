@@ -248,9 +248,12 @@ export async function select(req, res, next) {
 	const query = sql`
 		SELECT dvl.*,
 		SUM(ple.quantity)::float8 as total_quantity,
-		SUM(ple.poli_quantity)::float8 as total_poly_quantity
+		SUM(ple.poli_quantity)::float8 as total_poly_quantity,
+		CEIL(AVG(cl.cone_per_carton))::float8 as cone_per_carton
 		FROM delivery.v_packing_list dvl
 		LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
+		LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
+		LEFT JOIN thread.count_length cl ON toe.count_length_uuid = cl.uuid
 		WHERE dvl.uuid = ${req.params.uuid}
 		GROUP BY 
 			dvl.uuid,
@@ -295,7 +298,6 @@ export async function select(req, res, next) {
 			dvl.deleted_by_name
 		ORDER BY 
 			dvl.created_at DESC
-		
 	`;
 
 	const packing_listPromise = db.execute(query);
