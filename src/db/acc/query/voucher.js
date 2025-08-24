@@ -95,7 +95,7 @@ export async function selectAll(req, res, next) {
 			remarks: voucher.remarks,
 			narration: voucher.narration,
 			currency_uuid: voucher.currency_uuid,
-			currency_name: currency.currency_name,
+			currency_name: sql`currency.currency || ' ' || currency.currency_name`,
 			currency_symbol: currency.symbol,
 			conversion_rate: decimalToNumber(voucher.conversion_rate),
 		})
@@ -139,7 +139,7 @@ export async function select(req, res, next) {
 			remarks: voucher.remarks,
 			narration: voucher.narration,
 			currency_uuid: voucher.currency_uuid,
-			currency_name: currency.currency_name,
+			currency_name: sql`currency.currency || ' ' || currency.currency_name`,
 			currency_symbol: currency.symbol,
 			conversion_rate: decimalToNumber(voucher.conversion_rate),
 		})
