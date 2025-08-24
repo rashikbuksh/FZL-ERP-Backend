@@ -94,15 +94,15 @@ export async function selectAll(req, res, next) {
 			updated_at: voucher.updated_at,
 			remarks: voucher.remarks,
 			narration: voucher.narration,
-			currency_uuid: voucher_entry.currency_uuid,
+			currency_uuid: voucher.currency_uuid,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
-			conversion_rate: decimalToNumber(voucher_entry.conversion_rate),
+			conversion_rate: decimalToNumber(voucher.conversion_rate),
 		})
 		.from(voucher)
 		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))
 		.leftJoin(updatedByUser, eq(voucher.updated_by, updatedByUser.uuid))
-		.leftJoin(currency, eq(voucher_entry.currency_uuid, currency.uuid))
+		.leftJoin(currency, eq(voucher.currency_uuid, currency.uuid))
 		.orderBy(desc(voucher.created_at));
 
 	try {
@@ -138,15 +138,15 @@ export async function select(req, res, next) {
 			updated_at: voucher.updated_at,
 			remarks: voucher.remarks,
 			narration: voucher.narration,
-			currency_uuid: voucher_entry.currency_uuid,
+			currency_uuid: voucher.currency_uuid,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
-			conversion_rate: decimalToNumber(voucher_entry.conversion_rate),
+			conversion_rate: decimalToNumber(voucher.conversion_rate),
 		})
 		.from(voucher)
 		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))
 		.leftJoin(updatedByUser, eq(voucher.updated_by, updatedByUser.uuid))
-		.leftJoin(currency, eq(voucher_entry.currency_uuid, currency.uuid))
+		.leftJoin(currency, eq(voucher.currency_uuid, currency.uuid))
 		.where(eq(voucher.uuid, req.params.uuid));
 
 	try {
