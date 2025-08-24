@@ -10,7 +10,7 @@ import {
 } from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { alias } from 'drizzle-orm/pg-core';
-
+import { decimalToNumber } from '../../variables.js';
 import * as hrSchema from '../../hr/schema.js';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
@@ -116,7 +116,7 @@ export async function selectAll(req, res, next) {
 			currency_uuid: voucher_entry.currency_uuid,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
-			conversion_rate: voucher_entry.conversion_rate,
+			conversion_rate: decimalToNumber(voucher_entry.conversion_rate),
 		})
 		.from(voucher_entry)
 		.leftJoin(ledger, eq(voucher_entry.ledger_uuid, ledger.uuid))
@@ -167,7 +167,7 @@ export async function select(req, res, next) {
 			currency_uuid: voucher_entry.currency_uuid,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
-			conversion_rate: voucher_entry.conversion_rate,
+			conversion_rate: decimalToNumber(voucher_entry.conversion_rate),
 		})
 		.from(voucher_entry)
 		.leftJoin(ledger, eq(voucher_entry.ledger_uuid, ledger.uuid))
@@ -216,7 +216,7 @@ export async function selectByVoucherUuid(req, res, next) {
 			currency_uuid: voucher_entry.currency_uuid,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
-			conversion_rate: voucher_entry.conversion_rate,
+			conversion_rate: decimalToNumber(voucher_entry.conversion_rate),
 			voucher_entry_cost_center: sql`
 			(
 			   SELECT json_agg(row_to_json(t))

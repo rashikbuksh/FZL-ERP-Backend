@@ -5,6 +5,7 @@ import { currency } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core';
 
 import * as hrSchema from '../../hr/schema.js';
+import { decimalToNumber } from '../../variables.js';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
 const updatedByUser = alias(hrSchema.users, 'updatedByUser');
@@ -122,7 +123,7 @@ export async function select(req, res, next) {
 			currency: currency.currency,
 			currency_name: currency.currency_name,
 			symbol: currency.symbol,
-			conversion_rate: currency.conversion_rate,
+			conversion_rate: decimalToNumber(currency.conversion_rate),
 			created_by: currency.created_by,
 			created_by_name: createdByUser.name,
 			created_at: currency.created_at,
