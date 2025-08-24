@@ -16,6 +16,7 @@ export const currency = acc.table('currency', {
 	currency: text('currency').notNull().unique(),
 	currency_name: text('currency_name').notNull(),
 	symbol: text('symbol').default(sql`null`),
+	conversion_rate: PG_DECIMAL('conversion_rate').default(1),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_by: defaultUUID('updated_by')
@@ -208,6 +209,8 @@ export const voucher_entry = acc.table('voucher_entry', {
 	voucher_uuid: defaultUUID('voucher_uuid')
 		.references(() => voucher.uuid)
 		.notNull(),
+	currency_uuid: defaultUUID('currency_uuid').references(() => currency.uuid),
+	conversion_rate: PG_DECIMAL('conversion_rate').default(1),
 });
 
 export const voucher_entry_cost_center = acc.table(

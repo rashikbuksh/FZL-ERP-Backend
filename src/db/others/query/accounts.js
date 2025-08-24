@@ -28,6 +28,7 @@ export async function selectCurrency(req, res, next) {
 		.select({
 			value: accountSchema.currency.uuid,
 			label: sql`${accountSchema.currency.currency} || ' (' || ${accountSchema.currency.symbol} || ')'`,
+			conversion_rate: accountSchema.currency.conversion_rate,
 		})
 		.from(accountSchema.currency)
 		.orderBy(asc(accountSchema.currency.currency_name));

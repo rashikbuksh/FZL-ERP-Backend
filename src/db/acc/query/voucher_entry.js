@@ -6,6 +6,7 @@ import {
 	ledger,
 	voucher_entry_cost_center,
 	voucher_entry_payment,
+	currency,
 } from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { alias } from 'drizzle-orm/pg-core';
@@ -112,6 +113,10 @@ export async function selectAll(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			updated_at: voucher_entry.updated_at,
 			remarks: voucher_entry.remarks,
+			currency_uuid: voucher_entry.currency_uuid,
+			currency_name: currency.currency_name,
+			currency_symbol: currency.symbol,
+			conversion_rate: voucher_entry.conversion_rate,
 		})
 		.from(voucher_entry)
 		.leftJoin(ledger, eq(voucher_entry.ledger_uuid, ledger.uuid))
@@ -123,6 +128,7 @@ export async function selectAll(req, res, next) {
 			updatedByUser,
 			eq(voucher_entry.updated_by, updatedByUser.uuid)
 		)
+		.leftJoin(currency, eq(voucher_entry.currency_uuid, currency.uuid))
 		.orderBy(desc(voucher_entry.created_at));
 
 	try {
@@ -158,6 +164,10 @@ export async function select(req, res, next) {
 			updated_by: voucher_entry.updated_by,
 			updated_at: voucher_entry.updated_at,
 			remarks: voucher_entry.remarks,
+			currency_uuid: voucher_entry.currency_uuid,
+			currency_name: currency.currency_name,
+			currency_symbol: currency.symbol,
+			conversion_rate: voucher_entry.conversion_rate,
 		})
 		.from(voucher_entry)
 		.leftJoin(ledger, eq(voucher_entry.ledger_uuid, ledger.uuid))
@@ -165,6 +175,7 @@ export async function select(req, res, next) {
 			hrSchema.users,
 			eq(voucher_entry.created_by, hrSchema.users.uuid)
 		)
+		.leftJoin(currency, eq(voucher_entry.currency_uuid, currency.uuid))
 		.where(eq(voucher_entry.uuid, req.params.uuid));
 
 	try {
@@ -202,6 +213,10 @@ export async function selectByVoucherUuid(req, res, next) {
 			updated_by: voucher_entry.updated_by,
 			updated_at: voucher_entry.updated_at,
 			remarks: voucher_entry.remarks,
+			currency_uuid: voucher_entry.currency_uuid,
+			currency_name: currency.currency_name,
+			currency_symbol: currency.symbol,
+			conversion_rate: voucher_entry.conversion_rate,
 			voucher_entry_cost_center: sql`
 			(
 			   SELECT json_agg(row_to_json(t))
@@ -259,6 +274,7 @@ export async function selectByVoucherUuid(req, res, next) {
 			hrSchema.users,
 			eq(voucher_entry.created_by, hrSchema.users.uuid)
 		)
+		.leftJoin(currency, eq(voucher_entry.currency_uuid, currency.uuid))
 		.where(eq(voucher_entry.voucher_uuid, voucher_uuid))
 		.orderBy(voucher_entry.index);
 

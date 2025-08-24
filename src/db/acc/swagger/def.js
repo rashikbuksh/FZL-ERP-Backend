@@ -8,6 +8,7 @@ export const defCurrency = SED({
 		currency: SE.string('USD'),
 		currency_name: SE.string('US Dollar'),
 		symbol: SE.string('$'),
+		conversion_rate: SE.number(1),
 		created_by: SE.uuid(),
 		created_at: SE.date_time(),
 		updated_by: SE.uuid(),
@@ -173,6 +174,9 @@ export const defVoucherEntry = SED({
 		updated_by: SE.uuid(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		voucher_uuid: SE.uuid(),
+		currency_uuid: SE.uuid(),
+		conversion_rate: SE.number(1),
 	},
 	xml: 'Acc/VoucherEntry',
 });
