@@ -204,53 +204,53 @@ export async function selectByVoucherUuid(req, res, next) {
 			remarks: voucher_entry.remarks,
 			voucher_entry_cost_center: sql`
 			(
-		       SELECT 
-			       json_agg(
-				       JSON_BUILD_OBJECT(
-					       'uuid', voucher_entry_cost_center.uuid,
-					       'index', voucher_entry_cost_center.index,
-					       'voucher_entry_uuid', voucher_entry_cost_center.voucher_entry_uuid,
-					       'cost_center_uuid', voucher_entry_cost_center.cost_center_uuid,
-					       'cost_center_name', cost_center.name,
-					       'amount', voucher_entry_cost_center.amount::float8,
-					       'created_by', voucher_entry_cost_center.created_by,
-					       'created_by_name', users.name,
-					       'created_at', voucher_entry_cost_center.created_at,
-					       'updated_by', voucher_entry_cost_center.updated_by,
-					       'updated_at', voucher_entry_cost_center.updated_at,
-					       'remarks', voucher_entry_cost_center.remarks
-				       )
-			       )
-		       FROM acc.voucher_entry_cost_center
-		       LEFT JOIN acc.cost_center ON voucher_entry_cost_center.cost_center_uuid = cost_center.uuid
-		       LEFT JOIN hr.users ON voucher_entry_cost_center.created_by = users.uuid
-		       WHERE voucher_entry_uuid = ${voucher_entry.uuid}
-	       ) as voucher_entry_cost_center
+			   SELECT json_agg(row_to_json(t))
+			   FROM (
+				   SELECT 
+					   voucher_entry_cost_center.uuid,
+					   voucher_entry_cost_center.index,
+					   voucher_entry_cost_center.voucher_entry_uuid,
+					   voucher_entry_cost_center.cost_center_uuid,
+					   cost_center.name as cost_center_name,
+					   voucher_entry_cost_center.amount::float8,
+					   voucher_entry_cost_center.created_by,
+					   users.name as created_by_name,
+					   voucher_entry_cost_center.created_at,
+					   voucher_entry_cost_center.updated_by,
+					   voucher_entry_cost_center.updated_at,
+					   voucher_entry_cost_center.remarks
+				   FROM acc.voucher_entry_cost_center
+				   LEFT JOIN acc.cost_center ON voucher_entry_cost_center.cost_center_uuid = cost_center.uuid
+				   LEFT JOIN hr.users ON voucher_entry_cost_center.created_by = users.uuid
+				   WHERE voucher_entry_uuid = ${voucher_entry.uuid}
+				   ORDER BY voucher_entry_cost_center.index ASC
+			   ) t
+		   ) as voucher_entry_cost_center
 			`,
 			voucher_entry_payment: sql`
 			(
-		       SELECT 
-			       json_agg(
-				       JSON_BUILD_OBJECT(
-					       'uuid', voucher_entry_payment.uuid,
-					       'index', voucher_entry_payment.index,
-					       'voucher_entry_uuid', voucher_entry_payment.voucher_entry_uuid,
-					       'payment_type', voucher_entry_payment.payment_type,
-					       'trx_no', voucher_entry_payment.trx_no,
-					       'date', voucher_entry_payment.date,
-					       'amount', voucher_entry_payment.amount::float8,
-					       'created_by', voucher_entry_payment.created_by,
-					       'created_by_name', users.name,
-					       'created_at', voucher_entry_payment.created_at,
-					       'updated_by', voucher_entry_payment.updated_by,
-					       'updated_at', voucher_entry_payment.updated_at,
-					       'remarks', voucher_entry_payment.remarks
-				       )
-			       )
-		       FROM acc.voucher_entry_payment
-		       LEFT JOIN hr.users ON voucher_entry_payment.created_by = users.uuid
-		       WHERE voucher_entry_uuid = ${voucher_entry.uuid}
-	       ) as voucher_entry_payment
+			   SELECT json_agg(row_to_json(t))
+			   FROM (
+				   SELECT 
+					   voucher_entry_payment.uuid,
+					   voucher_entry_payment.index,
+					   voucher_entry_payment.voucher_entry_uuid,
+					   voucher_entry_payment.payment_type,
+					   voucher_entry_payment.trx_no,
+					   voucher_entry_payment.date,
+					   voucher_entry_payment.amount::float8,
+					   voucher_entry_payment.created_by,
+					   users.name as created_by_name,
+					   voucher_entry_payment.created_at,
+					   voucher_entry_payment.updated_by,
+					   voucher_entry_payment.updated_at,
+					   voucher_entry_payment.remarks
+				   FROM acc.voucher_entry_payment
+				   LEFT JOIN hr.users ON voucher_entry_payment.created_by = users.uuid
+				   WHERE voucher_entry_uuid = ${voucher_entry.uuid}
+				   ORDER BY voucher_entry_payment.index ASC
+			   ) t
+		   ) as voucher_entry_payment
 			`,
 		})
 		.from(voucher_entry)
@@ -259,7 +259,8 @@ export async function selectByVoucherUuid(req, res, next) {
 			hrSchema.users,
 			eq(voucher_entry.created_by, hrSchema.users.uuid)
 		)
-		.where(eq(voucher_entry.voucher_uuid, voucher_uuid));
+		.where(eq(voucher_entry.voucher_uuid, voucher_uuid))
+		.orderBy(voucher_entry.index);
 
 	try {
 		const data = await entryPromise;
