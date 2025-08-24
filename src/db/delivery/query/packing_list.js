@@ -249,7 +249,7 @@ export async function select(req, res, next) {
 		SELECT dvl.*,
 		SUM(ple.quantity)::float8 as total_quantity,
 		SUM(ple.poli_quantity)::float8 as total_poly_quantity,
-		CEIL(AVG(cl.cone_per_carton))::float8 as cone_per_carton
+		COALESCE(SUM(ple.quantity)::float8 / CEIL(AVG(cl.cone_per_carton))::float8, 1) as carton_quantity
 		FROM delivery.v_packing_list dvl
 		LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
 		LEFT JOIN thread.order_entry toe ON ple.thread_order_entry_uuid = toe.uuid
