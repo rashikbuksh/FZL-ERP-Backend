@@ -87,7 +87,7 @@ export async function selectAll(req, res, next) {
 			currency: currency.currency,
 			currency_name: currency.currency_name,
 			symbol: currency.symbol,
-			conversion_rate: currency.conversion_rate,
+			conversion_rate: decimalToNumber(currency.conversion_rate),
 			created_by: currency.created_by,
 			created_by_name: createdByUser.name,
 			created_at: currency.created_at,

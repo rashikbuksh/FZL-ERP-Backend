@@ -58,6 +58,7 @@ import {
 } from './query/order_status_report.js';
 import { selectItemMarketingOrderQuantity } from './query/item_wise_order.js';
 import { zipperBatchReportOnReceivedDate } from './query/zipper_batch_report.js';
+import { selectSampleBulkItemWiseStatus } from './query/sample_bulk_item_wise_status.js';
 
 const reportRouter = Router();
 
@@ -260,6 +261,12 @@ reportRouter.get(
 );
 // * Zipper Batch Report
 reportRouter.get('/zipper-batch-report', zipperBatchReportOnReceivedDate);
+
+// * sample_bulk_item_wise_status
+reportRouter.get(
+	'/order-item-type-wise-status',
+	selectSampleBulkItemWiseStatus
+);
 
 export const pathReport = {
 	'/report/zipper-production-status-report': {
@@ -1608,6 +1615,37 @@ export const pathReport = {
 				200: SE.response_schema(200, {
 					item_name: SE.string('Item Name'),
 					total_production: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/order-item-type-wise-status': {
+		get: {
+			summary: 'Order Item Type Wise Status',
+			description: 'Order Item Type Wise Status',
+			tags: ['report'],
+			operationId: 'selectOrderItemTypeWiseStatus',
+			parameters: [
+				SE.parameter_query(
+					'item_type',
+					'item_type',
+					['sample', 'bulk', 'all'],
+					true
+				),
+				SE.parameter_query(
+					'order_type',
+					'order_type',
+					['zipper', 'thread', 'all'],
+					true
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					item_name: SE.string('Item Name'),
+					status: SE.string('Status'),
+					quantity: SE.number(610),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
 				}),
 			},
 		},

@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
-export async function selectSampleLeadTime(req, res, next) {
+export async function selectSampleBulkItemWiseStatus(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { item_type, order_type } = req.query;
