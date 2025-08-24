@@ -10,7 +10,6 @@ import {
 } from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { alias } from 'drizzle-orm/pg-core';
-import { decimalToNumber } from '../../variables.js';
 import * as hrSchema from '../../hr/schema.js';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
