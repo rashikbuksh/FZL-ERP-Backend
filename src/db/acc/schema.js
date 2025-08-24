@@ -111,7 +111,7 @@ export const ledger = acc.table('ledger', {
 	id: integer('id').default(sql`nextval('acc.ledger_sequence')`),
 	table_name: text('table_name'),
 	table_uuid: text('table_uuid'),
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	category: text('category').notNull(),
 	account_no: text('account_no').notNull().unique(),
 	type: type_enum('type').notNull(),
