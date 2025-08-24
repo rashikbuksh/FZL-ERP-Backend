@@ -2803,7 +2803,15 @@ export async function selectPackingList(req, res, next) {
         CONCAT('PL', to_char(pl.created_at, 'YY-MM'), '-', pl.id::text) as label
 	FROM
 		delivery.packing_list pl 
+		LEFT JOIN (
+			SELECT 
+				SUM(ple.quantity) AS total_quantity, 
+				ple.packing_list_uuid
+			FROM delivery.packing_list_entry ple
+			GROUP BY ple.packing_list_uuid
+		) AS sub_query ON pl.uuid = sub_query.packing_list_uuid
 	WHERE
+		sub_query.total_quantity IS NOT NULL AND 
 		pl.is_deleted = false
 		${is_received === 'false' ? sql` AND pl.is_warehouse_received = false` : sql``}`;
 
