@@ -238,6 +238,7 @@ export const payment_type_enum = acc.enum('payment_type_enum', [
 	'cheque',
 	'rtgs',
 	'npsb',
+	'mfs',
 ]);
 
 export const voucher_entry_payment = acc.table('voucher_entry_payment', {
