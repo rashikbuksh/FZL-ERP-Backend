@@ -58,9 +58,6 @@ export async function handleError({ error, res }) {
 			message: msg,
 		};
 
-		res.status(500).json({
-			toast,
-			error: error.message || 'Unknown error',
-		});
+		res.status(500).json({ toast });
 	}
 }
