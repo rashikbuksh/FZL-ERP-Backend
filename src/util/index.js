@@ -50,6 +50,17 @@ export async function handleError({ error, res }) {
 		nullValueError(res, error);
 	}
 	if (!res.headersSent) {
-		res.status(400).json({ error: error.message || 'Unknown error' });
+		const { detail, where } = error;
+		const msg = `${error.code}: '${detail ? detail : where}'`;
+		const toast = {
+			status: 500,
+			type: 'error',
+			message: msg,
+		};
+
+		res.status(500).json({
+			toast,
+			error: error.message || 'Unknown error',
+		});
 	}
 }
