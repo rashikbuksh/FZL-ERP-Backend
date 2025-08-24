@@ -49,7 +49,7 @@ export async function handleError({ error, res }) {
 	if (error.severity === 'ERROR') {
 		nullValueError(res, error);
 	}
-	// else {
-	// 	next(new CustomError(error.message, 500));
-	// }
+	if (!res.headersSent) {
+		res.status(400).json({ error: error.message || 'Unknown error' });
+	}
 }
