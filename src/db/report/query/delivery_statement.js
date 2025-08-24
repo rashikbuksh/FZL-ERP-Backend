@@ -110,6 +110,7 @@ export async function deliveryStatementReport(req, res, next) {
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
                     AND vpl.is_deleted = false
                     AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
+                    AND ${order_info_uuid ? sql`vodf.order_info_uuid = ${order_info_uuid}` : sql`1=1`}
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
@@ -181,6 +182,7 @@ export async function deliveryStatementReport(req, res, next) {
                     AND vpl.item_for NOT IN ('thread', 'sample_thread')
                     AND vpl.is_deleted = false
                     AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
+                    AND ${order_info_uuid ? sql`vodf.order_info_uuid = ${order_info_uuid}` : sql`1=1`}
                 GROUP BY 
                     vpl.packing_list_entry_uuid,
                     vodf.order_type,
@@ -232,6 +234,7 @@ export async function deliveryStatementReport(req, res, next) {
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND vpl.is_deleted = false
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
+                        AND ${order_info_uuid ? sql`toi.uuid = ${order_info_uuid}` : sql`1=1`}
                     GROUP BY
                         vpl.packing_list_entry_uuid, toe.party_price, toe.company_price
                 ),
@@ -280,6 +283,7 @@ export async function deliveryStatementReport(req, res, next) {
                         AND vpl.item_for IN ('thread', 'sample_thread')
                         AND vpl.is_deleted = false
                         AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
+                        AND ${order_info_uuid ? sql`toi.uuid = ${order_info_uuid}` : sql`1=1`}
                     GROUP BY
                         vpl.packing_list_entry_uuid, toe.party_price, toe.company_price
                 )
@@ -578,14 +582,14 @@ export async function deliveryStatementReport(req, res, next) {
 
 		let filterData = [];
 
-		// filter by order_info_uuid
-		if (order_info_uuid) {
-			filterData = data?.rows?.filter(
-				(row) => row.order_info_uuid === order_info_uuid
-			);
-		} else {
-			filterData = data.rows;
-		}
+		// // filter by order_info_uuid
+		// if (order_info_uuid) {
+		// 	filterData = data?.rows?.filter(
+		// 		(row) => row.order_info_uuid === order_info_uuid
+		// 	);
+		// } else {
+		// 	filterData = data.rows;
+		// }
 
 		// first group by type, then party_name, then order_number, then item_description, then size
 		const groupedData = filterData.reduce((acc, row) => {
