@@ -5,6 +5,8 @@ import db from '../../index.js';
 export async function selectSampleLeadTime(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const { item_type, order_type } = req.query;
+
 	const query = sql`
     WITH zipper_results AS (
         SELECT
@@ -42,7 +44,8 @@ export async function selectSampleLeadTime(req, res, next) {
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
             LEFT JOIN delivery.challan c ON pl.challan_uuid = c.uuid
         WHERE
-            oi.is_sample = 1 AND od.uuid IS NOT NULL
+           od.uuid IS NOT NULL
+           ${order_type == 'sample' ? sql` AND oi.is_sample = 1` : order_type == 'bulk' ? sql` AND oi.is_sample = 0` : sql``}
         GROUP BY
             oi.id, oi.is_sample, oi.created_at, oe_sum.order_quantity, vodf.party_name, vodf.marketing_name
         HAVING
@@ -68,7 +71,7 @@ export async function selectSampleLeadTime(req, res, next) {
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
             LEFT JOIN delivery.challan tc ON pl.challan_uuid = tc.uuid
         WHERE 
-            toi.is_sample = 1
+            ${order_type == 'sample' ? sql` toi.is_sample = 1` : order_type == 'bulk' ? sql` toi.is_sample = 0` : sql` 1=1`}
         GROUP BY
             toi.id, toi.is_sample, toi.created_at, pm.name, pp.name
         HAVING
@@ -76,9 +79,17 @@ export async function selectSampleLeadTime(req, res, next) {
     )
     SELECT * 
     FROM (
-        SELECT * FROM zipper_results
-        UNION ALL
-        SELECT * FROM thread_results
+        ${
+			item_type == 'zipper'
+				? sql`SELECT * FROM zipper_results`
+				: item_type == 'thread'
+					? sql`SELECT * FROM thread_results`
+					: sql`
+                    SELECT * FROM zipper_results
+                    UNION ALL
+                    SELECT * FROM thread_results`
+		}
+        
     ) AS combined_results
     ORDER BY issue_date DESC;
     `;

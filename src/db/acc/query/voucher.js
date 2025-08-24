@@ -2,7 +2,7 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import { createApi } from '../../../util/api.js';
 import db from '../../index.js';
-import { voucher } from '../schema.js';
+import { currency, voucher } from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
 
 import { alias } from 'drizzle-orm/pg-core';
@@ -94,10 +94,15 @@ export async function selectAll(req, res, next) {
 			updated_at: voucher.updated_at,
 			remarks: voucher.remarks,
 			narration: voucher.narration,
+			currency_uuid: voucher_entry.currency_uuid,
+			currency_name: currency.currency_name,
+			currency_symbol: currency.symbol,
+			conversion_rate: decimalToNumber(voucher_entry.conversion_rate),
 		})
 		.from(voucher)
 		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))
 		.leftJoin(updatedByUser, eq(voucher.updated_by, updatedByUser.uuid))
+		.leftJoin(currency, eq(voucher_entry.currency_uuid, currency.uuid))
 		.orderBy(desc(voucher.created_at));
 
 	try {
@@ -133,10 +138,15 @@ export async function select(req, res, next) {
 			updated_at: voucher.updated_at,
 			remarks: voucher.remarks,
 			narration: voucher.narration,
+			currency_uuid: voucher_entry.currency_uuid,
+			currency_name: currency.currency_name,
+			currency_symbol: currency.symbol,
+			conversion_rate: decimalToNumber(voucher_entry.conversion_rate),
 		})
 		.from(voucher)
 		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))
 		.leftJoin(updatedByUser, eq(voucher.updated_by, updatedByUser.uuid))
+		.leftJoin(currency, eq(voucher_entry.currency_uuid, currency.uuid))
 		.where(eq(voucher.uuid, req.params.uuid));
 
 	try {

@@ -181,6 +181,8 @@ export const voucher = acc.table('voucher', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 	narration: text('narration').default(null),
+	currency_uuid: defaultUUID('currency_uuid').references(() => currency.uuid),
+	conversion_rate: PG_DECIMAL('conversion_rate').default(1),
 });
 
 export const voucher_entry_type_enum = acc.enum('voucher_entry_type_enum', [
@@ -209,8 +211,6 @@ export const voucher_entry = acc.table('voucher_entry', {
 	voucher_uuid: defaultUUID('voucher_uuid')
 		.references(() => voucher.uuid)
 		.notNull(),
-	currency_uuid: defaultUUID('currency_uuid').references(() => currency.uuid),
-	conversion_rate: PG_DECIMAL('conversion_rate').default(1),
 });
 
 export const voucher_entry_cost_center = acc.table(
