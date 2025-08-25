@@ -135,6 +135,7 @@ export const ledger = acc.table('ledger', {
 	remarks: text('remarks').default(null),
 	narration: text('narration').default(null),
 	is_bank_ledger: boolean('is_bank_ledger').default(false),
+	is_cash_ledger: boolean('is_cash_ledger').default(false),
 });
 
 export const cost_center = acc.table('cost_center', {
