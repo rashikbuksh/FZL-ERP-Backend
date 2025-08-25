@@ -69,8 +69,8 @@ export async function deliveryStatementReport(req, res, next) {
 			isZipper = is_zipper !== undefined;
 		}
 
-		const query = sql`
-            WITH opening_all_sum AS (
+		const queryHeader = sql`
+         WITH opening_all_sum AS (
                 SELECT 
                     vpl.packing_list_entry_uuid,
                     coalesce(
@@ -308,6 +308,9 @@ export async function deliveryStatementReport(req, res, next) {
                     GROUP BY
                         vpl.packing_list_entry_uuid, toe.party_price, toe.company_price
                 )
+        `;
+
+		const zipperQuery = sql`
                 SELECT 
                     vodf.marketing_uuid,
                     vodf.marketing_name,
@@ -465,8 +468,10 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
                     AND ${isZipper && order_info_uuid ? sql`vodf.order_info_uuid = ${order_info_uuid}` : sql`1=1`}
-                UNION 
-                SELECT 
+        `;
+
+		const threadQuery = sql`
+             SELECT 
                     toi.marketing_uuid,
                     marketing.name as marketing_name,
                     toi.uuid as order_info_uuid,
@@ -582,10 +587,31 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${isThread && order_info_uuid ? sql`toi.uuid = ${order_info_uuid}` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
-    `;
+        `;
+
+		let mainQuery;
+
+		if (isZipper && isThread) {
+			mainQuery = sql``
+				.append(queryHeader)
+				.append(zipperQuery)
+				.append(sql` UNION ALL `)
+				.append(threadQuery);
+		} else if (isZipper) {
+			mainQuery = sql``.append(queryHeader).append(zipperQuery);
+		} else if (isThread) {
+			mainQuery = sql``.append(queryHeader).append(threadQuery);
+		} else {
+			mainQuery = sql``
+				.append(queryHeader)
+				.append(zipperQuery)
+				.append(sql` UNION ALL `)
+				.append(threadQuery);
+		}
+
 		// ! is_bill removed from where clause in main query of zipper and thread
 		// ! warehouse_received removed from where clause in opening_all_sum, running_all_sum, opening_all_sum_thread, running_all_sum_thread
-		const resultPromise = db.execute(query);
+		const resultPromise = db.execute(mainQuery);
 
 		const data = await resultPromise;
 
@@ -603,19 +629,8 @@ export async function deliveryStatementReport(req, res, next) {
 		} else {
 		}
 
-		let filterData = [];
-
-		// filter by order_info_uuid
-		if (order_info_uuid) {
-			filterData = data?.rows?.filter(
-				(row) => row.order_info_uuid === order_info_uuid
-			);
-		} else {
-			filterData = data.rows;
-		}
-
 		// first group by type, then party_name, then order_number, then item_description, then size
-		const groupedData = filterData.reduce((acc, row) => {
+		const groupedData = data.rows.reduce((acc, row) => {
 			const {
 				type,
 				party_uuid,
