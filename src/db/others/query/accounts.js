@@ -74,7 +74,7 @@ export async function selectLedger(req, res, next) {
 	const ledgerPromise = db
 		.select({
 			value: accountSchema.ledger.uuid,
-			label: accountSchema.ledger.name,
+			label: sql`CONCAT(${accountSchema.ledger.name}, ' (', COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0), ')')`,
 			has_cost_center: sql`CASE WHEN cost_center.cost_center_count > 0 THEN TRUE ELSE FALSE END`,
 			cost_center_count: sql`COALESCE(cost_center.cost_center_count, 0)::float8`,
 		})
@@ -90,7 +90,25 @@ export async function selectLedger(req, res, next) {
 				) as cost_center
 			`,
 			eq(accountSchema.ledger.uuid, sql`cost_center.ledger_uuid`)
+		)
+		.leftJoin(
+			sql`
+				(
+				SELECT 
+					SUM(
+						CASE WHEN voucher_entry.type = 'dr' THEN voucher_entry.amount ELSE 0 END
+					) as total_debit_amount,
+					SUM(
+						CASE WHEN voucher_entry.type = 'cr' THEN voucher_entry.amount ELSE 0 END
+					) as total_credit_amount,
+					voucher_entry.ledger_uuid
+				FROM acc.voucher_entry
+				GROUP BY voucher_entry.ledger_uuid
+				) as voucher_total
+			`,
+			eq(accountSchema.ledger.uuid, sql`voucher_total.ledger_uuid`)
 		);
+
 	try {
 		const data = await ledgerPromise;
 		const toast = {
