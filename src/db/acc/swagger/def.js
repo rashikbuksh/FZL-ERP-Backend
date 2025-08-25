@@ -95,7 +95,6 @@ export const defLedger = SED({
 		table_name: SE.string('ledger'),
 		table_uuid: SE.uuid(),
 		name: SE.string('Cash Ledger'),
-		category: SE.string('cash'),
 		account_no: SE.string('1001'),
 		type: SE.string('asset'),
 		is_active: SE.boolean(true),

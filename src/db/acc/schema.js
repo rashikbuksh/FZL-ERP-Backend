@@ -116,7 +116,6 @@ export const ledger = acc.table('ledger', {
 	table_name: text('table_name').default(null),
 	table_uuid: text('table_uuid').default(null),
 	name: text('name').notNull().unique(),
-	category: text('category').notNull(),
 	account_no: text('account_no').default(null),
 	type: type_enum('type').notNull(),
 	is_active: boolean('is_active').default(true),

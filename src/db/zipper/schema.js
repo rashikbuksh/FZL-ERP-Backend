@@ -495,6 +495,8 @@ export const dyeing_batch = zipper.table('dyeing_batch', {
 	order_info_uuid: defaultUUID('order_info_uuid')
 		.references(() => order_info.uuid)
 		.default(null),
+	yarn_issued: PG_DECIMAL('yarn_issued').default(0.0),
+	yarn_issued_date: DateTime('yarn_issued_date').default(null),
 });
 
 export const dyeing_batch_entry = zipper.table('dyeing_batch_entry', {
