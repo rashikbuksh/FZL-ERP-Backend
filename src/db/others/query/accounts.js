@@ -154,18 +154,42 @@ export async function selectCostCenter(req, res, next) {
 // Get All Table Names in a Schema
 export async function getAccountsTableNames(req, res, next) {
 	const { schema_name } = req.query;
+
+	const options = [
+		{
+			value: 'commercial.lc',
+			label: 'LC',
+		},
+		{
+			value: 'purchase.description',
+			label: 'Store Purchase',
+		},
+		{
+			value: 'commercial.pi_cash',
+			label: 'Commercial Invoice',
+		},
+		{
+			value: 'purchase.vendor',
+			label: 'Vendor',
+		},
+		{
+			value: 'public.party',
+			label: 'Party',
+		},
+	];
+
 	try {
-		const result = await db.execute(sql`
-			SELECT 
-				CONCAT(table_schema, '.', table_name) as value, 
-				CONCAT(table_schema, '.', table_name) as label, 
-				table_schema as schema_name
-			FROM information_schema.tables
-			WHERE ${schema_name ? sql`table_schema = ${schema_name}` : sql` 1=1 `}
-			AND table_type = 'BASE TABLE' 
-			AND table_name NOT LIKE 'pg%'
-			AND table_name IN ('lc', 'description', 'vendor', 'party', 'pi_cash');
-		`);
+		// const result = await db.execute(sql`
+		// 	SELECT
+		// 		CONCAT(table_schema, '.', table_name) as value,
+		// 		CONCAT(table_schema, '.', table_name) as label,
+		// 		table_schema as schema_name
+		// 	FROM information_schema.tables
+		// 	WHERE ${schema_name ? sql`table_schema = ${schema_name}` : sql` 1=1 `}
+		// 	AND table_type = 'BASE TABLE'
+		// 	AND table_name NOT LIKE 'pg%'
+		// 	AND table_name IN ('lc', 'description', 'vendor', 'party', 'pi_cash');
+		// `);
 
 		const toast = {
 			status: 200,
@@ -175,7 +199,7 @@ export async function getAccountsTableNames(req, res, next) {
 
 		res.status(200).json({
 			toast,
-			data: result?.rows,
+			data: options,
 		});
 	} catch (error) {
 		await handleError({ error, res });
