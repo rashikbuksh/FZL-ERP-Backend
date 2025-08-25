@@ -95,6 +95,7 @@ export const type_enum = acc.enum('type_enum', [
 	'income',
 	'expense',
 	'cost_of_goods',
+	'revenue',
 ]);
 
 export const restrictions_enum = acc.enum('restrictions_enum', [
