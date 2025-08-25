@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import PdfPrinter from 'pdfmake';
 import fs from 'fs';
 import path from 'path';
@@ -7,6 +7,9 @@ import db from '../../index.js';
 import { GetMarketingOwnUUID } from '../../variables.js';
 import Pdf from '../pdf/delivery_statement_pdf/index.js';
 import FastPdf from '../pdf/delivery_statement_pdf_fast/index.js';
+
+import * as zipperSchema from '../../zipper/schema.js';
+import * as threadSchema from '../../thread/schema.js';
 
 const findOrCreateArray = (array, key, value, createFn) => {
 	let index = array.findIndex((item) =>
@@ -43,6 +46,28 @@ export async function deliveryStatementReport(req, res, next) {
 		const marketingUuid = own_uuid
 			? await GetMarketingOwnUUID(db, own_uuid)
 			: null;
+
+		let isThread = false;
+		let isZipper = false;
+
+		if (order_info_uuid) {
+			// find out is it zipper or thread
+			const [is_thread] = await db
+				.select()
+				.from(threadSchema.order_info)
+				.where(eq(threadSchema.order_info.uuid, order_info_uuid))
+				.limit(1);
+
+			isThread = is_thread !== undefined;
+
+			const [is_zipper] = await db
+				.select()
+				.from(zipperSchema.order_info)
+				.where(eq(zipperSchema.order_info.uuid, order_info_uuid))
+				.limit(1);
+
+			isZipper = is_zipper !== undefined;
+		}
 
 		const query = sql`
             WITH opening_all_sum AS (
@@ -439,6 +464,7 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${party ? sql`vodf.party_uuid = ${party}` : sql`1=1`}
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND ${own_uuid ? sql`vodf.marketing_uuid = ${marketingUuid}` : sql`1=1`}
+                    AND ${isZipper && order_info_uuid ? sql`vodf.order_info_uuid = ${order_info_uuid}` : sql`1=1`}
                 UNION 
                 SELECT 
                     toi.marketing_uuid,
@@ -553,6 +579,7 @@ export async function deliveryStatementReport(req, res, next) {
                     AND ${party ? sql`toi.party_uuid = ${party}` : sql`1=1`} 
                     AND ${from_date && to_date ? sql`pl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                     AND ${own_uuid ? sql`toi.marketing_uuid = ${marketingUuid}` : sql`1=1`}
+                    AND ${isThread && order_info_uuid ? sql`toi.uuid = ${order_info_uuid}` : sql`1=1`}
                 ORDER BY
                     party_name, marketing_name, item_name DESC, packing_number ASC;
     `;
