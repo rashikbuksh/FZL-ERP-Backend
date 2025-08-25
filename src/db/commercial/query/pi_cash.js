@@ -323,7 +323,7 @@ export async function select(req, res, next) {
 				pi_cash.receive_amount::float8,
 				pi_cash.is_completed,
 				pi_cash.pi_date,
-				cash_receives.cash_receives
+				COALESCE(cash_receives.cash_receives, '[]'::jsonb) as cash_receives
 			FROM 
 				commercial.pi_cash
 			LEFT JOIN 
