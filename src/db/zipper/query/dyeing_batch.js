@@ -110,7 +110,9 @@ export async function selectAll(req, res, next) {
 			oe_colors.bulk_approval_date as bulk_approval_date,
 			dyeing_batch.batch_type as batch_type,
 			dyeing_batch.order_info_uuid,
-			machine.water_capacity::float8 as water_capacity
+			machine.water_capacity::float8 as water_capacity,
+			dyeing_batch.yarn_issued::float8 as yarn_issued,
+			dyeing_batch.yarn_issued_date as yarn_issued_date
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
 		LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
@@ -259,6 +261,8 @@ export async function select(req, res, next) {
 			water_capacity: decimalToNumber(
 				publicSchema.machine.water_capacity
 			),
+			yarn_issued: decimalToNumber(dyeing_batch.yarn_issued),
+			yarn_issued_date: dyeing_batch.yarn_issued_date,
 		})
 		.from(dyeing_batch)
 		.leftJoin(
