@@ -322,7 +322,8 @@ export async function select(req, res, next) {
 				pi_cash.cross_weight::float8,
 				pi_cash.receive_amount::float8,
 				pi_cash.is_completed,
-				pi_cash.pi_date
+				pi_cash.pi_date,
+				cash_receives.cash_receives
 			FROM 
 				commercial.pi_cash
 			LEFT JOIN 
@@ -356,6 +357,24 @@ export async function select(req, res, next) {
 					LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
 				GROUP BY pi_cash_uuid
 			) pi_cash_entry_order_numbers ON pi_cash.uuid = pi_cash_entry_order_numbers.pi_cash_uuid
+			LEFT JOIN (
+				SELECT 
+					cr.pi_cash_uuid,
+					jsonb_agg(
+						jsonb_build_object(
+							'uuid', cr.uuid,
+							'amount', cr.amount::float8,
+							'created_by', cr.created_by,
+							'created_at', cr.created_at,
+							'updated_at', cr.updated_at,
+							'remarks', cr.remarks
+						)
+					) as cash_receives
+				FROM 
+					commercial.cash_receive cr
+				GROUP BY
+					cr.pi_cash_uuid
+			) cash_receives ON pe.pi_cash_uuid = cash_receives.pi_cash_uuid
 			WHERE 
 				pi_cash.uuid = ${req.params.uuid};
 	`;

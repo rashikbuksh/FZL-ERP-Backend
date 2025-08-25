@@ -298,8 +298,7 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 				count_length.length,
 				(pe.uuid IS NOT NULL) AS is_checked,
 				vodf.order_type,
-				COALESCE(rwn.short_names, ARRAY[]::text[]) AS sp_short_names,
-				cash_receives.cash_receives
+				COALESCE(rwn.short_names, ARRAY[]::text[]) AS sp_short_names
 			FROM
 				commercial.pi_cash_entry pe 
 				LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
