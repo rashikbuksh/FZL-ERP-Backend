@@ -74,7 +74,7 @@ export async function selectLedger(req, res, next) {
 	const ledgerPromise = db
 		.select({
 			value: accountSchema.ledger.uuid,
-			label: sql`CONCAT(${accountSchema.ledger.name}, ' (', COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0), ')')`,
+			label: sql`CONCAT(${accountSchema.ledger.name}, ' (', (COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0))::float8, ')')`,
 			has_cost_center: sql`CASE WHEN cost_center.cost_center_count > 0 THEN TRUE ELSE FALSE END`,
 			cost_center_count: sql`COALESCE(cost_center.cost_center_count, 0)::float8`,
 		})
