@@ -1673,7 +1673,7 @@ const pathAccounts = {
 			},
 		},
 	},
-	'/other/accounts/table-data/by/:table_name': {
+	'/other/accounts/table-data/by/{table_name}': {
 		get: {
 			tags: ['others'],
 			summary: 'get selected table data',

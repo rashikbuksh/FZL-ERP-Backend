@@ -146,7 +146,7 @@ export async function getAccountsTableNames(req, res, next) {
 			WHERE ${schema_name ? sql`table_schema = ${schema_name}` : sql` 1=1 `}
 			AND table_type = 'BASE TABLE' 
 			AND table_name NOT LIKE 'pg%'
-			AND table_name IN ('lc', 'description', 'vendor', 'party');
+			AND table_name IN ('lc', 'description', 'vendor', 'party', 'pi_cash');
 		`);
 
 		const toast = {
@@ -172,14 +172,35 @@ export async function getSelectedTableData(req, res, next) {
 
 	console.log(`Fetching data for table: ${table_name}`);
 
+	const option = [
+		{ value: 'commercial.lc', label: 'LC' },
+		{ value: 'purchase.description', label: 'SR' },
+		{ value: 'commercial.pi_cash', label: 'CI' },
+	];
+
 	try {
-		if (['commercial.lc', 'purchase.description'].includes(table_name)) {
-			result = await db.execute(sql`
-				SELECT 
-					uuid as value,
-					id::text as label
-				FROM ${sql.raw(table_name)};
-			`);
+		if (
+			[
+				'commercial.lc',
+				'purchase.description',
+				'commercial.pi_cash',
+			].includes(table_name)
+		) {
+			result =
+				table_name == 'commercial.pi_cash'
+					? await db.execute(sql`
+						SELECT 
+							uuid as value,
+							concat(${sql.raw(`'${option.find((val) => val.value == table_name).label}'`)}, to_char(created_at, 'YY'::text), '-', id::text) as label
+						FROM ${sql.raw(table_name)}
+						WHERE ${sql.raw(table_name)}.is_pi = 0;
+					`)
+					: await db.execute(sql`
+						SELECT 
+							uuid as value,
+							concat(${sql.raw(`'${option.find((val) => val.value == table_name).label}'`)}, to_char(created_at, 'YY'::text), '-', id::text) as label
+						FROM ${sql.raw(table_name)};
+					`);
 		} else if (['purchase.vendor', 'public.party'].includes(table_name)) {
 			result = await db.execute(sql`
 				SELECT 
