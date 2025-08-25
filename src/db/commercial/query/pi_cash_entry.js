@@ -298,7 +298,8 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 				count_length.length,
 				(pe.uuid IS NOT NULL) AS is_checked,
 				vodf.order_type,
-				COALESCE(rwn.short_names, ARRAY[]::text[]) AS sp_short_names
+				COALESCE(rwn.short_names, ARRAY[]::text[]) AS sp_short_names,
+				cash_receives.cash_receives
 			FROM
 				commercial.pi_cash_entry pe 
 				LEFT JOIN zipper.sfg sfg ON pe.sfg_uuid = sfg.uuid
@@ -309,6 +310,24 @@ export async function selectPiEntryByPiUuid(req, res, next) {
 				LEFT JOIN thread.count_length count_length ON toe.count_length_uuid = count_length.uuid
 				LEFT JOIN public.buyer thread_buyer ON toi.buyer_uuid = thread_buyer.uuid
 				LEFT JOIN requirements_with_names rwn ON vodf.order_description_uuid = rwn.order_description_uuid
+				LEFT JOIN (
+					SELECT 
+						cr.pi_cash_uuid,
+						jsonb_agg(
+							jsonb_build_object(
+								'uuid', cr.uuid,
+								'amount', cr.amount::float8,
+								'created_by', cr.created_by,
+								'created_at', cr.created_at,
+								'updated_at', cr.updated_at,
+								'remarks', cr.remarks
+							)
+						) as cash_receives
+					FROM 
+						commercial.cash_receive cr
+					GROUP BY
+						cr.pi_cash_uuid
+				) AS cash_receives ON pe.pi_cash_uuid = cash_receives.pi_cash_uuid
 			WHERE 
 				pe.pi_cash_uuid = ${req.params.pi_cash_uuid}
 			ORDER BY
