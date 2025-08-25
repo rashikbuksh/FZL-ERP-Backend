@@ -88,14 +88,7 @@ export const defGroup = SED({
 
 //* ./schema.js#ledger
 export const defLedger = SED({
-	required: [
-		'uuid',
-		'name',
-		'account_no',
-		'type',
-		'group_uuid',
-		'created_at',
-	],
+	required: ['uuid', 'name', 'type', 'group_uuid', 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
 		id: SE.integer(1),

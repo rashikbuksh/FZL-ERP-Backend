@@ -239,7 +239,6 @@ export async function selectAll(req, res, next) {
 			total_amount ON total_amount.pi_cash_uuid = pi_cash.uuid
 		WHERE 
 			${is_cash ? (is_cash == 'true' ? sql`pi_cash.is_pi = 0` : sql`pi_cash.is_pi = 1`) : sql`TRUE`}
-			AND total_amount.total_amount > 0
     		AND ${own_uuid ? sql`pi_cash.marketing_uuid = ${marketingUuid}` : sql`TRUE`}
 			${
 				type === 'pending' && is_cash === 'false'
