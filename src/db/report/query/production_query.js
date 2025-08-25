@@ -42,7 +42,8 @@ export async function selectItemWiseProduction(req, res, next) {
                 WHERE
                     pl.item_for NOT IN ('thread', 'sample_thread') 
                     AND od.uuid IS NOT null
-                    AND ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    AND ${from && to ? sql`pl.created_at BETWEEN ${from} AND ${to}` : sql`1=1`}
+                    AND pl.is_deleted = false
                 GROUP BY
                     od.uuid
         ) packing_list_sum ON vodf.order_description_uuid = packing_list_sum.order_description_uuid
@@ -76,7 +77,8 @@ export async function selectItemWiseProduction(req, res, next) {
                     thread.order_entry oe ON ple.thread_order_entry_uuid = oe.uuid
                 WHERE
                     oe.order_info_uuid IS NOT null
-                    AND pl.item_for IN ('thread', 'sample_thread') AND ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                    AND pl.item_for IN ('thread', 'sample_thread') AND ${from && to ? sql`pl.created_at BETWEEN ${from} AND ${to}` : sql`1=1`}
+                    AND pl.is_deleted = false
                 GROUP BY
                     oe.order_info_uuid
         ) packing_list_sum ON toi.uuid = packing_list_sum.order_info_uuid
@@ -149,7 +151,8 @@ export async function selectItemZipperEndWiseProduction(req, res, next) {
                             zipper.order_description od ON oe.order_description_uuid = od.uuid
                         WHERE
                             pl.item_for NOT IN ('thread', 'sample_thread') 
-                            AND ${from && to ? sql`pl.created_at BETWEEN ${from}::TIMESTAMP AND ${to}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                            AND ${from && to ? sql`pl.created_at BETWEEN ${from} AND ${to}` : sql`1=1`}
+                            AND pl.is_deleted = false
                         GROUP BY
                             od.uuid
                     ) packing_list_sum ON vodf.order_description_uuid = packing_list_sum.order_description_uuid
