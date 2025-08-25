@@ -128,7 +128,7 @@ export async function selectCostCenter(req, res, next) {
 	const costCenterPromise = db
 		.select({
 			value: accountSchema.cost_center.uuid,
-			label: accountSchema.cost_center.name,
+			label: sql`CONCAT(${accountSchema.cost_center.name}, ' - ', ${accountSchema.cost_center.invoice_no} )`,
 		})
 		.from(accountSchema.cost_center);
 
