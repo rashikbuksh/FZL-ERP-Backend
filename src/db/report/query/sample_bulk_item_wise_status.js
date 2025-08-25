@@ -19,6 +19,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             MAX(c.created_at) AS delivery_last_date,
             SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) AS delivery_quantity,
             oe_sum.order_quantity AS order_quantity,
+            oe_sum.color_count as color_count,
             CONCAT(SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END), '/', oe_sum.order_quantity) AS delivery_order_quantity,
             vodf.party_name,
             vodf.marketing_name
@@ -30,12 +31,13 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     SUM(CASE WHEN vodf.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END) AS order_quantity,
+                    COUNT(DISTINCT oe.color) as color_count,
                     vodf.order_description_uuid
                 FROM
                     zipper.order_entry oe
                     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                 WHERE
-                    vodf.is_sample = 1
+                    ${order_type == 'sample' ? sql` AND oi.is_sample = 1` : order_type == 'bulk' ? sql` AND oi.is_sample = 0` : sql`1=1`}
                 GROUP BY
                     vodf.order_description_uuid
             ) oe_sum ON oe.order_description_uuid = oe_sum.order_description_uuid
@@ -47,7 +49,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
            od.uuid IS NOT NULL
            ${order_type == 'sample' ? sql` AND oi.is_sample = 1` : order_type == 'bulk' ? sql` AND oi.is_sample = 0` : sql``}
         GROUP BY
-            oi.id, oi.is_sample, oi.created_at, oe_sum.order_quantity, vodf.party_name, vodf.marketing_name
+            oi.id, oi.is_sample, oi.created_at, oe_sum.order_quantity, vodf.party_name, vodf.marketing_name, oe_sum.color_count
         HAVING
             SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) < oe_sum.order_quantity
     ),
@@ -59,6 +61,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             MAX(tc.created_at) AS delivery_last_date,
             SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) AS delivery_quantity,
             SUM(toe.quantity::float8) AS order_quantity,
+            COUNT(DISTINCT toe.color) as color_count,
             CONCAT(SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END), '/', SUM(toe.quantity::float8)) AS delivery_order_quantity,
             pm.name AS marketing_name,
             pp.name AS party_name
