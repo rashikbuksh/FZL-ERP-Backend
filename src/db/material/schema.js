@@ -5,6 +5,7 @@ import {
 	pgSchema,
 	serial,
 	text,
+	unique,
 } from 'drizzle-orm/pg-core';
 import {
 	DateTime,
@@ -25,62 +26,94 @@ export const store_type_enum = material.enum('store_type_enum', [
 	'maintenance',
 ]);
 
-export const section = material.table('section', {
-	uuid: uuid_primary,
-	name: text('name').notNull().unique(),
-	short_name: text('short_name').default(null),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	updated_by: defaultUUID('updated_by')
-		.references(() => hrSchema.users.uuid)
-		.default(null),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
-	remarks: text('remarks').default(null),
-	index: integer('index').default(0),
-	store_type: store_type_enum('store_type').default('rm'),
-});
-
-export const type = material.table('type', {
-	uuid: uuid_primary,
-	name: text('name').notNull().unique(),
-	short_name: text('short_name').default(null),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	updated_by: defaultUUID('updated_by')
-		.references(() => hrSchema.users.uuid)
-		.default(null),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
-	remarks: text('remarks').default(null),
-	store_type: store_type_enum('store_type').default('rm'),
-});
-
-export const info = material.table('info', {
-	uuid: uuid_primary,
-	index: integer('index').default(0),
-	section_uuid: defaultUUID('section_uuid').references(() => section.uuid),
-	type_uuid: defaultUUID('type_uuid').references(() => type.uuid),
-	name: text('name').notNull().unique(),
-	short_name: text('short_name').default(null),
-	unit: text('unit').notNull(),
-	threshold: decimal('threshold', {
-		precision: 20,
-		scale: 4,
+export const section = material.table(
+	'section',
+	{
+		uuid: uuid_primary,
+		name: text('name').notNull(),
+		short_name: text('short_name').default(null),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		remarks: text('remarks').default(null),
+		index: integer('index').default(0),
+		store_type: store_type_enum('store_type').default('rm'),
+	},
+	(t) => ({
+		material_section_name_store_type_unique: unique(
+			'material_section_name_store_type_unique'
+		).on(t.name, t.store_type),
 	})
-		.notNull()
-		.default(0.0),
-	is_priority_material: integer('is_priority_material').default(0),
-	average_lead_time: integer('average_lead_time').default(0),
-	description: text('description').default(null),
-	created_at: DateTime('created_at').notNull(),
-	updated_at: DateTime('updated_at').default(null),
-	updated_by: defaultUUID('updated_by')
-		.references(() => hrSchema.users.uuid)
-		.default(null),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
-	remarks: text('remarks').default(null),
-	store_type: store_type_enum('store_type').notNull().default('rm'),
-	is_hidden: boolean('is_hidden').default(false),
-});
+);
+
+export const type = material.table(
+	'type',
+	{
+		uuid: uuid_primary,
+		name: text('name').notNull().unique(),
+		short_name: text('short_name').default(null),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		remarks: text('remarks').default(null),
+		store_type: store_type_enum('store_type').default('rm'),
+	},
+	(t) => ({
+		material_type_name_store_type_unique: unique(
+			'material_type_name_store_type_unique'
+		).on(t.name, t.store_type),
+	})
+);
+
+export const info = material.table(
+	'info',
+	{
+		uuid: uuid_primary,
+		index: integer('index').default(0),
+		section_uuid: defaultUUID('section_uuid').references(
+			() => section.uuid
+		),
+		type_uuid: defaultUUID('type_uuid').references(() => type.uuid),
+		name: text('name').notNull().unique(),
+		short_name: text('short_name').default(null),
+		unit: text('unit').notNull(),
+		threshold: decimal('threshold', {
+			precision: 20,
+			scale: 4,
+		})
+			.notNull()
+			.default(0.0),
+		is_priority_material: integer('is_priority_material').default(0),
+		average_lead_time: integer('average_lead_time').default(0),
+		description: text('description').default(null),
+		created_at: DateTime('created_at').notNull(),
+		updated_at: DateTime('updated_at').default(null),
+		updated_by: defaultUUID('updated_by')
+			.references(() => hrSchema.users.uuid)
+			.default(null),
+		created_by: defaultUUID('created_by').references(
+			() => hrSchema.users.uuid
+		),
+		remarks: text('remarks').default(null),
+		store_type: store_type_enum('store_type').notNull().default('rm'),
+		is_hidden: boolean('is_hidden').default(false),
+	},
+	(t) => ({
+		material_info_name_store_type_unique: unique(
+			'material_info_name_store_type_unique'
+		).on(t.name, t.store_type),
+	})
+);
 
 export const stock = material.table('stock', {
 	uuid: uuid_primary,
