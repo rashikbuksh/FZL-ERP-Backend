@@ -112,11 +112,11 @@ export const ledger_sequence = acc.sequence('ledger_sequence', {
 export const ledger = acc.table('ledger', {
 	uuid: uuid_primary,
 	id: integer('id').default(sql`nextval('acc.ledger_sequence')`),
-	table_name: text('table_name'),
-	table_uuid: text('table_uuid'),
+	table_name: text('table_name').default(null),
+	table_uuid: text('table_uuid').default(null),
 	name: text('name').notNull().unique(),
 	category: text('category').notNull(),
-	account_no: text('account_no').notNull().unique(),
+	account_no: text('account_no').default(null),
 	type: type_enum('type').notNull(),
 	is_active: boolean('is_active').default(true),
 	restrictions: restrictions_enum('restrictions').default('none'),
@@ -134,14 +134,15 @@ export const ledger = acc.table('ledger', {
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
 	narration: text('narration').default(null),
+	is_bank_ledger: boolean('is_bank_ledger').default(false),
 });
 
 export const cost_center = acc.table('cost_center', {
 	uuid: uuid_primary,
 	name: text('name').notNull().unique(),
 	ledger_uuid: defaultUUID('ledger_uuid').references(() => ledger.uuid),
-	table_name: text('table_name'),
-	table_uuid: text('table_uuid'),
+	table_name: text('table_name').default(null),
+	table_uuid: text('table_uuid').default(null),
 	invoice_no: text('invoice_no').default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
