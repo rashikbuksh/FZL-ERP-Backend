@@ -374,7 +374,7 @@ export async function select(req, res, next) {
 					commercial.cash_receive cr
 				GROUP BY
 					cr.pi_cash_uuid
-			) cash_receives ON pe.pi_cash_uuid = cash_receives.pi_cash_uuid
+			) cash_receives ON pi_cash.uuid = cash_receives.pi_cash_uuid
 			WHERE 
 				pi_cash.uuid = ${req.params.uuid};
 	`;
