@@ -33,6 +33,7 @@ export async function selectCurrency(req, res, next) {
 				accountSchema.currency.conversion_rate
 			),
 			default: accountSchema.currency.default,
+			symbol: accountSchema.currency.symbol,
 		})
 		.from(accountSchema.currency)
 		.orderBy(asc(accountSchema.currency.currency_name));
