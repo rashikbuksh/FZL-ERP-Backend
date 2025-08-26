@@ -1359,14 +1359,14 @@ export const pathReport = {
 			operationId: 'selectOrderItemTypeWiseStatus',
 			parameters: [
 				SE.parameter_query(
-					'item_type',
-					'item_type',
+					'order_type',
+					'order_type',
 					['sample', 'bulk', 'all'],
 					true
 				),
 				SE.parameter_query(
-					'order_type',
-					'order_type',
+					'item_type',
+					'item_type',
 					['zipper', 'thread', 'all'],
 					true
 				),
