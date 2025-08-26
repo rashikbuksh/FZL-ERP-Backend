@@ -1370,6 +1370,12 @@ export const pathReport = {
 					['zipper', 'thread', 'all'],
 					true
 				),
+				SE.parameter_query(
+					'status',
+					'status',
+					['pending', 'processing', 'complete', 'all'],
+					true
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {

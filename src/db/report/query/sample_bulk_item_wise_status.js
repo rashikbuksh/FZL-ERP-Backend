@@ -5,7 +5,7 @@ import db from '../../index.js';
 export async function selectSampleBulkItemWiseStatus(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { item_type, order_type } = req.query;
+	const { item_type, order_type, status } = req.query;
 
 	const query = sql`
     WITH zipper_results AS (
@@ -52,7 +52,15 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
         GROUP BY
             oi.uuid, oi.id, oi.is_sample, oi.created_at, oe_sum.order_quantity, vodf.party_name, vodf.marketing_name, oe_sum.color_count
         HAVING
-            SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) < oe_sum.order_quantity
+            ${
+				status == 'pending'
+					? sql`MAX(pl.challan_uuid) IS NULL`
+					: status == 'processing'
+						? sql`MAX(pl.challan_uuid) IS NOT NULL AND SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) < oe_sum.order_quantity`
+						: status == 'complete'
+							? sql`MAX(pl.challan_uuid) IS NOT NULL AND SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) >= oe_sum.order_quantity`
+							: sql`1=1`
+			}
     ),
     thread_results AS (
         SELECT
@@ -81,6 +89,15 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             toi.uuid, toi.id, toi.is_sample, toi.created_at, pm.name, pp.name
         HAVING
             SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) < SUM(toe.quantity::float8)
+            ${
+				status == 'pending'
+					? sql`MAX(tc.uuid) IS NULL`
+					: status == 'processing'
+						? sql`MAX(tc.uuid) IS NOT NULL AND SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) < SUM(toe.quantity::float8)`
+						: status == 'complete'
+							? sql`MAX(tc.uuid) IS NOT NULL AND SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) >= SUM(toe.quantity::float8)`
+							: sql`1=1`
+			}
     )
     SELECT * 
     FROM (
