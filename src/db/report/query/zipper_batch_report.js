@@ -35,7 +35,7 @@ export async function zipperBatchReportOnReceivedDate(req, res, next) {
 			dyeing_batch.batch_type as batch_type,
 			dyeing_batch.order_info_uuid,
 			machine.water_capacity::float8 as water_capacity,
-			dyeing_batch.yarn_issued,
+			dyeing_batch.yarn_issued::float8 as yarn_issued,
 			dyeing_batch.yarn_issued_date
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
