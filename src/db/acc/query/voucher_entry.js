@@ -211,6 +211,7 @@ export async function selectByVoucherUuid(req, res, next) {
 					   voucher_entry_cost_center.voucher_entry_uuid,
 					   voucher_entry_cost_center.cost_center_uuid,
 					   cost_center.name as cost_center_name,
+					   cost_center.invoice_no,
 					   voucher_entry_cost_center.amount::float8,
 					   voucher_entry_cost_center.created_by,
 					   users.name as created_by_name,
