@@ -10,7 +10,8 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
 	const query = sql`
     WITH zipper_results AS (
         SELECT
-            CONCAT('Z', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi.created_at, 'YY'), '-', oi.id::text) AS sample_order_no,
+            CONCAT('Z', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi.created_at, 'YY'), '-', oi.id::text) AS order_no,
+            oi.uuid as order_uuid,
             oi.created_at AS issue_date,
             CASE 
                 WHEN MAX(pl.challan_uuid) IS NULL THEN 'Pending' 
@@ -49,13 +50,14 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
            od.uuid IS NOT NULL
            ${order_type == 'sample' ? sql` AND oi.is_sample = 1` : order_type == 'bulk' ? sql` AND oi.is_sample = 0` : sql``}
         GROUP BY
-            oi.id, oi.is_sample, oi.created_at, oe_sum.order_quantity, vodf.party_name, vodf.marketing_name, oe_sum.color_count
+            oi.uuid, oi.id, oi.is_sample, oi.created_at, oe_sum.order_quantity, vodf.party_name, vodf.marketing_name, oe_sum.color_count
         HAVING
             SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) < oe_sum.order_quantity
     ),
     thread_results AS (
         SELECT
-            CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', toi.id::text) AS sample_order_no,
+            CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', toi.id::text) AS order_no,
+            toi.uuid as order_uuid,
             toi.created_at AS issue_date,
             CASE WHEN MAX(tc.uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
             MAX(tc.created_at) AS delivery_last_date,
@@ -76,7 +78,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
         WHERE 
             ${order_type == 'sample' ? sql` toi.is_sample = 1` : order_type == 'bulk' ? sql` toi.is_sample = 0` : sql` 1=1`}
         GROUP BY
-            toi.id, toi.is_sample, toi.created_at, pm.name, pp.name
+            toi.uuid, toi.id, toi.is_sample, toi.created_at, pm.name, pp.name
         HAVING
             SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) < SUM(toe.quantity::float8)
     )
