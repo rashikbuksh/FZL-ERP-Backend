@@ -88,7 +88,6 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
         GROUP BY
             toi.uuid, toi.id, toi.is_sample, toi.created_at, pm.name, pp.name
         HAVING
-            SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) < SUM(toe.quantity::float8)
             ${
 				status == 'pending'
 					? sql`MAX(tc.uuid) IS NULL`
