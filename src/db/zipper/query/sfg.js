@@ -293,6 +293,113 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 	}
 }
 
+export async function selectSwatchInfoForBulk(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	const { type, order_type } = req.query;
+
+	const query = sql`
+				SELECT
+                    sfg.recipe_uuid AS recipe_uuid,
+					oe.order_description_uuid AS order_description_uuid,
+					vod.order_info_uuid,
+					oe.style AS style,
+					oe.color AS color,
+					oe.color_ref,
+					CASE 
+						WHEN vod.order_type = 'tape' THEN 'Meter' 
+						WHEN vod.order_type = 'slider' THEN 'Pcs'
+						WHEN vod.is_inch = 1 THEN 'Inch'
+						ELSE 'CM' 
+					END AS unit,
+					oe.bleaching,
+					recipe.name AS recipe_name,
+					vod.order_number AS order_number,
+					vod.item_description AS item_description,
+					vod.order_type,
+					vod.order_description_created_at,
+					MAX(oe.swatch_approval_date),
+					vod.receive_by_factory,
+					vod.receive_by_factory_time,
+					vod.receive_by_factory_by,
+					vod.receive_by_factory_by_name
+				FROM
+					zipper.v_order_details vod
+				LEFT JOIN zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
+				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
+                LEFT JOIN lab_dip.recipe recipe ON sfg.recipe_uuid = recipe.uuid
+				LEFT JOIN hr.users swatch_approval_received_by ON oe.swatch_approval_received_by = swatch_approval_received_by.uuid
+				WHERE 
+					vod.order_type != 'slider' 
+					AND vod.is_cancelled = FALSE
+					AND vod.production_pause = FALSE
+					AND vod.receive_by_factory = TRUE
+					${
+						type === 'pending'
+							? sql`AND sfg.recipe_uuid IS NULL`
+							: type === 'completed'
+								? sql`AND sfg.recipe_uuid IS NOT NULL`
+								: sql``
+					}
+					${
+						order_type === 'complete_order'
+							? sql`AND oe.quantity <= sfg.delivered AND sfg.recipe_uuid IS NOT NULL`
+							: order_type === 'incomplete_order'
+								? sql`AND oe.quantity > sfg.delivered`
+								: sql``
+					}
+				GROUP BY 
+					oe.order_description_uuid,
+					oe.style,
+					oe.color,
+					oe.bleaching,
+                    vod.order_number,
+					vod.order_info_uuid,
+                    vod.item_description,
+                    oe.color_ref,
+                    vod.is_inch,
+                    vod.order_type,
+                    vod.order_description_created_at,
+                    sfg.recipe_uuid,
+                    recipe.name,
+                    vod.receive_by_factory,
+                    vod.receive_by_factory_time,
+                    vod.receive_by_factory_by,
+                    vod.receive_by_factory_by_name,
+                    swatch_approval_received_by.name
+				ORDER BY 
+					vod.order_description_created_at DESC,
+					sfg.recipe_uuid ASC;
+			`;
+
+	const swatchPromise = db.execute(query);
+
+	try {
+		const data = await swatchPromise;
+
+		// // merge data by order_info_uuid, order_description_uuid, style, color
+		// const mergedData = data.rows.reduce((acc, curr) => {
+		// 	const key = `${curr.order_info_uuid}-${curr.order_description_uuid}-${curr.style}-${curr.color}`;
+		// 	if (!acc[key]) {
+		// 		acc[key] = { ...curr, count: 0 };
+		// 	}
+		// 	acc[key].count += 1;
+		// 	return acc;
+		// }, {});
+
+		// console.log(mergedData);
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'swatch info',
+		};
+
+		return res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
 export async function updateSwatchByOrderDescriptionUuidStyleColorBleach(
 	req,
 	res,

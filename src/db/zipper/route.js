@@ -200,6 +200,10 @@ zipperRouter.put('/sfg/:uuid', sfgOperations.update);
 zipperRouter.delete('/sfg/:uuid', sfgOperations.remove);
 zipperRouter.get('/sfg-swatch', sfgOperations.selectSwatchInfo);
 zipperRouter.put('/sfg-swatch/:uuid', sfgOperations.updateSwatchBySfgUuid);
+zipperRouter.get(
+	'/sfg-swatch-bulk',
+	sfgOperations.selectSwatchInfoForBulk
+);
 zipperRouter.put(
 	'/sfg-swatch-bulk-update/:order_description_uuid/:style/:color/:bleaching',
 	sfgOperations.updateSwatchByOrderDescriptionUuidStyleColorBleach

@@ -1485,6 +1485,39 @@ export const pathZipperSfg = {
 			},
 		},
 	},
+	'/zipper/sfg-swatch-bulk': {
+		get: {
+			tags: ['zipper.sfg'],
+			summary: 'Get all SFG Swatch Info for Bulk',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+				SE.parameter_query('order_type', 'order_type', [
+					'complete_order',
+					'incomplete_order',
+				]),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					order_entry_uuid: SE.uuid(),
+					order_description_uuid: SE.uuid(),
+					style: SE.string('style 1'),
+					color: SE.string('black'),
+					size: SE.number(10),
+					quantity: SE.number(100),
+					recipe_uuid: SE.uuid(),
+					recipe_name: SE.string('recipe 1'),
+					remarks: SE.string('Remarks'),
+					order_number: SE.string('Z24-0010'),
+					item_description: SE.string('N-5-OE-SP'),
+				}),
+			},
+		},
+	},
 	'/zipper/sfg-swatch-bulk-update/{order_description_uuid}/{style}/{color}/{bleaching}':
 		{
 			put: {
