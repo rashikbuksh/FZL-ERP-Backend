@@ -38,7 +38,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
                     zipper.order_entry oe
                     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                 WHERE
-                    ${order_type == 'sample' ? sql` oi.is_sample = 1` : order_type == 'bulk' ? sql` oi.is_sample = 0` : sql`1=1`}
+                    ${order_type == 'sample' ? sql` vodf.is_sample = 1` : order_type == 'bulk' ? sql` vodf.is_sample = 0` : sql`1=1`}
                 GROUP BY
                     vodf.order_description_uuid
             ) oe_sum ON oe.order_description_uuid = oe_sum.order_description_uuid
