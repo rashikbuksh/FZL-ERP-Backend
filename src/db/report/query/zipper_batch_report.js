@@ -34,7 +34,9 @@ export async function zipperBatchReportOnReceivedDate(req, res, next) {
 			oe_colors.bulk_approval_date as bulk_approval_date,
 			dyeing_batch.batch_type as batch_type,
 			dyeing_batch.order_info_uuid,
-			machine.water_capacity::float8 as water_capacity
+			machine.water_capacity::float8 as water_capacity,
+			dyeing_batch.yarn_issued,
+			dyeing_batch.yarn_issued_date
 		FROM zipper.dyeing_batch
 		LEFT JOIN hr.users ON dyeing_batch.created_by = users.uuid
 		LEFT JOIN public.machine ON dyeing_batch.machine_uuid = public.machine.uuid
@@ -134,6 +136,7 @@ export async function zipperBatchReportOnReceivedDate(req, res, next) {
 		WHERE expected.order_numbers IS NOT NULL
         AND ${from && to && filter_type == 'received_date' ? sql` dyeing_batch.received_date BETWEEN ${from} AND ${to}` : sql` TRUE`}
 		AND ${from && to && filter_type == 'dyeing_status_date' ? sql` dyeing_batch.batch_status_date BETWEEN ${from} AND ${to}` : sql` TRUE`}
+		AND ${from && to && filter_type == 'yarn_issued_date' ? sql` dyeing_batch.yarn_issued_date::date BETWEEN ${from} AND ${to}` : sql` TRUE`}
 		ORDER BY expected.order_numbers DESC, dyeing_batch.id DESC
 	`;
 	const resultPromise = db.execute(query);
