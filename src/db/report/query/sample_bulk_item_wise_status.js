@@ -14,6 +14,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             oi.uuid as order_uuid,
             oi.created_at AS issue_date,
             CASE 
+                WHEN (MAX(pl.challan_uuid) IS NOT NULL AND SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) >= oe_sum.order_quantity) THEN 'Complete'
                 WHEN MAX(pl.challan_uuid) IS NULL THEN 'Pending' 
                 ELSE 'Processing' 
             END AS status,
@@ -67,7 +68,11 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', toi.id::text) AS order_no,
             toi.uuid as order_uuid,
             toi.created_at AS issue_date,
-            CASE WHEN MAX(tc.uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
+            CASE 
+                WHEN (MAX(tc.uuid) IS NOT NULL AND SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) >= SUM(toe.quantity::float8)) THEN 'Complete'
+                WHEN MAX(tc.uuid) IS NULL THEN 'Pending' 
+                ELSE 'Processing' 
+            END AS status,
             MAX(tc.created_at) AS delivery_last_date,
             SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) AS delivery_quantity,
             SUM(toe.quantity::float8) AS order_quantity,
