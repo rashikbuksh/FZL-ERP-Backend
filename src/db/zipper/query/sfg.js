@@ -299,6 +299,7 @@ export async function selectSwatchInfoForBulk(req, res, next) {
 
 	const query = sql`
 				SELECT
+					jsonb_agg(sfg.uuid) as uuids,
                     sfg.recipe_uuid AS recipe_uuid,
 					oe.order_description_uuid AS order_description_uuid,
 					vod.order_info_uuid,
