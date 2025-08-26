@@ -602,11 +602,20 @@ export async function deliveryStatementReport(req, res, next) {
 		} else if (isThread) {
 			mainQuery = sql``.append(queryHeader).append(threadQuery);
 		} else {
-			mainQuery = sql``
-				.append(queryHeader)
-				.append(zipperQuery)
-				.append(sql` UNION ALL `)
-				.append(threadQuery);
+			if (type === 'Thread') {
+				mainQuery = sql``.append(queryHeader).append(threadQuery);
+			} else if (type === 'Zipper') {
+				mainQuery = sql``.append(queryHeader).append(zipperQuery);
+			} else if (['Nylon', 'Metal', 'Vislon'].includes(type)) {
+				console.log(type);
+				mainQuery = sql``.append(queryHeader).append(zipperQuery);
+			} else {
+				mainQuery = sql``
+					.append(queryHeader)
+					.append(zipperQuery)
+					.append(sql` UNION ALL `)
+					.append(threadQuery);
+			}
 		}
 
 		// ! is_bill removed from where clause in main query of zipper and thread
@@ -616,17 +625,12 @@ export async function deliveryStatementReport(req, res, next) {
 		const data = await resultPromise;
 
 		// filter by type
-		if (type === 'Thread') {
-			data.rows = data.rows.filter((row) => row.type === 'Thread');
-		} else if (type === 'Zipper') {
-			data.rows = data.rows.filter((row) => row.type !== 'Thread');
-		} else if (type === 'Nylon') {
+		if (type === 'Nylon') {
 			data.rows = data.rows.filter((row) => row.type === 'Nylon');
 		} else if (type === 'Metal') {
 			data.rows = data.rows.filter((row) => row.type === 'Metal');
 		} else if (type === 'Vislon') {
 			data.rows = data.rows.filter((row) => row.type === 'Vislon');
-		} else {
 		}
 
 		// first group by type, then party_name, then order_number, then item_description, then size
