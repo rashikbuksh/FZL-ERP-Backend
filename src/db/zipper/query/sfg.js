@@ -305,7 +305,7 @@ export async function selectSwatchInfoForBulk(req, res, next) {
 					vod.order_info_uuid,
 					oe.style AS style,
 					oe.color AS color,
-					oe.color_ref,
+					CASE WHEN oe.color_ref = '' THEN NULL ELSE oe.color_ref END AS color_ref,
 					CASE 
 						WHEN vod.order_type = 'tape' THEN 'Meter' 
 						WHEN vod.order_type = 'slider' THEN 'Pcs'
@@ -356,7 +356,7 @@ export async function selectSwatchInfoForBulk(req, res, next) {
                     vod.order_number,
 					vod.order_info_uuid,
                     vod.item_description,
-                    oe.color_ref,
+                    CASE WHEN oe.color_ref = '' THEN NULL ELSE oe.color_ref END,
                     vod.is_inch,
                     vod.order_type,
                     vod.order_description_created_at,
