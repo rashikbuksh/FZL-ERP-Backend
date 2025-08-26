@@ -20,7 +20,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             MAX(c.created_at) AS delivery_last_date,
             SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END) AS delivery_quantity,
             oe_sum.order_quantity AS order_quantity,
-            oe_sum.color_count as color_count,
+            oe_sum.color_count AS color_count,
             CONCAT(SUM(CASE WHEN (pl.challan_uuid IS NOT NULL AND ple.sfg_uuid IS NOT NULL) THEN COALESCE(ple.quantity::float8, 0) ELSE 0 END), '/', oe_sum.order_quantity) AS delivery_order_quantity,
             vodf.party_name,
             vodf.marketing_name
@@ -32,7 +32,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             LEFT JOIN (
                 SELECT 
                     SUM(CASE WHEN vodf.order_type = 'tape' THEN COALESCE(oe.size::float8, 0) ELSE COALESCE(oe.quantity::float8, 0) END) AS order_quantity,
-                    COUNT(DISTINCT oe.color) as color_count,
+                    COUNT(DISTINCT oe.color)::float8 as color_count,
                     vodf.order_description_uuid
                 FROM
                     zipper.order_entry oe
@@ -63,7 +63,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             MAX(tc.created_at) AS delivery_last_date,
             SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END) AS delivery_quantity,
             SUM(toe.quantity::float8) AS order_quantity,
-            COUNT(DISTINCT toe.color) as color_count,
+            COUNT(DISTINCT toe.color)::float8 AS color_count,
             CONCAT(SUM(CASE WHEN (tc.uuid IS NULL AND ple.thread_order_entry_uuid IS NULL) THEN 0 ELSE ple.quantity::float8 END), '/', SUM(toe.quantity::float8)) AS delivery_order_quantity,
             pm.name AS marketing_name,
             pp.name AS party_name
