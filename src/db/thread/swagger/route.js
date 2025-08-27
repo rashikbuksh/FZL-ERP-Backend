@@ -183,45 +183,6 @@ export const pathThreadOrderInfo = {
 			},
 		},
 	},
-	'/thread/order-swatch': {
-		get: {
-			tags: ['thread.order_info'],
-			summary: 'Get Thread Order Swatch',
-			description: 'Get Thread Order Swatch',
-			parameters: [
-				SE.parameter_query('type', 'type', [
-					'pending',
-					'completed',
-					'all',
-				]),
-				SE.parameter_query('order_type', 'order_type', [
-					'complete_order',
-					'incomplete_order',
-				]),
-			],
-
-			responses: {
-				200: SE.response_schema(200, {
-					uuid: SE.uuid(),
-					id: SE.integer(),
-					order_number: SE.string(),
-					style: SE.string(),
-					color: SE.string(),
-					recipe_uuid: SE.uuid(),
-					recipe_name: SE.string(),
-					po: SE.string(),
-					count_length_uuid: SE.uuid(),
-					count: SE.integer(),
-					length: SE.integer(),
-					count_length_name: SE.string(),
-					order_quantity: SE.integer(),
-					created_at: SE.date_time(),
-					updated_at: SE.date_time(),
-					remarks: SE.string(),
-				}),
-			},
-		},
-	},
 	'/thread/order-info/send-from-ho/update/by/{uuid}': {
 		put: {
 			tags: ['thread.order_info'],
@@ -445,6 +406,125 @@ export const pathThreadOrderEntry = {
 			description: 'Update Thread Swatch Approval Received',
 			parameters: [SE.parameter_params('uuid', 'uuid')],
 			requestBody: SE.requestBody({
+				swatch_approval_received: SE.boolean(),
+				swatch_approval_received_date: SE.date_time(),
+				swatch_approval_received_by: SE.uuid(),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'thread/order_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/thread/order-swatch': {
+		get: {
+			tags: ['thread.order_entry'],
+			summary: 'Get Thread Order Swatch',
+			description: 'Get Thread Order Swatch',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+				SE.parameter_query('order_type', 'order_type', [
+					'complete_order',
+					'incomplete_order',
+				]),
+			],
+
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.integer(),
+					order_number: SE.string(),
+					style: SE.string(),
+					color: SE.string(),
+					recipe_uuid: SE.uuid(),
+					recipe_name: SE.string(),
+					po: SE.string(),
+					count_length_uuid: SE.uuid(),
+					count: SE.integer(),
+					length: SE.integer(),
+					count_length_name: SE.string(),
+					order_quantity: SE.integer(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+				}),
+			},
+		},
+	},
+	'/thread/order-swatch-bulk': {
+		get: {
+			tags: ['thread.order_entry'],
+			summary: 'Get Thread Order Swatch',
+			description: 'Get Thread Order Swatch',
+			parameters: [
+				SE.parameter_query('type', 'type', [
+					'pending',
+					'completed',
+					'all',
+				]),
+				SE.parameter_query('order_type', 'order_type', [
+					'complete_order',
+					'incomplete_order',
+				]),
+			],
+
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.integer(),
+					order_number: SE.string(),
+					style: SE.string(),
+					color: SE.string(),
+					recipe_uuid: SE.uuid(),
+					recipe_name: SE.string(),
+					po: SE.string(),
+					count_length_uuid: SE.uuid(),
+					count: SE.integer(),
+					length: SE.integer(),
+					count_length_name: SE.string(),
+					order_quantity: SE.integer(),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string(),
+				}),
+			},
+		},
+	},
+	'/thread/update/order-swatch-bulk/{uuid}': {
+		put: {
+			tags: ['thread.order_entry'],
+			summary: 'Update Thread Order Swatch Status Bulk',
+			description: 'Update Thread Order Swatch Status Bulk',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody({
+				uuids: SE.array(SE.uuid()),
+				recipe_uuid: SE.uuid(),
+				swatch_approval_date: SE.date_time(),
+				updated_by: SE.uuid(),
+				updated_at: SE.date_time(),
+			}),
+			responses: {
+				200: SE.response_schema_ref(200, 'thread/order_entry'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/thread/swatch-approval-received-bulk/{uuid}': {
+		put: {
+			tags: ['thread.order_entry'],
+			summary: 'Update Thread Swatch Approval Received',
+			description: 'Update Thread Swatch Approval Received',
+			parameters: [SE.parameter_params('uuid', 'uuid')],
+			requestBody: SE.requestBody({
+				uuids: SE.array(SE.uuid()),
 				swatch_approval_received: SE.boolean(),
 				swatch_approval_received_date: SE.date_time(),
 				swatch_approval_received_by: SE.uuid(),

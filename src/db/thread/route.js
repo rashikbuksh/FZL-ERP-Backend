@@ -44,7 +44,6 @@ threadRouter.put(
 	'/order-info/swatch-attachment/update/by/:uuid',
 	order_infoOperations.updateSwatchAttachment
 );
-threadRouter.get('/order-swatch', order_infoOperations.selectThreadSwatch);
 
 // order_entry routes
 threadRouter.get('/order-entry', order_entryOperations.selectAll);
@@ -63,6 +62,19 @@ threadRouter.get(
 threadRouter.put(
 	'/swatch-approval-received/:uuid',
 	order_entryOperations.updateSwatchApprovalReceivedByUuid
+);
+threadRouter.get('/order-swatch', order_entryOperations.selectThreadSwatch);
+threadRouter.get(
+	'/order-swatch-bulk',
+	order_entryOperations.selectThreadSwatchBulk
+);
+threadRouter.put(
+	'/update/order-swatch-bulk/:uuid',
+	order_entryOperations.updateSwatchStatusBulkByUuids
+);
+threadRouter.put(
+	'/swatch-approval-received-bulk/:uuid',
+	order_entryOperations.updateSwatchApprovalReceivedBulkByUuids
 );
 
 // batch_entry routes
