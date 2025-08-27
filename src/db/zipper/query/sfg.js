@@ -325,7 +325,8 @@ export async function selectSwatchInfoForBulk(req, res, next) {
 					vod.receive_by_factory_by_name,
 					oe.swatch_approval_received,
 					MAX(oe.swatch_approval_received_date) AS swatch_approval_received_date,
-					oe.swatch_approval_received_by
+					oe.swatch_approval_received_by,
+					swatch_approval_received_by.name as swatch_approval_received_by_name
 				FROM
 					zipper.v_order_details vod
 				LEFT JOIN zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
