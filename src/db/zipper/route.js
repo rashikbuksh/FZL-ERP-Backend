@@ -191,6 +191,11 @@ zipperRouter.put(
 	orderEntryOperations.updateSwatchApprovalReceivedByUuid
 );
 
+zipperRouter.put(
+	'/swatch-approval-received-bulk-update/:order_description_uuid/:style/:color/:bleaching',
+	orderEntryOperations.updateSwatchApprovalReceivedByOrderDescriptionUuidStyleColorBleach
+);
+
 // --------------------- SFG ROUTES ---------------------
 
 zipperRouter.get('/sfg', sfgOperations.selectAll);
@@ -200,10 +205,7 @@ zipperRouter.put('/sfg/:uuid', sfgOperations.update);
 zipperRouter.delete('/sfg/:uuid', sfgOperations.remove);
 zipperRouter.get('/sfg-swatch', sfgOperations.selectSwatchInfo);
 zipperRouter.put('/sfg-swatch/:uuid', sfgOperations.updateSwatchBySfgUuid);
-zipperRouter.get(
-	'/sfg-swatch-bulk',
-	sfgOperations.selectSwatchInfoForBulk
-);
+zipperRouter.get('/sfg-swatch-bulk', sfgOperations.selectSwatchInfoForBulk);
 zipperRouter.put(
 	'/sfg-swatch-bulk-update/:order_description_uuid/:style/:color/:bleaching',
 	sfgOperations.updateSwatchByOrderDescriptionUuidStyleColorBleach

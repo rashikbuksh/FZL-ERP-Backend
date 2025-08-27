@@ -960,3 +960,43 @@ export async function updateSwatchApprovalReceivedByUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function updateSwatchApprovalReceivedByOrderDescriptionUuidStyleColorBleach(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { order_description_uuid, style, color, bleaching } = req.params;
+
+	const orderEntryPromise = db
+		.update(order_entry)
+		.set({
+			swatch_approval_received: req.body.swatch_approval_received,
+			swatch_approval_received_date:
+				req.body.swatch_approval_received_date,
+			swatch_approval_received_by: req.body.swatch_approval_received_by,
+		})
+		.where(
+			and(
+				eq(order_entry.order_description_uuid, order_description_uuid),
+				eq(order_entry.style, style),
+				eq(order_entry.color, color),
+				eq(order_entry.bleaching, bleaching)
+			)
+		)
+		.returning({ updatedId: order_entry.uuid });
+
+	try {
+		const data = await orderEntryPromise;
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

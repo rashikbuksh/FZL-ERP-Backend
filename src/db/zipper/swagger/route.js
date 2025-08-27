@@ -1308,6 +1308,54 @@ export const pathZipperOrderEntry = {
 			},
 		},
 	},
+	'/zipper/swatch-approval-received-bulk-update/{order_description_uuid}/{style}/{color}/{bleaching}':
+		{
+			put: {
+				tags: ['zipper.order_entry'],
+				summary: 'Update an existing order entry by uuid',
+				description: '',
+				// operationId: "updatePet",
+				consumes: ['application/json'],
+				produces: ['application/json'],
+				parameters: [
+					SE.parameter_params(
+						'order description to update',
+						'order_description_uuid',
+						'string',
+						SE.uuid()
+					),
+					SE.parameter_params(
+						'style to update',
+						'style',
+						'string',
+						SE.string('style 1')
+					),
+					SE.parameter_params(
+						'color to update',
+						'color',
+						'string',
+						SE.string('black')
+					),
+					SE.parameter_params(
+						'bleaching to update',
+						'bleaching',
+						'string',
+						SE.string('bleaching 1')
+					),
+				],
+				requestBody: SE.requestBody({
+					swatch_approval_received: SE.boolean(),
+					swatch_approval_received_date: SE.date_time(),
+					swatch_approval_received_by: SE.uuid(),
+				}),
+				responses: {
+					200: SE.response_schema_ref(200, 'zipper/order_entry'),
+					400: SE.response(400),
+					404: SE.response(404),
+					405: SE.response(405),
+				},
+			},
+		},
 };
 
 const sfg_extra_fields = {
