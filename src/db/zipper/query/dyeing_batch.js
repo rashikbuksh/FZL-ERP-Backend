@@ -217,7 +217,7 @@ export async function selectAll(req, res, next) {
 					: sql`1 = 1`
 		}
 		AND expected.order_numbers IS NOT NULL
-		ORDER BY expected.order_numbers DESC, dyeing_batch.id DESC
+		ORDER BY dyeing_batch.id DESC
 	`;
 	const resultPromise = db.execute(query);
 
