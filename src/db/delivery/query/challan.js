@@ -502,7 +502,8 @@ export async function select(req, res, next) {
 										LEFT JOIN thread.order_entry toe ON packing_list_entry.thread_order_entry_uuid = toe.uuid
 									GROUP BY
 										packing_list.challan_uuid,
-										packing_list.item_for
+										packing_list.item_for,
+										order_entry.order_description_uuid
 								) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
 								LEFT JOIN
 									zipper.v_order_details_full vodf ON challan.order_info_uuid = vodf.order_info_uuid AND packing_list_count.order_description_uuid = vodf.order_description_uuid
