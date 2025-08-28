@@ -207,7 +207,7 @@ zipperRouter.get('/sfg-swatch', sfgOperations.selectSwatchInfo);
 zipperRouter.put('/sfg-swatch/:uuid', sfgOperations.updateSwatchBySfgUuid);
 zipperRouter.get('/sfg-swatch-bulk', sfgOperations.selectSwatchInfoForBulk);
 zipperRouter.put(
-	'/sfg-swatch-bulk-update/:order_description_uuid/:style/:color/:bleaching',
+	'/sfg-swatch-bulk-update/:order_number',
 	sfgOperations.updateSwatchByOrderDescriptionUuidStyleColorBleach
 );
 zipperRouter.get('/sfg/by/:section', sfgOperations.selectSfgBySection);

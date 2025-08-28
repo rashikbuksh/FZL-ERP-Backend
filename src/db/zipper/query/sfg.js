@@ -418,22 +418,12 @@ export async function updateSwatchByOrderDescriptionUuidStyleColorBleach(
 ) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_description_uuid, style, color, bleaching } = req.params;
-
-	const { recipe_uuid, swatch_approval_date } = req.body;
+	const { recipe_uuid, swatch_approval_date, uuids } = req.body;
 
 	const sfgQuery = sql`
 		UPDATE zipper.sfg
 		SET recipe_uuid = ${recipe_uuid}
-		WHERE order_entry_uuid IN (
-			SELECT oe.uuid
-			FROM zipper.order_entry oe
-			JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
-			WHERE od.uuid = ${order_description_uuid}
-			AND oe.style = ${style}
-			AND oe.color = ${color}
-			AND oe.bleaching = ${bleaching}
-		)
+		WHERE uuid IN (${sql.join(uuids, sql`, `)})
 		RETURNING uuid AS updatedId;
 		`;
 
@@ -443,11 +433,8 @@ export async function updateSwatchByOrderDescriptionUuidStyleColorBleach(
 			WHERE order_entry.uuid IN (
 				SELECT oe.uuid
 				FROM zipper.order_entry oe
-				JOIN zipper.order_description od ON oe.order_description_uuid = od.uuid
-				WHERE od.uuid = ${order_description_uuid}
-				AND oe.style = ${style}
-				AND oe.color = ${color}
-				AND oe.bleaching = ${bleaching}
+				JOIN zipper.sfg ON oe.uuid = sfg.order_entry_uuid
+				WHERE sfg.uuid IN (${sql.join(uuids, sql`, `)})
 			)
 			RETURNING order_entry.uuid AS updatedId;
 		`;
