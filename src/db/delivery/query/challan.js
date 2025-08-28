@@ -197,51 +197,51 @@ export async function selectAll(req, res, next) {
 	FROM
 		(
 			SELECT
-				DISTINCT challan.uuid AS uuid,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				challan.uuid AS uuid,
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text) ELSE
 					CONCAT('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text) END AS challan_number,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					challan.order_info_uuid ELSE
 					challan.thread_order_info_uuid END AS order_info_uuid,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.order_number ELSE
 					CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', toi.id::text) END AS order_number,
 				packing_list_count.packing_list_count AS total_carton_quantity,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.buyer_uuid ELSE
 					toi.buyer_uuid END AS buyer_uuid,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.buyer_name ELSE
 					pb.name END AS buyer_name,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.party_uuid ELSE
 					toi.party_uuid END AS party_uuid,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.party_name ELSE
 					pp.name END AS party_name,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.merchandiser_uuid ELSE
 					toi.merchandiser_uuid END AS merchandiser_uuid,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.merchandiser_name ELSE
 					pm.name END AS merchandiser_name,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.factory_uuid ELSE
 					toi.factory_uuid END AS factory_uuid,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.factory_name ELSE
 					pf.name END AS factory_name,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.factory_address ELSE
 					pf.address END AS factory_address,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.is_sample ELSE
 					toi.is_sample END AS is_sample,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.marketing_uuid ELSE
 					toi.marketing_uuid END AS marketing_uuid,
-				CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					vodf.marketing_name ELSE
 					toi_marketing.name END AS marketing_name,
 				challan.vehicle_uuid AS vehicle_uuid,
@@ -258,7 +258,7 @@ export async function selectAll(req, res, next) {
 				challan.updated_at AS updated_at,
 				challan.remarks AS remarks,
 				challan.delivery_date,
-				packing_list.item_for,
+				packing_list_count.item_for,
 				challan.is_own,
 				challan.delivery_type,
 				challan.is_delivered,
@@ -266,8 +266,8 @@ export async function selectAll(req, res, next) {
 				challan.is_out_for_delivery_by,
 				is_out_for_delivery_by.name as is_out_for_delivery_by_name,
 				challan.is_out_for_delivery_date,
-				colors.color,
-				colors.color_ref,
+				packing_list_count.color,
+				packing_list_count.color_ref,
 				challan.receive_status_by,
 				receive_status_by.name AS receive_status_by_name,
 				challan.receive_status_date,
@@ -279,14 +279,35 @@ export async function selectAll(req, res, next) {
 				delivery.challan
 			LEFT JOIN
 				hr.users ON challan.created_by = hr.users.uuid
+			LEFT JOIN (
+				SELECT
+					packing_list.challan_uuid,
+					packing_list.item_for,
+					COUNT(DISTINCT packing_list.uuid) AS packing_list_count,
+					ARRAY_AGG(DISTINCT CASE
+						WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_entry.color ELSE toe.color END
+					) AS color,
+					ARRAY_AGG(DISTINCT CASE
+						WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_entry.color_ref ELSE toe.color_ref END
+					) AS color_ref,
+					order_entry.order_description_uuid
+				FROM
+					delivery.packing_list
+					LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+					LEFT JOIN zipper.sfg ON packing_list_entry.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+					LEFT JOIN thread.order_entry toe ON packing_list_entry.thread_order_entry_uuid = toe.uuid
+				GROUP BY
+					packing_list.challan_uuid,
+					packing_list.item_for,
+					order_entry.order_description_uuid
+			) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
 			LEFT JOIN
-				zipper.v_order_details_full vodf ON challan.order_info_uuid = vodf.order_info_uuid
-			LEFT JOIN
-				delivery.packing_list ON challan.uuid = packing_list.challan_uuid
+				zipper.v_order_details_full vodf ON challan.order_info_uuid = vodf.order_info_uuid AND packing_list_count.order_description_uuid = vodf.order_description_uuid
 			LEFT JOIN
 				delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
 			LEFT JOIN 
-				thread.order_info toi ON delivery.packing_list.thread_order_info_uuid = toi.uuid
+				thread.order_info toi ON delivery.challan.thread_order_info_uuid = toi.uuid
 			LEFT JOIN
 				public.buyer pb ON toi.buyer_uuid = pb.uuid
 			LEFT JOIN
@@ -297,32 +318,6 @@ export async function selectAll(req, res, next) {
 				public.factory pf ON toi.factory_uuid = pf.uuid
 			LEFT JOIN
 				public.marketing toi_marketing ON toi.marketing_uuid = toi_marketing.uuid
-			LEFT JOIN (
-				SELECT
-					COUNT(packing_list.uuid) AS packing_list_count,
-					packing_list.challan_uuid
-				FROM
-					delivery.packing_list
-				GROUP BY
-					packing_list.challan_uuid
-			) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
-			LEFT JOIN (
-			         SELECT 
-					 		delivery.challan.uuid,
-							ARRAY_AGG(DISTINCT CASE
-								WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_entry.color ELSE toe.color END
-							) AS color,
-							ARRAY_AGG(DISTINCT CASE
-								WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_entry.color_ref ELSE toe.color_ref END
-							) AS color_ref
-					FROM delivery.challan
-					LEFT JOIN delivery.packing_list ON challan.uuid = packing_list.challan_uuid
-					LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
-					LEFT JOIN zipper.sfg ON packing_list_entry.sfg_uuid = sfg.uuid
-					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-					LEFT JOIN thread.order_entry toe ON packing_list_entry.thread_order_entry_uuid = toe.uuid
-					GROUP BY delivery.challan.uuid
-			) AS colors ON challan.uuid = colors.uuid
 			LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
 			LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
 			LEFT JOIN hr.users is_out_for_delivery_by ON challan.is_out_for_delivery_by = is_out_for_delivery_by.uuid
@@ -401,60 +396,63 @@ export async function select(req, res, next) {
 							sub_query.packing_numbers,
 							sub_query.packing_list_numbers,
 							sub_query.total_quantity,
-							sub_query.total_poly_quantity
+							sub_query.total_poly_quantity,
+							sub_query.gate_pass
 						FROM
 							(
 								SELECT
-										challan.uuid as uuid,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+									challan.uuid AS uuid,
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 										CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text) ELSE
 										CONCAT('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text) END AS challan_number,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 										challan.order_info_uuid ELSE
 										challan.thread_order_info_uuid END AS order_info_uuid,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', order_info.id::text) ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.order_number ELSE
 										CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', toi.id::text) END AS order_number,
 									packing_list_count.packing_list_count AS total_carton_quantity,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										zipper.order_info.buyer_uuid ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.buyer_uuid ELSE
 										toi.buyer_uuid END AS buyer_uuid,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										public.buyer.name ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.buyer_name ELSE
 										pb.name END AS buyer_name,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										zipper.order_info.party_uuid ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.party_uuid ELSE
 										toi.party_uuid END AS party_uuid,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										public.party.name ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.party_name ELSE
 										pp.name END AS party_name,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										zipper.order_info.merchandiser_uuid ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.merchandiser_uuid ELSE
 										toi.merchandiser_uuid END AS merchandiser_uuid,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										public.merchandiser.name ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.merchandiser_name ELSE
 										pm.name END AS merchandiser_name,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										zipper.order_info.factory_uuid ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.factory_uuid ELSE
 										toi.factory_uuid END AS factory_uuid,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										public.factory.name ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.factory_name ELSE
 										pf.name END AS factory_name,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										public.factory.address ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.factory_address ELSE
 										pf.address END AS factory_address,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										zipper.order_info.marketing_uuid ELSE
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.is_sample ELSE
+										toi.is_sample END AS is_sample,
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.marketing_uuid ELSE
 										toi.marketing_uuid END AS marketing_uuid,
-									CASE WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-										public.marketing.name ELSE
-										pmm.name END AS marketing_name,
-									challan.vehicle_uuid,
+									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
+										vodf.marketing_name ELSE
+										toi_marketing.name END AS marketing_name,
+									challan.vehicle_uuid AS vehicle_uuid,
 									vehicle.name AS vehicle_name,
 									vehicle.driver_name AS vehicle_driver_name,
 									CAST(challan.carton_quantity AS NUMERIC) AS carton_quantity,
 									challan.receive_status AS receive_status,
-									packing_list.gate_pass AS gate_pass,
 									challan.name AS name,
 									CAST(challan.delivery_cost AS NUMERIC) AS delivery_cost,
 									challan.is_hand_delivery AS is_hand_delivery,
@@ -464,88 +462,64 @@ export async function select(req, res, next) {
 									challan.updated_at AS updated_at,
 									challan.remarks AS remarks,
 									challan.delivery_date,
-									packing_list.item_for,
+									packing_list_count.item_for,
 									challan.is_own,
-									pi_cash.pi_cash_numbers,
 									challan.delivery_type,
 									challan.is_delivered,
-									challan.is_delivered_date,
-									challan.is_delivered_by,
-									is_delivered_by.name AS is_delivered_by_name,
 									challan.is_out_for_delivery,
 									challan.is_out_for_delivery_by,
 									is_out_for_delivery_by.name as is_out_for_delivery_by_name,
 									challan.is_out_for_delivery_date,
+									packing_list_count.color,
+									packing_list_count.color_ref,
 									challan.receive_status_by,
 									receive_status_by.name AS receive_status_by_name,
-									challan.receive_status_date
+									challan.receive_status_date,
+									challan.is_delivered_by,
+									is_delivered_by.name AS is_delivered_by_name,
+									challan.is_delivered_date
 								FROM
 									delivery.challan
 								LEFT JOIN
 									hr.users ON challan.created_by = hr.users.uuid
-								LEFT JOIN
-									zipper.order_info ON challan.order_info_uuid = zipper.order_info.uuid
-								LEFT JOIN
-									delivery.packing_list ON challan.uuid = packing_list.challan_uuid
-								LEFT JOIN
-									public.buyer ON zipper.order_info.buyer_uuid = public.buyer.uuid
-								LEFT JOIN
-									public.party ON zipper.order_info.party_uuid = public.party.uuid
-								LEFT JOIN
-									public.merchandiser ON zipper.order_info.merchandiser_uuid = public.merchandiser.uuid
-								LEFT JOIN
-									public.factory ON zipper.order_info.factory_uuid = public.factory.uuid
-								LEFT JOIN
-									public.marketing ON zipper.order_info.marketing_uuid = public.marketing.uuid
-								LEFT JOIN
-									delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
-								LEFT JOIN
-									thread.order_info toi on delivery.packing_list.thread_order_info_uuid = toi.uuid
-								LEFT JOIN
-									public.buyer pb on toi.buyer_uuid = pb.uuid
-								LEFT JOIN
-									public.party pp on toi.party_uuid = pp.uuid
-								LEFT JOIN
-									public.merchandiser pm on toi.merchandiser_uuid = pm.uuid
-								LEFT JOIN
-									public.factory pf on toi.factory_uuid = pf.uuid
-								LEFT JOIN 
-									public.marketing pmm on toi.marketing_uuid = pmm.uuid
-								LEFT JOIN (
-											SELECT 
-												array_agg(DISTINCT CASE 
-													WHEN pi_cash.is_pi = 1 THEN CONCAT('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
-													ELSE CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) 
-												END ) AS pi_cash_numbers,
-												vodf.order_info_uuid,
-												toi.uuid AS thread_order_info_uuid
-											FROM
-												commercial.pi_cash
-											LEFT JOIN
-												commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
-											LEFT JOIN
-												zipper.sfg ON pi_cash_entry.sfg_uuid = zipper.sfg.uuid
-											LEFT JOIN
-												zipper.order_entry ON sfg.order_entry_uuid = zipper.order_entry.uuid
-											LEFT JOIN
-												zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-											LEFT JOIN
-												thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
-											LEFT JOIN
-												thread.order_info toi ON toe.order_info_uuid = toi.uuid
-											GROUP BY
-												vodf.order_info_uuid, toi.uuid
-											
-										) AS pi_cash ON challan.order_info_uuid = pi_cash.order_info_uuid OR challan.thread_order_info_uuid = pi_cash.thread_order_info_uuid
 								LEFT JOIN (
 									SELECT
-										COUNT(packing_list.uuid) AS packing_list_count,
-										packing_list.challan_uuid
+										packing_list.challan_uuid,
+										packing_list.item_for,
+										COUNT(DISTINCT packing_list.uuid) AS packing_list_count,
+										ARRAY_AGG(DISTINCT CASE
+											WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_entry.color ELSE toe.color END
+										) AS color,
+										ARRAY_AGG(DISTINCT CASE
+											WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_entry.color_ref ELSE toe.color_ref END
+										) AS color_ref,
+										order_entry.order_description_uuid
 									FROM
 										delivery.packing_list
+										LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
+										LEFT JOIN zipper.sfg ON packing_list_entry.sfg_uuid = sfg.uuid
+										LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+										LEFT JOIN thread.order_entry toe ON packing_list_entry.thread_order_entry_uuid = toe.uuid
 									GROUP BY
-										packing_list.challan_uuid
+										packing_list.challan_uuid,
+										packing_list.item_for
 								) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
+								LEFT JOIN
+									zipper.v_order_details_full vodf ON challan.order_info_uuid = vodf.order_info_uuid AND packing_list_count.order_description_uuid = vodf.order_description_uuid
+								LEFT JOIN
+									delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
+								LEFT JOIN 
+									thread.order_info toi ON delivery.challan.thread_order_info_uuid = toi.uuid
+								LEFT JOIN
+									public.buyer pb ON toi.buyer_uuid = pb.uuid
+								LEFT JOIN
+									public.party pp ON toi.party_uuid = pp.uuid
+								LEFT JOIN
+									public.merchandiser pm ON toi.merchandiser_uuid = pm.uuid
+								LEFT JOIN
+									public.factory pf ON toi.factory_uuid = pf.uuid
+								LEFT JOIN
+									public.marketing toi_marketing ON toi.marketing_uuid = toi_marketing.uuid
 								LEFT JOIN hr.users receive_status_by ON challan.receive_status_by = receive_status_by.uuid
 								LEFT JOIN hr.users is_delivered_by ON challan.is_delivered_by = is_delivered_by.uuid
 								LEFT JOIN hr.users is_out_for_delivery_by ON challan.is_out_for_delivery_by = is_out_for_delivery_by.uuid
@@ -563,7 +537,12 @@ export async function select(req, res, next) {
 									)
 								) AS packing_list_numbers,
 								SUM(packing_list_entry.quantity)::float8 AS total_quantity,
-								SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity
+								SUM(packing_list_entry.poli_quantity)::float8 AS total_poly_quantity,
+								CASE
+									WHEN COUNT(packing_list.uuid) = SUM(CASE WHEN packing_list.gate_pass = 1 THEN 1 ELSE 0 END) 
+									THEN 1
+									ELSE 0
+								END AS gate_pass
 							FROM
 								delivery.packing_list
 							LEFT JOIN

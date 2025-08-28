@@ -447,6 +447,8 @@ export async function updateSwatchApprovalReceivedByUuid(req, res, next) {
 			swatch_approval_received_date:
 				req.body.swatch_approval_received_date,
 			swatch_approval_received_by: req.body.swatch_approval_received_by,
+			updated_by: updated_by,
+			updated_at: updated_at,
 		})
 		.where(eq(order_entry.uuid, req.params.uuid))
 		.returning({ updatedId: order_entry.uuid });
@@ -715,6 +717,8 @@ export async function updateSwatchApprovalReceivedBulkByUuids(req, res, next) {
 			swatch_approval_received: swatch_approval_received,
 			swatch_approval_received_date: swatch_approval_received_date,
 			swatch_approval_received_by: swatch_approval_received_by,
+			updated_by: updated_by,
+			updated_at: updated_at,
 		})
 		.where(inArray(order_entry.uuid, uuids))
 		.returning({ updatedId: order_entry.uuid });
