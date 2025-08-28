@@ -385,7 +385,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			ROUND(
                 CASE
                     WHEN vodf.order_type = 'tape' THEN 
-                        (tcr.top + tcr.bottom + oe.quantity) / 100.0 / tcr.dyed_mtr_per_kg
+                        (oe.size::numeric) / tcr.dyed_mtr_per_kg
                     ELSE 
                         (tcr.top + tcr.bottom + 
                             CASE WHEN vodf.is_inch = 1 
@@ -409,7 +409,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 		LEFT JOIN zipper.tape_coil_required tcr ON
 					vodf.item = tcr.item_uuid  
 					AND vodf.zipper_number = tcr.zipper_number_uuid 
-					AND vodf.end_type = tcr.end_type_uuid 
+					AND (CASE WHEN vodf.order_type = 'tape' THEN tcr.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE vodf.end_type = tcr.end_type_uuid END)
 					AND (
 						lower(vodf.item_name) != 'nylon' 
 						OR vodf.nylon_stopper = tcr.nylon_stopper_uuid
