@@ -378,9 +378,9 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 			vodf.is_inch,
 			oe.quantity::float8 as quantity,
 			CASE 
-				WHEN vodf.is_inch = 1 THEN ROUND((oe.size::float8 * 0.0254 * oe.quantity::float8)::numeric, 4)::float8 -- Convert inch to meter
+				WHEN vodf.is_inch = 1 THEN ROUND(((oe.size::float8 * 2.54 + tcr.top + tcr.bottom) * oe.quantity::float8)::numeric * 0.01, 4)::float8 -- Convert inch to CM to meter
 				WHEN vodf.order_type = 'tape' THEN ROUND((oe.size::float8)::numeric, 4)::float8 -- Keep tape size in meter
-				ELSE ROUND((oe.size::float8 * 0.01 * oe.quantity::float8)::numeric, 4)::float8 -- Convert cm to meter
+				ELSE ROUND(((oe.size::float8 + tcr.top + tcr.bottom) * 0.01 * oe.quantity::float8)::numeric, 4)::float8 -- Convert cm to meter
 			END as quantity_meter,
 			ROUND(
                 CASE
