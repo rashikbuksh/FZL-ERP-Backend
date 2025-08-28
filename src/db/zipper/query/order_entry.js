@@ -968,7 +968,7 @@ export async function updateSwatchApprovalReceivedByOrderDescriptionUuidStyleCol
 ) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { order_description_uuid, style, color, bleaching } = req.params;
+	const { uuids } = req.body;
 
 	const orderEntryPromise = db
 		.update(order_entry)
@@ -978,14 +978,7 @@ export async function updateSwatchApprovalReceivedByOrderDescriptionUuidStyleCol
 				req.body.swatch_approval_received_date,
 			swatch_approval_received_by: req.body.swatch_approval_received_by,
 		})
-		.where(
-			and(
-				eq(order_entry.order_description_uuid, order_description_uuid),
-				eq(order_entry.style, style),
-				eq(order_entry.color, color),
-				eq(order_entry.bleaching, bleaching)
-			)
-		)
+		.where(inArray(order_entry.uuid, uuids))
 		.returning({ updatedId: order_entry.uuid });
 
 	try {

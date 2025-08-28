@@ -192,7 +192,7 @@ zipperRouter.put(
 );
 
 zipperRouter.put(
-	'/swatch-approval-received-bulk-update/:order_description_uuid/:style/:color/:bleaching',
+	'/swatch-approval-received-bulk-update/:order_number',
 	orderEntryOperations.updateSwatchApprovalReceivedByOrderDescriptionUuidStyleColorBleach
 );
 
