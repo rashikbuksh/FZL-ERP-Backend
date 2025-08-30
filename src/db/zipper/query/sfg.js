@@ -264,13 +264,19 @@ export async function updateSwatchBySfgUuid(req, res, next) {
 
 	const sfgPromise = db
 		.update(sfg)
-		.set({ recipe_uuid: req.body.recipe_uuid })
+		.set({
+			recipe_uuid: req.body.recipe_uuid,
+			updated_by: req.body.updated_by,
+			updated_at: req.body.updated_at,
+		})
 		.where(eq(sfg.uuid, req.params.uuid))
 		.returning({ updatedId: sfg.uuid });
 
 	const query = sql`
 			UPDATE zipper.order_entry
-			SET swatch_approval_date = ${req.body.swatch_approval_date}
+			SET swatch_approval_date = ${req.body.swatch_approval_date},
+				updated_by = ${req.body.updated_by},
+				updated_at = ${req.body.updated_at}
 			FROM zipper.sfg
 			WHERE order_entry.uuid = sfg.order_entry_uuid
 			AND sfg.uuid = ${req.params.uuid}
@@ -418,18 +424,24 @@ export async function updateSwatchByOrderDescriptionUuidStyleColorBleach(
 ) {
 	if (!(await validateRequest(req, next))) return;
 
-	const { recipe_uuid, swatch_approval_date, uuids } = req.body;
+	const { recipe_uuid, swatch_approval_date, uuids, updated_by, updated_at } =
+		req.body;
 
 	const sfgQuery = sql`
 		UPDATE zipper.sfg
-		SET recipe_uuid = ${recipe_uuid}
+		SET 
+			recipe_uuid = ${recipe_uuid},
+			updated_by = ${updated_by},
+			updated_at = ${updated_at}
 		WHERE uuid IN (${sql.join(uuids, sql`, `)})
 		RETURNING uuid AS updatedId;
 		`;
 
 	const query = sql`
 			UPDATE zipper.order_entry
-			SET swatch_approval_date = ${swatch_approval_date}
+			SET swatch_approval_date = ${swatch_approval_date},
+				updated_by = ${updated_by},
+				updated_at = ${updated_at}
 			WHERE order_entry.uuid IN (
 				SELECT oe.uuid
 				FROM zipper.order_entry oe
