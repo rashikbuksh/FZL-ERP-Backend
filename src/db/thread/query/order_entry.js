@@ -440,13 +440,20 @@ export async function selectThreadSwatchApprovalReceived(req, res, next) {
 export async function updateSwatchApprovalReceivedByUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	const {
+		swatch_approval_received,
+		swatch_approval_received_date,
+		swatch_approval_received_by,
+		updated_by,
+		updated_at,
+	} = req.body;
+
 	const orderEntryPromise = db
 		.update(order_entry)
 		.set({
-			swatch_approval_received: req.body.swatch_approval_received,
-			swatch_approval_received_date:
-				req.body.swatch_approval_received_date,
-			swatch_approval_received_by: req.body.swatch_approval_received_by,
+			swatch_approval_received: swatch_approval_received,
+			swatch_approval_received_date: swatch_approval_received_date,
+			swatch_approval_received_by: swatch_approval_received_by,
 			updated_by: updated_by,
 			updated_at: updated_at,
 		})
@@ -709,6 +716,8 @@ export async function updateSwatchApprovalReceivedBulkByUuids(req, res, next) {
 		swatch_approval_received,
 		swatch_approval_received_date,
 		swatch_approval_received_by,
+		updated_by,
+		updated_at,
 	} = req.body;
 
 	const orderEntryPromise = db
