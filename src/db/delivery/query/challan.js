@@ -401,7 +401,7 @@ export async function select(req, res, next) {
 						FROM
 							(
 								SELECT
-									challan.uuid AS uuid,
+									DISTINCT challan.uuid AS uuid,
 									CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 										CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', challan.id::text) ELSE
 										CONCAT('TC', to_char(challan.created_at, 'YY'), '-', challan.id::text) END AS challan_number,
@@ -492,8 +492,7 @@ export async function select(req, res, next) {
 										) AS color,
 										ARRAY_AGG(DISTINCT CASE
 											WHEN packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN order_entry.color_ref ELSE toe.color_ref END
-										) AS color_ref,
-										order_entry.order_description_uuid
+										) AS color_ref
 									FROM
 										delivery.packing_list
 										LEFT JOIN delivery.packing_list_entry ON packing_list.uuid = packing_list_entry.packing_list_uuid
@@ -502,11 +501,10 @@ export async function select(req, res, next) {
 										LEFT JOIN thread.order_entry toe ON packing_list_entry.thread_order_entry_uuid = toe.uuid
 									GROUP BY
 										packing_list.challan_uuid,
-										packing_list.item_for,
-										order_entry.order_description_uuid
+										packing_list.item_for
 								) AS packing_list_count ON challan.uuid = packing_list_count.challan_uuid
 								LEFT JOIN
-									zipper.v_order_details_full vodf ON challan.order_info_uuid = vodf.order_info_uuid AND packing_list_count.order_description_uuid = vodf.order_description_uuid
+									zipper.v_order_details_full vodf ON challan.order_info_uuid = vodf.order_info_uuid
 								LEFT JOIN
 									delivery.vehicle ON challan.vehicle_uuid = vehicle.uuid
 								LEFT JOIN 
