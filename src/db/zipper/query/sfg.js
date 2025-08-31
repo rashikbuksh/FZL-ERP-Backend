@@ -431,8 +431,7 @@ export async function updateSwatchByOrderDescriptionUuidStyleColorBleach(
 		UPDATE zipper.sfg
 		SET 
 			recipe_uuid = ${recipe_uuid},
-			updated_by = ${updated_by},
-			updated_at = ${updated_at}
+			updated_by = ${updated_by}
 		WHERE uuid IN (${sql.join(uuids, sql`, `)})
 		RETURNING uuid AS updatedId;
 		`;
