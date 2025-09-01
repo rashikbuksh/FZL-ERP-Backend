@@ -602,10 +602,10 @@ export async function selectThreadSwatchBulk(req, res, next) {
 		order_entry.recipe_uuid,
 		lab_dip_recipe.name AS recipe_name,
 		order_entry.bleaching,
-		JSONB_AGG(order_entry.count_length_uuid) AS count_length_uuid,
-		JSONB_AGG(count_length.count) AS count,
-		JSONB_AGG(count_length.length) AS length,
-		JSONB_AGG(CONCAT(count_length.count, ' - ', count_length.length)) AS count_length_name,
+		(order_entry.count_length_uuid) AS count_length_uuid,
+		(count_length.count) AS count,
+		(count_length.length) AS length,
+		(CONCAT(count_length.count, ' - ', count_length.length)) AS count_length_name,
 		SUM(order_entry.quantity::float8) AS order_quantity,
 		order_info.created_at,
 		order_info.updated_at,
@@ -687,7 +687,10 @@ export async function selectThreadSwatchBulk(req, res, next) {
 		order_entry.swatch_approval_received,
 		order_entry.swatch_approval_received_date,
 		order_entry.swatch_approval_received_by,
-		swatch_approval_received_by.name
+		swatch_approval_received_by.name,
+		order_entry.count_length_uuid,
+		count_length.count,
+		count_length.length
 	ORDER BY 
 		order_info.created_at DESC;
 	`;
