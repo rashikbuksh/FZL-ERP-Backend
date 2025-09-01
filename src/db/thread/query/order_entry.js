@@ -611,7 +611,7 @@ export async function selectThreadSwatchBulk(req, res, next) {
 		order_info.updated_at,
 		order_info.remarks,
 		MAX(order_entry.swatch_approval_date) as swatch_approval_date,
-		COALESCE(MAX(batch_status.is_batch_created), FALSE) AS is_batch_created,
+		COALESCE(BOOL_OR(batch_status.is_batch_created), FALSE) AS is_batch_created,
 		order_info.is_cancelled,
 		order_info.sno_from_head_office,
 		order_info.sno_from_head_office_time,
