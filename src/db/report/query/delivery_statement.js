@@ -562,10 +562,12 @@ export async function deliveryStatementReport(req, res, next) {
                     LEFT JOIN (
                             SELECT 
                                 jsonb_array_elements_text(thread_order_info_uuids::jsonb) AS order_info_uuid,
-                                is_pi,
-                                conversion_rate
+                                BOOL_OR(CASE WHEN is_pi = 1 THEN TRUE ELSE FALSE END) as is_pi,
+                                AVG(conversion_rate) as conversion_rate
                             FROM 
                                 commercial.pi_cash
+                            GROUP BY
+                                jsonb_array_elements_text(thread_order_info_uuids::jsonb)
                         ) pi_cash ON toi.uuid::text = pi_cash.order_info_uuid
                     LEFT JOIN (
                         SELECT 
