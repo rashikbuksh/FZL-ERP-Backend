@@ -961,6 +961,7 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                 WHERE 
                     order_exists_in_pi.order_info_uuid IS NULL 
                     AND vodf.is_sample = 0
+                    AND vodf.is_cancelled = FALSE
                     AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
                 GROUP BY
                     vodf.marketing_uuid
@@ -1011,6 +1012,7 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                 WHERE 
                     order_exists_in_pi.uuid IS NULL 
                     AND toi.is_sample = 0
+                    AND toi.is_cancelled = FALSE
                     AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
                 GROUP BY
                     toi.marketing_uuid
