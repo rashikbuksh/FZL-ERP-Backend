@@ -1,0 +1,105 @@
+import { sql } from 'drizzle-orm';
+import { handleError } from '../../../util/index.js';
+import db from '../../index.js';
+import { GetMarketingOwnUUID } from '../../variables.js';
+
+export async function LCReport(req, res, next) {
+	const { own_uuid, date, report_type } = req?.query;
+
+	// get month and year from date
+	const month = new Date(date).getMonth() + 1;
+	const year = new Date(date).getFullYear();
+
+	try {
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
+
+		const query = sql`
+            SELECT 
+                CONCAT('LC', to_char(lc.created_at, 'YY'), '-', (lc.id::text)) AS file_number,
+                lc.uuid,
+                lc.lc_number,
+                lc.lc_date,
+                party.uuid as party_uuid,
+                party.name as party_name,
+                lc.created_at,
+                lc.updated_at,
+                lc.remarks,
+                lc.commercial_executive,
+                lc_entry.handover_date,
+                lc_entry.document_receive_date,
+                lc_entry.acceptance_date,
+                lc_entry.maturity_date,
+                lc_entry.payment_date,
+                lc_entry.ldbc_fdbc,
+                lc.shipment_date,
+                lc.expiry_date,
+                lc_entry.amount::float8,
+                lc_entry.payment_value,
+                lc_entry_others.ud_no,
+                lc_entry_others.ud_received,
+                pi_cash.marketing_uuid,
+                marketing.name as marketing_name,
+                pi_cash.bank_uuid,
+                bank.name as bank_name,
+                lc.party_bank,
+                CASE WHEN is_old_pi = 0 THEN(	
+				SELECT 
+					SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12)
+				FROM commercial.pi_cash 
+					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
+					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
+				WHERE pi_cash.lc_uuid = lc.uuid
+			)::float8 ELSE lc.lc_value::float8 END AS total_value
+            FROM
+                commercial.lc
+            LEFT JOIN 
+                commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
+            LEFT JOIN
+                commercial.lc_entry_others ON lc.uuid = lc_entry_others.lc_uuid
+            LEFT JOIN
+                public.party ON lc.party_uuid = party.uuid
+            LEFT JOIN 
+                commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
+            LEFT JOIN 
+                public.marketing ON pi_cash.marketing_uuid = marketing.uuid
+            LEFT JOIN
+                hr.users ON lc.created_by = users.uuid
+            LEFT JOIN
+                commercial.bank ON pi_cash.bank_uuid = bank.uuid
+            WHERE
+                lc_entry.maturity_date IS NOT NULL 
+                ${
+					report_type == 'over_due'
+						? sql`
+                        AND EXTRACT(YEAR FROM lc_entry.maturity_date) < ${year}
+		                AND EXTRACT(MONTH FROM lc_entry.maturity_date) < ${month}`
+						: report_type == 'current'
+							? sql`
+                        AND EXTRACT(YEAR FROM lc_entry.maturity_date) = ${year}
+                        AND EXTRACT(MONTH FROM lc_entry.maturity_date) = ${month}`
+							: report_type == 'push'
+								? sql`
+                        AND EXTRACT(YEAR FROM lc_entry.maturity_date) > ${year}
+                        AND EXTRACT(MONTH FROM lc_entry.maturity_date) > ${month}`
+								: sql``
+				}
+        `;
+
+		const resultPromise = db.execute(query);
+
+		const data = await resultPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'LC Report',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

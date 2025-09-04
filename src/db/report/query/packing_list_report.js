@@ -5,8 +5,6 @@ import db from '../../index.js';
 export async function selectPackingList(req, res, next) {
 	const { type, from_date, to_date, order_type, item_type } = req.query;
 
-	//console.log(from_date, to_date, order_type, type);
-
 	let query = sql`
 					WITH pi_cash_grouped AS (
 						SELECT 
@@ -128,8 +126,24 @@ export async function selectPackingList(req, res, next) {
 							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') 
 								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3) ELSE ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3) 
 							END as total_amount_without_commission,
-							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') 
-								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.party_price, 3) ELSE ROUND((SUM(ple.quantity))::numeric * toe.party_price, 3) 
+							CASE 
+								-- zipper order
+								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider') AND oe.party_price > 0
+								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.party_price, 3) 
+								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider') AND oe.party_price = 0
+								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3)
+								-- tape order 
+								WHEN dvl.item_for = 'tape' AND oe.party_price > 0
+								THEN ROUND((SUM(ple.quantity))::numeric * oe.party_price, 3) 
+								WHEN dvl.item_for = 'tape' AND oe.party_price = 0
+								THEN ROUND((SUM(ple.quantity))::numeric * oe.company_price, 3)
+								-- thread order
+								WHEN dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape') AND toe.party_price > 0
+								THEN ROUND((SUM(ple.quantity))::numeric * toe.party_price, 3)
+								WHEN dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape') AND toe.party_price = 0
+								THEN ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3)
+								-- default
+								ELSE 0::float8
 							END as total_amount_with_commission,
 							CASE 
 								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape'))
@@ -139,11 +153,23 @@ export async function selectPackingList(req, res, next) {
 								ELSE NULL
 							END as challan_total_amount_without_commission,
 							CASE 
-								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape'))
+								-- zipper order
+								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for IN ('zipper', 'sample_zipper', 'slider') AND oe.party_price > 0)
 								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.party_price, 3) 
-								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape'))
+								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for IN ('zipper', 'sample_zipper', 'slider') AND oe.party_price = 0)
+								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3)
+								-- tape order 
+								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for = 'tape' AND oe.party_price > 0)
+								THEN ROUND((SUM(ple.quantity))::numeric * oe.party_price, 3) 
+								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for = 'tape' AND oe.party_price = 0)
+								THEN ROUND((SUM(ple.quantity))::numeric * oe.company_price, 3)
+								-- thread order
+								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape') AND toe.party_price > 0)
 								THEN ROUND((SUM(ple.quantity))::numeric * toe.party_price, 3)
-								ELSE NULL
+								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape') AND toe.party_price = 0)
+								THEN ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3)
+								-- default
+								ELSE 0::float8
 							END as challan_total_amount_with_commission
 						FROM delivery.v_packing_list dvl
 						LEFT JOIN delivery.challan ch ON dvl.challan_uuid = ch.uuid
@@ -221,7 +247,8 @@ export async function selectPackingList(req, res, next) {
 							dvl.deleted_time,
 							dvl.deleted_by,
 							dvl.deleted_by_name
-						ORDER BY dvl.created_at DESC;`;
+						ORDER BY dvl.created_at DESC;
+			`;
 
 	try {
 		const data = await db.execute(query);
