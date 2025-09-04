@@ -125,7 +125,7 @@ export async function selectPackingList(req, res, next) {
 							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN pcg.pi_object ELSE pcgt.pi_object END as pi_numbers,
 							CASE WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') 
 								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3) ELSE ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3) 
-							END as total_amount_without_commission,
+							END::float8 as total_amount_without_commission,
 							CASE 
 								-- zipper order
 								WHEN dvl.item_for IN ('zipper', 'sample_zipper', 'slider') AND oe.party_price > 0
@@ -143,15 +143,15 @@ export async function selectPackingList(req, res, next) {
 								WHEN dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape') AND toe.party_price = 0
 								THEN ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3)
 								-- default
-								ELSE 0::float8
-							END as total_amount_with_commission,
+								ELSE NULL
+							END::float8 as total_amount_with_commission,
 							CASE 
 								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape'))
 								THEN ROUND((SUM(ple.quantity) / 12)::numeric * oe.company_price, 3) 
 								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape'))
 								THEN ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3)
 								ELSE NULL
-							END as challan_total_amount_without_commission,
+							END::float8 as challan_total_amount_without_commission,
 							CASE 
 								-- zipper order
 								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for IN ('zipper', 'sample_zipper', 'slider') AND oe.party_price > 0)
@@ -169,8 +169,8 @@ export async function selectPackingList(req, res, next) {
 								WHEN (dvl.challan_uuid IS NOT NULL AND dvl.item_for NOT IN ('zipper', 'sample_zipper', 'slider', 'tape') AND toe.party_price = 0)
 								THEN ROUND((SUM(ple.quantity))::numeric * toe.company_price, 3)
 								-- default
-								ELSE 0::float8
-							END as challan_total_amount_with_commission
+								ELSE NULL
+							END::float8 as challan_total_amount_with_commission
 						FROM delivery.v_packing_list dvl
 						LEFT JOIN delivery.challan ch ON dvl.challan_uuid = ch.uuid
 						LEFT JOIN delivery.packing_list_entry ple ON dvl.uuid = ple.packing_list_uuid
