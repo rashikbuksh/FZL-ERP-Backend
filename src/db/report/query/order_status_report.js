@@ -43,7 +43,9 @@ export async function ProductionReportSnm(req, res, next) {
                         vodf.receive_by_factory_by,
                         vodf.receive_by_factory_by_name,
                         vodf.created_by_name,
-                        vodf.order_description_updated_by_name as updated_by_name
+                        vodf.order_description_updated_by_name as updated_by_name,
+                        vodf.order_description_created_at,
+                        vodf.order_description_updated_at
                     FROM zipper.v_order_details_full vodf
                     WHERE 
                         vodf.order_description_uuid IS NOT NULL 
@@ -263,7 +265,6 @@ export async function ProductionReportSnm(req, res, next) {
                 CASE WHEN (dbm.batch_rank = 1 OR dbm.batch_rank IS NULL) AND sfg.recipe_uuid IS NOT NULL THEN CAST(oe.quantity::float8 AS TEXT) ELSE '--' END as approved_quantity,
                 sfg.recipe_uuid,
                 recipe.name as recipe_name,
-                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(COALESCE(oe.quantity, 0)::float8 AS TEXT) ELSE '--' END as total_quantity,
                 CASE 
                     WHEN (dbm.batch_rank = 1 OR dbm.batch_rank IS NULL) AND fo.end_type_name IN ('2 Way - Close End', '2 Way - Open End') 
                     THEN CAST(oe.quantity::float8 * 2 AS TEXT)
