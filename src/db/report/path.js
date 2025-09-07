@@ -1388,4 +1388,59 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/lc-fortnight-report': {
+		get: {
+			summary: 'LC Fortnight Report',
+			description: 'LC Fortnight Report',
+			tags: ['report'],
+			operationId: 'selectLcFortnightReport',
+			parameters: [
+				SE.parameter_query('handover', 'handover', ['true', 'false']),
+				SE.parameter_query('acceptance', 'acceptance', [
+					'true',
+					'false',
+				]),
+				SE.parameter_query('maturity', 'maturity', ['true', 'false']),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					lc_number: SE.string('LC Number'),
+					lc_date: SE.string('LC Date'),
+					currency: SE.string('Currency'),
+					lc_value: SE.number(610),
+					opening_balance: SE.number(610),
+					import_amount: SE.number(610),
+					payment_amount: SE.number(610),
+					closing_balance: SE.number(610),
+				}),
+			},
+		},
+	},
+	'/report/lc-payment-report': {
+		get: {
+			summary: 'LC Payment Report',
+			description: 'LC Payment Report',
+			tags: ['report'],
+			operationId: 'selectLcPaymentReport',
+			parameters: [
+				SE.parameter_query('date', 'date', '2024-10-01'),
+				SE.parameter_query('report_type', 'report_type', [
+					'over_due',
+					'current',
+					'push',
+				]),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					lc_number: SE.string('LC Number'),
+					payment_date: SE.string('Payment Date'),
+					payment_amount: SE.number(610),
+					payment_method: SE.string('Payment Method'),
+					bank_name: SE.string('Bank Name'),
+					cheque_number: SE.string('Cheque Number'),
+					remarks: SE.string('Remarks'),
+				}),
+			},
+		},
+	},
 };

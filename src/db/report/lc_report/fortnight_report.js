@@ -3,7 +3,7 @@ import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 import { GetMarketingOwnUUID } from '../../variables.js';
 
-export async function LCReport(req, res, next) {
+export async function fortnightReport(req, res, next) {
 	const { own_uuid, handover, acceptance, maturity, payment } = req?.query;
 
 	try {
@@ -69,13 +69,13 @@ export async function LCReport(req, res, next) {
                 lc_entry.handover_date IS NULL AND ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
         `;
 
-		if (handover) {
+		if (handover == 'true') {
 			query.append(sql` AND lc_entry.handover_date IS NOT NULL`);
-		} else if (acceptance) {
+		} else if (acceptance == 'true') {
 			query.append(
 				sql` AND lc_entry.handover_date IS NOT NULL AND lc_entry.acceptance_date IS NULL`
 			);
-		} else if (maturity) {
+		} else if (maturity == 'true') {
 			query.append(
 				sql` AND lc_entry.handover_date IS NOT NULL AND lc_entry.acceptance_date IS NOT NULL AND lc_entry.maturity_date IS NULL`
 			);

@@ -61,6 +61,9 @@ import { selectItemMarketingOrderQuantity } from './query/item_wise_order.js';
 import { zipperBatchReportOnReceivedDate } from './query/zipper_batch_report.js';
 import { selectSampleBulkItemWiseStatus } from './query/sample_bulk_item_wise_status.js';
 
+import { fortnightReport } from './lc_report/fortnight_report.js';
+import { PaymentReport } from './lc_report/payment_report.js';
+
 const reportRouter = Router();
 
 // * Zipper Production Status Report
@@ -268,6 +271,10 @@ reportRouter.get(
 	'/order-item-type-wise-status',
 	selectSampleBulkItemWiseStatus
 );
+
+// LC FORTNIGHT REPORT
+reportRouter.get('/lc-fortnight-report', fortnightReport);
+reportRouter.get('/lc-payment-report', PaymentReport);
 
 export const pathReport = {
 	...ReportRoutes.pathReport,

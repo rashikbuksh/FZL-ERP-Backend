@@ -3,7 +3,7 @@ import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 import { GetMarketingOwnUUID } from '../../variables.js';
 
-export async function LCReport(req, res, next) {
+export async function PaymentReport(req, res, next) {
 	const { own_uuid, date, report_type } = req?.query;
 
 	// get month and year from date
