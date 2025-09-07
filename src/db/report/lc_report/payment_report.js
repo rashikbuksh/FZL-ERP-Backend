@@ -10,6 +10,10 @@ export async function PaymentReport(req, res, next) {
 	const month = new Date(date).getMonth() + 1;
 	const year = new Date(date).getFullYear();
 
+	// make a date object from month and year
+	const reportDate = new Date(year, month - 1).toISOString().split('T')[0]; // first day of month
+	const toReportDate = new Date(year, month).toISOString().split('T')[0]; // next month
+
 	try {
 		const marketingUuid = own_uuid
 			? await GetMarketingOwnUUID(db, own_uuid)
@@ -37,12 +41,34 @@ export async function PaymentReport(req, res, next) {
                 lc.expiry_date,
                 lc_entry.amount::float8,
                 lc_entry.payment_value,
-                lc_entry_others.ud_no,
-                lc_entry_others.ud_received,
-                pi_cash.marketing_uuid,
-                marketing.name as marketing_name,
-                pi_cash.bank_uuid,
-                bank.name as bank_name,
+                CASE
+                    WHEN is_old_pi = 0 THEN (
+                        SELECT SUM(
+                                CASE
+                                    WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type = 'tape' THEN coalesce(
+                                        pi_cash_entry.pi_cash_quantity, 0
+                                    ) * coalesce(order_entry.party_price, 0)
+                                    WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type != 'tape' THEN coalesce(
+                                        pi_cash_entry.pi_cash_quantity, 0
+                                    ) * coalesce(order_entry.party_price, 0) / 12
+                                    ELSE coalesce(
+                                        pi_cash_entry.pi_cash_quantity, 0
+                                    ) * coalesce(toe.party_price, 0)
+                                END
+                            )
+                        FROM commercial.pi_cash
+                            LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+                            LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+                            LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                            LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                            LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+                        WHERE
+                            pi_cash.lc_uuid = lc.uuid
+                    )
+                    ELSE lc.lc_value::float8
+                END AS total_value,
+                (jsonb_agg(marketing.name))[1] as marketing_name,
+                (jsonb_agg(bank.name))[1] as bank_name,
                 lc.party_bank,
                 CASE WHEN is_old_pi = 0 THEN(	
 				SELECT 
@@ -58,8 +84,6 @@ export async function PaymentReport(req, res, next) {
             LEFT JOIN 
                 commercial.lc_entry ON lc.uuid = lc_entry.lc_uuid
             LEFT JOIN
-                commercial.lc_entry_others ON lc.uuid = lc_entry_others.lc_uuid
-            LEFT JOIN
                 public.party ON lc.party_uuid = party.uuid
             LEFT JOIN 
                 commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
@@ -71,21 +95,22 @@ export async function PaymentReport(req, res, next) {
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             WHERE
                 lc_entry.maturity_date IS NOT NULL 
+                AND lc_entry.payment_date IS NULL
                 ${
-					report_type == 'over_due'
+					report_type == 'over-due'
 						? sql`
-                        AND EXTRACT(YEAR FROM lc_entry.maturity_date) < ${year}
-		                AND EXTRACT(MONTH FROM lc_entry.maturity_date) < ${month}`
+                        AND lc_entry.maturity_date::date <= ${reportDate}::date`
 						: report_type == 'current'
 							? sql`
-                        AND EXTRACT(YEAR FROM lc_entry.maturity_date) = ${year}
-                        AND EXTRACT(MONTH FROM lc_entry.maturity_date) = ${month}`
+                        AND lc_entry.maturity_date::date > ${reportDate}::date AND lc_entry.maturity_date::date <= ${toReportDate}::date`
 							: report_type == 'push'
 								? sql`
-                        AND EXTRACT(YEAR FROM lc_entry.maturity_date) > ${year}
-                        AND EXTRACT(MONTH FROM lc_entry.maturity_date) > ${month}`
+                        AND lc_entry.maturity_date::date > ${toReportDate}::date`
 								: sql``
 				}
+                AND ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
+            GROUP BY lc.uuid, party.uuid, lc_entry.uuid
+            ORDER BY lc.created_at DESC
         `;
 
 		const resultPromise = db.execute(query);
