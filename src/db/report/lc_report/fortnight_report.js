@@ -23,6 +23,7 @@ export async function fortnightReport(req, res, next) {
                 lc.updated_at,
                 lc.remarks,
                 lc.commercial_executive,
+                lc.party_bank,
                 lc_entry.handover_date,
                 lc_entry.document_receive_date,
                 lc_entry.acceptance_date,
