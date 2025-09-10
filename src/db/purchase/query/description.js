@@ -187,6 +187,8 @@ export async function selectAll(req, res, next) {
 			transport_cost: decimalToNumber(description.transport_cost),
 			misc_cost: decimalToNumber(description.misc_cost),
 			file: description.file,
+			currency_uuid: description.currency_uuid,
+			conversion_rate: decimalToNumber(description.conversion_rate),
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
@@ -238,6 +240,8 @@ export async function select(req, res, next) {
 			transport_cost: description.transport_cost,
 			misc_cost: description.misc_cost,
 			file: description.file,
+			currency_uuid: description.currency_uuid,
+			conversion_rate: description.conversion_rate,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
@@ -330,6 +334,8 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			transport_cost: description.transport_cost,
 			misc_cost: description.misc_cost,
 			file: description.file,
+			currency_uuid: description.currency_uuid,
+			conversion_rate: decimalToNumber(description.conversion_rate),
 		})
 		.from(entry)
 		.leftJoin(

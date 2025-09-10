@@ -4,6 +4,7 @@ import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
 import { sql } from 'drizzle-orm';
 import * as hrSchema from '../hr/schema.js';
 import * as materialSchema from '../material/schema.js';
+import * as accountSchema from '../acc/schema.js';
 import { PG_DECIMAL } from '../variables.js';
 
 const purchase = pgSchema('purchase');
@@ -59,6 +60,10 @@ export const description = purchase.table('description', {
 	transport_cost: PG_DECIMAL('transport_cost').default(0),
 	misc_cost: PG_DECIMAL('misc_cost').default(0),
 	file: text('file').default(null),
+	conversion_rate: PG_DECIMAL('conversion_rate').default(1),
+	currency_uuid: defaultUUID('currency_uuid')
+		.references(() => accountSchema.currency.uuid)
+		.default(null),
 });
 
 export const entry = purchase.table('entry', {

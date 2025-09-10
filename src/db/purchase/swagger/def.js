@@ -42,6 +42,8 @@ export const defPurchaseDescription = SED({
 		transport_cost: SE.number(1000.0),
 		misc_cost: SE.number(500.0),
 		file: SE.file('file.pdf'),
+		currency_uuid: SE.uuid(),
+		conversion_rate: SE.number(1),
 	},
 	xml: 'Purchase/Description',
 });
