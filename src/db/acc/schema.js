@@ -122,8 +122,7 @@ export const ledger = acc.table('ledger', {
 	is_active: boolean('is_active').default(true),
 	restrictions: restrictions_enum('restrictions').default('none'),
 	group_uuid: defaultUUID('group_uuid')
-		.references(() => group.uuid)
-		.notNull(),
+		.references(() => group.uuid),
 	vat_deduction: PG_DECIMAL('vat_deduction').default(0),
 	tax_deduction: PG_DECIMAL('tax_deduction').default(0),
 	old_ledger_id: integer('old_ledger_id').default(null),

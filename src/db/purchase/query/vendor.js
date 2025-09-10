@@ -3,6 +3,8 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { vendor } from '../schema.js';
+import { ledger } from '../../acc/schema.js';
+import { nanoid } from '../../../lib/nanoid.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -12,14 +14,29 @@ export async function insert(req, res, next) {
 		.values(req.body)
 		.returning({ insertedId: vendor.name });
 	try {
-		const data = await vendorPromise;
+		const vendorData = await vendorPromise;
+		const ledgerPromise = db
+			.insert(ledger)
+			.values({
+				uuid: nanoid(),
+				name: req.body.name,
+				created_at: req.body.created_at,
+				created_by: req.body.created_by,
+				updated_at: req.body.updated_at,
+				updated_by: req.body.updated_by,
+				remarks: req.body.remarks,
+			})
+			.returning({ insertedName: ledger.name });
+
+		const ledgerData = await ledgerPromise;
+
 		const toast = {
 			status: 201,
 			type: 'create',
-			message: `${data[0].insertedId} created`,
+			message: `${vendorData[0].insertedId} AND ${ledgerData[0].insertedName} created`,
 		};
 
-		return await res.status(201).json({ toast, data });
+		return await res.status(201).json({ toast, data: vendorData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
