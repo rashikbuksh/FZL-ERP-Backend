@@ -753,7 +753,7 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 		ON 
 			v_order_details_full.item = tape_coil_required.item_uuid  
 			AND v_order_details_full.zipper_number = tape_coil_required.zipper_number_uuid 
-			AND v_order_details_full.end_type = tape_coil_required.end_type_uuid 
+			AND (CASE WHEN v_order_details_full.order_type = 'tape' THEN tape_coil_required.end_type_uuid = 'eE9nM0TDosBNqoT' ELSE v_order_details_full.end_type = tape_coil_required.end_type_uuid END)
 			AND (
 				lower(v_order_details_full.item_name) != 'nylon' 
 				OR v_order_details_full.nylon_stopper = tape_coil_required.nylon_stopper_uuid
