@@ -113,6 +113,7 @@ export const defLedger = SED({
 		narration: SE.string('narration'),
 		is_bank_ledger: SE.boolean(false),
 		is_cash_ledger: SE.boolean(false),
+		identifier: SE.string('none'),
 	},
 	xml: 'Acc/Ledger',
 });

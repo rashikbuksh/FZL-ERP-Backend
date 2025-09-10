@@ -103,6 +103,7 @@ export async function selectAll(req, res, next) {
 			remarks: ledger.remarks,
 			is_bank_ledger: ledger.is_bank_ledger,
 			is_cash_ledger: ledger.is_cash_ledger,
+			identifier: ledger.identifier,
 		})
 		.from(ledger)
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))
@@ -153,6 +154,7 @@ export async function select(req, res, next) {
 			remarks: ledger.remarks,
 			is_bank_ledger: ledger.is_bank_ledger,
 			is_cash_ledger: ledger.is_cash_ledger,
+			identifier: ledger.identifier,
 		})
 		.from(ledger)
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))

@@ -114,6 +114,13 @@ export const restrictions_enum = acc.enum('restrictions_enum', [
 	'job_income',
 ]);
 
+export const identifierEnum = acc.enum('identifierEnum', [
+	'store_maintenance',
+	'store_rm',
+	'store_accessories',
+	'none',
+]);
+
 export const ledger_sequence = acc.sequence('ledger_sequence', {
 	startWith: 1,
 	increment: 1,
@@ -143,6 +150,7 @@ export const ledger = acc.table('ledger', {
 	narration: text('narration').default(null),
 	is_bank_ledger: boolean('is_bank_ledger').default(false),
 	is_cash_ledger: boolean('is_cash_ledger').default(false),
+	identifier: identifierEnum('identifier').default('none'),
 });
 
 export const cost_center = acc.table('cost_center', {
