@@ -6,6 +6,8 @@ import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { description, entry, vendor } from '../schema.js';
+import { nanoid } from '../../../lib/nanoid.js';
+import { cost_center } from '../../acc/schema.js';
 import {
 	insertFile,
 	updateFile,
@@ -43,12 +45,31 @@ export async function insert(req, res, next) {
 			END`,
 		});
 
+	const descriptionData = await descriptionPromise;
+
+	const costCenterPromise = db
+		.insert(cost_center)
+		.values({
+			uuid: nanoid(),
+			name: descriptionData[0].insertedId,
+			ledger_uuid: null,
+			table_name: 'purchase.description',
+			table_uuid: formData.uuid,
+			invoice_no: null,
+			created_at: formData.created_at,
+			created_by: formData.created_by,
+			updated_by: formData.updated_by || null,
+			updated_at: formData.updated_at || null,
+			remarks: formData.remarks || null,
+		})
+		.returning({ insertedName: cost_center.name });
+
 	try {
-		const data = await descriptionPromise;
+		const costCenterData = await costCenterPromise;
 		const toast = {
 			status: 201,
 			type: 'create',
-			message: `${data[0].insertedId} created`,
+			message: `${descriptionData[0].insertedId}  AND Cost Center ${costCenterData[0].insertedName} created`,
 		};
 		return await res.status(201).json({ toast, data });
 	} catch (error) {
@@ -241,7 +262,7 @@ export async function select(req, res, next) {
 			misc_cost: description.misc_cost,
 			file: description.file,
 			currency_uuid: description.currency_uuid,
-			conversion_rate: description.conversion_rate,
+			conversion_rate: decimalToNumber(description.conversion_rate),
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
