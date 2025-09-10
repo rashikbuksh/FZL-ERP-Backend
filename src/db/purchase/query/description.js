@@ -39,39 +39,43 @@ export async function insert(req, res, next) {
 		})
 		.returning({
 			insertedId: sql`
-			CASE WHEN description.store_type = 'rm' 
-				THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
-				ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
-			END`,
+            CASE WHEN description.store_type = 'rm' 
+                THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+                ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0')) 
+            END`,
 		});
 
-	const descriptionData = await descriptionPromise;
-
-	const costCenterPromise = db
-		.insert(cost_center)
-		.values({
-			uuid: nanoid(),
-			name: descriptionData[0].insertedId,
-			ledger_uuid: null,
-			table_name: 'purchase.description',
-			table_uuid: formData.uuid,
-			invoice_no: null,
-			created_at: formData.created_at,
-			created_by: formData.created_by,
-			updated_by: formData.updated_by || null,
-			updated_at: formData.updated_at || null,
-			remarks: formData.remarks || null,
-		})
-		.returning({ insertedName: cost_center.name });
-
 	try {
+		// Insert description first to get the generated ID
+		const descriptionData = await descriptionPromise;
+		const generatedPurchaseId = descriptionData[0].insertedId;
+
+		// Now insert cost_center using the generated purchase ID as the name
+		const costCenterPromise = db
+			.insert(cost_center)
+			.values({
+				uuid: nanoid(),
+				name: generatedPurchaseId, // Use the exact generated ID from description
+				ledger_uuid: null,
+				table_name: 'purchase.description',
+				table_uuid: formData.uuid,
+				invoice_no: null,
+				created_at: formData.created_at,
+				created_by: formData.created_by,
+				updated_by: formData.updated_by || null,
+				updated_at: formData.updated_at || null,
+				remarks: formData.remarks || null,
+			})
+			.returning({ insertedName: cost_center.name });
+
 		const costCenterData = await costCenterPromise;
+
 		const toast = {
 			status: 201,
 			type: 'create',
-			message: `${descriptionData[0].insertedId}  AND Cost Center ${costCenterData[0].insertedName} created`,
+			message: `${generatedPurchaseId} AND Cost Center ${costCenterData[0].insertedName} created`,
 		};
-		return await res.status(201).json({ toast, data });
+		return await res.status(201).json({ toast, data: descriptionData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
