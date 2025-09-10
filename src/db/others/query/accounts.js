@@ -50,21 +50,41 @@ export async function selectCurrency(req, res, next) {
 	}
 }
 
+export const typeOptions = [
+	{ label: 'Asset', value: 'asset' },
+	{ label: 'Liability', value: 'liability' },
+	{ label: 'Income', value: 'income' },
+	{ label: 'Expense', value: 'expense' },
+	{ label: 'Cost Of Goods', value: 'cost_of_goods' },
+	{ label: 'Revenue', value: 'revenue' },
+];
+
 export async function selectGroup(req, res, next) {
 	const groupPromise = db
 		.select({
 			value: accountSchema.group.uuid,
-			label: sql`CONCAT(${accountSchema.group.name}, '(', ${accountSchema.group.type}, ')')`,
+			name: accountSchema.group.name,
+			type: accountSchema.group.type,
 		})
 		.from(accountSchema.group);
 	try {
 		const data = await groupPromise;
+		// Map the data to create the label using find from typeOptions
+		const mappedData = data.map((item) => {
+			const typeLabel =
+				typeOptions.find((option) => option.value === item.type)
+					?.label || item.type; // Fallback to raw type if no match
+			return {
+				value: item.value,
+				label: `${item.name} (${typeLabel})`,
+			};
+		});
 		const toast = {
 			status: 200,
 			type: 'select_all',
 			message: 'group list',
 		};
-		return await res.status(200).json({ toast, data: data });
+		return await res.status(200).json({ toast, data: mappedData });
 	} catch (error) {
 		await handleError({ error, res });
 	}
