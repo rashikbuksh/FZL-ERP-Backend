@@ -80,14 +80,14 @@ export const head = acc.table('head', {
 	type: headTypeEnum('type').default('assets'),
 });
 
-export const type_enum = acc.enum('type_enum', [
-	'asset',
-	'liability',
-	'income',
-	'expense',
-	'cost_of_goods',
-	'revenue',
-]);
+// export const type_enum = acc.enum('type_enum', [
+// 	'asset',
+// 	'liability',
+// 	'income',
+// 	'expense',
+// 	'cost_of_goods',
+// 	'revenue',
+// ]);
 
 export const group = acc.table('group', {
 	uuid: uuid_primary,
@@ -104,7 +104,7 @@ export const group = acc.table('group', {
 		.default(null),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
-	type: type_enum('type').notNull().default('asset'),
+	// type: type_enum('type').notNull().default('asset'),
 });
 
 export const restrictions_enum = acc.enum('restrictions_enum', [
