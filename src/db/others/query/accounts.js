@@ -54,7 +54,7 @@ export async function selectGroup(req, res, next) {
 	const groupPromise = db
 		.select({
 			value: accountSchema.group.uuid,
-			label: accountSchema.group.name,
+			label: sql`CONCAT(${accountSchema.group.name}, '(', ${accountSchema.group.type}, ')')`,
 		})
 		.from(accountSchema.group);
 	try {

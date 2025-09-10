@@ -82,6 +82,7 @@ export const defGroup = SED({
 		updated_by: SE.uuid(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		type: SE.string('asset'),
 	},
 	xml: 'Acc/Group',
 });
@@ -96,7 +97,7 @@ export const defLedger = SED({
 		table_uuid: SE.uuid(),
 		name: SE.string('Cash Ledger'),
 		account_no: SE.string('1001'),
-		type: SE.string('asset'),
+		// type: SE.string('asset'),
 		is_active: SE.boolean(true),
 		restrictions: SE.string('none'),
 		group_uuid: SE.uuid(),

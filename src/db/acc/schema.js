@@ -72,6 +72,15 @@ export const head = acc.table('head', {
 	remarks: text('remarks').default(null),
 });
 
+export const type_enum = acc.enum('type_enum', [
+	'asset',
+	'liability',
+	'income',
+	'expense',
+	'cost_of_goods',
+	'revenue',
+]);
+
 export const group = acc.table('group', {
 	uuid: uuid_primary,
 	name: text('name').notNull(),
@@ -87,16 +96,8 @@ export const group = acc.table('group', {
 		.default(null),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	type: type_enum('type').notNull().default('asset'),
 });
-
-export const type_enum = acc.enum('type_enum', [
-	'asset',
-	'liability',
-	'income',
-	'expense',
-	'cost_of_goods',
-	'revenue',
-]);
 
 export const restrictions_enum = acc.enum('restrictions_enum', [
 	'none',
@@ -117,7 +118,7 @@ export const ledger = acc.table('ledger', {
 	table_uuid: text('table_uuid').default(null),
 	name: text('name').notNull().unique(),
 	account_no: text('account_no').default(null),
-	type: type_enum('type').notNull(),
+	// type: type_enum('type').notNull(),
 	is_active: boolean('is_active').default(true),
 	restrictions: restrictions_enum('restrictions').default('none'),
 	group_uuid: defaultUUID('group_uuid')
