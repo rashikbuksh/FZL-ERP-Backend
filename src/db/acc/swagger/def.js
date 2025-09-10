@@ -64,6 +64,7 @@ export const defHead = SED({
 		updated_by: SE.uuid(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		type: SE.string('assets'),
 	},
 	xml: 'Acc/Head',
 });

@@ -160,7 +160,9 @@ export async function MaterialStockReportV2(req, res, next) {
                 (
                     SELECT 
                         material_uuid,
-                        SUM(quantity)::float8 as total_purchase_quantity
+                        SUM(quantity-provided_quantity)::float8 as total_opening_purchase_quantity,
+                        SUM(price/quantity)::float8 as unit,
+                        SUM((quantity-provided_quantity)*(price/quantity))::float8 as total_opening_purchase_quantity_cost
                     FROM 
                         purchase.entry
                     LEFT JOIN
@@ -175,7 +177,9 @@ export async function MaterialStockReportV2(req, res, next) {
                 (
                     SELECT 
                         material_uuid,
-                        SUM(quantity)::float8 as total_purchase_quantity
+                        SUM(quantity-provided_quantity)::float8 as total_purchase_quantity
+                        SUM(price/quantity)::float8 as unit,
+                        SUM((quantity-provided_quantity)*(price/quantity))::float8 as total_purchase_quantity_cost
                     FROM
                         purchase.entry
                     LEFT JOIN 
@@ -189,61 +193,34 @@ export async function MaterialStockReportV2(req, res, next) {
             LEFT JOIN 
                 (
                     SELECT 
-                        mi.uuid as material_uuid,
-                        SUM(COALESCE(mtrx.trx_quantity, 0))::float8 as total_issue_quantity
-                    FROM 
-                        material.info mi
+                        material_uuid,
+                        SUM(COALESCE(provided_quantity, 0))::float8 as total_consumption_quantity
+                     FROM
+                        purchase.entry
                     LEFT JOIN 
-                        material.trx mtrx ON (mi.uuid = mtrx.material_uuid AND mtrx.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
+                        material.info mi ON mi.uuid = purchase.entry.material_uuid
                     WHERE 
-                        ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
-                    GROUP BY 
-                        mi.uuid
+                        entry.created_at >= ${from_date}::TIMESTAMP AND entry.created_at <= ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'
+                        AND ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
+                    GROUP BY
+                        material_uuid
                 ) material_consumption ON m.uuid = material_consumption.material_uuid
             LEFT JOIN 
                 (
                     SELECT 
-                        mi.uuid as material_uuid,
-                        SUM(COALESCE(s2s.trx_quantity, 0))::float8 as total_s2s_issue_quantity
+                        material_uuid,
+                        SUM(COALESCE(provided_quantity, 0))::float8 as total_opening_consumption_quantity
                     FROM 
-                        material.info mi
-                    LEFT JOIN 
-                        zipper.material_trx_against_order_description s2s ON (mi.uuid = s2s.material_uuid AND s2s.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds')
+                        purchase.entry
+                    LEFT JOIN
+                        material.info mi ON mi.uuid = purchase.entry.material_uuid
                     WHERE 
-                        ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
+                        entry.created_at < ${from_date}::TIMESTAMP
+                        AND ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
                     GROUP BY 
-                        mi.uuid
-                ) s2s_consumption ON m.uuid = s2s_consumption.material_uuid
-            LEFT JOIN 
-                (
-                    SELECT 
-                        mi.uuid as material_uuid,
-                        SUM(COALESCE(mtrx.trx_quantity, 0))::float8 as total_issue_quantity
-                    FROM 
-                        material.info mi
-                    LEFT JOIN 
-                        material.trx mtrx ON mi.uuid = mtrx.material_uuid AND mtrx.created_at <= ${from_date}::TIMESTAMP
-                    WHERE
-                        ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
-                    GROUP BY 
-                        mi.uuid
+                        material_uuid
+                    
                 ) opening_material_consumption ON m.uuid = opening_material_consumption.material_uuid
-            LEFT JOIN 
-                (
-                    SELECT 
-                        mi.uuid as material_uuid,
-                        SUM(COALESCE(s2s.trx_quantity, 0))::float8 as total_s2s_issue_quantity
-                    FROM 
-                        material.info mi
-                    LEFT JOIN 
-                        zipper.material_trx_against_order_description s2s ON mi.uuid = s2s.material_uuid AND s2s.created_at <= ${from_date}::TIMESTAMP
-                    WHERE 
-                        ${store_type ? sql`mi.store_type = ${store_type}` : sql`true`}
-                    GROUP BY 
-                        mi.uuid
-                ) opening_s2s_consumption ON m.uuid = opening_s2s_consumption.material_uuid
-            WHERE
-                ${store_type ? sql`m.store_type = ${store_type}` : sql`true`}
             ORDER BY ms.index, m.name;
     `;
 

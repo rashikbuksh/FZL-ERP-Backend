@@ -57,6 +57,13 @@ export const fiscal_year = acc.table('fiscal_year', {
 	rate: PG_DECIMAL('rate').default(0),
 });
 
+export const headTypeEnum = acc.enum('headTypeEnum', [
+	'assets',
+	'liability',
+	'income',
+	'expense',
+]);
+
 export const head = acc.table('head', {
 	uuid: uuid_primary,
 	name: text('name').notNull().unique(),
@@ -70,6 +77,7 @@ export const head = acc.table('head', {
 		.default(null),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
+	type: headTypeEnum('type').default('assets'),
 });
 
 export const type_enum = acc.enum('type_enum', [
@@ -121,8 +129,7 @@ export const ledger = acc.table('ledger', {
 	// type: type_enum('type').notNull(),
 	is_active: boolean('is_active').default(true),
 	restrictions: restrictions_enum('restrictions').default('none'),
-	group_uuid: defaultUUID('group_uuid')
-		.references(() => group.uuid),
+	group_uuid: defaultUUID('group_uuid').references(() => group.uuid),
 	vat_deduction: PG_DECIMAL('vat_deduction').default(0),
 	tax_deduction: PG_DECIMAL('tax_deduction').default(0),
 	old_ledger_id: integer('old_ledger_id').default(null),
