@@ -241,7 +241,7 @@ export async function select(req, res, next) {
 			misc_cost: description.misc_cost,
 			file: description.file,
 			currency_uuid: description.currency_uuid,
-			conversion_rate: description.conversion_rate,
+			conversion_rate: decimalToNumber(description.conversion_rate),
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
