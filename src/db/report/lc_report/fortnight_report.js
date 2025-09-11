@@ -90,9 +90,7 @@ export async function fortnightReport(req, res, next) {
                 ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
         `;
 
-		if (handover == 'true') {
-			query.append(sql` AND lc_entry.handover_date IS NOT NULL`);
-		} else if (acceptance == 'true') {
+		if (acceptance == 'true') {
 			query.append(
 				sql` AND lc_entry.handover_date IS NOT NULL AND lc_entry.acceptance_date IS NULL`
 			);

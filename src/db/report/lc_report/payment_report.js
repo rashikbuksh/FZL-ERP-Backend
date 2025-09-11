@@ -100,7 +100,7 @@ export async function PaymentReport(req, res, next) {
                 ${
 					report_type == 'over-due'
 						? sql`
-                        AND lc_entry.maturity_date::date <= ${reportDate}::date`
+                        AND lc_entry.maturity_date::date < ${date}::date`
 						: report_type == 'current'
 							? sql`
                         AND lc_entry.maturity_date::date > ${reportDate}::date AND lc_entry.maturity_date::date <= ${toReportDate}::date`
