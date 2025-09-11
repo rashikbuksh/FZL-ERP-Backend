@@ -312,9 +312,7 @@ export async function selectLcPiByLcUuid(req, res, next) {
 			...lc?.data?.data,
 			lc_entry: lc_entry?.data?.data || [],
 			lc_entry_others: lc_entry_others?.data?.data || [],
-			pi: pi_cash?.data?.data
-				? pi_cash.data.data || []
-				: manual_pi?.data?.data || [],
+			pi: pi_cash.data.data || [],
 			manual_pi: manual_pi?.data?.data || [],
 		};
 

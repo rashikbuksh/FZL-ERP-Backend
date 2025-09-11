@@ -590,7 +590,6 @@ const pathCommercial = {
 			parameters: [
 				SE.parameter_query('is_update', 'is_update', [true, false]),
 				SE.parameter_query('party_uuid', 'party_uuid', [SE.uuid()]),
-				SE.parameter_query('page', 'page', ['manual_pi']),
 			],
 			responses: {
 				200: SE.response_schema(200, {
