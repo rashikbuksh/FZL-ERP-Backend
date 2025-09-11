@@ -1951,7 +1951,7 @@ export async function selectManualPi(req, res, next) {
 		bank.name AS pi_bank,
 		ROUND(SUM(
 			manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8
-		)::numeric, 2) AS pi_value,
+		)::numeric, 2)::float8 AS pi_value,
 		ARRAY_AGG(
 			manual_pi_entry.order_number
 		) AS order_number,
