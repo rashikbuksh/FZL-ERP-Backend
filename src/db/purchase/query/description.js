@@ -214,7 +214,7 @@ export async function selectAll(req, res, next) {
 			file: description.file,
 			currency_uuid: description.currency_uuid,
 			conversion_rate: decimalToNumber(description.conversion_rate),
-			currency_name: currency.name,
+			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
 		})
 		.from(description)
@@ -270,7 +270,7 @@ export async function select(req, res, next) {
 			file: description.file,
 			currency_uuid: description.currency_uuid,
 			conversion_rate: decimalToNumber(description.conversion_rate),
-			currency_name: currency.name,
+			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
 		})
 		.from(description)
@@ -367,7 +367,7 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			file: description.file,
 			currency_uuid: description.currency_uuid,
 			conversion_rate: decimalToNumber(description.conversion_rate),
-			currency_name: currency.name,
+			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
 		})
 		.from(entry)
