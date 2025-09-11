@@ -1942,7 +1942,7 @@ export async function selectPi(req, res, next) {
 }
 
 export async function selectManualPi(req, res, next) {
-	const { is_update, party_uuid, page } = req.query;
+	const { is_update, party_uuid } = req.query;
 
 	const query = sql`
 	SELECT
@@ -1968,13 +1968,6 @@ export async function selectManualPi(req, res, next) {
 		manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 > 0
 		${is_update === 'true' ? sql`` : sql`AND manual_pi.lc_uuid IS NULL`}
 		${party_uuid ? sql`AND manual_pi.party_uuid = ${party_uuid}` : sql``}
-		${
-			page == 'lc' || page == 'manual_pi'
-				? sql``
-				: is_update === 'true'
-					? sql``
-					: sql`AND (order_entry.quantity - sfg.pi)::float8 > 0 OR (toe.quantity - toe.pi)::float8 > 0`
-		}
 	GROUP BY
 		manual_pi.uuid,
 		manual_pi.created_at,
