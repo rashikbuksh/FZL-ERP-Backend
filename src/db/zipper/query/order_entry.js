@@ -320,7 +320,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 					CASE WHEN order_type = 'tape' THEN ' Long Chain ' ELSE '' END, 
 					CASE WHEN (vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---') THEN ' / ' ELSE '' END,
 					CASE WHEN (vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---') THEN vodf.end_type_name ELSE '' END,
-					CASE WHEN (vodf.hand_name IS NOT NULL AND vodf.hand_name != '---' AND (lower(vodf.end_type_name) != '%close end%' AND lower(vodf.end_type_name) != '2 way - close end')) THEN ' / ' ELSE '' END,
+					CASE WHEN (vodf.hand_name IS NOT NULL AND vodf.hand_name != '---' AND (lower(vodf.end_type_name) LIKE '%open end%')) THEN ' / ' ELSE '' END,
 					CASE WHEN (lower(vodf.end_type_name) LIKE '%open end%') THEN vodf.hand_name ELSE '' END,
 					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN ' / Teeth: ' ELSE '' END,
 					CASE WHEN (vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---') THEN vodf.teeth_type_name ELSE '' END,
