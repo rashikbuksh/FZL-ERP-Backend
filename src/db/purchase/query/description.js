@@ -450,7 +450,7 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			currency.currency_name,
 			currency.symbol
 		)
-		.orderBy(asc(description.id));
+		.orderBy(desc(description.id));
 
 	// if (s_type) {
 	// 	resultPromise.where(eq(description.store_type, s_type));
