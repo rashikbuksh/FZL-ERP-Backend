@@ -1985,7 +1985,7 @@ export async function selectManualPi(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			message: 'PI list',
+			message: 'Manual PI list',
 		};
 
 		res.status(200).json({ toast, data: data?.rows });

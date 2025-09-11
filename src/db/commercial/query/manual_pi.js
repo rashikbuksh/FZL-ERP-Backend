@@ -365,3 +365,80 @@ export async function updateManualPiPutLcByPiUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectByLcUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const manualPiPromise = db
+		.select({
+			uuid: manual_pi.uuid,
+			pi_uuids: manual_pi.pi_uuids,
+			marketing_uuid: manual_pi.marketing_uuid,
+			marketing_name: publicSchema.marketing.name,
+			party_uuid: manual_pi.party_uuid,
+			party_name: publicSchema.party.name,
+			party_address: publicSchema.party.address,
+			buyer_uuid: manual_pi.buyer_uuid,
+			buyer_name: publicSchema.buyer.name,
+			merchandiser_uuid: manual_pi.merchandiser_uuid,
+			merchandiser_name: publicSchema.merchandiser.name,
+			factory_uuid: manual_pi.factory_uuid,
+			factory_name: publicSchema.factory.name,
+			factory_address: publicSchema.factory.address,
+			bank_uuid: manual_pi.bank_uuid,
+			bank_name: bank.name,
+			bank_address: bank.address,
+			bank_swift_code: bank.swift_code,
+			bank_policy: bank.policy,
+			routing_no: bank.routing_no,
+			validity: manual_pi.validity,
+			payment: manual_pi.payment,
+			remarks: manual_pi.remarks,
+			created_by: manual_pi.created_by,
+			created_by_name: hrSchema.users.name,
+			receive_amount: decimalToNumber(manual_pi.receive_amount),
+			weight: decimalToNumber(manual_pi.weight),
+			date: manual_pi.date,
+			pi_number: manual_pi.pi_number,
+			created_at: manual_pi.created_at,
+			updated_at: manual_pi.updated_at,
+			is_inch: manual_pi.is_inch,
+		})
+		.from(manual_pi)
+		.leftJoin(hrSchema.users, eq(manual_pi.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			publicSchema.marketing,
+			eq(manual_pi.marketing_uuid, publicSchema.marketing.uuid)
+		)
+		.leftJoin(
+			publicSchema.merchandiser,
+			eq(manual_pi.merchandiser_uuid, publicSchema.merchandiser.uuid)
+		)
+		.leftJoin(
+			publicSchema.factory,
+			eq(manual_pi.factory_uuid, publicSchema.factory.uuid)
+		)
+		.leftJoin(
+			publicSchema.party,
+			eq(manual_pi.party_uuid, publicSchema.party.uuid)
+		)
+		.leftJoin(
+			publicSchema.buyer,
+			eq(manual_pi.buyer_uuid, publicSchema.buyer.uuid)
+		)
+		.leftJoin(bank, eq(manual_pi.bank_uuid, bank.uuid))
+		.where(eq(manual_pi.lc_uuid, req.params.lc_uuid));
+
+	try {
+		const data = await manualPiPromise;
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'manual_pi',
+		};
+
+		return await res.status(200).json({ toast, data: data[0] });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

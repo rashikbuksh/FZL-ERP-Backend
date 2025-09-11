@@ -304,6 +304,7 @@ export async function selectLcPiByLcUuid(req, res, next) {
 			fetchData('lc-entry/by'),
 			fetchData('lc-entry-others/by'),
 			fetchData('pi-cash-lc'),
+			fetchData('manual-pi/by/lc-uuid'),
 		]);
 
 		const response = {
@@ -311,6 +312,7 @@ export async function selectLcPiByLcUuid(req, res, next) {
 			lc_entry: lc_entry?.data?.data || [],
 			lc_entry_others: lc_entry_others?.data?.data || [],
 			pi: pi_cash?.data?.data || [],
+			manual_pi: manual_pi?.data?.data || [],
 		};
 
 		const toast = {
