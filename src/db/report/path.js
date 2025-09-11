@@ -513,6 +513,35 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/v2/material-stock-report': {
+		get: {
+			summary: 'Material Stock Report V2',
+			description: 'Material Stock Report V2',
+			tags: ['report'],
+			operationId: 'MaterialStockReportV2',
+			parameters: [
+				SE.parameter_query('as_on_date', 'as_on_date', '2024-10-31'),
+				SE.parameter_query(
+					'store_type',
+					'store_type',
+					['rm', 'accessories'],
+					true
+				),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					material_uuid: SE.uuid(),
+					material_name: SE.string('Material Name'),
+					material_section_name: SE.string('Section Name'),
+					material_unit: SE.string('Material Unit'),
+					opening_quantity: SE.number(610),
+					purchase_quantity: SE.number(610),
+					consumption_quantity: SE.number(610),
+					closing_quantity: SE.number(610),
+				}),
+			},
+		},
+	},
 	'/report/individual-material-report/:material_uuid': {
 		get: {
 			summary: 'Individual Material Report',

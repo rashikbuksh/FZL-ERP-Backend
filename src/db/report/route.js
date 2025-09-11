@@ -18,7 +18,10 @@ import {
 	selectPartyWiseApprovedQuantity,
 } from './query/item_zipper_number_end_wise_approved.js';
 import { selectLabDip } from './query/lab_dip.js';
-import { MaterialStockReport } from './query/material_stock_report.js';
+import {
+	MaterialStockReport,
+	MaterialStockReportV2,
+} from './query/material_stock_report.js';
 import {
 	selectOrderRegisterReport,
 	selectOrderRegisterReportForPackingList,
@@ -146,6 +149,7 @@ reportRouter.get(
 
 //* Material Stock Report
 reportRouter.get('/material-stock-report', MaterialStockReport);
+reportRouter.get('/v2/material-stock-report', MaterialStockReportV2);
 
 // * Individual Material Report
 reportRouter.get(
