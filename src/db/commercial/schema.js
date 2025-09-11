@@ -73,6 +73,8 @@ export const lc = commercial.table('lc', {
 		.references(() => hrSchema.users.uuid)
 		.default(null),
 	remarks: text('remarks').default(null),
+	is_completed: boolean('is_completed').default(false),
+	is_completed_date: DateTime('is_completed_date').default(null),
 });
 
 export const lc_entry = commercial.table('lc_entry', {
