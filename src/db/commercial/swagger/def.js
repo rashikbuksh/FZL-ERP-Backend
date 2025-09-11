@@ -160,6 +160,7 @@ export const defCommercialManualPi = SED({
 		date: SE.date_time(),
 		pi_number: SE.string('1234/2024'),
 		is_inch: SE.boolean(false),
+		lc_uuid: SE.uuid().default(null),
 	},
 	xml: 'Commercial/ManualPi',
 });

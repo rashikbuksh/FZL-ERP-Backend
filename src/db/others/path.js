@@ -581,6 +581,29 @@ const pathCommercial = {
 			},
 		},
 	},
+	'/other/manual-pi/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all Manual PIs',
+			description: 'All Manual PIs',
+			operationId: 'getAllManualPIs',
+			parameters: [
+				SE.parameter_query('is_update', 'is_update', [true, false]),
+				SE.parameter_query('party_uuid', 'party_uuid', [SE.uuid()]),
+				SE.parameter_query('page', 'page', ['manual_pi']),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					value: SE.string('igD0v9DIJQhJeet'),
+					label: SE.string('MPI24-0001'),
+					pi_bank: SE.string('AB BANK (PVT) LTD'),
+					pi_value: SE.number(1800.0),
+					order_numbers: SE.string('{Z24-0002}'),
+					marketing_name: SE.string('Mr Shanto'),
+				}),
+			},
+		},
+	},
 };
 
 const pathZipper = {

@@ -124,6 +124,9 @@ export const manual_pi_sequence = commercial.sequence('manual_pi_sequence', {
 export const manual_pi = commercial.table('manual_pi', {
 	uuid: uuid_primary,
 	id: integer('id').default(sql`nextval('commercial.manual_pi_sequence')`),
+	lc_uuid: defaultUUID('lc_uuid')
+		.default(null)
+		.references(() => lc.uuid),
 	pi_uuids: text('pi_uuids')
 		.array()
 		.notNull()

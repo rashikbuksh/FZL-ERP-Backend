@@ -144,6 +144,7 @@ otherRouter.get(
 	otherOperations.selectLCByPartyUuid
 );
 otherRouter.get('/pi/value/label', otherOperations.selectPi);
+otherRouter.get('/manual-pi/value/label', otherOperations.selectManualPi);
 
 // * hr * //
 otherRouter.get('/department/value/label', otherOperations.selectDepartment);

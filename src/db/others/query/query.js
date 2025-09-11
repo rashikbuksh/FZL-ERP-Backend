@@ -1940,6 +1940,66 @@ export async function selectPi(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectManualPi(req, res, next) {
+	const { is_update, party_uuid, page } = req.query;
+
+	const query = sql`
+	SELECT
+		manual_pi.uuid AS value,
+		manual_pi.pi_number AS label,
+		bank.name AS pi_bank,
+		ROUND(SUM(
+			manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8
+		)::numeric, 2) AS pi_value,
+		ARRAY_AGG(
+			manual_pi_entry.order_number
+		) AS order_number,
+		marketing.name AS marketing_name
+	FROM
+		commercial.manual_pi
+	LEFT JOIN
+		commercial.bank ON manual_pi.bank_uuid = bank.uuid
+	LEFT JOIN
+		commercial.manual_pi_entry ON manual_pi.uuid = manual_pi_entry.manual_pi_uuid
+	LEFT JOIN 
+		public.marketing ON manual_pi.marketing_uuid = marketing.uuid
+	WHERE
+		manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 > 0
+		${is_update === 'true' ? sql`` : sql`AND manual_pi.lc_uuid IS NULL`}
+		${party_uuid ? sql`AND manual_pi.party_uuid = ${party_uuid}` : sql``}
+		${
+			page == 'lc' || page == 'manual_pi'
+				? sql``
+				: is_update === 'true'
+					? sql``
+					: sql`AND (order_entry.quantity - sfg.pi)::float8 > 0 OR (toe.quantity - toe.pi)::float8 > 0`
+		}
+	GROUP BY
+		manual_pi.uuid,
+		manual_pi.created_at,
+		manual_pi.id,
+		bank.name,
+		marketing.name
+	ORDER BY manual_pi.id DESC
+	`;
+
+	const piPromise = db.execute(query);
+
+	try {
+		const data = await piPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'PI list',
+		};
+
+		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
 // * HR * //
 //* HR Department *//
 export async function selectDepartment(req, res, next) {
