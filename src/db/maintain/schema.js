@@ -87,6 +87,7 @@ export const issue = maintain.table('issue', {
 		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text().default(null),
+	name: text().default(null),
 });
 
 export const issue_procurement = maintain.table('issue_procurement', {
