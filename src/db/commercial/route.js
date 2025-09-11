@@ -80,7 +80,7 @@ commercialRouter.get(
 );
 commercialRouter.put(
 	'/manual-pi-lc-uuid/:manual_pi_uuid',
-	manualPiOperations.updateManualPiPutLcByPiUuid
+	manualPiOperations.updateManualPiPutLcByManualPiUuid
 );
 commercialRouter.get(
 	'/manual-pi/by/lc-uuid/:lc_uuid',

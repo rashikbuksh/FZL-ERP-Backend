@@ -328,7 +328,7 @@ export async function selectManualPiByManualPiUuid(req, res, next) {
 	}
 }
 
-export async function updateManualPiPutLcByPiUuid(req, res, next) {
+export async function updateManualPiPutLcByManualPiUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { manual_pi_uuid } = req.params;
