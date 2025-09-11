@@ -571,6 +571,39 @@ const pathPurchaseDescription = {
 			},
 		},
 	},
+	'/purchase/purchase-with-entry-price': {
+		get: {
+			summary: 'Get all descriptions with entry price',
+			tags: ['purchase.description'],
+			operationId: 'getPurchaseWithEntryPrice',
+			parameters: [],
+			responses: {
+				200: {
+					description: 'OK',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								properties: {
+									uuid: SE.uuid(),
+									purchase_id: {
+										type: 'string',
+										example: 'SR24-0001',
+									},
+									vendor_uuid: SE.uuid(),
+									vendor_name: {
+										type: 'string',
+										example: 'John Doe',
+									},
+									total_price: SE.number(1000.0),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 // * Purchase Entry * //

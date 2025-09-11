@@ -404,3 +404,49 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	// const { s_type } = req.query;
+
+	const resultPromise = db
+		.select({
+			uuid: description.uuid,
+			purchase_id: sql`CASE WHEN description.store_type = 'rm'
+								THEN CONCAT('SR', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))
+								ELSE CONCAT('SRA', to_char(description.created_at, 'YY'), '-', LPAD(description.id::text, 4, '0'))
+							END`,
+			vendor_uuid: description.vendor_uuid,
+			vendor_name: vendor.name,
+			total_price: sql`SUM(entry.price)`,
+			store_type: description.store_type,
+		})
+		.from(description)
+		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
+		.leftJoin(entry, eq(description.uuid, entry.purchase_description_uuid))
+		.groupBy(
+			description.uuid,
+			description.id,
+			description.store_type,
+			description.created_at,
+			vendor.uuid,
+			vendor.name
+		)
+		.orderBy(desc(description.created_at));
+
+	// if (s_type) {
+	// 	resultPromise.where(eq(description.store_type, s_type));
+	// }
+	try {
+		const data = await resultPromise;
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Description list',
+		};
+		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

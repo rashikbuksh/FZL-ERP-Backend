@@ -40,6 +40,10 @@ purchaseRouter.get(
 	'/purchase-log',
 	descriptionOperations.selectAllPurchaseDescriptionAndEntry
 );
+purchaseRouter.get(
+	'/purchase-with-entry-price',
+	descriptionOperations.selectAllPurchaseDescriptionWithEntry
+);
 
 // Entry routes
 purchaseRouter.get('/entry', entryOperations.selectAll);
