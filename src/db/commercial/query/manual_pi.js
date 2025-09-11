@@ -437,7 +437,7 @@ export async function selectByLcUuid(req, res, next) {
 			message: 'manual_pi',
 		};
 
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
