@@ -419,8 +419,9 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 							END`,
 			vendor_uuid: description.vendor_uuid,
 			vendor_name: vendor.name,
-			total_price: sql`SUM(entry.price)`,
+			total_price: sql`SUM(entry.price::float8)`,
 			store_type: description.store_type,
+			created_at: description.created_at,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
@@ -433,7 +434,7 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			vendor.uuid,
 			vendor.name
 		)
-		.orderBy(desc(description.created_at));
+		.orderBy(asc(description.id));
 
 	// if (s_type) {
 	// 	resultPromise.where(eq(description.store_type, s_type));
