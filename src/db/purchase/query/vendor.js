@@ -3,7 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { vendor } from '../schema.js';
-import { ledger } from '../../acc/schema.js';
+import { cost_center, ledger } from '../../acc/schema.js';
 import { nanoid } from '../../../lib/nanoid.js';
 
 export async function insert(req, res, next) {
@@ -16,24 +16,35 @@ export async function insert(req, res, next) {
 	try {
 		const vendorData = await vendorPromise;
 		const ledgerPromise = db
-			.insert(ledger)
-			.values({
-				uuid: nanoid(),
-				name: req.body.name,
-				created_at: req.body.created_at,
-				created_by: req.body.created_by,
-				updated_at: req.body.updated_at,
-				updated_by: req.body.updated_by,
-				remarks: req.body.remarks,
-			})
-			.returning({ insertedName: ledger.name });
+			.select({ uuid: ledger.uuid })
+			.from(ledger)
+			.where(eq(ledger.name, 'Trade Payable'));
 
 		const ledgerData = await ledgerPromise;
+
+		const costCenterPromise = db
+			.insert(cost_center)
+			.values({
+				uuid: nanoid(),
+				name: req.body.name, // Use the exact generated ID from description
+				ledger_uuid: ledgerData[0].uuid,
+				table_name: 'vendor',
+				table_uuid: formData.uuid,
+				invoice_no: null,
+				created_at: formData.created_at,
+				created_by: formData.created_by,
+				updated_by: formData.updated_by || null,
+				updated_at: formData.updated_at || null,
+				remarks: formData.remarks || null,
+			})
+			.returning({ insertedName: cost_center.name });
+
+		const costCenterData = await costCenterPromise;
 
 		const toast = {
 			status: 201,
 			type: 'create',
-			message: `${vendorData[0].insertedId} AND ${ledgerData[0].insertedName} created`,
+			message: `${vendorData[0].insertedId} AND ${costCenterData[0].insertedName} created`,
 		};
 
 		return await res.status(201).json({ toast, data: vendorData });
