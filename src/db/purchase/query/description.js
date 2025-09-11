@@ -7,7 +7,7 @@ import * as materialSchema from '../../material/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { description, entry, vendor } from '../schema.js';
 import { nanoid } from '../../../lib/nanoid.js';
-import { cost_center } from '../../acc/schema.js';
+import { cost_center, currency } from '../../acc/schema.js';
 import {
 	insertFile,
 	updateFile,
@@ -214,13 +214,16 @@ export async function selectAll(req, res, next) {
 			file: description.file,
 			currency_uuid: description.currency_uuid,
 			conversion_rate: decimalToNumber(description.conversion_rate),
+			currency_name: currency.name,
+			currency_symbol: currency.symbol,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
 		.leftJoin(
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)
-		);
+		)
+		.leftJoin(currency, eq(description.currency_uuid, currency.uuid));
 
 	if (s_type) {
 		resultPromise.where(eq(description.store_type, s_type));
@@ -267,6 +270,8 @@ export async function select(req, res, next) {
 			file: description.file,
 			currency_uuid: description.currency_uuid,
 			conversion_rate: decimalToNumber(description.conversion_rate),
+			currency_name: currency.name,
+			currency_symbol: currency.symbol,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
@@ -274,6 +279,7 @@ export async function select(req, res, next) {
 			hrSchema.users,
 			eq(description.created_by, hrSchema.users.uuid)
 		)
+		.leftJoin(currency, eq(description.currency_uuid, currency.uuid))
 		.where(eq(description.uuid, req.params.uuid));
 
 	try {
@@ -361,6 +367,8 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 			file: description.file,
 			currency_uuid: description.currency_uuid,
 			conversion_rate: decimalToNumber(description.conversion_rate),
+			currency_name: currency.name,
+			currency_symbol: currency.symbol,
 		})
 		.from(entry)
 		.leftJoin(
@@ -375,7 +383,8 @@ export async function selectAllPurchaseDescriptionAndEntry(req, res, next) {
 		.leftJoin(
 			materialSchema.info,
 			eq(entry.material_uuid, materialSchema.info.uuid)
-		);
+		)
+		.leftJoin(currency, eq(description.currency_uuid, currency.uuid));
 
 	if (s_type != undefined && from_date != undefined && to_date != undefined) {
 		resultPromise.where(
