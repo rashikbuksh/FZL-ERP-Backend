@@ -431,17 +431,24 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			total_price: sql`SUM(entry.price::float8)`,
 			store_type: description.store_type,
 			created_at: description.created_at,
+			currency_uuid: description.currency_uuid,
+			currency_name: currency.currency_name,
+			currency_symbol: currency.symbol,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
 		.leftJoin(entry, eq(description.uuid, entry.purchase_description_uuid))
+		.leftJoin(currency, eq(description.currency_uuid, currency.uuid))
 		.groupBy(
 			description.uuid,
 			description.id,
 			description.store_type,
 			description.created_at,
 			vendor.uuid,
-			vendor.name
+			vendor.name,
+			description.currency_uuid,
+			currency.currency_name,
+			currency.symbol
 		)
 		.orderBy(asc(description.id));
 
