@@ -78,6 +78,10 @@ commercialRouter.get(
 	'/manual-pi/details/by/:manual_pi_uuid',
 	manualPiOperations.selectManualPiByManualPiUuid
 );
+commercialRouter.put(
+	'/manual-pi-lc-uuid/:manual_pi_uuid',
+	manualPiOperations.updateManualPiPutLcByPiUuid
+);
 
 // * Manual Pi Entry routes
 commercialRouter.get('/manual-pi-entry', manualPiEntryOperations.selectAll);

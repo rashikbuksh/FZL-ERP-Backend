@@ -327,3 +327,41 @@ export async function selectManualPiByManualPiUuid(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+export async function updateManualPiPutLcByPiUuid(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { manual_pi_uuid } = req.params;
+
+	const { lc_uuid } = req.body;
+
+	const manualPiPromise = db
+		.update(manual_pi)
+		.set({ lc_uuid })
+		.where(eq(manual_pi.uuid, manual_pi_uuid))
+		.returning({
+			updatedId: manual_pi.pi_number,
+		});
+
+	try {
+		const data = await manualPiPromise;
+		if (data.length === 0) {
+			const toast = {
+				status: 404,
+				type: 'update',
+				message: `No record found to update`,
+			};
+			return res.status(404).json({ toast, data });
+		}
+
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}

@@ -737,6 +737,30 @@ export const pathCommercialManualPi = {
 			},
 		},
 	},
+	'/commercial/manual-pi-lc-uuid/:manual_pi_uuid': {
+		put: {
+			tags: ['commercial.manual_pi'],
+			summary: 'Update a manual pi lc uuid',
+			description: 'Update a manual pi lc uuid by manual_pi_uuid',
+			//operationId: "updateManualPiLcUuidByManualPiUuid",
+			consume: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'Update data using uuid',
+					'manual_pi_uuid',
+					'uuid'
+				),
+			],
+			requestBody: SE.requestBody_schema_ref('commercial/manual_pi'),
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/manual_pi'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
 };
 
 // * Commercial Manual Pi Entry * //
