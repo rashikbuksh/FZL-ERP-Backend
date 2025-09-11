@@ -1472,4 +1472,20 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/acc-balance-report': {
+		get: {
+			summary: 'Account Balance Report',
+			description: 'Account Balance Report',
+			tags: ['report'],
+			operationId: 'selectAccBalanceReport',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					account_name: SE.string('Account Name'),
+					balance: SE.number(610),
+					account_type: SE.string('Account Type'),
+				}),
+			},
+		},
+	},
 };

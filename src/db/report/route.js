@@ -67,6 +67,8 @@ import { selectSampleBulkItemWiseStatus } from './query/sample_bulk_item_wise_st
 import { fortnightReport } from './lc_report/fortnight_report.js';
 import { PaymentReport } from './lc_report/payment_report.js';
 
+import { balanceReport } from './acc_report/balance.js';
+
 const reportRouter = Router();
 
 // * Zipper Production Status Report
@@ -279,6 +281,9 @@ reportRouter.get(
 // LC FORTNIGHT REPORT
 reportRouter.get('/lc-fortnight-report', fortnightReport);
 reportRouter.get('/lc-payment-report', PaymentReport);
+
+// ACC BALANCE REPORT
+reportRouter.get('/acc-balance-report', balanceReport);
 
 export const pathReport = {
 	...ReportRoutes.pathReport,
