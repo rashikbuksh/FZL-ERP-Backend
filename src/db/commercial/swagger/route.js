@@ -737,7 +737,7 @@ export const pathCommercialManualPi = {
 			},
 		},
 	},
-	'/commercial/manual-pi-lc-uuid/:manual_pi_uuid': {
+	'/commercial/manual-pi-lc-uuid/{manual_pi_uuid}': {
 		put: {
 			tags: ['commercial.manual_pi'],
 			summary: 'Update a manual pi lc uuid',
