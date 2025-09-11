@@ -7,7 +7,7 @@ import * as materialSchema from '../../material/schema.js';
 import { decimalToNumber } from '../../variables.js';
 import { description, entry, vendor } from '../schema.js';
 import { nanoid } from '../../../lib/nanoid.js';
-import { cost_center, currency } from '../../acc/schema.js';
+import { cost_center, currency, ledger } from '../../acc/schema.js';
 import {
 	insertFile,
 	updateFile,
@@ -50,13 +50,26 @@ export async function insert(req, res, next) {
 		const descriptionData = await descriptionPromise;
 		const generatedPurchaseId = descriptionData[0].insertedId;
 
-		// Now insert cost_center using the generated purchase ID as the name
+		const ledgerData = db
+			.select({ uuid: ledger.uuid })
+			.from(ledger)
+			.where(
+				formData.store_type === 'rm'
+					? eq(ledger.identifier, 'store_rm')
+					: formData.store_type === 'maintenance'
+						? eq(ledger.identifier, 'store_maintenance')
+						: eq(ledger.identifier, 'store_accessories')
+			);
+
+		const ledgerResult = await ledgerData;
+
+		// Now insert into cost_center using the generated ID
 		const costCenterPromise = db
 			.insert(cost_center)
 			.values({
 				uuid: nanoid(),
 				name: generatedPurchaseId, // Use the exact generated ID from description
-				ledger_uuid: null,
+				ledger_uuid: ledgerResult[0]?.uuid || null,
 				table_name: 'purchase.description',
 				table_uuid: formData.uuid,
 				invoice_no: null,
