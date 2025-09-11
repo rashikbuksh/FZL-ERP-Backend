@@ -761,6 +761,24 @@ export const pathCommercialManualPi = {
 			},
 		},
 	},
+	'/commercial/manual-pi/by/lc-uuid/{lc_uuid}': {
+		get: {
+			tags: ['commercial.manual_pi'],
+			summary: 'Get a manual pi by lc_uuid',
+			description: ' Get a manual pi by lc_uuid',
+			//operationId: "getManualPiByLcUuid",
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params('Get data using uuid', 'lc_uuid', 'uuid'),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'commercial/pi_cash'),
+				405: SE.response(405),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
 };
 
 // * Commercial Manual Pi Entry * //

@@ -299,13 +299,14 @@ export async function selectLcPiByLcUuid(req, res, next) {
 		const fetchData = async (endpoint) =>
 			await api.get(`/commercial/${endpoint}/${lc_uuid}`);
 
-		const [lc, lc_entry, lc_entry_others, pi_cash] = await Promise.all([
-			fetchData('lc'),
-			fetchData('lc-entry/by'),
-			fetchData('lc-entry-others/by'),
-			fetchData('pi-cash-lc'),
-			fetchData('manual-pi/by/lc-uuid'),
-		]);
+		const [lc, lc_entry, lc_entry_others, pi_cash, manual_pi] =
+			await Promise.all([
+				fetchData('lc'),
+				fetchData('lc-entry/by'),
+				fetchData('lc-entry-others/by'),
+				fetchData('pi-cash-lc'),
+				fetchData('manual-pi/by/lc-uuid'),
+			]);
 
 		const response = {
 			...lc?.data?.data,
