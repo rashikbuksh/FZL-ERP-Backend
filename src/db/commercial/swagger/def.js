@@ -76,6 +76,8 @@ export const defCommercialLc = SED({
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string('remarks'),
+		is_completed: SE.boolean(false),
+		is_completed_date: SE.date_time(),
 	},
 	xml: 'Commercial/Lc',
 });
