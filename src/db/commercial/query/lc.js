@@ -138,7 +138,8 @@ export async function selectAll(req, res, next) {
 					WHERE
 						pi_cash.lc_uuid = lc.uuid
 				)
-				WHEN manual_pi_values.manual_pi_value::float8 > 0 THEN manual_pi_values.manual_pi_value::float8
+				WHEN (manual_pi_values.manual_pi_value::float8 IS NOT NULL OR manual_pi_values.manual_pi_value::float8 > 0)
+					THEN manual_pi_values.manual_pi_value::float8
 				ELSE lc.lc_value::float8
 			END AS total_value,
 			concat(
