@@ -197,7 +197,7 @@ export async function selectAll(req, res, next) {
 				manual_pi.lc_uuid
 		) manual_pi_values ON manual_pi_values.lc_uuid = lc.uuid
 		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
-		GROUP BY lc.uuid, party.name, users.name, lc_entry_agg.lc_entry
+		GROUP BY lc.uuid, party.name, users.name, lc_entry_agg.lc_entry, manual_pi_values.manual_pi_value
 		ORDER BY lc.created_at DESC
 		`;
 		const resultPromise = db.execute(query);
@@ -230,25 +230,46 @@ export async function select(req, res, next) {
 			lc.uuid,
 			lc.party_uuid,
 			array_agg(
-				CASE WHEN pi_cash.uuid IS NOT NULL THEN concat('PI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text) ELSE lc.pi_number END
+				CASE WHEN pi_cash.uuid IS NOT NULL 
+					THEN concat(
+						'PI',
+						to_char(pi_cash.created_at, 'YY'),
+						'-',
+						pi_cash.id::text
+					) 
+				WHEN manual_pi.uuid IS NOT NULL
+					THEN manual_pi.pi_number
+				ELSE lc.pi_number 
+				END
 			) as pi_ids,
 			party.name AS party_name,
-			CASE WHEN is_old_pi = 0 THEN (
-				SELECT
-					SUM(
-						CASE
-							WHEN pi_cash_entry.thread_order_entry_uuid IS NULL
-							THEN coalesce(pi_cash_entry.pi_cash_quantity, 0) * coalesce(order_entry.party_price, 0) / 12
-							ELSE coalesce(pi_cash_entry.pi_cash_quantity, 0) * coalesce(toe.party_price, 0)
-						END
-					)
-				FROM commercial.pi_cash 
-					LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
-					LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-					LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
-					LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
-				WHERE pi_cash.lc_uuid = lc.uuid
-			) ELSE lc.lc_value::float8 END AS total_value,
+			CASE
+				WHEN is_old_pi = 0 THEN (
+					SELECT SUM(
+							CASE
+								WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type = 'tape' THEN coalesce(
+									pi_cash_entry.pi_cash_quantity, 0
+								) * coalesce(order_entry.party_price, 0)
+								WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type != 'tape' THEN coalesce(
+									pi_cash_entry.pi_cash_quantity, 0
+								) * coalesce(order_entry.party_price, 0) / 12
+								ELSE coalesce(
+									pi_cash_entry.pi_cash_quantity, 0
+								) * coalesce(toe.party_price, 0)
+							END
+						)
+					FROM commercial.pi_cash
+						LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+						LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+						LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+						LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+						LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+					WHERE
+						pi_cash.lc_uuid = lc.uuid
+				)
+				WHEN manual_pi_values.manual_pi_value > 0 THEN manual_pi_values.manual_pi_value
+				ELSE lc.lc_value::float8
+			END AS total_value,
 			concat(
 			'LC', to_char(lc.created_at, 'YY'), '-', lc.id::text
 			) as file_number,
@@ -287,8 +308,21 @@ export async function select(req, res, next) {
 			public.party ON lc.party_uuid = party.uuid
 		LEFT JOIN
 			commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
+		LEFT JOIN commercial.manual_pi ON lc.uuid = manual_pi.lc_uuid
+		LEFT JOIN commercial.bank manual_bank ON manual_pi.bank_uuid = manual_bank.uuid
+		LEFT JOIN public.marketing manual_marketing ON manual_pi.marketing_uuid = manual_marketing.uuid
+		LEFT JOIN (
+			SELECT 
+				manual_pi.lc_uuid,
+				SUM(manual_pi_entry.quantity * manual_pi_entry.unit_price) AS manual_pi_value
+			FROM commercial.manual_pi_entry
+			LEFT JOIN commercial.manual_pi ON manual_pi_entry.manual_pi_uuid = manual_pi.uuid
+			WHERE manual_pi.lc_uuid IS NOT NULL
+			GROUP BY 
+				manual_pi.lc_uuid
+		) manual_pi_values ON manual_pi_values.lc_uuid = lc.uuid
 		WHERE lc.uuid = ${req.params.uuid}
-		GROUP BY lc.uuid, party.name, users.name`;
+		GROUP BY lc.uuid, party.name, users.name, manual_pi_values.manual_pi_value`;
 
 	const lcPromise = db.execute(query);
 
