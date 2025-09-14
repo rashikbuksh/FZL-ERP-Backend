@@ -138,7 +138,7 @@ export async function selectAll(req, res, next) {
 					WHERE
 						pi_cash.lc_uuid = lc.uuid
 				)
-				WHEN manual_pi_values.manual_pi_value > 0 THEN manual_pi_values.manual_pi_value
+				WHEN manual_pi_values.manual_pi_value::float8 > 0 THEN manual_pi_values.manual_pi_value::float8
 				ELSE lc.lc_value::float8
 			END AS total_value,
 			concat(
@@ -189,7 +189,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN (
 			SELECT 
 				manual_pi.lc_uuid,
-				SUM(manual_pi_entry.quantity * manual_pi_entry.unit_price / 12) AS manual_pi_value
+				SUM(manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 / 12) AS manual_pi_value
 			FROM commercial.manual_pi_entry
 			LEFT JOIN commercial.manual_pi ON manual_pi_entry.manual_pi_uuid = manual_pi.uuid
 			WHERE manual_pi.lc_uuid IS NOT NULL
