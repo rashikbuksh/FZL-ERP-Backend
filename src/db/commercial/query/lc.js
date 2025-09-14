@@ -99,17 +99,20 @@ export async function selectAll(req, res, next) {
 						to_char(pi_cash.created_at, 'YY'),
 						'-',
 						pi_cash.id::text
-					) ELSE lc.pi_number 
+					) 
+				WHEN manual_pi.uuid IS NOT NULL
+					THEN manual_pi.pi_number
+				ELSE lc.pi_number 
 				END
 			) as pi_ids,
-			COALESCE(json_agg(vpc.order_numbers) FILTER (WHERE vpc.order_numbers IS NOT NULL), '[]') as zipper,
+			CASE WHEN is_old_pi = 0 THEN COALESCE(json_agg(vpc.order_numbers) FILTER (WHERE vpc.order_numbers IS NOT NULL), '[]') END as zipper,
   			COALESCE(json_agg(vpc.thread_order_numbers) FILTER (WHERE vpc.thread_order_numbers IS NOT NULL), '[]') as thread,
 			party.name AS party_name,
 			array_agg(
-				marketing.name
+				CASE WHEN is_old_pi = 1 THEN manual_marketing.name ELSE marketing.name END
 			) as marketing_name,
 			array_agg(
-				DISTINCT bank.name
+				DISTINCT CASE WHEN is_old_pi = 1 THEN manual_bank.name ELSE bank.name END
 			) as bank_name,
 			CASE
 				WHEN is_old_pi = 0 THEN (
@@ -135,6 +138,7 @@ export async function selectAll(req, res, next) {
 					WHERE
 						pi_cash.lc_uuid = lc.uuid
 				)
+				WHEN manual_pi_values.manual_pi_value > 0 THEN manual_pi_values.manual_pi_value
 				ELSE lc.lc_value::float8
 			END AS total_value,
 			concat(
@@ -179,6 +183,19 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN public.marketing ON pi_cash.marketing_uuid = marketing.uuid
 		LEFT JOIN commercial.bank ON pi_cash.bank_uuid = bank.uuid
 		LEFT JOIN commercial.v_pi_cash vpc ON vpc.pi_cash_uuid = pi_cash.uuid
+		LEFT JOIN commercial.manual_pi ON lc.uuid = manual_pi.lc_uuid
+		LEFT JOIN commercial.bank manual_bank ON manual_pi.bank_uuid = manual_bank.uuid
+		LEFT JOIN public.marketing manual_marketing ON manual_pi.marketing_uuid = manual_marketing.uuid
+		LEFT JOIN (
+			SELECT 
+				manual_pi.lc_uuid,
+				SUM(manual_pi_entry.quantity * manual_pi_entry.unit_price) AS manual_pi_value
+			FROM commercial.manual_pi_entry
+			LEFT JOIN commercial.manual_pi ON manual_pi_entry.manual_pi_uuid = manual_pi.uuid
+			WHERE manual_pi.lc_uuid IS NOT NULL
+			GROUP BY 
+				manual_pi.lc_uuid
+		) manual_pi_values ON manual_pi_values.lc_uuid = lc.uuid
 		WHERE ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
 		GROUP BY lc.uuid, party.name, users.name, lc_entry_agg.lc_entry
 		ORDER BY lc.created_at DESC
