@@ -189,7 +189,7 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN (
 			SELECT 
 				manual_pi.lc_uuid,
-				SUM(manual_pi_entry.quantity * manual_pi_entry.unit_price) AS manual_pi_value
+				SUM(manual_pi_entry.quantity * manual_pi_entry.unit_price / 12) AS manual_pi_value
 			FROM commercial.manual_pi_entry
 			LEFT JOIN commercial.manual_pi ON manual_pi_entry.manual_pi_uuid = manual_pi.uuid
 			WHERE manual_pi.lc_uuid IS NOT NULL
@@ -314,7 +314,7 @@ export async function select(req, res, next) {
 		LEFT JOIN (
 			SELECT 
 				manual_pi.lc_uuid,
-				SUM(manual_pi_entry.quantity * manual_pi_entry.unit_price) AS manual_pi_value
+				SUM(manual_pi_entry.quantity * manual_pi_entry.unit_price / 12) AS manual_pi_value
 			FROM commercial.manual_pi_entry
 			LEFT JOIN commercial.manual_pi ON manual_pi_entry.manual_pi_uuid = manual_pi.uuid
 			WHERE manual_pi.lc_uuid IS NOT NULL
