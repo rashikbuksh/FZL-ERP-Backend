@@ -5,7 +5,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as publicSchema from '../../public/schema.js';
 import { decimalToNumber, GetMarketingOwnUUID } from '../../variables.js';
-import { bank, manual_pi } from '../schema.js';
+import { bank, lc, manual_pi } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -83,6 +83,8 @@ export async function selectAll(req, res, next) {
 		const query = sql`
 						SELECT
 							cmp.uuid,
+							cmp.lc_uuid,
+							lc.lc_number,
 							cmp.pi_uuids,
 							jsonb_agg(DISTINCT concat('PI', to_char(pi_cash_id.created_at, 'YY'), '-', pi_cash_id.id::text)) AS pi_ids,
 							cmpe_total_value.total_value AS total_value,
@@ -120,6 +122,8 @@ export async function selectAll(req, res, next) {
 						FROM
 							commercial.manual_pi cmp
 						LEFT JOIN
+							commercial.lc lc ON cmp.lc_uuid = lc.uuid
+						LEFT JOIN
 							hr.users hs ON cmp.created_by = hs.uuid
 						LEFT JOIN
 							public.marketing pm ON cmp.marketing_uuid = pm.uuid
@@ -156,6 +160,8 @@ export async function selectAll(req, res, next) {
 							${own_uuid ? sql`cmp.marketing_uuid = ${marketingUuid}` : sql`1=1`}
 						GROUP BY
 							cmp.uuid,
+							cmp.lc_uuid,
+							lc.lc_number,
 							cmp.pi_uuids,
 							cmp.marketing_uuid,
 							pm.name,
@@ -214,6 +220,8 @@ export async function select(req, res, next) {
 		.select({
 			uuid: manual_pi.uuid,
 			pi_uuids: manual_pi.pi_uuids,
+			lc_uuid: manual_pi.lc_uuid,
+			lc_number: lc.lc_number,
 			marketing_uuid: manual_pi.marketing_uuid,
 			marketing_name: publicSchema.marketing.name,
 			party_uuid: manual_pi.party_uuid,
@@ -246,6 +254,7 @@ export async function select(req, res, next) {
 			is_inch: manual_pi.is_inch,
 		})
 		.from(manual_pi)
+		.leftJoin(lc, eq(manual_pi.lc_uuid, lc.uuid))
 		.leftJoin(hrSchema.users, eq(manual_pi.created_by, hrSchema.users.uuid))
 		.leftJoin(
 			publicSchema.marketing,
