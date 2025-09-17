@@ -112,7 +112,8 @@ BEGIN
             UPDATE 
                 thread.order_entry
             SET 
-                warehouse = warehouse - CASE WHEN NEW.is_warehouse_received = TRUE THEN ple.quantity ELSE 0 END,
+                warehouse = warehouse - CASE WHEN ( NEW.is_warehouse_received = TRUE AND NEW.gate_pass = 0 ) THEN ple.quantity ELSE 0 END,
+                delivered = delivered - CASE WHEN NEW.gate_pass = 1 THEN ple.quantity ELSE 0 END,
                 production_quantity = production_quantity + ple.quantity
             FROM delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -122,7 +123,8 @@ BEGIN
             UPDATE 
                 thread.order_entry
             SET 
-                warehouse = warehouse + CASE WHEN NEW.is_warehouse_received = TRUE THEN ple.quantity ELSE 0 END,
+                warehouse = warehouse + CASE WHEN ( NEW.is_warehouse_received = TRUE AND NEW.gate_pass = 0 ) THEN ple.quantity ELSE 0 END,
+                delivered = delivered + CASE WHEN NEW.gate_pass = 1 THEN ple.quantity ELSE 0 END,
                 production_quantity = production_quantity - ple.quantity
             FROM delivery.packing_list_entry ple
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
@@ -134,7 +136,8 @@ BEGIN
             UPDATE 
                 zipper.sfg
             SET 
-                warehouse = warehouse - CASE WHEN NEW.is_warehouse_received = TRUE THEN ple.quantity ELSE 0 END,
+                warehouse = warehouse - CASE WHEN ( NEW.is_warehouse_received = TRUE AND NEW.gate_pass = 0 ) THEN ple.quantity ELSE 0 END,
+                delivered = delivered - CASE WHEN NEW.gate_pass = 1 THEN ple.quantity ELSE 0 END,
                 finishing_prod = finishing_prod + ple.quantity
             FROM 
                 delivery.packing_list_entry ple
@@ -145,7 +148,8 @@ BEGIN
             UPDATE 
                 zipper.sfg
             SET 
-                warehouse = warehouse + CASE WHEN NEW.is_warehouse_received = TRUE THEN ple.quantity ELSE 0 END,
+                warehouse = warehouse + CASE WHEN ( NEW.is_warehouse_received = TRUE AND NEW.gate_pass = 0 ) THEN ple.quantity ELSE 0 END,
+                delivered = delivered + CASE WHEN NEW.gate_pass = 1 THEN ple.quantity ELSE 0 END,
                 finishing_prod = finishing_prod - ple.quantity
             FROM 
                 delivery.packing_list_entry ple
