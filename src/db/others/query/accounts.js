@@ -95,6 +95,7 @@ export async function selectLedger(req, res, next) {
 			label: sql`CONCAT(${accountSchema.ledger.name}, ' (', (COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0))::float8, ')', CASE WHEN ledger.is_cash_ledger = true THEN ' - Cash' ELSE ' ' END)`,
 			cost_center_count: sql`COALESCE(cost_center.cost_center_count, 0)::float8`,
 			is_cash_ledger: accountSchema.ledger.is_cash_ledger,
+			identifier: accountSchema.ledger.identifier,
 		})
 		.from(accountSchema.ledger)
 		.leftJoin(
