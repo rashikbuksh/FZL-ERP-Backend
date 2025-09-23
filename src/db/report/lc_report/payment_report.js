@@ -79,7 +79,9 @@ export async function PaymentReport(req, res, next) {
                         LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
                         LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
                     WHERE pi_cash.lc_uuid = lc.uuid
-                )::float8 ELSE lc.lc_value::float8 END AS total_value
+                )::float8 ELSE lc.lc_value::float8 END AS total_value,
+                jsonb_agg(vpc.order_numbers) as order_numbers,
+                jsonb_agg(vpc.thread_order_numbers) as thread_order_numbers
             FROM
                 commercial.lc
             LEFT JOIN 
@@ -94,6 +96,8 @@ export async function PaymentReport(req, res, next) {
                 hr.users ON lc.created_by = users.uuid
             LEFT JOIN
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
+            LEFT JOIN 
+                commercial.v_pi_cash vpc ON pi_cash.uuid = vpc.pi_cash_uuid
             WHERE
                 lc_entry.maturity_date IS NOT NULL 
                 AND CASE
@@ -142,6 +146,16 @@ export async function PaymentReport(req, res, next) {
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
+
+		// order_numbers and thread_order_numbers are array of array of strings, we need to flatten them
+		// e.g. [['ORD-001', 'ORD-002'], ['ORD-003']] => ['ORD-001', 'ORD-002', 'ORD-003']
+		data.rows = data.rows.map((row) => {
+			return {
+				...row,
+				order_numbers: row.order_numbers.flat(),
+				thread_order_numbers: row.thread_order_numbers.flat(),
+			};
+		});
 
 		const toast = {
 			status: 200,
