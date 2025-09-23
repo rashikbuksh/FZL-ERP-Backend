@@ -14,6 +14,11 @@ import {
 	deleteFile,
 } from '../../../util/upload_files.js';
 
+import { alias } from 'drizzle-orm/pg-core';
+
+const purchaseCostCenter = alias(cost_center, 'purchase_cost_center');
+const vendorCostCenter = alias(cost_center, 'vendor_cost_center');
+
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -447,11 +452,21 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			currency_uuid: description.currency_uuid,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
+			purchase_cost_center_uuid: purchaseCostCenter.uuid,
+			vendor_cost_center_uuid: vendorCostCenter.uuid,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
 		.leftJoin(entry, eq(description.uuid, entry.purchase_description_uuid))
 		.leftJoin(currency, eq(description.currency_uuid, currency.uuid))
+		.leftJoin(
+			purchaseCostCenter,
+			eq(description.uuid, purchaseCostCenter.table_uuid)
+		)
+		.leftJoin(
+			vendorCostCenter,
+			eq(vendorCostCenter.table_uuid, description.vendor_uuid)
+		)
 		.groupBy(
 			description.uuid,
 			description.id,
@@ -461,7 +476,9 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			vendor.name,
 			description.currency_uuid,
 			currency.currency_name,
-			currency.symbol
+			currency.symbol,
+			purchaseCostCenter.uuid,
+			vendorCostCenter.uuid
 		)
 		.orderBy(desc(description.id));
 
