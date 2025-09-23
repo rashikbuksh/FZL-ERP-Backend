@@ -72,8 +72,8 @@ export async function fortnightReport(req, res, next) {
                         LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
                     WHERE pi_cash.lc_uuid = lc.uuid
                 )::float8 ELSE lc.lc_value::float8 END AS total_value,
-                CASE WHEN is_old_pi = 0 THEN jsonb_agg(vpc.order_numbers) ELSE manual_pi.order_numbers END AS order_numbers,
-                CASE WHEN is_old_pi = 0 THEN jsonb_agg(vpc.thread_order_numbers) ELSE manual_pi.thread_order_numbers END AS thread_order_numbers,
+                CASE WHEN is_old_pi = 0 THEN jsonb_agg(DISTINCT vpc.order_numbers) ELSE manual_pi.order_numbers END AS order_numbers,
+                CASE WHEN is_old_pi = 0 THEN jsonb_agg(DISTINCT vpc.thread_order_numbers) ELSE manual_pi.thread_order_numbers END AS thread_order_numbers,
                 lc.is_old_pi
             FROM
                 commercial.lc
@@ -136,15 +136,56 @@ export async function fortnightReport(req, res, next) {
 
 		// order_numbers and thread_order_numbers are array of array of strings, we need to flatten them
 		// e.g. [['ORD-001', 'ORD-002'], ['ORD-003']] => ['ORD-001', 'ORD-002', 'ORD-003']
-		data.rows = data.rows.map((row) => {
-			if (row.is_old_pi === 0) {
-				return {
-					...row,
-					order_numbers: row.order_numbers.flat(),
-					thread_order_numbers: row.thread_order_numbers.flat(),
-				};
-			}
-		});
+		data.rows = data.rows
+			.map((row) => {
+				if (row.is_old_pi === 0) {
+					const orderNumbersArr = Array.isArray(row.order_numbers)
+						? row.order_numbers.flat().filter(Boolean)
+						: [];
+					const threadOrderNumbersArr = Array.isArray(
+						row.thread_order_numbers
+					)
+						? row.thread_order_numbers.flat().filter(Boolean)
+						: [];
+
+					// Deduplicate by order_info_uuid (if object) or value
+					const uniqueOrders = [];
+					const seenOrders = new Set();
+					for (const o of orderNumbersArr) {
+						// o may be an object {quantity, delivered, order_number, packing_list, order_info_uuid}
+						const key =
+							o && typeof o === 'object' && 'order_info_uuid' in o
+								? o.order_info_uuid
+								: JSON.stringify(o);
+						if (!seenOrders.has(key)) {
+							seenOrders.add(key);
+							uniqueOrders.push(o);
+						}
+					}
+
+					const uniqueThreadOrders = [];
+					const seenThread = new Set();
+					for (const o of threadOrderNumbersArr) {
+						const key =
+							o && typeof o === 'object' && 'order_info_uuid' in o
+								? o.order_info_uuid
+								: JSON.stringify(o);
+						if (!seenThread.has(key)) {
+							seenThread.add(key);
+							uniqueThreadOrders.push(o);
+						}
+					}
+
+					return {
+						...row,
+						order_numbers: uniqueOrders,
+						thread_order_numbers: uniqueThreadOrders,
+					};
+				}
+				// Return row unchanged for old PI
+				return row;
+			})
+			.filter(Boolean);
 
 		const toast = {
 			status: 200,
