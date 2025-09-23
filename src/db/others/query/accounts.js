@@ -3,6 +3,7 @@ import { handleError } from '../../../util/index.js';
 import * as accountSchema from '../../acc/schema.js';
 import db from '../../index.js';
 import { decimalToNumber } from '../../variables.js';
+import * as purchaseSchema from '../../purchase/schema.js';
 
 export const typeOptions = [
 	{ label: 'Asset', value: 'assets' },
@@ -147,7 +148,11 @@ export async function selectCostCenter(req, res, next) {
 	const costCenterPromise = db
 		.select({
 			value: accountSchema.cost_center.uuid,
-			label: sql`CONCAT(${accountSchema.cost_center.name}, ' - ', ${accountSchema.cost_center.invoice_no} )`,
+			label: sql`CASE
+						WHEN ${accountSchema.ledger.identifier} IS NOT NULL AND ${accountSchema.ledger.identifier} != 'none'
+							THEN CONCAT(${accountSchema.cost_center.name}, ' - ', (SELECT pd.lc_number FROM purchase.description pd WHERE pd.uuid = ${accountSchema.cost_center.table_uuid}))
+						ELSE ${accountSchema.cost_center.name}
+       				END`,
 			invoice_no: accountSchema.cost_center.invoice_no,
 			identifier: accountSchema.ledger.identifier,
 		})
