@@ -151,6 +151,7 @@ export const ledger = acc.table('ledger', {
 	is_bank_ledger: boolean('is_bank_ledger').default(false),
 	is_cash_ledger: boolean('is_cash_ledger').default(false),
 	identifier: identifierEnum('identifier').default('none'),
+	initial_amount: PG_DECIMAL('initial_amount').default(0),
 });
 
 export const cost_center = acc.table('cost_center', {
