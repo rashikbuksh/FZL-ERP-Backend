@@ -93,7 +93,7 @@ export async function selectLedger(req, res, next) {
 	const ledgerPromise = db
 		.select({
 			value: accountSchema.ledger.uuid,
-			label: sql`CONCAT(${accountSchema.ledger.name}, ' (', (COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0))::float8, ')', CASE WHEN ledger.is_cash_ledger = true THEN ' - Cash' ELSE ' ' END)`,
+			label: sql`CONCAT(${accountSchema.ledger.name}, ' (', ${accountSchema.ledger.initial_amount} ::float8 + (COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0))::float8, ')', CASE WHEN ledger.is_cash_ledger = true THEN ' - Cash' ELSE ' ' END)`,
 			cost_center_count: sql`COALESCE(cost_center.cost_center_count, 0)::float8`,
 			is_cash_ledger: accountSchema.ledger.is_cash_ledger,
 			identifier: accountSchema.ledger.identifier,
