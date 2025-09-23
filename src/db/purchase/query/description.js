@@ -5,14 +5,33 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import * as materialSchema from '../../material/schema.js';
 import { decimalToNumber } from '../../variables.js';
-import { description, entry, vendor } from '../schema.js';
+import purchase, { description, entry, vendor } from '../schema.js';
 import { nanoid } from '../../../lib/nanoid.js';
-import { cost_center, currency, ledger } from '../../acc/schema.js';
+import {
+	cost_center,
+	currency,
+	ledger,
+	voucher_entry_cost_center,
+} from '../../acc/schema.js';
 import {
 	insertFile,
 	updateFile,
 	deleteFile,
 } from '../../../util/upload_files.js';
+
+import { alias } from 'drizzle-orm/pg-core';
+
+const purchaseCostCenter = alias(cost_center, 'purchase_cost_center');
+const vendorCostCenter = alias(cost_center, 'vendor_cost_center');
+
+const purchaseVoucherEntryCostCenter = alias(
+	voucher_entry_cost_center,
+	'purchase_voucher_entry_cost_center'
+);
+const vendorVoucherEntryCostCenter = alias(
+	voucher_entry_cost_center,
+	'vendor_voucher_entry_cost_center'
+);
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -447,11 +466,37 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			currency_uuid: description.currency_uuid,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
+			purchase_cost_center_uuid: purchaseCostCenter.uuid,
+			vendor_cost_center_uuid: vendorCostCenter.uuid,
+			purchase_cost_center_amount: purchaseVoucherEntryCostCenter.amount,
+			vendor_cost_center_amount: vendorVoucherEntryCostCenter.amount,
 		})
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
 		.leftJoin(entry, eq(description.uuid, entry.purchase_description_uuid))
 		.leftJoin(currency, eq(description.currency_uuid, currency.uuid))
+		.leftJoin(
+			purchaseCostCenter,
+			eq(description.uuid, purchaseCostCenter.table_uuid)
+		)
+		.leftJoin(
+			vendorCostCenter,
+			eq(vendorCostCenter.table_uuid, description.vendor_uuid)
+		)
+		.leftJoin(
+			purchaseVoucherEntryCostCenter,
+			eq(
+				purchaseVoucherEntryCostCenter.cost_center_uuid,
+				purchaseCostCenter.uuid
+			)
+		)
+		.leftJoin(
+			vendorVoucherEntryCostCenter,
+			eq(
+				vendorVoucherEntryCostCenter.cost_center_uuid,
+				vendorCostCenter.uuid
+			)
+		)
 		.groupBy(
 			description.uuid,
 			description.id,
@@ -461,7 +506,11 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			vendor.name,
 			description.currency_uuid,
 			currency.currency_name,
-			currency.symbol
+			currency.symbol,
+			purchaseCostCenter.uuid,
+			vendorCostCenter.uuid,
+			purchaseVoucherEntryCostCenter.amount,
+			vendorVoucherEntryCostCenter.amount
 		)
 		.orderBy(desc(description.id));
 

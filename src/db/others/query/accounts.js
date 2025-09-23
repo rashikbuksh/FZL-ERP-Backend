@@ -149,8 +149,13 @@ export async function selectCostCenter(req, res, next) {
 			value: accountSchema.cost_center.uuid,
 			label: sql`CONCAT(${accountSchema.cost_center.name}, ' - ', ${accountSchema.cost_center.invoice_no} )`,
 			invoice_no: accountSchema.cost_center.invoice_no,
+			identifier: accountSchema.ledger.identifier,
 		})
-		.from(accountSchema.cost_center);
+		.from(accountSchema.cost_center)
+		.leftJoin(
+			accountSchema.ledger,
+			eq(accountSchema.cost_center.ledger_uuid, accountSchema.ledger.uuid)
+		);
 
 	if (ledger_uuid) {
 		costCenterPromise.where(
