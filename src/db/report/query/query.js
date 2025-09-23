@@ -1071,12 +1071,12 @@ export async function LCReport(req, res, next) {
                 lc.expiry_date,
                 lc_entry.amount::float8,
                 lc_entry.payment_value,
-                lc_entry_others.ud_no,
-                lc_entry_others.ud_received,
-                pi_cash.marketing_uuid,
-                marketing.name as marketing_name,
-                pi_cash.bank_uuid,
-                bank.name as bank_name,
+                jsonb_agg(lc_entry_others.ud_no) as ud_no,
+                jsonb_agg(lc_entry_others.ud_received) as ud_received,
+                (jsonb_agg(pi_cash.marketing_uuid))[1] as marketing_uuid,
+                (jsonb_agg(marketing.name))[1] as marketing_name,
+                (jsonb_agg(pi_cash.bank_uuid))[1] as bank_uuid,
+                (jsonb_agg(bank.name))[1] as bank_name,
                 lc.party_bank,
                 CASE WHEN is_old_pi = 0 THEN(	
 				SELECT 
@@ -1118,6 +1118,8 @@ export async function LCReport(req, res, next) {
 				sql`AND lc_entry.document_receive_date IS NOT NULL AND lc_entry.maturity_date IS NOT NULL AND lc_entry.payment_date IS NULL`
 			);
 		}
+
+		query.append(sql`GROUP BY lc.uuid, party.uuid, lc_entry.uuid`);
 
 		const resultPromise = db.execute(query);
 

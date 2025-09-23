@@ -61,7 +61,8 @@ export async function selectMarketReport(req, res, next) {
                         marketing.name as marketing_name,
                         party.name as party_name,
                         -- party wise order number, against order number -> pi, lc, cash invoice
-                        zipper_object.order_details
+                        zipper_object.order_details,
+                        total_lc.total_value as total_lc_value
                     FROM 
                         public.party
                     LEFT JOIN
@@ -143,6 +144,58 @@ export async function selectMarketReport(req, res, next) {
                     ) AS zipper_object ON
                         zipper_object.marketing_uuid = vodf.marketing_uuid AND
                         zipper_object.party_uuid = vodf.party_uuid
+                    LEFT JOIN (
+                        SELECT 
+                            lc.party_uuid,
+                            CASE WHEN pi_cash.uuid IS NOT NULL THEN pi_cash.marketing_uuid ELSE manual_pi_values.marketing_uuid END AS marketing_uuid,
+                            SUM(
+                                CASE
+                                    WHEN is_old_pi = 0 THEN (
+                                        SELECT SUM(
+                                                CASE
+                                                    WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type = 'tape' THEN coalesce(
+                                                        pi_cash_entry.pi_cash_quantity, 0
+                                                    ) * coalesce(order_entry.party_price, 0)
+                                                    WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type != 'tape' THEN coalesce(
+                                                        pi_cash_entry.pi_cash_quantity, 0
+                                                    ) * coalesce(order_entry.party_price, 0) / 12
+                                                    ELSE coalesce(
+                                                        pi_cash_entry.pi_cash_quantity, 0
+                                                    ) * coalesce(toe.party_price, 0)
+                                                END
+                                            )
+                                        FROM commercial.pi_cash
+                                            LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+                                            LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+                                            LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                                            LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                                            LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+                                        WHERE
+                                            pi_cash.lc_uuid = lc.uuid
+                                    )
+                                    WHEN (manual_pi_values.manual_pi_value::float8 IS NOT NULL OR manual_pi_values.manual_pi_value::float8 > 0)
+                                        THEN manual_pi_values.manual_pi_value::float8
+                                    ELSE lc.lc_value::float8
+                                END
+                            ) AS total_value
+                        FROM commercial.lc
+                        LEFT JOIN commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
+                        LEFT JOIN (
+                            SELECT 
+                                manual_pi.lc_uuid,
+                                manual_pi.marketing_uuid,
+                                SUM(manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 / 12) AS manual_pi_value
+                            FROM commercial.manual_pi_entry
+                            LEFT JOIN commercial.manual_pi ON manual_pi_entry.manual_pi_uuid = manual_pi.uuid
+                            WHERE manual_pi.lc_uuid IS NOT NULL
+                            GROUP BY 
+                                manual_pi.lc_uuid, manual_pi.marketing_uuid
+                        ) manual_pi_values ON manual_pi_values.lc_uuid = lc.uuid 
+                        WHERE
+                            ${from_date && to_date ? sql`lc.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 DAY'` : sql`1=1`}
+                        GROUP BY lc.party_uuid, CASE WHEN pi_cash.uuid IS NOT NULL THEN pi_cash.marketing_uuid ELSE manual_pi_values.marketing_uuid END
+                    ) AS total_lc ON
+                        total_lc.party_uuid = vodf.party_uuid AND total_lc.marketing_uuid = vodf.marketing_uuid
                     WHERE order_details IS NOT NULL
                     `;
 
