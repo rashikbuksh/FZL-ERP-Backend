@@ -80,8 +80,9 @@ export async function PaymentReport(req, res, next) {
                         LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
                     WHERE pi_cash.lc_uuid = lc.uuid
                 )::float8 ELSE lc.lc_value::float8 END AS total_value,
-                jsonb_agg(vpc.order_numbers) as order_numbers,
-                jsonb_agg(vpc.thread_order_numbers) as thread_order_numbers
+                CASE WHEN is_old_pi = 0 THEN jsonb_agg(vpc.order_numbers) ELSE manual_pi.order_numbers END AS order_numbers,
+                CASE WHEN is_old_pi = 0 THEN jsonb_agg(vpc.thread_order_numbers) ELSE manual_pi.thread_order_numbers END AS thread_order_numbers,
+                lc.is_old_pi
             FROM
                 commercial.lc
             LEFT JOIN 
@@ -98,6 +99,22 @@ export async function PaymentReport(req, res, next) {
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             LEFT JOIN 
                 commercial.v_pi_cash vpc ON pi_cash.uuid = vpc.pi_cash_uuid
+            LEFT JOIN (
+                SELECT
+                    manual_pi.lc_uuid,
+                    CASE
+                        WHEN mpe.is_zipper = TRUE THEN JSONB_AGG(mpe.order_number)
+                        ELSE NULL
+                    END AS order_numbers,
+                    CASE
+                        WHEN mpe.is_zipper = FALSE THEN JSONB_AGG(mpe.order_number)
+                        ELSE NULL
+                    END AS thread_order_numbers
+                FROM commercial.manual_pi
+                LEFT JOIN commercial.manual_pi_entry mpe ON manual_pi.uuid = mpe.manual_pi_uuid
+                WHERE manual_pi.lc_uuid IS NOT NULL
+                GROUP BY manual_pi.lc_uuid, mpe.is_zipper
+            ) AS manual_pi ON manual_pi.lc_uuid = lc.uuid
             WHERE
                 lc_entry.maturity_date IS NOT NULL 
                 AND CASE
@@ -139,7 +156,7 @@ export async function PaymentReport(req, res, next) {
 								: sql``
 				}
                 AND ${own_uuid == null ? sql`TRUE` : sql`pi_cash.marketing_uuid = ${marketingUuid}`}
-            GROUP BY lc.uuid, party.uuid, lc_entry.uuid
+            GROUP BY lc.uuid, party.uuid, lc_entry.uuid, manual_pi.order_numbers, manual_pi.thread_order_numbers
             ORDER BY lc.created_at DESC
         `;
 
@@ -150,11 +167,13 @@ export async function PaymentReport(req, res, next) {
 		// order_numbers and thread_order_numbers are array of array of strings, we need to flatten them
 		// e.g. [['ORD-001', 'ORD-002'], ['ORD-003']] => ['ORD-001', 'ORD-002', 'ORD-003']
 		data.rows = data.rows.map((row) => {
-			return {
-				...row,
-				order_numbers: row.order_numbers.flat(),
-				thread_order_numbers: row.thread_order_numbers.flat(),
-			};
+			if (row.is_old_pi === 0) {
+				return {
+					...row,
+					order_numbers: row.order_numbers.flat(),
+					thread_order_numbers: row.thread_order_numbers.flat(),
+				};
+			}
 		});
 
 		const toast = {
