@@ -966,4 +966,24 @@ export const order_info_log = zipper.table('order_info_log', {
 	remarks: text('remarks').default(null),
 });
 
+export const chatPageEnum = zipper.enum('chat_page_enum', ['zipper', 'thread']);
+
+export const chat = zipper.table('chat', {
+	id: serial('id').notNull(),
+	uuid: uuid_primary,
+	order_description_uuid: defaultUUID('order_description_uuid')
+		.references(() => order_description.uuid)
+		.default(null),
+	thread_order_info_uuid: defaultUUID('thread_order_info_uuid')
+		.references(() => threadSchema.order_info.uuid)
+		.default(null),
+	user_uuid: defaultUUID('user_uuid').references(() => hrSchema.users.uuid),
+	page: chatPageEnum('page').default('zipper'),
+	message: text('message').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at'),
+	remarks: text('remarks').default(sql`null`),
+});
+
 export default zipper;

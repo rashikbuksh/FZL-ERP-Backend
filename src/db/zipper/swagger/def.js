@@ -1,4 +1,5 @@
 import SE, { SED } from '../../../util/swagger_example.js';
+import { order_description } from '../schema.js';
 
 // * Zipper Order Info * //
 export const def_zipper_order_info = SED({
@@ -767,6 +768,23 @@ export const def_zipper_tape_transfer_to_dyeing = SED({
 	xml: 'Zipper/Tape-Transfer-To-Dyeing',
 });
 
+export const def_zipper_chat = SED({
+	required: ['uuid', 'message', 'user_uuid', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		order_description_uuid: SE.uuid(),
+		user_uuid: SE.uuid(),
+		thread_order_info_uuid: SE.uuid(),
+		page: SE.string('zipper'),
+		message: SE.string('Message'),
+		created_by: SE.uuid(),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		remarks: SE.string('Remarks'),
+	},
+	xml: 'Zipper/Chat',
+});
+
 //....................FOR TESTING.......................
 export const defZipper = {
 	order_info: def_zipper_order_info,
@@ -796,6 +814,7 @@ export const defZipper = {
 	finishing_batch_entry: def_finishing_batch_entry,
 	order_entry_log: def_order_entry_log,
 	tape_transfer_to_dyeing: def_zipper_tape_transfer_to_dyeing,
+	chat: def_zipper_chat,
 };
 
 // * Zipper Tag * //
@@ -899,5 +918,9 @@ export const tagZipper = [
 	{
 		name: 'zipper.tape_transfer_to_dyeing',
 		description: 'Zipper Tape Transfer To Dyeing',
+	},
+	{
+		name: 'zipper.chat',
+		description: 'Zipper Chat',
 	},
 ];

@@ -4673,6 +4673,114 @@ export const pathZipperTapeTransferToDyeing = {
 	},
 };
 
+export const pathZipperChat = {
+	'/zipper/chat': {
+		get: {
+			tags: ['zipper.chat'],
+			summary: 'Get all Chat',
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.string('1'),
+					chat_id: SE.string('chat_1'),
+					order_description_uuid: SE.uuid(),
+					order_id: SE.string('Z24-0001'),
+					thread_order_info_uuid: SE.uuid(),
+					thread_order_info_id: SE.string('thread_1'),
+					page: SE.string('page_1'),
+					user_uuid: SE.uuid(),
+					user_name: SE.string('User 1'),
+					user_phone: SE.string('1234567890'),
+					message: SE.string('Hello, World!'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		post: {
+			tags: ['zipper.chat'],
+			summary: 'create a chat',
+			description: '',
+			// operationId: "add
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref('zipper/chat'),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/chat'),
+				405: SE.response(405),
+			},
+		},
+	},
+	'/zipper/chat/{uuid}': {
+		get: {
+			tags: ['zipper.chat'],
+			summary: 'Gets a chat',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('chat to get', 'uuid')],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					id: SE.string('1'),
+					chat_id: SE.string('chat_1'),
+					order_description_uuid: SE.uuid(),
+					order_id: SE.string('Z24-0001'),
+					thread_order_info_uuid: SE.uuid(),
+					thread_order_info_id: SE.string('thread_1'),
+					page: SE.string('page_1'),
+					user_uuid: SE.uuid(),
+					user_name: SE.string('User 1'),
+					user_phone: SE.string('1234567890'),
+					message: SE.string('Hello, World!'),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('John Doe'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('Remarks'),
+				}),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+		put: {
+			tags: ['zipper.chat'],
+			summary: 'Update an existing chat',
+			description: '',
+			// operationId: "updatePet",
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [SE.parameter_schema_ref('chat to update', 'uuid')],
+			requestBody: SE.requestBody_schema_ref('zipper/chat'),
+			responses: {
+				200: SE.response_schema_ref(200, 'zipper/chat'),
+				400: SE.response(400),
+				404: SE.response(404),
+				405: SE.response(405),
+			},
+		},
+		delete: {
+			tags: ['zipper.chat'],
+			summary: 'Deletes a chat',
+			description: '',
+			// operationId: "deletePet",
+			produces: ['application/json'],
+			parameters: [SE.parameter_params('chat to delete', 'uuid')],
+			responses: {
+				200: SE.response(200),
+				400: SE.response(400),
+				404: SE.response(404),
+			},
+		},
+	},
+};
+
 // * Zipper Path Zipper * //
 export const pathZipper = {
 	...pathZipperOrderInfo,
@@ -4697,4 +4805,6 @@ export const pathZipper = {
 	...pathZipperFinishingBatch,
 	...pathZipperFinishingBatchEntry,
 	...pathOrderEntryLog,
+	...pathZipperTapeTransferToDyeing,
+	...pathZipperChat,
 };

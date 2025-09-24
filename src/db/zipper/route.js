@@ -24,6 +24,7 @@ import * as tapeCoilRequiredOperations from './query/tape_coil_required.js';
 import * as tapeCoilToDyeingOperations from './query/tape_coil_to_dyeing.js';
 import * as tapeTransferToDyeingOperations from './query/tape_transfer_to_dyeing.js';
 import * as tapeTrxOperations from './query/tape_trx.js';
+import * as chatOperations from './query/chat.js';
 
 const zipperRouter = Router();
 
@@ -691,5 +692,13 @@ zipperRouter.delete(
 	'/tape-transfer-to-dyeing/:uuid',
 	tapeTransferToDyeingOperations.remove
 );
+
+// --------------------- CHAT ROUTES ---------------------
+
+zipperRouter.get('/chat', chatOperations.selectAll);
+zipperRouter.get('/chat/:uuid', chatOperations.select);
+zipperRouter.post('/chat', chatOperations.insert);
+zipperRouter.put('/chat/:uuid', chatOperations.update);
+zipperRouter.delete('/chat/:uuid', chatOperations.remove);
 
 export { zipperRouter };
