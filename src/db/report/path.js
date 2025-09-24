@@ -1478,7 +1478,10 @@ export const pathReport = {
 			description: 'Account Balance Report',
 			tags: ['report'],
 			operationId: 'selectAccBalanceReport',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
+				SE.parameter_query('to_date', 'to_date', ['2024-10-31']),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					account_name: SE.string('Account Name'),
