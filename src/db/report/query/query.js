@@ -404,7 +404,47 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 COALESCE(delivery_sum.total_delivery_delivered_quantity, 0)::float8 AS total_delivery_delivered_quantity,
                 COALESCE(delivery_sum.total_delivery_balance_quantity, 0)::float8 AS total_delivery_balance_quantity,
                 vodf.remarks,
-                expected.expected_kg::float8 AS total_tape_expected_kg
+                expected.expected_kg::float8 AS total_tape_expected_kg,
+                CONCAT(
+                    CASE WHEN vodf.item_name IS NOT NULL AND vodf.item_name != '---' THEN vodf.item_name ELSE '' END,
+                    CASE WHEN vodf.zipper_number_name IS NOT NULL AND vodf.zipper_number_name != '---' THEN ', ' ELSE '' END,
+                    CASE WHEN vodf.zipper_number_name IS NOT NULL AND vodf.zipper_number_name != '---' THEN vodf.zipper_number_name ELSE '' END,
+                    CASE WHEN vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---' THEN ', ' ELSE '' END,
+                    CASE WHEN vodf.end_type_name IS NOT NULL AND vodf.end_type_name != '---' THEN vodf.end_type_name ELSE '' END,
+                    CASE WHEN vodf.hand_name IS NOT NULL AND vodf.hand_name != '---' THEN ', ' ELSE '' END,
+                    CASE WHEN vodf.hand_name IS NOT NULL AND vodf.hand_name != '---' THEN vodf.hand_name ELSE '' END,
+                    CASE WHEN vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---' THEN ', ' ELSE '' END,
+                    CASE WHEN vodf.teeth_type_name IS NOT NULL AND vodf.teeth_type_name != '---' THEN vodf.teeth_type_name ELSE '' END,
+                    CASE WHEN vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---' THEN ', ' ELSE '' END,
+                    CASE WHEN vodf.teeth_color_name IS NOT NULL AND vodf.teeth_color_name != '---' THEN vodf.teeth_color_name ELSE '' END,
+                    CASE WHEN vodf.nylon_stopper_name IS NOT NULL AND vodf.nylon_stopper_name != '---' THEN ', ' ELSE '' END,
+                    CASE WHEN vodf.nylon_stopper_name IS NOT NULL AND vodf.nylon_stopper_name != '---' THEN vodf.nylon_stopper_name ELSE '' END
+                ) AS item_details,
+                CONCAT(
+                    COALESCE(vodf.puller_type_name, ''),
+                    CASE WHEN vodf.puller_color_name IS NOT NULL THEN ', ' ELSE '' END,
+                    COALESCE(vodf.puller_color_name, ''),
+                    CASE WHEN vodf.coloring_type_name IS NOT NULL THEN ', ' ELSE '' END,
+                    COALESCE(vodf.coloring_type_name, ''),
+                    CASE WHEN vodf.slider_name IS NOT NULL THEN ', ' ELSE '' END,
+                    COALESCE(vodf.slider_name, ''),
+                    CASE WHEN vodf.top_stopper_name IS NOT NULL THEN ', ' ELSE '' END,
+                    COALESCE(vodf.top_stopper_name, ''),
+                    CASE WHEN vodf.bottom_stopper_name IS NOT NULL THEN ', ' ELSE '' END,
+                    COALESCE(vodf.bottom_stopper_name, ''),
+                    CASE WHEN vodf.logo_type_name IS NOT NULL THEN ', ' ELSE '' END,
+                    COALESCE(vodf.logo_type_name, ''),
+                    CASE WHEN vodf.slider_body_shape_name IS NOT NULL THEN ', ' ELSE '' END,
+                    COALESCE(vodf.slider_body_shape_name, ''),
+                    CASE WHEN vodf.slider_link_name IS NOT NULL THEN ', ' ELSE '' END,
+                    COALESCE(vodf.slider_link_name, '')
+                ) AS slider_details,
+                CONCAT(
+                    vodf.garment,
+                    COALESCE(vodf.end_user_name, ''),
+                    CASE WHEN vodf.light_preference_name IS NOT NULL THEN ' ,' ELSE '' END,
+                    COALESCE(vodf.light_preference_name, '')
+                ) AS other_details
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -636,7 +676,26 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 delivery_sum.total_delivery_balance_quantity,
                 vodf.remarks,
                 expected.expected_kg,
-                vodf.is_inch
+                vodf.is_inch,
+                vodf.puller_type_name,
+                vodf.puller_color_name,
+                vodf.coloring_type_name,
+                vodf.slider_name,
+                vodf.top_stopper_name,
+                vodf.bottom_stopper_name,
+                vodf.logo_type_name,
+                vodf.slider_body_shape_name,
+                vodf.slider_link_name,
+                vodf.garment,
+                vodf.end_user_name,
+                vodf.light_preference_name,
+                vodf.item_name,
+                vodf.zipper_number_name,
+                vodf.end_type_name,
+                vodf.hand_name,
+                vodf.teeth_type_name,
+                vodf.teeth_color_name,
+                vodf.nylon_stopper_name
         `;
 
 		// HAVING clause logic remains the same
