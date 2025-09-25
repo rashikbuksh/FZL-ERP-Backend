@@ -643,7 +643,7 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 GROUP BY vodf.order_description_uuid
             ) AS expected ON vodf.order_description_uuid = expected.order_description_uuid
             WHERE vodf.order_description_uuid IS NOT NULL 
-                AND vodf.is_cancelled = FALSE AND vodf.is_sample = 1 AND vodf.is_bill = 0 
+                AND vodf.is_cancelled = FALSE AND vodf.is_sample != 1 AND vodf.is_bill != 0 
                 ${own_uuid == null ? sql`` : sql` AND vodf.marketing_uuid = ${marketingUuid}`} 
             GROUP BY
                 vodf.order_info_uuid,
