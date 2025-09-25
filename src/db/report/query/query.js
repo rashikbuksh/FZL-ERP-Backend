@@ -448,10 +448,33 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                  vodf.md_price::float8,
                  vodf.mkt_company_price::float8,
                  vodf.mkt_party_price::float8,
-                 vodf.is_price_confirmed
+                 vodf.is_price_confirmed,
+                COALESCE(size_wise_sum.size_wise_quantity, '{}'::jsonb) AS size_wise_quantity
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
+             LEFT JOIN (
+                SELECT
+                    order_description_uuid,
+                    jsonb_object_agg(size_key, qty_sum) FILTER (WHERE size_key IS NOT NULL) AS size_wise_quantity
+                FROM (
+                    SELECT
+                        oe.order_description_uuid,
+                        to_char(
+                            CASE 
+                                WHEN vodf.is_inch = 1 THEN CAST(oe.size AS NUMERIC) * 2.54 
+                                ELSE CAST(oe.size AS NUMERIC) 
+                            END, 'FM999999.###'
+                        ) AS size_key,
+                        SUM(
+                            CASE WHEN vodf.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END
+                        )::float8 AS qty_sum
+                    FROM zipper.order_entry oe
+                    LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+                    GROUP BY oe.order_description_uuid, size_key
+                ) t
+                GROUP BY order_description_uuid
+            ) size_wise_sum ON size_wise_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
 						SELECT COUNT(oe.swatch_approval_date) AS swatch_approval_count, oe.order_description_uuid
 						FROM zipper.order_entry oe
@@ -703,7 +726,8 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 vodf.md_price,
                 vodf.mkt_company_price,
                 vodf.mkt_party_price,
-                vodf.is_price_confirmed
+                vodf.is_price_confirmed,
+                size_wise_sum.size_wise_quantity
         `;
 
 		// HAVING clause logic remains the same
