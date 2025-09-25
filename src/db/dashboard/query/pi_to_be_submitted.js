@@ -20,12 +20,12 @@ export async function selectPiToBeSubmittedDashboard(req, res, next) {
                 public.party party
             LEFT JOIN (
                 SELECT 
-                    SUM(order_entry.quantity) AS total_quantity,
-                    SUM(order_entry.quantity - sfg.pi) AS total_balance_pi_quantity,
-                    SUM((order_entry.quantity - sfg.pi) * order_entry.party_price) AS total_balance_pi_value,
-                    SUM(sfg.pi) AS total_pi,
+                    SUM(CASE WHEN vodf.order_type = 'tape' THEN order_entry.size::numeric ELSE order_entry.quantity END) AS total_quantity,
+                    SUM(CASE WHEN vodf.order_type = 'tape' THEN order_entry.size::numeric ELSE order_entry.quantity END - CASE WHEN vodf.order_type = 'tape' THEN order_entry.size::numeric ELSE sfg.pi END) AS total_balance_pi_quantity,
+                    SUM((CASE WHEN vodf.order_type = 'tape' THEN order_entry.size::numeric ELSE order_entry.quantity END - CASE WHEN vodf.order_type = 'tape' THEN order_entry.size::numeric ELSE sfg.pi END) * order_entry.party_price) AS total_balance_pi_value,
+                    SUM(CASE WHEN vodf.order_type = 'tape' THEN order_entry.size::numeric ELSE sfg.pi END) AS total_pi,
                     SUM(sfg.delivered) AS total_delivered,
-                    SUM(order_entry.quantity - sfg.delivered) AS total_undelivered_balance_quantity,
+                    SUM(CASE WHEN vodf.order_type = 'tape' THEN order_entry.size::numeric ELSE order_entry.quantity END - sfg.delivered) AS total_undelivered_balance_quantity,
                     vodf.party_uuid,
                     vodf.party_name
                 FROM
