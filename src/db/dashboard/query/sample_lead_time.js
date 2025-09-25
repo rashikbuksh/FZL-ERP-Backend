@@ -30,7 +30,7 @@ export async function selectSampleLeadTime(req, res, next) {
                     zipper.order_entry oe
                     LEFT JOIN zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
                 WHERE
-                    vodf.is_sample = 1
+                    vodf.is_sample = 1 AND vodf.is_bill = 0
                 GROUP BY
                     vodf.order_description_uuid
             ) oe_sum ON oe.order_description_uuid = oe_sum.order_description_uuid
@@ -39,7 +39,7 @@ export async function selectSampleLeadTime(req, res, next) {
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
             LEFT JOIN delivery.challan c ON pl.challan_uuid = c.uuid
         WHERE
-            oi.is_sample = 1 AND od.uuid IS NOT NULL
+            oi.is_sample = 1 AND oi.is_bill = 0 AND od.uuid IS NOT NULL
         GROUP BY
             oi.id, oi.is_sample, oi.created_at, oe_sum.order_quantity
         HAVING
@@ -61,7 +61,7 @@ export async function selectSampleLeadTime(req, res, next) {
             LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
             LEFT JOIN delivery.challan tc ON pl.challan_uuid = tc.uuid
         WHERE 
-            toi.is_sample = 1
+            toi.is_sample = 1 AND toi.is_bill = 0
         GROUP BY
             toi.id, toi.is_sample, toi.created_at
         HAVING
