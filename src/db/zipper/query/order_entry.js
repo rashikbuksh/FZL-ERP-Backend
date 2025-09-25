@@ -242,7 +242,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			finishing_prod: decimalToNumber(sfg.finishing_prod),
 			finishing_balance: sql`
 				(CASE 
-					WHEN order_description.order_type = 'tape' THEN order_entry.size::numeric - sfg.warehouse - sfg.delivered 
+					WHEN order_description.order_type = 'tape' THEN order_entry.size::float8 - sfg.warehouse - sfg.delivered 
 					ELSE order_entry.quantity - sfg.warehouse - sfg.delivered 
 				END)::float8`,
 			total_finishing: sql`
