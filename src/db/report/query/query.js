@@ -444,7 +444,11 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                     COALESCE(vodf.end_user_name, ''),
                     CASE WHEN vodf.light_preference_name IS NOT NULL THEN ' ,' ELSE '' END,
                     COALESCE(vodf.light_preference_name, '')
-                ) AS other_details
+                ) AS other_details,
+                 vodf.md_price,
+                 vodf.mkt_company_price,
+                 vodf.mkt_party_price,
+                 vodf.is_price_confirmed
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -695,7 +699,11 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 vodf.hand_name,
                 vodf.teeth_type_name,
                 vodf.teeth_color_name,
-                vodf.nylon_stopper_name
+                vodf.nylon_stopper_name,
+                vodf.md_price,
+                vodf.mkt_company_price,
+                vodf.mkt_party_price,
+                vodf.is_price_confirmed
         `;
 
 		// HAVING clause logic remains the same
