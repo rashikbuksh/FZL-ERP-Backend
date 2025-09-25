@@ -73,10 +73,6 @@ export const OrderDetailsView = `
         order_description.revision_no,
         order_description.is_marketing_checked,
         order_description.marketing_checked_at,
-        order_description.md_price,
-        order_description.mkt_company_price,
-        order_description.mkt_party_price,
-        order_description.is_price_confirmed,
 		order_info.sno_from_head_office,
 		order_info.sno_from_head_office_time,
 		order_info.sno_from_head_office_by,
@@ -90,7 +86,11 @@ export const OrderDetailsView = `
         order_info.production_pause_by,
         production_pause_by.name AS production_pause_by_name,
         order_info.is_swatch_attached,
-        order_info.skip_slider_production
+        order_info.skip_slider_production,
+        order_description.md_price,
+        order_description.mkt_company_price,
+        order_description.mkt_party_price,
+        order_description.is_price_confirmed
     FROM
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
@@ -253,10 +253,6 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_description.revision_no,
         order_description.is_marketing_checked,
         order_description.marketing_checked_at,
-        order_description.md_price,
-        order_description.mkt_company_price,
-        order_description.mkt_party_price,
-        order_description.is_price_confirmed,
         order_info.sno_from_head_office,
 		order_info.sno_from_head_office_time,
         order_info.sno_from_head_office_by,
@@ -270,7 +266,11 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
 		order_info.production_pause_by,
 		production_pause_by.name AS production_pause_by_name,
         order_info.is_swatch_attached,
-        order_info.skip_slider_production
+        order_info.skip_slider_production,
+        order_description.md_price,
+        order_description.mkt_company_price,
+        order_description.mkt_party_price,
+        order_description.is_price_confirmed
   FROM zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
