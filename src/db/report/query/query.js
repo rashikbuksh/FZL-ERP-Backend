@@ -727,9 +727,11 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 vodf.mkt_company_price,
                 vodf.mkt_party_price,
                 vodf.is_price_confirmed,
-                size_wise_sum.size_wise_quantity
+                size_wise_sum.size_wise_quantity,
+                vodf.order_description_created_at,
+                vodf.id
             ORDER BY 
-                vodf.order_number DESC, vodf.order_description_created_at DESC
+                vodf.id DESC, vodf.order_description_created_at DESC
         `;
 
 		// HAVING clause logic remains the same
