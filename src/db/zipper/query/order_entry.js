@@ -240,11 +240,7 @@ export async function selectOrderEntryFullByOrderDescriptionUuid(
 			`,
 			finishing_stock: decimalToNumber(sfg.finishing_stock),
 			finishing_prod: decimalToNumber(sfg.finishing_prod),
-			finishing_balance: sql`
-				(CASE 
-					WHEN order_description.order_type = 'tape' THEN order_entry.size::float8 - sfg.warehouse - sfg.delivered 
-					ELSE order_entry.quantity - sfg.warehouse - sfg.delivered 
-				END)::float8`,
+			finishing_balance: sql`(order_entry.quantity - sfg.warehouse - sfg.delivered)::float8`,
 			total_finishing: sql`
 				SUM(
 					CASE WHEN finishing_batch_production.section = 'finishing' THEN finishing_batch_production.production_quantity ELSE 0 END
