@@ -228,6 +228,10 @@ export const order_description = zipper.table('order_description', {
 	updated_by: defaultUUID('updated_by')
 		.references(() => hrSchema.users.uuid)
 		.default(null),
+	md_price: PG_DECIMAL('md_price').default(0.0),
+	mkt_company_price: PG_DECIMAL('mkt_company_price').default(0.0),
+	mkt_party_price: PG_DECIMAL('mkt_party_price').default(0.0),
+	is_price_confirmed: boolean('is_price_confirmed').default(false),
 });
 
 export const order_entry = zipper.table('order_entry', {

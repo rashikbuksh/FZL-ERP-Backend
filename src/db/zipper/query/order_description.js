@@ -106,6 +106,10 @@ export async function insert(req, res, next) {
 		revision_no,
 		is_marketing_checked,
 		marketing_checked_at,
+		md_price,
+		mkt_company_price,
+		mkt_party_price,
+		is_price_confirmed,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -154,6 +158,10 @@ export async function insert(req, res, next) {
 			revision_no,
 			is_marketing_checked,
 			marketing_checked_at,
+			md_price,
+			mkt_company_price,
+			mkt_party_price,
+			is_price_confirmed,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -219,6 +227,10 @@ export async function update(req, res, next) {
 		is_marketing_checked,
 		marketing_checked_at,
 		updated_by,
+		md_price,
+		mkt_company_price,
+		mkt_party_price,
+		is_price_confirmed,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -268,6 +280,10 @@ export async function update(req, res, next) {
 			is_marketing_checked,
 			marketing_checked_at,
 			updated_by,
+			md_price,
+			mkt_company_price,
+			mkt_party_price,
+			is_price_confirmed,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
@@ -403,6 +419,10 @@ export async function selectAll(req, res, next) {
 			revision_no: order_description.revision_no,
 			is_marketing_checked: order_description.is_marketing_checked,
 			marketing_checked_at: order_description.marketing_checked_at,
+			md_price: order_description.md_price,
+			mkt_company_price: order_description.mkt_company_price,
+			mkt_party_price: order_description.mkt_party_price,
+			is_price_confirmed: order_description.is_price_confirmed,
 		})
 		.from(order_description)
 		.where(
@@ -615,6 +635,10 @@ export async function select(req, res, next) {
 			revision_no: order_description.revision_no,
 			is_marketing_checked: order_description.is_marketing_checked,
 			marketing_checked_at: order_description.marketing_checked_at,
+			md_price: order_description.md_price,
+			mkt_company_price: order_description.mkt_company_price,
+			mkt_party_price: order_description.mkt_party_price,
+			is_price_confirmed: order_description.is_price_confirmed,
 		})
 		.from(order_description)
 		.where(

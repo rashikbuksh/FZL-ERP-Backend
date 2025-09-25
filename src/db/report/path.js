@@ -23,6 +23,28 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/zipper-production-status-report-v2': {
+		get: {
+			summary: 'Zipper Production Status Report V2',
+			description: 'Zipper Production Status Report V2',
+			tags: ['report'],
+			operationId: 'zipperProductionStatusReportV2',
+			parameters: [SE.parameter_query('status', 'status', [])],
+			responses: {
+				200: {
+					description: 'Zipper Production Status Report V2',
+					content: {
+						'application/json': {
+							schema: {
+								type: 'array',
+								items: SED('zipperProductionStatusReportV2'),
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 	'/report/daily-challan-report': {
 		get: {
 			summary: 'Daily Challan Report',

@@ -77,6 +77,11 @@ reportRouter.get(
 	reportOperations.zipperProductionStatusReport
 );
 
+reportRouter.get(
+	'/zipper-production-status-report-v2',
+	reportOperations.zipperProductionStatusReportV2
+);
+
 // * Daily Challan Report
 reportRouter.get('/daily-challan-report', reportOperations.dailyChallanReport);
 
