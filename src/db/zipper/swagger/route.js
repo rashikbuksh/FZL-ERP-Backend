@@ -957,6 +957,37 @@ export const pathZipperOrderDescription = {
 			},
 		},
 	},
+	'/zipper/order/description/update-md-mkt-cmp-party-price-is-price-confirmed/by/{uuid}':
+		{
+			put: {
+				tags: ['zipper.order_description'],
+				summary: 'Update an existing order description',
+				description: '',
+				// operationId: "updatePet",
+				consumes: ['application/json'],
+				produces: ['application/json'],
+				parameters: [
+					SE.parameter_params('order description to update', 'uuid'),
+				],
+				requestBody: SE.requestBody({
+					md_price: SE.number(10.5),
+					mkt_company_price: SE.number(10.5),
+					mkt_party_price: SE.number(10.5),
+					is_price_confirmed: SE.number(0),
+					updated_at: SE.date_time(),
+					updated_by: SE.uuid(),
+				}),
+				responses: {
+					200: SE.response_schema_ref(
+						200,
+						'zipper/order_description'
+					),
+					400: SE.response(400),
+					404: SE.response(404),
+					405: SE.response(405),
+				},
+			},
+		},
 };
 
 const order_entry_fields = {

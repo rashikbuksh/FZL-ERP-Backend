@@ -163,6 +163,11 @@ zipperRouter.put(
 	orderDescriptionOperations.updateOrderDescriptionPutIsMarketingCheckedByOrderDescriptionUuid
 );
 
+zipperRouter.put(
+	'/order/description/update-md-mkt-cmp-party-price-is-price-confirmed/by/:uuid',
+	orderDescriptionOperations.updateOrderDescriptionPutMdMktCmpPartyPriceByOrderDescriptionUuid
+);
+
 // --------------------- ORDER ENTRY ROUTES ---------------------
 
 zipperRouter.get('/order-entry', orderEntryOperations.selectAll);

@@ -419,9 +419,11 @@ export async function selectAll(req, res, next) {
 			revision_no: order_description.revision_no,
 			is_marketing_checked: order_description.is_marketing_checked,
 			marketing_checked_at: order_description.marketing_checked_at,
-			md_price: order_description.md_price,
-			mkt_company_price: order_description.mkt_company_price,
-			mkt_party_price: order_description.mkt_party_price,
+			md_price: decimalToNumber(order_description.md_price),
+			mkt_company_price: decimalToNumber(
+				order_description.mkt_company_price
+			),
+			mkt_party_price: decimalToNumber(order_description.mkt_party_price),
 			is_price_confirmed: order_description.is_price_confirmed,
 		})
 		.from(order_description)
@@ -635,9 +637,11 @@ export async function select(req, res, next) {
 			revision_no: order_description.revision_no,
 			is_marketing_checked: order_description.is_marketing_checked,
 			marketing_checked_at: order_description.marketing_checked_at,
-			md_price: order_description.md_price,
-			mkt_company_price: order_description.mkt_company_price,
-			mkt_party_price: order_description.mkt_party_price,
+			md_price: decimalToNumber(order_description.md_price),
+			mkt_company_price: decimalToNumber(
+				order_description.mkt_company_price
+			),
+			mkt_party_price: decimalToNumber(order_description.mkt_party_price),
 			is_price_confirmed: order_description.is_price_confirmed,
 		})
 		.from(order_description)
@@ -1055,6 +1059,46 @@ export async function updateOrderDescriptionPutIsMarketingCheckedByOrderDescript
 			updated_by,
 			updated_at,
 		})
+		.where(eq(order_description.uuid, uuid))
+		.returning({
+			updatedId: sql`order_description.uuid`,
+		});
+
+	try {
+		const data = await orderDescriptionPromise;
+		if (data.length === 0) {
+			const toast = {
+				status: 404,
+				type: 'update',
+				message: `No record found to update`,
+			};
+			return res.status(404).json({ toast, data });
+		}
+
+		const toast = {
+			status: 201,
+			type: 'update',
+			message: `${data[0].updatedId} updated`,
+		};
+
+		return await res.status(201).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function updateOrderDescriptionPutMdMktCmpPartyPriceByOrderDescriptionUuid(
+	req,
+	res,
+	next
+) {
+	if (!(await validateRequest(req, next))) return;
+
+	const { uuid } = req.params;
+
+	const orderDescriptionPromise = db
+		.update(order_description)
+		.set(req.body)
 		.where(eq(order_description.uuid, uuid))
 		.returning({
 			updatedId: sql`order_description.uuid`,
