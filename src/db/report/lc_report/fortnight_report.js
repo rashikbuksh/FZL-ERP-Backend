@@ -18,7 +18,7 @@ export async function fortnightReport(req, res, next) {
                 lc.lc_number,
                 lc.lc_date,
                 party.uuid as party_uuid,
-                party.name as party_name,
+                party.name as party_name,                                                              
                 lc.created_at,
                 lc.updated_at,
                 lc.remarks,
@@ -34,44 +34,11 @@ export async function fortnightReport(req, res, next) {
                 lc.expiry_date,
                 lc_entry.amount::float8,
                 lc_entry.payment_value,
-                CASE
-                    WHEN is_old_pi = 0 THEN (
-                        SELECT SUM(
-                                CASE
-                                    WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type = 'tape' THEN coalesce(
-                                        pi_cash_entry.pi_cash_quantity, 0
-                                    ) * coalesce(order_entry.party_price, 0)
-                                    WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type != 'tape' THEN coalesce(
-                                        pi_cash_entry.pi_cash_quantity, 0
-                                    ) * coalesce(order_entry.party_price, 0) / 12
-                                    ELSE coalesce(
-                                        pi_cash_entry.pi_cash_quantity, 0
-                                    ) * coalesce(toe.party_price, 0)
-                                END
-                            )
-                        FROM commercial.pi_cash
-                            LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
-                            LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-                            LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-                            LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-                            LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
-                        WHERE
-                            pi_cash.lc_uuid = lc.uuid
-                    )
-                    ELSE lc.lc_value::float8
-                END AS total_value,
-                (jsonb_agg(marketing.name))[1] as marketing_name,
-                (jsonb_agg(bank.name))[1] as bank_name,
+                CASE WHEN lc.is_old_pi = 0 THEN COALESCE(pc_total.calc_total, lc.lc_value::float8) ELSE lc.lc_value::float8 END AS total_value,
+                MIN(marketing.name) as marketing_name,
+                MIN(bank.name) as bank_name,
                 lc.party_bank,
-                CASE WHEN is_old_pi = 0 THEN(	
-                    SELECT 
-                        SUM(coalesce(pi_cash_entry.pi_cash_quantity,0)  * coalesce(order_entry.party_price,0)/12)
-                    FROM commercial.pi_cash 
-                        LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid 
-                        LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-                        LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid 
-                    WHERE pi_cash.lc_uuid = lc.uuid
-                )::float8 ELSE lc.lc_value::float8 END AS total_value,
+                -- total_value already computed above; removed duplicate computation
                 CASE WHEN is_old_pi = 0 THEN jsonb_agg(DISTINCT vpc.order_numbers) ELSE manual_pi.order_numbers END AS order_numbers,
                 CASE WHEN is_old_pi = 0 THEN jsonb_agg(DISTINCT vpc.thread_order_numbers) ELSE manual_pi.thread_order_numbers END AS thread_order_numbers,
                 lc.is_old_pi
@@ -91,9 +58,26 @@ export async function fortnightReport(req, res, next) {
                 commercial.bank ON pi_cash.bank_uuid = bank.uuid
             LEFT JOIN 
                 commercial.v_pi_cash vpc ON pi_cash.uuid = vpc.pi_cash_uuid
+            -- Pre-aggregated total for performance instead of correlated subquery
+            LEFT JOIN LATERAL (
+                SELECT SUM(
+                        CASE
+                            WHEN pce.thread_order_entry_uuid IS NULL AND vodf2.order_type = 'tape' THEN COALESCE(pce.pi_cash_quantity,0) * COALESCE(oe2.party_price,0)
+                            WHEN pce.thread_order_entry_uuid IS NULL AND vodf2.order_type != 'tape' THEN COALESCE(pce.pi_cash_quantity,0) * COALESCE(oe2.party_price,0) / 12
+                            ELSE COALESCE(pce.pi_cash_quantity,0) * COALESCE(toe2.party_price,0)
+                        END
+                    ) AS calc_total
+                FROM commercial.pi_cash pc2
+                LEFT JOIN commercial.pi_cash_entry pce ON pc2.uuid = pce.pi_cash_uuid
+                LEFT JOIN zipper.sfg sfg2 ON pce.sfg_uuid = sfg2.uuid
+                LEFT JOIN zipper.order_entry oe2 ON sfg2.order_entry_uuid = oe2.uuid
+                LEFT JOIN zipper.v_order_details_full vodf2 ON oe2.order_description_uuid = vodf2.order_description_uuid
+                LEFT JOIN thread.order_entry toe2 ON pce.thread_order_entry_uuid = toe2.uuid
+                WHERE pc2.lc_uuid = lc.uuid
+            ) pc_total ON TRUE
             LEFT JOIN (
                 SELECT
-                    manual_pi.lc_uuid,
+                    manual_pi.lc_uuid,                                    
                     CASE
                         WHEN mpe.is_zipper = TRUE THEN JSONB_AGG(mpe.order_number)
                         ELSE NULL

@@ -176,7 +176,7 @@ export async function selectBatchEntryByBatchUuid(req, res, next) {
 			be.updated_at,
 			be.remarks,
 			oe.style,
-			oe.color,
+			CONCAT(oe.color, ' (', oe.color_ref, ')') as color,
 			oe.color_ref,
 			oe.size,
 			vodf.party_name,
