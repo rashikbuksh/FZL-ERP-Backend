@@ -22,7 +22,7 @@ export async function balanceReport(req, res, next) {
 	const prevStart = `${prevYear}-01-01`;
 	const prevEnd = `${prevYear}-12-31`;
 
-	console.log({ fromDate, toDate, ytdStart, ytdEnd, prevStart, prevEnd });
+	// console.log({ fromDate, toDate, ytdStart, ytdEnd, prevStart, prevEnd });
 
 	const headPromise = db
 		.select({
