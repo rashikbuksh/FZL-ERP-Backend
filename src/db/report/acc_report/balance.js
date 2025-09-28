@@ -5,7 +5,7 @@ import db from '../../index.js';
 import { head } from '../../acc/schema.js';
 
 export async function balanceReport(req, res, next) {
-	const { from_date, to_date } = req.query;
+	const { from_date, to_date, type } = req.query;
 
 	const fromDate = from_date
 		? new Date(from_date).toISOString().split('T')[0]
@@ -32,17 +32,17 @@ export async function balanceReport(req, res, next) {
                 FROM (
                     SELECT
                         h.uuid,
-                        h.name as head_name,
+                        (COALESCE(h.group_number::text, '') || ' ' || h.name) as head_name,
                         (SELECT json_agg(row_to_json(gl))
                           FROM (
                               SELECT
                                   g.uuid,
-                                  g.name as group_name,
+                                  (COALESCE(g.group_number::text, '') || ' ' || g.name) as group_name,
                                   (SELECT json_agg(row_to_json(ll))
                                     FROM (
                                         SELECT
                                             l.uuid,
-                                            l.name as leader_name,
+                                            (COALESCE(l.group_number::text, '') || ' ' || l.name) as leader_name,
 
                                            -- current period sums (filter by voucher entry created_at)
                                             COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_current_amount,
@@ -131,6 +131,12 @@ export async function balanceReport(req, res, next) {
                  )`
 		) // Filter by relevant types
 		.groupBy(head.type);
+
+	if (type === 'profit_and_loss') {
+		headPromise.where(sql`${head.type} IN ('income', 'expense')`);
+	} else if (type === 'balance_sheet') {
+		headPromise.where(sql`${head.type} IN ('assets', 'liability')`);
+	}
 
 	try {
 		const data = await headPromise;

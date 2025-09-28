@@ -1503,6 +1503,11 @@ export const pathReport = {
 			parameters: [
 				SE.parameter_query('from_date', 'from_date', '2024-10-01'),
 				SE.parameter_query('to_date', 'to_date', ['2024-10-31']),
+				SE.parameter_query('type', 'type', [
+					'balance_sheet',
+					'profit_and_loss',
+				]),
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
 			],
 			responses: {
 				200: SE.response_schema(200, {

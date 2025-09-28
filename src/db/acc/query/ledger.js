@@ -105,6 +105,8 @@ export async function selectAll(req, res, next) {
 			is_cash_ledger: ledger.is_cash_ledger,
 			identifier: ledger.identifier,
 			initial_amount: decimalToNumber(ledger.initial_amount),
+			group_number: ledger.group_number,
+			index: ledger.index,
 		})
 		.from(ledger)
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))
@@ -157,6 +159,8 @@ export async function select(req, res, next) {
 			is_cash_ledger: ledger.is_cash_ledger,
 			identifier: ledger.identifier,
 			initial_amount: decimalToNumber(ledger.initial_amount),
+			group_number: ledger.group_number,
+			index: ledger.index,
 		})
 		.from(ledger)
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))

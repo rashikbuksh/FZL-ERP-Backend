@@ -90,6 +90,8 @@ export async function selectAll(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			updated_at: group.updated_at,
 			remarks: group.remarks,
+			group_number: group.group_number,
+			index: group.index,
 		})
 		.from(group)
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
@@ -129,6 +131,8 @@ export async function select(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			updated_at: group.updated_at,
 			remarks: group.remarks,
+			group_number: group.group_number,
+			index: group.index,
 		})
 		.from(group)
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
