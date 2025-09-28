@@ -32,17 +32,17 @@ export async function balanceReport(req, res, next) {
                 FROM (
                     SELECT
                         h.uuid,
-                        h.name as head_name,
+                        (COALESCE(h.group_number::text, '') || ' ' || h.name) as head_name,
                         (SELECT json_agg(row_to_json(gl))
                           FROM (
                               SELECT
                                   g.uuid,
-                                  g.name as group_name,
+                                  (COALESCE(g.group_number::text, '') || ' ' || g.name) as group_name,
                                   (SELECT json_agg(row_to_json(ll))
                                     FROM (
                                         SELECT
                                             l.uuid,
-                                            l.name as leader_name,
+                                            (COALESCE(l.group_number::text, '') || ' ' || l.name) as leader_name,
 
                                            -- current period sums (filter by voucher entry created_at)
                                             COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_current_amount,
