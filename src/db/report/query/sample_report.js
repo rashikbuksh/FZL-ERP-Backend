@@ -147,9 +147,9 @@ export async function selectSampleReportByDate(req, res, next) {
                             ) AS item_details,
                             CONCAT(
                                 COALESCE(vodf.puller_type_name, ''),
-                                CASE WHEN vodf.puller_color_name IS NOT NULL THEN ', ' ELSE '' END,
+                                CASE WHEN vodf.puller_color_name IS NOT NULL THEN ', Puller: ' ELSE '' END,
                                 COALESCE(vodf.puller_color_name, ''),
-                                CASE WHEN vodf.coloring_type_name IS NOT NULL THEN ', ' ELSE '' END,
+                                CASE WHEN vodf.coloring_type_name IS NOT NULL THEN ', Slider: ' ELSE '' END,
                                 COALESCE(vodf.coloring_type_name, ''),
                                 CASE WHEN vodf.slider_name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(vodf.slider_name, ''),
@@ -292,9 +292,9 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                                 ) AS item_details,
                             CONCAT(
                                 COALESCE(op_puller.name, ''),
-                                CASE WHEN op_puller_color.name IS NOT NULL THEN ', ' ELSE '' END,
+                                CASE WHEN op_puller_color.name IS NOT NULL THEN ', Puller: ' ELSE '' END,
                                 COALESCE(op_puller_color.name, ''),
-                                CASE WHEN op_coloring.name IS NOT NULL THEN ', ' ELSE '' END,
+                                CASE WHEN op_coloring.name IS NOT NULL THEN ', Slider: ' ELSE '' END,
                                 COALESCE(op_coloring.name, ''),
                                 CASE WHEN op_slider.name IS NOT NULL THEN ', ' ELSE '' END,
                                 COALESCE(op_slider.name, ''),
