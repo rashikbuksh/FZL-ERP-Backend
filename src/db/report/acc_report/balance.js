@@ -43,18 +43,18 @@ export async function balanceReport(req, res, next) {
                                             l.uuid,
                                             l.name as leader_name,
 
-                                          -- current period sums (filter by voucher entry created_at)
+                                           -- current period sums (filter by voucher entry created_at)
                                             COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_current_amount,
                                             COALESCE(
                                               COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                              + COALESCE(MAX(l.initial_amount), 0),
+                                              + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date THEN l.initial_amount ELSE 0 END), 0),
                                             0) as total_debit_current_amount,
 
                                             -- net for current period (debit - credit)
                                             (
                                               COALESCE(
                                                 COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                                + COALESCE(MAX(l.initial_amount), 0),
+                                                + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date THEN l.initial_amount ELSE 0 END), 0),
                                               0)
                                               -
                                               COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
@@ -64,14 +64,14 @@ export async function balanceReport(req, res, next) {
                                             COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_ytd_amount,
                                             COALESCE(
                                               COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                              + COALESCE(MAX(l.initial_amount), 0),
+                                              + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} THEN l.initial_amount ELSE 0 END), 0),
                                             0) as total_debit_ytd_amount,
 
                                             -- net year to date (debit - credit)
                                             (
                                               COALESCE(
                                                 COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                                + COALESCE(MAX(l.initial_amount), 0),
+                                                + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} THEN l.initial_amount ELSE 0 END), 0),
                                               0)
                                               -
                                               COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
@@ -81,14 +81,14 @@ export async function balanceReport(req, res, next) {
                                             COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${prevStart} AND ${prevEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_last_year_amount,
                                             COALESCE(
                                               COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${prevStart} AND ${prevEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                              + COALESCE(MAX(l.initial_amount), 0),
+                                              + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${prevStart} AND ${prevEnd} THEN l.initial_amount ELSE 0 END), 0),
                                             0) as total_debit_last_year_amount,
 
                                             -- net last year (debit - credit)
                                             (
                                               COALESCE(
                                                 COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${prevStart} AND ${prevEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                                + COALESCE(MAX(l.initial_amount), 0),
+                                                + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${prevStart} AND ${prevEnd} THEN l.initial_amount ELSE 0 END), 0),
                                               0)
                                               -
                                               COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${prevStart} AND ${prevEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
