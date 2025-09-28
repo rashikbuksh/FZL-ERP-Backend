@@ -15,9 +15,10 @@ export async function balanceReport(req, res, next) {
 		: new Date().toISOString().split('T')[0];
 
 	const year = new Date(toDate).getFullYear();
-	const ytdStart = toDate;
-	const today = new Date().toISOString().split('T')[0];
-	const ytdEnd = today;
+	const fromYear = new Date(fromDate).getFullYear();
+	const ytdStart = `${fromYear}-01-01`;
+	//const today = new Date().toISOString().split('T')[0];
+	const ytdEnd = toDate;
 	const prevYear = year - 1;
 	const prevStart = `${prevYear}-01-01`;
 	const prevEnd = `${prevYear}-12-31`;
