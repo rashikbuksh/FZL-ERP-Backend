@@ -14,11 +14,15 @@ export async function balanceReport(req, res, next) {
 		? new Date(to_date).toISOString().split('T')[0]
 		: new Date().toISOString().split('T')[0];
 
-	const year = new Date(fromDate).getFullYear();
-	const ytdStart = `${year}-01-01`;
+	const year = new Date(toDate).getFullYear();
+	const ytdStart = toDate;
+	const today = new Date().toISOString().split('T')[0];
+	const ytdEnd = today;
 	const prevYear = year - 1;
 	const prevStart = `${prevYear}-01-01`;
 	const prevEnd = `${prevYear}-12-31`;
+
+	console.log({ fromDate, toDate, ytdStart, ytdEnd, prevStart, prevEnd });
 
 	const headPromise = db
 		.select({
@@ -57,20 +61,20 @@ export async function balanceReport(req, res, next) {
                                             ) as total_net_current_amount,
 
                                             -- year to date (from Jan 1 of from_date's year up to toDate)
-                                            COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${toDate} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_ytd_amount,
+                                            COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_ytd_amount,
                                             COALESCE(
-                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${toDate} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
+                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
                                               + COALESCE(MAX(l.initial_amount), 0),
                                             0) as total_debit_ytd_amount,
 
                                             -- net year to date (debit - credit)
                                             (
                                               COALESCE(
-                                                COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${toDate} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
+                                                COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
                                                 + COALESCE(MAX(l.initial_amount), 0),
                                               0)
                                               -
-                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${toDate} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
+                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
                                             ) as total_net_ytd_amount,
 
                                             -- last year (full previous year)
