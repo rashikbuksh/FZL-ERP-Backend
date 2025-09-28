@@ -5,7 +5,7 @@ import db from '../../index.js';
 import { head } from '../../acc/schema.js';
 
 export async function balanceReport(req, res, next) {
-	const { from_date, to_date } = req.query;
+	const { from_date, to_date, type } = req.query;
 
 	const fromDate = from_date
 		? new Date(from_date).toISOString().split('T')[0]
@@ -131,6 +131,12 @@ export async function balanceReport(req, res, next) {
                  )`
 		) // Filter by relevant types
 		.groupBy(head.type);
+
+	if (type === 'profit_and_loss') {
+		headPromise.where(sql`${head.type} IN ('income', 'expense')`);
+	} else if (type === 'balance_sheet') {
+		headPromise.where(sql`${head.type} IN ('assets', 'liability')`);
+	}
 
 	try {
 		const data = await headPromise;
