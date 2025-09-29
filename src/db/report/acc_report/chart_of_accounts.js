@@ -27,7 +27,7 @@ export async function chartOfAccountsReport(req, res, next) {
 
 	const headPromise = db
 		.select({
-			type: head.type,
+			name: head.type,
 			children: sql`(
             SELECT COALESCE(json_agg(head_obj), '[]'::json)
             FROM (
