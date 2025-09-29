@@ -34,7 +34,6 @@ export async function chartOfAccountsReport(req, res, next) {
                 SELECT
                     json_build_object(
                         'name', (COALESCE(h.group_number::text, '') || ' ' || h.name),
-                        'account_type', h.type,
                         'children',
                             COALESCE(
                                 (
@@ -43,6 +42,7 @@ export async function chartOfAccountsReport(req, res, next) {
                                         SELECT
                                             json_build_object(
                                                 'name', (COALESCE(g.group_number::text, '') || ' ' || g.name),
+                                                'account_type', h.type,
                                                 'children',
                                                     COALESCE(
                                                         (
@@ -51,8 +51,7 @@ export async function chartOfAccountsReport(req, res, next) {
                                                                 SELECT
                                                                     json_build_object(
                                                                         'name', (COALESCE(l.group_number::text, '') || ' ' || l.name),
-                                                                        'account_tag', 'Ledger',
-                                                                        'children', json_build_array(json_build_object('name', (COALESCE(l.group_number::text, '') || ' ' || l.name)))
+                                                                        'account_tag', 'Ledger'
                                                                     ) AS ledger_obj
                                                                 FROM acc.ledger l
                                                                 WHERE l.group_uuid = g.uuid
