@@ -489,7 +489,8 @@ export async function getOrderDetails(req, res, next) {
             COALESCE(oe_stats.swatch_approval_count, 0) AS swatch_approval_count,
             COALESCE(oe_stats.order_entry_count, 0) AS order_entry_count,
             COALESCE(oe_stats.price_approval_count, 0) AS price_approval_count,
-            CASE WHEN COALESCE(oe_stats.swatch_approval_count, 0) > 0 THEN 1 ELSE 0 END AS is_swatch_approved
+            CASE WHEN COALESCE(oe_stats.swatch_approval_count, 0) > 0 THEN 1 ELSE 0 END AS is_swatch_approved,
+			vod.is_fashion
         FROM zipper.v_order_details vod
         LEFT JOIN zipper.order_info oi ON vod.order_info_uuid = oi.uuid
         LEFT JOIN (
@@ -654,7 +655,8 @@ export async function getOrderDetailsByOwnUuid(req, res, next) {
 						all_approval_counts.swatch_approval_count,
 						all_approval_counts.order_entry_count,
 						CASE WHEN all_approval_counts.price_approval_count IS NULL THEN 0 ELSE all_approval_counts.price_approval_count END AS price_approval_count,
-						CASE WHEN all_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved
+						CASE WHEN all_approval_counts.swatch_approval_count > 0 THEN 1 ELSE 0 END AS is_swatch_approved,
+						vod.is_fashion
 					FROM zipper.v_order_details vod
 					LEFT JOIN (
 						SELECT order_number, COUNT(*) AS order_number_wise_count

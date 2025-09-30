@@ -90,7 +90,8 @@ export const OrderDetailsView = `
         order_description.md_price,
         order_description.mkt_company_price,
         order_description.mkt_party_price,
-        order_description.is_price_confirmed
+        order_description.is_price_confirmed,
+        order_description.is_fashion
     FROM
         zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
@@ -270,7 +271,8 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         order_description.md_price,
         order_description.mkt_company_price,
         order_description.mkt_party_price,
-        order_description.is_price_confirmed
+        order_description.is_price_confirmed,
+        order_description.is_fashion
   FROM zipper.order_info
         LEFT JOIN zipper.order_description ON order_description.order_info_uuid = order_info.uuid
         LEFT JOIN public.marketing ON marketing.uuid = order_info.marketing_uuid
