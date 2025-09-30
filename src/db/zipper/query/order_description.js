@@ -110,6 +110,7 @@ export async function insert(req, res, next) {
 		mkt_company_price,
 		mkt_party_price,
 		is_price_confirmed,
+		is_fashion,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -162,6 +163,7 @@ export async function insert(req, res, next) {
 			mkt_company_price,
 			mkt_party_price,
 			is_price_confirmed,
+			is_fashion,
 		})
 		.returning({ insertedUuid: order_description.uuid });
 
@@ -231,6 +233,7 @@ export async function update(req, res, next) {
 		mkt_company_price,
 		mkt_party_price,
 		is_price_confirmed,
+		is_fashion,
 	} = req.body;
 
 	const orderDescriptionPromise = db
@@ -284,6 +287,7 @@ export async function update(req, res, next) {
 			mkt_company_price,
 			mkt_party_price,
 			is_price_confirmed,
+			is_fashion,
 		})
 		.where(eq(order_description.uuid, req.params.uuid))
 		.returning({ updatedUuid: order_description.uuid });
