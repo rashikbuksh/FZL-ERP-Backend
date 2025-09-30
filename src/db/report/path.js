@@ -1544,4 +1544,30 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/chart-of-accounts-table-view': {
+		get: {
+			summary: 'Chart of Accounts Table View',
+			description: 'Chart of Accounts Table View',
+			tags: ['report'],
+			operationId: 'selectChartOfAccountsTableView',
+			parameters: [
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query('type', 'type', ['detail', 'summary']),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					account_name: SE.string('Account Name'),
+					account_type: SE.string('Account Type'),
+					balance: SE.number(610),
+					parent_account: SE.string('Parent Account'),
+					purchase_description_remarks: SE.string(
+						'Purchase Description Remarks'
+					),
+					sale_description_remarks: SE.string(
+						'Sale Description Remarks'
+					),
+				}),
+			},
+		},
+	},
 };

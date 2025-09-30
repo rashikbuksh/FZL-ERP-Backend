@@ -68,7 +68,10 @@ import { fortnightReport } from './lc_report/fortnight_report.js';
 import { PaymentReport } from './lc_report/payment_report.js';
 
 import { balanceReport } from './acc_report/balance.js';
-import { chartOfAccountsReport } from './acc_report/chart_of_accounts.js';
+import {
+	chartOfAccountsReport,
+	chartOfAccountsReportTableView,
+} from './acc_report/chart_of_accounts.js';
 
 const reportRouter = Router();
 
@@ -293,6 +296,12 @@ reportRouter.get('/acc-balance-report', balanceReport);
 
 // * Chart of Accounts (Tree View)
 reportRouter.get('/chart-of-accounts', chartOfAccountsReport);
+
+// * Chart of Accounts (Table View)
+reportRouter.get(
+	'/chart-of-accounts-table-view',
+	chartOfAccountsReportTableView
+);
 
 export const pathReport = {
 	...ReportRoutes.pathReport,

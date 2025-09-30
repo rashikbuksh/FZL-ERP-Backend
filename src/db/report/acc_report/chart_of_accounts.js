@@ -91,3 +91,32 @@ export async function chartOfAccountsReport(req, res, next) {
 		handleError({ error, res });
 	}
 }
+
+export async function chartOfAccountsReportTableView(req, res, next) {
+	const query = sql`
+        SELECT
+            l.uuid as ledger_uuid,
+            COALESCE(l.group_number::text, '') || ' ' || l.name AS ledger_name,
+            g.uuid as group_uuid,
+            COALESCE(g.group_number::text, '') || ' ' || g.name AS group_name,
+            h.uuid as head_uuid,
+            COALESCE(h.group_number::text, '') || ' ' || h.name AS head_name,
+            h.type
+        FROM acc.ledger l
+        LEFT JOIN acc.group g ON l.group_uuid = g.uuid
+        LEFT JOIN acc.head h ON g.head_uuid = h.uuid
+        ORDER BY h.type, h.group_number, g.group_number, l.group_number;
+    `;
+
+	try {
+		const data = await db.execute(query);
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'Chart of Accounts Report Table View',
+		};
+		return res.status(200).json({ toast, data: data.rows });
+	} catch (error) {
+		handleError({ error, res });
+	}
+}
