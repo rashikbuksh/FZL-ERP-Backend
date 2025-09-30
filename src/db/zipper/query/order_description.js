@@ -425,6 +425,7 @@ export async function selectAll(req, res, next) {
 			),
 			mkt_party_price: decimalToNumber(order_description.mkt_party_price),
 			is_price_confirmed: order_description.is_price_confirmed,
+			is_fashion: order_description.is_fashion,
 		})
 		.from(order_description)
 		.where(
@@ -643,6 +644,7 @@ export async function select(req, res, next) {
 			),
 			mkt_party_price: decimalToNumber(order_description.mkt_party_price),
 			is_price_confirmed: order_description.is_price_confirmed,
+			is_fashion: order_description.is_fashion,
 		})
 		.from(order_description)
 		.where(

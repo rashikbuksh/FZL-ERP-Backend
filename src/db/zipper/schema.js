@@ -232,6 +232,7 @@ export const order_description = zipper.table('order_description', {
 	mkt_company_price: PG_DECIMAL('mkt_company_price').default(0.0),
 	mkt_party_price: PG_DECIMAL('mkt_party_price').default(0.0),
 	is_price_confirmed: boolean('is_price_confirmed').default(false),
+	is_fashion: boolean('is_fashion').default(false),
 });
 
 export const order_entry = zipper.table('order_entry', {
