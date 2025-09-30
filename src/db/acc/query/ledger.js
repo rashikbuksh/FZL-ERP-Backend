@@ -112,7 +112,7 @@ export async function selectAll(req, res, next) {
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
 		.leftJoin(hrSchema.users, eq(ledger.created_by, hrSchema.users.uuid))
-		.orderBy(desc(ledger.created_at));
+		.orderBy(asc(ledger.index));
 
 	try {
 		const data = await resultPromise;

@@ -95,7 +95,7 @@ export async function selectAll(req, res, next) {
 		.from(head)
 		.leftJoin(createdByUser, eq(head.created_by, createdByUser.uuid))
 		.leftJoin(updatedByUser, eq(head.updated_by, updatedByUser.uuid))
-		.orderBy(desc(head.created_at));
+		.orderBy(asc(head.index));
 
 	try {
 		const data = await resultPromise;
