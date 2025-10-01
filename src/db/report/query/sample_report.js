@@ -42,16 +42,17 @@ export async function selectSampleReport(req, res, next) {
                                 toi.created_at AS issue_date,
                                 CASE WHEN MAX(tc.uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
                                 MAX(tc.created_at) AS delivery_last_date,
-                                SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE tce.quantity::float8 END) AS delivery_quantity,
+                                SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE ple.quantity::float8 END) AS delivery_quantity,
                                 SUM(toe.quantity::float8) AS order_quantity,
-                                CONCAT(SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE tce.quantity::float8 END), '/', SUM(toe.quantity::float8)) AS delivery_order_quantity,
+                                CONCAT(SUM(CASE WHEN tc.uuid IS NULL THEN 0 ELSE ple.quantity::float8 END), '/', SUM(toe.quantity::float8)) AS delivery_order_quantity,
                                 toi.marketing_uuid
                             FROM
                                 thread.order_info toi
                                 LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
-                                LEFT JOIN thread.challan_entry tce ON tce.order_entry_uuid = toe.uuid
-                                LEFT JOIN thread.challan tc ON tce.challan_uuid = tc.uuid
-                            WHERE 
+                                LEFT JOIN delivery.packing_list_entry ple ON ple.thread_order_entry_uuid = toe.uuid
+                                LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
+                                LEFT JOIN delivery.challan tc ON pl.challan_uuid = tc.uuid
+                            WHERE
                                 toi.is_sample = 1
                             GROUP BY
                                 toi.id, toi.created_at, toi.is_sample, toi.marketing_uuid

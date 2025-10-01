@@ -2289,16 +2289,18 @@ export const pathZipperDyeingBatch = {
 			tags: ['zipper.dyeing_batch'],
 			summary: 'Get all Dyeing Batch',
 			parameters: [
-				SE.parameter_query('type', 'type', [
-					'pending',
-					'completed',
-					'all',
-				]),
-				SE.parameter_query('order_type', 'order_type', [
-					'bulk',
-					'sample',
-					'all',
-				]),
+				SE.parameter_query(
+					'type',
+					'type',
+					['pending', 'completed', 'all'],
+					true
+				),
+				SE.parameter_query(
+					'order_type',
+					'order_type',
+					['bulk', 'sample', 'all'],
+					true
+				),
 			],
 			responses: {
 				200: SE.response_schema(200, {

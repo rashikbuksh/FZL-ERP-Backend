@@ -411,12 +411,4 @@ export const tagThread = [
 		name: 'thread.batch_entry_trx',
 		description: 'Thread Batch Entry Trx',
 	},
-	{
-		name: 'thread.challan',
-		description: 'Thread Challan',
-	},
-	{
-		name: 'thread.challan_entry',
-		description: 'Thread Challan Entry',
-	},
 ];
