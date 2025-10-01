@@ -111,7 +111,7 @@ export const OrderDetailsView = `
         LEFT JOIN public.properties op_nylon_stopper ON op_nylon_stopper.uuid = order_description.nylon_stopper
         LEFT JOIN hr.users sno_from_head_office_by ON sno_from_head_office_by.uuid = order_info.sno_from_head_office_by
         LEFT JOIN hr.users receive_by_factory_by ON receive_by_factory_by.uuid = order_info.receive_by_factory_by
-        LEFT JOIN hr.users production_pause_by ON production_pause_by.uuid = order_info.production_pause_by
+        LEFT JOIN hr.users production_pause_by ON production_pause_by.uuid = order_info.production_pause_by;
 `;
 
 export const OrderDetailsFullView = `
@@ -306,7 +306,7 @@ CREATE OR REPLACE VIEW zipper.v_order_details_full AS
         LEFT JOIN public.properties op_teeth_type ON op_teeth_type.uuid = order_description.teeth_type
         LEFT JOIN hr.users sno_from_head_office_by ON sno_from_head_office_by.uuid = order_info.sno_from_head_office_by
         LEFT JOIN hr.users receive_by_factory_by ON receive_by_factory_by.uuid = order_info.receive_by_factory_by
-        LEFT JOIN hr.users production_pause_by ON production_pause_by.uuid = order_info.production_pause_by
+        LEFT JOIN hr.users production_pause_by ON production_pause_by.uuid = order_info.production_pause_by;
 `; // required order_description changes
 
 export const PackingListDetailsView = `
@@ -415,7 +415,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list_details AS
         LEFT JOIN delivery.challan ch ON ch.uuid = pl.challan_uuid
         LEFT JOIN hr.users deleted_by ON deleted_by.uuid = pl.deleted_by
         LEFT JOIN public.party toi_party ON toi.party_uuid = toi_party.uuid
-        LEFT JOIN public.marketing toi_marketing ON toi.marketing_uuid = toi_marketing.uuid
+        LEFT JOIN public.marketing toi_marketing ON toi.marketing_uuid = toi_marketing.uuid;
 `;
 
 export const PackingListView = `
@@ -583,8 +583,7 @@ CREATE OR REPLACE VIEW delivery.v_packing_list AS
             packing_list.is_deleted,
             packing_list.created_at,
             packing_list.item_for
-    ) packing_list_rank ON packing_list_rank.packing_list_uuid = packing_list.uuid
-    ;
+    ) packing_list_rank ON packing_list_rank.packing_list_uuid = packing_list.uuid;
 `;
 
 // ! not using anymore
