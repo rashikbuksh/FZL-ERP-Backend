@@ -174,7 +174,7 @@ export async function getBatchEntryProductionDetails(req, res, next) {
 		oe.style as style,
 		oe.bleaching as bleaching,
 		oe.count_length_uuid as count_length_uuid,
-		CONCAT('"',cl.count, ' - ', cl.length) as count_length,
+		CONCAT('"', cl.count, ' - ', cl.length) as count_length,
 		cl.cone_per_carton,
 		be.quantity::float8 as batch_quantity,
 		be.coning_production_quantity::float8,
