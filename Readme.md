@@ -9,8 +9,8 @@
 2. Update DB - If needed
 
     ```
-    npm run db-generate
-    npm run db-migrate
+    bun run db-generate
+    bun run db-migrate
     ```
 
 3. Restart the project.
