@@ -464,6 +464,7 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			store_type: description.store_type,
 			created_at: description.created_at,
 			currency_uuid: sql`COALESCE(${description.currency_uuid}, 'bz7Xt8T3rfjDAQT')`,
+			currency: currency.currency,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
 			purchase_cost_center_uuid: purchaseCostCenter.uuid,
@@ -516,7 +517,8 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			purchaseCostCenter.uuid,
 			vendorCostCenter.uuid,
 			purchaseVoucherEntryCostCenter.amount,
-			vendorVoucherEntryCostCenter.amount
+			vendorVoucherEntryCostCenter.amount,
+			currency.currency
 		)
 		.orderBy(desc(description.id));
 
