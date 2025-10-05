@@ -2888,6 +2888,7 @@ export async function selectPackingList(req, res, next) {
 // ! Maintain
 // ? Section Machine
 export async function selectMaintainMachineSection(req, res, next) {
+	const { section } = req.query;
 	const query = sql`
 	SELECT
 		section_machine.uuid AS value,
@@ -2896,6 +2897,15 @@ export async function selectMaintainMachineSection(req, res, next) {
 		maintain.section_machine;`;
 
 	const machineSectionPromise = db.execute(query);
+
+	if (section) {
+		machineSectionPromise.where(
+			and(
+				eq(sql`section_machine.section`, section),
+				eq(sql`section_machine.status`, true)
+			)
+		);
+	}
 
 	try {
 		const data = await machineSectionPromise;

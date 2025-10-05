@@ -1577,6 +1577,14 @@ const pathMaintain = {
 			summary: 'get all maintain',
 			description: 'All maintain',
 			operationId: 'getAllMaintain',
+			parameters: [
+				SE.parameter_query('section', 'section', [
+					'sewing',
+					'printing',
+					'embroidery',
+					'finishing',
+				]),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					value: SE.uuid('2ggcphnw'),
