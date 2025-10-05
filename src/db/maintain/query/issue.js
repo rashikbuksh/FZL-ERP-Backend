@@ -202,6 +202,8 @@ export async function select(req, res, next) {
 			remarks: issue.remarks,
 			extra_section: issue.extra_section,
 			name: issue.name,
+			maintenance_desc: issue.maintenance_desc,
+			parts_details: issue.parts_details,
 		})
 		.from(issue)
 		.leftJoin(
@@ -266,6 +268,8 @@ export async function selectAll(req, res, next) {
 			remarks: issue.remarks,
 			extra_section: issue.extra_section,
 			name: issue.name,
+			maintenance_desc: issue.maintenance_desc,
+			parts_details: issue.parts_details,
 		})
 		.from(issue)
 		.leftJoin(
