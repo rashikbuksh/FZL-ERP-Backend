@@ -164,3 +164,26 @@ export async function select(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+// -- Bulk: insert for all vendors that don't already have a vendor cost_center
+// INSERT INTO acc.cost_center (
+//   uuid, name, ledger_uuid, table_name, table_uuid, invoice_no,
+//   created_at, created_by, updated_by, updated_at, remarks
+// )
+// SELECT
+//   substring(md5(random()::text || clock_timestamp()::text) FROM 1 FOR 15) AS uuid,
+//   v.name AS name,
+//   (SELECT l.uuid FROM acc.ledger l WHERE l.name = 'Trade Payable' LIMIT 1) AS ledger_uuid,
+//   'vendor' AS table_name,
+//   v.uuid AS table_uuid,
+//   NULL AS invoice_no,
+//   v.created_at,
+//   v.created_by,
+//   v.updated_by,
+//   v.updated_at,
+//   v.remarks
+// FROM purchase.vendor v
+// WHERE NOT EXISTS (
+//   SELECT 1 FROM acc.cost_center cc
+//   WHERE cc.table_name = 'vendor' AND cc.table_uuid = v.uuid
+// );

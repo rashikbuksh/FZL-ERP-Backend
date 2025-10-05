@@ -537,3 +537,38 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 		await handleError({ error, res });
 	}
 }
+
+// INSERT INTO acc.cost_center (
+//   uuid, name, ledger_uuid, table_name, table_uuid, invoice_no,
+//   created_at, created_by, updated_by, updated_at, remarks
+// )
+// SELECT
+//   substring(md5(random()::text || clock_timestamp()::text) FROM 1 FOR 15) AS uuid,
+//   CASE WHEN d.store_type = 'rm'
+//        THEN CONCAT('SR', to_char(d.created_at, 'YY'), '-', LPAD(d.id::text, 4, '0'))
+//        ELSE CONCAT('SRA', to_char(d.created_at, 'YY'), '-', LPAD(d.id::text, 4, '0'))
+//   END AS name,
+//   (
+//     SELECT l.uuid
+//     FROM acc.ledger l
+//     WHERE l.identifier::text = CASE
+//       WHEN d.store_type = 'rm' THEN 'store_rm'
+//       WHEN d.store_type = 'maintenance' THEN 'store_maintenance'
+//       ELSE 'store_accessories'
+//     END
+//     LIMIT 1
+//   ) AS ledger_uuid,
+//   'purchase.description' AS table_name,
+//   d.uuid AS table_uuid,
+//   NULL AS invoice_no,
+//   d.created_at,
+//   d.created_by,
+//   d.updated_by,
+//   d.updated_at,
+//   d.remarks
+// FROM purchase.description d
+// WHERE NOT EXISTS (
+//   SELECT 1 FROM acc.cost_center cc
+//   WHERE cc.table_name = 'purchase.description'
+//     AND cc.table_uuid = d.uuid
+// );
