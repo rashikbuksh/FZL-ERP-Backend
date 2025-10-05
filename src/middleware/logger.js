@@ -1,4 +1,6 @@
 import winston from 'winston';
+import fs from 'fs';
+import path from 'path';
 
 const { combine, timestamp, json, colorize, printf } = winston.format;
 
@@ -7,6 +9,26 @@ const { combine, timestamp, json, colorize, printf } = winston.format;
 // 	datePattern: 'YYYY-MM-DD',
 // 	maxFiles: '14d',
 // });
+
+// Resolve / ensure log directory (prevents _createLogDirIfNotExist errors when CWD changes)
+const logDir = process.env.LOG_DIR
+	? path.isAbsolute(process.env.LOG_DIR)
+		? process.env.LOG_DIR
+		: path.resolve(process.cwd(), process.env.LOG_DIR)
+	: path.resolve(process.cwd(), 'logs');
+
+try {
+	if (!fs.existsSync(logDir)) {
+		fs.mkdirSync(logDir, { recursive: true });
+	}
+} catch (e) {
+	// Fallback: if directory cannot be created, we'll log to console only
+	console.error(
+		'[logger] Failed to create log directory:',
+		logDir,
+		e.message
+	);
+}
 
 const logger = winston.createLogger({
 	format: combine(
@@ -19,10 +41,28 @@ const logger = winston.createLogger({
 	),
 	transports: [
 		new winston.transports.Console(),
-		new winston.transports.File({ filename: 'error.log', level: 'error' }),
-		new winston.transports.File({ filename: 'combined.log' }),
-		// Add a dedicated transport for API logs
-		new winston.transports.File({ filename: 'api.log', level: 'info' }),
+		// Use absolute paths so runtime CWD changes (e.g. with PM2) don't break logging
+		...(fs.existsSync(logDir)
+			? [
+					new winston.transports.File({
+						filename: path.join(logDir, 'error.log'),
+						level: 'error',
+						maxsize: 5 * 1024 * 1024, // 5MB per file (optional safeguard)
+						maxFiles: 5,
+					}),
+					new winston.transports.File({
+						filename: path.join(logDir, 'combined.log'),
+						maxsize: 10 * 1024 * 1024,
+						maxFiles: 5,
+					}),
+					new winston.transports.File({
+						filename: path.join(logDir, 'api.log'),
+						level: 'info',
+						maxsize: 10 * 1024 * 1024,
+						maxFiles: 3,
+					}),
+				]
+			: []),
 	],
 
 	// transports: [fileRotateTransport],
