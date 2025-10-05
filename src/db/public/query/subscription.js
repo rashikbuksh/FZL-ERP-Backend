@@ -81,30 +81,27 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const subscriptionPromise = db
-		.select({
-			id: subscription.id,
-			endpoint: subscription.endpoint,
-			created_at: subscription.created_at,
-		})
-		.from(subscription);
-
 	try {
-		const data = await subscriptionPromise;
+		const data = await db
+			.select({
+				id: subscription.id,
+				endpoint: subscription.endpoint,
+				created_at: subscription.created_at,
+			})
+			.from(subscription);
+
 		const toast = {
 			status: 200,
 			type: 'select_all',
-			message: 'subscription',
+			message: 'subscription list',
 		};
 
-		const combinedData = {
-			toast,
-			data,
-		};
-
-		return combinedData;
+		return res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
+		if (!res.headersSent) {
+			res.status(500).json({ error: 'Failed to load subscriptions' });
+		}
 	}
 }
 
@@ -118,10 +115,6 @@ export async function select(req, res, next) {
 			created_at: subscription.created_at,
 		})
 		.from(subscription)
-		.leftJoin(
-			hrSchema.users,
-			eq(subscription.created_by, hrSchema.users.uuid)
-		)
 		.where(eq(subscription.uuid, req.params.uuid));
 
 	try {
