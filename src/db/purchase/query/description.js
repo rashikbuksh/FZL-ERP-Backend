@@ -463,7 +463,7 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 			total_price: sql`SUM(entry.price::float8)`,
 			store_type: description.store_type,
 			created_at: description.created_at,
-			currency_uuid: description.currency_uuid,
+			currency_uuid: sql`COALESCE(${description.currency_uuid}, 'bz7Xt8T3rfjDAQT')`,
 			currency_name: currency.currency_name,
 			currency_symbol: currency.symbol,
 			purchase_cost_center_uuid: purchaseCostCenter.uuid,
@@ -474,7 +474,13 @@ export async function selectAllPurchaseDescriptionWithEntry(req, res, next) {
 		.from(description)
 		.leftJoin(vendor, eq(description.vendor_uuid, vendor.uuid))
 		.leftJoin(entry, eq(description.uuid, entry.purchase_description_uuid))
-		.leftJoin(currency, eq(description.currency_uuid, currency.uuid))
+		.leftJoin(
+			currency,
+			eq(
+				sql`COALESCE(${description.currency_uuid}, 'bz7Xt8T3rfjDAQT')`,
+				currency.uuid
+			)
+		)
 		.leftJoin(
 			purchaseCostCenter,
 			eq(description.uuid, purchaseCostCenter.table_uuid)
