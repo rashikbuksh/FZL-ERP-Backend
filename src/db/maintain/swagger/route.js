@@ -325,8 +325,28 @@ export const pathMaintainIssueProcurement = {
 	},
 };
 
+// * Maintain Dashboard * //
+export const pathMaintainDashboard = {
+	'/maintain/maintenance/dashboard': {
+		get: {
+			tags: ['maintain.dashboard'],
+			summary: 'Get maintenance dashboard data',
+			description: 'Get maintenance dashboard data',
+			responses: {
+				200: SE.response_schema_ref(
+					'maintain/dashboard-maintenance',
+					'Returns maintenance dashboard data'
+				),
+				400: SE.response(400, 'Invalid request'),
+				404: SE.response(404, 'No data found'),
+			},
+		},
+	},
+};
+
 export const pathMaintain = {
 	...pathMaintainSectionMachine,
 	...pathMaintainIssue,
 	...pathMaintainIssueProcurement,
+	...pathMaintainDashboard,
 };

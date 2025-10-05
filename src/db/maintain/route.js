@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as issueOperations from './query/issue.js';
 import * as issueProcurementOperations from './query/issue_procurement.js';
 import * as sectionMachineOperations from './query/section_machine.js';
+import * as maintenanceDashboardOperations from './query/maintenance_dashboard.js';
 const maintainRouter = Router();
 
 // info routes
@@ -42,6 +43,12 @@ maintainRouter.delete(
 maintainRouter.get(
 	'/issue-procurement/by/:issue_uuid',
 	issueProcurementOperations.selectByIssueUuid
+);
+
+// dashboard routes
+maintainRouter.get(
+	'/maintenance/dashboard',
+	maintenanceDashboardOperations.maintenanceDashboard
 );
 
 export { maintainRouter };
