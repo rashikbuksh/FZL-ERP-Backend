@@ -2894,18 +2894,10 @@ export async function selectMaintainMachineSection(req, res, next) {
 		section_machine.uuid AS value,
 		section_machine.name AS label
 	FROM
-		maintain.section_machine;`;
+		maintain.section_machine
+	WHERE ${section ? sql`section_machine.section = ${section} AND section_machine.status = true` : sql`1=1`}`;
 
 	const machineSectionPromise = db.execute(query);
-
-	if (section) {
-		machineSectionPromise.where(
-			and(
-				eq(sql`section_machine.section`, section),
-				eq(sql`section_machine.status`, true)
-			)
-		);
-	}
 
 	try {
 		const data = await machineSectionPromise;
