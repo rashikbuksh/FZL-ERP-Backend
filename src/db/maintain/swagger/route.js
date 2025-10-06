@@ -329,7 +329,7 @@ export const pathMaintainIssueProcurement = {
 export const pathMaintainDashboard = {
 	'/maintain/maintenance/dashboard': {
 		get: {
-			tags: ['maintain.dashboard'],
+			tags: ['maintain.issue'],
 			summary: 'Get maintenance dashboard data',
 			description: 'Get maintenance dashboard data',
 			responses: {
