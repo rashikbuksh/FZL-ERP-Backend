@@ -243,6 +243,12 @@ const pathPublic = {
 			summary: 'get all marketing',
 			description: 'All marketing',
 			operationId: 'getAllMarketing',
+			parameters: [
+				SE.parameter_query('is_already_team', 'is_already_team', [
+					'true',
+					'false',
+				]),
+			],
 			responses: {
 				200: {
 					description: 'Returns a all marketing.',

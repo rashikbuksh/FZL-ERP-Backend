@@ -566,12 +566,30 @@ export async function selectSpecificFactory(req, res, next) {
 }
 
 export async function selectMarketing(req, res, next) {
+	const { is_already_team } = req.query;
 	const marketingPromise = db
 		.select({
 			value: publicSchema.marketing.uuid,
 			label: publicSchema.marketing.name,
 		})
-		.from(publicSchema.marketing);
+		.from(publicSchema.marketing)
+		.leftJoin(
+			publicSchema.marketing_team_entry,
+			eq(
+				publicSchema.marketing.uuid,
+				publicSchema.marketing_team_entry.marketing_uuid
+			)
+		);
+
+	if (is_already_team === 'true') {
+		marketingPromise.where(
+			sql`${publicSchema.marketing_team_entry.marketing_uuid} IS NOT NULL`
+		);
+	} else if (is_already_team === 'false') {
+		marketingPromise.where(
+			sql`${publicSchema.marketing_team_entry.marketing_uuid} IS NULL`
+		);
+	}
 
 	try {
 		const data = await marketingPromise;
