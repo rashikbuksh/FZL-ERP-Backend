@@ -3,7 +3,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { complaint } from '../schema.js';
-import { alias } from 'drizzle-orm/pg-core/alias.js';
+import { alias } from 'drizzle-orm/pg-core';
 import * as viewSchema from '../../view/schema.js';
 import * as threadSchema from '../../thread/schema.js';
 
