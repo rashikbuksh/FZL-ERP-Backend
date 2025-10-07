@@ -1,3 +1,4 @@
+import { order_description } from '@/db/zipper/schema.js';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 //* ./schema.js#buyer
@@ -269,6 +270,8 @@ export const defComplaint = SED({
 	required: ['uuid', 'name', 'created_at', 'created_by'],
 	properties: {
 		uuid: SE.uuid(),
+		order_description_uuid: SE.uuid(),
+		thread_order_info_uuid: SE.uuid(),
 		name: SE.string('Complaint Name'),
 		description: SE.string('Description of the complaint'),
 		root_cause_analysis: SE.string('Root cause analysis details'),

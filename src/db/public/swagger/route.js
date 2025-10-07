@@ -2389,6 +2389,28 @@ export const pathComplaint = {
 			},
 		},
 	},
+	'/public/complaint-by-order-description-uuid/{order_description_uuid}': {
+		get: {
+			summary: 'Get all complaints by order description uuid',
+			tags: ['public.complaint'],
+			operationId: 'getComplaintsByOrderDescriptionUuid',
+			parameters: [
+				SE.parameter_params(
+					'order_description_uuid',
+					'uuid',
+					SE.uuid()
+				),
+				SE.parameter_query('is_zipper', 'is_zipper', [
+					'true',
+					'false',
+					'all',
+				]),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'public/complaint'),
+			},
+		},
+	},
 };
 
 // * Export All Public Paths * //

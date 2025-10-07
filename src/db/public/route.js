@@ -12,6 +12,7 @@ import * as productionCapacityOperations from './query/production_capacity.js';
 import * as propertiesOperations from './query/properties.js';
 import * as sectionOperations from './query/section.js';
 import * as subscriptionOperations from './query/subscription.js';
+import * as complaintOperations from './query/complaint.js';
 
 import Cache from 'memory-cache';
 
@@ -237,10 +238,14 @@ publicRouter.delete('/subscribe/:uuid', subscriptionOperations.remove);
 publicRouter.post('/unsubscribe', subscriptionOperations.unSubscribe);
 
 // * Complaint routes
-publicRouter.get('/complaint', subscriptionOperations.selectAll);
-publicRouter.get('/complaint/:uuid', subscriptionOperations.select);
-publicRouter.post('/complaint', subscriptionOperations.insert);
-publicRouter.put('/complaint/:uuid', subscriptionOperations.update);
-publicRouter.delete('/complaint/:uuid', subscriptionOperations.remove);
+publicRouter.get('/complaint', complaintOperations.selectAll);
+publicRouter.get('/complaint/:uuid', complaintOperations.select);
+publicRouter.post('/complaint', complaintOperations.insert);
+publicRouter.put('/complaint/:uuid', complaintOperations.update);
+publicRouter.delete('/complaint/:uuid', complaintOperations.remove);
+publicRouter.get(
+	'/complaint-by-order-description-uuid/:order_description_uuid',
+	complaintOperations.selectByOrderDescriptionUuid
+);
 
 export { publicRouter };
