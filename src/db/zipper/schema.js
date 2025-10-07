@@ -194,6 +194,10 @@ export const order_description = zipper.table('order_description', {
 	status: integer('status').notNull().default(0),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
 	remarks: text('remarks').default(null),
 	slider_body_shape: defaultUUID('slider_body_shape').references(
 		() => publicSchema.properties.uuid
@@ -209,7 +213,6 @@ export const order_description = zipper.table('order_description', {
 		() => publicSchema.properties.uuid
 	),
 	garments_wash: text('garments_wash').default(null),
-	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	garments_remarks: text('garments_remarks').default(null),
 	// nylon_plastic_finishing: PG_DECIMAL('nylon_plastic_finishing').default(0),
 	// nylon_metallic_finishing: PG_DECIMAL('nylon_metallic_finishing').default(0),
@@ -225,9 +228,6 @@ export const order_description = zipper.table('order_description', {
 	revision_no: integer('revision_no').default(0),
 	is_marketing_checked: boolean('is_marketing_checked').default(false),
 	marketing_checked_at: DateTime('marketing_checked_at').default(null),
-	updated_by: defaultUUID('updated_by')
-		.references(() => hrSchema.users.uuid)
-		.default(null),
 	md_price: PG_DECIMAL('md_price').default(0.0),
 	mkt_company_price: PG_DECIMAL('mkt_company_price').default(0.0),
 	mkt_party_price: PG_DECIMAL('mkt_party_price').default(0.0),
@@ -918,6 +918,28 @@ export const order_entry_log = zipper.table('order_entry_log', {
 	quantity: PG_DECIMAL('quantity').default(0.0),
 	company_price: PG_DECIMAL('company_price').default(0.0),
 	party_price: PG_DECIMAL('party_price').default(0.0),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+});
+
+export const md_price_log_sequence = zipper.sequence('md_price_log_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
+export const md_price_log = zipper.table('md_price_log', {
+	id: integer('id')
+		.default(sql`nextval('zipper.md_price_log_sequence')`)
+		.notNull(),
+	order_description_uuid: defaultUUID('order_description_uuid').references(
+		() => order_description.uuid
+	),
+	thread_order_info_uuid: defaultUUID('thread_order_info_uuid').references(
+		() => threadSchema.order_info.uuid
+	),
+	md_price: PG_DECIMAL('md_price').default(0.0),
+	mkt_company_price: PG_DECIMAL('mkt_company_price').default(0.0),
+	mkt_party_price: PG_DECIMAL('mkt_party_price').default(0.0),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 });

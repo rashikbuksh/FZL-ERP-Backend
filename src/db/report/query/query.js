@@ -435,7 +435,9 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                  vodf.mkt_company_price::float8,
                  vodf.mkt_party_price::float8,
                  vodf.is_price_confirmed,
-                COALESCE(size_wise_sum.size_wise_quantity, '{}'::jsonb) AS size_wise_quantity
+                COALESCE(size_wise_sum.size_wise_quantity, '{}'::jsonb) AS size_wise_quantity,
+                md_price_log.md_price_history,
+                md_price_log.mkt_price_history
             FROM
                 zipper.v_order_details_full vodf
             LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -461,6 +463,35 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 ) t
                 GROUP BY order_description_uuid
             ) size_wise_sum ON size_wise_sum.order_description_uuid = vodf.order_description_uuid
+            LEFT JOIN (
+                SELECT
+                    order_description_uuid,
+                    jsonb_agg(
+                        jsonb_build_object(
+                            'id',
+                            id,
+                            'md_price',
+                            md_price,
+                            'created_at',
+                            created_at
+                        ) ORDER BY created_at DESC
+                    ) as md_price_history,
+                    jsonb_agg(
+                        jsonb_build_object(
+                            'id',
+                            id,
+                            'mkt_company_price',
+                            mkt_company_price,
+                            'mkt_party_price',
+                            mkt_party_price,
+                            'created_at',
+                            created_at
+                        ) ORDER BY created_at DESC
+                    ) as mkt_price_history
+                FROM zipper.md_price_log
+                GROUP BY
+                    order_description_uuid
+            ) md_price_log ON md_price_log.order_description_uuid = vodf.order_description_uuid
             WHERE vodf.order_description_uuid IS NOT NULL 
                 AND vodf.is_cancelled = FALSE AND vodf.is_sample != 1 AND vodf.is_bill != 0 
                 ${own_uuid == null ? sql`` : sql` AND vodf.marketing_uuid = ${marketingUuid}`} 
@@ -507,7 +538,9 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 vodf.is_price_confirmed,
                 size_wise_sum.size_wise_quantity,
                 vodf.order_description_created_at,
-                vodf.id
+                vodf.id,
+                md_price_log.md_price_history,
+                md_price_log.mkt_price_history
             ORDER BY 
                 vodf.id DESC, vodf.order_description_created_at DESC
         `;
