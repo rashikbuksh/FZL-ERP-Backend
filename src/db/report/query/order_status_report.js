@@ -45,7 +45,8 @@ export async function ProductionReportSnm(req, res, next) {
                         vodf.created_by_name,
                         vodf.order_description_updated_by_name as updated_by_name,
                         vodf.order_description_created_at,
-                        vodf.order_description_updated_at
+                        vodf.order_description_updated_at,
+                        vodf.is_fashion
                     FROM zipper.v_order_details_full vodf
                     WHERE 
                         vodf.order_description_uuid IS NOT NULL 
@@ -239,10 +240,12 @@ export async function ProductionReportSnm(req, res, next) {
                 fo.item_description,
                 fo.item_name,
                 fo.item_name || 
-                CASE WHEN fo.nylon_stopper_name IS NOT NULL 
-                     THEN ' - ' || fo.nylon_stopper_name 
-                     ELSE COALESCE(' ' || fo.nylon_stopper_name, '') 
-                END as item_name_with_stopper,
+                    CASE WHEN fo.nylon_stopper_name IS NOT NULL 
+                        THEN ' - ' || fo.nylon_stopper_name 
+                        ELSE COALESCE(' ' || fo.nylon_stopper_name, '')   
+                    END || 
+                    CASE WHEN fo.is_fashion = TRUE THEN ' (FZ)' ELSE '' END 
+                as item_name_with_stopper,
                 fo.nylon_stopper_name,
                 fo.zipper_number_name,
                 fo.end_type_name,

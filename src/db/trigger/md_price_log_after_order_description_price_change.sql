@@ -15,9 +15,9 @@ BEGIN
         )
         VALUES (
             NEW.uuid, 
-            NEW.md_price, 
-            NEW.mkt_company_price, 
-            NEW.mkt_party_price, 
+            OLD.md_price, 
+            OLD.mkt_company_price, 
+            OLD.mkt_party_price, 
             NEW.updated_by,
             NEW.updated_at
         );
