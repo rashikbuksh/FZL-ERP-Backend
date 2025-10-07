@@ -232,11 +232,6 @@ export const complaint = pgTable('complaint', {
 	issue_department: text('issue_department').default(null),
 	solution: text('solution').default(null),
 	future_proof: text('future_proof').default(null),
-	is_addressed: boolean('is_addressed').default(false),
-	addressed_by: defaultUUID('addressed_by')
-		.references(() => hrSchema.users.uuid)
-		.default(null),
-	addressed_at: DateTime('addressed_at').default(null),
 	created_at: DateTime('created_at').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	updated_at: DateTime('updated_at').default(null),
