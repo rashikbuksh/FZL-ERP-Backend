@@ -224,4 +224,26 @@ export const subscription = pgTable('subscription', {
 	created_at: DateTime('created_at').notNull(),
 });
 
+export const complaint = pgTable('complaint', {
+	uuid: uuid_primary,
+	name: text('name').notNull(),
+	description: text('description').default(null),
+	root_cause_analysis: text('root_cause_analysis').default(null),
+	issue_department: text('issue_department').default(null),
+	solution: text('solution').default(null),
+	future_proof: text('future_proof').default(null),
+	is_addressed: boolean('is_addressed').default(false),
+	addressed_by: defaultUUID('addressed_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
+	addressed_at: DateTime('addressed_at').default(null),
+	created_at: DateTime('created_at').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
+	remarks: text('remarks').default(null),
+});
+
 export default buyer;
