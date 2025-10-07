@@ -271,6 +271,7 @@ export const defComplaint = SED({
 		uuid: SE.uuid(),
 		order_description_uuid: SE.uuid(),
 		thread_order_info_uuid: SE.uuid(),
+		file: SE.array(SE.file()),
 		name: SE.string('Complaint Name'),
 		description: SE.string('Description of the complaint'),
 		root_cause_analysis: SE.string('Root cause analysis details'),

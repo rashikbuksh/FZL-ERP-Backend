@@ -15,6 +15,18 @@ import {
 
 const updatedByUser = alias(hrSchema.users, 'updatedByUser');
 
+function sanitizePayload(src) {
+	const out = {};
+	for (const [k, v] of Object.entries(src || {})) {
+		if (v === '' || v === 'null' || v === null) {
+			out[k] = null;
+		} else {
+			out[k] = v;
+		}
+	}
+	return out;
+}
+
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
@@ -43,21 +55,29 @@ export async function insert(req, res, next) {
 export async function insertImage(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const formData = req.body;
-	const file = req.file;
+	const formData = sanitizePayload(req.body);
+	const files = Array.isArray(req.files) ? req.files : [];
 
-	const filePath = file ? await insertFile(file, 'public/complaint') : null;
-
-	// check if formdata has 'null' then make it actual null
-	Object.keys(formData).forEach((key) => {
-		if (formData[key] === 'null') {
-			formData[key] = null;
+	const storedPaths = [];
+	for (const f of files) {
+		if (f) {
+			// ensure await
+			const p = await insertFile(f, 'public/complaint');
+			storedPaths.push(p);
 		}
-	});
+	}
+
+	// If your complaint.file column is json/jsonb keep as array; if it's text, JSON.stringify it:
+	const fileValue = storedPaths.length ? JSON.stringify(storedPaths) : null;
+
+	const payload = {
+		...formData,
+		file: fileValue,
+	};
 
 	const complaintPromise = db
 		.insert(complaint)
-		.values({ ...formData, file: filePath })
+		.values(payload)
 		.returning({ insertedName: complaint.name });
 
 	try {
@@ -67,13 +87,10 @@ export async function insertImage(req, res, next) {
 			type: 'insert',
 			message: `${data[0].insertedName} inserted`,
 		};
-
-		return await res.status(201).json({ toast, data });
+		return res.status(201).json({ toast, data });
 	} catch (error) {
-		await handleError({
-			error,
-			res,
-		});
+		await handleError({ error, res });
+		if (!res.headersSent) res.status(400).json({ error: error.message });
 	}
 }
 
@@ -106,60 +123,65 @@ export async function update(req, res, next) {
 export async function updateImage(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const formData = req.body;
-	const file = req.file;
+	const formData = sanitizePayload(req.body);
 
-	// check if formdata has 'null' then make it actual null
-	Object.keys(formData).forEach((key) => {
-		if (formData[key] === 'null') {
-			formData[key] = null;
-		}
-	});
-
-	if (file) {
-		// If a new file is uploaded, we need to handle the file update
-		const oldFilePath = db
-			.select()
+	// Support array insertion (append multiple new files to existing list)
+	const files = Array.isArray(req.files)
+		? req.files
+		: req.files
+			? [req.files]
+			: [];
+	if (files.length) {
+		// Fetch existing record's file field
+		const existing = await db
+			.select({ file: complaint.file })
 			.from(complaint)
 			.where(eq(complaint.uuid, req.params.uuid))
-			.returning(complaint.file);
-		const oldFile = await oldFilePath;
+			.limit(1);
 
-		if (oldFile && oldFile[0].file) {
-			// If there is an old file, delete it
-			const filePath = updateFile(
-				file,
-				oldFile[0].file,
-				'public/complaint'
-			);
-			formData.file = filePath;
-		} else {
-			// If no new file is uploaded, keep the old file path
-			const filePath = insertFile(file, 'public/complaint');
-			formData.file = filePath;
+		let newPaths = [];
+		if (existing.length) {
+			for (const p of JSON.parse(existing || '[]')) {
+				deleteFile(p);
+			}
 		}
+
+		// Insert each new file and collect paths
+		for (const f of files) {
+			if (!f) continue;
+			const stored = await insertFile(f, 'public/complaint');
+			newPaths.push(stored);
+		}
+
+		formData.file = JSON.stringify(newPaths); // Keep consistent with insertImage implementation
 	}
 
 	const complaintPromise = db
 		.update(complaint)
-		.set(req.body)
+		.set(formData)
 		.where(eq(complaint.uuid, req.params.uuid))
 		.returning({ updatedName: complaint.name });
 
 	try {
 		const data = await complaintPromise;
+		if (!data.length) {
+			return res.status(404).json({
+				toast: {
+					status: 404,
+					type: 'update',
+					message: 'Not found',
+				},
+			});
+		}
 		const toast = {
 			status: 200,
 			type: 'update',
 			message: `${data[0].updatedName} updated`,
 		};
-
-		return await res.status(200).json({ toast, data });
+		return res.status(200).json({ toast, data });
 	} catch (error) {
-		await handleError({
-			error,
-			res,
-		});
+		await handleError({ error, res });
+		if (!res.headersSent) res.status(400).json({ error: error.message });
 	}
 }
 
@@ -214,6 +236,7 @@ export async function selectAll(req, res, next) {
 			item_description: viewSchema.v_order_details_full.item_description,
 			thread_order_info_uuid: complaint.thread_order_info_uuid,
 			thread_order_number: sql`concat('ST', CASE WHEN thread.order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(thread.order_info.created_at, 'YY'), '-', (thread.order_info.id))`,
+			file: complaint.file,
 			name: complaint.name,
 			description: complaint.description,
 			root_cause_analysis: complaint.root_cause_analysis,

@@ -2361,7 +2361,7 @@ export const pathComplaint = {
 			tags: ['public.complaint'],
 			operationId: 'uploadComplaintFile',
 			parameters: [],
-			requestBody: SE.requestBody_schema_ref('public/complaint'),
+			requestBody: SE.requestBody_file_schema_ref('public/complaint'),
 			responses: {
 				201: {
 					description: 'Created',
