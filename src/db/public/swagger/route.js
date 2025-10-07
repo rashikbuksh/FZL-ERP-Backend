@@ -2355,6 +2355,20 @@ export const pathComplaint = {
 			},
 		},
 	},
+	'/public/complaint-file': {
+		post: {
+			summary: 'Upload complaint file',
+			tags: ['public.complaint'],
+			operationId: 'uploadComplaintFile',
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref('public/complaint'),
+			responses: {
+				201: {
+					description: 'Created',
+				},
+			},
+		},
+	},
 	'/public/complaint/{uuid}': {
 		get: {
 			summary: 'Get a complaint',
@@ -2382,6 +2396,20 @@ export const pathComplaint = {
 			tags: ['public.complaint'],
 			operationId: 'deleteComplaint',
 			parameters: [SE.parameter_params('uuid', 'uuid', SE.uuid())],
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
+	'/public/complaint-file/{uuid}': {
+		put: {
+			summary: 'Update a complaint file',
+			tags: ['public.complaint'],
+			operationId: 'updateComplaintFile',
+			parameters: [SE.parameter_params('uuid', 'uuid', SE.uuid())],
+			requestBody: SE.requestBody_schema_ref('public/complaint'),
 			responses: {
 				204: {
 					description: 'No Content',
