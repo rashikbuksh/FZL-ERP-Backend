@@ -265,6 +265,25 @@ export const defSubscribe = SED({
 	xml: 'Public/Subscribe',
 });
 
+export const defComplaint = SED({
+	required: ['uuid', 'name', 'created_at', 'created_by'],
+	properties: {
+		uuid: SE.uuid(),
+		name: SE.string('Complaint Name'),
+		description: SE.string('Description of the complaint'),
+		root_cause_analysis: SE.string('Root cause analysis details'),
+		issue_department: SE.string('Department responsible for the issue'),
+		solution: SE.string('Proposed solution for the complaint'),
+		future_proof: SE.string('Measures to prevent future occurrences'),
+		created_at: SE.date_time(),
+		updated_at: SE.date_time(),
+		created_by: SE.uuid(),
+		updated_by: SE.uuid(),
+		remarks: SE.string('Additional remarks about the complaint'),
+	},
+	xml: 'Public/Complaint',
+});
+
 // * Marge All
 export const defPublic = {
 	buyer: defPublicBuyer,
@@ -280,6 +299,7 @@ export const defPublic = {
 	marketing_team_member_target: defMarketingTeamMemberTarget,
 	production_capacity: defProductionCapacity,
 	subscribe: defSubscribe,
+	complaint: defComplaint,
 };
 
 // * Tag

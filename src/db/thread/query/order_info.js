@@ -12,7 +12,7 @@ export async function insert(req, res, next) {
 		.insert(order_info)
 		.values(req.body)
 		.returning({
-			insertedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			insertedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id))`,
 		});
 
 	try {

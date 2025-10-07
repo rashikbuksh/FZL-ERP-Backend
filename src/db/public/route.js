@@ -228,11 +228,19 @@ publicRouter.delete(
 	productionCapacityOperations.remove
 );
 
+// * Subscription routes
 publicRouter.get('/subscribe', subscriptionOperations.selectAll);
 publicRouter.get('/subscribe/:uuid', subscriptionOperations.select);
 publicRouter.post('/subscribe', subscriptionOperations.insert);
 publicRouter.put('/subscribe/:uuid', subscriptionOperations.update);
 publicRouter.delete('/subscribe/:uuid', subscriptionOperations.remove);
 publicRouter.post('/unsubscribe', subscriptionOperations.unSubscribe);
+
+// * Complaint routes
+publicRouter.get('/complaint', subscriptionOperations.selectAll);
+publicRouter.get('/complaint/:uuid', subscriptionOperations.select);
+publicRouter.post('/complaint', subscriptionOperations.insert);
+publicRouter.put('/complaint/:uuid', subscriptionOperations.update);
+publicRouter.delete('/complaint/:uuid', subscriptionOperations.remove);
 
 export { publicRouter };

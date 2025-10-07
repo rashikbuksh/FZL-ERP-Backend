@@ -15,6 +15,8 @@ import {
 } from '../variables.js';
 
 import * as hrSchema from '../hr/schema.js';
+import { order_description } from '../zipper/schema.js';
+import { order_info } from '../thread/schema.js';
 
 export const buyer = pgTable('buyer', {
 	uuid: uuid_primary,
@@ -226,6 +228,12 @@ export const subscription = pgTable('subscription', {
 
 export const complaint = pgTable('complaint', {
 	uuid: uuid_primary,
+	order_description_uuid: defaultUUID('order_description_uuid')
+		.references(() => order_description.uuid)
+		.default(null),
+	thread_order_info_uuid: defaultUUID('thread_order_info_uuid')
+		.references(() => order_info.uuid)
+		.default(null),
 	name: text('name').notNull(),
 	description: text('description').default(null),
 	root_cause_analysis: text('root_cause_analysis').default(null),
