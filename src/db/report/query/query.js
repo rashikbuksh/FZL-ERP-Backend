@@ -465,31 +465,32 @@ export async function zipperProductionStatusReportV2(req, res, next) {
             ) size_wise_sum ON size_wise_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
                 SELECT
-                    order_description_uuid,
-                   COALESCE(
+                    md_price_log.order_description_uuid,
+                    COALESCE(
                         jsonb_agg(
                             jsonb_build_object(
-                                'id', id,
-                                'md_price', md_price,
-                                'created_at', created_at
-                            ) ORDER BY created_at DESC
-                        ) FILTER (WHERE COALESCE(md_price,0) <> 0), '[]'::jsonb
+                                'id', md_price_log.id,
+                                'md_price', md_price_log.md_price,
+                                'created_at', md_price_log.created_at
+                            ) ORDER BY md_price_log.created_at DESC
+                        ) FILTER (WHERE (COALESCE(md_price_log.md_price,0) <> 0) AND md_price_log.md_price != vodf.md_price), '[]'::jsonb
                     ) AS md_price_history,
                     COALESCE(
                         jsonb_agg(
                             jsonb_build_object(
-                                'id', id,
-                                'mkt_company_price', mkt_company_price,
-                                'mkt_party_price', mkt_party_price,
-                                'created_at', created_at
-                            ) ORDER BY created_at DESC
+                                'id', md_price_log.id,
+                                'mkt_company_price', md_price_log.mkt_company_price,
+                                'mkt_party_price', md_price_log.mkt_party_price,
+                                'created_at', md_price_log.created_at
+                            ) ORDER BY md_price_log.created_at DESC
                         ) FILTER (
-                            WHERE (COALESCE(mkt_company_price,0) <> 0 OR COALESCE(mkt_party_price,0) <> 0)
+                            WHERE ((COALESCE(md_price_log.mkt_company_price,0) <> 0 OR COALESCE(md_price_log.mkt_party_price,0) <> 0) AND md_price_log.mkt_company_price != vodf.mkt_company_price AND md_price_log.mkt_party_price != vodf.mkt_party_price)
                         ), '[]'::jsonb
                     ) AS mkt_price_history
                 FROM zipper.md_price_log
+                LEFT JOIN zipper.v_order_details_full vodf ON md_price_log.order_description_uuid = vodf.order_description_uuid
                 GROUP BY
-                    order_description_uuid
+                    md_price_log.order_description_uuid
             ) md_price_log ON md_price_log.order_description_uuid = vodf.order_description_uuid
             WHERE vodf.order_description_uuid IS NOT NULL 
                 AND vodf.is_cancelled = FALSE AND vodf.is_sample != 1 AND vodf.is_bill != 0 
