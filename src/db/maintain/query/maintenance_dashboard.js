@@ -31,7 +31,29 @@ export async function maintenanceDashboard(req, res, next) {
                             SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE - INTERVAL '1 day' AND maintain_date < CURRENT_DATE THEN 1 ELSE 0 END) AS ongoing_yesterday,
                             SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE - INTERVAL '6 day' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_seven_day,
                             SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE - INTERVAL '1 month' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_one_month,
-                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE - INTERVAL '1 year' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_one_year
+                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE - INTERVAL '1 year' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_one_year,
+
+							-- avg resolution time (verification_date - created_at) in seconds for ranges
+                            AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
+                                WHERE verification_approved = TRUE
+                                AND verification_date >= CURRENT_DATE AND verification_date < CURRENT_DATE + INTERVAL '1 day'
+                            ) AS avg_resolution_today_seconds,
+                            AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
+                                WHERE verification_approved = TRUE
+                                AND verification_date >= CURRENT_DATE - INTERVAL '1 day' AND verification_date < CURRENT_DATE
+                            ) AS avg_resolution_yesterday_seconds,
+                            AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
+                                WHERE verification_approved = TRUE
+                                AND verification_date >= CURRENT_DATE - INTERVAL '6 day' AND verification_date < CURRENT_DATE + INTERVAL '1 day'
+                            ) AS avg_resolution_last_seven_day_seconds,
+                            AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
+                                WHERE verification_approved = TRUE
+                                AND verification_date >= CURRENT_DATE - INTERVAL '1 month' AND verification_date < CURRENT_DATE + INTERVAL '1 day'
+                            ) AS avg_resolution_last_one_month_seconds,
+                            AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
+                                WHERE verification_approved = TRUE
+                                AND verification_date >= CURRENT_DATE - INTERVAL '1 year' AND verification_date < CURRENT_DATE + INTERVAL '1 day'
+                            ) AS avg_resolution_last_one_year_seconds
 
                         FROM maintain.issue;`;
 
@@ -92,6 +114,21 @@ export async function maintenanceDashboard(req, res, next) {
 					data.rows[0].ongoing_last_one_month || 0
 				),
 				last_one_year: Number(data.rows[0].ongoing_last_one_year || 0),
+			},
+			avg_resolution_time_seconds: {
+				today: Number(data.rows[0].avg_resolution_today_seconds || 0),
+				yesterday: Number(
+					data.rows[0].avg_resolution_yesterday_seconds || 0
+				),
+				last_seven_day: Number(
+					data.rows[0].avg_resolution_last_seven_day_seconds || 0
+				),
+				last_one_month: Number(
+					data.rows[0].avg_resolution_last_one_month_seconds || 0
+				),
+				last_one_year: Number(
+					data.rows[0].avg_resolution_last_one_year_seconds || 0
+				),
 			},
 		};
 
