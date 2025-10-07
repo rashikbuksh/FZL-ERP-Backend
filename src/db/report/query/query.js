@@ -464,7 +464,7 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 GROUP BY order_description_uuid
             ) size_wise_sum ON size_wise_sum.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN (
-                /* Distinct price histories: capture unique md_price and (mkt_company_price, mkt_party_price) combos with latest timestamp */
+                /* Price histories based on changes vs previous log (LAG), not vs current live values */
                 SELECT
                     base.order_description_uuid,
                     COALESCE(md_hist.md_price_history, '[]'::jsonb) AS md_price_history,
@@ -472,7 +472,17 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                 FROM (
                     SELECT DISTINCT order_description_uuid FROM zipper.md_price_log
                 ) base
+                /* MD price change history: include only rows where md_price differs from previous md_price */
                 LEFT JOIN (
+                    WITH md_changes AS (
+                        SELECT
+                            order_description_uuid,
+                            md_price,
+                            created_at,
+                            LAG(md_price) OVER (PARTITION BY order_description_uuid ORDER BY created_at) AS prev_md_price
+                        FROM zipper.md_price_log
+                        WHERE COALESCE(md_price,0) <> 0
+                    )
                     SELECT
                         order_description_uuid,
                         jsonb_agg(
@@ -481,19 +491,23 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                                 'created_at', created_at
                             ) ORDER BY created_at DESC
                         ) AS md_price_history
-                    FROM (
-                        SELECT DISTINCT ON (order_description_uuid, md_price)
-                            mpl.order_description_uuid,
-                            mpl.md_price,
-                            mpl.created_at
-                        FROM zipper.md_price_log mpl
-                        LEFT JOIN zipper.v_order_details_full vodf ON mpl.order_description_uuid = vodf.order_description_uuid
-                        WHERE COALESCE(mpl.md_price,0) <> 0 AND mpl.md_price != vodf.md_price
-                        ORDER BY mpl.order_description_uuid, mpl.md_price, mpl.created_at DESC
-                    ) d
+                    FROM md_changes
+                    WHERE md_price IS DISTINCT FROM prev_md_price
                     GROUP BY order_description_uuid
                 ) md_hist ON md_hist.order_description_uuid = base.order_description_uuid
+                /* Marketing price change history: only rows where either component changed vs previous */
                 LEFT JOIN (
+                    WITH mkt_changes AS (
+                        SELECT
+                            order_description_uuid,
+                            mkt_company_price,
+                            mkt_party_price,
+                            created_at,
+                            LAG(mkt_company_price) OVER (PARTITION BY order_description_uuid ORDER BY created_at) AS prev_mkt_company_price,
+                            LAG(mkt_party_price) OVER (PARTITION BY order_description_uuid ORDER BY created_at) AS prev_mkt_party_price
+                        FROM zipper.md_price_log
+                        WHERE COALESCE(mkt_company_price,0) <> 0 OR COALESCE(mkt_party_price,0) <> 0
+                    )
                     SELECT
                         order_description_uuid,
                         jsonb_agg(
@@ -503,17 +517,9 @@ export async function zipperProductionStatusReportV2(req, res, next) {
                                 'created_at', created_at
                             ) ORDER BY created_at DESC
                         ) AS mkt_price_history
-                    FROM (
-                        SELECT DISTINCT ON (order_description_uuid, mkt_company_price, mkt_party_price)
-                            mpl.order_description_uuid,
-                            mpl.mkt_company_price,
-                            mpl.mkt_party_price,
-                            mpl.created_at
-                        FROM zipper.md_price_log mpl 
-                        LEFT JOIN zipper.v_order_details_full vodf ON mpl.order_description_uuid = vodf.order_description_uuid
-                        WHERE (COALESCE(mpl.mkt_company_price,0) <> 0 OR COALESCE(mpl.mkt_party_price,0) <> 0) AND (mpl.mkt_company_price != vodf.mkt_company_price OR mpl.mkt_party_price != vodf.mkt_party_price)
-                        ORDER BY mpl.order_description_uuid, mpl.mkt_company_price, mpl.mkt_party_price, mpl.created_at DESC
-                    ) d
+                    FROM mkt_changes
+                    WHERE (mkt_company_price IS DISTINCT FROM prev_mkt_company_price)
+                       OR (mkt_party_price IS DISTINCT FROM prev_mkt_party_price)
                     GROUP BY order_description_uuid
                 ) mkt_hist ON mkt_hist.order_description_uuid = base.order_description_uuid
             ) md_price_log ON md_price_log.order_description_uuid = vodf.order_description_uuid
