@@ -345,7 +345,7 @@ export async function zipperProductionStatusReport(req, res, next) {
 }
 
 export async function zipperProductionStatusReportV2(req, res, next) {
-	const { own_uuid, status } = req?.query;
+	const { own_uuid, marketing_price, price_lock } = req?.query;
 
 	try {
 		const marketingUuid = own_uuid
@@ -526,6 +526,8 @@ export async function zipperProductionStatusReportV2(req, res, next) {
             WHERE vodf.order_description_uuid IS NOT NULL 
                 AND vodf.is_cancelled = FALSE AND vodf.is_sample != 1 AND vodf.is_bill != 0 
                 ${own_uuid == null ? sql`` : sql` AND vodf.marketing_uuid = ${marketingUuid}`} 
+                ${marketing_price === 'true' ? sql` AND vodf.mkt_company_price > 0 AND vodf.mkt_party_price > 0` : sql``}
+                ${price_lock === 'true' ? sql` AND vodf.is_price_confirmed = TRUE` : sql``}
             GROUP BY
                 vodf.order_info_uuid,
                 vodf.order_number,
