@@ -6,57 +6,57 @@ import db from '../../index.js';
 export async function maintenanceDashboard(req, res, next) {
 	const query = sql`SELECT 
                             -- submitted (filter on created_at)
-                            SUM(CASE WHEN created_at >= CURRENT_DATE AND created_at < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_today,
-                            SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '1 day' AND created_at < CURRENT_DATE THEN 1 ELSE 0 END) AS submitted_yesterday,
-                            SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '6 day' AND created_at < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_last_seven_day,
-                            SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '1 month' AND created_at < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_last_one_month,
-                            SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '1 year' AND created_at < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_last_one_year,
+                            SUM(CASE WHEN created_at::date >= CURRENT_DATE AND created_at < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_today,
+                            SUM(CASE WHEN created_at::date >= CURRENT_DATE - INTERVAL '1 day' AND created_at::date < CURRENT_DATE THEN 1 ELSE 0 END) AS submitted_yesterday,
+                            SUM(CASE WHEN created_at::date >= CURRENT_DATE - INTERVAL '6 day' AND created_at::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_last_seven_day,
+                            SUM(CASE WHEN created_at::date >= CURRENT_DATE - INTERVAL '1 month' AND created_at::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_last_one_month,
+                            SUM(CASE WHEN created_at::date >= CURRENT_DATE - INTERVAL '1 year' AND created_at::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_last_one_year,
 
 							 -- unresolved: not verification_approved and older than week/month (based on created_at)
-                            SUM(CASE WHEN (verification_approved IS NOT TRUE) AND created_at < CURRENT_DATE - INTERVAL '7 day' THEN 1 ELSE 0 END) AS unresolved_over_one_week,
-                            SUM(CASE WHEN (verification_approved IS NOT TRUE) AND created_at < CURRENT_DATE - INTERVAL '1 month' THEN 1 ELSE 0 END) AS unresolved_over_one_month,
+                            SUM(CASE WHEN (verification_approved IS NOT TRUE) AND created_at::date < CURRENT_DATE - INTERVAL '7 day' THEN 1 ELSE 0 END) AS unresolved_over_one_week,
+                            SUM(CASE WHEN (verification_approved IS NOT TRUE) AND created_at::date < CURRENT_DATE - INTERVAL '1 month' THEN 1 ELSE 0 END) AS unresolved_over_one_month,
 
                             -- resolved (verification_approved = true, use verification_date)
-                            SUM(CASE WHEN verification_approved = TRUE AND verification_date >= CURRENT_DATE AND verification_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_today,
-                            SUM(CASE WHEN verification_approved = TRUE AND verification_date >= CURRENT_DATE - INTERVAL '1 day' AND verification_date < CURRENT_DATE THEN 1 ELSE 0 END) AS resolved_yesterday,
-                            SUM(CASE WHEN verification_approved = TRUE AND verification_date >= CURRENT_DATE - INTERVAL '6 day' AND verification_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_last_seven_day,
-                            SUM(CASE WHEN verification_approved = TRUE AND verification_date >= CURRENT_DATE - INTERVAL '1 month' AND verification_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_last_one_month,
-                            SUM(CASE WHEN verification_approved = TRUE AND verification_date >= CURRENT_DATE - INTERVAL '1 year' AND verification_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_last_one_year,
+                            SUM(CASE WHEN verification_approved = TRUE AND verification_date::date >= CURRENT_DATE AND verification_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_today,
+                            SUM(CASE WHEN verification_approved = TRUE AND verification_date::date >= CURRENT_DATE - INTERVAL '1 day' AND verification_date::date < CURRENT_DATE THEN 1 ELSE 0 END) AS resolved_yesterday,
+                            SUM(CASE WHEN verification_approved = TRUE AND verification_date::date >= CURRENT_DATE - INTERVAL '6 day' AND verification_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_last_seven_day,
+                            SUM(CASE WHEN verification_approved = TRUE AND verification_date::date >= CURRENT_DATE - INTERVAL '1 month' AND verification_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_last_one_month,
+                            SUM(CASE WHEN verification_approved = TRUE AND verification_date::date >= CURRENT_DATE - INTERVAL '1 year' AND verification_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_last_one_year,
 
                             -- awaiting_response (maintain_condition = 'waiting', use maintain_date)
-                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date >= CURRENT_DATE AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS awaiting_today,
-                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date >= CURRENT_DATE - INTERVAL '1 day' AND maintain_date < CURRENT_DATE THEN 1 ELSE 0 END) AS awaiting_yesterday,
-                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date >= CURRENT_DATE - INTERVAL '6 day' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS awaiting_last_seven_day,
-                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date >= CURRENT_DATE - INTERVAL '1 month' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS awaiting_last_one_month,
-                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date >= CURRENT_DATE - INTERVAL '1 year' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS awaiting_last_one_year,
+                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date::date >= CURRENT_DATE AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS awaiting_today,
+                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date::date >= CURRENT_DATE - INTERVAL '1 day' AND maintain_date::date < CURRENT_DATE THEN 1 ELSE 0 END) AS awaiting_yesterday,
+                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date::date >= CURRENT_DATE - INTERVAL '6 day' AND maintain_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS awaiting_last_seven_day,
+                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date::date >= CURRENT_DATE - INTERVAL '1 month' AND maintain_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS awaiting_last_one_month,
+                            SUM(CASE WHEN maintain_condition = 'waiting' AND maintain_date::date >= CURRENT_DATE - INTERVAL '1 year' AND maintain_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS awaiting_last_one_year,
 
-                            -- ongoing (maintain_condition = 'ongoing', use maintain_date)
-                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_today,
-                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE - INTERVAL '1 day' AND maintain_date < CURRENT_DATE THEN 1 ELSE 0 END) AS ongoing_yesterday,
-                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE - INTERVAL '6 day' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_seven_day,
-                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE - INTERVAL '1 month' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_one_month,
-                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date >= CURRENT_DATE - INTERVAL '1 year' AND maintain_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_one_year,
+                            -- ongoing (maintain_condition = 'ongoing', use maintain_date::date)
+                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date::date >= CURRENT_DATE AND maintain_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_today,
+                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date::date >= CURRENT_DATE - INTERVAL '1 day' AND maintain_date::date < CURRENT_DATE THEN 1 ELSE 0 END) AS ongoing_yesterday,
+                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date::date >= CURRENT_DATE - INTERVAL '6 day' AND maintain_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_seven_day,
+                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date::date >= CURRENT_DATE - INTERVAL '1 month' AND maintain_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_one_month,
+                            SUM(CASE WHEN maintain_condition = 'ongoing' AND maintain_date::date >= CURRENT_DATE - INTERVAL '1 year' AND maintain_date::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS ongoing_last_one_year,
 
 							-- avg resolution time (verification_date - created_at) in seconds for ranges
                             AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
                                 WHERE verification_approved = TRUE
-                                AND verification_date >= CURRENT_DATE AND verification_date < CURRENT_DATE + INTERVAL '1 day'
+                                AND verification_date::date >= CURRENT_DATE AND verification_date::date < CURRENT_DATE + INTERVAL '1 day'
                             ) AS avg_resolution_today_seconds,
                             AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
                                 WHERE verification_approved = TRUE
-                                AND verification_date >= CURRENT_DATE - INTERVAL '1 day' AND verification_date < CURRENT_DATE
+                                AND verification_date::date >= CURRENT_DATE - INTERVAL '1 day' AND verification_date::date < CURRENT_DATE
                             ) AS avg_resolution_yesterday_seconds,
                             AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
                                 WHERE verification_approved = TRUE
-                                AND verification_date >= CURRENT_DATE - INTERVAL '6 day' AND verification_date < CURRENT_DATE + INTERVAL '1 day'
+                                AND verification_date::date >= CURRENT_DATE - INTERVAL '6 day' AND verification_date::date < CURRENT_DATE + INTERVAL '1 day'
                             ) AS avg_resolution_last_seven_day_seconds,
                             AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
                                 WHERE verification_approved = TRUE
-                                AND verification_date >= CURRENT_DATE - INTERVAL '1 month' AND verification_date < CURRENT_DATE + INTERVAL '1 day'
+                                AND verification_date::date >= CURRENT_DATE - INTERVAL '1 month' AND verification_date::date < CURRENT_DATE + INTERVAL '1 day'
                             ) AS avg_resolution_last_one_month_seconds,
                             AVG(EXTRACT(EPOCH FROM (verification_date - created_at))) FILTER (
                                 WHERE verification_approved = TRUE
-                                AND verification_date >= CURRENT_DATE - INTERVAL '1 year' AND verification_date < CURRENT_DATE + INTERVAL '1 day'
+                                AND verification_date::date >= CURRENT_DATE - INTERVAL '1 year' AND verification_date::date < CURRENT_DATE + INTERVAL '1 day'
                             ) AS avg_resolution_last_one_year_seconds
 
                         FROM maintain.issue;`;
