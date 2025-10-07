@@ -1,4 +1,3 @@
-import { order_description } from '@/db/zipper/schema.js';
 import SE, { SED } from '../../../util/swagger_example.js';
 
 //* ./schema.js#buyer

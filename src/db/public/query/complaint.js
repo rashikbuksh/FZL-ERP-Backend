@@ -6,7 +6,6 @@ import { complaint } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core/alias.js';
 import * as viewSchema from '../../view/schema.js';
 import * as threadSchema from '../../thread/schema.js';
-import { order_description } from '@/db/zipper/schema.js';
 
 const updatedByUser = alias(hrSchema.users, 'updatedByUser');
 
