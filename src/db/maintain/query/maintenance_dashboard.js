@@ -12,6 +12,10 @@ export async function maintenanceDashboard(req, res, next) {
                             SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '1 month' AND created_at < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_last_one_month,
                             SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '1 year' AND created_at < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS submitted_last_one_year,
 
+							 -- unresolved: not verification_approved and older than week/month (based on created_at)
+                            SUM(CASE WHEN (verification_approved IS NOT TRUE) AND created_at < CURRENT_DATE - INTERVAL '7 day' THEN 1 ELSE 0 END) AS unresolved_over_one_week,
+                            SUM(CASE WHEN (verification_approved IS NOT TRUE) AND created_at < CURRENT_DATE - INTERVAL '1 month' THEN 1 ELSE 0 END) AS unresolved_over_one_month,
+
                             -- resolved (verification_approved = true, use verification_date)
                             SUM(CASE WHEN verification_approved = TRUE AND verification_date >= CURRENT_DATE AND verification_date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_today,
                             SUM(CASE WHEN verification_approved = TRUE AND verification_date >= CURRENT_DATE - INTERVAL '1 day' AND verification_date < CURRENT_DATE THEN 1 ELSE 0 END) AS resolved_yesterday,
@@ -128,6 +132,14 @@ export async function maintenanceDashboard(req, res, next) {
 				),
 				last_one_year: Number(
 					data.rows[0].avg_resolution_last_one_year_seconds || 0
+				),
+			},
+			unresolved: {
+				over_one_week: Number(
+					data.rows[0].unresolved_over_one_week || 0
+				),
+				over_one_month: Number(
+					data.rows[0].unresolved_over_one_month || 0
 				),
 			},
 		};
