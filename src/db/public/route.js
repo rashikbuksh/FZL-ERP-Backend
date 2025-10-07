@@ -13,10 +13,12 @@ import * as propertiesOperations from './query/properties.js';
 import * as sectionOperations from './query/section.js';
 import * as subscriptionOperations from './query/subscription.js';
 import * as complaintOperations from './query/complaint.js';
+import multer from 'multer';
 
 import Cache from 'memory-cache';
 
 const publicRouter = Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Route to fetch buyers with caching and a custom cache key
 publicRouter.get('/buyer/:uuid', buyerOperations.select);
@@ -241,7 +243,17 @@ publicRouter.post('/unsubscribe', subscriptionOperations.unSubscribe);
 publicRouter.get('/complaint', complaintOperations.selectAll);
 publicRouter.get('/complaint/:uuid', complaintOperations.select);
 publicRouter.post('/complaint', complaintOperations.insert);
+publicRouter.post(
+	'/complaint-file',
+	upload.array('file'),
+	complaintOperations.insertImage
+);
 publicRouter.put('/complaint/:uuid', complaintOperations.update);
+publicRouter.put(
+	'/complaint-file/:uuid',
+	upload.array('file'),
+	complaintOperations.updateImage
+);
 publicRouter.delete('/complaint/:uuid', complaintOperations.remove);
 publicRouter.get(
 	'/complaint-by-order-description-uuid/:order_description_uuid',

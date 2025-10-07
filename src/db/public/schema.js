@@ -234,6 +234,7 @@ export const complaint = pgTable('complaint', {
 	thread_order_info_uuid: defaultUUID('thread_order_info_uuid')
 		.references(() => order_info.uuid)
 		.default(null),
+	file: text('file').default(null),
 	name: text('name').notNull(),
 	description: text('description').default(null),
 	root_cause_analysis: text('root_cause_analysis').default(null),
