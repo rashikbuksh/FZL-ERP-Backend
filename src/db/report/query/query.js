@@ -466,28 +466,27 @@ export async function zipperProductionStatusReportV2(req, res, next) {
             LEFT JOIN (
                 SELECT
                     order_description_uuid,
-                    jsonb_agg(
-                        jsonb_build_object(
-                            'id',
-                            id,
-                            'md_price',
-                            md_price,
-                            'created_at',
-                            created_at
-                        ) ORDER BY created_at DESC
-                    ) as md_price_history,
-                    jsonb_agg(
-                        jsonb_build_object(
-                            'id',
-                            id,
-                            'mkt_company_price',
-                            mkt_company_price,
-                            'mkt_party_price',
-                            mkt_party_price,
-                            'created_at',
-                            created_at
-                        ) ORDER BY created_at DESC
-                    ) as mkt_price_history
+                   COALESCE(
+                        jsonb_agg(
+                            jsonb_build_object(
+                                'id', id,
+                                'md_price', md_price,
+                                'created_at', created_at
+                            ) ORDER BY created_at DESC
+                        ) FILTER (WHERE COALESCE(md_price,0) <> 0), '[]'::jsonb
+                    ) AS md_price_history,
+                    COALESCE(
+                        jsonb_agg(
+                            jsonb_build_object(
+                                'id', id,
+                                'mkt_company_price', mkt_company_price,
+                                'mkt_party_price', mkt_party_price,
+                                'created_at', created_at
+                            ) ORDER BY created_at DESC
+                        ) FILTER (
+                            WHERE (COALESCE(mkt_company_price,0) <> 0 OR COALESCE(mkt_party_price,0) <> 0)
+                        ), '[]'::jsonb
+                    ) AS mkt_price_history
                 FROM zipper.md_price_log
                 GROUP BY
                     order_description_uuid
