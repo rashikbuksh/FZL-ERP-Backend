@@ -129,10 +129,10 @@ export async function update(req, res, next) {
 	if (file) {
 		// If a new file is uploaded, we need to handle the file update
 		const oldFilePath = db
-			.select()
+			.select({ file: description.file })
 			.from(description)
-			.where(eq(description.uuid, req.params.uuid))
-			.returning(description.file);
+			.where(eq(description.uuid, req.params.uuid));
+
 		const oldFile = await oldFilePath;
 
 		if (oldFile && oldFile[0].file) {
