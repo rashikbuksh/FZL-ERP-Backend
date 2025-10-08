@@ -125,6 +125,8 @@ export async function updateImage(req, res, next) {
 
 	const formData = sanitizePayload(req.body);
 
+	const { file_string } = formData;
+
 	// Support array insertion (append multiple new files to existing list)
 	const files = Array.isArray(req.files)
 		? req.files
@@ -139,12 +141,26 @@ export async function updateImage(req, res, next) {
 			.where(eq(complaint.uuid, req.params.uuid))
 			.limit(1);
 
-		let newPaths = [];
+		// Determine which existing files to delete
+		let filesToDelete = [];
 		if (existing.length) {
 			for (const p of existing) {
+				const existingFiles = p.file ? JSON.parse(p.file) : [];
+				filesToDelete = existingFiles.filter(
+					(f) => !file_string || !file_string.includes(f)
+				);
+			}
+		}
+
+		if (filesToDelete.length) {
+			for (const p of filesToDelete) {
 				deleteFile(p.file);
 			}
 		}
+
+		let newPaths = [];
+		// Retain files that are in file_string
+		newPaths = file_string ? [...file_string] : [];
 
 		// Insert each new file and collect paths
 		for (const f of files) {
