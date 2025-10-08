@@ -127,12 +127,20 @@ export async function updateImage(req, res, next) {
 
 	const { file_string } = formData;
 
+	// file_string is expected to be an json string of array
+	const file_string_parsed = file_string
+		? Array.isArray(file_string)
+			? file_string
+			: JSON.parse(file_string)
+		: [];
+
 	// Support array insertion (append multiple new files to existing list)
 	const files = Array.isArray(req.files)
 		? req.files
 		: req.files
 			? [req.files]
 			: [];
+
 	if (files.length) {
 		// Fetch existing record's file field
 		const existing = await db
@@ -147,7 +155,8 @@ export async function updateImage(req, res, next) {
 			for (const p of existing) {
 				const existingFiles = p.file ? JSON.parse(p.file) : [];
 				filesToDelete = existingFiles.filter(
-					(f) => !file_string || !file_string.includes(f)
+					(f) =>
+						!file_string_parsed || !file_string_parsed.includes(f)
 				);
 			}
 		}
@@ -160,7 +169,7 @@ export async function updateImage(req, res, next) {
 
 		let newPaths = [];
 		// Retain files that are in file_string
-		newPaths = file_string ? [...file_string] : [];
+		newPaths = file_string_parsed ? [...file_string_parsed] : [];
 
 		// Insert each new file and collect paths
 		for (const f of files) {
