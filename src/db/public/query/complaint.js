@@ -141,8 +141,8 @@ export async function updateImage(req, res, next) {
 
 		let newPaths = [];
 		if (existing.length) {
-			for (const p of JSON.parse(existing || '[]')) {
-				deleteFile(p);
+			for (const p of existing) {
+				deleteFile(p.file);
 			}
 		}
 

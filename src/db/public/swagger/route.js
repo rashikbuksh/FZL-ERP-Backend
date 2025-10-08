@@ -2409,7 +2409,7 @@ export const pathComplaint = {
 			tags: ['public.complaint'],
 			operationId: 'updateComplaintFile',
 			parameters: [SE.parameter_params('uuid', 'uuid', SE.uuid())],
-			requestBody: SE.requestBody_schema_ref('public/complaint'),
+			requestBody: SE.requestBody_file_schema_ref('public/complaint'),
 			responses: {
 				204: {
 					description: 'No Content',
