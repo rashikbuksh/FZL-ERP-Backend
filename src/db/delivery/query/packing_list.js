@@ -224,7 +224,7 @@ export async function selectAll(req, res, next) {
 		dvl.deleted_by,
 		dvl.deleted_by_name
     ORDER BY 
-        ${type === 'deleted' ? sql` dvl.deleted_time DESC` : sql` dvl.created_at ASC`}`
+        ${type === 'deleted' ? sql` dvl.deleted_time DESC` : sql` dvl.created_at DESC`}`
 	);
 
 	const resultPromise = db.execute(query);
