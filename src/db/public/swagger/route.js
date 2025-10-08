@@ -2404,7 +2404,7 @@ export const pathComplaint = {
 		},
 	},
 	'/public/complaint-file/{uuid}': {
-		put: {
+		patch: {
 			summary: 'Update a complaint file',
 			tags: ['public.complaint'],
 			operationId: 'updateComplaintFile',

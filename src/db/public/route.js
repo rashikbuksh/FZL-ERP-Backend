@@ -249,7 +249,7 @@ publicRouter.post(
 	complaintOperations.insertImage
 );
 publicRouter.put('/complaint/:uuid', complaintOperations.update);
-publicRouter.put(
+publicRouter.patch(
 	'/complaint-file/:uuid',
 	upload.array('file'),
 	complaintOperations.updateImage
