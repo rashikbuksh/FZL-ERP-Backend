@@ -398,7 +398,8 @@ export async function selectByOrderDescriptionUuid(req, res, next) {
 							complaint.order_description_uuid,
 							order_description_uuid
 						)
-		);
+		)
+		.orderBy(desc(complaint.created_at));
 
 	try {
 		const data = await complaintPromise;
