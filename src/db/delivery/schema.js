@@ -68,6 +68,7 @@ export const packing_list = delivery.table('packing_list', {
 	deleted_by: defaultUUID('deleted_by')
 		.references(() => hrSchema.users.uuid)
 		.default(null),
+	carton_quantity: integer('carton_quantity').default(1),
 });
 
 export const packing_list_entry = delivery.table('packing_list_entry', {
