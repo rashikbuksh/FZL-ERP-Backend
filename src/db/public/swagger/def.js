@@ -283,6 +283,7 @@ export const defComplaint = SED({
 		created_by: SE.uuid(),
 		updated_by: SE.uuid(),
 		remarks: SE.string('Additional remarks about the complaint'),
+		is_resolved: SE.boolean(),
 	},
 	xml: 'Public/Complaint',
 });

@@ -248,6 +248,7 @@ export const complaint = pgTable('complaint', {
 		.references(() => hrSchema.users.uuid)
 		.default(null),
 	remarks: text('remarks').default(null),
+	is_resolved: boolean('is_resolved').default(false),
 });
 
 export default buyer;

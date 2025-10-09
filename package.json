@@ -12,7 +12,8 @@
 		"db-introspect": "drizzle-kit introspect",
 		"db-push": "drizzle-kit push",
 		"db-studio": "drizzle-kit studio --port 4000",
-		"deploy": "git pull && bun i && bun run db-generate && bun run db-migrate && pm2 restart fzl-backend --update-env"
+		"deploy": "git pull && bun i && bun run db-generate && bun run db-migrate && pm2 restart fzl-backend --update-env",
+		"deploy-local": "git pull && bun i && bun run db-generate && bun run db-migrate"
 	},
 	"author": "FZL ERP Team",
 	"license": "ISC",

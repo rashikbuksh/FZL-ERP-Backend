@@ -275,6 +275,7 @@ export async function selectAll(req, res, next) {
 			updated_by: complaint.updated_by,
 			updated_by_name: updatedByUser.name,
 			remarks: complaint.remarks,
+			is_resolved: complaint.is_resolved,
 		})
 		.from(complaint)
 		.leftJoin(hrSchema.users, eq(complaint.created_by, hrSchema.users.uuid))
@@ -336,6 +337,7 @@ export async function select(req, res, next) {
 			updated_by: complaint.updated_by,
 			updated_by_name: updatedByUser.name,
 			remarks: complaint.remarks,
+			is_resolved: complaint.is_resolved,
 		})
 		.from(complaint)
 		.leftJoin(hrSchema.users, eq(complaint.created_by, hrSchema.users.uuid))
@@ -396,6 +398,7 @@ export async function selectByOrderDescriptionUuid(req, res, next) {
 			updated_by: complaint.updated_by,
 			updated_by_name: updatedByUser.name,
 			remarks: complaint.remarks,
+			is_resolved: complaint.is_resolved,
 		})
 		.from(complaint)
 		.leftJoin(hrSchema.users, eq(complaint.created_by, hrSchema.users.uuid))
