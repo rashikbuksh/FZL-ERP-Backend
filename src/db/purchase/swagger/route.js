@@ -191,7 +191,7 @@ const pathPurchaseDescription = {
 				},
 			},
 		},
-		put: {
+		patch: {
 			summary: 'Update a description',
 			tags: ['purchase.description'],
 			operationId: 'updateDescription',
@@ -203,78 +203,9 @@ const pathPurchaseDescription = {
 					type: 'string',
 				},
 			],
-			requestBody: {
-				content: {
-					'application/json': {
-						schema: {
-							$ref: '#/definitions/purchase/description',
-						},
-					},
-				},
-			},
+			requestBody: SE.requestBody_file_schema_ref('purchase/description'),
 			responses: {
-				200: {
-					description: 'OK',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									purchase_id: {
-										type: 'string',
-										example: 'SR24-0001',
-									},
-									vendor_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									vendor_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									is_local: {
-										type: 'integer',
-										example: 1,
-									},
-									lc_number: {
-										type: 'string',
-										example: '123456789',
-									},
-									challan_number: {
-										type: 'string',
-										example: '123456789',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'This is a description',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'purchase/description'),
 				204: {
 					description: 'No Content',
 				},
@@ -293,68 +224,7 @@ const pathPurchaseDescription = {
 				},
 			],
 			responses: {
-				200: {
-					description: 'OK',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									purchase_id: {
-										type: 'string',
-										example: 'SR24-0001',
-									},
-									vendor_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									vendor_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									is_local: {
-										type: 'integer',
-										example: 1,
-									},
-									lc_number: {
-										type: 'string',
-										example: '123456789',
-									},
-									challan_number: {
-										type: 'string',
-										example: '123456789',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'This is a description',
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response(200),
 				204: {
 					description: 'No Content',
 				},
@@ -375,115 +245,7 @@ const pathPurchaseDescription = {
 				},
 			],
 			responses: {
-				200: {
-					description: 'OK',
-					content: {
-						'application/json': {
-							schema: {
-								type: 'object',
-								properties: {
-									uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									purchase_id: {
-										type: 'string',
-										example: 'SR24-0001',
-									},
-									vendor_uuid: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									vendor_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									is_local: {
-										type: 'integer',
-										example: 1,
-									},
-									lc_number: {
-										type: 'string',
-										example: '123456789',
-									},
-									challan_number: {
-										type: 'string',
-										example: '123456789',
-									},
-									created_by: {
-										type: 'string',
-										example: 'igD0v9DIJQhJeet',
-									},
-									created_by_name: {
-										type: 'string',
-										example: 'John Doe',
-									},
-									created_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									updated_at: {
-										type: 'string',
-										format: 'date-time',
-										example: '2024-01-01 00:00:00',
-									},
-									remarks: {
-										type: 'string',
-										example: 'This is a description',
-									},
-									purchase: {
-										type: 'object',
-										properties: {
-											uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											purchase_description_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											material_uuid: {
-												type: 'string',
-												example: 'igD0v9DIJQhJeet',
-											},
-											material_name: {
-												type: 'string',
-												example: 'nylon',
-											},
-											unit: {
-												type: 'string',
-												example: 'kg',
-											},
-											quantity: {
-												type: 'number',
-												example: 1000.0,
-											},
-											price: {
-												type: 'number',
-												example: 1111.0,
-											},
-											created_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											updated_at: {
-												type: 'string',
-												format: 'date-time',
-												example: '2024-01-01 00:00:00',
-											},
-											remarks: {
-												type: 'string',
-												example: 'This is an entry',
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
+				200: SE.response_schema_ref(200, 'purchase/description'),
 				204: {
 					description: 'No Content',
 				},

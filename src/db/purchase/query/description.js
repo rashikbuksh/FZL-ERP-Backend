@@ -129,15 +129,15 @@ export async function update(req, res, next) {
 	if (file) {
 		// If a new file is uploaded, we need to handle the file update
 		const oldFilePath = db
-			.select()
+			.select({ file: description.file })
 			.from(description)
-			.where(eq(description.uuid, req.params.uuid))
-			.returning(description.file);
+			.where(eq(description.uuid, req.params.uuid));
+
 		const oldFile = await oldFilePath;
 
 		if (oldFile && oldFile[0].file) {
 			// If there is an old file, delete it
-			const filePath = updateFile(
+			const filePath = await updateFile(
 				file,
 				oldFile[0].file,
 				'purchase/description'
@@ -145,7 +145,7 @@ export async function update(req, res, next) {
 			formData.file = filePath;
 		} else {
 			// If no new file is uploaded, keep the old file path
-			const filePath = insertFile(file, 'purchase/description');
+			const filePath = await insertFile(file, 'purchase/description');
 			formData.file = filePath;
 		}
 	}

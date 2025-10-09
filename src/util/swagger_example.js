@@ -150,6 +150,18 @@ const SE = {
 		};
 	},
 
+	requestBody_file_schema_ref: (path = '') => {
+		return {
+			content: {
+				'multipart/form-data': {
+					schema: {
+						$ref: '#/definitions/' + path,
+					},
+				},
+			},
+		};
+	},
+
 	// * Response
 	response: (code) => {
 		return { description: getDescriptionByCode(code) };

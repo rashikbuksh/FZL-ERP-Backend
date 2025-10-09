@@ -1106,6 +1106,7 @@ const pathPublicSection = {
 	},
 };
 
+// * Public Machine * //
 export const publicMachine = {
 	'/public/machine': {
 		get: {
@@ -1264,6 +1265,7 @@ export const publicMachine = {
 	},
 };
 
+// * Public Marketing Team * //
 export const publicMarketingTeam = {
 	'/public/marketing-team': {
 		get: {
@@ -1486,6 +1488,7 @@ export const publicMarketingTeam = {
 		},
 };
 
+// * Public Marketing Team Entry * //
 export const publicMarketingTeamEntry = {
 	'/public/marketing-team-entry': {
 		get: {
@@ -1728,6 +1731,7 @@ export const publicMarketingTeamEntry = {
 	},
 };
 
+// * Public Marketing Team Member Target * //
 export const publicMarketingTeamMemberTarget = {
 	'/public/marketing-team-member-target': {
 		get: {
@@ -1949,6 +1953,7 @@ export const publicMarketingTeamMemberTarget = {
 	},
 };
 
+// * Public Production Capacity * //
 export const publicProductionCapacity = {
 	'/public/production-capacity': {
 		get: {
@@ -2174,6 +2179,7 @@ export const publicProductionCapacity = {
 	},
 };
 
+// * Public Subscribe * //
 export const pathSubscribe = {
 	'/public/subscribe': {
 		get: {
@@ -2325,6 +2331,117 @@ export const pathSubscribe = {
 	},
 };
 
+export const pathComplaint = {
+	'/public/complaint': {
+		get: {
+			summary: 'Get all complaints',
+			tags: ['public.complaint'],
+			operationId: 'getComplaint',
+			parameters: [],
+			responses: {
+				200: SE.response_schema_ref(200, 'public/complaint'),
+			},
+		},
+		post: {
+			summary: 'Create a complaint',
+			tags: ['public.complaint'],
+			operationId: 'createComplaint',
+			parameters: [],
+			requestBody: SE.requestBody_schema_ref('public/complaint'),
+			responses: {
+				201: {
+					description: 'Created',
+				},
+			},
+		},
+	},
+	'/public/complaint-file': {
+		post: {
+			summary: 'Upload complaint file',
+			tags: ['public.complaint'],
+			operationId: 'uploadComplaintFile',
+			parameters: [],
+			requestBody: SE.requestBody_file_schema_ref('public/complaint'),
+			responses: {
+				201: {
+					description: 'Created',
+				},
+			},
+		},
+	},
+	'/public/complaint/{uuid}': {
+		get: {
+			summary: 'Get a complaint',
+			tags: ['public.complaint'],
+			operationId: 'getcomplaint',
+			parameters: [SE.parameter_params('uuid', 'uuid', SE.uuid())],
+			responses: {
+				200: SE.response_schema_ref(200, 'public/complaint'),
+			},
+		},
+		put: {
+			summary: 'Update a complaint',
+			tags: ['public.complaint'],
+			operationId: 'updateComplaint',
+			parameters: [SE.parameter_params('uuid', 'uuid', SE.uuid())],
+			requestBody: SE.requestBody_schema_ref('public/complaint'),
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+		delete: {
+			summary: 'Delete a complaint',
+			tags: ['public.complaint'],
+			operationId: 'deleteComplaint',
+			parameters: [SE.parameter_params('uuid', 'uuid', SE.uuid())],
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
+	'/public/complaint-file/{uuid}': {
+		patch: {
+			summary: 'Update a complaint file',
+			tags: ['public.complaint'],
+			operationId: 'updateComplaintFile',
+			parameters: [SE.parameter_params('uuid', 'uuid', SE.uuid())],
+			requestBody: SE.requestBody_file_schema_ref('public/complaint'),
+			responses: {
+				204: {
+					description: 'No Content',
+				},
+			},
+		},
+	},
+	'/public/complaint-by-order-description-uuid/{order_description_uuid}': {
+		get: {
+			summary: 'Get all complaints by order description uuid',
+			tags: ['public.complaint'],
+			operationId: 'getComplaintsByOrderDescriptionUuid',
+			parameters: [
+				SE.parameter_params(
+					'order_description_uuid',
+					'uuid',
+					SE.uuid()
+				),
+				SE.parameter_query('is_zipper', 'is_zipper', [
+					'true',
+					'false',
+					'all',
+				]),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'public/complaint'),
+			},
+		},
+	},
+};
+
+// * Export All Public Paths * //
 export const pathPublic = {
 	...pathPublicBuyer,
 	...pathPublicFactory,
@@ -2339,4 +2456,5 @@ export const pathPublic = {
 	...publicMarketingTeamMemberTarget,
 	...publicProductionCapacity,
 	...pathSubscribe,
+	...pathComplaint,
 };
