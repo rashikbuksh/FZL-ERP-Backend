@@ -253,6 +253,8 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
+	const { own_uuid } = req.query;
+
 	const complaintPromise = db
 		.select({
 			uuid: complaint.uuid,
@@ -276,6 +278,7 @@ export async function selectAll(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			remarks: complaint.remarks,
 			is_resolved: complaint.is_resolved,
+			is_resolved_date: complaint.is_resolved_date,
 		})
 		.from(complaint)
 		.leftJoin(hrSchema.users, eq(complaint.created_by, hrSchema.users.uuid))
@@ -291,6 +294,7 @@ export async function selectAll(req, res, next) {
 			threadSchema.order_info,
 			eq(complaint.thread_order_info_uuid, threadSchema.order_info.uuid)
 		)
+		.where(own_uuid ? eq(complaint.created_by, own_uuid) : sql`1=1`)
 		.orderBy(desc(complaint.created_at));
 
 	try {
@@ -338,6 +342,7 @@ export async function select(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			remarks: complaint.remarks,
 			is_resolved: complaint.is_resolved,
+			is_resolved_date: complaint.is_resolved_date,
 		})
 		.from(complaint)
 		.leftJoin(hrSchema.users, eq(complaint.created_by, hrSchema.users.uuid))
@@ -374,7 +379,7 @@ export async function selectByOrderDescriptionUuid(req, res, next) {
 
 	const { order_description_uuid } = req.params;
 
-	const { is_zipper } = req.query;
+	const { is_zipper, own_uuid } = req.query;
 
 	const complaintPromise = db
 		.select({
@@ -399,6 +404,7 @@ export async function selectByOrderDescriptionUuid(req, res, next) {
 			updated_by_name: updatedByUser.name,
 			remarks: complaint.remarks,
 			is_resolved: complaint.is_resolved,
+			is_resolved_date: complaint.is_resolved_date,
 		})
 		.from(complaint)
 		.leftJoin(hrSchema.users, eq(complaint.created_by, hrSchema.users.uuid))
@@ -426,8 +432,51 @@ export async function selectByOrderDescriptionUuid(req, res, next) {
 							complaint.order_description_uuid,
 							order_description_uuid
 						)
-		)
-		.orderBy(desc(complaint.created_at));
+		);
+
+	// is_zipper and own_uuid both present means filter by own_uuid
+	let filterCondition;
+
+	if (is_zipper && own_uuid) {
+		filterCondition =
+			is_zipper === 'true'
+				? and(
+						eq(complaint.created_by, own_uuid),
+						eq(
+							complaint.order_description_uuid,
+							order_description_uuid
+						)
+					)
+				: is_zipper === 'false'
+					? and(
+							eq(complaint.created_by, own_uuid),
+							eq(
+								complaint.thread_order_info_uuid,
+								order_description_uuid
+							)
+						)
+					: eq(complaint.created_by, own_uuid);
+	} else if (is_zipper && !own_uuid) {
+		// only is_zipper present means no filter
+		filterCondition =
+			is_zipper === 'true'
+				? eq(complaint.order_description_uuid, order_description_uuid)
+				: is_zipper === 'false'
+					? eq(
+							complaint.thread_order_info_uuid,
+							order_description_uuid
+						)
+					: sql`1=1`; // no filter
+	} else if (!is_zipper && own_uuid) {
+		// only own_uuid present means filter by own_uuid for both
+		filterCondition = eq(complaint.created_by, own_uuid);
+	} else {
+		// none present means no filter
+		filterCondition = sql`1=1`; // no filter
+	}
+	complaintPromise.where(filterCondition);
+
+	complaintPromise.orderBy(desc(complaint.created_at));
 
 	try {
 		const data = await complaintPromise;
