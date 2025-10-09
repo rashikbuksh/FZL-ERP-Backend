@@ -196,7 +196,7 @@ export async function selectAll(req, res, next) {
 							pf.address,
 							cmp.is_inch
 						ORDER BY
-							cmp.created_at ASC`;
+							cmp.created_at DESC`;
 
 		const resultPromise = db.execute(query);
 
