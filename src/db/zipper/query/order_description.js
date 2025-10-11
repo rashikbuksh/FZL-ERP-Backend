@@ -1013,12 +1013,12 @@ export async function selectOrderNumberToGetOrderDescriptionAndOrderEntryOfMarke
 export async function updateOrderDescriptionByTapeCoil(req, res, next) {
 	if (!validateRequest(req, next)) return;
 
-	const { tape_coil_uuid } = req.params;
+	const { tape_coil_uuid, updated_at, updated_by } = req.params;
 	// console.log('tape_coil_uuid', tape_coil_uuid);
 
 	const orderDescriptionPromise = db
 		.update(order_description)
-		.set({ tape_coil_uuid })
+		.set({ tape_coil_uuid, updated_at, updated_by })
 		.where(eq(order_description.uuid, req.body.order_description_uuid))
 		.returning({ updatedUuid: order_description.uuid });
 
