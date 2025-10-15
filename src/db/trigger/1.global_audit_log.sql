@@ -28,9 +28,6 @@ BEGIN
         -- Extract changed_by from the old record (for DELETE operations)
         BEGIN
             changed_by := (to_jsonb(OLD) ->> 'updated_by');
-            IF changed_by IS NULL THEN
-                changed_by := (to_jsonb(OLD) ->> 'created_by');
-            END IF;
         EXCEPTION
             WHEN OTHERS THEN
                 changed_by := NULL;
