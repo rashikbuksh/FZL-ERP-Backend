@@ -7,8 +7,8 @@ import { alias } from 'drizzle-orm/pg-core';
 
 import * as hrSchema from '../../hr/schema.js';
 
-const createdByUser = alias(hrSchema.users, 'createdByUser');
-const updatedByUser = alias(hrSchema.users, 'updatedByUser');
+const createdByUser = alias(hrSchema.users, 'created_by_user');
+const updatedByUser = alias(hrSchema.users, 'updated_by_user');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -80,7 +80,10 @@ export async function selectAll(req, res, next) {
 			uuid: group.uuid,
 			name: group.name,
 			head_uuid: group.head_uuid,
-			head_name: sql`group.group_number || ' - ' || head.name || ' (' || head.type || ')'`,
+			head_name:
+				sql`${group.group_number} || ' - ' || ${head.name} || ' (' || ${head.type} || ')'`.as(
+					'head_name'
+				),
 			code: group.code,
 			is_fixed: group.is_fixed,
 			created_by: group.created_by,
@@ -121,7 +124,10 @@ export async function select(req, res, next) {
 			uuid: group.uuid,
 			name: group.name,
 			head_uuid: group.head_uuid,
-			head_name: sql`group.group_number || ' - ' || head.name || ' (' || head.type || ')'`,
+			head_name:
+				sql`${group.group_number} || ' - ' || ${head.name} || ' (' || ${head.type} || ')'`.as(
+					'head_name'
+				),
 			code: group.code,
 			is_fixed: group.is_fixed,
 			created_by: group.created_by,
