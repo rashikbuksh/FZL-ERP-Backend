@@ -1,4 +1,4 @@
-import { desc, eq, asc } from 'drizzle-orm';
+import { eq, asc, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 import { group, head } from '../schema.js';
