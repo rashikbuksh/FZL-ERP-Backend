@@ -2,7 +2,13 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import { createApi } from '../../../util/api.js';
 import db from '../../index.js';
-import { currency, voucher } from '../schema.js';
+import {
+	currency,
+	voucher,
+	voucher_entry,
+	voucher_entry_cost_center,
+	voucher_entry_payment,
+} from '../schema.js';
 import { decimalToNumber } from '../../variables.js';
 
 import { alias } from 'drizzle-orm/pg-core';
@@ -57,6 +63,34 @@ export async function update(req, res, next) {
 
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
+
+	const getVoucherEntriesPromise = db
+		.select()
+		.from(voucher_entry)
+		.where(eq(voucher_entry.voucher_uuid, req.params.uuid));
+
+	// First, delete related voucher entries like voucher payments and voucher cost centers
+	await getVoucherEntriesPromise.then(async (voucherEntries) => {
+		for (const entry of voucherEntries) {
+			// Delete voucher payments related to this voucher entry
+			await db
+				.delete(voucher_entry_payment)
+				.where(
+					eq(voucher_entry_payment.voucher_entry_uuid, entry.uuid)
+				);
+			// Delete voucher cost centers related to this voucher entry
+			await db
+				.delete(voucher_entry_cost_center)
+				.where(
+					eq(voucher_entry_cost_center.voucher_entry_uuid, entry.uuid)
+				);
+		}
+	});
+
+	// Then, delete the voucher entries themselves
+	await db
+		.delete(voucher_entry)
+		.where(eq(voucher_entry.voucher_uuid, req.params.uuid));
 
 	const voucherPromise = db
 		.delete(voucher)
