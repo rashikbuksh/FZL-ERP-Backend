@@ -5,13 +5,13 @@ import db from '../../index.js';
 import { head } from '../../acc/schema.js';
 
 export async function balanceReport(req, res, next) {
-	const { from_date, to_date, type } = req.query;
+	const { from, to, type } = req.query;
 
-	const fromDate = from_date
-		? new Date(from_date).toISOString().split('T')[0]
+	const fromDate = from
+		? new Date(from).toISOString().split('T')[0]
 		: new Date().toISOString().split('T')[0];
-	const toDate = to_date
-		? new Date(to_date).toISOString().split('T')[0]
+	const toDate = to
+		? new Date(to).toISOString().split('T')[0]
 		: new Date().toISOString().split('T')[0];
 
 	const year = new Date(toDate).getFullYear();
@@ -45,54 +45,54 @@ export async function balanceReport(req, res, next) {
                                             (COALESCE(l.group_number::text, '') || ' ' || l.name) as leader_name,
 
                                            -- current period sums (filter by voucher entry created_at)
-                                            COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_current_amount,
+                                            COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${fromDate}::TIMESTAMP AND ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_current_amount,
                                             COALESCE(
-                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                              + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date THEN l.initial_amount ELSE 0 END), 0),
+                                              COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${fromDate}::TIMESTAMP AND ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
+                                              + COALESCE(MAX(CASE WHEN l.created_at BETWEEN ${fromDate}::TIMESTAMP AND ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' THEN l.initial_amount ELSE 0 END), 0),
                                             0) as total_debit_current_amount,
 
                                             -- net for current period (debit - credit)
                                             (
                                               COALESCE(
-                                                COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                                + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date THEN l.initial_amount ELSE 0 END), 0),
+                                                COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${fromDate}::TIMESTAMP AND ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
+                                                + COALESCE(MAX(CASE WHEN l.created_at BETWEEN ${fromDate}::TIMESTAMP AND ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' THEN l.initial_amount ELSE 0 END), 0),
                                               0)
                                               -
-                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${fromDate}::date AND ${toDate}::date AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
+                                              COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${fromDate}::TIMESTAMP AND ${toDate}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
                                             ) as total_net_current_amount,
 
                                             -- year to date (from Jan 1 of from_date's year up to toDate)
-                                            COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_ytd_amount,
+                                            COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${ytdStart}::TIMESTAMP AND ${ytdEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_ytd_amount,
                                             COALESCE(
-                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                              + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} THEN l.initial_amount ELSE 0 END), 0),
+                                              COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${ytdStart}::TIMESTAMP AND ${ytdEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
+                                              + COALESCE(MAX(CASE WHEN l.created_at BETWEEN ${ytdStart}::TIMESTAMP AND ${ytdEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' THEN l.initial_amount ELSE 0 END), 0),
                                             0) as total_debit_ytd_amount,
 
                                             -- net year to date (debit - credit)
                                             (
                                               COALESCE(
-                                                COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                                + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} THEN l.initial_amount ELSE 0 END), 0),
+                                                COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${ytdStart}::TIMESTAMP AND ${ytdEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
+                                                + COALESCE(MAX(CASE WHEN l.created_at BETWEEN ${ytdStart}::TIMESTAMP AND ${ytdEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' THEN l.initial_amount ELSE 0 END), 0),
                                               0)
                                               -
-                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${ytdStart} AND ${ytdEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
+                                              COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${ytdStart}::TIMESTAMP AND ${ytdEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
                                             ) as total_net_ytd_amount,
 
                                             -- last year (full previous year)
-                                            COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${prevStart} AND ${prevEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_last_year_amount,
+                                            COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${prevStart}::TIMESTAMP AND ${prevEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0) as total_credit_last_year_amount,
                                             COALESCE(
-                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${prevStart} AND ${prevEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                              + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${prevStart} AND ${prevEnd} THEN l.initial_amount ELSE 0 END), 0),
+                                              COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${prevStart}::TIMESTAMP AND ${prevEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
+                                              + COALESCE(MAX(CASE WHEN l.created_at BETWEEN ${prevStart}::TIMESTAMP AND ${prevEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' THEN l.initial_amount ELSE 0 END), 0),
                                             0) as total_debit_last_year_amount,
 
                                             -- net last year (debit - credit)
                                             (
                                               COALESCE(
-                                                COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${prevStart} AND ${prevEnd} AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
-                                                + COALESCE(MAX(CASE WHEN l.created_at::date BETWEEN ${prevStart} AND ${prevEnd} THEN l.initial_amount ELSE 0 END), 0),
+                                                COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${prevStart}::TIMESTAMP AND ${prevEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'dr' THEN ve.amount ELSE 0 END), 0)
+                                                + COALESCE(MAX(CASE WHEN l.created_at BETWEEN ${prevStart}::TIMESTAMP AND ${prevEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' THEN l.initial_amount ELSE 0 END), 0),
                                               0)
                                               -
-                                              COALESCE(SUM(CASE WHEN ve.created_at::date BETWEEN ${prevStart} AND ${prevEnd} AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
+                                              COALESCE(SUM(CASE WHEN ve.created_at BETWEEN ${prevStart}::TIMESTAMP AND ${prevEnd}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds' AND ve.type = 'cr' THEN ve.amount ELSE 0 END), 0)
                                             ) as total_net_last_year_amount
 
                                         FROM acc.ledger l
