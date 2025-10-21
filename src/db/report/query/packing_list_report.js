@@ -13,8 +13,8 @@ export async function selectPackingList(req, res, next) {
 									'pi_cash_uuid', subquery.uuid, 
 									'pi_numbers', 
 									CASE 
-										WHEN subquery.is_pi = 1 THEN concat('PI', to_char(subquery.created_at, 'YY'), '-', LPAD(subquery.id::text, 4, '0')) 
-										ELSE concat('CI', to_char(subquery.created_at, 'YY'), '-', LPAD(subquery.id::text, 4, '0')) 
+										WHEN subquery.is_pi = 1 THEN concat('PI', to_char(subquery.created_at, 'YY'), '-', (subquery.id::text)) 
+										ELSE concat('CI', to_char(subquery.created_at, 'YY'), '-', (subquery.id::text)) 
 									END
 								)
 							) AS pi_object,
@@ -43,8 +43,8 @@ export async function selectPackingList(req, res, next) {
 									'pi_cash_uuid', subquery.uuid, 
 									'pi_numbers', 
 									CASE 
-										WHEN subquery.is_pi = 1 THEN concat('PI', to_char(subquery.created_at, 'YY'), '-', LPAD(subquery.id::text, 4, '0')) 
-										ELSE concat('CI', to_char(subquery.created_at, 'YY'), '-', LPAD(subquery.id::text, 4, '0')) 
+										WHEN subquery.is_pi = 1 THEN concat('PI', to_char(subquery.created_at, 'YY'), '-', (subquery.id::text)) 
+										ELSE concat('CI', to_char(subquery.created_at, 'YY'), '-', (subquery.id::text)) 
 									END
 								)
 							) AS pi_object,

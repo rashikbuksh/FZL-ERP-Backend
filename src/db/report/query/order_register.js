@@ -401,7 +401,7 @@ export async function selectOrderRegisterReportForPackingList(req, res, next) {
 
 			SELECT 
 				toi.uuid as order_info_uuid,
-				concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) as order_number,
+				concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) as order_number,
 				toi.created_at,
 				p.name as party_name,
 				b.name as buyer_name,

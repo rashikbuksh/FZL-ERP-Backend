@@ -33,14 +33,14 @@ export async function selectChallanPdf(req, res, next) {
 			SELECT
 				challan.uuid AS uuid,
 				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-					CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) ELSE
-					CONCAT('TC', to_char(challan.created_at, 'YY'), '-', LPAD(challan.id::text, 5, '0')) END AS challan_number,
+					CONCAT('ZC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) ELSE
+					CONCAT('TC', to_char(challan.created_at, 'YY'), '-', (challan.id::text)) END AS challan_number,
 				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					challan.order_info_uuid ELSE
 					challan.thread_order_info_uuid END AS order_info_uuid,
 				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
-					CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) ELSE
-					CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END AS order_number,
+					CONCAT('Z', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', (order_info.id::text)) ELSE
+					CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(toi.created_at, 'YY'), '-', (toi.id::text)) END AS order_number,
 				packing_list_count.packing_list_count AS total_carton_quantity,
 				CASE WHEN packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape') THEN
 					zipper.order_info.buyer_uuid ELSE
@@ -164,7 +164,7 @@ export async function selectChallanPdf(req, res, next) {
 					'updated_at', ple.updated_at,
 					'remarks', ple.remarks,
 					'order_info_uuid', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_info_uuid ELSE toi.uuid END,
-					'order_number', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_number ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) END,
+					'order_number', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.order_number ELSE CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) END,
 					'item_description', CASE WHEN ple.sfg_uuid IS NOT NULL THEN vodf.item_description ELSE tc.count END,
 					'specification', CASE WHEN ple.sfg_uuid IS NOT NULL 
 						THEN CONCAT(

@@ -16,7 +16,7 @@ export async function selectSampleReport(req, res, next) {
 		const query = sql`
                         WITH zipper_results AS (
                             SELECT
-                                CONCAT('Z', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi.created_at, 'YY'), '-', LPAD(oi.id::text, 4, '0')) AS sample_order_no,
+                                CONCAT('Z', CASE WHEN oi.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi.created_at, 'YY'), '-', (oi.id::text)) AS sample_order_no,
                                 oi.created_at AS issue_date,
                                 CASE WHEN MAX(pl.challan_uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
                                 MAX(c.created_at) AS delivery_last_date,
@@ -38,7 +38,7 @@ export async function selectSampleReport(req, res, next) {
                         ),
                         thread_results AS (
                             SELECT
-                                CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')) AS sample_order_no,
+                                CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) AS sample_order_no,
                                 toi.created_at AS issue_date,
                                 CASE WHEN MAX(tc.uuid) IS NULL THEN 'Pending' ELSE 'Processing' END AS status,
                                 MAX(tc.created_at) AS delivery_last_date,
@@ -364,7 +364,7 @@ export async function selectSampleReportByDateCombined(req, res, next) {
                         SELECT 
                             CONCAT('ST', 
                                     CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END,
-                                    to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')
+                                    to_char(toi.created_at, 'YY'), '-', (toi.id::text)
                                 ) AS order_number,
                             toi.uuid as order_info_uuid,
                             pmt.name AS marketing_name,
@@ -446,7 +446,7 @@ export async function selectThreadSampleReportByDate(req, res, next) {
                      SELECT 
                             CONCAT('ST', 
                                     CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END,
-                                    to_char(toi.created_at, 'YY'), '-', LPAD(toi.id::text, 4, '0')
+                                    to_char(toi.created_at, 'YY'), '-', (toi.id::text)
                                 ) AS order_number,
                             toi.uuid as order_info_uuid,
                             pmt.name AS marketing_name,

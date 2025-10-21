@@ -44,7 +44,7 @@ export async function selectCashInvoice(req, res, next) {
                                                 CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, 
                                                 TO_CHAR(toi.created_at, 'YY'), 
                                                 '-', 
-                                                LPAD(toi.id::text, 4, '0')
+                                                (toi.id::text)
                                             ), 
                                             'thread_order_info_uuid', toi.uuid
                                         )

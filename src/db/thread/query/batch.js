@@ -11,7 +11,7 @@ export async function insert(req, res, next) {
 		.insert(batch)
 		.values(req.body)
 		.returning({
-			insertedId: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+			insertedId: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', (batch.id::text))`,
 		});
 
 	try {
@@ -37,7 +37,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(batch.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+			updatedId: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', (batch.id::text))`,
 		});
 
 	try {
@@ -62,7 +62,7 @@ export async function remove(req, res, next) {
 		.delete(batch)
 		.where(eq(batch.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0'))`,
+			deletedId: sql`concat('TB', to_char(batch.created_at, 'YY'), '-', (batch.id::text))`,
 		});
 
 	try {
@@ -90,7 +90,7 @@ export async function selectAll(req, res, next) {
 							'TB',
 							to_char(batch.created_at, 'YY'),
 							'-',
-							LPAD(batch.id::text, 4, '0')
+							(batch.id::text)
 						) as batch_id,
 						batch.machine_uuid,
 						CONCAT(
@@ -160,7 +160,7 @@ export async function selectAll(req, res, next) {
 										END,
 										to_char(order_info.created_at, 'YY'),
 										'-',
-										LPAD(order_info.id::text, 4, '0')
+										(order_info.id::text)
 									)
 									ELSE null
 								END
@@ -183,7 +183,7 @@ export async function selectAll(req, res, next) {
 								END,
 								to_char(oi_v2.created_at, 'YY'),
 								'-',
-								LPAD(oi_v2.id::text, 4, '0')
+								(oi_v2.id::text)
 							)
 							ELSE null
 						END as order_number,
@@ -284,7 +284,7 @@ export async function select(req, res, next) {
 					SELECT
 						batch.uuid,
 						batch.id,
-						concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_id,
+						concat('TB', to_char(batch.created_at, 'YY'), '-', (batch.id::text)) as batch_id,
 						batch.machine_uuid,
 						pm.name as machine_name,
 						pm.water_capacity,
@@ -333,7 +333,7 @@ export async function select(req, res, next) {
 						batch.production_date::date as production_date,
 						batch.batch_type,
 						batch.order_info_uuid,
-						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number,
+						CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', (oi_v2.id::text)) ELSE null END as order_number,
 						oi_v2.is_sample
 					FROM
 						thread.batch

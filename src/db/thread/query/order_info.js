@@ -38,7 +38,7 @@ export async function update(req, res, next) {
 		.set(req.body)
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text))`,
 		});
 
 	try {
@@ -63,7 +63,7 @@ export async function remove(req, res, next) {
 		.delete(order_info)
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			deletedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			deletedId: sql`concat('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text))`,
 		});
 
 	try {
@@ -93,7 +93,7 @@ export async function selectAll(req, res, next) {
 		SELECT 
 			order_info.uuid,
 			order_info.id,
-			CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+			CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', (order_info.id::text)) AS order_number,
 			pi_cash_grouped.pi_numbers,
 			order_info.party_uuid,
 			party.name AS party_name,
@@ -163,7 +163,7 @@ export async function selectAll(req, res, next) {
 					GROUP BY toe.order_info_uuid
 		) order_entry_counts ON order_info.uuid = order_entry_counts.order_info_uuid
 		LEFT JOIN (
-			SELECT toi.uuid as order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers
+			SELECT toi.uuid as order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text))) as pi_numbers
 			FROM
 				thread.order_info toi
 				LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
@@ -209,7 +209,7 @@ export async function select(req, res, next) {
 		SELECT 
 			order_info.uuid,
 			order_info.id,
-			CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+			CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', (order_info.id::text)) AS order_number,
 			pi_cash_grouped.pi_numbers,
 			order_info.party_uuid,
 			party.name AS party_name,
@@ -279,7 +279,7 @@ export async function select(req, res, next) {
 					GROUP BY toe.order_info_uuid
 		) order_entry_counts ON order_info.uuid = order_entry_counts.order_info_uuid
 		LEFT JOIN (
-			SELECT toi.uuid as order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers
+			SELECT toi.uuid as order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text))) as pi_numbers
 			FROM
 				thread.order_info toi
 				LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid
@@ -362,7 +362,7 @@ export async function updateSendFromHeadOffice(req, res, next) {
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text))`,
 		});
 
 	try {
@@ -397,7 +397,7 @@ export async function updateReceiveByFactory(req, res, next) {
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text))`,
 		});
 
 	try {
@@ -429,7 +429,7 @@ export async function updateProductionPause(req, res, next) {
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text))`,
 		});
 
 	try {
@@ -458,7 +458,7 @@ export async function updateSwatchAttachment(req, res, next) {
 		})
 		.where(eq(order_info.uuid, req.params.uuid))
 		.returning({
-			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0'))`,
+			updatedId: sql`CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text))`,
 		});
 
 	try {

@@ -79,7 +79,7 @@ export async function selectOrderSheetSendReceiveReportThread(req, res, next) {
                         SELECT 
                             order_info.uuid,
                             order_info.id,
-                            CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+                            CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', (order_info.id::text)) AS order_number,
                             order_info.party_uuid,
                             party.name AS party_name,
                             order_info.marketing_uuid,

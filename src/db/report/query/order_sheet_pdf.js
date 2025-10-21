@@ -37,7 +37,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                         LEFT JOIN
                             zipper.tape_coil ON v_order_details_full.tape_coil_uuid = tape_coil.uuid
                         LEFT JOIN (
-                            SELECT vodf.order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers
+                            SELECT vodf.order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text))) as pi_numbers
                             FROM
                                 zipper.v_order_details_full vodf
                                 LEFT JOIN zipper.order_entry oe ON vodf.order_description_uuid = oe.order_description_uuid
@@ -82,7 +82,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                         SELECT 
                             order_info.uuid,
                             order_info.id,
-                            CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) AS order_number,
+                            CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, TO_CHAR(order_info.created_at, 'YY'), '-', (order_info.id::text)) AS order_number,
                             pi_cash_grouped.pi_numbers,
                             order_info.party_uuid,
                             party.name AS party_name,
@@ -135,7 +135,7 @@ export async function selectOrderSheetPdf(req, res, next) {
                                     GROUP BY toe.order_info_uuid
                         ) order_entry_counts ON order_info.uuid = order_entry_counts.order_info_uuid
                         LEFT JOIN (
-                            SELECT toi.uuid as order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0'))) as pi_numbers
+                            SELECT toi.uuid as order_info_uuid, array_agg(DISTINCT concat('PI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text))) as pi_numbers
                             FROM
                                 thread.order_info toi
                                 LEFT JOIN thread.order_entry toe ON toi.uuid = toe.order_info_uuid

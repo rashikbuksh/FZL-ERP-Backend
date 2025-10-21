@@ -22,7 +22,7 @@ export async function selectThreadBatchReport(req, res, next) {
             SELECT
 				batch.uuid,
 				batch.id,
-				concat('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_id,
+				concat('TB', to_char(batch.created_at, 'YY'), '-', (batch.id::text)) as batch_id,
 				batch.machine_uuid,
 				CONCAT(pm.name, ' (', pm.min_capacity::float8, '-', pm.max_capacity::float8, ')') as machine_name,
 				batch.slot,
@@ -75,7 +75,7 @@ export async function selectThreadBatchReport(req, res, next) {
                                     CASE WHEN order_info.is_sample = 1 
 									THEN 'S' ELSE '' 
 									END, 
-								to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')))
+								to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)))
 				) AS order_numbers,
 				jsonb_agg(
 					DISTINCT order_info.uuid 
@@ -87,7 +87,7 @@ export async function selectThreadBatchReport(req, res, next) {
 				ARRAY_AGG(DISTINCT recipe.name) as recipe_name,
 				batch.batch_type,
 				batch.order_info_uuid,
-				CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', LPAD(oi_v2.id::text, 4, '0')) ELSE null END as order_number,
+				CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', (oi_v2.id::text)) ELSE null END as order_number,
 				oi_v2.is_sample
 			FROM
 				thread.batch

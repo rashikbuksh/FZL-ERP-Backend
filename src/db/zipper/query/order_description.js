@@ -800,10 +800,10 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 				array_agg(
 					DISTINCT CASE
 						WHEN pi_cash.is_pi = 1 THEN CONCAT(
-							'PI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
+							'PI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)
 						)
 						ELSE CONCAT(
-							'CI', to_char(pi_cash.created_at, 'YY'), '-', LPAD(pi_cash.id::text, 4, '0')
+							'CI', to_char(pi_cash.created_at, 'YY'), '-', (pi_cash.id::text)
 						)
 					END
 				) as pi_numbers

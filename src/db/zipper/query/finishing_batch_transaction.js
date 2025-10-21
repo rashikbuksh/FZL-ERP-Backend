@@ -243,7 +243,7 @@ export async function selectByTrxFrom(req, res, next) {
 			finishing_batch_transaction.uuid,
 			finishing_batch_transaction.finishing_batch_entry_uuid,
 			zfb.uuid as finishing_batch_uuid,
-			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', lpad((zfb.id)::text, 4, '0'::text)) as batch_number,
+			concat('FB', to_char(zfb.created_at, 'YY'::text), '-', ((zfb.id)::text)) as batch_number,
 			sfg.order_entry_uuid,
 			vodf.order_description_uuid,
 			vodf.order_number, 

@@ -260,7 +260,7 @@ export async function getOrderDetailsForBatchEntry(req, res, next) {
 		oe.recipe_uuid as recipe_uuid,
 		re.name as recipe_name,
 		re.sub_streat,
-		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)) as order_number,
 		CASE WHEN be_given.total_quantity IS NULL THEN 0 ELSE
 			be_given.total_quantity::float8
 		END as total_trx_quantity,
@@ -356,7 +356,7 @@ export async function getBatchEntryByBatchUuid(req, res, next) {
 							oe.recipe_uuid as recipe_uuid,
 							re.name as recipe_name,
 							re.sub_streat,
-							CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+							CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)) as order_number,
 							be.quantity::float8 as quantity,
 							be.coning_production_quantity::float8,
 							be.coning_carton_quantity::float8,
@@ -443,10 +443,10 @@ export async function getBatchEntryDetails(req, res, next) {
 	SELECT 
 		be.uuid as batch_entry_uuid,
 		be.batch_uuid,
-		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', LPAD(batch.id::text, 4, '0')) as batch_number,
+		CONCAT('TB', to_char(batch.created_at, 'YY'), '-', (batch.id::text)) as batch_number,
 		be.order_entry_uuid,
 		oe.order_info_uuid,
-		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', LPAD(order_info.id::text, 4, '0')) as order_number,
+		CONCAT('ST', CASE WHEN order_info.is_sample = 1 THEN 'S' ELSE '' END, to_char(order_info.created_at, 'YY'), '-', (order_info.id::text)) as order_number,
 		order_info.party_uuid,
 		party.name as party_name,
 	    oe.color as color,
