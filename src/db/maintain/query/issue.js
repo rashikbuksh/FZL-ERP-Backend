@@ -291,9 +291,15 @@ export async function selectAll(req, res, next) {
 		issueEntryPromise.where(eq(issue.created_by, own_uuid));
 	}
 	if (maintain_condition) {
-		issueEntryPromise.where(
-			eq(issue.maintain_condition, maintain_condition)
-		);
+		if (maintain_condition === 'waiting_ongoing') {
+			issueEntryPromise.where(
+				sql`(${eq(issue.maintain_condition, 'waiting')} AND ${eq(issue.maintain_condition, 'ongoing')})`
+			);
+		} else {
+			issueEntryPromise.where(
+				eq(issue.maintain_condition, maintain_condition)
+			);
+		}
 	}
 
 	try {
