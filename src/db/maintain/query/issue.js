@@ -236,7 +236,7 @@ export async function select(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { own_uuid } = req.query;
+	const { own_uuid, maintain_condition } = req.query;
 
 	const issueEntryPromise = db
 		.select({
@@ -289,6 +289,11 @@ export async function selectAll(req, res, next) {
 
 	if (own_uuid) {
 		issueEntryPromise.where(eq(issue.created_by, own_uuid));
+	}
+	if (maintain_condition) {
+		issueEntryPromise.where(
+			eq(issue.maintain_condition, maintain_condition)
+		);
 	}
 
 	try {

@@ -105,7 +105,14 @@ export const pathMaintainIssue = {
 			tags: ['maintain.issue'],
 			summary: 'Get all machine problem info',
 			description: 'Get all machine problem info',
-			parameters: [SE.parameter_query('own_uuid', 'own_uuid', SE.uuid())],
+			parameters: [
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query(
+					'maintain_condition',
+					'maintain_condition',
+					'string'
+				),
+			],
 			responses: {
 				200: SE.response_schema_ref(
 					'maintain/issue',
