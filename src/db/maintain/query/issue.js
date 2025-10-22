@@ -293,7 +293,7 @@ export async function selectAll(req, res, next) {
 	if (maintain_condition) {
 		if (maintain_condition === 'waiting_ongoing') {
 			issueEntryPromise.where(
-				sql`(${eq(issue.maintain_condition, 'waiting')} AND ${eq(issue.maintain_condition, 'ongoing')})`
+				sql`(${eq(issue.maintain_condition, 'waiting')} or ${eq(issue.maintain_condition, 'ongoing')})`
 			);
 		} else {
 			issueEntryPromise.where(
