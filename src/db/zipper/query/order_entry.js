@@ -427,7 +427,7 @@ export async function selectOrderAllInfoByOrderInfoUuid(req, res, next) {
 		WHERE
 			vodf.order_number = ${order_number} AND ${order_description_uuid ? sql`vodf.order_description_uuid = ${order_description_uuid}` : sql`true`}
 		ORDER BY
-			oe.size::float8 ASC
+			oe.color ASC, oe.size::float8 ASC
 	`;
 
 	// ! Removing order quantity SUM from the query as it is not needed FOR NOW
