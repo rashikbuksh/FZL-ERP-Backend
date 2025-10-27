@@ -107,7 +107,7 @@ export const group = acc.table('group', {
 	head_uuid: defaultUUID('head_uuid')
 		.references(() => head.uuid)
 		.notNull(),
-	code: text('code'),
+	code: text('code').default(null),
 	is_fixed: boolean('is_fixed').default(true),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
