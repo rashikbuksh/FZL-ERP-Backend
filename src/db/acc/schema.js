@@ -64,6 +64,11 @@ export const headTypeEnum = acc.enum('headTypeEnum', [
 	'expense',
 ]);
 
+export const headIndexSequence = acc.sequence('head_index_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
 export const head = acc.table('head', {
 	uuid: uuid_primary,
 	name: text('name').notNull().unique(),
@@ -79,7 +84,7 @@ export const head = acc.table('head', {
 	remarks: text('remarks').default(null),
 	type: headTypeEnum('type').default('assets'),
 	group_number: text('group_number').default(null),
-	index: integer('index').default(0).unique(),
+	index: integer('index').default(sql`nextval('acc.head_index_sequence')`),
 });
 
 // export const type_enum = acc.enum('type_enum', [
@@ -90,6 +95,11 @@ export const head = acc.table('head', {
 // 	'cost_of_goods',
 // 	'revenue',
 // ]);
+
+export const groupIndexSequence = acc.sequence('group_index_sequence', {
+	startWith: 1,
+	increment: 1,
+});
 
 export const group = acc.table('group', {
 	uuid: uuid_primary,
@@ -108,7 +118,7 @@ export const group = acc.table('group', {
 	remarks: text('remarks').default(null),
 	// type: type_enum('type').notNull().default('asset'),
 	group_number: text('group_number').default(null),
-	index: integer('index').default(0).unique(),
+	index: integer('index').default(sql`nextval('acc.group_index_sequence')`),
 });
 
 export const restrictions_enum = acc.enum('restrictions_enum', [
@@ -126,6 +136,11 @@ export const identifierEnum = acc.enum('identifierEnum', [
 ]);
 
 export const ledger_sequence = acc.sequence('ledger_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
+export const ledger_index_sequence = acc.sequence('ledger_index_sequence', {
 	startWith: 1,
 	increment: 1,
 });
@@ -157,7 +172,7 @@ export const ledger = acc.table('ledger', {
 	identifier: identifierEnum('identifier').default('none'),
 	initial_amount: PG_DECIMAL('initial_amount').default(0),
 	group_number: text('group_number').default(null),
-	index: integer('index').default(0).unique(),
+	index: integer('index').default(sql`nextval('acc.ledger_index_sequence')`),
 });
 
 export const cost_center = acc.table('cost_center', {
