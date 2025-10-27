@@ -995,7 +995,7 @@ export async function selectOrderZipperThread(req, res, next) {
 								: sql``
 						}
 						WHERE 
-							vodf.item_description != '---' AND vodf.item_description != '' AND vodf.item_description IS NOT NULL AND vodf.is_cancelled = false
+							vodf.item_description != '---' AND vodf.item_description != '' AND vodf.item_description IS NOT NULL
 							${
 								page == 'production_statement'
 									? sql` 
@@ -1013,6 +1013,7 @@ export async function selectOrderZipperThread(req, res, next) {
 										: sql``
 							}
 							${page == 'challan_pdf' ? sql`AND challan.uuid IS NOT NULL` : sql``}
+							${page != 'challan_pdf' || page != 'production_statement' || page != 'production_statement_accounts' ? sql`AND oz.is_cancelled = false` : sql``}
 							${own_uuid ? sql`AND oz.marketing_uuid = ${marketingUuid}` : sql``}
 						GROUP BY
 							oz.uuid, oz.is_sample, oz.created_at, oz.id ${is_description_needed == 'true' ? sql`, vodf.order_description_uuid, vodf.item_description` : sql``}
@@ -1040,7 +1041,7 @@ export async function selectOrderZipperThread(req, res, next) {
 								: sql``
 						}
 						WHERE 
-							ot.is_cancelled = false
+							true
 							${
 								page == 'production_statement'
 									? sql` 
@@ -1058,6 +1059,7 @@ export async function selectOrderZipperThread(req, res, next) {
 										: sql``
 							}
 							${page == 'challan_pdf' ? sql`AND challan.uuid IS NOT NULL` : sql``}
+							${page != 'challan_pdf' || page != 'production_statement' || page != 'production_statement_accounts' ? sql`AND ot.is_cancelled = false` : sql``}
 							${own_uuid ? sql`AND ot.marketing_uuid = ${marketingUuid}` : sql``}
 						GROUP BY
 							ot.uuid, ot.is_sample, ot.created_at, ot.id
