@@ -81,7 +81,7 @@ export async function selectAll(req, res, next) {
 			name: group.name,
 			head_uuid: group.head_uuid,
 			head_name:
-				sql`CASE WHEN ${group.group_number} IS NULL THEN NULL ELSE ${group.group_number} END || ' - ' || ${head.name} || ' (' || ${head.type} || ')'`.as(
+				sql`CASE WHEN ${group.group_number} IS NOT NULL THEN ${group.group_number} ELSE NULL END || CASE WHEN ${group.group_number} IS NOT NULL THEN ' - ' ELSE '' END || ${head.name} || ' (' || ${head.type} || ')'`.as(
 					'head_name'
 				),
 			code: group.code,
@@ -125,7 +125,7 @@ export async function select(req, res, next) {
 			name: group.name,
 			head_uuid: group.head_uuid,
 			head_name:
-				sql`CASE WHEN ${group.group_number} IS NULL THEN NULL ELSE ${group.group_number} END || ' - ' || ${head.name} || ' (' || ${head.type} || ')'`.as(
+				sql`CASE WHEN ${group.group_number} IS NOT NULL THEN ${group.group_number} ELSE NULL END || CASE WHEN ${group.group_number} IS NOT NULL THEN ' - ' ELSE '' END || ${head.name} || ' (' || ${head.type} || ')'`.as(
 					'head_name'
 				),
 			code: group.code,
