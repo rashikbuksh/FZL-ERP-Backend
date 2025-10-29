@@ -80,10 +80,9 @@ export async function selectAll(req, res, next) {
 			uuid: group.uuid,
 			name: group.name,
 			head_uuid: group.head_uuid,
-			head_name:
-				sql`CASE WHEN ${group.group_number} IS NOT NULL THEN ${group.group_number} ELSE NULL END || CASE WHEN ${group.group_number} IS NOT NULL THEN ' - ' ELSE '' END || ${head.name} || ' (' || ${head.type} || ')'`.as(
-					'head_name'
-				),
+			head_name: sql`${head.name} || ' (' || ${head.type} || ')'`.as(
+				'head_name'
+			),
 			code: group.code,
 			is_fixed: group.is_fixed,
 			created_by: group.created_by,
@@ -124,10 +123,9 @@ export async function select(req, res, next) {
 			uuid: group.uuid,
 			name: group.name,
 			head_uuid: group.head_uuid,
-			head_name:
-				sql`CASE WHEN ${group.group_number} IS NOT NULL THEN ${group.group_number} ELSE NULL END || CASE WHEN ${group.group_number} IS NOT NULL THEN ' - ' ELSE '' END || ${head.name} || ' (' || ${head.type} || ')'`.as(
-					'head_name'
-				),
+			head_name: sql`${head.name} || ' (' || ${head.type} || ')'`.as(
+				'head_name'
+			),
 			code: group.code,
 			is_fixed: group.is_fixed,
 			created_by: group.created_by,
