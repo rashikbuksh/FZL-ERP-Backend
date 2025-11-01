@@ -2034,7 +2034,11 @@ export async function selectManualPi(req, res, next) {
 		manual_pi.pi_number AS label,
 		bank.name AS pi_bank,
 		ROUND(SUM(
-			manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8
+			CASE
+				WHEN manual_pi_entry.is_zipper = true THEN manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 / 12
+				WHEN manual_pi_entry.is_zipper = false THEN manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8
+				ELSE 0
+			END
 		)::numeric, 2)::float8 AS pi_value,
 		ARRAY_AGG(
 			manual_pi_entry.order_number

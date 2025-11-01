@@ -190,7 +190,13 @@ export async function selectAll(req, res, next) {
 		LEFT JOIN (
 			SELECT 
 				manual_pi.lc_uuid,
-				SUM(manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 / 12) AS manual_pi_value
+				SUM(
+					CASE
+						WHEN manual_pi_entry.is_zipper = true THEN manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 / 12
+						WHEN manual_pi_entry.is_zipper = false THEN manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8
+						ELSE 0
+					END
+				) AS manual_pi_value
 			FROM commercial.manual_pi_entry
 			LEFT JOIN commercial.manual_pi ON manual_pi_entry.manual_pi_uuid = manual_pi.uuid
 			WHERE manual_pi.lc_uuid IS NOT NULL
