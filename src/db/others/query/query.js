@@ -1584,6 +1584,7 @@ export async function selectOrderDescriptionByCoilUuid(req, res, next) {
 	}
 }
 
+// FOR PI ORDER NUMBER SELECT
 export async function selectOrderNumberForPi(req, res, next) {
 	const is_cash = req.query.is_cash;
 	const pi_uuid = req.query.pi_uuid;
@@ -1605,12 +1606,11 @@ export async function selectOrderNumberForPi(req, res, next) {
 				LEFT JOIN zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 			WHERE
-				vod.is_cancelled = false AND
 				vod.is_cash = 1 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
 				vod.party_uuid = ${req.params.party_uuid} AND 
 				(vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))
-				${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND oe.quantity - sfg.pi > 0`}
+				${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND vod.is_cancelled = false AND oe.quantity - sfg.pi > 0`}
 			ORDER BY
 				vod.order_number ASC;`;
 	} else {
@@ -1623,12 +1623,11 @@ export async function selectOrderNumberForPi(req, res, next) {
 				LEFT JOIN zipper.order_entry oe ON vod.order_description_uuid = oe.order_description_uuid
 				LEFT JOIN zipper.sfg sfg ON oe.uuid = sfg.order_entry_uuid
 			WHERE
-				vod.is_cancelled = false AND
 				vod.is_cash = 0 AND
 				vod.marketing_uuid = ${req.params.marketing_uuid} AND
 				vod.party_uuid = ${req.params.party_uuid} AND 
 				(vod.is_sample = 0 OR (vod.is_sample = 1 AND vod.is_bill = 1))
-				${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND oe.quantity - sfg.pi > 0`}
+				${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND vod.order_info_uuid IN (SELECT json_array_elements_text(order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND vod.is_cancelled = false AND oe.quantity - sfg.pi > 0`}
 			ORDER BY
 				vod.order_number ASC;`;
 	}
@@ -1641,10 +1640,75 @@ export async function selectOrderNumberForPi(req, res, next) {
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'Order Number of a marketing and party',
+			message: 'Zipper Order Number of a marketing and party',
 		};
 
 		res.status(200).json({ toast, data: data?.rows });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function selectOrderNumberForPiThread(req, res, next) {
+	const { marketing_uuid, party_uuid } = req.params;
+	const { is_cash, pi_uuid } = req.query;
+	let query;
+
+	if (
+		is_cash == null ||
+		is_cash == undefined ||
+		is_cash == '' ||
+		is_cash == 'true'
+	) {
+		query = sql`
+		SELECT
+			DISTINCT toi.uuid AS value,
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) AS label,
+			toi.id
+		FROM
+			thread.order_info toi
+		LEFT JOIN
+			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+		WHERE
+			toi.is_cash = 1 AND
+			toi.marketing_uuid = ${marketing_uuid} AND
+			toi.party_uuid = ${party_uuid} AND 
+			(toi.is_sample = 0 OR (toi.is_sample = 1 AND toi.is_bill = 1))
+			${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND toi.is_cancelled = false AND toe.quantity - toe.pi > 0`}
+		ORDER BY toi.id ASC;
+	`;
+	} else {
+		query = sql`
+		SELECT
+			DISTINCT toi.uuid AS value,
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) AS label,
+			toi.id
+		FROM
+			thread.order_info toi
+		LEFT JOIN
+			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
+		WHERE
+			toi.is_cash = 0 AND
+			toi.marketing_uuid = ${marketing_uuid} AND
+			toi.party_uuid = ${party_uuid} AND 
+			(toi.is_sample = 0 OR (toi.is_sample = 1 AND toi.is_bill = 1))
+		${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND toi.is_cancelled = false AND toe.quantity - toe.pi > 0`}
+		ORDER BY toi.id ASC;
+	`;
+	}
+
+	const orderInfoPromise = db.execute(query);
+
+	try {
+		const data = await orderInfoPromise;
+
+		const toast = {
+			status: 200,
+			type: 'select_all',
+			message: 'Thread Order Number of a marketing and party',
+		};
+
+		res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -2560,73 +2624,6 @@ export async function selectThreadOrder(req, res, next) {
 		};
 
 		res.status(200).json({ toast, data: data?.rows });
-	} catch (error) {
-		await handleError({ error, res });
-	}
-}
-
-export async function selectOrderNumberForPiThread(req, res, next) {
-	const { marketing_uuid, party_uuid } = req.params;
-	const { is_cash, pi_uuid } = req.query;
-	let query;
-
-	if (
-		is_cash == null ||
-		is_cash == undefined ||
-		is_cash == '' ||
-		is_cash == 'true'
-	) {
-		query = sql`
-		SELECT
-			DISTINCT toi.uuid AS value,
-			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) AS label,
-			toi.id
-		FROM
-			thread.order_info toi
-		LEFT JOIN
-			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
-		WHERE
-			toi.is_cancelled = false AND
-			toi.is_cash = 1 AND
-			toi.marketing_uuid = ${marketing_uuid} AND
-			toi.party_uuid = ${party_uuid} AND 
-			(toi.is_sample = 0 OR (toi.is_sample = 1 AND toi.is_bill = 1))
-			${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND toe.quantity - toe.pi > 0`}
-		ORDER BY toi.id ASC;
-	`;
-	} else {
-		query = sql`
-		SELECT
-			DISTINCT toi.uuid AS value,
-			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)) AS label,
-			toi.id
-		FROM
-			thread.order_info toi
-		LEFT JOIN
-			thread.order_entry toe ON toi.uuid = toe.order_info_uuid
-		WHERE
-			toi.is_cancelled = false AND
-			toi.is_cash = 0 AND
-			toi.marketing_uuid = ${marketing_uuid} AND
-			toi.party_uuid = ${party_uuid} AND 
-			(toi.is_sample = 0 OR (toi.is_sample = 1 AND toi.is_bill = 1))
-		${pi_uuid && pi_uuid != null && pi_uuid != '' ? sql` AND toi.uuid IN (SELECT json_array_elements_text(thread_order_info_uuids::json) FROM commercial.pi_cash WHERE uuid = ${pi_uuid})` : sql` AND toe.quantity - toe.pi > 0`}
-		ORDER BY toi.id ASC;
-	`;
-	}
-
-	const orderInfoPromise = db.execute(query);
-
-	try {
-		const data = await orderInfoPromise;
-
-		const toast = {
-			status: 200,
-			type: 'select_all',
-			message: 'Thread Order Info list',
-		};
-
-		res.status(200).json({ toast, data: data.rows });
 	} catch (error) {
 		await handleError({ error, res });
 	}
