@@ -220,12 +220,30 @@ export async function select(req, res, next) {
 					) subquery
 			)
 			`,
+			total_amount: sql`${ledger.initial_amount}::float8 + (COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0))::float8`,
 		})
 		.from(ledger)
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
 		.leftJoin(hrSchema.users, eq(ledger.created_by, hrSchema.users.uuid))
 		.leftJoin(voucher_entry, eq(ledger.uuid, voucher_entry.ledger_uuid))
+		.leftJoin(
+			sql`
+				(
+				SELECT 
+					SUM(
+						CASE WHEN voucher_entry.type = 'dr' THEN voucher_entry.amount ELSE 0 END
+					) as total_debit_amount,
+					SUM(
+						CASE WHEN voucher_entry.type = 'cr' THEN voucher_entry.amount ELSE 0 END
+					) as total_credit_amount,
+					voucher_entry.ledger_uuid
+				FROM acc.voucher_entry
+				GROUP BY voucher_entry.ledger_uuid
+				) as voucher_total
+			`,
+			eq(ledger.uuid, sql`voucher_total.ledger_uuid`)
+		)
 		.where(eq(ledger.uuid, req.params.uuid));
 
 	try {
