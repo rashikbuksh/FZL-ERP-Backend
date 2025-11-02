@@ -205,7 +205,7 @@ export async function select(req, res, next) {
 	                            'ledger_name', l_other.name
 	                        )) as ledger_details,
 	                        ve_main.type,
-							SUM(ve_other.amount) as total_amount,
+							ve_main.amount as total_amount,
 							v.category,
 							v.date,
 							v.currency_uuid,
@@ -216,7 +216,7 @@ export async function select(req, res, next) {
 						LEFT JOIN acc.ledger l_other ON ve_other.ledger_uuid = l_other.uuid
 						LEFT JOIN acc.currency ON v.currency_uuid = currency.uuid
 						WHERE ve_main.ledger_uuid = ledger.uuid
-						GROUP BY ve_other.voucher_uuid, v.created_at, v.id, v.category, v.date, ve_main.type, currency.currency, currency.symbol, v.currency_uuid
+						GROUP BY ve_other.voucher_uuid, v.created_at, v.id, v.category, v.date, ve_main.type, currency.currency, currency.symbol, v.currency_uuid, ve_main.amount
 					) subquery
 			)
 			`,
