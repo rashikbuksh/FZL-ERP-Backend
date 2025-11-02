@@ -141,7 +141,7 @@ export async function selectAll(req, res, next) {
 		.leftJoin(updatedByUser, eq(voucher.updated_by, updatedByUser.uuid))
 		.leftJoin(currency, eq(voucher.currency_uuid, currency.uuid))
 		.leftJoin(
-			sql`
+			sql`(
 				SELECT 
 					voucher_entry.voucher_uuid, 
 					array_agg(ledger.name::text) FILTER (WHERE voucher_entry.type = 'dr') as dr_ledgers,
@@ -152,7 +152,7 @@ export async function selectAll(req, res, next) {
 				FROM acc.voucher_entry
 				LEFT JOIN acc.ledger ON voucher_entry.ledger_uuid = ledger.uuid
 				GROUP BY voucher_entry.voucher_uuid
-			`.as('voucher_agg'),
+			) as voucher_agg`,
 			eq(voucher.uuid, sql`voucher_agg.voucher_uuid`)
 		)
 		.orderBy(desc(voucher.created_at));
