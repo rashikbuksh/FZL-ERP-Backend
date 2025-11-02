@@ -180,30 +180,38 @@ export async function select(req, res, next) {
 			group_number: ledger.group_number,
 			index: ledger.index,
 			associated_ledgers: sql`
-			(
-				SELECT COALESCE(
+			SELECT COALESCE(
 						JSONB_AGG(
 							JSONB_BUILD_OBJECT(
-								'uuid', ve_other.uuid, 
-								'voucher_uuid', ve_other.voucher_uuid, 
-								'voucher_id', CONCAT(
-									'VO', TO_CHAR(v.created_at::timestamp, 'YY'), '-', v.id
-								), 
-								'ledger_uuid', ve_other.ledger_uuid, 
-								'ledger_name', l_other.name,
-								'category', v.category, 
-								'date', v.date,
-								'type', ve_other.type,
-								'amount', ve_other.amount
+								'voucher_uuid', voucher_uuid, 
+								'voucher_id', voucher_id, 
+								'ledger_details', ledger_details, 
+								'category', category, 
+								'date', date,
+								'amount', total_amount,
+                                'type', type
 							)
 						), '[]'::jsonb
 					)
-				FROM acc.voucher_entry ve_main
-				LEFT JOIN acc.voucher v ON ve_main.voucher_uuid = v.uuid
-				LEFT JOIN acc.voucher_entry ve_other ON v.uuid = ve_other.voucher_uuid AND ve_other.ledger_uuid != ve_main.ledger_uuid
-				LEFT JOIN acc.ledger l_other ON ve_other.ledger_uuid = l_other.uuid
-				WHERE ve_main.ledger_uuid = ledger.uuid
-			) as associated_ledgers
+				FROM (
+					SELECT 
+						ve_other.voucher_uuid,
+						CONCAT('VO', TO_CHAR(v.created_at::timestamp, 'YY'), '-', v.id) as voucher_id,
+                        JSONB_AGG( JSONB_BUILD_OBJECT(
+                            'ledger_uuid', ve_other.ledger_uuid,
+                            'ledger_name', l_other.name
+                        )) as ledger_details,
+                        ve_other.type,
+						SUM(ve_other.amount) as total_amount,
+						v.category,
+						v.date
+					FROM acc.voucher_entry ve_main
+					LEFT JOIN acc.voucher v ON ve_main.voucher_uuid = v.uuid
+					LEFT JOIN acc.voucher_entry ve_other ON v.uuid = ve_other.voucher_uuid AND ve_other.ledger_uuid != ve_main.ledger_uuid
+					LEFT JOIN acc.ledger l_other ON ve_other.ledger_uuid = l_other.uuid
+					WHERE ve_main.ledger_uuid = ledger.uuid
+					GROUP BY ve_other.voucher_uuid, v.created_at, v.id, v.category, v.date, ve_other.type
+				) subquery
 			`,
 		})
 		.from(ledger)
