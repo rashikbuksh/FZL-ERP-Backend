@@ -190,7 +190,9 @@ export async function select(req, res, next) {
 									'category', category, 
 									'date', date,
 									'amount', total_amount,
-	                                'type', type
+	                                'type', type,
+									'currency_uuid', currency_uuid,
+									'currency_symbol', currency_symbol
 								)
 							), '[]'::jsonb
 						)
@@ -203,15 +205,18 @@ export async function select(req, res, next) {
 	                            'ledger_name', l_other.name
 	                        )) as ledger_details,
 	                        ve_other.type,
-							SUM(ve_other.amount) as total_amount,
+							SUM(ve_main.amount) as total_amount,
 							v.category,
-							v.date
+							v.date,
+							v.currency_uuid,
+							currency.currency || ' (' || currency.symbol || ')' as currency_symbol
 						FROM acc.voucher_entry ve_main
 						LEFT JOIN acc.voucher v ON ve_main.voucher_uuid = v.uuid
 						LEFT JOIN acc.voucher_entry ve_other ON v.uuid = ve_other.voucher_uuid AND ve_other.ledger_uuid != ve_main.ledger_uuid
 						LEFT JOIN acc.ledger l_other ON ve_other.ledger_uuid = l_other.uuid
-						WHERE ve_main.ledger_uuid = ledger.uuid
-						GROUP BY ve_other.voucher_uuid, v.created_at, v.id, v.category, v.date, ve_other.type
+						LEFT JOIN acc.currency ON v.currency_uuid = currency.uuid
+						WHERE ve_main.ledger_uuid = ledger.uuid AND ve_main.type != ve_other.type
+						GROUP BY ve_other.voucher_uuid, v.created_at, v.id, v.category, v.date, ve_other.type, currency.currency, currency.symbol, v.currency_uuid
 					) subquery
 			)
 			`,
