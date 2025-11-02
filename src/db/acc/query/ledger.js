@@ -179,31 +179,32 @@ export async function select(req, res, next) {
 			initial_amount: decimalToNumber(ledger.initial_amount),
 			group_number: ledger.group_number,
 			index: ledger.index,
-			vouchers: sql`
+			associated_ledgers: sql`
 			(
 				SELECT COALESCE(
 						JSONB_AGG(
 							JSONB_BUILD_OBJECT(
-								'uuid', ve.uuid, 
-								'voucher_uuid', ve.voucher_uuid, 
+								'uuid', ve_other.uuid, 
+								'voucher_uuid', ve_other.voucher_uuid, 
 								'voucher_id', CONCAT(
 									'VO', TO_CHAR(v.created_at::timestamp, 'YY'), '-', v.id
 								), 
-								'ledger_uuid', ve.ledger_uuid, 
-								'ledger_name', l.name,
+								'ledger_uuid', ve_other.ledger_uuid, 
+								'ledger_name', l_other.name,
 								'category', v.category, 
 								'date', v.date,
-								'type', ve.type,
-								'amount', ve.amount
+								'type', ve_other.type,
+								'amount', ve_other.amount
 							)
 						), '[]'::jsonb
 					)
-				FROM acc.voucher_entry ve
-				LEFT JOIN acc.voucher v ON ve.voucher_uuid = v.uuid
-				LEFT JOIN acc.ledger l ON ve.ledger_uuid = l.uuid
-				WHERE ve.ledger_uuid = ledger.uuid
-			)
-			`.as('vouchers'),
+				FROM acc.voucher_entry ve_main
+				LEFT JOIN acc.voucher v ON ve_main.voucher_uuid = v.uuid
+				LEFT JOIN acc.voucher_entry ve_other ON v.uuid = ve_other.voucher_uuid AND ve_other.ledger_uuid != ve_main.ledger_uuid
+				LEFT JOIN acc.ledger l_other ON ve_other.ledger_uuid = l_other.uuid
+				WHERE ve_main.ledger_uuid = ledger.uuid
+			) as associated_ledgers
+			`,
 		})
 		.from(ledger)
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))
