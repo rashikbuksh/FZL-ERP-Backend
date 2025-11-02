@@ -107,7 +107,7 @@ export async function selectAll(req, res, next) {
 			initial_amount: decimalToNumber(ledger.initial_amount),
 			group_number: ledger.group_number,
 			index: ledger.index,
-			total_amount: sql`${ledger.initial_amount} ::float8 + (COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0))::float8`,
+			total_amount: sql`${ledger.initial_amount}::float8 + (COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0))::float8`,
 		})
 		.from(ledger)
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))

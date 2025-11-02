@@ -132,6 +132,9 @@ export async function selectAll(req, res, next) {
 			currency_name: sql`currency.currency || ' (' || currency.symbol || ')'`,
 			currency_symbol: currency.symbol,
 			conversion_rate: decimalToNumber(voucher.conversion_rate),
+			dr_ledgers: sql`COALESCE(voucher_agg.dr_ledgers, ARRAY[]::text[])`,
+			cr_ledgers: sql`COALESCE(voucher_agg.cr_ledgers, ARRAY[]::text[])`,
+			amount: sql`COALESCE(voucher_agg.amount, 0)::float8`,
 		})
 		.from(voucher)
 		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))
@@ -145,14 +148,12 @@ export async function selectAll(req, res, next) {
     				array_agg(ledger.name::text) FILTER (WHERE voucher_entry.type = 'cr') as cr_ledgers,
     				SUM(
 						CASE WHEN voucher_entry.type = 'dr' THEN voucher_entry.amount ELSE 0 END
-					) as total_debit_amount,
-					SUM(
-						CASE WHEN voucher_entry.type = 'cr' THEN voucher_entry.amount ELSE 0 END
-					) as total_credit_amount
+					) as amount
 				FROM acc.voucher_entry
 				LEFT JOIN acc.ledger ON voucher_entry.ledger_uuid = ledger.uuid
 				GROUP BY voucher_entry.voucher_uuid
-			`
+			`.as('voucher_agg'),
+			eq(voucher.uuid, sql`voucher_agg.voucher_uuid`)
 		)
 		.orderBy(desc(voucher.created_at));
 
