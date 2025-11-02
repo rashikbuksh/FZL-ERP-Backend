@@ -1663,7 +1663,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		query = sql`
 		SELECT
 			DISTINCT toi.uuid AS value,
-			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text), CASE WHEN toi.is_cancelled = false THEN ' - (Cancelled)' ELSE '' END) AS label,
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text), CASE WHEN toi.is_cancelled = true THEN ' - (Cancelled)' ELSE '' END) AS label,
 			toi.id
 		FROM
 			thread.order_info toi
@@ -1681,7 +1681,7 @@ export async function selectOrderNumberForPiThread(req, res, next) {
 		query = sql`
 		SELECT
 			DISTINCT toi.uuid AS value,
-			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text), CASE WHEN toi.is_cancelled = false THEN ' - (Cancelled)' ELSE '' END) AS label,
+			concat('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text), CASE WHEN toi.is_cancelled = true THEN ' - (Cancelled)' ELSE '' END) AS label,
 			toi.id
 		FROM
 			thread.order_info toi
