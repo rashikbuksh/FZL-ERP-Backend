@@ -128,7 +128,7 @@ export async function selectAll(req, res, next) {
 				GROUP BY voucher_entry.ledger_uuid
 				) as voucher_total
 			`,
-			eq(accountSchema.ledger.uuid, sql`voucher_total.ledger_uuid`)
+			eq(ledger.uuid, sql`voucher_total.ledger_uuid`)
 		)
 		.orderBy(asc(ledger.index));
 
