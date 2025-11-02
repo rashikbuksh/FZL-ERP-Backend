@@ -217,6 +217,7 @@ export async function select(req, res, next) {
 						LEFT JOIN acc.currency ON v.currency_uuid = currency.uuid
 						WHERE ve_main.ledger_uuid = ledger.uuid
 						GROUP BY ve_other.voucher_uuid, v.created_at, v.id, v.category, v.date, ve_main.type, currency.currency, currency.symbol, v.currency_uuid, ve_main.amount
+						ORDER BY CONCAT('VO', TO_CHAR(v.created_at::timestamp, 'YY'), '-', v.id) DESC
 					) subquery
 			)
 			`,
