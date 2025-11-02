@@ -130,7 +130,7 @@ export async function selectAll(req, res, next) {
 			`,
 			eq(ledger.uuid, sql`voucher_total.ledger_uuid`)
 		)
-		.orderBy(asc(ledger.index));
+		.orderBy(asc(ledger.name));
 
 	try {
 		const data = await resultPromise;
