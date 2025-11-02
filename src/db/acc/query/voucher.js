@@ -137,6 +137,23 @@ export async function selectAll(req, res, next) {
 		.leftJoin(createdByUser, eq(voucher.created_by, createdByUser.uuid))
 		.leftJoin(updatedByUser, eq(voucher.updated_by, updatedByUser.uuid))
 		.leftJoin(currency, eq(voucher.currency_uuid, currency.uuid))
+		.leftJoin(
+			sql`
+				SELECT 
+					voucher_entry.voucher_uuid, 
+					array_agg(ledger.name::text) FILTER (WHERE voucher_entry.type = 'dr') as dr_ledgers,
+    				array_agg(ledger.name::text) FILTER (WHERE voucher_entry.type = 'cr') as cr_ledgers,
+    				SUM(
+						CASE WHEN voucher_entry.type = 'dr' THEN voucher_entry.amount ELSE 0 END
+					) as total_debit_amount,
+					SUM(
+						CASE WHEN voucher_entry.type = 'cr' THEN voucher_entry.amount ELSE 0 END
+					) as total_credit_amount
+				FROM acc.voucher_entry
+				LEFT JOIN acc.ledger ON voucher_entry.ledger_uuid = ledger.uuid
+				GROUP BY voucher_entry.voucher_uuid
+			`
+		)
 		.orderBy(desc(voucher.created_at));
 
 	try {

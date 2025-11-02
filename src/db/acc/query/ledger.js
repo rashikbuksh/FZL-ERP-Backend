@@ -1,7 +1,7 @@
 import { desc, eq, sql, asc } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { group, head, ledger } from '../schema.js';
+import { group, head, ledger, voucher_entry } from '../schema.js';
 
 import { alias } from 'drizzle-orm/pg-core';
 
@@ -91,7 +91,7 @@ export async function selectAll(req, res, next) {
 			group_uuid: ledger.group_uuid,
 			group_name: group.name,
 			head_uuid: group.head_uuid,
-			head_name: head.name,
+			head_name: sql`head.name || ' (' || head.type || ')'`,
 			vat_deduction: decimalToNumber(ledger.vat_deduction),
 			tax_deduction: decimalToNumber(ledger.tax_deduction),
 			old_ledger_id: ledger.old_ledger_id,
@@ -107,11 +107,29 @@ export async function selectAll(req, res, next) {
 			initial_amount: decimalToNumber(ledger.initial_amount),
 			group_number: ledger.group_number,
 			index: ledger.index,
+			total_amount: sql`${ledger.initial_amount} ::float8 + (COALESCE(voucher_total.total_debit_amount, 0) - COALESCE(voucher_total.total_credit_amount, 0))::float8`,
 		})
 		.from(ledger)
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
 		.leftJoin(hrSchema.users, eq(ledger.created_by, hrSchema.users.uuid))
+		.leftJoin(
+			sql`
+				(
+				SELECT 
+					SUM(
+						CASE WHEN voucher_entry.type = 'dr' THEN voucher_entry.amount ELSE 0 END
+					) as total_debit_amount,
+					SUM(
+						CASE WHEN voucher_entry.type = 'cr' THEN voucher_entry.amount ELSE 0 END
+					) as total_credit_amount,
+					voucher_entry.ledger_uuid
+				FROM acc.voucher_entry
+				GROUP BY voucher_entry.ledger_uuid
+				) as voucher_total
+			`,
+			eq(accountSchema.ledger.uuid, sql`voucher_total.ledger_uuid`)
+		)
 		.orderBy(asc(ledger.index));
 
 	try {
@@ -161,11 +179,37 @@ export async function select(req, res, next) {
 			initial_amount: decimalToNumber(ledger.initial_amount),
 			group_number: ledger.group_number,
 			index: ledger.index,
+			vouchers: sql`
+			(
+				SELECT COALESCE(
+						JSONB_AGG(
+							JSONB_BUILD_OBJECT(
+								'uuid', ve.uuid, 
+								'voucher_uuid', ve.voucher_uuid, 
+								'voucher_id', CONCAT(
+									'VO', TO_CHAR(v.created_at::timestamp, 'YY'), '-', v.id
+								), 
+								'ledger_uuid', ve.ledger_uuid, 
+								'ledger_name', l.name,
+								'category', v.category, 
+								'date', v.date,
+								'type', ve.type,
+								'amount', ve.amount
+							)
+						), '[]'::jsonb
+					)
+				FROM acc.voucher_entry ve
+				LEFT JOIN acc.voucher v ON ve.voucher_uuid = v.uuid
+				LEFT JOIN acc.ledger l ON ve.ledger_uuid = l.uuid
+				WHERE ve.ledger_uuid = ledger.uuid
+			)
+			`.as('vouchers'),
 		})
 		.from(ledger)
 		.leftJoin(group, eq(ledger.group_uuid, group.uuid))
 		.leftJoin(head, eq(group.head_uuid, head.uuid))
 		.leftJoin(hrSchema.users, eq(ledger.created_by, hrSchema.users.uuid))
+		.leftJoin(voucher_entry, eq(ledger.uuid, voucher_entry.ledger_uuid))
 		.where(eq(ledger.uuid, req.params.uuid));
 
 	try {
