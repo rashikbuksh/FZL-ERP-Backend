@@ -184,6 +184,7 @@ export async function select(req, res, next) {
 				SELECT COALESCE(
 							JSONB_AGG(
 								JSONB_BUILD_OBJECT(
+									'id', id,
 									'voucher_uuid', voucher_uuid, 
 									'voucher_id', voucher_id, 
 									'ledger_details', ledger_details, 
@@ -193,7 +194,7 @@ export async function select(req, res, next) {
 	                                'type', type,
 									'currency_uuid', currency_uuid,
 									'currency_symbol', currency_symbol
-								) ORDER BY voucher_id DESC
+								) ORDER BY id DESC, date DESC
 							), '[]'::jsonb
 						)
 					FROM (
@@ -209,7 +210,8 @@ export async function select(req, res, next) {
 							v.category,
 							v.date,
 							v.currency_uuid,
-							currency.currency || ' (' || currency.symbol || ')' as currency_symbol
+							currency.currency || ' (' || currency.symbol || ')' as currency_symbol,
+							v.id
 						FROM acc.voucher_entry ve_main
 						LEFT JOIN acc.voucher v ON ve_main.voucher_uuid = v.uuid
 						LEFT JOIN acc.voucher_entry ve_other ON v.uuid = ve_other.voucher_uuid AND ve_other.ledger_uuid != ve_main.ledger_uuid AND ve_main.type != ve_other.type
