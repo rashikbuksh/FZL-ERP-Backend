@@ -108,9 +108,9 @@ export async function select(req, res, next) {
 						ue.updated_by,
 						updater.name AS updated_by_name,
 						ue.remarks
-					FROM utility_entry ue
-					LEFT JOIN hr_schema.users AS creator ON ue.created_by = creator.uuid
-					LEFT JOIN hr_schema.users AS updater ON ue.updated_by = updater.uuid
+					FROM maintain.utility_entry ue
+					LEFT JOIN hr.users AS creator ON ue.created_by = creator.uuid
+					LEFT JOIN hr.users AS updater ON ue.updated_by = updater.uuid
 					WHERE ue.utility_uuid = utility.uuid
 				) AS ue_data
 			)`,
