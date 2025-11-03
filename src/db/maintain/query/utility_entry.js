@@ -4,6 +4,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { utility, utility_entry } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core';
+import { decimalToNumber } from '@/db/variables.js';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
 const updatedByUser = alias(hrSchema.users, 'updatedByUser');
@@ -86,9 +87,9 @@ export async function select(req, res, next) {
 			previous_date: utility.previous_date,
 			off_day: utility.off_day,
 			type: utility.type,
-			reading: utility_entry.reading,
-			voltage_ratio: utility_entry.voltage_ratio,
-			unit_cost: utility_entry.unit_cost,
+			reading: decimalToNumber(utility_entry.reading),
+			voltage_ratio: decimalToNumber(utility_entry.voltage_ratio),
+			unit_cost: decimalToNumber(utility_entry.unit_cost),
 			created_at: utility_entry.created_at,
 			created_by: utility_entry.created_by,
 			created_by_name: createdByUser.name,
@@ -133,9 +134,9 @@ export async function selectAll(req, res, next) {
 			previous_date: utility.previous_date,
 			off_day: utility.off_day,
 			type: utility.type,
-			reading: utility_entry.reading,
-			voltage_ratio: utility_entry.voltage_ratio,
-			unit_cost: utility_entry.unit_cost,
+			reading: decimalToNumber(utility_entry.reading),
+			voltage_ratio: decimalToNumber(utility_entry.voltage_ratio),
+			unit_cost: decimalToNumber(utility_entry.unit_cost),
 			created_at: utility_entry.created_at,
 			created_by: utility_entry.created_by,
 			created_by_name: createdByUser.name,
