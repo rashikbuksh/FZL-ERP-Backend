@@ -2,7 +2,7 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { utility } from '../schema.js';
+import { utility, utility_entry } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
@@ -56,12 +56,17 @@ export async function update(req, res, next) {
 }
 
 export async function remove(req, res, next) {
+	const utilityEntryPromise = db
+		.delete(utility_entry)
+		.where(eq(utility_entry.utility_uuid, req.params.uuid));
+
 	const utilityPromise = db
 		.delete(utility)
 		.where(eq(utility.uuid, req.params.uuid))
 		.returning({ deletedUuid: utility.id });
 
 	try {
+		await utilityEntryPromise;
 		const data = await utilityPromise;
 
 		const toast = {
