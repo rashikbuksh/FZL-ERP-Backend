@@ -85,6 +85,7 @@ export async function selectThreadBatchReport(req, res, next) {
 				ARRAY_AGG(DISTINCT oe.color) as color,
 				ARRAY_AGG(DISTINCT oe.color_ref) as color_ref,
 				ARRAY_AGG(DISTINCT recipe.name) as recipe_name,
+				ARRAY_AGG(DISTINCT oe.style) as style,
 				batch.batch_type,
 				batch.order_info_uuid,
 				CASE WHEN batch.batch_type = 'extra' THEN concat('ST', CASE WHEN oi_v2.is_sample = 1 THEN 'S' ELSE '' END, to_char(oi_v2.created_at, 'YY'), '-', (oi_v2.id::text)) ELSE null END as order_number,
