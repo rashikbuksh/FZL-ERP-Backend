@@ -119,7 +119,7 @@ export const utility = maintain.table('utility', {
 	uuid: uuid_primary,
 	date: DateTime('date').notNull().unique(),
 	previous_date: DateTime('previous_date').default(null),
-	off_day: boolean('off_day').notNull().default(false),
+	off_day: boolean('off_day').default(false),
 	created_at: DateTime('created_at').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	updated_at: DateTime('updated_at').default(null),

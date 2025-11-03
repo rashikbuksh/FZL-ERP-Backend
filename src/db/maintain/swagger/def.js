@@ -74,11 +74,55 @@ export const defIssueProcurement = SED({
 	xml: 'Maintain/IssueProcurement',
 });
 
+export const defUtility = SED({
+	required: ['uuid', 'date', 'created_at'],
+	properties: {
+		uuid: SE.uuid(),
+		date: SE.date_time(),
+		previous_date: SE.date_time(),
+		off_day: SE.boolean(),
+		created_at: SE.date_time(),
+		created_by: SE.uuid(),
+		updated_at: SE.date_time(),
+		updated_by: SE.uuid(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Maintain/Utility',
+});
+
+export const defUtilityEntry = SED({
+	required: [
+		'uuid',
+		'utility_uuid',
+		'type',
+		'reading',
+		'voltage_ratio',
+		'unit_cost',
+		'created_at',
+	],
+	properties: {
+		uuid: SE.uuid(),
+		utility_uuid: SE.uuid(),
+		type: SE.string('fzl_peak_hour'),
+		reading: SE.number(100.5),
+		voltage_ratio: SE.number(1.0),
+		unit_cost: SE.number(5.0),
+		created_at: SE.date_time(),
+		created_by: SE.uuid(),
+		updated_at: SE.date_time(),
+		updated_by: SE.uuid(),
+		remarks: SE.string('remarks'),
+	},
+	xml: 'Maintain/UtilityEntry',
+});
+
 // * Marge All
 export const defMaintain = {
 	section_machine: defSectionMachine,
 	issue: defIssue,
 	issue_procurement: defIssueProcurement,
+	utility: defUtility,
+	utility_entry: defUtilityEntry,
 };
 
 // * Tag
@@ -99,5 +143,13 @@ export const tagMaintain = [
 	{
 		name: 'maintain.issue_procurement',
 		description: 'Operations about issue procurement',
+	},
+	{
+		name: 'maintain.utility',
+		description: 'Operations about utility',
+	},
+	{
+		name: 'maintain.utility_entry',
+		description: 'Operations about utility entry',
 	},
 ];

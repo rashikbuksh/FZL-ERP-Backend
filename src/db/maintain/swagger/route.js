@@ -351,9 +351,178 @@ export const pathMaintainDashboard = {
 	},
 };
 
+// * Utility * //
+export const pathMaintainUtility = {
+	'/maintain/utility': {
+		get: {
+			tags: ['maintain.utility'],
+			summary: 'Get all utility records',
+			description: 'Get all utility records',
+			responses: {
+				200: SE.response_schema_ref(200, 'maintain/utility'),
+			},
+		},
+		post: {
+			tags: ['maintain.utility'],
+			summary: 'Create a utility record',
+			description: 'Create a utility record',
+			operationId: 'createUtility',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			requestBody: SE.requestBody_schema_ref('maintain/utility'),
+			responses: {
+				200: SE.response_schema_ref(200, 'maintain/utility'),
+			},
+		},
+	},
+	'/maintain/utility/{uuid}': {
+		get: {
+			tags: ['maintain.utility'],
+			summary: 'Get utility record by uuid',
+			description: 'Get utility record by uuid',
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'uuid',
+					'uuid',
+					'Utility record to get',
+					true
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'maintain/utility'),
+			},
+		},
+		put: {
+			tags: ['maintain.utility'],
+			summary: 'Update an existing utility record',
+			description: 'Update an existing utility record',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'uuid',
+					'uuid',
+					'Utility record to update',
+					true
+				),
+			],
+			requestBody: SE.requestBody_schema_ref('maintain/utility'),
+			responses: {
+				200: SE.response_schema_ref(200, 'maintain/utility'),
+			},
+		},
+		delete: {
+			tags: ['maintain.utility'],
+			summary: 'Delete a utility record',
+			description: 'Delete a utility record',
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'uuid',
+					'uuid',
+					'Utility record to delete',
+					true
+				),
+			],
+			responses: {
+				200: SE.response(200, 'Utility record deleted successfully'),
+			},
+		},
+	},
+};
+
+// * Utility Entry * //
+export const pathMaintainUtilityEntry = {
+	'/maintain/utility-entry': {
+		get: {
+			tags: ['maintain.utility_entry'],
+			summary: 'Get all utility entry records',
+			description: 'Get all utility entry records',
+			responses: {
+				200: SE.response_schema_ref(200, 'maintain/utility_entry'),
+			},
+		},
+		post: {
+			tags: ['maintain.utility_entry'],
+			summary: 'Create a utility entry record',
+			description: 'Create a utility entry record',
+			operationId: 'createUtilityEntry',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			requestBody: SE.requestBody_schema_ref('maintain/utility_entry'),
+			responses: {
+				200: SE.response_schema_ref(200, 'maintain/utility_entry'),
+			},
+		},
+	},
+	'/maintain/utility-entry/{uuid}': {
+		get: {
+			tags: ['maintain.utility_entry'],
+			summary: 'Get utility entry record by uuid',
+			description: 'Get utility entry record by uuid',
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'uuid',
+					'uuid',
+					'Utility entry record to get',
+					true
+				),
+			],
+			responses: {
+				200: SE.response_schema_ref(200, 'maintain/utility_entry'),
+			},
+		},
+		put: {
+			tags: ['maintain.utility_entry'],
+			summary: 'Update an existing utility entry record',
+			description: 'Update an existing utility entry record',
+			consumes: ['application/json'],
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'uuid',
+					'uuid',
+					'Utility entry record to update',
+					true
+				),
+			],
+			requestBody: SE.requestBody_schema_ref('maintain/utility_entry'),
+			responses: {
+				200: SE.response_schema_ref(200, 'maintain/utility_entry'),
+			},
+		},
+		delete: {
+			tags: ['maintain.utility_entry'],
+			summary: 'Delete a utility entry record',
+			description: 'Delete a utility entry record',
+			produces: ['application/json'],
+			parameters: [
+				SE.parameter_params(
+					'uuid',
+					'uuid',
+					'Utility entry record to delete',
+					true
+				),
+			],
+			responses: {
+				200: SE.response(
+					200,
+					'Utility entry record deleted successfully'
+				),
+			},
+		},
+	},
+};
+
+// * Maintain * //
+
 export const pathMaintain = {
 	...pathMaintainSectionMachine,
 	...pathMaintainIssue,
 	...pathMaintainIssueProcurement,
 	...pathMaintainDashboard,
+	...pathMaintainUtility,
+	...pathMaintainUtilityEntry,
 };

@@ -92,6 +92,28 @@ export async function select(req, res, next) {
 			updated_by: utility.updated_by,
 			updated_by_name: updatedByUser.name,
 			remarks: utility.remarks,
+			utility_entries: sql`(
+				SELECT json_agg(ue_data) FROM (
+					SELECT
+						ue.uuid,
+						ue.utility_uuid,
+						ue.type,
+						ue.reading,
+						ue.voltage_ratio,
+						ue.unit_cost,
+						ue.created_at,
+						ue.created_by,
+						creator.name AS created_by_name,
+						ue.updated_at,
+						ue.updated_by,
+						updater.name AS updated_by_name,
+						ue.remarks
+					FROM utility_entry ue
+					LEFT JOIN hr_schema.users AS creator ON ue.created_by = creator.uuid
+					LEFT JOIN hr_schema.users AS updater ON ue.updated_by = updater.uuid
+					WHERE ue.utility_uuid = utility.uuid
+				) AS ue_data
+			)`,
 		})
 		.from(utility)
 		.leftJoin(createdByUser, eq(utility.created_by, createdByUser.uuid))
