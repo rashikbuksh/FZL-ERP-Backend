@@ -4,7 +4,7 @@ import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { utility, utility_entry } from '../schema.js';
 import { alias } from 'drizzle-orm/pg-core';
-import { decimalToNumber } from '@/db/variables.js';
+import { decimalToNumber } from '../../variables.js';
 
 const createdByUser = alias(hrSchema.users, 'createdByUser');
 const updatedByUser = alias(hrSchema.users, 'updatedByUser');
