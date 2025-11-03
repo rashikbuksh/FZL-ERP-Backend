@@ -109,4 +109,50 @@ export const issue_procurement = maintain.table('issue_procurement', {
 	remarks: text().default(null),
 });
 
+export const utility_sequence = maintain.sequence('utility_sequence', {
+	startWith: 1,
+	increment: 1,
+});
+
+export const utility = maintain.table('utility', {
+	id: serial('id'),
+	uuid: uuid_primary,
+	date: DateTime('date').notNull().unique(),
+	previous_date: DateTime('previous_date').default(null),
+	off_day: boolean('off_day').notNull().default(false),
+	created_at: DateTime('created_at').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by')
+		.references(() => hrSchema.users.uuid)
+		.default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const utility_entry_type_enum = maintain.enum(
+	'utility_entry_type_enum',
+	[
+		'fzl_peak_hour',
+		'fzl_off_hour',
+		'boiler',
+		'gas_generator',
+		'tsl_peak_hour',
+		'tsl_off_hour',
+	]
+);
+
+export const utility_entry = maintain.table('utility_entry', {
+	uuid: uuid_primary,
+	utility_uuid: defaultUUID('utility_uuid').references(() => utility.uuid),
+	type: utility_entry_type_enum('type').notNull(),
+	reading: PG_DECIMAL('reading').notNull(),
+	voltage_ratio: PG_DECIMAL('voltage_ratio').notNull(),
+	unit_cost: PG_DECIMAL('unit_cost').notNull(),
+	created_at: DateTime('created_at').notNull(),
+	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	updated_at: DateTime('updated_at').default(null),
+	updated_by: defaultUUID('updated_by').references(() => hrSchema.users.uuid),
+	remarks: text('remarks').default(null),
+});
+
 export default maintain;
