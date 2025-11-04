@@ -9,13 +9,15 @@ const utilityPrevious = alias(maintainSchema.utility, 'utility_previous');
 export async function selectUtilityDate(req, res, next) {
 	const utilityPromise = db
 		.select({
-			value: sql`${maintainSchema.utility.date}`,
-			label: sql`${maintainSchema.utility.date}`,
+			value: maintainSchema.utility.date,
+			label: maintainSchema.utility.date,
 		})
 		.from(maintainSchema.utility)
-		.leftJoin(
-			utilityPrevious,
-			ne(utilityPrevious.date, maintainSchema.utility.previous_date)
+		.where(
+			ne(
+				maintainSchema.utility.date,
+				maintainSchema.utility.previous_date
+			)
 		)
 		.orderBy(desc(maintainSchema.utility.date));
 
