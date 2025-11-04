@@ -8,16 +8,17 @@ const utilityPrevious = alias(maintainSchema.utility, 'utility_previous');
 
 export async function selectUtilityDate(req, res, next) {
 	const utilityPromise = db
-		.select({
+		.selectDistinct({
 			value: maintainSchema.utility.date,
 			label: maintainSchema.utility.date,
 		})
 		.from(maintainSchema.utility)
 		.where(
-			ne(
-				maintainSchema.utility.date,
-				maintainSchema.utility.previous_date
-			)
+			sql`${maintainSchema.utility.date} NOT IN (
+				SELECT DISTINCT ${maintainSchema.utility.previous_date} 
+				FROM ${maintainSchema.utility} 
+				WHERE ${maintainSchema.utility.previous_date} IS NOT NULL
+			)`
 		)
 		.orderBy(desc(maintainSchema.utility.date));
 
