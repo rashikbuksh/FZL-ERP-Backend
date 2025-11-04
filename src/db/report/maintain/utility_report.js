@@ -7,10 +7,11 @@ export async function utilityReport(req, res, next) {
 		const query = sql`
             SELECT 
                 u.date::date,
+                u.off_day,
                 ue.type,
                 ue.reading AS current_reading,
-                ue.reading - COALESCE(ue_prev.reading, 0) AS consumption_reading,
-                ue.reading - COALESCE(ue_prev.reading, 0) * ue.voltage_ratio * ue.unit_cost AS consumption_cost
+                ue.reading - COALESCE(ue_prev.reading, 0) AS reading_difference,
+                (ue.reading - COALESCE(ue_prev.reading, 0)) * ue.voltage_ratio * ue.unit_cost AS consumption_cost
             FROM
                 maintain.utility_entry ue
             LEFT JOIN
@@ -18,7 +19,7 @@ export async function utilityReport(req, res, next) {
             LEFT JOIN
                 maintain.utility u_prev ON u.previous_date::date = u_prev.date::date
             LEFT JOIN 
-                maintain.utility_entry ue_prev ON u_prev.uuid = ue_prev.utility_uuid
+                maintain.utility_entry ue_prev ON u_prev.uuid = ue_prev.utility_uuid AND ue.type = ue_prev.type
         `;
 
 		const resultPromise = db.execute(query);

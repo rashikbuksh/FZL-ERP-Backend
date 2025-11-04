@@ -1,8 +1,10 @@
-import { asc, eq, sql } from 'drizzle-orm';
+import { ne, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { handleError } from '../../../util/index.js';
-import * as maintainSchema from '../../maintain/schema.js';
 import db from '../../index.js';
-import { decimalToNumber } from '../../variables.js';
+import * as maintainSchema from '../../maintain/schema.js';
+
+const utilityPrevious = alias(maintainSchema.utility, 'utility_previous');
 
 export async function selectUtilityDate(req, res, next) {
 	const utilityPromise = db
@@ -11,7 +13,11 @@ export async function selectUtilityDate(req, res, next) {
 			label: sql`${maintainSchema.utility.date}`,
 		})
 		.from(maintainSchema.utility)
-		.limit(1);
+		.leftJoin(
+			utilityPrevious,
+			ne(utilityPrevious.date, maintainSchema.utility.previous_date)
+		)
+		.orderBy(desc(maintainSchema.utility.date));
 
 	try {
 		const [data] = await utilityPromise;
