@@ -1570,4 +1570,22 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/utility-report': {
+		get: {
+			summary: 'Utility Report',
+			description: 'Utility Report',
+			tags: ['report'],
+			operationId: 'selectUtilityReport',
+			parameters: [],
+			responses: {
+				200: SE.response_schema(200, {
+					date: SE.date_time(),
+					type: SE.string('Utility Type'),
+					current_reading: SE.number(610),
+					consumption_reading: SE.number(610),
+					consumption_cost: SE.number(610),
+				}),
+			},
+		},
+	},
 };

@@ -72,6 +72,7 @@ import {
 	chartOfAccountsReport,
 	chartOfAccountsReportTableView,
 } from './acc_report/chart_of_accounts.js';
+import { utilityReport } from './maintain/utility_report.js';
 
 const reportRouter = Router();
 
@@ -287,11 +288,11 @@ reportRouter.get(
 	selectSampleBulkItemWiseStatus
 );
 
-// LC FORTNIGHT REPORT
+// * LC FORTNIGHT REPORT
 reportRouter.get('/lc-fortnight-report', fortnightReport);
 reportRouter.get('/lc-payment-report', PaymentReport);
 
-// ACC BALANCE REPORT
+// * ACC BALANCE REPORT
 reportRouter.get('/acc-balance-report', balanceReport);
 
 // * Chart of Accounts (Tree View)
@@ -302,6 +303,9 @@ reportRouter.get(
 	'/chart-of-accounts-table-view',
 	chartOfAccountsReportTableView
 );
+
+// * Utility Report
+reportRouter.get('/utility-report', utilityReport);
 
 export const pathReport = {
 	...ReportRoutes.pathReport,
