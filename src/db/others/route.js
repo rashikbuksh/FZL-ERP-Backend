@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import * as otherOperations from './query/query.js';
 import * as accOperations from './query/accounts.js';
+import * as maintainOperations from './query/maintain.js';
 import {
 	pathPublic,
 	pathPurchase,
@@ -260,6 +261,12 @@ otherRouter.get('/accounts/table-name', accOperations.getAccountsTableNames);
 otherRouter.get(
 	'/accounts/table-data/by/:table_name',
 	accOperations.getSelectedTableData
+);
+
+// * Maintain Utility
+otherRouter.get(
+	'/maintain/utility-date/value/label',
+	maintainOperations.selectUtilityDate
 );
 
 export const pathOthers = {

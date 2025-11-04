@@ -1613,6 +1613,20 @@ const pathMaintain = {
 			},
 		},
 	},
+	'/other/maintain/utility-date/value/label': {
+		get: {
+			tags: ['others'],
+			summary: 'get all maintain utility dates',
+			description: 'All maintain utility dates',
+			operationId: 'getAllMaintainUtilityDates',
+			responses: {
+				200: SE.response_schema(200, {
+					value: SE.date_time(),
+					label: SE.date_time(),
+				}),
+			},
+		},
+	},
 };
 
 const pathAccounts = {
