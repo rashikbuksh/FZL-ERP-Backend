@@ -20,7 +20,7 @@ export async function selectUtilityDate(req, res, next) {
 		.orderBy(desc(maintainSchema.utility.date));
 
 	try {
-		const [data] = await utilityPromise;
+		const data = await utilityPromise;
 
 		const toast = {
 			status: 200,
