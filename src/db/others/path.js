@@ -1,3 +1,4 @@
+import { param } from 'express-validator';
 import SE from '../../util/swagger_example.js';
 
 const pathPublic = {
@@ -1619,6 +1620,9 @@ const pathMaintain = {
 			summary: 'get all maintain utility dates',
 			description: 'All maintain utility dates',
 			operationId: 'getAllMaintainUtilityDates',
+			parameters: [
+				SE.parameter_query('current', 'current', SE.date_time()),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					value: SE.date_time(),
