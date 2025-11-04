@@ -1,4 +1,4 @@
-import { ne, sql } from 'drizzle-orm';
+import { desc, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
