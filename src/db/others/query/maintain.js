@@ -1,4 +1,4 @@
-import { desc, ne, sql } from 'drizzle-orm';
+import { and, desc, ne, sql } from 'drizzle-orm';
 import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 import * as maintainSchema from '../../maintain/schema.js';
