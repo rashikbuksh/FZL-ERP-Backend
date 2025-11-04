@@ -7,8 +7,8 @@ import { decimalToNumber } from '../../variables.js';
 export async function selectUtilityDate(req, res, next) {
 	const utilityPromise = db
 		.select({
-			value: sql`${maintainSchema.utility.date}::date`,
-			label: sql`${maintainSchema.utility.date}::date`,
+			value: sql`${maintainSchema.utility.date}`,
+			label: sql`${maintainSchema.utility.date}`,
 		})
 		.from(maintainSchema.utility)
 		.limit(1);
