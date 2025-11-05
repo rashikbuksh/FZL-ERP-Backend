@@ -3,6 +3,11 @@ import { handleError } from '../../../util/index.js';
 import db from '../../index.js';
 
 export async function utilityReport(req, res, next) {
+	const { month, year } = req.query;
+
+	const monthInt = month ? parseInt(month) : null;
+	const yearInt = year ? parseInt(year) : null;
+
 	try {
 		const query = sql`
             SELECT 
@@ -21,6 +26,8 @@ export async function utilityReport(req, res, next) {
             LEFT JOIN 
                 maintain.utility_entry ue_prev ON u_prev.uuid = ue_prev.utility_uuid AND ue.type = ue_prev.type
             WHERE ue.type IS NOT NULL
+                ${month ? sql`AND EXTRACT(MONTH FROM u.date) = ${monthInt}` : sql``}
+                ${year ? sql`AND EXTRACT(YEAR FROM u.date) = ${yearInt}` : sql``}
             ORDER BY u.date, ue.type
         `;
 

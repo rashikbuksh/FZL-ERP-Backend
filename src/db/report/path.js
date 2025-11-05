@@ -1576,7 +1576,10 @@ export const pathReport = {
 			description: 'Utility Report',
 			tags: ['report'],
 			operationId: 'selectUtilityReport',
-			parameters: [],
+			parameters: [
+				SE.parameter_query('month', 'month', 'January'),
+				SE.parameter_query('year', 'year', '2024'),
+			],
 			responses: {
 				200: SE.response_schema(200, {
 					date: SE.date_time(),
