@@ -28,70 +28,26 @@ export async function utilityReport(req, res, next) {
 
 		const data = await resultPromise;
 
-		// group data using type where ['fzl_peak_hour','fzl_off_hour'] will be together and ['tsl_peak_hour','tsl_off_hour'] will be together and ['boiler','gas_generator'] will be together
-		const groupedData = data.rows.reduce((acc, row) => {
-			let groupKey;
-			if (row.type === 'fzl_peak_hour' || row.type === 'fzl_off_hour') {
-				groupKey = 'fzl';
-			} else if (
-				row.type === 'tsl_peak_hour' ||
-				row.type === 'tsl_off_hour'
-			) {
-				groupKey = 'tsl';
-			} else if (row.type === 'boiler' || row.type === 'gas_generator') {
-				groupKey = 'generators';
-			}
-
-			// Create unique key for date + group combination
-			const dateGroupKey = `${row.date}_${groupKey}`;
-
-			if (!acc[dateGroupKey]) {
-				acc[dateGroupKey] = {
-					date: row.date,
-					off_day: row.off_day,
+		// group data using date
+		const groupedData = data.reduce((acc, curr) => {
+			if (!acc[curr.date]) {
+				acc[curr.date] = {
+					date: curr.date,
+					off_day: curr.off_day,
 					entries: [],
 				};
 			}
-
-			// Check if entry with this type already exists for this date
-			const existingEntry = acc[dateGroupKey].entries.find(
-				(entry) => entry.type === row.type
-			);
-
-			if (!existingEntry) {
-				acc[dateGroupKey].entries.push({
-					type: row.type,
-					current_reading: row.current_reading,
-					reading_difference: row.reading_difference,
-					reading_cost: row.reading_cost,
-				});
-			}
-
+			acc[curr.date].entries.push({
+				type: curr.type,
+				current_reading: curr.current_reading,
+				reading_difference: curr.reading_difference,
+				reading_cost: curr.reading_cost,
+			});
 			return acc;
 		}, {});
 
-		// Convert grouped data to an array and group by actual group key
-		const finalGroupedData = {};
-		Object.keys(groupedData).forEach((dateGroupKey) => {
-			const data = groupedData[dateGroupKey];
-			const groupKey = dateGroupKey.split('_').slice(1).join('_'); // Extract group from dateGroupKey
-
-			if (!finalGroupedData[groupKey]) {
-				finalGroupedData[groupKey] = [];
-			}
-
-			finalGroupedData[groupKey].push({
-				date: data.date,
-				off_day: data.off_day,
-				entries: data.entries,
-			});
-		});
-
-		// Convert to final array format
-		const finalData = Object.keys(finalGroupedData).map((key) => ({
-			group: key,
-			dates: finalGroupedData[key],
-		}));
+		// convert grouped data to array
+		const finalData = Object.values(groupedData);
 
 		const toast = {
 			status: 200,
