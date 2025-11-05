@@ -29,7 +29,7 @@ export async function utilityReport(req, res, next) {
 		const data = await resultPromise;
 
 		// group data using date
-		const groupedData = data.reduce((acc, curr) => {
+		const groupedData = data.rows.reduce((acc, curr) => {
 			if (!acc[curr.date]) {
 				acc[curr.date] = {
 					date: curr.date,
