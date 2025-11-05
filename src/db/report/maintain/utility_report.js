@@ -9,17 +9,19 @@ export async function utilityReport(req, res, next) {
                 u.date::date,
                 u.off_day,
                 ue.type,
-                ue.reading AS current_reading,
-                ue.reading - COALESCE(ue_prev.reading, 0) AS reading_difference,
-                (ue.reading - COALESCE(ue_prev.reading, 0)) * ue.voltage_ratio * ue.unit_cost AS reading_cost
+                ue.reading::float8 AS current_reading,
+                ue.reading::float8 - COALESCE(ue_prev.reading, 0)::float8 AS reading_difference,
+                (ue.reading::float8 - COALESCE(ue_prev.reading, 0)::float8) * ue.voltage_ratio::float8 * ue.unit_cost::float8 AS reading_cost
             FROM
-                maintain.utility_entry ue
+                maintain.utility u
             LEFT JOIN
-                maintain.utility u ON ue.utility_uuid = u.uuid
+                maintain.utility_entry ue ON ue.utility_uuid = u.uuid
             LEFT JOIN
                 maintain.utility u_prev ON u.previous_date::date = u_prev.date::date
             LEFT JOIN 
                 maintain.utility_entry ue_prev ON u_prev.uuid = ue_prev.utility_uuid AND ue.type = ue_prev.type
+            WHERE ue.type IS NOT NULL
+            ORDER BY u.date, ue.type
         `;
 
 		const resultPromise = db.execute(query);
@@ -39,26 +41,56 @@ export async function utilityReport(req, res, next) {
 			} else if (row.type === 'boiler' || row.type === 'gas_generator') {
 				groupKey = 'generators';
 			}
-			if (!acc[groupKey]) {
-				acc[groupKey] = {
+
+			// Create unique key for date + group combination
+			const dateGroupKey = `${row.date}_${groupKey}`;
+
+			if (!acc[dateGroupKey]) {
+				acc[dateGroupKey] = {
 					date: row.date,
 					off_day: row.off_day,
 					entries: [],
 				};
 			}
-			acc[groupKey].entries.push({
-				type: row.type,
-				current_reading: row.current_reading,
-				reading_difference: row.reading_difference,
-				reading_cost: row.reading_cost,
-			});
+
+			// Check if entry with this type already exists for this date
+			const existingEntry = acc[dateGroupKey].entries.find(
+				(entry) => entry.type === row.type
+			);
+
+			if (!existingEntry) {
+				acc[dateGroupKey].entries.push({
+					type: row.type,
+					current_reading: row.current_reading,
+					reading_difference: row.reading_difference,
+					reading_cost: row.reading_cost,
+				});
+			}
+
 			return acc;
 		}, {});
 
-		// Convert grouped data to an array
-		const finalData = Object.keys(groupedData).map((key) => ({
+		// Convert grouped data to an array and group by actual group key
+		const finalGroupedData = {};
+		Object.keys(groupedData).forEach((dateGroupKey) => {
+			const data = groupedData[dateGroupKey];
+			const groupKey = dateGroupKey.split('_').slice(1).join('_'); // Extract group from dateGroupKey
+
+			if (!finalGroupedData[groupKey]) {
+				finalGroupedData[groupKey] = [];
+			}
+
+			finalGroupedData[groupKey].push({
+				date: data.date,
+				off_day: data.off_day,
+				entries: data.entries,
+			});
+		});
+
+		// Convert to final array format
+		const finalData = Object.keys(finalGroupedData).map((key) => ({
 			group: key,
-			...groupedData[key],
+			dates: finalGroupedData[key],
 		}));
 
 		const toast = {
