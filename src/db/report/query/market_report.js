@@ -1,17 +1,12 @@
 import { sql } from 'drizzle-orm';
 import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
-import { GetMarketingOwnUUID } from '../../variables.js';
 
 export async function selectMarketReport(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	const { own_uuid, from_date, to_date, report_for } = req?.query;
+	const { from_date, to_date } = req?.query;
 
 	try {
-		const marketingUuid = own_uuid
-			? await GetMarketingOwnUUID(db, own_uuid)
-			: null;
-
 		const query = sql`
                     WITH opening_all_sum AS (
                         SELECT 
@@ -28,13 +23,12 @@ export async function selectMarketReport(req, res, next) {
                             ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                             AND vpl.item_for NOT IN ('thread', 'sample_thread')
                             AND vpl.is_deleted = false
-                            AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                         GROUP BY 
                             vpl.packing_list_entry_uuid,
                             vodf.order_type,
                             oe.party_price,
                             oe.company_price
-                        ),
+                    ),
                     running_all_sum AS (
                         SELECT 
                             vpl.packing_list_entry_uuid, 
@@ -50,19 +44,20 @@ export async function selectMarketReport(req, res, next) {
                             ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                             AND vpl.item_for NOT IN ('thread', 'sample_thread')
                             AND vpl.is_deleted = false
-                            AND ${report_for == 'accounts' ? sql`vpl.challan_uuid IS NOT NULL` : sql`1=1`}
                         GROUP BY 
                             vpl.packing_list_entry_uuid,
                             vodf.order_type,
                             oe.party_price,
                             oe.company_price
-                        )
+                    )
                     SELECT
-                        marketing.name as marketing_name,
-                        party.name as party_name,
+                        MIN(marketing.name) as marketing_name,
+                        MIN(party.name) as party_name,
+                        MIN(party.uuid) as party_uuid,
                         -- party wise order number, against order number -> pi, lc, cash invoice
-                        zipper_object.order_details,
-                        total_lc.total_value as total_lc_value
+                        jsonb_agg(DISTINCT elem) FILTER (WHERE elem IS NOT NULL) as order_details,
+                        MAX(total_lc.total_value) as total_lc_value,
+                        MAX(cash_received.total_cash_received) as total_cash_received
                     FROM 
                         public.party
                     LEFT JOIN
@@ -184,7 +179,7 @@ export async function selectMarketReport(req, res, next) {
                             SELECT 
                                 manual_pi.lc_uuid,
                                 manual_pi.marketing_uuid,
-                                SUM(manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 / 12) AS manual_pi_value
+                                SUM(CASE WHEN manual_pi_entry.is_zipper = true THEN (manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 / 12) ELSE (manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8) END) AS manual_pi_value
                             FROM commercial.manual_pi_entry
                             LEFT JOIN commercial.manual_pi ON manual_pi_entry.manual_pi_uuid = manual_pi.uuid
                             WHERE manual_pi.lc_uuid IS NOT NULL
@@ -196,7 +191,28 @@ export async function selectMarketReport(req, res, next) {
                         GROUP BY lc.party_uuid, CASE WHEN pi_cash.uuid IS NOT NULL THEN pi_cash.marketing_uuid ELSE manual_pi_values.marketing_uuid END
                     ) AS total_lc ON
                         total_lc.party_uuid = vodf.party_uuid AND total_lc.marketing_uuid = vodf.marketing_uuid
-                    WHERE order_details IS NOT NULL
+                    LEFT JOIN 
+                        (
+                            SELECT 
+                                SUM(cash_receive.amount) AS total_cash_received,
+                                pi_cash.marketing_uuid,
+                                pi_cash.party_uuid
+                            FROM 
+                                commercial.cash_receive
+                            LEFT JOIN 
+                                commercial.pi_cash ON cash_receive.pi_cash_uuid = pi_cash.uuid
+                            WHERE 
+                                ${from_date && to_date ? sql`cash_receive.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 DAY'` : sql`1=1`}
+                            GROUP BY 
+                                pi_cash.marketing_uuid,
+                                pi_cash.party_uuid
+                        ) AS cash_received ON 
+                            cash_received.party_uuid = vodf.party_uuid AND cash_received.marketing_uuid = vodf.marketing_uuid
+                    CROSS JOIN LATERAL jsonb_array_elements(zipper_object.order_details) AS elem
+                    WHERE zipper_object.order_details IS NOT NULL
+                    GROUP BY 
+                        party.uuid,
+                        marketing.uuid
                     `;
 
 		const resultPromise = db.execute(query);
