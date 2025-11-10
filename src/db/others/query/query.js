@@ -973,7 +973,7 @@ export async function selectOrderZipperThread(req, res, next) {
 						)
 						SELECT
 							${is_description_needed == 'true' ? sql`vodf.order_description_uuid ` : sql`oz.uuid`} AS value,
-							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', oz.id::text ${is_description_needed == 'true' ? sql`,' - ', vodf.item_description` : sql``}) as label,
+							CONCAT('Z', CASE WHEN oz.is_sample = 1 THEN 'S' ELSE '' END, to_char(oz.created_at, 'YY'), '-', oz.id::text ${is_description_needed == 'true' ? sql`,' - ', vodf.item_description` : sql``}, CASE WHEN oz.is_cancelled = true THEN ' (Cancelled)' ELSE '' END) as label,
 							ARRAY_AGG(DISTINCT oe.color) as colors,
 							true as is_zipper
 						FROM
@@ -1020,7 +1020,7 @@ export async function selectOrderZipperThread(req, res, next) {
 						UNION 
 						SELECT
 							ot.uuid AS value,
-							CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', ot.id::text) as label,
+							CONCAT('ST', CASE WHEN ot.is_sample = 1 THEN 'S' ELSE '' END, to_char(ot.created_at, 'YY'), '-', ot.id::text, CASE WHEN ot.is_cancelled = true THEN ' (Cancelled)' ELSE '' END) as label,
 							ARRAY_AGG(DISTINCT toe.color) as colors,
 							false as is_zipper
 						FROM
