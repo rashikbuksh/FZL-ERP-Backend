@@ -8,28 +8,7 @@ export async function selectMarketReport(req, res, next) {
 
 	try {
 		const query = sql`
-                    WITH opening_all_sum AS (
-                        SELECT 
-                            vpl.packing_list_entry_uuid,
-                            coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                            coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 0)::float8 as total_prod_value_party,
-                            coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value_company
-                        FROM 
-                            delivery.v_packing_list_details vpl 
-                            LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
-                            LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
-                            AND oe.order_description_uuid = vodf.order_description_uuid 
-                        WHERE 
-                            ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
-                            AND vpl.item_for NOT IN ('thread', 'sample_thread')
-                            AND vpl.is_deleted = false
-                        GROUP BY 
-                            vpl.packing_list_entry_uuid,
-                            vodf.order_type,
-                            oe.party_price,
-                            oe.company_price
-                    ),
-                    running_all_sum AS (
+                    WITH running_all_sum AS (
                         SELECT 
                             vpl.packing_list_entry_uuid, 
                             coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
@@ -133,6 +112,8 @@ export async function selectMarketReport(req, res, next) {
                             GROUP BY
                                 vodf.order_info_uuid
                         ) AS oe_sum ON vodf.order_info_uuid = oe_sum.order_info_uuid
+                        WHERE 
+							production_quantity.total_prod_quantity IS NOT NULL
                         GROUP BY
                             vodf.marketing_uuid,
                             vodf.party_uuid
