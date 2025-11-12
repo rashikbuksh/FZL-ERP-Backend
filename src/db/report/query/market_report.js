@@ -20,7 +20,7 @@ export async function selectMarketReport(req, res, next) {
                             LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
                             AND oe.order_description_uuid = vodf.order_description_uuid 
                         WHERE 
-                            vpl.created_at < '2025-10-01'::TIMESTAMP
+                            vpl.created_at < ${from_date}::TIMESTAMP
                             AND vpl.item_for NOT IN ('thread', 'sample_thread')
                             AND vpl.is_deleted = false
                         GROUP BY 
@@ -215,6 +215,9 @@ export async function selectMarketReport(req, res, next) {
                     GROUP BY 
                         party.uuid,
                         marketing.uuid
+                    ORDER BY
+                        marketing_name,
+                        party_name
                     `;
 
 		const resultPromise = db.execute(query);
