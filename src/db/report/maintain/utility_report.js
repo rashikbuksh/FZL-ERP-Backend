@@ -28,7 +28,7 @@ export async function utilityReport(req, res, next) {
             WHERE ue.type IS NOT NULL
                 ${month ? sql`AND EXTRACT(MONTH FROM u.date) = ${monthInt}` : sql``}
                 ${year ? sql`AND EXTRACT(YEAR FROM u.date) = ${yearInt}` : sql``}
-            ORDER BY u.date, ue.type
+            ORDER BY u.date DESC, ue.type ASC
         `;
 
 		const resultPromise = db.execute(query);
