@@ -779,7 +779,8 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 			tape_coil_required.bottom::float8,
 			tape_coil_required.raw_mtr_per_kg::float8 as raw_per_kg_meter,
 			tape_coil_required.dyed_mtr_per_kg::float8 as dyed_per_kg_meter,
-			pi_cash_grouped.pi_numbers
+			pi_cash_grouped.pi_numbers,
+			description_complains.description_complains
 		FROM 
 			zipper.v_order_details_full 
 		LEFT JOIN 
@@ -818,6 +819,43 @@ export async function selectOrderDescriptionFullByOrderDescriptionUuid(
 			GROUP BY
 				vodf.order_info_uuid
 		) pi_cash_grouped ON v_order_details_full.order_info_uuid = pi_cash_grouped.order_info_uuid
+		LEFT JOIN (
+			SELECT 
+				vodf.order_description_uuid,
+				row_to_json(t) AS description_complains
+			FROM 
+				zipper.v_order_details_full vodf
+			LEFT JOIN (
+				SELECT 
+					com.uuid,
+					com.order_description_uuid,
+					vodf.order_number,
+					com.file,
+					com.name,
+					com.description,
+					com.root_cause_analysis,
+					com.issue_department,
+					com.solution,
+					com.future_proof,
+					com.created_at,
+					com.created_by,
+					created_by_user.name AS created_by_name,
+					com.updated_at,
+					com.updated_by,
+					updated_by_user.name AS updated_by_name,
+					com.remarks,
+					com.is_resolved,
+					com.is_resolved_date
+				FROM 
+					public.complaint com
+				LEFT JOIN 
+					hr.users AS created_by_user ON com.created_by = created_by_user.uuid
+				LEFT JOIN 
+					hr.users AS updated_by_user ON com.updated_by = updated_by_user.uuid
+				LEFT JOIN 
+					zipper.v_order_details_full vodf ON com.order_description_uuid = vodf.order_description_uuid
+			) t	ON vodf.order_description_uuid = t.order_description_uuid
+		) AS description_complains ON v_order_details_full.order_description_uuid = description_complains.order_description_uuid
 		WHERE 
 			v_order_details_full.order_description_uuid = ${order_description_uuid}`;
 
