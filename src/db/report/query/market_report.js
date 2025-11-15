@@ -6,11 +6,21 @@ export async function selectMarketReport(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { from_date, to_date } = req?.query;
 
+	// new date which will be before from_date - 15 days
+	const before_from_date = from_date
+		? new Date(new Date(from_date).getTime() - 15 * 24 * 60 * 60 * 1000)
+		: null;
+
+	// before_from_date format will be 'YYYY-MM-DD'
+	const before_from_date_formatted = before_from_date
+		? before_from_date.toISOString().split('T')[0]
+		: null;
+
 	try {
 		const query = sql`
                     WITH opening_all_sum AS (
-                        SELECT 
-                            vpl.packing_list_entry_uuid,
+                       SELECT 
+                            vpl.packing_list_entry_uuid, 
                             coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
                             coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 0)::float8 as total_prod_value_party,
                             coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value_company
@@ -20,7 +30,7 @@ export async function selectMarketReport(req, res, next) {
                             LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
                             AND oe.order_description_uuid = vodf.order_description_uuid 
                         WHERE 
-                            vpl.created_at < ${from_date}::TIMESTAMP
+                            ${before_from_date_formatted && from_date ? sql`vpl.created_at between ${before_from_date_formatted}::TIMESTAMP and ${from_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
                             AND vpl.item_for NOT IN ('thread', 'sample_thread')
                             AND vpl.is_deleted = false
                         GROUP BY 
@@ -77,17 +87,23 @@ export async function selectMarketReport(req, res, next) {
                                     'order_number',
                                     vodf.order_number,
                                     'total_quantity',
-                                    oe_sum.total_quantity,
+                                    COALESCE(oe_sum.total_quantity, 0),
                                     'total_quantity_party_price',
-                                    oe_sum.total_quantity_party_price,
+                                    COALESCE(oe_sum.total_quantity_party_price, 0),
                                     'total_quantity_company_price',
-                                    oe_sum.total_quantity_company_price,
-                                    'total_prod_quantity',
-                                    production_quantity.total_prod_quantity,
-                                    'total_prod_value_party',
-                                    production_quantity.total_prod_value_party,
-                                    'total_prod_value_company',
-                                    production_quantity.total_prod_value_company
+                                    COALESCE(oe_sum.total_quantity_company_price, 0),
+                                    'running_prod_quantity',
+                                    COALESCE(production_quantity.total_prod_quantity, 0),
+                                    'running_prod_value_party',
+                                    COALESCE(production_quantity.total_prod_value_party, 0),
+                                    'running_prod_value_company',
+                                    COALESCE(production_quantity.total_prod_value_company, 0),
+                                    'opening_prod_quantity',
+                                    COALESCE(opening_quantity.total_prod_quantity, 0),
+                                    'opening_prod_value_party',
+                                    COALESCE(opening_quantity.total_prod_value_party, 0),
+                                    'opening_prod_value_company',
+                                    COALESCE(opening_quantity.total_prod_value_company, 0)
                                 )
                             ) FILTER ( WHERE oe_sum.total_quantity != 0 OR oe_sum.total_quantity IS NOT NULL ) AS order_details
                         FROM zipper.v_order_details_full vodf
@@ -108,6 +124,23 @@ export async function selectMarketReport(req, res, next) {
                                 vpl.order_info_uuid
                         ) AS production_quantity ON
                             vodf.order_info_uuid = production_quantity.order_info_uuid
+                        LEFT JOIN (
+                            SELECT 
+                                vpl.order_info_uuid,
+                                SUM(oas.total_prod_quantity) as total_prod_quantity,
+                                SUM(oas.total_prod_value_party) as total_prod_value_party,
+                                SUM(oas.total_prod_value_company) as total_prod_value_company
+                            FROM
+                                delivery.v_packing_list_details vpl
+                            LEFT JOIN
+                                opening_all_sum oas ON vpl.packing_list_entry_uuid = oas.packing_list_entry_uuid
+                            WHERE 
+                                vpl.is_deleted = false
+                                AND vpl.item_for NOT IN ('thread', 'sample_thread')
+                            GROUP BY
+                                vpl.order_info_uuid
+                        ) AS opening_quantity ON
+                            vodf.order_info_uuid = opening_quantity.order_info_uuid
                         LEFT JOIN (
                             SELECT
                                 vodf.order_info_uuid,
