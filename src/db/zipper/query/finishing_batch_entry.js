@@ -647,7 +647,7 @@ export async function selectFinishingBatchEntryBySection(req, res, next) {
 			${item_name ? sql`AND lower(vodf.item_name) = lower(${item_name})` : sql``}
 			${nylon_stopper ? (nylon_stopper == 'plastic' ? sql`AND lower(vodf.nylon_stopper_name) LIKE 'plastic%'` : sql`AND lower(vodf.nylon_stopper_name) NOT LIKE 'plastic%'`) : sql``}
 			AND CASE WHEN ${section} = 'finishing_prod' 
-				THEN zfbe.finishing_prod IS NOT NULL
+				THEN zfbe.finishing_prod IS NOT NULL AND sfg.delivered < oe.quantity
 				WHEN ${section} = 'teeth_coloring_prod' 
 				THEN (zfbe.quantity - (COALESCE(zfbe.finishing_stock, 0) + COALESCE(zfbe.finishing_prod, 0)))::float8 > 0
 				ELSE 
