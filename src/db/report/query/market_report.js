@@ -6,6 +6,8 @@ export async function selectMarketReport(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	const { from_date, to_date } = req?.query;
 
+	const startTime = Date.now();
+
 	// new date which will be before from_date - 15 days
 	const before_from_date = from_date
 		? new Date(new Date(from_date).getTime() - 15 * 24 * 60 * 60 * 1000)
@@ -23,6 +25,8 @@ export async function selectMarketReport(req, res, next) {
 		? before_to_date.toISOString().split('T')[0]
 		: null;
 
+	//  Packing list creation is considered as production
+
 	try {
 		const query = sql`
                     WITH opening_all_sum AS (
@@ -37,7 +41,7 @@ export async function selectMarketReport(req, res, next) {
                             LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
                             AND oe.order_description_uuid = vodf.order_description_uuid 
                         WHERE 
-                            ${before_from_date_formatted && before_to_date_formatted ? sql`vpl.created_at between ${before_from_date_formatted}::TIMESTAMP and ${before_to_date_formatted}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                            ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                             AND vpl.item_for NOT IN ('thread', 'sample_thread')
                             AND vpl.is_deleted = false
                         GROUP BY 
@@ -79,9 +83,7 @@ export async function selectMarketReport(req, res, next) {
                         MAX(total_lc.total_value) as running_total_lc_value,
                         MAX(cash_received.total_cash_received) as running_total_cash_received,
                         MAX(op_total_lc.total_value) as opening_total_lc_value,
-                        MAX(op_cash_received.total_cash_received) as opening_total_cash_received,
-                        ${before_from_date_formatted} as opening_report_from_date,
-                        ${before_to_date_formatted} as opening_report_to_date
+                        MAX(op_cash_received.total_cash_received) as opening_total_cash_received
                     FROM 
                         public.party
                     LEFT JOIN
@@ -367,7 +369,7 @@ export async function selectMarketReport(req, res, next) {
                                 manual_pi.lc_uuid, manual_pi.marketing_uuid
                         ) manual_pi_values ON manual_pi_values.lc_uuid = lc.uuid 
                         WHERE
-                            ${before_from_date_formatted && before_to_date_formatted ? sql`lc.created_at between ${before_from_date_formatted}::TIMESTAMP and ${before_to_date_formatted}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                            ${from_date ? sql`lc.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                         GROUP BY lc.party_uuid, CASE WHEN pi_cash.uuid IS NOT NULL THEN pi_cash.marketing_uuid ELSE manual_pi_values.marketing_uuid END
                     ) AS op_total_lc ON
                         op_total_lc.party_uuid = vodf.party_uuid AND op_total_lc.marketing_uuid = vodf.marketing_uuid
@@ -382,7 +384,7 @@ export async function selectMarketReport(req, res, next) {
                             LEFT JOIN 
                                 commercial.pi_cash ON cash_receive.pi_cash_uuid = pi_cash.uuid
                             WHERE 
-                                ${before_from_date_formatted && before_to_date_formatted ? sql`cash_receive.created_at BETWEEN ${before_from_date_formatted}::TIMESTAMP AND ${before_to_date_formatted}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
+                                ${from_date ? sql`cash_receive.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
                             GROUP BY 
                                 pi_cash.marketing_uuid,
                                 pi_cash.party_uuid
@@ -402,6 +404,9 @@ export async function selectMarketReport(req, res, next) {
 		const resultPromise = db.execute(query);
 
 		const data = await resultPromise;
+
+		const endTime = Date.now();
+		console.log(`Query execution time: ${endTime - startTime} ms`);
 
 		const toast = {
 			status: 200,
