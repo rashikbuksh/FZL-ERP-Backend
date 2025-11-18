@@ -1591,4 +1591,23 @@ export const pathReport = {
 			},
 		},
 	},
+	'/report/market-report': {
+		get: {
+			summary: 'Market Report',
+			description: 'Market Report',
+			tags: ['report'],
+			operationId: 'selectMarketReport',
+			parameters: [
+				SE.parameter_query('from_date', 'from_date', '2025-10-01'),
+				SE.parameter_query('to_date', 'to_date', '2025-10-15'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					market_name: SE.string('Market Name'),
+					price: SE.number(610),
+					quantity: SE.number(610),
+				}),
+			},
+		},
+	},
 };

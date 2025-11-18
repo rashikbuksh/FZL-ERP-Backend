@@ -73,6 +73,7 @@ import {
 	chartOfAccountsReportTableView,
 } from './acc_report/chart_of_accounts.js';
 import { utilityReport } from './maintain/utility_report.js';
+import { selectMarketReport } from './query/market_report.js';
 
 const reportRouter = Router();
 
@@ -306,6 +307,9 @@ reportRouter.get(
 
 // * Utility Report
 reportRouter.get('/utility-report', utilityReport);
+
+// * Market Report
+reportRouter.get('/market-report', selectMarketReport);
 
 export const pathReport = {
 	...ReportRoutes.pathReport,
