@@ -2337,7 +2337,13 @@ export const pathComplaint = {
 			summary: 'Get all complaints',
 			tags: ['public.complaint'],
 			operationId: 'getComplaint',
-			parameters: [SE.parameter_query('own_uuid', 'own_uuid', SE.uuid())],
+			parameters: [
+				SE.parameter_query('own_uuid', 'own_uuid', SE.uuid()),
+				SE.parameter_query('is_resolved', 'is_resolved', [
+					'true',
+					'false',
+				]),
+			],
 			responses: {
 				200: SE.response_schema_ref(200, 'public/complaint'),
 			},

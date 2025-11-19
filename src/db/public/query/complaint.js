@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -253,7 +253,7 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const { own_uuid } = req.query;
+	const { own_uuid, is_resolved } = req.query;
 
 	const complaintPromise = db
 		.select({
@@ -279,6 +279,12 @@ export async function selectAll(req, res, next) {
 			remarks: complaint.remarks,
 			is_resolved: complaint.is_resolved,
 			is_resolved_date: complaint.is_resolved_date,
+			marketing_name: viewSchema.v_order_details_full.marketing_name,
+			party_name: viewSchema.v_order_details_full.party_name,
+			buyer_name: viewSchema.v_order_details_full.buyer_name,
+			merchandiser_name:
+				viewSchema.v_order_details_full.merchandiser_name,
+			factory_name: viewSchema.v_order_details_full.factory_name,
 		})
 		.from(complaint)
 		.leftJoin(hrSchema.users, eq(complaint.created_by, hrSchema.users.uuid))
@@ -294,8 +300,22 @@ export async function selectAll(req, res, next) {
 			threadSchema.order_info,
 			eq(complaint.thread_order_info_uuid, threadSchema.order_info.uuid)
 		)
-		.where(own_uuid ? eq(complaint.created_by, own_uuid) : sql`1=1`)
 		.orderBy(desc(complaint.created_at));
+
+	const filterConditions = [];
+
+	if (own_uuid) {
+		filterConditions.push(eq(complaint.created_by, own_uuid));
+	}
+	if (is_resolved === 'true') {
+		filterConditions.push(eq(complaint.is_resolved, true));
+	}
+	if (is_resolved === 'false') {
+		filterConditions.push(eq(complaint.is_resolved, false));
+	}
+	if (filterConditions.length > 0) {
+		complaintPromise.where(and(...filterConditions));
+	}
 
 	try {
 		const data = await complaintPromise;
@@ -343,6 +363,12 @@ export async function select(req, res, next) {
 			remarks: complaint.remarks,
 			is_resolved: complaint.is_resolved,
 			is_resolved_date: complaint.is_resolved_date,
+			marketing_name: viewSchema.v_order_details_full.marketing_name,
+			party_name: viewSchema.v_order_details_full.party_name,
+			buyer_name: viewSchema.v_order_details_full.buyer_name,
+			merchandiser_name:
+				viewSchema.v_order_details_full.merchandiser_name,
+			factory_name: viewSchema.v_order_details_full.factory_name,
 		})
 		.from(complaint)
 		.leftJoin(hrSchema.users, eq(complaint.created_by, hrSchema.users.uuid))
@@ -405,6 +431,12 @@ export async function selectByOrderDescriptionUuid(req, res, next) {
 			remarks: complaint.remarks,
 			is_resolved: complaint.is_resolved,
 			is_resolved_date: complaint.is_resolved_date,
+			marketing_name: viewSchema.v_order_details_full.marketing_name,
+			party_name: viewSchema.v_order_details_full.party_name,
+			buyer_name: viewSchema.v_order_details_full.buyer_name,
+			merchandiser_name:
+				viewSchema.v_order_details_full.merchandiser_name,
+			factory_name: viewSchema.v_order_details_full.factory_name,
 		})
 		.from(complaint)
 		.leftJoin(hrSchema.users, eq(complaint.created_by, hrSchema.users.uuid))
