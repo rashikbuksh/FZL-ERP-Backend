@@ -69,6 +69,8 @@ export async function deliveryStatementReport(req, res, next) {
 			isZipper = is_zipper !== undefined;
 		}
 
+		//  Packing list creation is considered as production
+
 		const queryHeader = sql`
          WITH opening_all_sum AS (
                 SELECT 

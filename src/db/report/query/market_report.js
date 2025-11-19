@@ -8,23 +8,6 @@ export async function selectMarketReport(req, res, next) {
 
 	const startTime = Date.now();
 
-	// new date which will be before from_date - 15 days
-	const before_from_date = from_date
-		? new Date(new Date(from_date).getTime() - 15 * 24 * 60 * 60 * 1000)
-		: null;
-	const before_to_date = to_date
-		? new Date(new Date(to_date).getTime() - 15 * 24 * 60 * 60 * 1000)
-		: null;
-
-	// before_from_date format will be 'YYYY-MM-DD'
-	const before_from_date_formatted = before_from_date
-		? before_from_date.toISOString().split('T')[0]
-		: null;
-	// before_to_date format will be 'YYYY-MM-DD'
-	const before_to_date_formatted = before_to_date
-		? before_to_date.toISOString().split('T')[0]
-		: null;
-
 	//  Packing list creation is considered as production
 
 	try {
