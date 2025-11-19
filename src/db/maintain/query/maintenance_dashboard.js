@@ -24,6 +24,13 @@ export async function maintenanceDashboard(req, res, next) {
 		SUM(CASE WHEN verification_approved = true AND created_at::date >= CURRENT_DATE - INTERVAL '1 month' AND created_at::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_last_one_month,
 		SUM(CASE WHEN verification_approved = true AND created_at::date >= CURRENT_DATE - INTERVAL '1 year' AND created_at::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS resolved_last_one_year,
 
+		-- respondent (maintain_condition = 'okay' AND verification_approved = false, use created_at)
+		SUM(CASE WHEN maintain_condition = 'okay' AND verification_approved = false AND created_at::date >= CURRENT_DATE AND created_at < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS respondent_today,
+		SUM(CASE WHEN maintain_condition = 'okay' AND verification_approved = false AND created_at::date >= CURRENT_DATE - INTERVAL '1 day' AND created_at::date < CURRENT_DATE THEN 1 ELSE 0 END) AS respondent_yesterday,
+		SUM(CASE WHEN maintain_condition = 'okay' AND verification_approved = false AND created_at::date >= CURRENT_DATE - INTERVAL '6 day' AND created_at::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS respondent_last_seven_day,
+		SUM(CASE WHEN maintain_condition = 'okay' AND verification_approved = false AND created_at::date >= CURRENT_DATE - INTERVAL '1 month' AND created_at::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS respondent_last_one_month,
+		SUM(CASE WHEN maintain_condition = 'okay' AND verification_approved = false AND created_at::date >= CURRENT_DATE - INTERVAL '1 year' AND created_at::date < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS respondent_last_one_year,
+
 		-- awaiting_response (maintain_condition = 'waiting' AND verification_approved = false, use created_at)
 		SUM(CASE WHEN maintain_condition = 'waiting' AND verification_approved = false AND created_at::date >= CURRENT_DATE AND created_at < CURRENT_DATE + INTERVAL '1 day' THEN 1 ELSE 0 END) AS awaiting_today,
 		SUM(CASE WHEN maintain_condition = 'waiting' AND verification_approved = false AND created_at::date >= CURRENT_DATE - INTERVAL '1 day' AND created_at::date < CURRENT_DATE THEN 1 ELSE 0 END) AS awaiting_yesterday,
@@ -97,6 +104,19 @@ export async function maintenanceDashboard(req, res, next) {
 					data.rows[0].resolved_last_one_month || 0
 				),
 				last_one_year: Number(data.rows[0].resolved_last_one_year || 0),
+			},
+			respondent: {
+				today: Number(data.rows[0].respondent_today || 0),
+				yesterday: Number(data.rows[0].respondent_yesterday || 0),
+				last_seven_day: Number(
+					data.rows[0].respondent_last_seven_day || 0
+				),
+				last_one_month: Number(
+					data.rows[0].respondent_last_one_month || 0
+				),
+				last_one_year: Number(
+					data.rows[0].respondent_last_one_year || 0
+				),
 			},
 			awaiting_response: {
 				today: Number(data.rows[0].awaiting_today || 0),
