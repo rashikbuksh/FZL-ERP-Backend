@@ -15,8 +15,8 @@ export async function utilityReport(req, res, next) {
                 u.off_day,
                 ue.type,
                 ue.reading::float8 AS current_reading,
-                ue.reading::float8 - COALESCE(ue_prev.reading, 0)::float8 AS reading_difference,
-                (ue.reading::float8 - COALESCE(ue_prev.reading, 0)::float8) * ue.voltage_ratio::float8 * ue.unit_cost::float8 AS reading_cost
+                ROUND((ue.reading::float8 - COALESCE(ue_prev.reading, 0)::float8)::numeric, 2)::float8 AS reading_difference,
+                ROUND(((ue.reading::float8 - COALESCE(ue_prev.reading, 0)::float8) * ue.voltage_ratio::float8 * ue.unit_cost::float8)::numeric, 2)::float8 AS reading_cost
             FROM
                 maintain.utility u
             LEFT JOIN

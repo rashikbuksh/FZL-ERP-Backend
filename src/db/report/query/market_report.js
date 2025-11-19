@@ -12,45 +12,26 @@ export async function selectMarketReport(req, res, next) {
 
 	try {
 		const query = sql`
-                    WITH opening_all_sum AS (
+                    WITH production_all_sum AS (
                        SELECT 
                             vpl.packing_list_entry_uuid, 
                             coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
                             coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 0)::float8 as total_prod_value_party,
-                            coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value_company
+                            coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value_company,
+                            vpl.entry_created_at as created_at
                         FROM 
                             delivery.v_packing_list_details vpl 
                             LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
                             LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
                             AND oe.order_description_uuid = vodf.order_description_uuid 
                         WHERE 
-                            ${from_date ? sql`vpl.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}
-                            AND vpl.item_for NOT IN ('thread', 'sample_thread')
+                            vpl.item_for NOT IN ('thread', 'sample_thread')
                         GROUP BY 
                             vpl.packing_list_entry_uuid,
                             vodf.order_type,
                             oe.party_price,
-                            oe.company_price
-                    ),
-                    running_all_sum AS (
-                        SELECT 
-                            vpl.packing_list_entry_uuid, 
-                            coalesce(SUM(vpl.quantity), 0)::float8 as total_prod_quantity,
-                            coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.party_price ELSE (oe.party_price / 12) END, 0)::float8 as total_prod_value_party,
-                            coalesce(SUM(vpl.quantity) * CASE WHEN vodf.order_type = 'tape' THEN oe.company_price ELSE (oe.company_price / 12) END, 0)::float8 as total_prod_value_company
-                        FROM 
-                            delivery.v_packing_list_details vpl 
-                            LEFT JOIN zipper.v_order_details_full vodf ON vpl.order_description_uuid = vodf.order_description_uuid 
-                            LEFT JOIN zipper.order_entry oe ON vpl.order_entry_uuid = oe.uuid 
-                            AND oe.order_description_uuid = vodf.order_description_uuid 
-                        WHERE 
-                            ${from_date && to_date ? sql`vpl.created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`1=1`}
-                            AND vpl.item_for NOT IN ('thread', 'sample_thread')
-                        GROUP BY 
-                            vpl.packing_list_entry_uuid,
-                            vodf.order_type,
-                            oe.party_price,
-                            oe.company_price
+                            oe.company_price,
+                            vpl.entry_created_at
                     ),
                     -- Consolidated LC calculation to avoid duplication
                     lc_values AS (
@@ -117,7 +98,13 @@ export async function selectMarketReport(req, res, next) {
                         MAX(lc_totals.running_total_value::float8) as running_total_lc_value,
                         MAX(cash_totals.running_total_cash_received::float8) as running_total_cash_received,
                         MAX(lc_totals.opening_total_value::float8) as opening_total_lc_value,
-                        MAX(cash_totals.opening_total_cash_received::float8) as opening_total_cash_received
+                        MAX(cash_totals.opening_total_cash_received::float8) as opening_total_cash_received,
+                        COALESCE(zipper_object.total_ordered_quantity, 0)::float8 as total_ordered_quantity,
+                        COALESCE(zipper_object.total_ordered_value_party, 0)::float8 as total_ordered_value_party,
+                        COALESCE(zipper_object.total_ordered_value_company, 0)::float8 as total_ordered_value_company,
+                        COALESCE(zipper_object.total_produced_quantity, 0)::float8 as total_produced_quantity,
+                        COALESCE(zipper_object.total_produced_value_party, 0)::float8 as total_produced_value_party,
+                        COALESCE(zipper_object.total_produced_value_company, 0)::float8 as total_produced_value_company
                     FROM 
                         public.party
                     LEFT JOIN
@@ -130,6 +117,12 @@ export async function selectMarketReport(req, res, next) {
                         SELECT
                             vodf.marketing_uuid,
                             vodf.party_uuid,
+                            SUM(oe_sum.total_quantity)::float8 as total_ordered_quantity,
+                            SUM(oe_sum.total_quantity_party_price)::float8 as total_ordered_value_party,
+                            SUM(oe_sum.total_quantity_company_price)::float8 as total_ordered_value_company,
+                            SUM(COALESCE(production_quantity.total_prod_quantity, 0)::float8) as total_produced_quantity,
+                            SUM(COALESCE(production_quantity.total_prod_value_party, 0)::float8) as total_produced_value_party,
+                            SUM(COALESCE(production_quantity.total_prod_value_company, 0)::float8) as total_produced_value_company,
                             jsonb_agg(
                                 DISTINCT jsonb_build_object(
                                     'order_info_uuid',
@@ -154,13 +147,13 @@ export async function selectMarketReport(req, res, next) {
                         LEFT JOIN (
                             SELECT 
                                 vpl.order_info_uuid,
-                                SUM(ras.total_prod_quantity) as total_prod_quantity,
-                                SUM(ras.total_prod_value_party) as total_prod_value_party,
-                                SUM(ras.total_prod_value_company) as total_prod_value_company
+                                SUM(pas.total_prod_quantity) FILTER (WHERE ${from_date && to_date ? sql`pas.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 day'` : sql`1=1`}) as total_prod_quantity,
+                                SUM(pas.total_prod_value_party) FILTER (WHERE ${from_date && to_date ? sql`pas.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 day'` : sql`1=1`}) as total_prod_value_party,
+                                SUM(pas.total_prod_value_company) FILTER (WHERE ${from_date && to_date ? sql`pas.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 day'` : sql`1=1`}) as total_prod_value_company
                             FROM
                                 delivery.v_packing_list_details vpl
                             LEFT JOIN
-                                running_all_sum ras ON vpl.packing_list_entry_uuid = ras.packing_list_entry_uuid
+                                production_all_sum pas ON vpl.packing_list_entry_uuid = pas.packing_list_entry_uuid
                             WHERE 
                                 vpl.is_deleted = false
                                 AND vpl.item_for NOT IN ('thread', 'sample_thread')
@@ -229,13 +222,13 @@ export async function selectMarketReport(req, res, next) {
                         LEFT JOIN (
                             SELECT 
                                 vpl.order_info_uuid,
-                                SUM(oas.total_prod_quantity) as total_prod_quantity,
-                                SUM(oas.total_prod_value_party) as total_prod_value_party,
-                                SUM(oas.total_prod_value_company) as total_prod_value_company
+                                SUM(pas.total_prod_quantity) FILTER (WHERE ${from_date ? sql`pas.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}) as total_prod_quantity,
+                                SUM(pas.total_prod_value_party) FILTER (WHERE ${from_date ? sql`pas.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}) as total_prod_value_party,
+                                SUM(pas.total_prod_value_company) FILTER (WHERE ${from_date ? sql`pas.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}) as total_prod_value_company
                             FROM
                                 delivery.v_packing_list_details vpl
                             LEFT JOIN
-                                opening_all_sum oas ON vpl.packing_list_entry_uuid = oas.packing_list_entry_uuid
+                                production_all_sum pas ON vpl.packing_list_entry_uuid = pas.packing_list_entry_uuid
                             WHERE 
                                 vpl.is_deleted = false
                                 AND vpl.item_for NOT IN ('thread', 'sample_thread')
@@ -301,7 +294,13 @@ export async function selectMarketReport(req, res, next) {
                     WHERE zipper_object.order_details IS NOT NULL
                     GROUP BY 
                         party.uuid,
-                        marketing.uuid
+                        marketing.uuid,
+                        zipper_object.total_ordered_quantity,
+                        zipper_object.total_ordered_value_party,
+                        zipper_object.total_ordered_value_company,
+                        zipper_object.total_produced_quantity,
+                        zipper_object.total_produced_value_party,
+                        zipper_object.total_produced_value_company
                     ORDER BY
                         marketing_name,
                         party_name
