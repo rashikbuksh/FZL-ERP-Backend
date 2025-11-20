@@ -4,6 +4,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import db from '../../index.js';
 
 import { challan, packing_list } from '../schema.js';
+import { GetMarketingOwnUUID } from '../../variables.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -173,17 +174,10 @@ export async function selectAll(req, res, next) {
 	const { delivery_date, vehicle, type, own_uuid, order_type, product_type } =
 		req.query;
 
-	let marketingUuid = null;
-	const marketingUuidQuery = sql`
-		SELECT uuid
-		FROM public.marketing
-		WHERE user_uuid = ${own_uuid};`;
-
 	try {
-		if (own_uuid) {
-			const marketingUuidData = await db.execute(marketingUuidQuery);
-			marketingUuid = marketingUuidData?.rows[0]?.uuid;
-		}
+		const marketingUuid = own_uuid
+			? await GetMarketingOwnUUID(db, own_uuid)
+			: null;
 
 		const query = sql`
 	SELECT
@@ -324,8 +318,8 @@ export async function selectAll(req, res, next) {
 			WHERE
 			  	${delivery_date ? sql`DATE(challan.is_out_for_delivery_date) = ${delivery_date}` : sql`TRUE`}
 				${vehicle && vehicle !== 'null' && vehicle !== 'undefined' && vehicle !== 'all' ? sql`AND challan.vehicle_uuid = ${vehicle}` : sql``}
-				${own_uuid == null || own_uuid == 'null' || own_uuid == undefined ? sql`` : sql`AND (order_info.marketing_uuid = ${marketingUuid} OR toi.marketing_uuid = ${marketingUuid})`}
-				${product_type === 'zipper' ? sql`AND packing_list.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')` : product_type === 'thread' ? sql`AND packing_list.item_for IN ('thread', 'sample_thread')` : sql``}
+				${own_uuid == null || own_uuid == 'null' || own_uuid == undefined ? sql`` : sql`AND (vodf.marketing_uuid = ${marketingUuid} OR toi.marketing_uuid = ${marketingUuid})`}
+				${product_type === 'zipper' ? sql`AND packing_list_count.item_for IN ('zipper', 'sample_zipper', 'slider', 'tape')` : product_type === 'thread' ? sql`AND packing_list_count.item_for IN ('thread', 'sample_thread')` : sql``}
 		) AS main_query
 	LEFT JOIN (
 		SELECT
