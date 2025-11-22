@@ -689,8 +689,9 @@ WITH
         SELECT
             zo.pi_cash_uuid,
             vodf.order_info_uuid,
-            vodf.order_number,
+            CASE WHEN vodf.is_cancelled = true THEN CONCAT(vodf.order_number, ' (CANCELLED)') ELSE vodf.order_number END as order_number,
             vodf.order_type,
+            vodf.is_cancelled,
             SUM(
                 CASE
                     WHEN vodf.order_type = 'tape' THEN oe.size::float8
@@ -703,13 +704,12 @@ WITH
             JOIN zipper.v_order_details_full vodf ON vodf.order_info_uuid = zo.order_info_uuid
             JOIN zipper.order_entry oe ON oe.order_description_uuid = vodf.order_description_uuid
             LEFT JOIN zipper.sfg ON sfg.order_entry_uuid = oe.uuid
-        WHERE
-            vodf.is_cancelled = false
         GROUP BY
             zo.pi_cash_uuid,
             vodf.order_info_uuid,
             vodf.order_number,
-            vodf.order_type
+            vodf.order_type,
+            vodf.is_cancelled
     ),
     zipper_packing AS (
         SELECT
@@ -735,22 +735,23 @@ WITH
                 END,
                 TO_CHAR(oi.created_at, 'YY'),
                 '-',
-                (oi.id::text)
+                (oi.id::text),
+                CASE WHEN oi.is_cancelled = true THEN ' (CANCELLED)' ELSE '' END
             ) AS thread_order_number,
+            oi.is_cancelled,
             SUM(toe.quantity::float8) AS quantity,
             SUM(toe.delivered)::float8 AS total_delivered_quantity
         FROM
             thread_orders tho
             JOIN thread.order_info oi ON oi.uuid = tho.order_info_uuid
             JOIN thread.order_entry toe ON toe.order_info_uuid = oi.uuid
-        WHERE
-            oi.is_cancelled = false
         GROUP BY
             tho.pi_cash_uuid,
             oi.uuid,
             oi.is_sample,
             oi.created_at,
-            oi.id
+            oi.id,
+            oi.is_cancelled
     ),
     thread_packing AS (
         SELECT
@@ -781,7 +782,9 @@ SELECT
                     0
                 ),
                 'delivered',
-                za.total_delivered_quantity
+                za.total_delivered_quantity,
+                'is_cancelled',
+                za.is_cancelled
             )
         ) FILTER (
             WHERE
@@ -804,7 +807,9 @@ SELECT
                     0
                 ),
                 'delivered',
-                ta.total_delivered_quantity
+                ta.total_delivered_quantity,
+                'is_cancelled',
+                ta.is_cancelled
             )
         ) FILTER (
             WHERE
