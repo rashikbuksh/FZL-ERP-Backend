@@ -2,6 +2,8 @@ import { Router } from 'express';
 
 import * as ReportRoutes from './path.js';
 
+import * as marketReportArchiveOperations from './query/market_report_archive.js';
+
 import { selectCashInvoice } from './query/cash_invoice.js';
 import { selectChallanPdf } from './query/challan_pdf.js';
 import { selectCountLengthWiseDeliveryReport } from './query/count_length_wise_delivery_report.js';
@@ -310,6 +312,32 @@ reportRouter.get('/utility-report', utilityReport);
 
 // * Market Report
 reportRouter.get('/market-report', selectMarketReport);
+
+// * Market Report Archive routes
+reportRouter.post(
+	'/market-report-archive',
+	marketReportArchiveOperations.generateMarketReportSnapshot
+);
+reportRouter.get(
+	'/market-report-archive',
+	marketReportArchiveOperations.listMarketReportSnapshots
+);
+reportRouter.get(
+	'/market-report-archive/:uuid',
+	marketReportArchiveOperations.getMarketReportSnapshot
+);
+reportRouter.delete(
+	'/market-report-archive/:uuid',
+	marketReportArchiveOperations.deleteMarketReportSnapshot
+);
+reportRouter.post(
+	'/market-report-archive/:uuid',
+	marketReportArchiveOperations.updateMarketReportSnapshot
+);
+reportRouter.post(
+	'/market-report-archive/:uuid/confirm',
+	marketReportArchiveOperations.confirmMarketReportSnapshot
+);
 
 export const pathReport = {
 	...ReportRoutes.pathReport,

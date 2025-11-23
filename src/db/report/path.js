@@ -1610,4 +1610,124 @@ export const pathReport = {
 			},
 		},
 	},
+	'/market-report-archive': {
+		post: {
+			summary: 'Generate market report snapshot',
+			description:
+				'Generate and save a market report snapshot for a specific date range',
+			tags: ['report.market_report_archive'],
+			body: {
+				type: 'object',
+				required: ['from_date', 'to_date'],
+				properties: {
+					from_date: { type: 'string', format: 'date' },
+					to_date: { type: 'string', format: 'date' },
+					report_name: { type: 'string' },
+					remarks: { type: 'string' },
+				},
+			},
+			response: {
+				201: SE.response_schema(201, {}),
+				400: SE.response_schema(400),
+			},
+		},
+		get: {
+			summary: 'List market report snapshots',
+			description: 'Get all market report snapshots (excluding deleted)',
+			tags: ['report.market_report_archive'],
+			querystring: {
+				type: 'object',
+				properties: {
+					status: {
+						type: 'string',
+						enum: ['pending', 'confirmed'],
+					},
+				},
+			},
+			response: {
+				200: SE.response_schema(200, {}),
+			},
+		},
+	},
+	'/market-report-archive/{uuid}': {
+		get: {
+			summary: 'Get market report snapshot',
+			description: 'Get a specific market report snapshot with full data',
+			tags: ['report.market_report_archive'],
+			params: {
+				type: 'object',
+				required: ['uuid'],
+				properties: {
+					uuid: { type: 'string', format: 'uuid' },
+				},
+			},
+			response: {
+				200: SE.response_schema(200, {}),
+				404: SE.response_schema(404),
+			},
+		},
+		put: {
+			summary: 'Update market report snapshot',
+			description: 'Update report name or remarks',
+			tags: ['report.market_report_archive'],
+			params: {
+				type: 'object',
+				required: ['uuid'],
+				properties: {
+					uuid: { type: 'string', format: 'uuid' },
+				},
+			},
+			body: {
+				type: 'object',
+				properties: {
+					report_name: { type: 'string' },
+					remarks: { type: 'string' },
+				},
+			},
+			response: {
+				200: SE.response_schema(200, {}),
+				404: SE.response_schema(404),
+			},
+		},
+		delete: {
+			summary: 'Delete market report snapshot',
+			description: 'Soft delete a market report snapshot',
+			tags: ['report.market_report_archive'],
+			params: {
+				type: 'object',
+				required: ['uuid'],
+				properties: {
+					uuid: { type: 'string', format: 'uuid' },
+				},
+			},
+			response: {
+				200: SE.response_schema(200, {}),
+				404: SE.response_schema(404),
+			},
+		},
+	},
+	'/market-report-archive/:uuid/confirm': {
+		put: {
+			summary: 'Confirm market report snapshot',
+			description: 'Confirm/keep a market report snapshot',
+			tags: ['report.market_report_archive'],
+			params: {
+				type: 'object',
+				required: ['uuid'],
+				properties: {
+					uuid: { type: 'string', format: 'uuid' },
+				},
+			},
+			body: {
+				type: 'object',
+				properties: {
+					remarks: { type: 'string' },
+				},
+			},
+			response: {
+				200: SE.response_schema(200, {}),
+				404: SE.response_schema(404),
+			},
+		},
+	},
 };
