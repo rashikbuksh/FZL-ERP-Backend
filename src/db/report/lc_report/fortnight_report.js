@@ -109,7 +109,7 @@ export async function fortnightReport(req, res, next) {
 
 		query.append(
 			sql` 
-            GROUP BY lc.uuid, party.uuid, lc_entry.uuid, manual_pi.order_numbers, manual_pi.thread_order_numbers
+            GROUP BY lc.uuid, party.uuid, lc_entry.uuid, manual_pi.order_numbers, manual_pi.thread_order_numbers, pc_total.calc_total
             ORDER BY lc.created_at DESC
             `
 		);
