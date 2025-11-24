@@ -148,7 +148,7 @@ export async function selectAll(req, res, next) {
 				'-',
 				lc.id::text
 			) as file_number,
-			CONCAT(''', lc.lc_number) as lc_number,
+			CONCAT('-', lc.lc_number) as lc_number,
 			lc.lc_date,
 			lc.commercial_executive,
 			lc.party_bank,
