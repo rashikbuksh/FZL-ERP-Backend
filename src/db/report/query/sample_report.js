@@ -32,7 +32,7 @@ export async function selectSampleReport(req, res, next) {
                                 LEFT JOIN zipper.order_description od ON oi.uuid = od.order_info_uuid
                                 LEFT JOIN zipper.order_entry oe ON od.uuid = oe.order_description_uuid
                             WHERE
-                                oi.is_sample = 1 AND od.uuid IS NOT NULL
+                                oi.is_sample = 1 AND od.uuid IS NOT NULL AND oi.is_cancelled = FALSE
                             GROUP BY
                                 oi.id, oi.created_at, oi.is_sample, oi.marketing_uuid
                         ),
@@ -53,7 +53,7 @@ export async function selectSampleReport(req, res, next) {
                                 LEFT JOIN delivery.packing_list pl ON ple.packing_list_uuid = pl.uuid
                                 LEFT JOIN delivery.challan tc ON pl.challan_uuid = tc.uuid
                             WHERE
-                                toi.is_sample = 1
+                                toi.is_sample = 1 AND toi.is_cancelled = FALSE
                             GROUP BY
                                 toi.id, toi.created_at, toi.is_sample, toi.marketing_uuid
                         )

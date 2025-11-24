@@ -155,6 +155,7 @@ export async function selectProductWiseConsumption(req, res, next) {
 								? sql`vodf.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'`
 								: sql`TRUE`
 						}
+						AND vodf.is_cancelled = FALSE
 					GROUP BY
 						vodf.item_name,
 						vodf.nylon_stopper_name,

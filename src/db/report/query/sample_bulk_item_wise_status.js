@@ -49,6 +49,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             LEFT JOIN delivery.challan c ON pl.challan_uuid = c.uuid
         WHERE
            od.uuid IS NOT NULL
+           AND vodf.is_cancelled = FALSE
            ${order_type == 'sample' ? sql` AND oi.is_sample = 1` : order_type == 'bulk' ? sql` AND oi.is_sample = 0` : sql``}
         GROUP BY
             oi.uuid, oi.id, oi.is_sample, oi.created_at, oe_sum.order_quantity, vodf.party_name, vodf.marketing_name, oe_sum.color_count
@@ -90,6 +91,7 @@ export async function selectSampleBulkItemWiseStatus(req, res, next) {
             LEFT JOIN delivery.challan tc ON pl.challan_uuid = tc.uuid
         WHERE 
             ${order_type == 'sample' ? sql` toi.is_sample = 1` : order_type == 'bulk' ? sql` toi.is_sample = 0` : sql` 1=1`}
+            AND toi.is_cancelled = FALSE
         GROUP BY
             toi.uuid, toi.id, toi.is_sample, toi.created_at, pm.name, pp.name
         HAVING
