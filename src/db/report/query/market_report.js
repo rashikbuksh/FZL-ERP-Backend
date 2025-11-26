@@ -106,19 +106,7 @@ export async function selectMarketReport(req, res, next) {
                         COALESCE(zipper_object.total_produced_value_company, 0)::float8 as total_produced_value_company,
                         COALESCE(zipper_object.total_produced_quantity_deleted, 0)::float8 as total_produced_quantity_deleted,
                         COALESCE(zipper_object.total_produced_value_party_deleted, 0)::float8 as total_produced_value_party_deleted,
-                        COALESCE(zipper_object.total_produced_value_company_deleted, 0)::float8 as total_produced_value_company_deleted,
-                        -- opening totals
-                        COALESCE(MAX(lc_totals.opening_total_value::float8), 0) as opening_total_lc_value,
-                        COALESCE(MAX(cash_totals.opening_total_cash_received::float8), 0) as opening_total_cash_received,
-                        COALESCE(op_zipper_object.total_ordered_quantity, 0)::float8 as opening_total_ordered_quantity,
-                        COALESCE(op_zipper_object.total_ordered_value_party, 0)::float8 as opening_total_ordered_value_party,
-                        COALESCE(op_zipper_object.total_ordered_value_company, 0)::float8 as opening_total_ordered_value_company,
-                        COALESCE(op_zipper_object.total_produced_quantity, 0)::float8 as opening_total_produced_quantity,
-                        COALESCE(op_zipper_object.total_produced_value_party, 0)::float8 as opening_total_produced_value_party,
-                        COALESCE(op_zipper_object.total_produced_value_company, 0)::float8 as opening_total_produced_value_company,
-                        COALESCE(op_zipper_object.total_produced_quantity_deleted, 0)::float8 as opening_total_produced_quantity_deleted,
-                        COALESCE(op_zipper_object.total_produced_value_party_deleted, 0)::float8 as opening_total_produced_value_party_deleted,
-                        COALESCE(op_zipper_object.total_produced_value_company_deleted, 0)::float8 as opening_total_produced_value_company_deleted
+                        COALESCE(zipper_object.total_produced_value_company_deleted, 0)::float8 as total_produced_value_company_deleted
                     FROM 
                         public.party
                     LEFT JOIN
@@ -213,98 +201,10 @@ export async function selectMarketReport(req, res, next) {
                         zipper_object.marketing_uuid = vodf.marketing_uuid AND
                         zipper_object.party_uuid = vodf.party_uuid
                     LEFT JOIN (
-                        SELECT
-                            vodf.marketing_uuid,
-                            vodf.party_uuid,
-                            SUM(oe_sum.total_quantity)::float8 as total_ordered_quantity,
-                            SUM(oe_sum.total_quantity_party_price)::float8 as total_ordered_value_party,
-                            SUM(oe_sum.total_quantity_company_price)::float8 as total_ordered_value_company,
-                            SUM(COALESCE(opening_quantity.total_prod_quantity, 0)::float8) as total_produced_quantity,
-                            SUM(COALESCE(opening_quantity.total_prod_value_party, 0)::float8) as total_produced_value_party,
-                            SUM(COALESCE(opening_quantity.total_prod_value_company, 0)::float8) as total_produced_value_company,
-                            SUM(COALESCE(opening_quantity.total_prod_quantity_deleted, 0)::float8) as total_produced_quantity_deleted,
-                            SUM(COALESCE(opening_quantity.total_prod_value_party_deleted, 0)::float8) as total_produced_value_party_deleted,
-                            SUM(COALESCE(opening_quantity.total_prod_value_company_deleted, 0)::float8) as total_produced_value_company_deleted,
-                            jsonb_agg(
-                                DISTINCT jsonb_build_object(
-                                    'order_info_uuid',
-                                    vodf.order_info_uuid,
-                                    'order_number',
-                                    vodf.order_number,
-                                    'total_quantity',
-                                    COALESCE(oe_sum.total_quantity, 0)::float8,
-                                    'total_quantity_party_price',
-                                    COALESCE(oe_sum.total_quantity_party_price, 0)::float8,
-                                    'total_quantity_company_price',
-                                    COALESCE(oe_sum.total_quantity_company_price, 0)::float8,
-                                    'opening_prod_quantity',
-                                    COALESCE(opening_quantity.total_prod_quantity, 0)::float8,
-                                    'opening_prod_value_party',
-                                    COALESCE(opening_quantity.total_prod_value_party, 0)::float8,
-                                    'opening_prod_value_company',
-                                    COALESCE(opening_quantity.total_prod_value_company, 0)::float8
-                                )
-                            ) FILTER ( WHERE oe_sum.total_quantity != 0 OR oe_sum.total_quantity IS NOT NULL ) AS order_details
-                        FROM zipper.v_order_details_full vodf
-                        LEFT JOIN (
-                            SELECT
-                                vpl.order_info_uuid,
-                                SUM(pas.total_prod_quantity) FILTER (WHERE ${from_date ? sql`pas.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}) as total_prod_quantity,
-                                SUM(pas.total_prod_value_party) FILTER (WHERE ${from_date ? sql`pas.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}) as total_prod_value_party,
-                                SUM(pas.total_prod_value_company) FILTER (WHERE ${from_date ? sql`pas.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}) as total_prod_value_company,
-                                SUM(pas.total_prod_quantity) FILTER (WHERE ${from_date ? sql`CASE WHEN vpl.deleted_time IS NULL THEN vpl.updated_at < ${from_date}::TIMESTAMP ELSE vpl.deleted_time < ${from_date}::TIMESTAMP END AND vpl.is_deleted = true` : sql`1=1`}) as total_prod_quantity_deleted,
-                                SUM(pas.total_prod_value_party) FILTER (WHERE ${from_date ? sql`CASE WHEN vpl.deleted_time IS NULL THEN vpl.updated_at < ${from_date}::TIMESTAMP ELSE vpl.deleted_time < ${from_date}::TIMESTAMP END AND vpl.is_deleted = true` : sql`1=1`}) as total_prod_value_party_deleted,
-                                SUM(pas.total_prod_value_company) FILTER (WHERE ${from_date ? sql`CASE WHEN vpl.deleted_time IS NULL THEN vpl.updated_at < ${from_date}::TIMESTAMP ELSE vpl.deleted_time < ${from_date}::TIMESTAMP END AND vpl.is_deleted = true` : sql`1=1`}) as total_prod_value_company_deleted
-                            FROM
-                                delivery.v_packing_list_details vpl
-                            LEFT JOIN
-                                production_all_sum pas ON vpl.packing_list_entry_uuid = pas.packing_list_entry_uuid
-                            WHERE
-                                vpl.is_deleted = false
-                                AND vpl.item_for NOT IN ('thread', 'sample_thread')
-                            GROUP BY
-                                vpl.order_info_uuid
-                        ) AS opening_quantity ON
-                            vodf.order_info_uuid = opening_quantity.order_info_uuid
-                        LEFT JOIN (
-                            SELECT
-                                vodf.order_info_uuid,
-                                SUM(
-                                    oe.quantity
-                                ) as total_quantity,
-                                SUM(
-                                    oe.quantity * CASE
-                                        WHEN vodf.order_type = 'tape' THEN oe.party_price
-                                        ELSE (oe.party_price / 12)
-                                    END
-                                ) as total_quantity_party_price,
-                                SUM(
-                                    oe.quantity * CASE
-                                        WHEN vodf.order_type = 'tape' THEN oe.company_price
-                                        ELSE (oe.company_price / 12)
-                                    END
-                                ) as total_quantity_company_price
-                            FROM
-                                zipper.order_entry oe
-                            LEFT JOIN
-                                zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
-                            GROUP BY
-                                vodf.order_info_uuid
-                        ) AS oe_sum ON vodf.order_info_uuid = oe_sum.order_info_uuid
-                        WHERE
-                            opening_quantity.total_prod_quantity IS NOT NULL
-                        GROUP BY
-                            vodf.marketing_uuid,
-                            vodf.party_uuid
-                    ) AS op_zipper_object ON
-                        op_zipper_object.marketing_uuid = vodf.marketing_uuid AND
-                        op_zipper_object.party_uuid = vodf.party_uuid
-                    LEFT JOIN (
                         SELECT 
                             party_uuid,
                             marketing_uuid,
-                            SUM(lc_value) FILTER (WHERE ${from_date && to_date ? sql`created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}) AS running_total_value,
-                            SUM(lc_value) FILTER (WHERE ${from_date ? sql`created_at < ${from_date}::TIMESTAMP` : sql`TRUE`}) AS opening_total_value
+                            SUM(lc_value) FILTER (WHERE ${from_date && to_date ? sql`created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}) AS running_total_value
                         FROM lc_values
                         GROUP BY party_uuid, marketing_uuid
                     ) AS lc_totals ON
@@ -313,8 +213,7 @@ export async function selectMarketReport(req, res, next) {
                         SELECT 
                             pi_cash.marketing_uuid,
                             pi_cash.party_uuid,
-                            SUM(cash_receive.amount) FILTER (WHERE ${from_date && to_date ? sql`cash_receive.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 DAY'` : sql`TRUE`}) AS running_total_cash_received,
-                            SUM(cash_receive.amount) FILTER (WHERE ${from_date ? sql`cash_receive.created_at < ${from_date}::TIMESTAMP` : sql`TRUE`}) AS opening_total_cash_received
+                            SUM(cash_receive.amount) FILTER (WHERE ${from_date && to_date ? sql`cash_receive.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 DAY'` : sql`TRUE`}) AS running_total_cash_received
                         FROM commercial.cash_receive
                         LEFT JOIN commercial.pi_cash ON cash_receive.pi_cash_uuid = pi_cash.uuid
                         WHERE pi_cash.uuid IS NOT NULL
@@ -333,20 +232,119 @@ export async function selectMarketReport(req, res, next) {
                         zipper_object.total_produced_value_company,
                         zipper_object.total_produced_quantity_deleted,
                         zipper_object.total_produced_value_party_deleted,
-                        zipper_object.total_produced_value_company_deleted,
-                        op_zipper_object.total_ordered_quantity,
-                        op_zipper_object.total_ordered_value_party,
-                        op_zipper_object.total_ordered_value_company,
-                        op_zipper_object.total_produced_quantity,
-                        op_zipper_object.total_produced_value_party,
-                        op_zipper_object.total_produced_value_company,
-                        op_zipper_object.total_produced_quantity_deleted,
-                        op_zipper_object.total_produced_value_party_deleted,
-                        op_zipper_object.total_produced_value_company_deleted
+                        zipper_object.total_produced_value_company_deleted
                     ORDER BY
                         marketing_name,
                         party_name
                     `;
+
+		// ! opening totals (against from_date)
+		// COALESCE(MAX(lc_totals.opening_total_value::float8), 0) as opening_total_lc_value,
+		// COALESCE(MAX(cash_totals.opening_total_cash_received::float8), 0) as opening_total_cash_received,
+		// COALESCE(op_zipper_object.total_ordered_quantity, 0)::float8 as opening_total_ordered_quantity,
+		// COALESCE(op_zipper_object.total_ordered_value_party, 0)::float8 as opening_total_ordered_value_party,
+		// COALESCE(op_zipper_object.total_ordered_value_company, 0)::float8 as opening_total_ordered_value_company,
+		// COALESCE(op_zipper_object.total_produced_quantity, 0)::float8 as opening_total_produced_quantity,
+		// COALESCE(op_zipper_object.total_produced_value_party, 0)::float8 as opening_total_produced_value_party,
+		// COALESCE(op_zipper_object.total_produced_value_company, 0)::float8 as opening_total_produced_value_company,
+		// COALESCE(op_zipper_object.total_produced_quantity_deleted, 0)::float8 as opening_total_produced_quantity_deleted,
+		// COALESCE(op_zipper_object.total_produced_value_party_deleted, 0)::float8 as opening_total_produced_value_party_deleted,
+		// COALESCE(op_zipper_object.total_produced_value_company_deleted, 0)::float8 as opening_total_produced_value_company_deleted
+
+		// ! LC Total Opening
+		// SUM(lc_value) FILTER (WHERE ${from_date ? sql`created_at < ${from_date}::TIMESTAMP` : sql`TRUE`}) AS opening_total_value
+
+		// ! Cash Total Opening
+		// SUM(cash_receive.amount) FILTER (WHERE ${from_date ? sql`cash_receive.created_at < ${from_date}::TIMESTAMP` : sql`TRUE`}) AS opening_total_cash_received
+
+		// ! op_zipper_object is similar to zipper_object but for opening balances
+		// LEFT JOIN (
+		//     SELECT
+		//         vodf.marketing_uuid,
+		//         vodf.party_uuid,
+		//         SUM(oe_sum.total_quantity)::float8 as total_ordered_quantity,
+		//         SUM(oe_sum.total_quantity_party_price)::float8 as total_ordered_value_party,
+		//         SUM(oe_sum.total_quantity_company_price)::float8 as total_ordered_value_company,
+		//         SUM(COALESCE(opening_quantity.total_prod_quantity, 0)::float8) as total_produced_quantity,
+		//         SUM(COALESCE(opening_quantity.total_prod_value_party, 0)::float8) as total_produced_value_party,
+		//         SUM(COALESCE(opening_quantity.total_prod_value_company, 0)::float8) as total_produced_value_company,
+		//         SUM(COALESCE(opening_quantity.total_prod_quantity_deleted, 0)::float8) as total_produced_quantity_deleted,
+		//         SUM(COALESCE(opening_quantity.total_prod_value_party_deleted, 0)::float8) as total_produced_value_party_deleted,
+		//         SUM(COALESCE(opening_quantity.total_prod_value_company_deleted, 0)::float8) as total_produced_value_company_deleted,
+		//         jsonb_agg(
+		//             DISTINCT jsonb_build_object(
+		//                 'order_info_uuid',
+		//                 vodf.order_info_uuid,
+		//                 'order_number',
+		//                 vodf.order_number,
+		//                 'total_quantity',
+		//                 COALESCE(oe_sum.total_quantity, 0)::float8,
+		//                 'total_quantity_party_price',
+		//                 COALESCE(oe_sum.total_quantity_party_price, 0)::float8,
+		//                 'total_quantity_company_price',
+		//                 COALESCE(oe_sum.total_quantity_company_price, 0)::float8,
+		//                 'opening_prod_quantity',
+		//                 COALESCE(opening_quantity.total_prod_quantity, 0)::float8,
+		//                 'opening_prod_value_party',
+		//                 COALESCE(opening_quantity.total_prod_value_party, 0)::float8,
+		//                 'opening_prod_value_company',
+		//                 COALESCE(opening_quantity.total_prod_value_company, 0)::float8
+		//             )
+		//         ) FILTER ( WHERE oe_sum.total_quantity != 0 OR oe_sum.total_quantity IS NOT NULL ) AS order_details
+		//     FROM zipper.v_order_details_full vodf
+		//     LEFT JOIN (
+		//         SELECT
+		//             vpl.order_info_uuid,
+		//             SUM(pas.total_prod_quantity) FILTER (WHERE ${from_date ? sql`pas.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}) as total_prod_quantity,
+		//             SUM(pas.total_prod_value_party) FILTER (WHERE ${from_date ? sql`pas.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}) as total_prod_value_party,
+		//             SUM(pas.total_prod_value_company) FILTER (WHERE ${from_date ? sql`pas.created_at < ${from_date}::TIMESTAMP` : sql`1=1`}) as total_prod_value_company,
+		//             SUM(pas.total_prod_quantity) FILTER (WHERE ${from_date ? sql`CASE WHEN vpl.deleted_time IS NULL THEN vpl.updated_at < ${from_date}::TIMESTAMP ELSE vpl.deleted_time < ${from_date}::TIMESTAMP END AND vpl.is_deleted = true` : sql`1=1`}) as total_prod_quantity_deleted,
+		//             SUM(pas.total_prod_value_party) FILTER (WHERE ${from_date ? sql`CASE WHEN vpl.deleted_time IS NULL THEN vpl.updated_at < ${from_date}::TIMESTAMP ELSE vpl.deleted_time < ${from_date}::TIMESTAMP END AND vpl.is_deleted = true` : sql`1=1`}) as total_prod_value_party_deleted,
+		//             SUM(pas.total_prod_value_company) FILTER (WHERE ${from_date ? sql`CASE WHEN vpl.deleted_time IS NULL THEN vpl.updated_at < ${from_date}::TIMESTAMP ELSE vpl.deleted_time < ${from_date}::TIMESTAMP END AND vpl.is_deleted = true` : sql`1=1`}) as total_prod_value_company_deleted
+		//         FROM
+		//             delivery.v_packing_list_details vpl
+		//         LEFT JOIN
+		//             production_all_sum pas ON vpl.packing_list_entry_uuid = pas.packing_list_entry_uuid
+		//         WHERE
+		//             vpl.is_deleted = false
+		//             AND vpl.item_for NOT IN ('thread', 'sample_thread')
+		//         GROUP BY
+		//             vpl.order_info_uuid
+		//     ) AS opening_quantity ON
+		//         vodf.order_info_uuid = opening_quantity.order_info_uuid
+		//     LEFT JOIN (
+		//         SELECT
+		//             vodf.order_info_uuid,
+		//             SUM(
+		//                 oe.quantity
+		//             ) as total_quantity,
+		//             SUM(
+		//                 oe.quantity * CASE
+		//                     WHEN vodf.order_type = 'tape' THEN oe.party_price
+		//                     ELSE (oe.party_price / 12)
+		//                 END
+		//             ) as total_quantity_party_price,
+		//             SUM(
+		//                 oe.quantity * CASE
+		//                     WHEN vodf.order_type = 'tape' THEN oe.company_price
+		//                     ELSE (oe.company_price / 12)
+		//                 END
+		//             ) as total_quantity_company_price
+		//         FROM
+		//             zipper.order_entry oe
+		//         LEFT JOIN
+		//             zipper.v_order_details_full vodf ON oe.order_description_uuid = vodf.order_description_uuid
+		//         GROUP BY
+		//             vodf.order_info_uuid
+		//     ) AS oe_sum ON vodf.order_info_uuid = oe_sum.order_info_uuid
+		//     WHERE
+		//         opening_quantity.total_prod_quantity IS NOT NULL
+		//     GROUP BY
+		//         vodf.marketing_uuid,
+		//         vodf.party_uuid
+		// ) AS op_zipper_object ON
+		//     op_zipper_object.marketing_uuid = vodf.marketing_uuid AND
+		//     op_zipper_object.party_uuid = vodf.party_uuid
 
 		const resultPromise = db.execute(query);
 
