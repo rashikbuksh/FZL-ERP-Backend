@@ -36,54 +36,60 @@ export async function selectMarketReport(req, res, next) {
                     -- Consolidated LC calculation to avoid duplication
                     lc_values AS (
                         SELECT 
+                            lc.uuid as lc_uuid,
                             lc.party_uuid,
-                            CASE WHEN pi_cash.uuid IS NOT NULL THEN pi_cash.marketing_uuid ELSE manual_pi_values.marketing_uuid END AS marketing_uuid,
+                            COALESCE(pi_cash.marketing_uuid, manual_pi_values.marketing_uuid) AS marketing_uuid,
                             lc.created_at,
+                            concat('LC', to_char(lc.created_at, 'YY'), '-', lc.id::text) AS file_number,
                             CASE
-                                WHEN is_old_pi = 0 THEN (
-                                    SELECT SUM(
-                                            CASE
-                                                WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type = 'tape' THEN coalesce(
-                                                    pi_cash_entry.pi_cash_quantity, 0
-                                                ) * coalesce(order_entry.party_price, 0)
-                                                WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type != 'tape' THEN coalesce(
-                                                    pi_cash_entry.pi_cash_quantity, 0
-                                                ) * coalesce(order_entry.party_price, 0) / 12
-                                                ELSE coalesce(
-                                                    pi_cash_entry.pi_cash_quantity, 0
-                                                ) * coalesce(toe.party_price, 0)
-                                            END
-                                        )::float8
-                                    FROM commercial.pi_cash
-                                        LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
-                                        LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-                                        LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-                                        LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-                                        LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
-                                    WHERE
-                                        pi_cash.lc_uuid = lc.uuid
-                                )
-                                WHEN (manual_pi_values.manual_pi_value::float8 IS NOT NULL OR manual_pi_values.manual_pi_value::float8 > 0)
-                                    THEN manual_pi_values.manual_pi_value::float8
+                                WHEN lc.is_old_pi = 0 THEN COALESCE(pi_cash_agg.pi_cash_value, 0)
+                                WHEN manual_pi_values.manual_pi_value IS NOT NULL AND manual_pi_values.manual_pi_value > 0 
+                                    THEN manual_pi_values.manual_pi_value
                                 ELSE lc.lc_value::float8
                             END AS lc_value
                         FROM commercial.lc
-                        LEFT JOIN commercial.pi_cash ON lc.uuid = pi_cash.lc_uuid
+                        LEFT JOIN (
+                            SELECT 
+                                pi_cash.lc_uuid,
+                                MIN(pi_cash.marketing_uuid) as marketing_uuid
+                            FROM commercial.pi_cash
+                            GROUP BY pi_cash.lc_uuid
+                        ) pi_cash ON lc.uuid = pi_cash.lc_uuid
+                        LEFT JOIN (
+                            SELECT
+                                pi_cash.lc_uuid,
+                                SUM(
+                                    CASE
+                                        WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type = 'tape' 
+                                            THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price, 0)
+                                        WHEN pi_cash_entry.thread_order_entry_uuid IS NULL AND vodf.order_type != 'tape' 
+                                            THEN COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(order_entry.party_price, 0) / 12
+                                        ELSE COALESCE(pi_cash_entry.pi_cash_quantity, 0) * COALESCE(toe.party_price, 0)
+                                    END
+                                )::float8 AS pi_cash_value
+                            FROM commercial.pi_cash
+                            LEFT JOIN commercial.pi_cash_entry ON pi_cash.uuid = pi_cash_entry.pi_cash_uuid
+                            LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+                            LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                            LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                            LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+                            GROUP BY pi_cash.lc_uuid
+                        ) pi_cash_agg ON lc.uuid = pi_cash_agg.lc_uuid
                         LEFT JOIN (
                             SELECT 
                                 manual_pi.lc_uuid,
-                                manual_pi.marketing_uuid,
+                                MIN(manual_pi.marketing_uuid) as marketing_uuid,
                                 SUM(
-                                    CASE WHEN manual_pi_entry.is_zipper = true 
-                                        THEN (manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 / 12) 
-                                        ELSE (manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8) 
+                                    CASE 
+                                        WHEN manual_pi_entry.is_zipper = true 
+                                            THEN manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8 / 12
+                                        ELSE manual_pi_entry.quantity::float8 * manual_pi_entry.unit_price::float8
                                     END
                                 )::float8 AS manual_pi_value
                             FROM commercial.manual_pi_entry
                             LEFT JOIN commercial.manual_pi ON manual_pi_entry.manual_pi_uuid = manual_pi.uuid
                             WHERE manual_pi.lc_uuid IS NOT NULL
-                            GROUP BY 
-                                manual_pi.lc_uuid, manual_pi.marketing_uuid
+                            GROUP BY manual_pi.lc_uuid
                         ) manual_pi_values ON manual_pi_values.lc_uuid = lc.uuid
                     )
                     SELECT
@@ -93,11 +99,13 @@ export async function selectMarketReport(req, res, next) {
                         MIN(party.name) as party_name,
                         MIN(party.uuid) as party_uuid,
                         -- party wise order number, against order number -> pi, lc, cash invoice
-                        -- (array_agg(zipper_object.order_details))[1] as order_details,
+                        (array_agg(zipper_object.order_details))[1] as order_details,
                         -- (array_agg(op_zipper_object.order_details))[1] as opening_order_details,
                         -- running totals
                         COALESCE(MAX(lc_totals.running_total_value::float8), 0) as running_total_lc_value,
+                        COALESCE((lc_totals.file_numbers), ARRAY[]::text[]) AS running_lc_file_numbers,
                         COALESCE(MAX(cash_totals.running_total_cash_received::float8), 0) as running_total_cash_received,
+                        COALESCE((cash_totals.pi_cash_ids), ARRAY[]::text[]) AS running_pi_cash_ids,
                         COALESCE(zipper_object.total_ordered_quantity, 0)::float8 as total_ordered_quantity,
                         COALESCE(zipper_object.total_ordered_value_party, 0)::float8 as total_ordered_value_party,
                         COALESCE(zipper_object.total_ordered_value_company, 0)::float8 as total_ordered_value_company,
@@ -204,7 +212,8 @@ export async function selectMarketReport(req, res, next) {
                         SELECT 
                             party_uuid,
                             marketing_uuid,
-                            SUM(lc_value) FILTER (WHERE ${from_date && to_date ? sql`created_at between ${from_date}::TIMESTAMP and ${to_date}::TIMESTAMP + interval '23 hours 59 minutes 59 seconds'` : sql`TRUE`}) AS running_total_value
+                            array_agg(DISTINCT file_number) FILTER (WHERE ${from_date && to_date ? sql`created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}) AS file_numbers,
+                            SUM(lc_value) FILTER (WHERE ${from_date && to_date ? sql`created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}) AS running_total_value
                         FROM lc_values
                         GROUP BY party_uuid, marketing_uuid
                     ) AS lc_totals ON
@@ -213,7 +222,8 @@ export async function selectMarketReport(req, res, next) {
                         SELECT 
                             pi_cash.marketing_uuid,
                             pi_cash.party_uuid,
-                            SUM(cash_receive.amount) FILTER (WHERE ${from_date && to_date ? sql`cash_receive.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 DAY'` : sql`TRUE`}) AS running_total_cash_received
+                            array_agg(DISTINCT CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text)) FILTER (WHERE ${from_date && to_date ? sql`cash_receive.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 DAY'` : sql`1=1`}) AS pi_cash_ids,
+                            SUM(cash_receive.amount) FILTER (WHERE ${from_date && to_date ? sql`cash_receive.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 DAY'` : sql`1=1`}) AS running_total_cash_received
                         FROM commercial.cash_receive
                         LEFT JOIN commercial.pi_cash ON cash_receive.pi_cash_uuid = pi_cash.uuid
                         WHERE pi_cash.uuid IS NOT NULL
@@ -224,6 +234,8 @@ export async function selectMarketReport(req, res, next) {
                     GROUP BY 
                         party.uuid,
                         marketing.uuid,
+                        lc_totals.file_numbers,
+                        cash_totals.pi_cash_ids,
                         zipper_object.total_ordered_quantity,
                         zipper_object.total_ordered_value_party,
                         zipper_object.total_ordered_value_company,
