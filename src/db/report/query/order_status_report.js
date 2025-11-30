@@ -278,7 +278,7 @@ export async function ProductionReportSnm(req, res, next) {
                 END as total_slider_required,
                 CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(sfg.delivered::float8 AS TEXT) ELSE '--' END as delivered,
                 CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST(sfg.warehouse::float8 AS TEXT) ELSE '--' END as warehouse,
-                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST((oe.quantity::float8 - sfg.delivered::float8) AS TEXT) ELSE '--' END as balance_quantity,
+                CASE WHEN dbm.batch_rank = 1 OR dbm.batch_rank IS NULL THEN CAST((CASE WHEN fo.order_type = 'tape' THEN oe.size::float8 ELSE oe.quantity::float8 END - sfg.delivered::float8) AS TEXT) ELSE '--' END as balance_quantity,
                 fo.order_type,
                 fo.is_inch,
                 CASE
