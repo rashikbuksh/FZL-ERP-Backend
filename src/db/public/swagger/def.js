@@ -23,6 +23,7 @@ export const defPublicParty = SED({
 		updated_at: SE.date_time(),
 		created_by: SE.uuid(),
 		remarks: SE.string('Remarks'),
+		parent_party_uuid: SE.uuid(),
 	},
 	xml: 'Public/Party',
 });

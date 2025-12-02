@@ -43,6 +43,9 @@ export const party = pgTable('party', {
 		.default(null),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	remarks: text('remarks').default(null),
+	parent_party_uuid: defaultUUID('parent_party_uuid')
+		.references(() => party.uuid)
+		.default(null),
 });
 
 export const marketing = pgTable('marketing', {

@@ -96,8 +96,8 @@ export async function selectMarketReport(req, res, next) {
                         ${from_date} as report_from_date,
                         ${to_date} as report_to_date,
                         MIN(marketing.name) as marketing_name,
-                        MIN(party.name) as party_name,
-                        MIN(party.uuid) as party_uuid,
+                        MIN(COALESCE(parent_party.name, party.name)) as party_name,
+                        COALESCE(MIN(parent_party.uuid), MIN(party.uuid)) as party_uuid,
                         -- party wise order number, against order number -> pi, lc, cash invoice
                         (array_agg(zipper_object.order_details))[1] as order_details,
                         -- (array_agg(op_zipper_object.order_details))[1] as opening_order_details,
@@ -119,6 +119,8 @@ export async function selectMarketReport(req, res, next) {
                         public.party
                     LEFT JOIN
                         zipper.v_order_details_full vodf ON party.uuid = vodf.party_uuid
+                    LEFT JOIN
+                        public.party parent_party ON party.parent_party_uuid = parent_party.uuid
                     LEFT JOIN
                         thread.order_info toi ON party.uuid = toi.party_uuid
                     LEFT JOIN
@@ -210,29 +212,31 @@ export async function selectMarketReport(req, res, next) {
                         zipper_object.party_uuid = vodf.party_uuid
                     LEFT JOIN (
                         SELECT 
-                            party_uuid,
-                            marketing_uuid,
-                            array_agg(DISTINCT file_number) FILTER (WHERE ${from_date && to_date ? sql`created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}) AS file_numbers,
-                            SUM(lc_value) FILTER (WHERE ${from_date && to_date ? sql`created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}) AS running_total_value
-                        FROM lc_values
-                        GROUP BY party_uuid, marketing_uuid
+                            COALESCE(p.parent_party_uuid, lv.party_uuid) AS party_root_uuid,
+                            lv.marketing_uuid,
+                            array_agg(DISTINCT lv.file_number) FILTER (WHERE ${from_date && to_date ? sql`lv.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}) AS file_numbers,
+                            SUM(lv.lc_value) FILTER (WHERE ${from_date && to_date ? sql`lv.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '23 hours 59 minutes 59 seconds'` : sql`1=1`}) AS running_total_value
+                        FROM lc_values lv
+                        LEFT JOIN public.party p ON p.uuid = lv.party_uuid
+                        GROUP BY COALESCE(p.parent_party_uuid, lv.party_uuid), lv.marketing_uuid
                     ) AS lc_totals ON
-                        lc_totals.party_uuid = vodf.party_uuid AND lc_totals.marketing_uuid = vodf.marketing_uuid
+                        lc_totals.party_root_uuid = COALESCE(parent_party.uuid, vodf.party_uuid) AND lc_totals.marketing_uuid = vodf.marketing_uuid
                     LEFT JOIN (
                         SELECT 
+                            COALESCE(p.parent_party_uuid, pi_cash.party_uuid) AS party_root_uuid,
                             pi_cash.marketing_uuid,
-                            pi_cash.party_uuid,
                             array_agg(DISTINCT CONCAT('CI', to_char(pi_cash.created_at, 'YY'), '-', pi_cash.id::text)) FILTER (WHERE ${from_date && to_date ? sql`cash_receive.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 DAY'` : sql`1=1`}) AS pi_cash_ids,
                             SUM(cash_receive.amount) FILTER (WHERE ${from_date && to_date ? sql`cash_receive.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 DAY'` : sql`1=1`}) AS running_total_cash_received
                         FROM commercial.cash_receive
                         LEFT JOIN commercial.pi_cash ON cash_receive.pi_cash_uuid = pi_cash.uuid
+                        LEFT JOIN public.party p ON p.uuid = pi_cash.party_uuid
                         WHERE pi_cash.uuid IS NOT NULL
-                        GROUP BY pi_cash.marketing_uuid, pi_cash.party_uuid
+                        GROUP BY COALESCE(p.parent_party_uuid, pi_cash.party_uuid), pi_cash.marketing_uuid
                     ) AS cash_totals ON 
-                        cash_totals.party_uuid = vodf.party_uuid AND cash_totals.marketing_uuid = vodf.marketing_uuid
+                        cash_totals.party_root_uuid = COALESCE(parent_party.uuid, vodf.party_uuid) AND cash_totals.marketing_uuid = vodf.marketing_uuid
                     WHERE zipper_object.order_details IS NOT NULL
                     GROUP BY 
-                        party.uuid,
+                        COALESCE(parent_party.uuid, party.uuid),
                         marketing.uuid,
                         lc_totals.file_numbers,
                         cash_totals.pi_cash_ids,

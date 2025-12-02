@@ -1,11 +1,11 @@
 import { desc, eq } from 'drizzle-orm';
-import {
-	handleError,
-	validateRequest,
-} from '../../../util/index.js';
+import { alias } from 'drizzle-orm/pg-core';
+import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { party } from '../schema.js';
+
+const parentParty = alias(party, 'parent_party');
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -95,9 +95,12 @@ export async function selectAll(req, res, next) {
 			updated_at: party.updated_at,
 			created_by: party.created_by,
 			created_by_name: hrSchema.users.name,
+			parent_party_uuid: party.parent_party_uuid,
+			parent_party_name: parentParty.name,
 		})
 		.from(party)
 		.leftJoin(hrSchema.users, eq(party.created_by, hrSchema.users.uuid))
+		.leftJoin(parentParty, eq(party.parent_party_uuid, parentParty.uuid))
 		.orderBy(desc(party.created_at));
 
 	try {
@@ -128,9 +131,12 @@ export async function select(req, res, next) {
 			updated_at: party.updated_at,
 			created_by: party.created_by,
 			created_by_name: hrSchema.users.name,
+			parent_party_uuid: party.parent_party_uuid,
+			parent_party_name: parentParty.name,
 		})
 		.from(party)
 		.leftJoin(hrSchema.users, eq(party.created_by, hrSchema.users.uuid))
+		.leftJoin(parentParty, eq(party.parent_party_uuid, parentParty.uuid))
 		.where(eq(party.uuid, req.params.uuid));
 
 	try {
