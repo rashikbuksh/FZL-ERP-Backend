@@ -92,6 +92,13 @@ export async function selectMarketReport(req, res, next) {
                             GROUP BY manual_pi.lc_uuid
                         ) manual_pi_values ON manual_pi_values.lc_uuid = lc.uuid
                     )
+                    , party_roots AS (
+                        SELECT
+                            p.uuid AS party_uuid,
+                            COALESCE(p.parent_party_uuid, p.uuid) AS party_root_uuid,
+                            p.name
+                        FROM public.party p
+                    )
                     SELECT
                         ${from_date} as report_from_date,
                         ${to_date} as report_to_date,
@@ -137,7 +144,7 @@ export async function selectMarketReport(req, res, next) {
                     LEFT JOIN (
                         SELECT
                             vodf.marketing_uuid,
-                            vodf.party_uuid,
+                            pr.party_root_uuid,
                             SUM(oe_sum.total_quantity)::float8 as total_ordered_quantity,
                             SUM(oe_sum.total_quantity_party_price)::float8 as total_ordered_value_party,
                             SUM(oe_sum.total_quantity_company_price)::float8 as total_ordered_value_company,
@@ -168,6 +175,7 @@ export async function selectMarketReport(req, res, next) {
                                 )
                             ) FILTER ( WHERE oe_sum.total_quantity != 0 OR oe_sum.total_quantity IS NOT NULL ) AS order_details
                         FROM zipper.v_order_details_full vodf
+                        LEFT JOIN party_roots pr ON pr.party_uuid = vodf.party_uuid
                         LEFT JOIN (
                             SELECT 
                                 vpl.order_info_uuid,
@@ -215,10 +223,10 @@ export async function selectMarketReport(req, res, next) {
 							production_quantity.total_prod_quantity IS NOT NULL
                         GROUP BY
                             vodf.marketing_uuid,
-                            vodf.party_uuid
+                            pr.party_root_uuid
                     ) AS zipper_object ON
                         zipper_object.marketing_uuid = vodf.marketing_uuid AND
-                        zipper_object.party_uuid = vodf.party_uuid
+                        zipper_object.party_root_uuid = COALESCE(parent_party.uuid, vodf.party_uuid)
                     LEFT JOIN (
                         SELECT 
                             COALESCE(p.parent_party_uuid, lv.party_uuid) AS party_root_uuid,
@@ -244,6 +252,7 @@ export async function selectMarketReport(req, res, next) {
                     ) AS cash_totals ON 
                         cash_totals.party_root_uuid = COALESCE(parent_party.uuid, vodf.party_uuid) AND cash_totals.marketing_uuid = vodf.marketing_uuid
                     WHERE zipper_object.order_details IS NOT NULL
+                        AND party_name = 'TEX MERCHANT LTD'
                     GROUP BY 
                         COALESCE(parent_party.uuid, party.uuid),
                         marketing.uuid,
