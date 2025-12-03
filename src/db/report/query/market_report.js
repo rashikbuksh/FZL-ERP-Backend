@@ -99,19 +99,26 @@ export async function selectMarketReport(req, res, next) {
                             p.name
                         FROM public.party p
                     )
+                    , party_names AS (
+                        SELECT
+                            party_root_uuid,
+                            string_agg(DISTINCT name, ' / ' ORDER BY name) AS all_names,
+                            MIN(CASE WHEN party_root_uuid = party_uuid THEN name END) AS parent_name
+                        FROM party_roots
+                        GROUP BY party_root_uuid
+                    )
                     SELECT
                         ${from_date} as report_from_date,
                         ${to_date} as report_to_date,
                         MIN(marketing.name) as marketing_name,
-                        -- If there is a parent, show parent name plus distinct child names joined by ' / '
+                        -- Combined parent + child names (ordered, distinct)
                         CASE
-                            WHEN MAX(parent_party.uuid) IS NOT NULL THEN
+                            WHEN pn.parent_name IS NOT NULL THEN
                                 CASE
-                                    WHEN string_agg(DISTINCT party.name, ' / ') = MAX(parent_party.name) THEN MAX(parent_party.name)
-                                    ELSE MAX(parent_party.name) || ' / ' || string_agg(DISTINCT party.name, ' / ')
+                                    WHEN pn.all_names = pn.parent_name THEN pn.parent_name
+                                    ELSE pn.parent_name || ' / ' || pn.all_names
                                 END
-                            ELSE
-                                string_agg(DISTINCT party.name, ' / ')
+                            ELSE pn.all_names
                         END AS party_name,
                         COALESCE(MAX(parent_party.uuid), MIN(party.uuid)) as party_uuid,
                         -- party wise order number, against order number -> pi, lc, cash invoice
@@ -251,11 +258,13 @@ export async function selectMarketReport(req, res, next) {
                         GROUP BY COALESCE(p.parent_party_uuid, pi_cash.party_uuid), pi_cash.marketing_uuid
                     ) AS cash_totals ON 
                         cash_totals.party_root_uuid = COALESCE(parent_party.uuid, vodf.party_uuid) AND cash_totals.marketing_uuid = vodf.marketing_uuid
+                    LEFT JOIN party_names pn ON pn.party_root_uuid = COALESCE(parent_party.uuid, party.uuid)
                     WHERE zipper_object.order_details IS NOT NULL
-                        AND party_name = 'TEX MERCHANT LTD'
                     GROUP BY 
                         COALESCE(parent_party.uuid, party.uuid),
                         marketing.uuid,
+                        pn.parent_name,
+                        pn.all_names,
                         zipper_object.total_ordered_quantity,
                         zipper_object.total_ordered_value_party,
                         zipper_object.total_ordered_value_company,
