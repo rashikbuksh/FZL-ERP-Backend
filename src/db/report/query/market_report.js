@@ -96,16 +96,25 @@ export async function selectMarketReport(req, res, next) {
                         ${from_date} as report_from_date,
                         ${to_date} as report_to_date,
                         MIN(marketing.name) as marketing_name,
-                        MIN(COALESCE(parent_party.name, party.name)) as party_name,
-                        COALESCE(MIN(parent_party.uuid), MIN(party.uuid)) as party_uuid,
+                        -- If there is a parent, show parent name plus distinct child names joined by ' / '
+                        CASE
+                            WHEN MAX(parent_party.uuid) IS NOT NULL THEN
+                                CASE
+                                    WHEN string_agg(DISTINCT party.name, ' / ') = MAX(parent_party.name) THEN MAX(parent_party.name)
+                                    ELSE MAX(parent_party.name) || ' / ' || string_agg(DISTINCT party.name, ' / ')
+                                END
+                            ELSE
+                                string_agg(DISTINCT party.name, ' / ')
+                        END AS party_name,
+                        COALESCE(MAX(parent_party.uuid), MIN(party.uuid)) as party_uuid,
                         -- party wise order number, against order number -> pi, lc, cash invoice
                         (array_agg(zipper_object.order_details))[1] as order_details,
                         -- (array_agg(op_zipper_object.order_details))[1] as opening_order_details,
                         -- running totals
                         COALESCE(MAX(lc_totals.running_total_value::float8), 0) as running_total_lc_value,
-                        COALESCE((lc_totals.file_numbers), ARRAY[]::text[]) AS running_lc_file_numbers,
+                        COALESCE(MAX(lc_totals.file_numbers), ARRAY[]::text[]) AS running_lc_file_numbers,
                         COALESCE(MAX(cash_totals.running_total_cash_received::float8), 0) as running_total_cash_received,
-                        COALESCE((cash_totals.pi_cash_ids), ARRAY[]::text[]) AS running_pi_cash_ids,
+                        COALESCE(MAX(cash_totals.pi_cash_ids), ARRAY[]::text[]) AS running_pi_cash_ids,
                         COALESCE(zipper_object.total_ordered_quantity, 0)::float8 as total_ordered_quantity,
                         COALESCE(zipper_object.total_ordered_value_party, 0)::float8 as total_ordered_value_party,
                         COALESCE(zipper_object.total_ordered_value_company, 0)::float8 as total_ordered_value_company,
@@ -238,8 +247,6 @@ export async function selectMarketReport(req, res, next) {
                     GROUP BY 
                         COALESCE(parent_party.uuid, party.uuid),
                         marketing.uuid,
-                        lc_totals.file_numbers,
-                        cash_totals.pi_cash_ids,
                         zipper_object.total_ordered_quantity,
                         zipper_object.total_ordered_value_party,
                         zipper_object.total_ordered_value_company,
