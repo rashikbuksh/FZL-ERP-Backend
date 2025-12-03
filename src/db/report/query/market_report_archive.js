@@ -4,33 +4,48 @@ import db from '../../index.js';
 import { market_report_archive } from '../schema.js';
 import { users } from '../../hr/schema.js';
 
+function sanitizePayload(src) {
+	const out = {};
+	for (const [k, v] of Object.entries(src || {})) {
+		if (v === '' || v === 'null' || v === null) {
+			out[k] = null;
+		} else {
+			out[k] = v;
+		}
+	}
+	return out;
+}
+
 // Generate and save market report snapshot
 export async function generateMarketReportSnapshot(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	const { from_date, to_date, report_name, remarks } = req.body;
 
+	const formData = sanitizePayload(req.body);
+	const file = req.file;
+
+	let filePath = null;
+
+	// Build the report query
+	if (file) {
+		filePath = await insertFile(file, 'public/complaint');
+	}
+
 	try {
-		// Run the existing market report query
-		const query = sql`
-            -- Your existing market report query here
-            -- Copy the entire query from selectMarketReport function
-        `;
-
-		const reportData = await db.execute(query);
-
 		// Save snapshot to archive table
 		const snapshot = await db
 			.insert(market_report_archive)
 			.values({
 				report_name:
-					report_name || `Market Report ${from_date} to ${to_date}`,
-				from_date,
-				to_date,
-				generated_by: req.user_uuid,
-				report_data: reportData.rows,
-				status: 'pending',
-				remarks: remarks || null,
+					formData.report_name ||
+					`Market Report ${formData.from_date} to ${formData.to_date}`,
+				from_date: formData.from_date,
+				to_date: formData.to_date,
+				generated_by: formData.user_uuid,
+				file: filePath,
+				status: formData.status || 'pending',
+				remarks: formData.remarks || null,
 			})
 			.returning();
 
@@ -62,6 +77,7 @@ export async function listMarketReportSnapshots(req, res, next) {
 				generated_at: market_report_archive.generated_at,
 				generated_by: market_report_archive.generated_by,
 				generated_by_name: users.name,
+				file: market_report_archive.file,
 				status: market_report_archive.status,
 				confirmed_at: market_report_archive.confirmed_at,
 				confirmed_by: market_report_archive.confirmed_by,
@@ -110,7 +126,7 @@ export async function getMarketReportSnapshot(req, res, next) {
 				status: market_report_archive.status,
 				confirmed_at: market_report_archive.confirmed_at,
 				confirmed_by: market_report_archive.confirmed_by,
-				report_data: market_report_archive.report_data,
+				file: market_report_archive.file,
 				remarks: market_report_archive.remarks,
 				created_at: market_report_archive.created_at,
 				updated_at: market_report_archive.updated_at,

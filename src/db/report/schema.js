@@ -16,7 +16,7 @@ export const market_report_archive = reportSchema.table(
 		status: text('status').default('pending'), // 'pending', 'confirmed', 'deleted'
 		confirmed_at: timestamp('confirmed_at'),
 		confirmed_by: defaultUUID('confirmed_by').references(() => users.uuid),
-		report_data: text('report_data', { mode: 'json' }).notNull(), // JSONB stored as JSON
+		file: text('file'),
 		remarks: text('remarks'),
 		created_at: timestamp('created_at').defaultNow(),
 		updated_at: timestamp('updated_at').defaultNow(),
