@@ -24,7 +24,9 @@ export async function insert(req, res, next) {
 	const voucherPromise = db
 		.insert(voucher)
 		.values(req.body)
-		.returning({ insertedDate: voucher.date });
+		.returning({
+			insertedDate: sql`CONCAT('VO', TO_CHAR(${voucher.created_at}::timestamp, 'YY'), '-', ${voucher.id})`,
+		});
 
 	try {
 		const data = await voucherPromise;
@@ -46,7 +48,9 @@ export async function update(req, res, next) {
 		.update(voucher)
 		.set(req.body)
 		.where(eq(voucher.uuid, req.params.uuid))
-		.returning({ updatedDate: voucher.date });
+		.returning({
+			updatedDate: sql`CONCAT('VO', TO_CHAR(${voucher.created_at}::timestamp, 'YY'), '-', ${voucher.id})`,
+		});
 
 	try {
 		const data = await voucherPromise;
@@ -95,7 +99,9 @@ export async function remove(req, res, next) {
 	const voucherPromise = db
 		.delete(voucher)
 		.where(eq(voucher.uuid, req.params.uuid))
-		.returning({ deletedDate: voucher.date });
+		.returning({
+			deletedDate: sql`CONCAT('VO', TO_CHAR(${voucher.created_at}::timestamp, 'YY'), '-', ${voucher.id})`,
+		});
 
 	try {
 		const data = await voucherPromise;
