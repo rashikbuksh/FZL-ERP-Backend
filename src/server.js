@@ -1,4 +1,5 @@
 import express, { json, urlencoded } from 'express';
+import serveStatic from 'serve-static';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import swaggerUi from 'swagger-ui-express';
@@ -29,6 +30,10 @@ export const webPushKey = webPush.setVapidDetails(
 );
 
 const server = express();
+
+// Fix for Express v5 - swagger-ui-express needs express.static
+express.static = serveStatic;
+
 const httpServer = createServer(server);
 
 // Initialize Socket.IO
@@ -283,8 +288,8 @@ server.use(json({ limit: '100mb' }));
 const pdfStoragePath = path.join(process.cwd(), 'pdf_storage');
 const uploadsPath = path.join(process.cwd(), 'uploads');
 
-server.use('/uploads', express.static(uploadsPath));
-server.use('/pdf_storage', express.static(pdfStoragePath));
+server.use('/uploads', serveStatic(uploadsPath));
+server.use('/pdf_storage', serveStatic(pdfStoragePath));
 
 server.use(VerifyToken);
 

@@ -1,0 +1,31 @@
+# Bun Configuration File
+
+[install]
+# Use exact versions
+exact = false
+
+# Use global cache
+cache = true
+
+# Production dependencies only
+production = false
+
+# Auto-install peer dependencies
+auto = true
+
+[install.scopes]
+# Configure npm registry for scoped packages if needed
+# "@myorg" = { token = "$NPM_TOKEN", url = "https://registry.npmjs.org/" }
+
+[run]
+# Environment to use when running scripts
+# shell = "powershell"
+
+[test]
+# Test configuration
+preload = []
+coverage = false
+
+[dev]
+# Development server configuration
+port = 3005
