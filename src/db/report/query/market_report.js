@@ -259,7 +259,6 @@ export async function selectMarketReport(req, res, next) {
                     ) AS cash_totals ON 
                         cash_totals.party_root_uuid = COALESCE(parent_party.uuid, vodf.party_uuid) AND cash_totals.marketing_uuid = vodf.marketing_uuid
                     LEFT JOIN party_names pn ON pn.party_root_uuid = COALESCE(parent_party.uuid, party.uuid)
-                    WHERE zipper_object.order_details IS NOT NULL
                     GROUP BY 
                         COALESCE(parent_party.uuid, party.uuid),
                         marketing.uuid,
