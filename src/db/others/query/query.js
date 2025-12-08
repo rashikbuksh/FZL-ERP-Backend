@@ -774,11 +774,10 @@ export async function selectOrderInfo(req, res, next) {
 	}
 
 	if (from_date && to_date) {
+		const dateCond = sql`order_info.created_at BETWEEN ${from_date} AND ${to_date}`;
 		filterCondition = filterCondition
-			? filterCondition.append(
-					sql` order_info.created_at BETWEEN ${from_date} AND ${to_date}`
-				)
-			: sql` AND order_info.created_at BETWEEN ${from_date} AND ${to_date}`;
+			? filterCondition.append(sql` AND ${dateCond}`)
+			: dateCond;
 	}
 
 	try {
