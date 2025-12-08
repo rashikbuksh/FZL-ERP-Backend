@@ -176,9 +176,9 @@ export async function selectMarketReport(req, res, next) {
                                     'total_quantity_company_price',
                                     COALESCE(oe_sum.total_quantity_company_price, 0)::float8,
                                     'total_quantity_party_price_bdt',
-                                    COALESCE(oe_sum.total_quantity_party_price * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE 80 END, 0)::float8,
+                                    COALESCE(oe_sum.total_quantity_party_price * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE '80'::float8 END, 0)::float8,
                                     'total_quantity_company_price_bdt',
-                                    COALESCE(oe_sum.total_quantity_company_price * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE 80 END, 0)::float8,
+                                    COALESCE(oe_sum.total_quantity_company_price * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE '80'::float8 END, 0)::float8,
                                     'running_prod_quantity',
                                     COALESCE(production_quantity.total_prod_quantity, 0)::float8,
                                     'running_prod_value_party',
@@ -186,9 +186,9 @@ export async function selectMarketReport(req, res, next) {
                                     'running_prod_value_company',
                                     COALESCE(production_quantity.total_prod_value_company, 0)::float8,
                                     'running_prod_value_party_bdt',
-                                    COALESCE(production_quantity.total_prod_value_party * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE 80 END, 0)::float8,
+                                    COALESCE(production_quantity.total_prod_value_party * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE '80'::float8 END, 0)::float8,
                                     'running_prod_value_company_bdt',
-                                    COALESCE(production_quantity.total_prod_value_company * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE 80 END, 0)::float8
+                                    COALESCE(production_quantity.total_prod_value_company * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE '80'::float8 END, 0)::float8
                                 )
                             ) FILTER ( WHERE oe_sum.total_quantity != 0 OR oe_sum.total_quantity IS NOT NULL ) AS order_details
                         FROM zipper.v_order_details_full vodf
