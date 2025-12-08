@@ -102,8 +102,8 @@ export async function selectMarketReport(req, res, next) {
                     , party_names AS (
                         SELECT
                             party_root_uuid,
-                            string_agg(DISTINCT name, ' / ' ORDER BY name) AS all_names,
-                            MIN(CASE WHEN party_root_uuid = party_uuid THEN name END) AS parent_name
+                            MIN(CASE WHEN party_root_uuid = party_uuid THEN name END) AS parent_name,
+                            array_to_string(array_agg(DISTINCT name) FILTER (WHERE party_root_uuid != party_uuid), ' / ') AS child_names
                         FROM party_roots
                         GROUP BY party_root_uuid
                     )
@@ -111,15 +111,8 @@ export async function selectMarketReport(req, res, next) {
                         ${from_date} as report_from_date,
                         ${to_date} as report_to_date,
                         MIN(marketing.name) as marketing_name,
-                        -- Combined parent + child names (ordered, distinct)
-                        CASE
-                            WHEN pn.parent_name IS NOT NULL THEN
-                                CASE
-                                    WHEN pn.all_names = pn.parent_name THEN pn.parent_name
-                                    ELSE pn.parent_name || ' / ' || pn.all_names
-                                END
-                            ELSE pn.all_names
-                        END AS party_name,
+                        -- Combined parent + child names (parent first, then distinct children)
+                        (pn.parent_name || COALESCE(' / ' || pn.child_names, '')) AS party_name,
                         COALESCE(MAX(parent_party.uuid), MIN(party.uuid)) as party_uuid,
                         -- party wise order number, against order number -> pi, lc, cash invoice
                         (array_agg(zipper_object.order_details))[1] as order_details,
@@ -151,7 +144,7 @@ export async function selectMarketReport(req, res, next) {
                     LEFT JOIN (
                         SELECT
                             vodf.marketing_uuid,
-                            vodf.party_uuid,
+                            pr.party_root_uuid,
                             SUM(oe_sum.total_quantity)::float8 as total_ordered_quantity,
                             SUM(oe_sum.total_quantity_party_price)::float8 as total_ordered_value_party,
                             SUM(oe_sum.total_quantity_company_price)::float8 as total_ordered_value_company,
@@ -182,7 +175,7 @@ export async function selectMarketReport(req, res, next) {
                                 )
                             ) FILTER ( WHERE oe_sum.total_quantity != 0 OR oe_sum.total_quantity IS NOT NULL ) AS order_details
                         FROM zipper.v_order_details_full vodf
-                        -- LEFT JOIN party_roots pr ON pr.party_uuid = vodf.party_uuid
+                        LEFT JOIN party_roots pr ON pr.party_uuid = vodf.party_uuid
                         LEFT JOIN (
                             SELECT 
                                 vpl.order_info_uuid,
@@ -230,10 +223,10 @@ export async function selectMarketReport(req, res, next) {
 							production_quantity.total_prod_quantity IS NOT NULL
                         GROUP BY
                             vodf.marketing_uuid,
-                            vodf.party_uuid
+                            pr.party_root_uuid
                     ) AS zipper_object ON
                         zipper_object.marketing_uuid = vodf.marketing_uuid AND
-                        zipper_object.party_uuid = COALESCE(parent_party.uuid, vodf.party_uuid)
+                        zipper_object.party_root_uuid = COALESCE(parent_party.uuid, vodf.party_uuid)
                     LEFT JOIN (
                         SELECT 
                             COALESCE(p.parent_party_uuid, lv.party_uuid) AS party_root_uuid,
@@ -263,7 +256,7 @@ export async function selectMarketReport(req, res, next) {
                         COALESCE(parent_party.uuid, party.uuid),
                         marketing.uuid,
                         pn.parent_name,
-                        pn.all_names,
+                        pn.child_names,
                         zipper_object.total_ordered_quantity,
                         zipper_object.total_ordered_value_party,
                         zipper_object.total_ordered_value_company,
