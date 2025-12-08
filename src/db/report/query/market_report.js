@@ -128,10 +128,14 @@ export async function selectMarketReport(req, res, next) {
                         COALESCE(zipper_object.total_ordered_value_company, 0)::float8 as total_ordered_value_company,
                         COALESCE(zipper_object.total_produced_quantity, 0)::float8 as total_produced_quantity,
                         COALESCE(zipper_object.total_produced_value_party, 0)::float8 as total_produced_value_party,
+                        COALESCE(zipper_object.total_produced_value_party_bdt, 0)::float8 as total_produced_value_party_bdt,
                         COALESCE(zipper_object.total_produced_value_company, 0)::float8 as total_produced_value_company,
+                        COALESCE(zipper_object.total_produced_value_company_bdt, 0)::float8 as total_produced_value_company_bdt,
                         COALESCE(zipper_object.total_produced_quantity_deleted, 0)::float8 as total_produced_quantity_deleted,
                         COALESCE(zipper_object.total_produced_value_party_deleted, 0)::float8 as total_produced_value_party_deleted,
-                        COALESCE(zipper_object.total_produced_value_company_deleted, 0)::float8 as total_produced_value_company_deleted
+                        COALESCE(zipper_object.total_produced_value_party_deleted_bdt, 0)::float8 as total_produced_value_party_deleted_bdt,
+                        COALESCE(zipper_object.total_produced_value_company_deleted, 0)::float8 as total_produced_value_company_deleted,
+                        COALESCE(zipper_object.total_produced_value_company_deleted_bdt, 0)::float8 as total_produced_value_company_deleted_bdt
                     FROM 
                         public.party
                     LEFT JOIN
@@ -152,9 +156,13 @@ export async function selectMarketReport(req, res, next) {
                             SUM(COALESCE(production_quantity.total_prod_quantity, 0)::float8) as total_produced_quantity,
                             SUM(COALESCE(production_quantity.total_prod_value_party, 0)::float8) as total_produced_value_party,
                             SUM(COALESCE(production_quantity.total_prod_value_company, 0)::float8) as total_produced_value_company,
+                            SUM(COALESCE(production_quantity.total_prod_value_party * pc.conversion_rate, 0)::float8) as total_produced_value_party_bdt,
+                            SUM(COALESCE(production_quantity.total_prod_value_company * pc.conversion_rate, 0)::float8) as total_produced_value_company_bdt,
                             SUM(COALESCE(production_quantity.total_prod_quantity_deleted, 0)::float8) as total_produced_quantity_deleted,
                             SUM(COALESCE(production_quantity.total_prod_value_party_deleted, 0)::float8) as total_produced_value_party_deleted,
                             SUM(COALESCE(production_quantity.total_prod_value_company_deleted, 0)::float8) as total_produced_value_company_deleted,
+                            SUM(COALESCE(production_quantity.total_prod_value_party_deleted * pc.conversion_rate, 0)::float8) as total_produced_value_party_deleted_bdt,
+                            SUM(COALESCE(production_quantity.total_prod_value_company_deleted * pc.conversion_rate, 0)::float8) as total_produced_value_company_deleted_bdt,
                             jsonb_agg(
                                 DISTINCT jsonb_build_object(
                                     'order_info_uuid',
@@ -167,12 +175,20 @@ export async function selectMarketReport(req, res, next) {
                                     COALESCE(oe_sum.total_quantity_party_price, 0)::float8,
                                     'total_quantity_company_price',
                                     COALESCE(oe_sum.total_quantity_company_price, 0)::float8,
+                                    'total_quantity_party_price_bdt',
+                                    COALESCE(oe_sum.total_quantity_party_price * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE 80 END, 0)::float8,
+                                    'total_quantity_company_price_bdt',
+                                    COALESCE(oe_sum.total_quantity_company_price * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE 80 END, 0)::float8,
                                     'running_prod_quantity',
                                     COALESCE(production_quantity.total_prod_quantity, 0)::float8,
                                     'running_prod_value_party',
-                                    COALESCE(production_quantity.total_prod_value_party, 0)::float8,
+                                    COALESCE(production_quantity.total_prod_value_party , 0)::float8,
                                     'running_prod_value_company',
-                                    COALESCE(production_quantity.total_prod_value_company, 0)::float8
+                                    COALESCE(production_quantity.total_prod_value_company, 0)::float8,
+                                    'running_prod_value_party_bdt',
+                                    COALESCE(production_quantity.total_prod_value_party * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE 80 END, 0)::float8,
+                                    'running_prod_value_company_bdt',
+                                    COALESCE(production_quantity.total_prod_value_company * CASE WHEN vodf.is_cash = 1 THEN pc.conversion_rate ELSE 80 END, 0)::float8
                                 )
                             ) FILTER ( WHERE oe_sum.total_quantity != 0 OR oe_sum.total_quantity IS NOT NULL ) AS order_details
                         FROM zipper.v_order_details_full vodf
@@ -220,6 +236,11 @@ export async function selectMarketReport(req, res, next) {
                             GROUP BY
                                 vodf.order_info_uuid
                         ) AS oe_sum ON vodf.order_info_uuid = oe_sum.order_info_uuid
+                        LEFT JOIN commercial.pi_cash pc ON EXISTS (
+                            SELECT 1
+                            FROM jsonb_array_elements_text(pc.order_info_uuids::jsonb) AS elem(val)
+                            WHERE elem.val = vodf.order_info_uuid::text AND vodf.is_cash = 1
+                        )
                         WHERE 
 							production_quantity.total_prod_quantity IS NOT NULL
                         GROUP BY
@@ -260,13 +281,19 @@ export async function selectMarketReport(req, res, next) {
                         pn.child_names,
                         zipper_object.total_ordered_quantity,
                         zipper_object.total_ordered_value_party,
+                        zipper_object.total_produced_value_party_bdt,
                         zipper_object.total_ordered_value_company,
+                        zipper_object.total_produced_value_company_bdt,
                         zipper_object.total_produced_quantity,
                         zipper_object.total_produced_value_party,
+                        zipper_object.total_produced_value_party_bdt,
                         zipper_object.total_produced_value_company,
+                        zipper_object.total_produced_value_company_bdt,
                         zipper_object.total_produced_quantity_deleted,
                         zipper_object.total_produced_value_party_deleted,
-                        zipper_object.total_produced_value_company_deleted
+                        zipper_object.total_produced_value_party_deleted_bdt,
+                        zipper_object.total_produced_value_company_deleted,
+                        zipper_object.total_produced_value_company_deleted_bdt
                     ORDER BY
                         marketing_name,
                         party_name
