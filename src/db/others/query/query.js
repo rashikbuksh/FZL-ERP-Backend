@@ -774,7 +774,7 @@ export async function selectOrderInfo(req, res, next) {
 	}
 
 	if (from_date && to_date) {
-		const dateCond = sql`order_info.created_at BETWEEN ${from_date} AND ${to_date}`;
+		const dateCond = sql`order_info.created_at BETWEEN ${from_date}::TIMESTAMP AND ${to_date}::TIMESTAMP + INTERVAL '1 day' - INTERVAL '1 second'`;
 		filterCondition = filterCondition
 			? filterCondition.append(sql` AND ${dateCond}`)
 			: dateCond;

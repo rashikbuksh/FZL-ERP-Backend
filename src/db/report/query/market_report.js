@@ -119,6 +119,7 @@ export async function selectMarketReport(req, res, next) {
                         -- (array_agg(op_zipper_object.order_details))[1] as opening_order_details,
                         -- running totals
                         COALESCE(MAX(lc_totals.running_total_value::float8), 0) as running_total_lc_value,
+                        COALESCE(MAX(lc_totals.running_total_value::float8 * 80), 0) as running_total_lc_value_bdt,
                         COALESCE(MAX(lc_totals.file_numbers), ARRAY[]::text[]) AS running_lc_file_numbers,
                         COALESCE(MAX(cash_totals.running_total_cash_received::float8), 0) as running_total_cash_received,
                         COALESCE(MAX(cash_totals.pi_cash_ids), ARRAY[]::text[]) AS running_pi_cash_ids,
