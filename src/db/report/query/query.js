@@ -1052,37 +1052,56 @@ export async function PiToBeRegister(req, res, next) {
             FROM
                 public.party party
             LEFT JOIN (
-                SELECT 
-                    jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', CONCAT(vodf.order_number, ' - ', vodf.marketing_name))) as order_object,
-                    SUM(order_entry.quantity) AS total_quantity,
-                    SUM(sfg.delivered) AS total_delivered,
-                    SUM(sfg.pi) AS total_pi,
-                    SUM(order_entry.quantity - sfg.pi) AS total_non_pi,
-                    SUM(order_entry.quantity * order_entry.party_price) AS total_quantity_value,
-                    SUM(sfg.delivered * order_entry.party_price) AS total_delivered_value,
-                    SUM(sfg.pi * order_entry.party_price) AS total_pi_value,
-                    SUM((order_entry.quantity - sfg.pi) * order_entry.party_price) AS total_non_pi_value,
-                    vodf.party_uuid
-                FROM
-                    zipper.sfg
-                LEFT JOIN
-                    zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-                LEFT JOIN 
-                    zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-                LEFT JOIN (
-                    SELECT DISTINCT vodf.order_info_uuid
-                    FROM commercial.pi_cash_entry
-                    LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
-                    LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-                    LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-                ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
-                WHERE 
-                    order_exists_in_pi.order_info_uuid IS NULL 
-                    AND vodf.is_sample = 0
-                    AND vodf.is_cancelled = FALSE
-                    AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
-                GROUP BY
-                    vodf.party_uuid
+                -- aggregate per order_number first, then aggregate those per party to include per-order quantity in order_object
+                SELECT
+                    per_order.party_uuid,
+                    jsonb_agg(DISTINCT jsonb_build_object(
+                        'value', per_order.order_number,
+                        'label', CONCAT(per_order.order_number, ' - ', per_order.marketing_name, ' - Q:', per_order.total_qty),
+                        'quantity', per_order.total_qty
+                    )) AS order_object,
+                    SUM(per_order.total_qty) AS total_quantity,
+                    SUM(per_order.total_delivered) AS total_delivered,
+                    SUM(per_order.total_pi) AS total_pi,
+                    SUM(per_order.total_qty - per_order.total_pi) AS total_non_pi,
+                    SUM(per_order.total_qty_value) AS total_quantity_value,
+                    SUM(per_order.total_delivered_value) AS total_delivered_value,
+                    SUM(per_order.total_pi_value) AS total_pi_value,
+                    SUM(per_order.total_non_pi_value) AS total_non_pi_value
+                FROM (
+                    SELECT
+                        vodf.party_uuid,
+                        vodf.order_number,
+                        vodf.marketing_name,
+                        SUM(order_entry.quantity)::float8 AS total_qty,
+                        SUM(sfg.delivered)::float8 AS total_delivered,
+                        SUM(sfg.pi)::float8 AS total_pi,
+                        SUM(order_entry.quantity * order_entry.party_price)::float8 AS total_qty_value,
+                        SUM(sfg.delivered * order_entry.party_price)::float8 AS total_delivered_value,
+                        SUM(sfg.pi * order_entry.party_price)::float8 AS total_pi_value,
+                        SUM((order_entry.quantity - sfg.pi) * order_entry.party_price)::float8 AS total_non_pi_value
+                    FROM
+                        zipper.sfg
+                    LEFT JOIN
+                        zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                    LEFT JOIN 
+                        zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                    LEFT JOIN (
+                        SELECT DISTINCT vodf.order_info_uuid
+                        FROM commercial.pi_cash_entry
+                        LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+                        LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                        LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                    ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
+                    WHERE 
+                        order_exists_in_pi.order_info_uuid IS NULL 
+                        AND vodf.is_sample = 0
+                        AND vodf.is_cancelled = FALSE
+                        AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                    GROUP BY
+                        vodf.party_uuid, vodf.order_number, vodf.marketing_name
+                ) per_order
+                GROUP BY per_order.party_uuid
             ) vodf_grouped ON party.uuid = vodf_grouped.party_uuid
             WHERE 
                 (vodf_grouped.total_quantity > 0 OR 
@@ -1106,53 +1125,55 @@ export async function PiToBeRegister(req, res, next) {
             FROM
                 public.party party
             LEFT JOIN (
-                SELECT 
-                    jsonb_agg(
-                        DISTINCT jsonb_build_object(
-                            'value',
-                            toi.uuid,
-                            'label',
-                            CONCAT(
-                                'ST',
-                                CASE
-                                    WHEN toi.is_sample = 1 THEN 'S'
-                                    ELSE ''
-                                END,
-                                to_char(toi.created_at, 'YY'),
-                                '-',
-                                (toi.id::text),
-                                ' - ',
-                                marketing.name
-                            )
-                        )
-                    ) as order_object,
-                    SUM(toe.quantity) AS total_quantity,
-                    SUM(toe.delivered) AS total_delivered,
-                    SUM(toe.pi) AS total_pi,
-                    SUM(toe.quantity - toe.pi) AS total_non_pi,
-                    SUM(toe.quantity * toe.party_price) AS total_quantity_value,
-                    SUM(toe.delivered * toe.party_price) AS total_delivered_value,
-                    SUM(toe.pi * toe.party_price) AS total_pi_value,
-                    SUM((toe.quantity - toe.pi) * toe.party_price) AS total_non_pi_value,
-                    toi.party_uuid
-                FROM
-                    thread.order_entry toe
-                LEFT JOIN 
-                    thread.order_info toi ON toe.order_info_uuid = toi.uuid
-                LEFT JOIN public.marketing ON toi.marketing_uuid = marketing.uuid
-                LEFT JOIN (
-                    SELECT DISTINCT toi.uuid
-                    FROM commercial.pi_cash_entry
-                    LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+                -- aggregate per thread order (toi) first, then aggregate per party to include per-order quantity
+                SELECT
+                    per_order.party_uuid,
+                    jsonb_agg(DISTINCT jsonb_build_object(
+                        'value', per_order.toi_uuid,
+                        'label', CONCAT('ST', CASE WHEN per_order.is_sample = 1 THEN 'S' ELSE '' END, to_char(per_order.created_at, 'YY'), '-', per_order.id_text, ' - ', per_order.party_name, ' - Q:', per_order.total_qty),
+                        'quantity', per_order.total_qty
+                    )) AS order_object,
+                    SUM(per_order.total_qty) AS total_quantity,
+                    SUM(per_order.total_delivered) AS total_delivered,
+                    SUM(per_order.total_pi) AS total_pi,
+                    SUM(per_order.total_qty - per_order.total_pi) AS total_non_pi,
+                    SUM(per_order.total_qty_value) AS total_quantity_value,
+                    SUM(per_order.total_delivered_value) AS total_delivered_value,
+                    SUM(per_order.total_pi_value) AS total_pi_value,
+                    SUM(per_order.total_non_pi_value) AS total_non_pi_value
+                FROM (
+                    SELECT
+                        toi.party_uuid,
+                        toi.uuid AS toi_uuid,
+                        toi.is_sample,
+                        toi.created_at,
+                        toi.id::text AS id_text,
+                        party.name AS party_name,
+                        SUM(toe.quantity)::float8 AS total_qty,
+                        SUM(toe.delivered)::float8 AS total_delivered,
+                        SUM(toe.pi)::float8 AS total_pi,
+                        SUM(toe.quantity * toe.party_price)::float8 AS total_qty_value,
+                        SUM(toe.delivered * toe.party_price)::float8 AS total_delivered_value,
+                        SUM(toe.pi * toe.party_price)::float8 AS total_pi_value,
+                        SUM((toe.quantity - toe.pi) * toe.party_price)::float8 AS total_non_pi_value
+                    FROM thread.order_entry toe
                     LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-                ) order_exists_in_pi ON toi.uuid = order_exists_in_pi.uuid
-                WHERE 
-                    order_exists_in_pi.uuid IS NULL 
-                    AND toi.is_sample = 0
-                    AND toi.is_cancelled = FALSE
-                    AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
-                GROUP BY
-                    toi.party_uuid
+                    LEFT JOIN public.party ON toi.party_uuid = party.uuid
+                    LEFT JOIN (
+                        SELECT DISTINCT toi.uuid
+                        FROM commercial.pi_cash_entry
+                        LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+                        LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                    ) order_exists_in_pi ON toi.uuid = order_exists_in_pi.uuid
+                    WHERE
+                        order_exists_in_pi.uuid IS NULL
+                        AND toi.is_sample = 0
+                        AND toi.is_cancelled = FALSE
+                        AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
+                    GROUP BY
+                        toi.party_uuid, toi.uuid, toi.is_sample, toi.created_at, toi.id, party.name
+                ) per_order
+                GROUP BY per_order.party_uuid
             ) toi_grouped ON party.uuid = toi_grouped.party_uuid
             WHERE 
                 (toi_grouped.total_quantity > 0 OR 
@@ -1203,37 +1224,50 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
             FROM
                 public.marketing marketing
             LEFT JOIN (
-                SELECT 
-                    jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', CONCAT(vodf.order_number, ' - ', vodf.party_name))) as order_object,
-                    SUM(order_entry.quantity) AS total_quantity,
-                    SUM(sfg.delivered) AS total_delivered,
-                    SUM(sfg.pi) AS total_pi,
-                    SUM(order_entry.quantity - sfg.pi) AS total_non_pi,
-                    SUM(order_entry.quantity * order_entry.party_price) AS total_quantity_value,
-                    SUM(sfg.delivered * order_entry.party_price) AS total_delivered_value,
-                    SUM(sfg.pi * order_entry.party_price) AS total_pi_value,
-                    SUM((order_entry.quantity - sfg.pi) * order_entry.party_price) AS total_non_pi_value,
-                    vodf.marketing_uuid
-                FROM
-                    zipper.sfg
-                LEFT JOIN
-                    zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
-                LEFT JOIN 
-                    zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-                LEFT JOIN (
-                    SELECT DISTINCT vodf.order_info_uuid
-                    FROM commercial.pi_cash_entry
-                    LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+                -- First aggregate per order_number to compute the SUMs, then aggregate those per marketing
+                SELECT
+                    per_order.marketing_uuid,
+                    jsonb_agg(DISTINCT jsonb_build_object('value', per_order.order_number, 'label', CONCAT(per_order.order_number, ' - ', per_order.party_name, ' - Q:', per_order.total_qty))) AS order_object,
+                    SUM(per_order.total_qty) AS total_quantity,
+                    SUM(per_order.total_delivered) AS total_delivered,
+                    SUM(per_order.total_pi) AS total_pi,
+                    SUM(per_order.total_qty - per_order.total_pi) AS total_non_pi,
+                    SUM(per_order.total_qty_value) AS total_quantity_value,
+                    SUM(per_order.total_delivered_value) AS total_delivered_value,
+                    SUM(per_order.total_pi_value) AS total_pi_value,
+                    SUM(per_order.total_non_pi_value) AS total_non_pi_value
+                FROM (
+                    SELECT
+                        vodf.marketing_uuid,
+                        vodf.order_number,
+                        vodf.party_name,
+                        SUM(order_entry.quantity)::float8 AS total_qty,
+                        SUM(sfg.delivered)::float8 AS total_delivered,
+                        SUM(sfg.pi)::float8 AS total_pi,
+                        SUM(order_entry.quantity * order_entry.party_price)::float8 AS total_qty_value,
+                        SUM(sfg.delivered * order_entry.party_price)::float8 AS total_delivered_value,
+                        SUM(sfg.pi * order_entry.party_price)::float8 AS total_pi_value,
+                        SUM((order_entry.quantity - sfg.pi) * order_entry.party_price)::float8 AS total_non_pi_value
+                    FROM
+                        zipper.sfg
                     LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
                     LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
-                ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
-                WHERE 
-                    order_exists_in_pi.order_info_uuid IS NULL 
-                    AND vodf.is_sample = 0
-                    AND vodf.is_cancelled = FALSE
-                    AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
-                GROUP BY
-                    vodf.marketing_uuid
+                    LEFT JOIN (
+                        SELECT DISTINCT vodf.order_info_uuid
+                        FROM commercial.pi_cash_entry
+                        LEFT JOIN zipper.sfg ON pi_cash_entry.sfg_uuid = sfg.uuid
+                        LEFT JOIN zipper.order_entry ON sfg.order_entry_uuid = order_entry.uuid
+                        LEFT JOIN zipper.v_order_details_full vodf ON order_entry.order_description_uuid = vodf.order_description_uuid
+                    ) order_exists_in_pi ON vodf.order_info_uuid = order_exists_in_pi.order_info_uuid
+                    WHERE
+                        order_exists_in_pi.order_info_uuid IS NULL
+                        AND vodf.is_sample = 0
+                        AND vodf.is_cancelled = FALSE
+                        AND ${own_uuid == null ? sql`TRUE` : sql`vodf.marketing_uuid = ${marketingUuid}`}
+                    GROUP BY
+                        vodf.marketing_uuid, vodf.order_number, vodf.party_name
+                ) per_order
+                GROUP BY per_order.marketing_uuid
             ) vodf_grouped ON marketing.uuid = vodf_grouped.marketing_uuid
             WHERE 
                 (vodf_grouped.total_quantity > 0 OR 
@@ -1257,53 +1291,51 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
             FROM
                 public.marketing marketing
             LEFT JOIN (
-                SELECT 
-                    jsonb_agg(
-                        DISTINCT jsonb_build_object(
-                            'value',
-                            toi.uuid,
-                            'label',
-                            CONCAT(
-                                'ST',
-                                CASE
-                                    WHEN toi.is_sample = 1 THEN 'S'
-                                    ELSE ''
-                                END,
-                                to_char(toi.created_at, 'YY'),
-                                '-',
-                                (toi.id::text),
-                                ' - ',
-                                party.name
-                            )
-                        )
-                    ) as order_object,
-                    SUM(toe.quantity) AS total_quantity,
-                    SUM(toe.delivered) AS total_delivered,
-                    SUM(toe.pi) AS total_pi,
-                    SUM(toe.quantity - toe.pi) AS total_non_pi,
-                    SUM(toe.quantity * toe.party_price) AS total_quantity_value,
-                    SUM(toe.delivered * toe.party_price) AS total_delivered_value,
-                    SUM(toe.pi * toe.party_price) AS total_pi_value,
-                    SUM((toe.quantity - toe.pi) * toe.party_price) AS total_non_pi_value,
-                    toi.marketing_uuid
-                FROM
-                    thread.order_entry toe
-                LEFT JOIN 
-                    thread.order_info toi ON toe.order_info_uuid = toi.uuid
-                LEFT JOIN public.party ON toi.party_uuid = party.uuid
-                LEFT JOIN (
-                    SELECT DISTINCT toi.uuid
-                    FROM commercial.pi_cash_entry
-                    LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+                -- Aggregate per thread order (toi) first, then aggregate per marketing
+                SELECT
+                    per_order.marketing_uuid,
+                    jsonb_agg(DISTINCT jsonb_build_object('value', per_order.toi_uuid, 'label', CONCAT('ST', CASE WHEN per_order.is_sample = 1 THEN 'S' ELSE '' END, to_char(per_order.created_at, 'YY'), '-', per_order.id_text, ' - ', per_order.party_name, ' - Q:', per_order.total_qty))) AS order_object,
+                    SUM(per_order.total_qty) AS total_quantity,
+                    SUM(per_order.total_delivered) AS total_delivered,
+                    SUM(per_order.total_pi) AS total_pi,
+                    SUM(per_order.total_qty - per_order.total_pi) AS total_non_pi,
+                    SUM(per_order.total_qty_value) AS total_quantity_value,
+                    SUM(per_order.total_delivered_value) AS total_delivered_value,
+                    SUM(per_order.total_pi_value) AS total_pi_value,
+                    SUM(per_order.total_non_pi_value) AS total_non_pi_value
+                FROM (
+                    SELECT
+                        toi.marketing_uuid,
+                        toi.uuid AS toi_uuid,
+                        toi.is_sample,
+                        toi.created_at,
+                        toi.id::text AS id_text,
+                        party.name AS party_name,
+                        SUM(toe.quantity)::float8 AS total_qty,
+                        SUM(toe.delivered)::float8 AS total_delivered,
+                        SUM(toe.pi)::float8 AS total_pi,
+                        SUM(toe.quantity * toe.party_price)::float8 AS total_qty_value,
+                        SUM(toe.delivered * toe.party_price)::float8 AS total_delivered_value,
+                        SUM(toe.pi * toe.party_price)::float8 AS total_pi_value,
+                        SUM((toe.quantity - toe.pi) * toe.party_price)::float8 AS total_non_pi_value
+                    FROM thread.order_entry toe
                     LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-                ) order_exists_in_pi ON toi.uuid = order_exists_in_pi.uuid
-                WHERE 
-                    order_exists_in_pi.uuid IS NULL 
-                    AND toi.is_sample = 0
-                    AND toi.is_cancelled = FALSE
-                    AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
-                GROUP BY
-                    toi.marketing_uuid
+                    LEFT JOIN public.party ON toi.party_uuid = party.uuid
+                    LEFT JOIN (
+                        SELECT DISTINCT toi.uuid
+                        FROM commercial.pi_cash_entry
+                        LEFT JOIN thread.order_entry toe ON pi_cash_entry.thread_order_entry_uuid = toe.uuid
+                        LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                    ) order_exists_in_pi ON toi.uuid = order_exists_in_pi.uuid
+                    WHERE
+                        order_exists_in_pi.uuid IS NULL
+                        AND toi.is_sample = 0
+                        AND toi.is_cancelled = FALSE
+                        AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
+                    GROUP BY
+                        toi.marketing_uuid, toi.uuid, toi.is_sample, toi.created_at, toi.id, party.name
+                ) per_order
+                GROUP BY per_order.marketing_uuid
             ) toi_grouped ON marketing.uuid = toi_grouped.marketing_uuid
             WHERE 
                 (toi_grouped.total_quantity > 0 OR 
