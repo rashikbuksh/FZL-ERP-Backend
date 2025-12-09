@@ -117,9 +117,9 @@ const swaggerSpec = swaggerJSDoc({
 		basePath: SERVER_URL,
 		openapi: '3.0.0',
 		info: {
-			title: 'FZL ERP API',
+			title: 'FZL API',
 			description: 'FZL API Documentation',
-			contact: { name: 'RBR', email: 'rafsan@fortunezip.com' },
+			contact: { name: 'Synaptech', email: 'info@synaptech.cloud' },
 			version: '0.1.1',
 		},
 		servers: [

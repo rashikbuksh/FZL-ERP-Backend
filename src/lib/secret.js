@@ -3,6 +3,7 @@ dotenv.config();
 
 // process.env
 const {
+	NODE_ENV,
 	DB_HOST,
 	DB_USER,
 	DB_PASS,
@@ -18,6 +19,7 @@ const {
 } = process.env;
 
 export {
+	NODE_ENV,
 	DB_HOST,
 	DB_NAME,
 	DB_PASS,

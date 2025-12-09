@@ -1,6 +1,6 @@
 import { compare, genSalt, hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { PRIVATE_KEY, SALT } from '../lib/secret.js';
+import { PRIVATE_KEY, SALT, NODE_ENV } from '../lib/secret.js';
 
 const { sign, verify } = jwt;
 
@@ -40,6 +40,10 @@ export const CreateToken = (user, time = '24h') => {
 };
 
 export const VerifyToken = (req, res, next) => {
+	// In development allow requests without authorization for convenience
+	if (NODE_ENV === 'development') {
+		return next();
+	}
 	const { authorization } = req?.headers;
 	const { originalUrl, method } = req;
 
