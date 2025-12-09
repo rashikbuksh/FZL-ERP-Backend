@@ -1053,7 +1053,7 @@ export async function PiToBeRegister(req, res, next) {
                 public.party party
             LEFT JOIN (
                 SELECT 
-                    jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', vodf.order_number)) as order_object,
+                    jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', CONCAT(vodf.order_number, ' - ', vodf.marketing_name))) as order_object,
                     SUM(order_entry.quantity) AS total_quantity,
                     SUM(sfg.delivered) AS total_delivered,
                     SUM(sfg.pi) AS total_pi,
@@ -1107,7 +1107,25 @@ export async function PiToBeRegister(req, res, next) {
                 public.party party
             LEFT JOIN (
                 SELECT 
-                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)))) as order_object,
+                    jsonb_agg(
+                        DISTINCT jsonb_build_object(
+                            'value',
+                            toi.uuid,
+                            'label',
+                            CONCAT(
+                                'ST',
+                                CASE
+                                    WHEN toi.is_sample = 1 THEN 'S'
+                                    ELSE ''
+                                END,
+                                to_char(toi.created_at, 'YY'),
+                                '-',
+                                (toi.id::text),
+                                ' - ',
+                                marketing.name
+                            )
+                        )
+                    ) as order_object,
                     SUM(toe.quantity) AS total_quantity,
                     SUM(toe.delivered) AS total_delivered,
                     SUM(toe.pi) AS total_pi,
@@ -1121,6 +1139,7 @@ export async function PiToBeRegister(req, res, next) {
                     thread.order_entry toe
                 LEFT JOIN 
                     thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                LEFT JOIN public.marketing ON toi.marketing_uuid = marketing.uuid
                 LEFT JOIN (
                     SELECT DISTINCT toi.uuid
                     FROM commercial.pi_cash_entry
@@ -1185,7 +1204,7 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                 public.marketing marketing
             LEFT JOIN (
                 SELECT 
-                    jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', vodf.order_number)) as order_object,
+                    jsonb_agg(DISTINCT jsonb_build_object('value', vodf.order_info_uuid, 'label', CONCAT(vodf.order_number, ' - ', vodf.party_name))) as order_object,
                     SUM(order_entry.quantity) AS total_quantity,
                     SUM(sfg.delivered) AS total_delivered,
                     SUM(sfg.pi) AS total_pi,
@@ -1239,7 +1258,25 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                 public.marketing marketing
             LEFT JOIN (
                 SELECT 
-                    jsonb_agg(DISTINCT jsonb_build_object('value', toi.uuid, 'label', CONCAT('ST', CASE WHEN toi.is_sample = 1 THEN 'S' ELSE '' END, to_char(toi.created_at, 'YY'), '-', (toi.id::text)))) as order_object,
+                    jsonb_agg(
+                        DISTINCT jsonb_build_object(
+                            'value',
+                            toi.uuid,
+                            'label',
+                            CONCAT(
+                                'ST',
+                                CASE
+                                    WHEN toi.is_sample = 1 THEN 'S'
+                                    ELSE ''
+                                END,
+                                to_char(toi.created_at, 'YY'),
+                                '-',
+                                (toi.id::text),
+                                ' - ',
+                                party.name
+                            )
+                        )
+                    ) as order_object,
                     SUM(toe.quantity) AS total_quantity,
                     SUM(toe.delivered) AS total_delivered,
                     SUM(toe.pi) AS total_pi,
@@ -1253,6 +1290,7 @@ export async function PiToBeRegisterMarketingWise(req, res, next) {
                     thread.order_entry toe
                 LEFT JOIN 
                     thread.order_info toi ON toe.order_info_uuid = toi.uuid
+                LEFT JOIN public.party ON toi.party_uuid = party.uuid
                 LEFT JOIN (
                     SELECT DISTINCT toi.uuid
                     FROM commercial.pi_cash_entry
