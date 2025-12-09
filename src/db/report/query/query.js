@@ -1171,7 +1171,7 @@ export async function PiToBeRegister(req, res, next) {
                         AND toi.is_cancelled = FALSE
                         AND ${own_uuid == null ? sql`TRUE` : sql`toi.marketing_uuid = ${marketingUuid}`}
                     GROUP BY
-                        toi.party_uuid, toi.uuid, toi.is_sample, toi.created_at, toi.id, party.name
+                        toi.party_uuid, toi.uuid, toi.is_sample, toi.created_at, toi.id, marketing.name
                 ) per_order
                 GROUP BY per_order.party_uuid
             ) toi_grouped ON party.uuid = toi_grouped.party_uuid
