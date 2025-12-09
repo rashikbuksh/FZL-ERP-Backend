@@ -1130,7 +1130,7 @@ export async function PiToBeRegister(req, res, next) {
                     per_order.party_uuid,
                     jsonb_agg(DISTINCT jsonb_build_object(
                         'value', per_order.toi_uuid,
-                        'label', CONCAT('ST', CASE WHEN per_order.is_sample = 1 THEN 'S' ELSE '' END, to_char(per_order.created_at, 'YY'), '-', per_order.id_text, ' - ', per_order.party_name, ' - Q:', per_order.total_qty),
+                        'label', CONCAT('ST', CASE WHEN per_order.is_sample = 1 THEN 'S' ELSE '' END, to_char(per_order.created_at, 'YY'), '-', per_order.id_text, ' - ', per_order.marketing_name, ' - Q:', per_order.total_qty),
                         'quantity', per_order.total_qty
                     )) AS order_object,
                     SUM(per_order.total_qty) AS total_quantity,
@@ -1148,7 +1148,7 @@ export async function PiToBeRegister(req, res, next) {
                         toi.is_sample,
                         toi.created_at,
                         toi.id::text AS id_text,
-                        party.name AS party_name,
+                        marketing.name AS marketing_name,
                         SUM(toe.quantity)::float8 AS total_qty,
                         SUM(toe.delivered)::float8 AS total_delivered,
                         SUM(toe.pi)::float8 AS total_pi,
@@ -1158,7 +1158,7 @@ export async function PiToBeRegister(req, res, next) {
                         SUM((toe.quantity - toe.pi) * toe.party_price)::float8 AS total_non_pi_value
                     FROM thread.order_entry toe
                     LEFT JOIN thread.order_info toi ON toe.order_info_uuid = toi.uuid
-                    LEFT JOIN public.party ON toi.party_uuid = party.uuid
+                    LEFT JOIN public.marketing ON toi.marketing_uuid = marketing.uuid
                     LEFT JOIN (
                         SELECT DISTINCT toi.uuid
                         FROM commercial.pi_cash_entry
